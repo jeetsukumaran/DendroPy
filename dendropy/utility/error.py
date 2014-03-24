@@ -31,12 +31,14 @@ def get_calling_code_info(stack_level):
     lineno = inspect.getlineno(frame[0])
     return filename, lineno
 
-def dump_stack():
+def dump_stack(out):
+    if out is None:
+        out = sys.stderr
     for frame, filename, line_num, func, source_code, source_index in inspect.stack()[2:]:
         if source_code is None:
-            print("{}: {}".format(filename, line_num))
+            out.write("{}: {}\n".format(filename, line_num))
         else:
-            print("{}: {}: {}".format(filename, line_num, source_code[source_index].strip()))
+            out.write("{}: {}: {}\n".format(filename, line_num, source_code[source_index].strip()))
 
 # def deprecation_alert(message,
 #         logger_obj=None,

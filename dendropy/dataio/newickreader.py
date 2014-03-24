@@ -21,6 +21,10 @@ Parsing of NEWICK-format tree from a stream.
 """
 
 import warnings
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
 from dendropy.utility import error
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -230,9 +234,9 @@ class NewickReader(ioservice.DataReader):
         """
         Keyword Arguments
         -----------------
-        rootedness : string, {['default-unrooted'], 'default-rooted', 'force-unrooted', 'force-rooted'}
+        rooting : string, {['default-unrooted'], 'default-rooted', 'force-unrooted', 'force-rooted'}
             Specifies how trees in the data source should be intepreted with
-            respect to their rootedness:
+            respect to their rooting:
 
                 '``default-unrooted``' [default]:
                     All trees are interpreted as unrooted unless a '``[&R]``'
@@ -292,14 +296,15 @@ class NewickReader(ioservice.DataReader):
             punctuation characters.
         """
         self._parser = NewickTreeParser()
+        self._rooting = None
 
         ## (TEMPORARY and UGLY!!!!) Special handling for legacy signature
         if "as_unrooted" in kwargs or "as_rooted" in kwargs or "default_as_rooted" in kwargs or "default_as_unrooted" in kwargs:
             import collections
             legacy_kw = ("as_unrooted", "as_rooted", "default_as_rooted", "default_as_unrooted")
             legacy_kw_str = ", ".join("'{}'".format(k) for k in legacy_kw)
-            if "rootedness" in kwargs:
-                raise ValueError("Cannot specify 'rootedness' keyword argument in conjunction with any of the (legacy) keyword arguments ({}). Use 'rootedness' alone.".format(legacy_kw_str))
+            if "rooting" in kwargs:
+                raise ValueError("Cannot specify 'rooting' keyword argument in conjunction with any of the (legacy) keyword arguments ({}). Use 'rooting' alone.".format(legacy_kw_str))
             specs = collections.Counter(k for k in kwargs.keys() if k in legacy_kw)
             if sum(specs.values()) > 1:
                 raise ValueError("Cannot specify more than one of {{ {} }} at the same time".format(legacy_kw_str))
@@ -324,12 +329,44 @@ class NewickReader(ioservice.DataReader):
                     corrected = "default-rooted"
                 else:
                     corrected = "default-unrooted"
-            error.dump_stack()
-            warnings.warn("Use of keyword argument '{}={}' is deprecated; use 'rootedness=\"{}\"' instead".format(kw, kwargs[kw], corrected),
+            msg = StringIO()
+            error.dump_stack(msg)
+            warnings.warn("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
                     FutureWarning, stacklevel=4)
             kwargs.pop(kw)
-            kwargs["rootedness"] = corrected
-        self.rootedness = kwargs.pop("rootedness", "default-unrooted")
+            kwargs["rooting"] = corrected
+        self.rooting = kwargs.pop("rooting", "default-unrooted")
+
+    def _get_rooting(self):
+        return self._rooting
+    def _set_rooting(self, val):
+        if val not in ["force-unrooted", "force-rooted", "default-unrooted", "default-rooted"]:
+            raise ValueError("Unrecognized rooting directive: '{}'".format(val))
+        self._rooting = val
+    rooting = property(_get_rooting, _set_rooting)
+
+    def _tree_rooting_state(self, rooting_comment=None):
+        """
+        Returns rooting state for tree with given rooting comment token, taking
+        into account `rooting` configuration.
+        """
+        if self._rooting == "force-unrooted":
+            return False
+        elif self._rooting == "force-rooted":
+            return True
+        elif rooting_comment == "&R" or rooting_comment == "&r":
+            return True
+        elif rooting_comment == "&U" or rooting_comment == "&U":
+            return False
+        elif self._rooting == "default-rooted":
+            return True
+        elif self._rooting == "default-unrooted" or self._rooting is None:
+            return False
+        else:
+            raise TypeError("Unrecognized rooting directive: '{}'".format(self._rooting))
+
+
+
 
     def tree_iter(self,
             stream,
