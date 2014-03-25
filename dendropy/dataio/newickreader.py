@@ -28,6 +28,7 @@ except ImportError:
     from io import StringIO # Python 3
 from dendropy.datamodel import base
 from dendropy.utility import error
+from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
 
@@ -128,9 +129,13 @@ class NewickReader(ioservice.DataReader):
             spaces. Defaults to `False`: all underscores not protected by
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
-            If `False`, internal node labels will be instantantiatd into Taxon
-            objects. Defaults to `True`: internal node labels will *not* be
-            treated as taxa.
+            If `False`, internal node labels will be instantantiated into
+            :class:`Taxon` objects. If `True`, internal node labels
+            will *not* be instantantiated as strings.
+        suppress_external_node_taxa : boolean, default: `False`
+            If `False`, external node labels will be instantantiated into
+            :class:`Taxon` objects. If `True`, external node labels
+            will *not* be instantantiated as strings.
         allow_duplicate_taxon_labels : boolean, default: `False`
             If `True`, then multiple identical taxon labels will be allowed.
             Defaults to `False`: treat multiple identical taxon labels as an
@@ -190,8 +195,9 @@ class NewickReader(ioservice.DataReader):
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
+        self.suppress_external_node_taxa = kwargs.get("suppress_external_node_taxa", False)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
-        self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', False)
+        self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', False)
 
     def tree_iter(self,
             stream,
@@ -375,6 +381,7 @@ class NewickReader(ioservice.DataReader):
                         new_node = tree.node_factory()
                         self._process_node_comments(node=new_node,
                                 nexus_tokenizer=nexus_tokenizer)
+                        self._finish_node(new_node)
                         current_node.add_child(new_node)
                         # do not flag node as created to allow for an extra node to be created in the event of (..,)
                     nexus_tokenizer.require_next_token()
@@ -383,6 +390,7 @@ class NewickReader(ioservice.DataReader):
                         new_node = tree.node_factory()
                         self._process_node_comments(node=new_node,
                                 nexus_tokenizer=nexus_tokenizer)
+                        self._finish_node(new_node)
                         current_node.add_child(new_node)
                         nexus_tokenizer.require_next_token()
                         node_created = true;
@@ -391,6 +399,7 @@ class NewickReader(ioservice.DataReader):
                         new_node = tree.node_factory();
                         self._process_node_comments(node=new_node,
                                 nexus_tokenizer=nexus_tokenizer)
+                        self._finish_node(new_node)
                         current_node.add_child(new_node)
                         node_created = true;
                 elif nexus_tokenizer.current_token == ")": #206
@@ -432,6 +441,7 @@ class NewickReader(ioservice.DataReader):
                 self._process_node_comments(node=current_node,
                         nexus_tokenizer=nexus_tokenizer,
                         additional_comments=current_node_comments)
+                self._finish_node(current_node)
                 return current_node
             elif nexus_tokenizer.current_token == ";": #256
                 # end of tree statement
@@ -442,6 +452,7 @@ class NewickReader(ioservice.DataReader):
                 self._process_node_comments(node=current_node,
                         nexus_tokenizer=nexus_tokenizer,
                         additional_comments=current_node_comments)
+                self._finish_node(current_node)
                 return current_node
             elif nexus_tokenizer.current_token == "(": #263
                 # start of another node or tree without finishing this
@@ -460,18 +471,24 @@ class NewickReader(ioservice.DataReader):
                             col_num=nexus_tokenizer.token_column_num,
                             stream=nexus_tokenizer.src)
                 else:
-                    # Label: if leaf node, then taxon; if internal node
-                    # then either way
-                    ### TODO!!! taxon/label handling
-                    if is_internal_node:
+                    # Label
+                    if ( (is_internal_node and self.suppress_internal_node_taxa)
+                            or (not is_internal_node and self.suppress_external_node_taxa) ):
                         current_node.label = nexus_tokenizer.current_token
                     else:
                         current_node.taxon = taxon_symbol_map_func(nexus_tokenizer.current_token)
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
+                    # try:
+                    #     nexus_tokenizer.require_next_token()
+                    # except tokenizer.Tokenizer.UnexpectedEndOfStreamError:
+                    #     ## one possibility is that we have a single line
+                    #     ## tree string with no terminating semi-colon ...
+                    #     break
         self._process_node_comments(node=current_node,
                 nexus_tokenizer=nexus_tokenizer,
                 additional_comments=current_node_comments)
+        self._finish_node(current_node)
         return current_node
 
     def _parse_comment_metadata(comment,
@@ -573,3 +590,7 @@ class NewickReader(ioservice.DataReader):
                     node.comments.append(comment)
             else:
                 node.comments.append(comment)
+
+    def _finish_node(self, node):
+        if self.finish_node_func is not None:
+            self.finish_node_func(node)
