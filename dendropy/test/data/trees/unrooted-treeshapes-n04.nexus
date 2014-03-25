@@ -1,0 +1,17 @@
+#NEXUS
+
+[ All 4-tip unlabeled unrooted bifurcating tree topologies. ]
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=4;
+    TAXLABELS
+        t01
+        t02
+        t03
+        t04
+  ;
+END;
+
+BEGIN TREES;
+    TREE 1 = [&U] ((t01,t02),t03,t04);
+END;

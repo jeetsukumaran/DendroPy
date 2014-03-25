@@ -1,0 +1,25 @@
+#NEXUS
+
+[ All 6-tip unlabeled rooted bifurcating tree topologies. ]
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=6;
+    TAXLABELS
+        t01
+        t02
+        t03
+        t04
+        t05
+        t06
+  ;
+END;
+
+BEGIN TREES;
+    TREE 1 = [&R] (t01,(t02,(t03,(t04,(t05,t06)))));
+    TREE 2 = [&R] (t01,(t02,((t03,t04),(t05,t06))));
+    TREE 3 = [&R] (t01,((t02,t03),(t04,(t05,t06))));
+    TREE 4 = [&R] ((t01,t02),(t03,(t04,(t05,t06))));
+    TREE 5 = [&R] ((t01,t02),((t03,t04),(t05,t06)));
+    TREE 6 = [&R] ((t01,(t02,t03)),(t04,(t05,t06)));
+END;
+

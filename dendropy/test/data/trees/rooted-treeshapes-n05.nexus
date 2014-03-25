@@ -1,0 +1,21 @@
+#NEXUS
+
+[ All 5-tip unlabeled rooted bifurcating tree topologies. ]
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS
+        t01
+        t02
+        t03
+        t04
+        t05
+  ;
+END;
+
+BEGIN TREES;
+    TREE 1 = [&R] (t01,(t02,(t03,(t04,t05))));
+    TREE 2 = [&R] (t01,((t02,t03),(t04,t05)));
+    TREE 3 = [&R] ((t01,t02),(t03,(t04,t05)));
+END;
+
