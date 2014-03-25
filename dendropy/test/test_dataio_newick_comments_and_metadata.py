@@ -41,5 +41,27 @@ class TreeWithCommentsTestCase(unittest.TestCase):
                 for comment in nd.comments:
                     self.assertEqual(comment[0], nd.label)
 
+    def test_anonymous_node_comment_association(self):
+        tree_string1 = "[x1]([x2],[x3]([x4],[x5]([x6],[x7],[x8],[x9])[x10])[x11])[x12];"
+        tree_string2 = "[x1](a[x2],[x3]([x4]b,[x5]([x6]c,[x7]d,[x8]e,[x9]f)g[x10])h[x11])i[x12];"
+        tree1 = dendropy.Tree.get_from_string(tree_string1, "newick", suppress_external_node_taxa=True)
+        tree2 = dendropy.Tree.get_from_string(tree_string2, "newick", suppress_external_node_taxa=True)
+        expected_comments = {
+                "a": ["x2",],
+                "b": ["x4",],
+                "c": ["x6",],
+                "d": ["x7",],
+                "e": ["x8",],
+                "f": ["x9",],
+                "g": ["x5", "x10"],
+                "h": ["x3", "x11"],
+                "i": ["x12"],
+                }
+        nodes1 = [nd for nd in tree1]
+        nodes2 = [nd for nd in tree2]
+        for nd1, nd2 in zip(nodes1, nodes2):
+            self.assertEqual(nd2.comments, expected_comments[nd2.label])
+            self.assertEqual(nd1.comments, expected_comments[nd2.label])
+
 if __name__ == "__main__":
     unittest.main()

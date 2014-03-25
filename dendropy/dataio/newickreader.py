@@ -383,7 +383,7 @@ class NewickReader(ioservice.DataReader):
                                 nexus_tokenizer=nexus_tokenizer)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
-                        # do not flag node as created to allow for an extra node to be created in the event of (..,)
+                        ## node_created = True # do not flag node as created to allow for an extra node to be created in the event of (..,)
                     nexus_tokenizer.require_next_token()
                     while nexus_tokenizer.current_token == ",": #192
                         # another blank node
@@ -392,8 +392,8 @@ class NewickReader(ioservice.DataReader):
                                 nexus_tokenizer=nexus_tokenizer)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
+                        # node_created = True; # do not flag node as created: extra node needed in the event of (..,)
                         nexus_tokenizer.require_next_token()
-                        node_created = true;
                     if not node_created and nexus_tokenizer.current_token == ")": #200
                         # end of node
                         new_node = tree.node_factory();
@@ -401,7 +401,7 @@ class NewickReader(ioservice.DataReader):
                                 nexus_tokenizer=nexus_tokenizer)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
-                        node_created = true;
+                        node_created = True;
                 elif nexus_tokenizer.current_token == ")": #206
                     # end of child nodes
                     nexus_tokenizer.require_next_token()
@@ -430,9 +430,8 @@ class NewickReader(ioservice.DataReader):
             if nexus_tokenizer.current_token == ":": #246
                 nexus_tokenizer.require_next_token()
                 try:
-                    edge_length = float(nexus_tokenizer.current_token)
+                    edge_length = self.edge_len_type(nexus_tokenizer.current_token)
                 except ValueError:
-                    ### TODO!!! handle other types of valuesNewickReader.
                     raise
                 current_node.edge.length = edge_length
                 nexus_tokenizer.require_next_token()
