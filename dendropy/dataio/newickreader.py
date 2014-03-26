@@ -237,7 +237,8 @@ class NewickReader(ioservice.DataReader):
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
         tree_list = tree_list_factory(label=None, taxon_namespace=taxon_namespace)
-        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace)
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
+                enable_lookup_by_taxon_number=False)
         tree_factory = tree_list.new_tree
         for tree in self.tree_iter(stream=stream,
                 taxon_symbol_mapper=taxon_symbol_mapper,

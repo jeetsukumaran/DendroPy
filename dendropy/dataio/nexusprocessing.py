@@ -84,7 +84,10 @@ class NexusTaxonSymbolMapper(object):
     methods.
     """
 
-    def __init__(self, taxon_namespace, case_insensitive=True):
+    def __init__(self,
+            taxon_namespace,
+            enable_lookup_by_taxon_number=True,
+            case_insensitive=True):
         self._taxon_namespace = None
         self.taxon_namespace_original_mutability_state = None
         self.case_insensitive = case_insensitive
@@ -96,6 +99,7 @@ class NexusTaxonSymbolMapper(object):
             self.label_taxon_map = {}
         self.number_taxon_map = {}
         self.number_taxon_label_map = {}
+        self.enable_lookup_by_taxon_number = enable_lookup_by_taxon_number
         self._set_taxon_namespace(taxon_namespace)
 
     def restore_taxon_namespace_mutability(self):
@@ -152,10 +156,11 @@ class NexusTaxonSymbolMapper(object):
             return self.label_taxon_map[symbol]
         except KeyError:
             pass
-        try:
-            return self.number_taxon_map[symbol]
-        except KeyError:
-            pass
+        if self.enable_lookup_by_taxon_number:
+            try:
+                return self.number_taxon_map[symbol]
+            except KeyError:
+                pass
         if create_taxon_if_not_found:
             return self.new_taxon(symbol)
         return None
