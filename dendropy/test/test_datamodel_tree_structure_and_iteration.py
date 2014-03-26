@@ -351,6 +351,14 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(edges), len(exp_edges))
         self.assertEqual(set(edges), exp_edges)
 
+    def test_get_child_nodes(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        for node in tree:
+            child_labels = [ch.label for ch in node.child_nodes()]
+            expected_children = self.node_children[node.label]
+            self.assertEqual(len(child_labels), len(expected_children))
+            self.assertEqual(set(child_labels), set(expected_children))
+
     ###########################################################################
     ## (Taxon-free) Node Finders
 
