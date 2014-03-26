@@ -282,7 +282,7 @@ class NewickReader(ioservice.DataReader):
         tree_comments = nexus_tokenizer.pull_captured_comments()
         if current_token is None:
             current_token = nexus_tokenizer.next_token()
-            tree_comments = nexus_tokenizer.pull_captured_comments()
+            tree_comments.extend(nexus_tokenizer.pull_captured_comments())
         while current_token == ";" and not nexus_tokenizer.is_eof():
             current_token = nexus_tokenizer.require_next_token()
             tree_comments = nexus_tokenizer.pull_captured_comments()
