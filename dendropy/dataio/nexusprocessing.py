@@ -112,7 +112,7 @@ class NexusTaxonSymbolMapper(object):
         self.restore_taxon_namespace_mutability()
 
     def _get_taxon_namespace(self):
-        return self.taxon_namespace
+        return self._taxon_namespace
     def _set_taxon_namespace(self, taxon_namespace):
         if self._taxon_namespace is not None:
             self.restore_taxon_namespace_mutability()

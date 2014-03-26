@@ -224,7 +224,7 @@ class NewickReader(ioservice.DataReader):
             tree = self._parse_tree_statement(
                     nexus_tokenizer=nexus_tokenizer,
                     tree_factory=tree_factory,
-                    taxon_symbol_map_func=taxon_symbol_mapper.lookup_taxon_symbol)
+                    taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
             yield tree
             if tree is None:
                 raise StopIteration
