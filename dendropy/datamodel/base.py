@@ -22,10 +22,13 @@ Infrastructure for phylogenetic data objects.
 
 import os
 import copy
+import sys
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container
 from dendropy.utility import bibtex
 
@@ -143,10 +146,11 @@ class Readable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        fsrc = open(src, "rU")
-        return cls._parse_from_stream(stream=fsrc,
-                schema=schema,
-                **kwargs)
+        fsrc = open(src, "r", newline=None)
+        with fsrc:
+            return cls._parse_from_stream(stream=fsrc,
+                    schema=schema,
+                    **kwargs)
     get_from_path = classmethod(get_from_path)
 
     def get_from_string(cls, src, schema, **kwargs):
