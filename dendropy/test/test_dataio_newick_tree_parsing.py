@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Tests for NEWICK reading.
+Tests for general NEWICK reading.
 """
 
 import sys

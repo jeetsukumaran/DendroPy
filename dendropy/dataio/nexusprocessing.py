@@ -46,9 +46,45 @@ class NexusTokenizer(Tokenizer):
 ## Taxon Handling
 
 class NexusTaxonSymbolMapper(object):
+    """
+    Manages :class:`TaxonNamespace` and :class:`Taxon` object look-ups when
+    parsing NEXUS and NEWICK formatted data.
+
+    Operational taxonomic unit concepts in NEXUS files can be referenced using
+    one of three types of symbols:
+
+        - the "TRANSLATE" block token
+        - the taxon label
+        - the taxon number
+
+    In the event of redundant over overdetermined symbols, the resolution order
+    is as given above.
+
+    This class encapsulates creating, looking-up and retrieving :class:`Taxon`
+    objects corresponding to operation taxonomic unit concept references
+    encountered when reading NEXUS or NEWICK data sources from the
+    :class:`TaxonNamespace` that it wraps and manages. It keeps track of
+    "TRANSLATE" block tokens, operational taxonomic unit labels, and
+    operational taxonomic unit indexes in mapping containers that allow for
+    quick retrieval of corresponding :class:`Taxon` objects. The symbol look-up
+    is case-insensitive, as per NEXUS/NEWICK convention.
+
+    If a :class:`Taxon` object is not found for a particular symbol, it will
+    create a new :class:`Taxon` object with that symbol for its label, and
+    register it in all the other supplemental mappings appropriately.
+
+    Note that the :class:`TaxonNamespace` object passed to this class and the
+    member :class:`Taxon` objects should not be modified during the lifespan of
+    this class or, at least, the tenure of the management of
+    :class:`TaxonNamespace` and member :class:`Taxon` objects by this class.
+    This is to ensure that the various supplementatl mappings (in particular,
+    the label mapping and the taxon number mapping) are synchronized.
+    To this end, the of the :class:`TaxonNamespace` object is locked.
+    """
 
     def __init__(self, taxon_namespace, case_insensitive=True):
         self._taxon_namespace = None
+        self.taxon_namespace_original_mutability_state = None
         self.case_insensitive = case_insensitive
         if self.case_insensitive:
             self.token_taxon_map = container.CaseInsensitiveDict()
@@ -60,10 +96,23 @@ class NexusTaxonSymbolMapper(object):
         self.number_taxon_label_map = {}
         self._set_taxon_namespace(taxon_namespace)
 
+    def restore_taxon_namespace_mutability(self):
+        if self._taxon_namespace is not None:
+            if self.taxon_namespace_original_mutability_state is not None:
+                self._taxon_namespace.is_mutable = self.taxon_namespace_original_mutability_state
+        self.taxon_namespace_original_mutability_state = None
+
+    def __del__(self):
+        self.restore_taxon_namespace_mutability()
+
     def _get_taxon_namespace(self):
         return self.taxon_namespace
     def _set_taxon_namespace(self, taxon_namespace):
+        if self._taxon_namespace is not None:
+            self.restore_taxon_namespace_mutability()
         self._taxon_namespace = taxon_namespace
+        self.taxon_namespace_original_mutability_state = self._taxon_namespace.is_mutable
+        self._taxon_namespace.is_mutable = False
         self.reset_supplemental_mappings()
     taxon_namespace = property(_get_taxon_namespace, _set_taxon_namespace)
 
@@ -89,6 +138,8 @@ class NexusTaxonSymbolMapper(object):
         #     return self.label_taxon_map[symbol]
         # if symbol in self.number_taxon_map:
         #     return self.number_taxon_map[symbol]
+        if not isinstance(symbol, str):
+            symbol = str(symbol)
         try:
             return self.token_taxon_map[symbol]
         except KeyError:
@@ -102,10 +153,17 @@ class NexusTaxonSymbolMapper(object):
         except KeyError:
             pass
         if create_taxon_if_not_found:
+            self._taxon_namespace.is_mutable = True
             t = self._taxon_namespace.new_taxon(symbol)
+            self._taxon_namespace.is_mutable = False
             self.label_taxon_map[symbol] = t
+            taxon_number = str(len(self._taxon_namespace))
+            self.number_taxon_map[taxon_number] = t
             return t
         return None
+
+    def require_taxon_for_symbol(self, symbol):
+        return self.lookup_taxon_symbol(symbol=symbol, create_taxon_if_not_found=True)
 
 ###############################################################################
 ## Metadata
