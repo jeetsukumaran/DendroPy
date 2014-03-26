@@ -467,11 +467,15 @@ class NewickReader(ioservice.DataReader):
                             stream=nexus_tokenizer.src)
                 else:
                     # Label
+                    if not self.preserve_underscores and not nexus_tokenizer.is_token_quoted:
+                        label = nexus_tokenizer.current_token.replace("_", " ")
+                    else:
+                        label = nexus_tokenizer.current_token
                     if ( (is_internal_node and self.suppress_internal_node_taxa)
                             or (not is_internal_node and self.suppress_external_node_taxa) ):
-                        current_node.label = nexus_tokenizer.current_token
+                        current_node.label = label
                     else:
-                        current_node.taxon = taxon_symbol_map_func(nexus_tokenizer.current_token)
+                        current_node.taxon = taxon_symbol_map_func(label)
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
                     # try:
