@@ -353,7 +353,7 @@ class TestTreeStructure(unittest.TestCase):
 
     def test_get_child_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
-        for node in tree:
+        for node in anodes:
             child_labels = [ch.label for ch in node.child_nodes()]
             expected_children = self.node_children[node.label]
             self.assertEqual(len(child_labels), len(expected_children))
@@ -739,19 +739,34 @@ class TestTreeStructure(unittest.TestCase):
     ###########################################################################
     ## Special Iterators
 
-    def test_child_iterator_unfiltered(self):
+    def test_child_node_iterator_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         for nd in anodes:
             expected_children = self.node_children[nd.label]
-            children = [ch.label for ch in nd.child_iter()]
+            children = [ch.label for ch in nd.child_node_iter()]
             self.assertEqual(children, expected_children)
 
-    def test_child_iterator_filtered(self):
+    def test_child_node_iterator_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         filter_fn = lambda x: x.edge.length > 13
         for nd in anodes:
             expected_children = [label for label in self.node_children[nd.label] if self.node_edge_lengths[label] > 13]
-            children = [ch.label for ch in nd.child_iter(filter_fn=filter_fn)]
+            children = [ch.label for ch in nd.child_node_iter(filter_fn=filter_fn)]
+            self.assertEqual(children, expected_children)
+
+    def test_child_edge_iterator_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        for nd in anodes:
+            expected_children = self.node_children[nd.label]
+            children = [edge.head_node.label for edge in nd.child_edge_iter()]
+            self.assertEqual(children, expected_children)
+
+    def test_child_edge_iterator_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        filter_fn = lambda x: x.length > 13
+        for nd in anodes:
+            expected_children = [label for label in self.node_children[nd.label] if self.node_edge_lengths[label] > 13]
+            children = [edge.head_node.label for edge in nd.child_edge_iter(filter_fn=filter_fn)]
             self.assertEqual(children, expected_children)
 
     def test_ancestor_iterator_exclusive_unfiltered(self):

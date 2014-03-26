@@ -490,7 +490,7 @@ class Node(base.Annotable):
         for node in self.postorder_iter(ff):
             yield node
 
-    def child_iter(self, filter_fn=None):
+    def child_node_iter(self, filter_fn=None):
         """
         Iterator over all nodes that are the (immediate) children of this node.
 
@@ -510,6 +510,27 @@ class Node(base.Annotable):
         for node in self._child_nodes:
             if filter_fn is None or filter_fn(node):
                 yield node
+
+    def child_edge_iter(self, filter_fn=None):
+        """
+        Iterator over all edges that are the (immediate) children of this edge.
+
+        Parameters
+        ----------
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
+
+        Returns
+        -------
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
+            An iterator yielding edges that have this edge as a parent.
+        """
+        for node in self._child_nodes:
+            if filter_fn is None or filter_fn(node.edge):
+                yield node.edge
 
     def ancestor_iter(self, filter_fn=None, inclusive=False):
         """
@@ -1013,8 +1034,8 @@ class Node(base.Annotable):
         Note
         ----
         Unless an actual `list` is needed, iterating over the child nodes using
-        :meth:`Node.child_iter()` is preferable to avoid the overhead of list
-        construction.
+        :meth:`Node.child_node_iter()` is preferable to avoid the overhead of
+        list construction.
 
         Returns
         -------
@@ -1022,6 +1043,23 @@ class Node(base.Annotable):
            A `list` of :class:`Node` objects that have `self` as a parent.
         """
         return list(self._child_nodes)
+
+    def child_edges(self):
+        """
+        Returns a shallow-copy list of all child edges of this node.
+
+        Note
+        ----
+        Unless an actual `list` is needed, iterating over the child edges using
+        :meth:`Node.child_edge_iter()` is preferable to avoid the overhead of
+        list construction.
+
+        Returns
+        -------
+        children : :py:class:`list` [:class:`Edge`]
+           A `list` of :class:`Edge` objects that have `self` as a tail node.
+        """
+        return list(ch.edge for ch in self._child_nodes)
 
     def incident_edges(self):
         """

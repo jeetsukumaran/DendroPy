@@ -54,7 +54,7 @@ class NewickTreeReaderTest(unittest.TestCase):
                         self.assertEqual(node.parent_node.label, check_node.parent)
                     else:
                         self.assertEqual(check_node.parent, "None")
-                    ch_labels = [ch.label for ch in node.child_iter()]
+                    ch_labels = [ch.label for ch in node.child_node_iter()]
                     self.assertEqual(len(ch_labels), len(check_node.children))
                     self.assertEqual(set(ch_labels), set(check_node.children))
                     self.assertEqual(node.comments, check_node.comments)
