@@ -280,10 +280,7 @@ class NewickReader(ioservice.DataReader):
         """
         current_token = nexus_tokenizer.current_token
         tree_comments = nexus_tokenizer.pull_captured_comments()
-        if current_token is None:
-            current_token = nexus_tokenizer.next_token()
-            tree_comments.extend(nexus_tokenizer.pull_captured_comments())
-        while current_token == ";" and not nexus_tokenizer.is_eof():
+        while (current_token == ";" or current_token is None) and not nexus_tokenizer.is_eof():
             current_token = nexus_tokenizer.require_next_token()
             tree_comments = nexus_tokenizer.pull_captured_comments()
         if nexus_tokenizer.is_eof():
@@ -303,6 +300,7 @@ class NewickReader(ioservice.DataReader):
                 taxon_symbol_map_func=taxon_symbol_map_func)
         current_token = nexus_tokenizer.current_token
         while current_token == ";" and not nexus_tokenizer.is_eof():
+            nexus_tokenizer.clear_captured_comments()
             current_token = nexus_tokenizer.next_token()
         return tree
 
@@ -426,7 +424,9 @@ class NewickReader(ioservice.DataReader):
                     current_node.add_child(new_node);
                     node_created = True;
         label_parsed = False
+        end_of_tree = False
         while True:
+            current_node_comments = nexus_tokenizer.pull_captured_comments()
             if nexus_tokenizer.current_token == ":": #246
                 nexus_tokenizer.require_next_token()
                 try:
@@ -444,6 +444,7 @@ class NewickReader(ioservice.DataReader):
                 return current_node
             elif nexus_tokenizer.current_token == ";": #256
                 # end of tree statement
+                end_of_tree = True
                 nexus_tokenizer.next_token()
                 break
             elif nexus_tokenizer.current_token == ",": #260
@@ -484,9 +485,16 @@ class NewickReader(ioservice.DataReader):
                     #     ## one possibility is that we have a single line
                     #     ## tree string with no terminating semi-colon ...
                     #     break
-        self._process_node_comments(node=current_node,
-                nexus_tokenizer=nexus_tokenizer,
-                additional_comments=current_node_comments)
+        if end_of_tree:
+            # do not pull any new comments from tokenizer: these
+            # are for the next tree or item
+            self._process_node_comments(node=current_node,
+                    nexus_tokenizer=None,
+                    additional_comments=current_node_comments)
+        else:
+            self._process_node_comments(node=current_node,
+                    nexus_tokenizer=nexus_tokenizer,
+                    additional_comments=current_node_comments)
         self._finish_node(current_node)
         return current_node
 
@@ -577,7 +585,9 @@ class NewickReader(ioservice.DataReader):
             node,
             nexus_tokenizer,
             additional_comments=None):
-        node_comments = nexus_tokenizer.pull_captured_comments()
+        node_comments = []
+        if nexus_tokenizer is not None:
+            node_comments.extend(nexus_tokenizer.pull_captured_comments())
         if additional_comments is not None:
             node_comments.extend(additional_comments)
         for comment in node_comments:
