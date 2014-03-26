@@ -426,7 +426,7 @@ class NewickReader(ioservice.DataReader):
         label_parsed = False
         end_of_tree = False
         while True:
-            current_node_comments = nexus_tokenizer.pull_captured_comments()
+            current_node_comments.extend(nexus_tokenizer.pull_captured_comments())
             if nexus_tokenizer.current_token == ":": #246
                 nexus_tokenizer.require_next_token()
                 try:

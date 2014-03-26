@@ -253,7 +253,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             pre-order sequence.
         """
@@ -290,7 +290,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in pre-order sequence.
         """
@@ -323,7 +323,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -370,7 +370,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -404,7 +404,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             level-order sequence.
         """
@@ -445,7 +445,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             infix or in-order sequence.
         """
@@ -480,7 +480,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding leaf nodes of the subtree rooted at this node.
         """
         if filter_fn:
@@ -504,7 +504,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes that have this node as a parent.
         """
         for node in self._child_nodes:
@@ -534,7 +534,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             Iterator over all predecessor/ancestor nodes of this node.
         """
         if inclusive and (filter_fn is None or filter_fn(self)):
@@ -576,7 +576,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
         """
@@ -2109,7 +2109,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -2134,7 +2134,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes in `self` in pre-order sequence.
         """
         return self.seed_node.preorder_iter(filter_fn=filter_fn)
@@ -2163,7 +2163,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of `self`.
         """
         return self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn,
@@ -2188,7 +2188,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the nodes in `self` in post-order sequence.
         """
         return self.seed_node.postorder_iter(filter_fn=filter_fn)
@@ -2217,7 +2217,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of `self` in post-order
             sequence.
         """
@@ -2243,7 +2243,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of `self` in level-order sequence.
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
@@ -2275,7 +2275,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of `self` in infix or in-order sequence.
         """
         return self.seed_node.inorder_iter(filter_fn=filter_fn)
@@ -2298,7 +2298,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding leaf nodes in `self`.
         """
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
@@ -2341,7 +2341,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             Iterator over age-ordered sequence of nodes of `self`.
         """
         if self.seed_node.age is None:
@@ -2382,7 +2382,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes in `self` in pre-order sequence.
         """
         if filter_fn is not None:
@@ -2416,7 +2416,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding the internal edges of `self`.
         """
         if filter_fn is not None:
@@ -2446,7 +2446,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding the edges in `self` in post-order sequence.
         """
         if filter_fn is not None:
@@ -2480,7 +2480,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding the internal edges of `self` in post-order
             sequence.
         """
@@ -2511,7 +2511,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding edges of `self` in level-order sequence.
         """
         if filter_fn is not None:
@@ -2548,7 +2548,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding edges of `self` in infix or in-order sequence.
         """
         if filter_fn is not None:
@@ -2576,7 +2576,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding leaf edges in `self`.
         """
         if filter_fn is not None:
