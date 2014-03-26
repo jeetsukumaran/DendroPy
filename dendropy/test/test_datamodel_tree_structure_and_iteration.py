@@ -758,7 +758,7 @@ class TestTreeStructure(unittest.TestCase):
         filter_fn = lambda x: x.edge.length > 13
         for nd in anodes:
             expected_ancestors = self.node_ancestors[nd.label]
-            expected_ancestors = [nd for nd in expected_ancestors if self.node_edge_lengths[nd] > 13]
+            expected_ancestors = [nda for nda in expected_ancestors if self.node_edge_lengths[nda] > 13]
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=False, filter_fn=filter_fn)]
             self.assertEqual(ancestors, expected_ancestors)
 
@@ -774,7 +774,7 @@ class TestTreeStructure(unittest.TestCase):
         filter_fn = lambda x: x.edge.length > 13
         for nd in anodes:
             expected_ancestors = [nd.label] + self.node_ancestors[nd.label]
-            expected_ancestors = [nd for nd in expected_ancestors if self.node_edge_lengths[nd] > 13]
+            expected_ancestors = [nda for nda in expected_ancestors if self.node_edge_lengths[nda] > 13]
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True, filter_fn=filter_fn)]
             self.assertEqual(ancestors, expected_ancestors)
 
