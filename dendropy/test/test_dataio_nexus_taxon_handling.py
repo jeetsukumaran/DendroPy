@@ -54,6 +54,45 @@ class TaxonSymbolMappingTest(unittest.TestCase):
             self.assertIs(t1, t4)
             self.assertEqual(t4.label, label)
 
+    def test_no_number_lookup_and_create(self):
+        # looking up a number symbol should result in new taxon creation
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns,
+                enable_lookup_by_taxon_number=False)
+        for idx, label in enumerate(labels):
+            self.assertEqual(len(tns), idx)
+            t1 = tsm.require_taxon_for_symbol(label)
+            self.assertEqual(len(tns), idx+1)
+            self.assertEqual(t1.label, label)
+
+            t2 = tsm.require_taxon_for_symbol(label)
+            self.assertEqual(len(tns), idx+1)
+            self.assertIs(t1, t2)
+            self.assertEqual(t2.label, label)
+
+            t3 = tsm.lookup_taxon_symbol(str(idx+1), create_taxon_if_not_found=False)
+            self.assertIs(t3, None)
+            self.assertEqual(len(tns), idx+1)
+
+    def test_no_number_lookup_and_create2(self):
+        # looking up a number symbol should result in new taxon creation
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns,
+                enable_lookup_by_taxon_number=False)
+        taxa = []
+        for label_idx, label in enumerate(labels):
+            t = dendropy.Taxon(label)
+            tsm.add_taxon(t)
+            taxa.append(t)
+        self.assertEqual(len(tns), len(labels))
+        for label_idx, label in enumerate(labels):
+            t1 = tsm.require_taxon_for_symbol(label_idx+1)
+            self.assertNotIn(t1, taxa)
+            self.assertEqual(t1.label, str(label_idx+1))
+            self.assertEqual(len(tns), len(labels)+label_idx+1)
+
     def test_new_taxon(self):
         labels = ["t{}".format(i) for i in range(1, 101)]
         tns = dendropy.TaxonNamespace()
