@@ -90,6 +90,28 @@ class NewickTreeTaxonHandlingTest(unittest.TestCase):
         for nd in tree:
             self.assertEqual(nd.edge.length, expected[nd.taxon.label])
 
+    def test_unquoted_underscores_preserved(self):
+        s = "(a_1:3.14e-2,(b_2:1.2,(c_3:0.5,d_4:0.7)e_5:111)f_6:222)g_7:333;"
+        tree = dendropy.Tree.get_from_string(s,
+                "newick",
+                suppress_internal_node_taxa=False,
+                preserve_underscores=True)
+        expected = {
+                "a_1": 3.14e-2,
+                "b_2": 1.2,
+                "c_3": 0.5,
+                "d_4": 0.7,
+                "e_5": 111,
+                "f_6": 222,
+                "g_7": 333,
+                }
+        tns = tree.taxon_namespace
+        self.assertEqual(len(tns), len(expected))
+        labels = set([t.label for t in tns])
+        self.assertEqual(labels, set(expected.keys()))
+        for nd in tree:
+            self.assertEqual(nd.edge.length, expected[nd.taxon.label])
+
 
 if __name__ == "__main__":
     unittest.main()
