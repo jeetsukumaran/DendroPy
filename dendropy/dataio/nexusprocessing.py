@@ -20,6 +20,7 @@
 Specialized tokenizer for processing NEXUS/Newick streams.
 """
 
+import re
 import io
 from dendropy.dataio.tokenizer import Tokenizer
 from dendropy.utility import container
@@ -105,6 +106,97 @@ class NexusTaxonSymbolMapper(object):
             self.label_taxon_map[symbol] = t
             return t
         return None
+
+###############################################################################
+## Metadata
+
+
+FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
+NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
+
+def parse_comment_metadata_to_annotations(
+        comment,
+        annotations=None,
+        field_name_map=None,
+        field_value_types=None,
+        strip_leading_trailing_spaces=True):
+    """
+    Returns set of :class:`Annotation` objects corresponding to metadata
+    given in comments.
+
+    Parameters
+    ----------
+    `comment` : string
+        A comment token.
+    `annotations` : :class:`AnnotationSet` or `set`
+        Set of :class:`Annotation` objects to which to add this annotation.
+    `field_name_map` : dict
+        A dictionary mapping field names (as given in the comment string)
+        to strings that should be used to represent the field in the
+        metadata dictionary; if not given, no mapping is done (i.e., the
+        comment string field name is used directly).
+    `field_value_types` : dict
+        A dictionary mapping field names (as given in the comment
+        string) to the value type (e.g. {"node-age" : float}.
+    `strip_leading_trailing_spaces` : boolean
+        Remove whitespace from comments.
+
+    Returns
+    -------
+    metadata : :py:class::`set` [:class:`Annotation`]
+        Set of :class:`Annotation` objects corresponding to metadata
+        parsed.
+    """
+    if annotations is None:
+        annotations = set()
+    if field_name_map is None:
+        field_name_map = {}
+    if field_value_types is None:
+        field_value_types = {}
+    if comment.startswith("&&NHX:"):
+        pattern = NHX_COMMENT_FIELD_PATTERN
+        comment = comment[6:]
+    elif comment.startswith("&&"):
+        pattern = NHX_COMMENT_FIELD_PATTERN
+        comment = comment[2:]
+    elif comment.startswith("&"):
+        pattern = FIGTREE_COMMENT_FIELD_PATTERN
+        comment = comment[1:]
+    else:
+        # unrecognized metadata pattern
+        return annotations
+    for match_group in pattern.findall(comment):
+        key, val = match_group[:2]
+        if strip_leading_trailing_spaces:
+            key = key.strip()
+            val = val.strip()
+        if key in field_value_types:
+            value_type = field_value_types[key]
+        else:
+            value_type = None
+        if val.startswith('{'):
+            if value_type is not None:
+                val = [value_type(v) for v in val[1:-1].split(',')]
+            else:
+                val = val[1:-1].split(',')
+        else:
+            if value_type is not None:
+                val = value_type(val)
+        if key in field_name_map:
+            key = field_name_map[key]
+        annote = base.Annotation(
+                name=key,
+                value=val,
+                # datatype_hint=datatype_hint,
+                # name_prefix=name_prefix,
+                # namespace=namespace,
+                # name_is_prefixed=name_is_prefixed,
+                # is_attribute=False,
+                # annotate_as_reference=annotate_as_reference,
+                # is_hidden=is_hidden,
+                )
+        annotations.add(annote)
+    return annotations
 
 ###############################################################################
 ## NEWICK/NEXUS formatting support.

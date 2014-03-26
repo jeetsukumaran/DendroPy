@@ -40,9 +40,6 @@ class NewickReader(ioservice.DataReader):
     Parser for NEWICK-formatted data.
     """
 
-    FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
-    NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
-
     class NewickReaderError(error.DataParseError):
         def __init__(self, message,
                 line_num=None,
@@ -489,7 +486,9 @@ class NewickReader(ioservice.DataReader):
         self._finish_node(current_node)
         return current_node
 
-    def _parse_comment_metadata(comment,
+    def _parse_comment_metadata(
+            self,
+            comment,
             annotations=None,
             field_name_map=None,
             field_value_types=None,
@@ -521,56 +520,12 @@ class NewickReader(ioservice.DataReader):
             Set of :class:`Annotation` objects corresponding to metadata
             parsed.
         """
-        if annotations is None:
-            annotations = set()
-        if field_name_map is None:
-            field_name_map = {}
-        if field_value_types is None:
-            field_value_types = {}
-        if comment.startswith("&&NHX:"):
-            pattern = NewickReader.NHX_COMMENT_FIELD_PATTERN
-            comment = comment[6:]
-        elif comment.startswith("&&"):
-            pattern = NewickReader.NHX_COMMENT_FIELD_PATTERN
-            comment = comment[2:]
-        elif comment.startswith("&"):
-            pattern = NewickReader.FIGTREE_COMMENT_FIELD_PATTERN
-            comment = comment[1:]
-        else:
-            # unrecognized metadata pattern
-            return annotations
-        for match_group in pattern.findall(comment):
-            key, val = match_group[:2]
-            if strip_leading_trailing_spaces:
-                key = key.strip()
-                val = val.strip()
-            if key in field_value_types:
-                value_type = field_value_types[key]
-            else:
-                value_type = None
-            if val.startswith('{'):
-                if value_type is not None:
-                    val = [value_type(v) for v in val[1:-1].split(',')]
-                else:
-                    val = val[1:-1].split(',')
-            else:
-                if value_type is not None:
-                    val = value_type(val)
-            if key in field_name_map:
-                key = field_name_map[key]
-            annote = base.Annotation(
-                    name=key,
-                    value=val,
-                    # datatype_hint=datatype_hint,
-                    # name_prefix=name_prefix,
-                    # namespace=namespace,
-                    # name_is_prefixed=name_is_prefixed,
-                    # is_attribute=False,
-                    # annotate_as_reference=annotate_as_reference,
-                    # is_hidden=is_hidden,
-                    )
-            annotations.add(annote)
-        return annotations
+        return nexusprocessing.parse_comment_metadata_to_annotations(
+            comment=comment,
+            annotations=annotations,
+            field_name_map=field_name_map,
+            field_value_types=field_value_types,
+            strip_leading_trailing_spaces=strip_leading_trailing_spaces)
 
     def _process_node_comments(self, node, node_comments):
         for comment in node_comments:
