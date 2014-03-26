@@ -79,7 +79,9 @@ class NexusTaxonSymbolMapper(object):
     :class:`TaxonNamespace` and member :class:`Taxon` objects by this class.
     This is to ensure that the various supplementatl mappings (in particular,
     the label mapping and the taxon number mapping) are synchronized.
-    To this end, the of the :class:`TaxonNamespace` object is locked.
+    To this end, the of the :class:`TaxonNamespace` object is locked, and all
+    :class:`Taxon` object creation should be through this class's native
+    methods.
     """
 
     def __init__(self, taxon_namespace, case_insensitive=True):
@@ -129,6 +131,8 @@ class NexusTaxonSymbolMapper(object):
             self.number_taxon_label_map[s] = taxon.label
 
     def add_translate_token(self, token, taxon):
+        if not isinstance(token, str):
+            token = str(token)
         self.token_taxon_map[token] = taxon
 
     def lookup_taxon_symbol(self, symbol, create_taxon_if_not_found=True):
@@ -153,17 +157,29 @@ class NexusTaxonSymbolMapper(object):
         except KeyError:
             pass
         if create_taxon_if_not_found:
-            self._taxon_namespace.is_mutable = True
-            t = self._taxon_namespace.new_taxon(symbol)
-            self._taxon_namespace.is_mutable = False
-            self.label_taxon_map[symbol] = t
-            taxon_number = str(len(self._taxon_namespace))
-            self.number_taxon_map[taxon_number] = t
-            return t
+            return self.new_taxon(symbol)
         return None
 
     def require_taxon_for_symbol(self, symbol):
         return self.lookup_taxon_symbol(symbol=symbol, create_taxon_if_not_found=True)
+
+    def new_taxon(self, label):
+        self._taxon_namespace.is_mutable = True
+        t = self._taxon_namespace.new_taxon(label)
+        self._taxon_namespace.is_mutable = False
+        self.label_taxon_map[label] = t
+        taxon_number = str(len(self._taxon_namespace))
+        self.number_taxon_map[taxon_number] = t
+        return t
+
+    def add_taxon(self, taxon):
+        self._taxon_namespace.is_mutable = True
+        self._taxon_namespace.add_taxon(taxon)
+        self._taxon_namespace.is_mutable = False
+        self.label_taxon_map[taxon.label] = taxon
+        taxon_number = str(len(self._taxon_namespace))
+        self.number_taxon_map[taxon_number] = taxon
+        return taxon
 
 ###############################################################################
 ## Metadata

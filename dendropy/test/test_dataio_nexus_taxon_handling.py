@@ -29,7 +29,7 @@ from dendropy.dataio import nexusprocessing
 class TaxonSymbolMappingTest(unittest.TestCase):
 
     def test_standard_lookup_and_create(self):
-        labels = ["t{}".format(i) for i in range(1, 10)]
+        labels = ["t{}".format(i) for i in range(1, 101)]
         tns = dendropy.TaxonNamespace()
         tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
         for idx, label in enumerate(labels):
@@ -37,14 +37,120 @@ class TaxonSymbolMappingTest(unittest.TestCase):
             t1 = tsm.require_taxon_for_symbol(label)
             self.assertEqual(len(tns), idx+1)
             self.assertEqual(t1.label, label)
+
             t2 = tsm.require_taxon_for_symbol(label)
             self.assertEqual(len(tns), idx+1)
             self.assertIs(t1, t2)
             self.assertEqual(t2.label, label)
+
             t3 = tsm.require_taxon_for_symbol(str(idx+1))
             self.assertEqual(len(tns), idx+1)
             self.assertIs(t1, t3)
             self.assertEqual(t3.label, label)
+
+            assert label.upper() != label
+            t4 = tsm.require_taxon_for_symbol(label.upper())
+            self.assertEqual(len(tns), idx+1)
+            self.assertIs(t1, t4)
+            self.assertEqual(t4.label, label)
+
+    def test_new_taxon(self):
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
+        for label_idx, label in enumerate(labels):
+            t = tsm.new_taxon(label)
+            self.assertEqual(len(tns), label_idx+1)
+            self.assertEqual(t.label, label)
+            self.assertIs(tsm.require_taxon_for_symbol(label), t)
+            self.assertEqual(len(tns), label_idx+1)
+            self.assertIs(tsm.require_taxon_for_symbol(str(label_idx+1)), t)
+            self.assertEqual(len(tns), label_idx+1)
+        self.assertEqual(len(tns), len(labels))
+
+    def test_add_taxon(self):
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
+        for label_idx, label in enumerate(labels):
+            t = dendropy.Taxon(label)
+            tsm.add_taxon(t)
+            self.assertEqual(len(tns), label_idx+1)
+            self.assertEqual(t.label, label)
+            self.assertIs(tsm.require_taxon_for_symbol(label), t)
+            self.assertEqual(len(tns), label_idx+1)
+            self.assertIs(tsm.require_taxon_for_symbol(str(label_idx+1)), t)
+            self.assertEqual(len(tns), label_idx+1)
+        self.assertEqual(len(tns), len(labels))
+
+    def test_simple_token_lookup(self):
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
+        translate = {}
+        t_labels = {}
+        for label_idx, label in enumerate(labels):
+            t = dendropy.Taxon(label)
+            t_labels[t] = t.label
+            tsm.add_taxon(t)
+            token = label_idx + 1
+            translate[token] = t
+            tsm.add_translate_token(token, t)
+        self.assertEqual(len(tns), len(labels))
+        for token in translate:
+            t1 = translate[token]
+            t2 = tsm.require_taxon_for_symbol(token)
+            self.assertIs(t1, t2)
+            self.assertEqual(t2.label, t_labels[t1])
+        self.assertEqual(len(tns), len(labels))
+
+    def test_tricky_token_lookup(self):
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
+        translate = {}
+        t_labels = {}
+        for label_idx, label in enumerate(labels):
+            t = dendropy.Taxon(label)
+            t_labels[t] = t.label
+            tsm.add_taxon(t)
+            token = str(len(labels) - label_idx)
+            translate[token] = t
+            tsm.add_translate_token(token, t)
+        self.assertEqual(len(tns), len(labels))
+        for token in translate:
+            t1 = translate[token]
+            t2 = tsm.require_taxon_for_symbol(token)
+            self.assertIs(t1, t2)
+            self.assertEqual(t2.label, t_labels[t1])
+        self.assertEqual(len(tns), len(labels))
+
+    def test_mixed_token_lookup(self):
+        labels = ["t{}".format(i) for i in range(1, 101)]
+        tns = dendropy.TaxonNamespace()
+        tsm = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=tns)
+        translate = {}
+        t_labels = {}
+        labels_t = {}
+        for label_idx, label in enumerate(labels):
+            t = dendropy.Taxon(label)
+            t_labels[t] = t.label
+            labels_t[t.label] = t
+            tsm.add_taxon(t)
+            if label_idx % 2 == 0:
+                token = str(label_idx+1)
+                translate[token] = t
+                tsm.add_translate_token(token, t)
+        self.assertEqual(len(tns), len(labels))
+        for label_idx, label in enumerate(labels):
+            token = label_idx + 1
+            t1 = tsm.require_taxon_for_symbol(token)
+            self.assertEqual(len(tns), len(labels))
+            self.assertEqual(t1.label, label)
+            self.assertIs(t1, labels_t[label])
+            if token in translate:
+                self.assertIs(t1, translate[token])
+        self.assertEqual(len(tns), len(labels))
 
     def test_taxon_namespace_locking(self):
         tns = dendropy.TaxonNamespace()
