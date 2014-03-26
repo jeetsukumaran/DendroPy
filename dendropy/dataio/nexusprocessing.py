@@ -164,7 +164,7 @@ class NexusTaxonSymbolMapper(object):
         return self.lookup_taxon_symbol(symbol=symbol, create_taxon_if_not_found=True)
 
     def new_taxon(self, label):
-        self._taxon_namespace.is_mutable = True
+        self._taxon_namespace.is_mutable = self.taxon_namespace_original_mutability_state
         t = self._taxon_namespace.new_taxon(label)
         self._taxon_namespace.is_mutable = False
         self.label_taxon_map[label] = t
@@ -173,7 +173,7 @@ class NexusTaxonSymbolMapper(object):
         return t
 
     def add_taxon(self, taxon):
-        self._taxon_namespace.is_mutable = True
+        self._taxon_namespace.is_mutable = self.taxon_namespace_original_mutability_state
         self._taxon_namespace.add_taxon(taxon)
         self._taxon_namespace.is_mutable = False
         self.label_taxon_map[taxon.label] = taxon

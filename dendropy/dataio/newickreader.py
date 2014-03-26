@@ -198,7 +198,7 @@ class NewickReader(ioservice.DataReader):
 
     def tree_iter(self,
             stream,
-            taxon_namespace,
+            taxon_symbol_mapper,
             tree_factory):
         """
         Iterator that yields trees in NEWICK-formatted source.
@@ -220,7 +220,6 @@ class NewickReader(ioservice.DataReader):
             data in `stream`.
         """
         nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
-        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace)
         while True:
             tree = self._parse_tree_statement(
                     nexus_tokenizer=nexus_tokenizer,
@@ -238,9 +237,10 @@ class NewickReader(ioservice.DataReader):
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
         tree_list = tree_list_factory(label=None, taxon_namespace=taxon_namespace)
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace)
         tree_factory = tree_list.new_tree
         for tree in self.tree_iter(stream=stream,
-                taxon_namespace=taxon_namespace,
+                taxon_symbol_mapper=taxon_symbol_mapper,
                 tree_factory=tree_factory):
             pass
         product = self.Product(
