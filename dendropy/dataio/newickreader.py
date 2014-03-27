@@ -295,7 +295,8 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer=nexus_tokenizer,
                 tree=tree,
                 current_node=tree.seed_node,
-                taxon_symbol_map_func=taxon_symbol_map_func)
+                taxon_symbol_map_func=taxon_symbol_map_func,
+                is_internal_node=None)
         current_token = nexus_tokenizer.current_token
         while current_token == ";" and not nexus_tokenizer.is_eof():
             nexus_tokenizer.clear_captured_comments()
@@ -354,7 +355,7 @@ class NewickReader(ioservice.DataReader):
             tree,
             current_node,
             taxon_symbol_map_func,
-            is_internal_node=False):
+            is_internal_node=None):
         """
         Assuming that the iterator is currently sitting on a parenthesis
         that opens a node with children or the label of a leaf node, this
@@ -423,6 +424,14 @@ class NewickReader(ioservice.DataReader):
                     node_created = True;
         label_parsed = False
         end_of_tree = False
+        if is_internal_node is None:
+            # Initial call using `seed_node` does not set `is_internal_node` to
+            # `True` or `False`, explicitly, but rather `None`. If this is the
+            # case, the rest of the tree has be constructed, and we simply look
+            # at whether there are children or not to determine if it is an
+            # internal node. This approach allows for a single-tip tree.
+            if current_node._child_nodes:
+                is_internal_node = True
         while True:
             current_node_comments.extend(nexus_tokenizer.pull_captured_comments())
             if nexus_tokenizer.current_token == ":": #246
