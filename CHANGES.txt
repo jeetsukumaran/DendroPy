@@ -1,3 +1,45 @@
+Release 3.12.2
+--------------
+
+Bug Fixes
+^^^^^^^^^
+
+    - Tree weights handled correctly when calculating splits frequencies.
+
+Release 3.12.1
+--------------
+
+New Features
+^^^^^^^^^^^^
+
+    - New statistics calculations in `Tree`: Sackin's index, Colless', Treeness, B1, N_bar, number of lineages at time.
+    - New methods in `Tree`: `truncate_from_root()`, `calc_node_distances()`,
+    - Coalescence of more than two lineages at time supported.
+    - Patristic matrix: track paths between two nodes.
+
+Bug Fixes
+^^^^^^^^^
+
+    - `pure_kingman()` now actually generates edges with random branch lengths
+      instead of expected values (!!).
+    - SumTrees closes each file after use.
+    - Leaf iterator filtering fixed.
+    - Correctly accomodate diploid population size passed as aparameter to coalescent functions.
+    - First underscore not replaced with speces in underscore-preserving mode (NEWICK/NEXUS).
+
+Changes
+^^^^^^^
+
+    - Annotations/metadata API significantly changed. Affects not only parsing
+      of NeXML-formatted data by NEXUS/NEWICK as well (metadata no longer
+      stored in dictionaries, by AnnotationSet collections of Annotation
+      objects).
+    - [NEXUS/NEWICK] ``suppress_internal_node_taxa`` keyword now actually
+      instantiates Taxon objects from internal node labels when 'False', but
+      defaults to `True` for consistency with legacy behavior.
+    - [NEXUS/NEWICK] Faster parsing of tree files.
+    - NCBI module ("``dendropy.interop.ncbi``") has been deprecated. Use "``dendropy.interop.genbank``" instead.
+
 Release 3.12.0
 --------------
 
