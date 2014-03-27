@@ -278,7 +278,10 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return "<{} {} '{}': [{}]>".format(self.__class__.__name__, hex(id(self)), self.label, ", ".join(repr(i) for i in self._taxa))
 
     def __hash__(self):
-        return hash( (t for t in self._taxa) )
+        return id(self)
+
+    def __lt__(self, o):
+        return self._taxa < o._taxa
 
     def __iter__(self):
         return iter(self._taxa)

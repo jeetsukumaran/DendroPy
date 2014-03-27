@@ -4169,7 +4169,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     #     return "<TaxonNamespace {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._taxa))
 
     # def __hash__(self):
-    #     return hash( (t for t in self._taxa) )
+    #     return id(self)
 
     ###########################################################################
     ## Data I/O
