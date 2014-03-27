@@ -27,12 +27,100 @@ import dendropy
 from dendropy.test.support import standard_test_tree_data
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
 _LOG = get_logger(__name__)
 
 class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
 
+    def compare_to_check_tree(self,
+            tree,
+            tree_file_title,
+            tree_idx,
+            suppress_internal_node_taxa=True,
+            suppress_external_node_taxa=False):
+        check_tree = standard_test_tree_data.tree_directory[tree_file_title][tree_idx]
+        self.assertEqual(tree.comments, check_tree.comments)
+        self.assertIs(tree.is_rooted, check_tree.rooted)
+        seen_taxa = []
+        node_labels = []
+        for node_idx, node in enumerate(tree):
+            _LOG.debug("{}: {}: {}".format(tree_file_title, tree_idx, node.label))
+            if node.taxon is not None:
+                check_node_label_key = node.taxon.label
+            else:
+                check_node_label_key = node.label
+            check_node = standard_test_tree_data.node_directory[(tree_file_title, tree_idx, check_node_label_key)]
+            if check_node.children:
+                if suppress_internal_node_taxa:
+                    self.assertEqual(node.label, check_node.label)
+                    self.assertIs(node.taxon, None)
+                    node_labels.append(node.label)
+                else:
+                    self.assertIsNot(node.taxon, None)
+                    self.assertEqual(node.taxon.label, check_node.label)
+                    self.assertIs(node.label, None)
+                    seen_taxa.append(node.taxon)
+            else:
+                if suppress_external_node_taxa:
+                    self.assertEqual(node.label, check_node.label)
+                    self.assertIs(node.taxon, None)
+                    node_labels.append(node.label)
+                else:
+                    self.assertIsNot(node.taxon, None)
+                    self.assertEqual(node.taxon.label, check_node.label)
+                    self.assertIs(node.label, None)
+                    seen_taxa.append(node.taxon)
+            self.assertAlmostEqual(node.edge.length, check_node.edge_length, 4)
+            if node.parent_node is not None:
+                self.assertEqual(node.parent_node.label, check_node.parent)
+            else:
+                self.assertEqual(check_node.parent, "None")
+            child_labels = []
+            for ch in node.child_node_iter():
+                if ch.is_internal():
+                    if suppress_internal_node_taxa:
+                        self.assertIs(ch.taxon, None)
+                        child_labels.append(ch.label)
+                    else:
+                        self.assertIsNot(ch.taxon, None)
+                        child_labels.append(ch.taxon.label)
+                        self.assertIs(ch.label, None)
+                else:
+                    if suppress_external_node_taxa:
+                        self.assertIs(ch.taxon, None)
+                        child_labels.append(ch.label)
+                    else:
+                        self.assertIsNot(ch.taxon, None)
+                        child_labels.append(ch.taxon.label)
+                        self.assertIs(ch.label, None)
+            self.assertEqual(len(child_labels), len(check_node.children))
+            self.assertEqual(set(child_labels), set(check_node.children))
+            self.assertEqual(node.comments, check_node.comments)
+        self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
+        self.assertEqual(set(seen_taxa), set(tree.taxon_namespace))
+        node_labels.extend([t.label for t in tree.taxon_namespace])
+        self.assertEqual(len(node_labels), len(check_tree.nodes))
+        self.assertEqual(set(node_labels), set(check_tree.nodes))
 
-    def test_normal_newick_reader(self):
+    def verify_standard_trees(self,
+            tree_list,
+            tree_file_title,
+            suppress_internal_node_taxa=True,
+            suppress_external_node_taxa=False):
+        self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title])
+        # for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, standard_test_tree_data.tree_directory[tree_file_title])):
+        for tree_idx, tree in enumerate(tree_list):
+            _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
+            self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
+            self.compare_to_check_tree(
+                    tree=tree,
+                    tree_file_title=tree_file_title,
+                    tree_idx=tree_idx,
+                    suppress_internal_node_taxa=suppress_internal_node_taxa,
+                    suppress_external_node_taxa=suppress_external_node_taxa)
+
+    def test_default_newick_get_from_path(self):
         taxon_namespaces = set()
         for tree_filename in standard_test_tree_data.newick_tree_filenames:
             tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
@@ -41,52 +129,95 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     "newick")
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
-            self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title])
-            for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, standard_test_tree_data.tree_directory[tree_file_title])):
-                _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
-                self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
-                self.assertEqual(tree.comments, check_tree.comments)
-                self.assertIs(tree.is_rooted, check_tree.rooted)
-                seen_taxa = []
-                node_labels = []
-                for node_idx, node in enumerate(tree):
-                    _LOG.debug("{}: {}: {}".format(tree_file_title, tree_idx, node.label))
-                    if node.taxon is not None:
-                        check_node_label_key = node.taxon.label
-                    else:
-                        check_node_label_key = node.label
-                    check_node = standard_test_tree_data.node_directory[(tree_file_title, tree_idx, check_node_label_key)]
-                    if check_node.children:
-                        self.assertEqual(node.label, check_node.label)
-                        self.assertIs(node.taxon, None)
-                        node_labels.append(node.label)
-                    else:
-                        self.assertIsNot(node.taxon, None)
-                        self.assertEqual(node.taxon.label, check_node.label)
-                        self.assertIs(node.label, None)
-                        seen_taxa.append(node.taxon)
-                    self.assertAlmostEqual(node.edge.length, check_node.edge_length, 4)
-                    if node.parent_node is not None:
-                        self.assertEqual(node.parent_node.label, check_node.parent)
-                    else:
-                        self.assertEqual(check_node.parent, "None")
-                    child_labels = []
-                    for ch in node.child_node_iter():
-                        if not ch.is_leaf():
-                            self.assertIs(ch.taxon, None)
-                            child_labels.append(ch.label)
-                        else:
-                            self.assertIsNot(ch.taxon, None)
-                            child_labels.append(ch.taxon.label)
-                            self.assertIs(ch.label, None)
-                    self.assertEqual(len(child_labels), len(check_node.children))
-                    self.assertEqual(set(child_labels), set(check_node.children))
-                    self.assertEqual(node.comments, check_node.comments)
-                self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
-                self.assertEqual(set(seen_taxa), set(tree.taxon_namespace))
-                node_labels.extend([t.label for t in tree.taxon_namespace])
-                self.assertEqual(len(node_labels), len(check_tree.nodes))
-                self.assertEqual(set(node_labels), set(check_tree.nodes))
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+
+    def test_default_newick_get_from_string(self):
+        taxon_namespaces = set()
+        for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+            filepath = pathmap.tree_source_path(tree_filename)
+            fsrc = open(filepath, "r", newline=None)
+            with fsrc:
+                s = fsrc.read()
+            tree_list = dendropy.TreeList.get_from_string(s, "newick")
+            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+            taxon_namespaces.add(tree_list.taxon_namespace)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+
+    def test_default_newick_get_from_stream(self):
+        taxon_namespaces = set()
+        for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+            filepath = pathmap.tree_source_path(tree_filename)
+            fsrc = open(filepath, "r", newline=None)
+            with fsrc:
+                tree_list = dendropy.TreeList.get_from_stream(fsrc, "newick")
+            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+            taxon_namespaces.add(tree_list.taxon_namespace)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+
+    def test_default_newick_read_from_path(self):
+        taxon_namespaces = set()
+        for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+            tree_list = dendropy.TreeList()
+            tree_list.read_from_path(
+                    pathmap.tree_source_path(tree_filename),
+                    "newick")
+            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+            taxon_namespaces.add(tree_list.taxon_namespace)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+
+    def test_default_newick_read_from_string(self):
+        taxon_namespaces = set()
+        for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+            filepath = pathmap.tree_source_path(tree_filename)
+            fsrc = open(filepath, "r", newline=None)
+            with fsrc:
+                s = fsrc.read()
+            tree_list = dendropy.TreeList()
+            tree_list.read_from_string(s, "newick")
+            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+            taxon_namespaces.add(tree_list.taxon_namespace)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+
+    def test_default_newick_read_from_stream(self):
+        taxon_namespaces = set()
+        for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+            filepath = pathmap.tree_source_path(tree_filename)
+            fsrc = open(filepath, "r", newline=None)
+            tree_list = dendropy.TreeList()
+            with fsrc:
+                tree_list.read_from_stream(fsrc, "newick")
+            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+            taxon_namespaces.add(tree_list.taxon_namespace)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
 
     def test_notaxa_newick_reader(self):
         taxon_namespaces = set()
@@ -99,30 +230,11 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     suppress_external_node_taxa=True)
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
-            self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title])
-            for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, standard_test_tree_data.tree_directory[tree_file_title])):
-                _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
-                self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
-                self.assertEqual(tree.comments, check_tree.comments)
-                self.assertIs(tree.is_rooted, check_tree.rooted)
-                node_labels = []
-                for node_idx, node in enumerate(tree):
-                    _LOG.debug("{}: {}: {}".format(tree_file_title, tree_idx, node.label))
-                    check_node = standard_test_tree_data.node_directory[(tree_file_title, tree_idx, node.label)]
-                    assert check_node.label == node.label
-                    self.assertAlmostEqual(node.edge.length, check_node.edge_length, 4)
-                    if node.parent_node is not None:
-                        self.assertEqual(node.parent_node.label, check_node.parent)
-                    else:
-                        self.assertEqual(check_node.parent, "None")
-                    ch_labels = [ch.label for ch in node.child_node_iter()]
-                    self.assertEqual(len(ch_labels), len(check_node.children))
-                    self.assertEqual(set(ch_labels), set(check_node.children))
-                    self.assertEqual(node.comments, check_node.comments)
-                    node_labels.append(node.label)
-                self.assertEqual(len(node_labels), len(check_tree.nodes))
-                self.assertEqual(set(node_labels), set(check_tree.nodes))
-                self.assertEqual(len(tree_list.taxon_namespace), 0)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=True)
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 

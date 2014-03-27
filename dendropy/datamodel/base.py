@@ -321,8 +321,9 @@ class Readable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
-        return self.read(stream=f, schema=schema, **kwargs)
+        fsrc = open(filepath, "r", newline=None)
+        with fsrc:
+            return self.read(stream=fsrc, schema=schema, **kwargs)
 
     def read_from_string(self, src_str, schema, **kwargs):
         """
@@ -404,7 +405,8 @@ class Writeable(object):
         Writes to file specified by `dest`.
         """
         f = open(os.path.expandvars(os.path.expanduser(dest)), "w")
-        return self.write(stream=f, schema=schema, **kwargs)
+        with f:
+            return self.write(stream=f, schema=schema, **kwargs)
 
     def as_string(self, schema, **kwargs):
         """
