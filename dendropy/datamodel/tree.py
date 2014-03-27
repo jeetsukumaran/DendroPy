@@ -4339,7 +4339,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         raise NotImplementedError
 
     def new_tree(self, *args, **kwargs):
-        tns = kwargs.get("taxon_namespace", self.taxon_namespace)
+        tns = taxon.process_kwargs_for_taxon_namespace(kwargs, self.taxon_namespace)
         if tns is not self.taxon_namespace:
             raise TypeError("Cannot create new Tree with different TaxonNamespace")
         kwargs["taxon_namespace"] = self.taxon_namespace
