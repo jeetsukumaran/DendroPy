@@ -20,6 +20,7 @@
 Split calculation and management.
 """
 
+import sys
 from copy import deepcopy
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -389,7 +390,7 @@ class SplitDistribution(object):
 
     def __init__(self, taxon_set=None, split_set=None):
         self.total_trees_counted = 0
-        self.sum_of_weights = 0.0
+        self.sum_of_tree_weights = 0.0
         self.taxon_set = taxon_set
         self.splits = []
         self.split_counts = {}
@@ -427,21 +428,29 @@ class SplitDistribution(object):
 
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
-    def add_split_count(self, split, count=1, weight=None):
+    # def add_split_count(self, split, count=1, weight=None):
+    #     if split not in self.splits:
+    #         self.splits.append(split)
+    #         self.split_counts[split] = 0
+    #     self.split_counts[split] += count
+    #     if weight is not None:
+    #         try:
+    #             self.weighted_split_counts[split] += weight
+    #         except:
+    #             self.weighted_split_counts[split] = weight
+    #         ## this is wrong! it adds the weight of the tree
+    #         ## multiple times, once for each split in the tree,
+    #         ## as opposed to just once for the tree
+    #         self.sum_of_tree_weights += weight
+    def add_split_count(self, split, count=1):
         if split not in self.splits:
             self.splits.append(split)
             self.split_counts[split] = 0
         self.split_counts[split] += count
-        if weight is not None:
-            try:
-                self.weighted_split_counts[split] += weight
-            except:
-                self.weighted_split_counts[split] = weight
-            self.sum_of_weights += weight
 
     def update(self, split_dist):
         self.total_trees_counted += split_dist.total_trees_counted
-        self.sum_of_weights += split_dist.sum_of_weights
+        self.sum_of_tree_weights += split_dist.sum_of_tree_weights
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
@@ -506,13 +515,13 @@ class SplitDistribution(object):
     def calc_weighted_freqs(self):
         "Forces recalculation of weighted frequencies."
         self._weighted_split_freqs = {}
-        if not self.sum_of_weights:
+        if not self.sum_of_tree_weights:
             total_weight = 1.0
         else:
-            total_weight = float(self.sum_of_weights)
+            total_weight = float(self.sum_of_tree_weights)
         for split in self.weighted_split_counts.keys():
-            # self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
-            self._weighted_split_freqs[split] = self.weighted_split_counts[split]
+            # sys.stderr.write("{}, {} = {}\n".format(self.weighted_split_counts[split], total_weight, self.weighted_split_counts[split] / total_weight))
+            self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
         self._trees_counted_for_weighted_freqs = self.total_trees_counted
         self._trees_counted_for_summaries = self.total_trees_counted
         return self._weighted_split_freqs
@@ -580,6 +589,11 @@ class SplitDistribution(object):
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
             tree.calc_node_ages(check_prec=self.ultrametricity_precision)
+        if tree.weight is None:
+            weight_to_use = 1.0
+        else:
+            weight_to_use = float(tree.weight)
+        self.sum_of_tree_weights += weight_to_use
         for split, edge in tree.split_edges.iteritems():
             if self.is_rooted:
                 split = edge.split_bitmask
@@ -588,15 +602,10 @@ class SplitDistribution(object):
             except KeyError:
                 self.splits.append(split)
                 self.split_counts[split] = 1
-            if tree.weight is None:
-                weight_to_use = 1.0
-            else:
-                weight_to_use = float(tree.weight)
             try:
                 self.weighted_split_counts[split] += weight_to_use
             except KeyError:
                 self.weighted_split_counts[split] = weight_to_use
-            self.sum_of_weights += weight_to_use
             if not self.ignore_edge_lengths:
                 sel = self.split_edge_lengths.setdefault(split,[])
                 if edge.length is not None:
