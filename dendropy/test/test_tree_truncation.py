@@ -26,7 +26,7 @@ class TruncateTree(unittest.TestCase):
                 working.truncate_from_root(td)
                 for idx, leaf in enumerate(working.leaf_iter()):
                     if leaf.label is None and leaf.taxon is None:
-                        leaf.taxon = dendropy.Taxon(label="t{}".format(idx+1))
+                        leaf.taxon = dendropy.Taxon(label="t%s" % (idx+1))
                 self.check_ultrametric_tree(working, td)
 
 if __name__ == "__main__":
