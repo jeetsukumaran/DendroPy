@@ -34,7 +34,7 @@ class DummyX(TestObject):
 
 class AnnotableDeepCopyTester(unittest.TestCase):
 
-    def compare(self, x1, x2):
+    def compare_annotables(self, x1, x2):
         self.assertIsNot(x1, x2)
         if not x1.has_annotations:
             self.assertTrue( (not hasattr(x1, "_annotations")) or len(x1._annotations) == 0 )
@@ -55,10 +55,17 @@ class AnnotableDeepCopyTester(unittest.TestCase):
                 v1 = a1.__dict__[k]
                 v2 = a2.__dict__[k]
                 if isinstance(v1, TestObject):
+                    self.assertTrue(isinstance(v2, TestObject))
                     self.assertIsNot(v1, v2)
+                elif isinstance(v1, base.AnnotationSet):
+                    self.assertTrue(isinstance(v2, base.AnnotationSet))
+                    self.assertIs(v1.target, a1)
+                    self.assertIs(v2.target, a2)
+                    for s1, s2 in zip(v1, v2):
+                        self.compare_annotables(s1, s2)
                 else:
                     self.assertEqual(v1, v2)
-                self.compare(a1, a2)
+                self.compare_annotables(a1, a2)
 
     def test_deep_copy(self):
         x1 = DummyX()
@@ -66,7 +73,7 @@ class AnnotableDeepCopyTester(unittest.TestCase):
         a2 = x1.annotations.add_new(name="a2", value="2")
         a3 = x1.annotations.add_new(name="a3", value="3")
         x2 = copy.deepcopy(x1)
-        self.compare(x1, x2)
+        self.compare_annotables(x1, x2)
 
     def test_nested_deep_copy(self):
         x1 = DummyX()
@@ -77,7 +84,7 @@ class AnnotableDeepCopyTester(unittest.TestCase):
         a5 = a3.annotations.add_new(name="a5", value="5")
         a6 = a5.annotations.add_new(name="a6", value="6")
         x2 = copy.deepcopy(x1)
-        self.compare(x1, x2)
+        self.compare_annotables(x1, x2)
 
 
 if __name__ == "__main__":
