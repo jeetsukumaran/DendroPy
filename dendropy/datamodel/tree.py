@@ -4017,23 +4017,32 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             Identifier of format of data in `stream`
 
         collection_offset : integer or None
-            0-based index indicating collection of trees to parse. If
-            `None`, then all tree collections are retrieved, with each distinct
+            0-based index indicating collection of trees to parse. If `None`,
+            then all tree collections are retrieved, with each distinct
             collection parsed into a separate :class:`TreeList` object. If the
             tree colleciton offset index is equal or greater than the number of
             tree collections in the data source, then IndexError is raised.
-            Only applicable when parsing data schemas that support the concept
-            of distinct collections of trees (e.g., NEXUS or NeXML).
+            Negative offsets work like negative list indexes; e.g., a
+            `collection_offset` of -1 means to read the last collection of
+            trees in the data source. For data formats that do not support the
+            concept of distinct tree collections (e.g. NEWICK) are considered
+            single-collection data source (i.e, the only acceptable
+            `collection_offset` values are -1 or 0).
 
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
-            collection of trees to parse. If `None`, then all trees are parsed.
-            Only makes sense (respected) if a particular tree collection has
-            been identified using the `tree_collection_offset` parameter. If
-            the tree offset index is equal or greater than the number of trees
-            in the collection, then IndexError is raised. Only applicable when
-            parsing data schemas that support the concept of distinct
-            collections of trees (e.g., NEXUS or NeXML).
+            collection of trees at which to begin reading.  If not specified or
+            `None` (default), then all trees are parsed.  Otherwise, must be an
+            integer value up the length of the collection minus 1.  A positive
+            offset indicates the number of trees in the collection to skip;
+            e.g. a `tree_offset` of 20 means to skip the first 20 trees in the
+            collection.  Negative offsets work like negative list indexes;
+            e.g., a `tree_offset` value of -10 means to retrieve the last 10
+            trees in the collection.  If the tree offset index is equal or
+            greater than the number of trees in the collection, then IndexError
+            is raised. Requires that a particular tree collection has been
+            identified using the `tree_collection_offset` parameter: if
+            `tree_collection_offset` is not specified, a `TypeError` is raised.
 
         \*\*kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
@@ -4054,6 +4063,17 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
+
+        Notes
+        -----
+        Note that in most cases, even if `collection_offset` and `tree_offset`
+        are specified to restrict the trees returned, the *entire* data source
+        is still parsed and processed. So this is not more efficient than
+        reading all the trees and then manually-extracting them later; just
+        more convenient. If you need just a single subset of trees from a data
+        source, there is no gain in efficiency. If you need multiple trees or
+        subsets of trees from the same data source, it would be much more
+        efficient to read the entire data source, and extract trees as needed.
 
         Returns
         -------
@@ -4091,8 +4111,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             target_tree_list = tree_lists[collection_offset]
             tree_list.copy_annotations_from(target_tree_list)
             if tree_offset is not None:
-                if tree_offset < 0:
-                    raise IndexError("Tree offset out of range: {} (minimum offset = 0)".format(tree_offset))
+                # if tree_offset < 0:
+                #     raise IndexError("Tree offset out of range: {} (minimum offset = 0)".format(tree_offset))
                 if tree_offset >= len(target_tree_list):
                     raise IndexError("Tree offset out of range: {} (collection size = {}, maximum offset = {})".format(tree_offset, len(target_tree_list), len(target_tree_list)-1))
                 for tree in target_tree_list[tree_offset:]:
@@ -4199,6 +4219,23 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             # same
             tlst10 = TreeList([Tree(t) for t in tlst5])
 
+            # Subsets of trees can be read:
+            # (Note that in most cases, the entire data source is parsed, so
+            # this is not more efficient than reading all the trees and
+            # then manually-extracting them later; just more convenient
+
+            # skip the first 100 trees in the first collection of trees
+            trees = TreeList.get_from_path("mcmc.tre", "newick",
+                        collection_offset=0, tree_offset=100)
+
+            # get the last 10 trees in the first collection of trees
+            trees = TreeList.get_from_path("mcmc.tre", "newick",
+                        collection_offset=0, tree_offset=-10)
+
+            # get the last 10 trees in the second-to-last collection of trees
+            trees = TreeList.get_from_path("mcmc.xml", "nexml",
+                        collection_offset=-2, tree_offset=-10)
+
         """
         super(TreeList, self).__init__(*args, **kwargs)
         self._trees = []
@@ -4251,23 +4288,32 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             Identifier of format of data in `stream`.
 
         collection_offset : integer or None
-            0-based index indicating collection of trees to parse. If
-            `None`, then all tree collections are retrieved, with each distinct
+            0-based index indicating collection of trees to parse. If `None`,
+            then all tree collections are retrieved, with each distinct
             collection parsed into a separate :class:`TreeList` object. If the
             tree colleciton offset index is equal or greater than the number of
             tree collections in the data source, then IndexError is raised.
-            Only applicable when parsing data schemas that support the concept
-            of distinct collections of trees (e.g., NEXUS or NeXML).
+            Negative offsets work like negative list indexes; e.g., a
+            `collection_offset` of -1 means to read the last collection of
+            trees in the data source. For data formats that do not support the
+            concept of distinct tree collections (e.g. NEWICK) are considered
+            single-collection data source (i.e, the only acceptable
+            `collection_offset` values are -1 or 0).
 
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
-            collection of trees to parse. If `None`, then all trees are parsed.
-            Only makes sense (respected) if a particular tree collection has
-            been identified using the `tree_collection_offset` parameter. If
-            the tree offset index is equal or greater than the number of trees
-            in the collection, then IndexError is raised. Only applicable when
-            parsing data schemas that support the concept of distinct
-            collections of trees (e.g., NEXUS or NeXML).
+            collection of trees at which to begin reading.  If not specified or
+            `None` (default), then all trees are parsed.  Otherwise, must be an
+            integer value up the length of the collection minus 1.  A positive
+            offset indicates the number of trees in the collection to skip;
+            e.g. a `tree_offset` of 20 means to skip the first 20 trees in the
+            collection.  Negative offsets work like negative list indexes;
+            e.g., a `tree_offset` value of -10 means to retrieve the last 10
+            trees in the collection.  If the tree offset index is equal or
+            greater than the number of trees in the collection, then IndexError
+            is raised. Requires that a particular tree collection has been
+            identified using the `tree_collection_offset` parameter: if
+            `tree_collection_offset` is not specified, a `TypeError` is raised.
 
         \*\*kwargs : keyword arguments
 
@@ -4285,6 +4331,17 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             Other keyword arguments are available depending on the schema. See
             specific schema handlers (e.g., :class:`NewickReader`, :class:`NexusReader`,
             :class:`NexmlReader`) for more details.
+
+        Notes
+        -----
+        Note that in most cases, even if `collection_offset` and `tree_offset`
+        are specified to restrict the trees read, the *entire* data source
+        is still parsed and processed. So this is not more efficient than
+        reading all the trees and then manually-extracting them later; just
+        more convenient. If you need just a single subset of trees from a data
+        source, there is no gain in efficiency. If you need multiple trees or
+        subsets of trees from the same data source, it would be much more
+        efficient to read the entire data source, and extract trees as needed.
 
         Returns
         -------

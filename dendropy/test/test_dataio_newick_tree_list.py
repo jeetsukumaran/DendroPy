@@ -132,6 +132,11 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
             tree_offset=0,
             suppress_internal_node_taxa=True,
             suppress_external_node_taxa=False):
+        if tree_offset < 0:
+            if abs(tree_offset) > standard_test_tree_data.expected_number_of_trees[tree_file_title]:
+                tree_offset = 0
+            else:
+                tree_offset = standard_test_tree_data.expected_number_of_trees[tree_file_title] + tree_offset
         self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title]-tree_offset)
         # for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, standard_test_tree_data.tree_directory[tree_file_title])):
         for tree_idx, tree in enumerate(tree_list):
@@ -330,12 +335,14 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     suppress_external_node_taxa=False)
 
     def test_tree_offset_newick_get_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+        tree_filename = standard_test_tree_data.newick_tree_filenames[1]
         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        offsets = [0, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1]
-        for rep in range(5):
-            offsets.append(random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1))
-        for tree_offset in offsets:
+        tree_offsets = set([0, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1, -1, -standard_test_tree_data.expected_number_of_trees[tree_file_title]])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title]-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-standard_test_tree_data.expected_number_of_trees[tree_file_title]-2, -2))
+        for tree_offset in tree_offsets:
             tree_list = dendropy.TreeList.get_from_path(
                     pathmap.tree_source_path(tree_filename),
                     "newick",
@@ -351,12 +358,14 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     suppress_external_node_taxa=False)
 
     def test_tree_offset_newick_read_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+        tree_filename = standard_test_tree_data.newick_tree_filenames[1]
         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        offsets = [0, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1]
-        for rep in range(5):
-            offsets.append(random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1))
-        for tree_offset in offsets:
+        tree_offsets = set([0, standard_test_tree_data.expected_number_of_trees[tree_file_title]-1, -1, -standard_test_tree_data.expected_number_of_trees[tree_file_title]])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title]-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-standard_test_tree_data.expected_number_of_trees[tree_file_title]-2, -2))
+        for tree_offset in tree_offsets:
             tree_list = dendropy.TreeList()
             old_id = id(tree_list)
             n = tree_list.read_from_path(
@@ -421,66 +430,68 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
         tree_filename = standard_test_tree_data.newick_tree_filenames[0]
         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
         t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            t = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=1,
-                    tree_offset=0)
+        for collection_offset in [1, -2]:
+            with self.assertRaises(IndexError):
+                t = dendropy.TreeList.get_from_path(
+                        pathmap.tree_source_path(tree_filename),
+                        "newick",
+                        collection_offset=1,
+                        tree_offset=0)
 
     def test_out_of_range_collection_offset_newick_read_from(self):
         tree_filename = standard_test_tree_data.newick_tree_filenames[0]
         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
         t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            t.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=1,
-                    tree_offset=0)
+        for collection_offset in [1, -2]:
+            with self.assertRaises(IndexError):
+                t.read_from_path(
+                        pathmap.tree_source_path(tree_filename),
+                        "newick",
+                        collection_offset=1,
+                        tree_offset=0)
 
-    def test_invalid_tree_offset_newick_get_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        with self.assertRaises(IndexError):
-            t = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=-1)
+    # def test_invalid_tree_offset_newick_get_from(self):
+    #     tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     with self.assertRaises(IndexError):
+    #         t = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=-1)
 
-    def test_invalid_tree_offset_newick_read_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            t.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=-1)
+    # def test_invalid_tree_offset_newick_read_from(self):
+    #     tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     with self.assertRaises(IndexError):
+    #         t.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=-1)
 
-    def test_invalid_collection_offset_newick_get_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            t = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=-1,
-                    tree_offset=0)
+    # def test_invalid_collection_offset_newick_get_from(self):
+    #     tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     with self.assertRaises(IndexError):
+    #         t = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=-1,
+    #                 tree_offset=0)
 
-    def test_invalid_collection_offset_newick_read_from(self):
-        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            n = t.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=-1,
-                    tree_offset=0)
+    # def test_invalid_collection_offset_newick_read_from(self):
+    #     tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     with self.assertRaises(IndexError):
+    #         n = t.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=-1,
+    #                 tree_offset=0)
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
