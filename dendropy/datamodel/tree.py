@@ -4087,6 +4087,10 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             target_tree_list = tree_lists[collection_offset]
             tree_list.copy_annotations_from(target_tree_list)
             if tree_offset is not None:
+                if tree_offset < 0:
+                    raise IndexError("Tree offset out of range: {} (minimum offset = 0)".format(tree_offset))
+                if tree_offset >= len(target_tree_list):
+                    raise IndexError("Tree offset out of range: {} (collection size = {}, maximum offset = {})".format(tree_offset, len(target_tree_list), len(target_tree_list)-1))
                 for tree in target_tree_list[tree_offset:]:
                     tree_list._trees.append(tree)
             else:
