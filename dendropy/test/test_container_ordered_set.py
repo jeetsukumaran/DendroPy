@@ -84,5 +84,29 @@ class TestOrderedSet(unittest.TestCase):
                 self.assertEqual(result, zz)
                 self.assertEqual(len(result), len(zz))
 
+    def test_pop_back(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        ordered_set = container.OrderedSet(items)
+        while ordered_set:
+            item1 = ordered_set.pop()
+            item2 = items.pop(-1)
+            self.assertIs(item1, item2)
+            self.assertEqual(len(ordered_set), len(items))
+            result = [item for item in ordered_set]
+            self.assertEqual(result, items)
+        self.assertEqual(len(ordered_set), 0)
+
+    def test_pop_front(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        ordered_set = container.OrderedSet(items)
+        while ordered_set:
+            item1 = ordered_set.pop(False)
+            item2 = items.pop(0)
+            self.assertIs(item1, item2)
+            self.assertEqual(len(ordered_set), len(items))
+            result = [item for item in ordered_set]
+            self.assertEqual(result, items)
+        self.assertEqual(len(ordered_set), 0)
+
 if __name__ == "__main__":
     unittest.main()

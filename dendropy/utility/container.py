@@ -200,12 +200,12 @@ class OrderedSet(object):
     def __repr__(self):
         return "{}([{}])".format((self.__class__.__name__, ", ".join([str(i) for i in self._item_list])))
 
-    def __hash__(self):
-        return id(self)
-        return hash( (t for t in self._item_list) )
+    # def __hash__(self):
+    #     return id(self)
+    #     return hash( (t for t in self._item_list) )
 
-    def __lt__(self, o):
-        return self._item_list < o._item_list
+    # def __lt__(self, o):
+    #     return self._item_list < o._item_list
 
     def pop(self, last=True):
         if not self._item_set:
