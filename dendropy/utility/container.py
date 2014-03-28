@@ -144,8 +144,8 @@ class OrderedSet(object):
         self._item_list[key] = value
 
     def __delitem__(self, key):
+        self._item_set.remove(self._item_list[key])
         del self._item_list[key]
-        self._item_set.remove(item)
 
     def discard(self, key):
         if key in self._item_set:
@@ -206,6 +206,16 @@ class OrderedSet(object):
 
     def __lt__(self, o):
         return self._item_list < o._item_list
+
+    def pop(self, last=True):
+        if not self._item_set:
+            raise KeyError('OrderedSet is empty')
+        if last:
+            key = self._item_list[-1]
+        else:
+            key = self._item_list[0]
+        self.discard(key)
+        return key
 
 ###############################################################################
 ## NormalizedBitmaskDict

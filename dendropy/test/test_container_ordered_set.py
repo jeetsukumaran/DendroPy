@@ -38,6 +38,51 @@ class TestOrderedSet(unittest.TestCase):
             ordered_set.add( random.choice(items) )
         result = [item for item in ordered_set]
         self.assertEqual(result, items)
+        self.assertEqual(len(result), len(items))
+
+    def test_constructor(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        ordered_set = container.OrderedSet(items)
+        for x in range(100):
+            ordered_set.add( random.choice(items) )
+        result = [item for item in ordered_set]
+        self.assertEqual(result, items)
+        self.assertEqual(len(result), len(items))
+
+    def test_basic_getting(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        ordered_set = container.OrderedSet()
+        for item in items:
+            ordered_set.add(item)
+        for idx in range(len(items)):
+            self.assertIs(ordered_set[idx], items[idx])
+
+    def test_del(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        for x in range(len(items)):
+            ordered_set = container.OrderedSet(items)
+            zz = list(items)
+            while len(zz):
+                i = random.randint(0, len(zz)-1)
+                self.assertIs(ordered_set[i], zz[i])
+                del ordered_set[i]
+                del zz[i]
+                result = [item for item in ordered_set]
+                self.assertEqual(result, zz)
+                self.assertEqual(len(result), len(zz))
+
+    def test_discard(self):
+        items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]
+        for x in range(len(items)):
+            ordered_set = container.OrderedSet(items)
+            zz = list(items)
+            while len(zz):
+                k = random.choice(zz)
+                ordered_set.discard(k)
+                zz.remove(k)
+                result = [item for item in ordered_set]
+                self.assertEqual(result, zz)
+                self.assertEqual(len(result), len(zz))
 
 if __name__ == "__main__":
     unittest.main()
