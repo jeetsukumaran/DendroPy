@@ -4283,12 +4283,15 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             raise TypeError("Cannot change `taxon_namespace` when reading into an existing TreeList")
         kwargs["taxon_namespace"] = self.taxon_namespace
         kwargs["tree_list"] = self
+        cur_size = len(self._trees)
         TreeList._parse_from_stream(
                 stream=stream,
                 schema=schema,
                 collection_offset=collection_offset,
                 tree_offset=tree_offset,
                 **kwargs)
+        new_size = len(self._trees)
+        return new_size - cur_size
 
     ###########################################################################
     ## List Interface

@@ -268,9 +268,15 @@ class Readable(object):
 
         Returns
         -------
-        pdo : phylogenetic data object
-            New instance of object, constructed and populated from data given
-            in source.
+        n : `int` or :py:class:`tuple` [`int`]
+            A value indicating size of data read, where "size" depends on
+            the object:
+
+                - :class:`Tree`: **undefined**
+                - :class:`TreeList`: number of trees
+                - :class:`CharacterMatrix`: number of sequences
+                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
+
         """
         raise NotImplementedError
 
@@ -293,9 +299,14 @@ class Readable(object):
 
         Returns
         -------
-        pdo : phylogenetic data object
-            New instance of object, constructed and populated from data given
-            in source.
+        n : :py:class:`tuple` [integer]
+            A value indicating size of data read, where "size" depends on
+            the object:
+
+                - :class:`Tree`: **undefined**
+                - :class:`TreeList`: number of trees
+                - :class:`CharacterMatrix`: number of sequences
+                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
         return self.read(stream=fileobj, schema=schema, **kwargs)
 
@@ -317,9 +328,14 @@ class Readable(object):
 
         Returns
         -------
-        pdo : phylogenetic data object
-            New instance of object, constructed and populated from data given
-            in source.
+        n : :py:class:`tuple` [integer]
+            A value indicating size of data read, where "size" depends on
+            the object:
+
+                - :class:`Tree`: **undefined**
+                - :class:`TreeList`: number of trees
+                - :class:`CharacterMatrix`: number of sequences
+                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
         fsrc = open(filepath, "r", newline=None)
         with fsrc:
@@ -343,9 +359,14 @@ class Readable(object):
 
         Returns
         -------
-        pdo : phylogenetic data object
-            New instance of object, constructed and populated from data given
-            in source.
+        n : :py:class:`tuple` [integer]
+            A value indicating size of data read, where "size" depends on
+            the object:
+
+                - :class:`Tree`: **undefined**
+                - :class:`TreeList`: number of trees
+                - :class:`CharacterMatrix`: number of sequences
+                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
@@ -368,9 +389,14 @@ class Readable(object):
 
         Returns
         -------
-        pdo : phylogenetic data object
-            New instance of object, constructed and populated from data given
-            in source.
+        n : :py:class:`tuple` [integer]
+            A value indicating size of data read, where "size" depends on
+            the object:
+
+                - :class:`Tree`: **undefined**
+                - :class:`TreeList`: number of trees
+                - :class:`CharacterMatrix`: number of sequences
+                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
         src_str = read_url(url)
         s = StringIO(src_str)

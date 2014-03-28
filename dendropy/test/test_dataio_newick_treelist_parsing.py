@@ -120,11 +120,6 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
             self.assertEqual(set(child_labels), set(check_node.children))
             self.assertEqual(node.comments, check_node.comments)
         self.assertEqual(num_visited_nodes, len(check_tree.nodes))
-        if len(seen_taxa) != len(tree.taxon_namespace):
-            print("   ===> ", set(seen_taxa))
-            print("   ===> ", set(tree.taxon_namespace))
-            print("   ===> ", set(seen_taxa) - set(tree.taxon_namespace))
-            print("   ===> ", set(tree.taxon_namespace) - set(seen_taxa))
         self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
         self.assertEqual(set(seen_taxa), set(tree.taxon_namespace))
         node_labels.extend([t.label for t in tree.taxon_namespace])
@@ -202,9 +197,12 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
         for tree_filename in standard_test_tree_data.newick_tree_filenames:
             tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
             tree_list = dendropy.TreeList()
-            tree_list.read_from_path(
+            old_id = id(tree_list)
+            n = tree_list.read_from_path(
                     pathmap.tree_source_path(tree_filename),
                     "newick")
+            self.assertEqual(id(tree_list), old_id)
+            self.assertEqual(n, len(tree_list))
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
             self.verify_standard_trees(
@@ -222,7 +220,10 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
             with fsrc:
                 s = fsrc.read()
             tree_list = dendropy.TreeList()
-            tree_list.read_from_string(s, "newick")
+            old_id = id(tree_list)
+            n = tree_list.read_from_string(s, "newick")
+            self.assertEqual(id(tree_list), old_id)
+            self.assertEqual(n, len(tree_list))
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
             self.verify_standard_trees(
@@ -234,12 +235,15 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
     def test_default_newick_read_from_stream(self):
         taxon_namespaces = set()
         for tree_filename in standard_test_tree_data.newick_tree_filenames:
+            tree_list = dendropy.TreeList()
+            old_id = id(tree_list)
             tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
             filepath = pathmap.tree_source_path(tree_filename)
             fsrc = open(filepath, "r", newline=None)
-            tree_list = dendropy.TreeList()
             with fsrc:
-                tree_list.read_from_stream(fsrc, "newick")
+                n = tree_list.read_from_stream(fsrc, "newick")
+            self.assertEqual(id(tree_list), old_id)
+            self.assertEqual(n, len(tree_list))
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
             self.verify_standard_trees(
@@ -252,11 +256,15 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
         taxon_namespaces = set()
         for tree_filename in standard_test_tree_data.newick_tree_filenames:
             tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList.get_from_path(
+            tree_list = dendropy.TreeList()
+            old_id = id(tree_list)
+            n = tree_list.read_from_path(
                     pathmap.tree_source_path(tree_filename),
                     "newick",
                     suppress_internal_node_taxa=True,
                     suppress_external_node_taxa=True)
+            self.assertEqual(id(tree_list), old_id)
+            self.assertEqual(n, len(tree_list))
             self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
             taxon_namespaces.add(tree_list.taxon_namespace)
             self.verify_standard_trees(
@@ -287,13 +295,17 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
         for rep in range(10):
             tree_offset = random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title])
-            tree_list = dendropy.TreeList.get_from_path(
+            tree_list = dendropy.TreeList()
+            old_id = id(tree_list)
+            n = tree_list.read_from_path(
                     pathmap.tree_source_path(tree_filename),
                     "newick",
                     collection_offset=0,
                     tree_offset=tree_offset,
                     suppress_internal_node_taxa=True,
                     suppress_external_node_taxa=False)
+            self.assertEqual(id(tree_list), old_id)
+            self.assertEqual(n, len(tree_list))
             self.verify_standard_trees(
                     tree_list=tree_list,
                     tree_file_title=tree_file_title,
