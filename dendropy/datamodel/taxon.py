@@ -180,7 +180,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
     can be related.
     """
 
-    ## Construction, Copying and Life-cycle ##
+    ###########################################################################
+    ## Life-cycle
 
     def __init__(self, *args, **kwargs):
         """
@@ -271,6 +272,9 @@ class TaxonNamespace(base.DataObject, base.Annotable):
                     else:
                         self.new_taxon(label=i)
 
+    ###########################################################################
+    ## Identity and Comparison
+
     def __str__(self):
         return "[{}]".format(", ".join([str(i) for i in self._taxa]))
 
@@ -283,46 +287,26 @@ class TaxonNamespace(base.DataObject, base.Annotable):
     def __lt__(self, o):
         return self._taxa < o._taxa
 
+    ###########################################################################
+    ## Collection Iteration
+
     def __iter__(self):
         return iter(self._taxa)
 
     def __reversed__(self):
         return reversed(self._taxa)
 
-    # def __deepcopy__(self, memo):
-    #     """
-    #     By default, deep copies of non-DataSet data objects do *not* deep-copy
-    #     the corresponding TaxonNamespace, and id's of all TaxonNamespace
-    #     objects are mapped to themselves. This can be overridden by
-    #     pre-populating memo with appropriate clones.
-    #     """
-    #     memo[id(self)] = self
-    #     return self
-
-    # def fullcopy(self, memo=None):
-    #     """
-    #     "Truly" deep-copy or clone the TaxonNamespace: make copies of Taxon
-    #     objects and return new TaxonNamespace.
-    #     """
-    #     raise NotImplementedError
-    #     if memo is None:
-    #         memo = {}
-    #     o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-    #     for taxon in self._taxa:
-    #         o.add_taxon(taxon.fullcopy(memo=memo))
-    #     for k in self.__dict__:
-    #         # o.__dict__[copy.deepcopy(k, memo)] = copy.deepcopy(self.__dict__[k], memo)
-    #         o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-    #     memo[id(self)] = o
-    #     return o
-
-    ## Container Interface ##
+    ###########################################################################
+    ## Collection Data
 
     def __len__(self):
         """
         Returns number of :class:`Taxon` objects in this :class:`TaxonNamespace`.
         """
         return len(self._taxa)
+
+    ###########################################################################
+    ## Collection Access and Management
 
     def __getitem__(self, key):
         """
@@ -345,70 +329,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         # look-up in dictionary for O(1) instead of O(n) in list
         return taxon in self._taxon_accession_index_map
 
-    def _lookup_label(self,
-            label,
-            multiple=True,
-            case_insensitive=False,
-            error_if_not_found=False):
-        """
-        Return :class:`Taxon` object(s) with label matching `label`.
-        If `multiple` is `True`, then a list of :class:`Taxon` objects with labels
-        that match `label` are returned, otherwise just the first one is
-        returned. If `case_insensitive` is `True`, then the matching is done
-        without regard for case. If no :class:`Taxon` object is in the current the
-        namespace that matches the criteria, then `None` is returned unless
-        `error_if_not_found` is `False`, in which case :class:`LookupError` is raised.
-        """
-        taxa = []
-        if case_insensitive:
-            label = str(label).lower()
-            for taxon in self._taxa:
-                if label == str(taxon.label).lower():
-                    if not multiple:
-                        return taxon
-                    else:
-                        taxa.append(taxon)
-        else:
-            for taxon in self._taxa:
-                if label == taxon.label:
-                    if not multiple:
-                        return taxon
-                    else:
-                        taxa.append(taxon)
-        if len(taxa) > 0:
-            return taxa
-        elif error_if_not_found:
-            raise LookupError(label)
-        else:
-            return None
-
-    # def _resolve_taxon_request(self,
-    #         key,
-    #         multiple=True,
-    #         case_insensitive=False,
-    #         error_if_not_found=True):
-    #     """
-    #     If `key` is a :class:`Taxon` object, return `key` as-is.  Otherwise, return the
-    #     :class:`Taxon` object with label value `key`.  If :class:`Taxon` object cannot be
-    #     resolved, then `None` is returned if `raise_error` is `True`,
-    #     otherwise an IndexError or LookupError is raised.
-    #     """
-    #     if isinstance(key, Taxon):
-    #         if key in self._taxa:
-    #             if multiple:
-    #                 return [key]
-    #             else:
-    #                 return key
-    #         elif error_if_not_found:
-    #             raise LookupError(key)
-    #         else:
-    #             return None
-    #     else:
-    #         return self.findall(
-    #                 label=key,
-    #                 multiple=multiple,
-    #                 case_insensitive=case_insensitive,
-    #                 error_if_not_found=error_if_not_found)
+    ###########################################################################
+    ## Adding Taxa
 
     def add_taxon(self, taxon):
         """
@@ -526,6 +448,149 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             taxa.append(self.new_taxon(label=label))
         return taxa
 
+    ###########################################################################
+    ## Removing Taxa
+
+    def remove_taxon(self, taxon):
+        """
+        Removes specified :class:`Taxon` object from the collection in this namespace.
+
+        Parameters
+        ----------
+        taxon : a :class:`Taxon` object
+            The :class:`Taxon` object to be removed.
+
+        Raises
+        ------
+        ValueError
+            If `taxon` is not in the collection of this namespace.
+        """
+        if taxon not in self._taxa:
+            raise ValueError(taxon)
+        self._taxa.remove(taxon)
+        # assert taxon not in self._taxa
+        while taxon in self._taxa:
+            self._taxa.remove(taxon)
+        idx = self._taxon_accession_index_map.pop(taxon, None)
+        if idx is not None:
+            self._accession_index_taxon_map.pop(idx, None)
+            self._taxon_accession_index_map.pop(taxon, None)
+        bm = self._taxon_bitmask_map.pop(taxon, None)
+        if bm is not None:
+            self._bitmask_taxon_map.pop(bm, None)
+            self._taxon_accession_index_map.pop(taxon, None)
+
+    def remove_taxon_label(self, label, case_insensitive=False):
+        """
+        Removes *all* :class:`Taxon` objects with label matching `label` from the
+        collection in this namespace.
+
+        Parameters
+        ----------
+        label : string or string-like
+            The value of the :class:`Taxon` object label to remove.
+        case_insensitive : boolean, optional
+            If `False` (default), then the label matching is done as-is. If
+            `True`, then both the `label` argument as well as the :class:`Taxon`
+            object's `label` attribute are coerced into lower-case label
+            strings before checking for a match.
+
+        Raises
+        ------
+        LookupError
+            If no :class:`Taxon` objects are found with matching label(s).
+
+        See Also
+        --------
+        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not raise an error if no
+            matching :class:`Taxon` objects are found.
+        """
+        taxa = self._lookup_label(label,
+                case_insensitive=case_insensitive,
+                multiple=True,
+                error_if_not_found=True)
+        for taxon in taxa:
+            self.remove_taxon(taxon)
+
+    def discard_taxon_label(self, label, case_insensitive=False):
+        """
+        Removes *all* :class:`Taxon` objects with label matching `label` from the
+        collection in this namespace.
+
+        Parameters
+        ----------
+        label : string or string-like
+            The value of the :class:`Taxon` object label to remove.
+        case_insensitive : boolean, optional
+            If `False` (default), then the label matching is done as-is. If
+            `True`, then both the `label` argument as well as the :class:`Taxon`
+            object's `label` attribute are coerced into lower-case label
+            strings before checking for a match.
+
+        See Also
+        --------
+        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not
+            raise an error if no matching :class:`Taxon` objects are found.
+        """
+        taxa = self._lookup_label(label,
+                case_insensitive=case_insensitive,
+                multiple=True,
+                error_if_not_found=False)
+        if taxa is None:
+            return
+        for taxon in taxa:
+            self.remove_taxon(taxon)
+
+    def clear(self):
+        """
+        Removes all :class:`Taxon` objects from this namespace.
+        """
+        # self._taxa.clear() # Python 2 `list` class does not have `clear()` method
+        del self._taxa[:]
+        self._accession_index_taxon_map.clear()
+        self._taxon_accession_index_map.clear()
+        self._taxon_bitmask_map.clear()
+        self._bitmask_taxon_map.clear()
+
+    ###########################################################################
+    ## Look-up and Retrieval of Taxa
+
+    def _lookup_label(self,
+            label,
+            multiple=True,
+            case_insensitive=False,
+            error_if_not_found=False):
+        """
+        Return :class:`Taxon` object(s) with label matching `label`.
+        If `multiple` is `True`, then a list of :class:`Taxon` objects with labels
+        that match `label` are returned, otherwise just the first one is
+        returned. If `case_insensitive` is `True`, then the matching is done
+        without regard for case. If no :class:`Taxon` object is in the current the
+        namespace that matches the criteria, then `None` is returned unless
+        `error_if_not_found` is `False`, in which case :class:`LookupError` is raised.
+        """
+        taxa = []
+        if case_insensitive:
+            label = str(label).lower()
+            for taxon in self._taxa:
+                if label == str(taxon.label).lower():
+                    if not multiple:
+                        return taxon
+                    else:
+                        taxa.append(taxon)
+        else:
+            for taxon in self._taxa:
+                if label == taxon.label:
+                    if not multiple:
+                        return taxon
+                    else:
+                        taxa.append(taxon)
+        if len(taxa) > 0:
+            return taxa
+        elif error_if_not_found:
+            raise LookupError(label)
+        else:
+            return None
 
     def findall(self, label, case_insensitive=False):
         """
@@ -741,106 +806,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         taxon = self.new_taxon(label=label)
         return taxon
 
-    def remove_taxon(self, taxon):
-        """
-        Removes specified :class:`Taxon` object from the collection in this namespace.
-
-        Parameters
-        ----------
-        taxon : a :class:`Taxon` object
-            The :class:`Taxon` object to be removed.
-
-        Raises
-        ------
-        ValueError
-            If `taxon` is not in the collection of this namespace.
-        """
-        if taxon not in self._taxa:
-            raise ValueError(taxon)
-        self._taxa.remove(taxon)
-        # assert taxon not in self._taxa
-        while taxon in self._taxa:
-            self._taxa.remove(taxon)
-        idx = self._taxon_accession_index_map.pop(taxon, None)
-        if idx is not None:
-            self._accession_index_taxon_map.pop(idx, None)
-            self._taxon_accession_index_map.pop(taxon, None)
-        bm = self._taxon_bitmask_map.pop(taxon, None)
-        if bm is not None:
-            self._bitmask_taxon_map.pop(bm, None)
-            self._taxon_accession_index_map.pop(taxon, None)
-
-    def remove_taxon_label(self, label, case_insensitive=False):
-        """
-        Removes *all* :class:`Taxon` objects with label matching `label` from the
-        collection in this namespace.
-
-        Parameters
-        ----------
-        label : string or string-like
-            The value of the :class:`Taxon` object label to remove.
-        case_insensitive : boolean, optional
-            If `False` (default), then the label matching is done as-is. If
-            `True`, then both the `label` argument as well as the :class:`Taxon`
-            object's `label` attribute are coerced into lower-case label
-            strings before checking for a match.
-
-        Raises
-        ------
-        LookupError
-            If no :class:`Taxon` objects are found with matching label(s).
-
-        See Also
-        --------
-        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not raise an error if no
-            matching :class:`Taxon` objects are found.
-        """
-        taxa = self._lookup_label(label,
-                case_insensitive=case_insensitive,
-                multiple=True,
-                error_if_not_found=True)
-        for taxon in taxa:
-            self.remove_taxon(taxon)
-
-    def discard_taxon_label(self, label, case_insensitive=False):
-        """
-        Removes *all* :class:`Taxon` objects with label matching `label` from the
-        collection in this namespace.
-
-        Parameters
-        ----------
-        label : string or string-like
-            The value of the :class:`Taxon` object label to remove.
-        case_insensitive : boolean, optional
-            If `False` (default), then the label matching is done as-is. If
-            `True`, then both the `label` argument as well as the :class:`Taxon`
-            object's `label` attribute are coerced into lower-case label
-            strings before checking for a match.
-
-        See Also
-        --------
-        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not
-            raise an error if no matching :class:`Taxon` objects are found.
-        """
-        taxa = self._lookup_label(label,
-                case_insensitive=case_insensitive,
-                multiple=True,
-                error_if_not_found=False)
-        if taxa is None:
-            return
-        for taxon in taxa:
-            self.remove_taxon(taxon)
-
-    def clear(self):
-        """
-        Removes all :class:`Taxon` objects from this namespace.
-        """
-        # self._taxa.clear() # Python 2 `list` class does not have `clear()` method
-        del self._taxa[:]
-        self._accession_index_taxon_map.clear()
-        self._taxon_accession_index_map.clear()
-        self._taxon_bitmask_map.clear()
-        self._bitmask_taxon_map.clear()
+    ###########################################################################
+    ## Taxon Ordering
 
     def sort(self, key=None, reverse=False):
         """
@@ -865,6 +832,9 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         Reverses order of :class:`Taxon` objects in collection.
         """
         self._taxa.reverse()
+
+    ###########################################################################
+    ## Summarization of Collection
 
     def labels(self):
         """
@@ -906,6 +876,9 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         for t in self._taxa:
             d[t.label] = t
         return d
+
+    ###########################################################################
+    ## Split Management
 
     def complement_split_bitmask(self, split_bitmask):
         """
@@ -1064,6 +1037,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
 
 ##############################################################################
 ## TaxonSet
+
 class TaxonSet(TaxonNamespace):
     """
     This class is present for (temporary!) legacy support of code written under
@@ -1102,22 +1076,6 @@ class Taxon(base.DataObject, base.Annotable):
 
     def __lt__(self, other):
         return self.label < other.label
-
-    def __deepcopy__(self, memo):
-        """
-        By default, deep copies of non-DataSet data objects do *not* deep-copy
-        the taxa, and id's of all taxon set objects are mapped to self. This
-        can be overridden by pre-populating memo with appropriate clones.
-        """
-        memo[id(self)] = self
-        return self
-
-    def fullcopy(self, memo=None):
-        if memo is None:
-            memo = {}
-        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-        memo[id(self)] = o
-        return o
 
     def __str__(self):
         "String representation of self = taxon name."
