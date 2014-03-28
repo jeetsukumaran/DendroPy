@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Test of data collection classes.
+NormalizedBitmaskDict tests.
 """
 
 import unittest

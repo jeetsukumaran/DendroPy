@@ -24,11 +24,6 @@ import collections
 import copy
 import sys
 
-# copied from treesplit, which is a bit ugly, but this is a two-liner...
-def lowest_bit_only(s):
-    m = s & (s - 1)
-    return m ^ s
-
 ###############################################################################
 ## ItemAttributeProviderList
 
@@ -119,45 +114,98 @@ class ItemSublistProxyList(list):
 ###############################################################################
 ## OrderedSet
 
-class OrderedSet(list):
+class OrderedSet(object):
 
     """
     Ordered collection of unique objects.
     """
 
     def __init__(self, *args):
-        list.__init__(self, *args)
+        self._item_list = []
+        self._item_set = set()
+        if len(args) > 1:
+            raise TypeError("OrderedSet expected at most 1 arguments, got 2")
+        elif len(args) == 1:
+            for a in args[0]:
+                if a not in self._item_set:
+                    self._item_set.add(a)
+                    self._item_list.append(a)
 
-    def __setitem__(self, *args):
-        raise Exception("'OrderedSet' object does not support item assignment\n")
+    def __len__(self):
+        return len(self._item_list)
 
-    def __str__(self):
-        return "[{}]".format(", ".join([str(i) for i in self]))
+    def __getitem__(self, key):
+        return self._item_list[key]
 
-    def __repr__(self):
-        return "{}[{}])".format((self.__class__.__name__, ", ".join([str(i) for i in self])))
+    def __setitem__(self, key, value):
+        item = self._item_list[key]
+        self._item_set.remove(item)
+        self._item_set.add(value)
+        self._item_list[key] = value
 
-    def __hash__(self):
-        return hash( (t for t in self) )
+    def __delitem__(self, key):
+        del self._item_list[key]
+        self._item_set.remove(item)
 
-    def __cmp__(self, o):
-        return list.__cmp__(self, o)
+    def discard(self, key):
+        if key in self._item_set:
+            self._item_set.remove(key)
+            self._item_list.remove(key)
 
-    def add(self, x):
-        if x not in self:
-            list.append(self, x)
-            return x
+    def __iter__(self):
+        return iter(self._item_list)
+
+    def next(self):
+        return self.__iter__()
+
+    def __reversed__(self):
+        return OrderedSet(reversed(self._item_list))
+
+    def __add__(self, o):
+        v = self._item_list + o._item_list
+        return OrderedSet(v)
+
+    def index(self, value):
+        return self._item_list.index(value)
+
+    def __contains__(self, o):
+        return o in self._item_set
+
+    def add(self, value):
+        if value not in self._item_set:
+            self._item_set.add(value)
+            self._item_list.append(value)
+            return value
         else:
             return None
 
+    def append(self, value):
+        self.add(value)
+
     def update(self, x):
         for i in x:
-            if i not in self:
-                list.append(self, i)
+            if i not in self._item_set:
+                self._item_set.add(i)
+                self._item_list.append(i)
 
     def extend(self, t):
         for x in t:
-            self.append(x)
+            if x not in self._item_set:
+                self._item_set.add(x)
+                self._item_list.append(x)
+
+    def __str__(self):
+        return "[{}]".format(", ".join([str(i) for i in self._item_list]))
+
+    def __repr__(self):
+        return "{}([{}])".format((self.__class__.__name__, ", ".join([str(i) for i in self._item_list])))
+
+    def __hash__(self):
+        return id(self)
+        return hash( (t for t in self._item_list) )
+
+    def __lt__(self, o):
+        return self._item_list < o._item_list
 
 ###############################################################################
 ## NormalizedBitmaskDict
@@ -169,6 +217,12 @@ class NormalizedBitmaskDict(dict):
     most bit is '0'. That is, if the key's right-most bit is '0', it is added
     as-is, otherwise it is complemented by XOR'ing it with 'mask'.
     """
+
+    # copied from treesplit, which is a bit ugly, but this is a two-liner...
+    def lowest_bit_only(s):
+        m = s & (s - 1)
+        return m ^ s
+    lowest_bit_only = staticmethod(lowest_bit_only)
 
     def normalize(key, mask, lowest_relevant_bit):
         if key & lowest_relevant_bit:
@@ -204,7 +258,7 @@ class NormalizedBitmaskDict(dict):
     def __init__(self, other=None, mask=None):
         "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
-        self.lowest_relevant_bit = lowest_bit_only(mask)
+        self.lowest_relevant_bit = NormalizedBitmaskDict.lowest_bit_only(mask)
         self.mask = mask
 #         sys.stderr.write('''NormalizedBitmaskDict.__init__
 # mask      = %s %d
