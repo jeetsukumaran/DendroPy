@@ -3990,7 +3990,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 ##############################################################################
 ## TreeList
 
-class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
+class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.Writeable):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of
     opeational taxonomic unit concepts through the same :class:`TaxonNamespace`
@@ -4046,7 +4046,10 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 * `label` specifies the label or description of the new
                   :class:`TreeList`.
                 * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
-                   attached to the new :class:`TreeList` object.
+                  attached to the new :class:`TreeList` object.
+                * `tree_list` : **SPECIAL** If passed a :class:`TreeList` using
+                  this keyword, then this instance is populated and returned
+                  (instead of a new instance being created).
 
             All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
@@ -4057,17 +4060,50 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         A :class:`TreeList` object.
 
         """
+        reader = dataio.get_reader(schema, **kwargs)
         taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
-        tree_list = cls(label=label,
-                taxon_namespace=taxon_namespace)
-        tree_list.read(
-                stream=stream,
-                schema=schema,
-                collection_offset=collection_offset,
-                tree_offset=tree_offset,
-                **kwargs)
+
+        # Accommodate an existing TreeList object being passed
+        tree_list = kwargs.pop("tree_list", None)
+        if tree_list is None:
+            tree_list = cls(label=label, taxon_namespace=taxon_namespace)
+
+        if collection_offset is None:
+            if tree_offset is not None:
+                raise TypeError("Cannot specify `tree_offset` without specifying `collection_offset`")
+            # coerce all tree products into this list
+            reader.read_trees(
+                        stream=stream,
+                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
+                        tree_list_factory=tree_list._tree_list_pseudofactory,
+                        global_annotations_target=None)
+        else:
+            tree_lists = reader.read_trees(
+                        stream=stream,
+                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
+                        tree_list_factory=tree_list.__class__,
+                        global_annotations_target=None)
+            target_tree_list = tree_lists[collection_offset]
+            tree_list.copy_annotations_from(target_tree_list)
+            if tree_offset is not None:
+                for tree in target_tree_list[tree_offset:]:
+                    tree_list._trees.append(tree)
+            else:
+                for tree in target_tree_list:
+                    tree_list._trees.append(tree)
         return tree_list
+        # taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        # label = kwargs.pop("label", None)
+        # tree_list = cls(label=label,
+        #         taxon_namespace=taxon_namespace)
+        # tree_list.read(
+        #         stream=stream,
+        #         schema=schema,
+        #         collection_offset=collection_offset,
+        #         tree_offset=tree_offset,
+        #         **kwargs)
+        # return tree_list
     _parse_from_stream = classmethod(_parse_from_stream)
 
     def tree_factory(cls, *args, **kwargs):
@@ -4243,29 +4279,16 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             :class:`NexmlReader`) for more details.
 
         """
-        reader = dataio.get_reader(schema, **kwargs)
         if "taxon_set" in kwargs or "taxon_namespace" in kwargs:
             raise TypeError("Cannot change `taxon_namespace` when reading into an existing TreeList")
-        if collection_offset is None:
-            assert tree_offset is None
-            # coerce all tree products into this list
-            reader.read_trees(
-                        stream=stream,
-                        taxon_namespace_factory=self._taxon_namespace_pseudofactory,
-                        tree_list_factory=self._tree_list_pseudofactory,
-                        global_annotations_target=None)
-        else:
-            tree_lists = reader.read_trees(
-                        stream=stream,
-                        taxon_namespace_factory=self._taxon_namespace_pseudofactory,
-                        tree_list_factory=self.__class__,
-                        global_annotations_target=None)
-            tree_list = tree_lists[collection_offset]
-            self.copy_annotations_from(tree_list)
-            if tree_offset is not None:
-                self.extend(tree_list[tree_offset:])
-            else:
-                self.extend(tree_lists)
+        kwargs["taxon_namespace"] = self.taxon_namespace
+        kwargs["tree_list"] = self
+        TreeList._parse_from_stream(
+                stream=stream,
+                schema=schema,
+                collection_offset=collection_offset,
+                tree_offset=tree_offset,
+                **kwargs)
 
     ###########################################################################
     ## List Interface

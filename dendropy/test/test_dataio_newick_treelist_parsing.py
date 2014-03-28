@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import dendropy
+import random
 from dendropy.test.support import standard_test_tree_data
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
@@ -36,10 +37,10 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
     def compare_to_check_tree(self,
             tree,
             tree_file_title,
-            tree_idx,
+            check_tree_idx,
             suppress_internal_node_taxa=True,
             suppress_external_node_taxa=False):
-        check_tree = standard_test_tree_data.tree_directory[tree_file_title][tree_idx]
+        check_tree = standard_test_tree_data.tree_directory[tree_file_title][check_tree_idx]
         self.assertEqual(tree.comments, check_tree.comments)
         self.assertIs(tree.is_rooted, check_tree.rooted)
         seen_taxa = []
@@ -51,8 +52,8 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                 check_node_label_key = node.taxon.label
             else:
                 check_node_label_key = node.label
-            check_node = standard_test_tree_data.node_directory[(tree_file_title, tree_idx, check_node_label_key)]
-            _LOG.debug("{}: {}: {}".format(tree_file_title, tree_idx, check_node_label_key))
+            check_node = standard_test_tree_data.node_directory[(tree_file_title, check_tree_idx, check_node_label_key)]
+            _LOG.debug("{}: {}: {}".format(tree_file_title, check_tree_idx, check_node_label_key))
             if check_node.children:
                 self.assertTrue(node.is_internal())
                 self.assertFalse(node.is_leaf())
@@ -133,9 +134,10 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
     def verify_standard_trees(self,
             tree_list,
             tree_file_title,
+            tree_offset=0,
             suppress_internal_node_taxa=True,
             suppress_external_node_taxa=False):
-        self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title])
+        self.assertEqual(len(tree_list), standard_test_tree_data.expected_number_of_trees[tree_file_title]-tree_offset)
         # for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, standard_test_tree_data.tree_directory[tree_file_title])):
         for tree_idx, tree in enumerate(tree_list):
             _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
@@ -143,7 +145,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
             self.compare_to_check_tree(
                     tree=tree,
                     tree_file_title=tree_file_title,
-                    tree_idx=tree_idx,
+                    check_tree_idx=tree_idx + tree_offset,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
                     suppress_external_node_taxa=suppress_external_node_taxa)
 
@@ -278,6 +280,25 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     tree_list=tree_list,
                     tree_file_title=tree_file_title,
                     suppress_internal_node_taxa=False,
+                    suppress_external_node_taxa=False)
+
+    def test_tree_offset_newick_reader(self):
+        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+        for rep in range(10):
+            tree_offset = random.randint(1, standard_test_tree_data.expected_number_of_trees[tree_file_title])
+            tree_list = dendropy.TreeList.get_from_path(
+                    pathmap.tree_source_path(tree_filename),
+                    "newick",
+                    collection_offset=0,
+                    tree_offset=tree_offset,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=False)
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    tree_offset=tree_offset,
+                    suppress_internal_node_taxa=True,
                     suppress_external_node_taxa=False)
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
