@@ -569,6 +569,9 @@ class Annotation(Annotable):
                 and ( ((not hasattr(self, "_annotations")) and (not hasattr(o, "_annotations")))
                     or (hasattr(self, "_annotations") and hasattr(o, "_annotations") and self._annotations == o._annotations)))
 
+    def __hash__(self):
+        return id(self)
+
     def __str__(self):
         return "{}='{}'".format(self.name, self.value)
 
