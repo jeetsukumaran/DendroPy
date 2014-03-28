@@ -71,6 +71,7 @@ class Edge(base.Annotable):
         self.head_node = head_node
         self.rootedge = rootedge
         self.length = length
+        self.split_bitmask = None
         self.comments = []
 
     def new_edge(self, *args, **kwargs):
@@ -969,6 +970,18 @@ class Node(base.Annotable):
         self._edge.length = v
     edge_length = property(_get_edge_length, _set_edge_length)
 
+    def _get_split_bitmask(self):
+        """
+        Returns the split hash bitmask for this node.
+        """
+        return self._edge.split_bitmask
+    def _set_split_bitmask(self, v=None):
+        """
+        Sets the split hash bitmask for htis node.
+        """
+        self._edge.split_bitmask = v
+    split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
+
     ###########################################################################
     ## Parent Access and Manipulation
 
@@ -1664,26 +1677,26 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         self.weight = None
         self.length_type = None
 
-    def clone_from(self, other):
-        """
-        Clones the structure and properties of :class:`Tree` object `other`.
+    # def clone_from(self, other):
+    #     """
+    #     Clones the structure and properties of :class:`Tree` object `other`.
 
-        Parameters
-        ----------
-        other : :class:`Tree`
-            Tree object to clone.
+    #     Parameters
+    #     ----------
+    #     other : :class:`Tree`
+    #         Tree object to clone.
 
-        Returns
-        -------
-        self : :class:`Tree`
-            Returns `self`.
-        """
-        t = copy.deepcopy(other)
-        for k, v in t.__dict__.iteritems():
-            if k not in ["_annotations"]:
-                self.__dict__[k] = v
-        self.annotations = t.annotations
-        return self
+    #     Returns
+    #     -------
+    #     self : :class:`Tree`
+    #         Returns `self`.
+    #     """
+    #     t = copy.deepcopy(other)
+    #     for k, v in t.__dict__.iteritems():
+    #         if k not in ["_annotations"]:
+    #             self.__dict__[k] = v
+    #     self.annotations = t.annotations
+    #     return self
 
     # def __deepcopy__(self, memo):
     #     # we treat the taxa as immutable and copy the reference even in a deepcopy
