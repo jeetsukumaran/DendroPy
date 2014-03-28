@@ -117,7 +117,8 @@ class ItemSublistProxyList(list):
 class OrderedSet(object):
 
     """
-    Ordered collection of unique objects.
+    Ordered collection of unique objects with O(1) look-ups, addition, and
+    deletion.
     """
 
     def __init__(self, *args):
@@ -134,44 +135,91 @@ class OrderedSet(object):
     def __len__(self):
         return len(self._item_list)
 
-    def __getitem__(self, key):
-        return self._item_list[key]
+    def __getitem__(self, index):
+        """
+        Returns value at `index`.
+        Note takes *index* of than value as key.
+        """
+        return self._item_list[index]
 
-    def __setitem__(self, key, value):
-        item = self._item_list[key]
+    def __setitem__(self, index, value):
+        """
+        Sets value at `index`.
+        Note takes *index* of than value as key.
+        """
+        item = self._item_list[index]
         self._item_set.remove(item)
         self._item_set.add(value)
-        self._item_list[key] = value
+        self._item_list[index] = value
 
-    def __delitem__(self, key):
-        self._item_set.remove(self._item_list[key])
-        del self._item_list[key]
+    def __delitem__(self, index):
+        """
+        Deletes value at `index`.
+        Note takes *index* of than value as key.
+        """
+        self._item_set.remove(self._item_list[index])
+        del self._item_list[index]
 
     def discard(self, key):
+        """
+        Deletes value of `key` from `self`.
+        No error if no value of `key` is not in `self`.
+        """
         if key in self._item_set:
             self._item_set.remove(key)
             self._item_list.remove(key)
 
+    def remove(self, key):
+        """
+        Deletes value of `key` from `self`.
+        `KeyError`if no value of `key` is not in `self`.
+        """
+        self._item_set.remove(key)
+        self._item_list.remove(key)
+
     def __iter__(self):
+        """
+        Returns iterator over values in `self`.
+        """
         return iter(self._item_list)
 
     def next(self):
+        """
+        Returns iterator over values in `self`.
+        """
         return self.__iter__()
 
     def __reversed__(self):
+        """
+        Returns :class:`OrderedSet` with values in reversed order.
+        """
         return OrderedSet(reversed(self._item_list))
 
-    def __add__(self, o):
-        v = self._item_list + o._item_list
+    def __add__(self, other):
+        """
+        Returns :class:`OrderedSet` consisting of union of values in `self`
+        and `other`.
+        """
+        v = self._item_list + other._item_list
         return OrderedSet(v)
 
     def index(self, value):
+        """
+        Returns index of element with value of `value`.
+        """
         return self._item_list.index(value)
 
-    def __contains__(self, o):
-        return o in self._item_set
+    def __contains__(self, value):
+        """
+        Returns `True` if `value` is in `self` or `False` otherwise.
+        """
+        return value in self._item_set
 
     def add(self, value):
+        """
+        Adds a new element, `value`, to `self` if `value` is not already in
+        `self`.
+        """
         if value not in self._item_set:
             self._item_set.add(value)
             self._item_list.append(value)
@@ -179,20 +227,15 @@ class OrderedSet(object):
         else:
             return None
 
-    def append(self, value):
-        self.add(value)
-
-    def update(self, x):
-        for i in x:
+    def update(self, other):
+        """
+        Updates `self` with values in `other` for each value in `other` that is
+        not already in `self`.
+        """
+        for i in other:
             if i not in self._item_set:
                 self._item_set.add(i)
                 self._item_list.append(i)
-
-    def extend(self, t):
-        for x in t:
-            if x not in self._item_set:
-                self._item_set.add(x)
-                self._item_list.append(x)
 
     def __str__(self):
         return "[{}]".format(", ".join([str(i) for i in self._item_list]))
@@ -208,6 +251,10 @@ class OrderedSet(object):
     #     return self._item_list < o._item_list
 
     def pop(self, last=True):
+        """
+        Removes and return value in `self`.
+        By default, removes last value.
+        """
         if not self._item_set:
             raise KeyError('OrderedSet is empty')
         if last:
