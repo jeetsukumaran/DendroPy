@@ -473,6 +473,10 @@ class Annotable(object):
                 a.target = self
     annotations = property(_get_annotations, _set_annotations)
 
+    def _has_annotations(self):
+        return hasattr(self, "_annotations") and len(self._annotations) > 0
+    has_annotations = property(_has_annotations)
+
     def copy_annotations_from(self, other):
         if hasattr(other, "_annotations"):
             for annote in other._annotations:
@@ -552,6 +556,18 @@ class Annotation(Annotable):
         self.namespace = namespace
         self.annotate_as_reference = annotate_as_reference
         self.is_hidden = is_hidden
+
+    def __eq__(self, o):
+        return (self.name == o.name
+                and self._value == o._value
+                and self.is_attribute == o.is_attribute
+                and self._name_prefix == o._name_prefix
+                and self.datatype_hint == o.datatype_hint
+                and self._namespace == o._namespace
+                and self.annotate_as_reference == o.annotate_as_reference
+                and self.is_hidden == o.is_hidden
+                and ( ((not hasattr(self, "_annotations")) and (not hasattr(o, "_annotations")))
+                    or (hasattr(self, "_annotations") and hasattr(o, "_annotations") and self._annotations == o._annotations)))
 
     def __str__(self):
         return "{}='{}'".format(self.name, self.value)

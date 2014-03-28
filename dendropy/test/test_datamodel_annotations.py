@@ -36,12 +36,16 @@ class AnnotableDeepCopyTester(unittest.TestCase):
 
     def compare(self, x1, x2):
         self.assertIsNot(x1, x2)
-        if not hasattr(x1, "_annotations"):
-            self.assertTrue(not hasattr(x2, "_annotations"))
+        if not x1.has_annotations:
+            self.assertTrue( (not hasattr(x1, "_annotations")) or len(x1._annotations) == 0 )
+            self.assertFalse(x2.has_annotations)
+            self.assertTrue( (not hasattr(x2, "_annotations")) or len(x2._annotations) == 0 )
             return
+        self.assertTrue( hasattr(x1, "_annotations") and len(x1._annotations) > 0 )
+        self.assertTrue(x2.has_annotations)
+        self.assertTrue( hasattr(x2, "_annotations") and len(x2._annotations) > 0 )
         self.assertIs(x1._annotations.target, x1)
         self.assertIs(x2._annotations.target, x2)
-        self.assertTrue(hasattr(x2, "_annotations"))
         self.assertIsNot(x1._annotations, x2._annotations)
         self.assertEqual(len(x1._annotations), len(x2._annotations))
         for a1, a2 in zip(x1._annotations, x2._annotations):
@@ -51,7 +55,7 @@ class AnnotableDeepCopyTester(unittest.TestCase):
                 v1 = a1.__dict__[k]
                 v2 = a2.__dict__[k]
                 if isinstance(v1, TestObject):
-                    self.assertNotIs(v1, v2)
+                    self.assertIsNot(v1, v2)
                 else:
                     self.assertEqual(v1, v2)
                 self.compare(a1, a2)
@@ -61,9 +65,18 @@ class AnnotableDeepCopyTester(unittest.TestCase):
         a1 = x1.annotations.add_new(name="a1", value="1")
         a2 = x1.annotations.add_new(name="a2", value="2")
         a3 = x1.annotations.add_new(name="a3", value="3")
-
         x2 = copy.deepcopy(x1)
+        self.compare(x1, x2)
 
+    def test_nested_deep_copy(self):
+        x1 = DummyX()
+        a1 = x1.annotations.add_new(name="a1", value="1")
+        a2 = x1.annotations.add_new(name="a2", value="2")
+        a3 = x1.annotations.add_new(name="a3", value="3")
+        a4 = a3.annotations.add_new(name="a4", value="4")
+        a5 = a3.annotations.add_new(name="a5", value="5")
+        a6 = a5.annotations.add_new(name="a6", value="6")
+        x2 = copy.deepcopy(x1)
         self.compare(x1, x2)
 
 
