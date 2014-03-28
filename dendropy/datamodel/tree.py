@@ -4084,6 +4084,10 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
                         taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
                         tree_list_factory=tree_list.__class__,
                         global_annotations_target=None)
+            if collection_offset < 0:
+                raise IndexError("Collection offset out of range: {} (minimum offset = 0)".format(collection_offset))
+            if collection_offset >= len(tree_lists):
+                raise IndexError("Collection offset out of range: {} (number of collecitons = {}, maximum offset = {})".format(collection_offset, len(tree_lists), len(tree_lists)-1))
             target_tree_list = tree_lists[collection_offset]
             tree_list.copy_annotations_from(target_tree_list)
             if tree_offset is not None:
@@ -4281,6 +4285,11 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             Other keyword arguments are available depending on the schema. See
             specific schema handlers (e.g., :class:`NewickReader`, :class:`NexusReader`,
             :class:`NexmlReader`) for more details.
+
+        Returns
+        -------
+        n : `int`
+            The number of :class:`Tree` objects read.
 
         """
         if "taxon_set" in kwargs or "taxon_namespace" in kwargs:

@@ -460,6 +460,28 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     collection_offset=0,
                     tree_offset=-1)
 
+    def test_invalid_collection_offset_newick_get_from(self):
+        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+        t = dendropy.TreeList()
+        with self.assertRaises(IndexError):
+            t = dendropy.TreeList.get_from_path(
+                    pathmap.tree_source_path(tree_filename),
+                    "newick",
+                    collection_offset=-1,
+                    tree_offset=0)
+
+    def test_invalid_collection_offset_newick_read_from(self):
+        tree_filename = standard_test_tree_data.newick_tree_filenames[0]
+        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+        t = dendropy.TreeList()
+        with self.assertRaises(IndexError):
+            n = t.read_from_path(
+                    pathmap.tree_source_path(tree_filename),
+                    "newick",
+                    collection_offset=-1,
+                    tree_offset=0)
+
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
     def test_shared_taxon_namespace(self):
