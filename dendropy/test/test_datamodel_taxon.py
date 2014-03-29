@@ -59,14 +59,14 @@ class TaxonIdentity(compare_and_validate.AnnotableComparator, unittest.TestCase)
 # otherwise setUp will not be called
 class TaxonDeepCopy(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
-    def test_copy_from_another(self):
+    def test_construct_from_another(self):
         t1 = Taxon("a")
         t2 = Taxon(t1)
         self.assertIsNot(t1, t2)
         self.assertNotEqual(t1, t2)
         self.assertEqual(t1.label, t2.label)
 
-    def test_copy_from_another_with_simple_annotations(self):
+    def test_construct_from_another_with_simple_annotations(self):
         t1 = Taxon("a")
         t1.annotations.add_new("a", 0)
         t1.annotations.add_new("b", 1)
@@ -80,7 +80,7 @@ class TaxonDeepCopy(compare_and_validate.AnnotableComparator, unittest.TestCase)
         self.assertEqual(len(t1.annotations), len(t2.annotations))
         self.compare_annotables(t1, t2)
 
-    def test_copy_from_another_with_complex_annotations(self):
+    def test_construct_from_another_with_complex_annotations(self):
         t1 = Taxon("a")
         t1.annotations.add_new("a", 0)
         b = t1.annotations.add_new("b", (t1, "label"), is_attribute=True)
@@ -93,6 +93,53 @@ class TaxonDeepCopy(compare_and_validate.AnnotableComparator, unittest.TestCase)
         self.assertTrue(hasattr(t2, "annotations"))
         self.assertEqual(len(t1.annotations), len(t2.annotations))
         self.compare_annotables(t1, t2)
+        t1.label = "x"
+        self.assertEqual(t1.annotations[1].value, "x")
+        self.assertEqual(t2.annotations[1].value, "x")
+        t1.label = "z"
+        self.assertEqual(t1.annotations[1].value, "z")
+        self.assertEqual(t2.annotations[1].value, "z")
+
+    def test_deepcopy_from_another(self):
+        t1 = Taxon("a")
+        t2 = copy.deepcopy(t1)
+        self.assertIsNot(t1, t2)
+        self.assertNotEqual(t1, t2)
+        self.assertEqual(t1.label, t2.label)
+
+    def test_deepcopy_from_another_with_simple_annotations(self):
+        t1 = Taxon("a")
+        t1.annotations.add_new("a", 0)
+        t1.annotations.add_new("b", 1)
+        t1.annotations.add_new("c", 3)
+        t2 = copy.deepcopy(Taxon(t1))
+        self.assertIsNot(t1, t2)
+        self.assertNotEqual(t1, t2)
+        self.assertEqual(t1.label, t2.label)
+        self.assertTrue(hasattr(t1, "annotations"))
+        self.assertTrue(hasattr(t2, "annotations"))
+        self.assertEqual(len(t1.annotations), len(t2.annotations))
+        self.compare_annotables(t1, t2)
+
+    def test_deepcopy_from_another_with_complex_annotations(self):
+        t1 = Taxon("a")
+        t1.annotations.add_new("a", 0)
+        b = t1.annotations.add_new("b", (t1, "label"), is_attribute=True)
+        b.annotations.add_new("c", 3)
+        t2 = copy.deepcopy(Taxon(t1))
+        self.assertIsNot(t1, t2)
+        self.assertNotEqual(t1, t2)
+        self.assertEqual(t1.label, t2.label)
+        self.assertTrue(hasattr(t1, "annotations"))
+        self.assertTrue(hasattr(t2, "annotations"))
+        self.assertEqual(len(t1.annotations), len(t2.annotations))
+        self.compare_annotables(t1, t2)
+        t1.label = "x"
+        self.assertEqual(t1.annotations[1].value, "x")
+        self.assertEqual(t2.annotations[1].value, "x")
+        t1.label = "z"
+        self.assertEqual(t1.annotations[1].value, "z")
+        self.assertEqual(t2.annotations[1].value, "z")
 
     def test_simple_copy(self):
         t1 = Taxon("a")

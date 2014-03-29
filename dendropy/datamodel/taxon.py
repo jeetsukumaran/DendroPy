@@ -303,6 +303,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return self._taxa < o._taxa
 
     def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
         return (self.label == other.label
                 and self._taxa == other._taxa
                 and base.Annotable.__eq__(self, other))
@@ -1095,7 +1097,7 @@ class Taxon(base.DataObject, base.Annotable):
             other_taxon = label
             label = other_taxon.label
             base.DataObject.__init__(self, label=label)
-            self.copy_annotations_from(other_taxon, memo={id(other_taxon):self})
+            self.copy_annotations_from(other_taxon)
         else:
             label = str(label)
             base.DataObject.__init__(self, label=label)
@@ -1115,7 +1117,7 @@ class Taxon(base.DataObject, base.Annotable):
         for k in self.__dict__:
             if k != "_annotations":
                 o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        o.copy_annotations_from(self, memo)
+        o.copy_annotations_from(self)
         return o
 
     def __hash__(self):

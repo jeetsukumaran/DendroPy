@@ -1801,7 +1801,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             raise ValueError("Invalid tree source specification")
         self.seed_node = tree.seed_node
         if not ignore_metadata:
-            self.annotations.copy_annotations_from(tree, memo={id(tree):self})
+            self.annotations.copy_annotations_from(tree)
 
     def write(self, stream, schema, **kwargs):
         """
@@ -4131,7 +4131,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             if collection_offset >= len(tree_lists):
                 raise IndexError("Collection offset out of range: {} (number of collecitons = {}, maximum offset = {})".format(collection_offset, len(tree_lists), len(tree_lists)-1))
             target_tree_list = tree_lists[collection_offset]
-            tree_list.copy_annotations_from(target_tree_list, memo={id(target_tree_list):tree_list})
+            tree_list.copy_annotations_from(target_tree_list)
             if tree_offset is not None:
                 # if tree_offset < 0:
                 #     raise IndexError("Tree offset out of range: {} (minimum offset = 0)".format(tree_offset))

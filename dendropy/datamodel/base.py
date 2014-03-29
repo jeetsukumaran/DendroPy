@@ -478,6 +478,8 @@ class Annotable(object):
     has_annotations = property(_has_annotations)
 
     def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
         if ( (not hasattr(self, "_annotations")) and (not hasattr(other, "_annotations")) ):
             return True
         elif hasattr(self, "_annotations") and hasattr(other, "_annotations"):
@@ -485,17 +487,14 @@ class Annotable(object):
         else:
             return False
 
-    def copy_annotations_from(self, other, memo=None):
+    def copy_annotations_from(self, other):
         if hasattr(other, "_annotations"):
-            if memo is None:
-                memo = {}
-            # assume that all references to other object should be references
-            # to self?
-            memo[id(other)] = self
-            for annote in other._annotations:
-                a2 = copy.deepcopy(annote, memo)
-                if a2.is_attribute and a2._value[0] is other:
-                    a2._value[0] = self
+            for a1 in other._annotations:
+                # Note: shallow-copy not deep-copy!!!
+                a2 = a1.shallow_copy()
+                # We do not update the attribute object in a shallow ocpy
+                # if a2.is_attribute and a2._value[0] is other:
+                #     a2._value = (self, a2._value[1])
                 self.annotations.add(a2)
 
     def __deepcopy__(self, memo=None):
@@ -571,6 +570,8 @@ class Annotation(Annotable):
         self.is_hidden = is_hidden
 
     def __eq__(self, o):
+        if not isinstance(o, self.__class__):
+            return False
         if self._value != o._value:
             return False
         if self.is_attribute != o.is_attribute:
@@ -595,7 +596,23 @@ class Annotation(Annotable):
     def __str__(self):
         return "{}='{}'".format(self.name, self.value)
 
+    def __copy__(self):
+        return self.shallow_copy()
+
     def __deepcopy__(self, memo=None):
+        return self.deep_copy(memo=memo)
+
+    def shallow_copy(self):
+        o = self.__class__.__new__(self.__class__)
+        if hasattr(self, "_annotations"):
+            o.copy_annotations_from(self)
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            o.__dict__[k] = self.__dict__[k]
+        return o
+
+    def deep_copy(self, memo=None):
         if memo is None:
             memo = {}
         o = Annotable.__deepcopy__(self, memo)
@@ -666,6 +683,8 @@ class AnnotationSet(container.OrderedSet):
         self.target = target
 
     def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
         return (self.target is other.target
                 and container.OrderedSet.__eq__(self, other))
 
