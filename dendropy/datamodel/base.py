@@ -498,9 +498,17 @@ class Annotable(object):
                 self.annotations.add(a2)
 
     def deep_copy_annotations_from(self, other, memo=None):
+        """
+        Note that all references to `other` in any annotation value (and
+        sub-annotation, and sub-sub-sub-annotation, etc.) will be
+        replaced with references to `self`. This may not always make sense
+        (i.e., a reference to a particular entity may be absolute regardless of
+        context).
+        """
         if hasattr(other, "_annotations"):
-            if not isinstance(self, other.__class__) or not isinstance(other, self.__class__):
-                raise TypeError("Cannot deep-copy annotations from different type")
+            # if not isinstance(self, other.__class__) or not isinstance(other, self.__class__):
+            if type(self) is not type(other):
+                raise TypeError("Cannot deep-copy annotations from different type (unable to assume object equivalence in dynamic or nested annotations)")
             if memo is None:
                 memo = {}
             for a1 in other._annotations:
