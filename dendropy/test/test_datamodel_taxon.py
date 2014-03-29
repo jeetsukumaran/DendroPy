@@ -556,32 +556,93 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
             x.append(t)
         self.assertEqual(len(x), 0)
 
-    # def test_drop_taxon_singlekeyed_singledropped_casesensitive_noerror(self):
-    #     upper_labels = [label.upper() for label in self.str_labels if label.upper() != label]
-    #     full_list = self.str_labels + upper_labels
-    #     tns = TaxonNamespace(full_list)
-    #     for label in full_list:
-    #         tns.drop_taxon(key=label,
-    #                 multiple=False,
-    #                 case_insensitive=False,
-    #                 error_if_not_found=False)
-    #         z = full_list[:]
-    #         z.remove(label)
-    #         self.validate_taxon_concepts(tns, z)
+class TaxonNamespaceIdentity(unittest.TestCase):
 
+    def setUp(self):
+        self.str_labels = ["a", "a", "b", "c", "d", "e", "_", "_", "_", "z", "z", "z"]
+        self.taxa = [ Taxon(label) for label in self.str_labels ]
+        self.tns1 = TaxonNamespace(self.taxa)
+        self.tns2 = TaxonNamespace(self.taxa)
 
-#     def test_delete_by_label(self):
-#         for idx in range(len(self.str_labels)):
-#             tns = TaxonNamespace(self.str_labels)
-#             expected_labels = [label in self.str_labels if label != self.str_labels[idx]]
-#             del tns[idx]
-#             for idx2, taxon in enumerate(self.taxa):
-#                 if idx2 == idx:
-#                     self.assertNotIn(taxon, tns)
-#                 else:
-#                     self.assertIn(taxon, tns)
+    def test_separate_but_equal(self):
+        self.assertIsNot(self.tns1, self.tns2)
+        self.assertEqual(self.tns1, self.tns2)
 
+    def test_different_labels(self):
+        self.assertIsNot(self.tns1, self.tns2)
+        self.assertEqual(self.tns1, self.tns2)
+        self.tns1.label = "hello"
+        self.tns2.label = "goodbye"
+        self.assertNotEqual(self.tns1, self.tns2)
+        self.tns1.label = self.tns2.label
+        self.assertIsNot(self.tns1, self.tns2)
+        self.assertEqual(self.tns1, self.tns2)
 
+    def test_same_annotations(self):
+        self.assertIsNot(self.tns1, self.tns2)
+        self.assertEqual(self.tns1, self.tns2)
+        self.tns1.annotations.add_new("hello", 0)
+        self.tns2.annotations.add_new("hello", 0)
+        # not equal because each :class:`AnnotationSet` has a `target`
+        # attribute that holds reference to the object being annotated. As
+        # these the target objects are necessarily different (even if they
+        # evaluate being equal), the :class:`AnnotationSet` objects are not
+        # considered equal, and thus the target objects that have the
+        # AnnotationSets are not equal.
+        self.assertNotEqual(self.tns1, self.tns2)
+
+    def test_different_annotations1(self):
+        self.assertIsNot(self.tns1, self.tns2)
+        self.assertEqual(self.tns1, self.tns2)
+        self.tns1.annotations.add_new("hello", 0)
+        self.assertNotEqual(self.tns1, self.tns2)
+
+    def test_hash_dict_membership(self):
+        k = {}
+        k[self.tns1] = 1
+        k[self.tns2] = 2
+        self.assertEqual(len(k), 2)
+        self.assertEqual(k[self.tns1], 1)
+        self.assertEqual(k[self.tns2], 2)
+        self.assertIn(self.tns1, k)
+        self.assertIn(self.tns2, k)
+
+    def test_hash_set_membership(self):
+        k = set()
+        k.add(self.tns1)
+        k.add(self.tns2)
+        self.assertEqual(len(k), 2)
+        self.assertIn(self.tns1, k)
+        self.assertIn(self.tns2, k)
+
+class TaxonIdentity(unittest.TestCase):
+
+    def setUp(self):
+        self.t1 = Taxon("a")
+        self.t2 = Taxon("a")
+
+    def test_equal(self):
+        # two distinct :class:`Taxon` objects are never equal, even if all
+        # member values are the same.
+        self.assertNotEqual(self.t1, self.t2)
+
+    def test_hash_dict_membership(self):
+        k = {}
+        k[self.t1] = 1
+        k[self.t2] = 2
+        self.assertEqual(len(k), 2)
+        self.assertEqual(k[self.t1], 1)
+        self.assertEqual(k[self.t2], 2)
+        self.assertIn(self.t1, k)
+        self.assertIn(self.t2, k)
+
+    def test_hash_set_membership(self):
+        k = set()
+        k.add(self.t1)
+        k.add(self.t2)
+        self.assertEqual(len(k), 2)
+        self.assertIn(self.t1, k)
+        self.assertIn(self.t2, k)
 
 # class TaxaTest(datatest.AnnotatedDataObjectVerificationTestCase):
 

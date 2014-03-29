@@ -303,8 +303,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return self._taxa < o._taxa
 
     def __eq__(self, other):
-        return (self._taxa == other._taxa
-                and self.label == other.label
+        return (self.label == other.label
+                and self._taxa == other._taxa
                 and base.Annotable.__eq__(self, other))
 
     ###########################################################################

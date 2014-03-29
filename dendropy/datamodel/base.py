@@ -566,9 +566,16 @@ class Annotation(Annotable):
         self.is_hidden = is_hidden
 
     def __eq__(self, o):
+        if self._value != o._value:
+            return False
+        if self.is_attribute != o.is_attribute:
+            return False
+        if self.is_attribute and o.is_attribute:
+            if getattr(*self._value) != getattr(*o._value):
+                return False
+        # at this point, we have established that the values
+        # are equal
         return (self.name == o.name
-                and self._value == o._value
-                and self.is_attribute == o.is_attribute
                 and self._name_prefix == o._name_prefix
                 and self.datatype_hint == o.datatype_hint
                 and self._namespace == o._namespace
@@ -652,7 +659,7 @@ class AnnotationSet(container.OrderedSet):
         self.target = target
 
     def __eq__(self, other):
-        return (self.target == other.target
+        return (self.target is other.target
                 and container.OrderedSet.__eq__(self, other))
 
     def __str__(self):

@@ -74,6 +74,9 @@ class Edge(base.Annotable):
         self.split_bitmask = None
         self.comments = []
 
+    def __hash__(self):
+        return id(self)
+
     def new_edge(self, *args, **kwargs):
         """
         Returns a new edge object of the same class of this edge.
@@ -231,6 +234,12 @@ class Node(base.Annotable):
     #     for c in self._child_nodes:
     #         o.add_child(copy.deepcopy(c, memo))
     #     return o
+
+    ###########################################################################
+    ## Identity
+
+    def __hash__(self):
+        return id(self)
 
     ###########################################################################
     ## Iterators
