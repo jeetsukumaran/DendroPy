@@ -497,26 +497,40 @@ class Annotable(object):
                 #     a2._value = (self, a2._value[1])
                 self.annotations.add(a2)
 
-    def __deepcopy__(self, memo=None):
-        # ensure clone map
-        if memo is None:
-            memo = {}
-        # get or create clone of self
-        try:
-            o = memo[id(self)]
-        except KeyError:
-            # create object without initialization
-            # o = type(self).__new__(self.__class__)
-            o = self.__class__.__new__(self.__class__)
-            # store
-            memo[id(self)] = o
-        # create annotations
-        if hasattr(self, "_annotations") and id(self._annotations) not in memo:
-            o._annotations = copy.deepcopy(self._annotations, memo)
-            memo[id(self._annotations)] = o._annotations
+    def deep_copy_annotations_from(self, other, memo=None):
+        if hasattr(other, "_annotations"):
+            if not isinstance(self, other.__class__) or not isinstance(other, self.__class__):
+                raise TypeError("Cannot deep-copy annotations from different type")
+            if memo is None:
+                memo = {}
+            for a1 in other._annotations:
+                a2 = a1.deep_copy(memo=memo)
+                if a2.is_attribute and a1._value[0] is other:
+                    a2._value = (self, a1._value[1])
+                self.annotations.add(a2)
+            memo[id(other._annotations)] = self._annotations
 
-        # return
-        return o
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
+        # # ensure clone map
+        # if memo is None:
+        #     memo = {}
+        # # get or create clone of self
+        # try:
+        #     o = memo[id(self)]
+        # except KeyError:
+        #     # create object without initialization
+        #     # o = type(self).__new__(self.__class__)
+        #     o = self.__class__.__new__(self.__class__)
+        #     # store
+        #     memo[id(self)] = o
+        # # create annotations
+        # if hasattr(self, "_annotations") and id(self._annotations) not in memo:
+        #     o._annotations = copy.deepcopy(self._annotations, memo)
+        #     memo[id(o._annotations)] = self._annotations
+
+        # # return
+        # return o
 
 ##############################################################################
 ## Annotation
@@ -615,7 +629,7 @@ class Annotation(Annotable):
     def deep_copy(self, memo=None):
         if memo is None:
             memo = {}
-        o = Annotable.__deepcopy__(self, memo)
+        o = self.__class__.__new__(self.__class__)
         memo[id(self)] = o
         for k in self.__dict__:
             if k not in o.__dict__: # do not add attributes already added by base class

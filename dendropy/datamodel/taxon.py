@@ -1117,7 +1117,7 @@ class Taxon(base.DataObject, base.Annotable):
         for k in self.__dict__:
             if k != "_annotations":
                 o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        o.copy_annotations_from(self)
+        o.deep_copy_annotations_from(self, memo)
         return o
 
     def __hash__(self):
