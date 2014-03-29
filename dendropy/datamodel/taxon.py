@@ -235,17 +235,39 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         >>> taxa = [t1, t2, "c"]
         >>> tns = dendropy.TaxonNamespace(taxa, label="taxa")
 
-        If a :class:`TaxonNamespace` object is passed as the initializer argument,
-        then each :class:`Taxon` object in the original :class:`TaxonNamespace` will be
-        *fully* cloned, i.e., will become completely separate and independent
-        operational taxonomic concepts:
+        If a :class:`TaxonNamespace` object is passed as the
+        initializer argument, a *shallow* copy of the object is constructed:
 
         >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
-        >>> tns2 = dendropy.TaxonNamespace(tns1, label="2")
         >>> tns1
         <TaxonNamespace 0x1097275d0 'taxa1': [<Taxon 0x109727610 'a'>, <Taxon 0x109727e10 'b'>, <Taxon 0x109727e90 'c'>]>
+        >>> tns2 = dendropy.TaxonNamespace(tns1, label="2")
         >>> tns2
-        <TaxonNamespace 0x109727d50 '2': [<Taxon 0x10972a0d0 'a'>, <Taxon 0x10972a090 'b'>, <Taxon 0x10972ac10 'c'>]>
+        <TaxonNamespace 0x109727d50 'taxa1': [<Taxon 0x109727610 'a'>, <Taxon 0x109727e10 'b'>, <Taxon 0x109727e90 'c'>]>
+
+        Thus, while "`tns1`" and "`tns2`" are independent collections, and
+        addition/deletion of :class:`Taxon` instances to one will not effect
+        the other, the label of a :class:`Taxon` instance that is an element in
+        one will of course effect the same instance if it is in the other:
+
+        >>> print(tns1[0].label)
+        >>> a
+        >>> print(tns2[0].label)
+        >>> a
+        >>> tns1[0].label = "Z"
+        >>> print(tns1[0].label)
+        >>> Z
+        >>> print(tns2[0].label)
+        >>> Z
+
+        If what is needed is a **full** or **deep-copy** of a
+        :class:`TaxonNamespace`, including copies of the member :class:`Taxon`
+        instances, then  this can be achieved using :func:`copy.deepcopy()` or
+        :meth:`TaxonNamespace.clone()`:
+
+        >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
+        >>> tns2 = tns1.clone()
+        >>> tns3 = copy.deepcopy(tns2)
         """
         base.DataObject.__init__(self, label=kwargs.get('label'))
         base.Annotable.__init__(self)
@@ -259,18 +281,11 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         if len(args) > 1:
             raise TypeError("TaxonNamespace() takes at most 1 non-keyword argument ({} given)".format(len(args)))
         elif len(args) == 1:
-            if isinstance(args[0], TaxonNamespace):
-                self.label = kwargs.get('label', args[0].label)
-                memo = {}
-                for t in args[0]:
-                    self.add_taxon(t.fullcopy(memo=memo))
-                self.copy_annotations_from(args[0], memo=memo)
-            else:
-                for i in args[0]:
-                    if isinstance(i, Taxon):
-                        self.add_taxon(i)
-                    else:
-                        self.new_taxon(label=i)
+            for i in args[0]:
+                if isinstance(i, Taxon):
+                    self.add_taxon(i)
+                else:
+                    self.new_taxon(label=i)
 
     ###########################################################################
     ## Identity and Comparison
@@ -284,8 +299,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
     def __hash__(self):
         return id(self)
 
-    def __lt__(self, o):
+    def __lt__(self, other):
         return self._taxa < o._taxa
+
+    def __eq__(self, other):
+        return (self._taxa == other._taxa
+                and self.label == other.label
+                and base.Annotable.__eq__(self, other))
 
     ###########################################################################
     ## Collection Iteration
@@ -1073,6 +1093,12 @@ class Taxon(base.DataObject, base.Annotable):
             label = str(label)
         base.DataObject.__init__(self, label=label)
         base.Annotable.__init__(self)
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
 
     def __lt__(self, other):
         return self.label < other.label

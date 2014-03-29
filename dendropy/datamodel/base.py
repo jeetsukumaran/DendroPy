@@ -477,6 +477,14 @@ class Annotable(object):
         return hasattr(self, "_annotations") and len(self._annotations) > 0
     has_annotations = property(_has_annotations)
 
+    def __eq__(self, other):
+        if ( (not hasattr(self, "_annotations")) and (not hasattr(other, "_annotations")) ):
+            return True
+        elif hasattr(self, "_annotations") and hasattr(other, "_annotations"):
+            return self._annotations == other._annotations
+        else:
+            return False
+
     def copy_annotations_from(self, other):
         if hasattr(other, "_annotations"):
             for annote in other._annotations:
@@ -642,6 +650,10 @@ class AnnotationSet(container.OrderedSet):
     def __init__(self, target, *args):
         container.OrderedSet.__init__(self, *args)
         self.target = target
+
+    def __eq__(self, other):
+        return (self.target == other.target
+                and container.OrderedSet.__eq__(self, other))
 
     def __str__(self):
         return "AnnotationSet([{}])".format(( ", ".join(str(a) for a in self)))

@@ -63,6 +63,19 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         for t in self.taxa:
             self.assertIn(t, tns._taxa)
 
+    def test_initialize_other_taxon_namespace(self):
+        tns1 = TaxonNamespace(self.taxa)
+        tns2 = TaxonNamespace(tns1)
+        self.assertIsNot(tns1, tns2)
+        self.validate_taxon_concepts(tns1, self.taxa_labels)
+        self.validate_taxon_concepts(tns2, self.taxa_labels)
+        for t in self.taxa:
+            self.assertIn(t, tns1._taxa)
+            self.assertIn(t, tns2._taxa)
+        for t1, t2 in zip(tns1, tns2):
+            self.assertIs(t1, t2)
+        self.assertEqual(tns1, tns2)
+
     ### adding ###
 
     def test_basic_adding(self):
