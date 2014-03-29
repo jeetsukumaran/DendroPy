@@ -510,27 +510,36 @@ class Annotable(object):
                 self.annotations.add(a2)
             memo[id(other._annotations)] = self._annotations
 
-    def __deepcopy__(self, memo=None):
-        raise NotImplementedError
-        # # ensure clone map
-        # if memo is None:
-        #     memo = {}
-        # # get or create clone of self
-        # try:
-        #     o = memo[id(self)]
-        # except KeyError:
-        #     # create object without initialization
-        #     # o = type(self).__new__(self.__class__)
-        #     o = self.__class__.__new__(self.__class__)
-        #     # store
-        #     memo[id(self)] = o
-        # # create annotations
-        # if hasattr(self, "_annotations") and id(self._annotations) not in memo:
-        #     o._annotations = copy.deepcopy(self._annotations, memo)
-        #     memo[id(o._annotations)] = self._annotations
+    def __copy__(self):
+        o = self.__class__.__new__(self.__class__)
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            o.__dict__[k] = self.__dict__[k]
+        o.copy_annotations_from(self)
 
-        # # return
-        # return o
+    def __deepcopy__(self, memo=None):
+        # ensure clone map
+        if memo is None:
+            memo = {}
+        # get or create clone of self
+        try:
+            o = memo[id(self)]
+        except KeyError:
+            # create object without initialization
+            # o = type(self).__new__(self.__class__)
+            o = self.__class__.__new__(self.__class__)
+            # store
+            memo[id(self)] = o
+        # copy other attributes first, skipping annotations
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        # create annotations
+        o.deep_copy_annotations_from(self, memo)
+        # return
+        return o
 
 ##############################################################################
 ## Annotation
