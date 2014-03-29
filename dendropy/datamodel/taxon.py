@@ -1084,15 +1084,19 @@ class Taxon(base.DataObject, base.Annotable):
         """
         Parameters
         ----------
-        label : string
-            Label or name of this operational taxonomic unit concept.
+        label : string or :class:`Taxon` object
+            Label or name of this operational taxonomic unit concept. If a
+            string, then the `label` attribute of `self` is set to this value.
+            If a :class:`Taxon` object, then the `label` attribute of `self` is
+            set to the same value as the `label` attribute the other
+            :class:`Taxon` object and all annotations/metadata are copied.
         """
         if isinstance(label, Taxon):
+            self.copy_annotations_from(label)
             label = label.label
         else:
             label = str(label)
         base.DataObject.__init__(self, label=label)
-        base.Annotable.__init__(self)
 
     def __hash__(self):
         return id(self)

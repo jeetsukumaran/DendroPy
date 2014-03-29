@@ -24,48 +24,16 @@ import collections
 import unittest
 import copy
 from dendropy.datamodel import base
+from dendropy.test.support import compare_and_validate
 
-class TestObject(base.Annotable):
+class TestObject(base.Annotable, base.DataObject):
     pass
 
 class DummyX(TestObject):
     def __init__(self, data=None):
         self.data = data
 
-class AnnotableDeepCopyTester(unittest.TestCase):
-
-    def compare_annotables(self, x1, x2):
-        self.assertIsNot(x1, x2)
-        if not x1.has_annotations:
-            self.assertTrue( (not hasattr(x1, "_annotations")) or len(x1._annotations) == 0 )
-            self.assertFalse(x2.has_annotations)
-            self.assertTrue( (not hasattr(x2, "_annotations")) or len(x2._annotations) == 0 )
-            return
-        self.assertTrue( hasattr(x1, "_annotations") and len(x1._annotations) > 0 )
-        self.assertTrue(x2.has_annotations)
-        self.assertTrue( hasattr(x2, "_annotations") and len(x2._annotations) > 0 )
-        self.assertIs(x1._annotations.target, x1)
-        self.assertIs(x2._annotations.target, x2)
-        self.assertIsNot(x1._annotations, x2._annotations)
-        self.assertEqual(len(x1._annotations), len(x2._annotations))
-        for a1, a2 in zip(x1._annotations, x2._annotations):
-            self.assertIsNot(a1, a2)
-            for k in a1.__dict__:
-                self.assertIn(k, a2.__dict__)
-                v1 = a1.__dict__[k]
-                v2 = a2.__dict__[k]
-                if isinstance(v1, TestObject):
-                    self.assertTrue(isinstance(v2, TestObject))
-                    self.assertIsNot(v1, v2)
-                elif isinstance(v1, base.AnnotationSet):
-                    self.assertTrue(isinstance(v2, base.AnnotationSet))
-                    self.assertIs(v1.target, a1)
-                    self.assertIs(v2.target, a2)
-                    for s1, s2 in zip(v1, v2):
-                        self.compare_annotables(s1, s2)
-                else:
-                    self.assertEqual(v1, v2)
-                self.compare_annotables(a1, a2)
+class AnnotableDeepCopyTester(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
     def test_deep_copy(self):
         x1 = DummyX()
