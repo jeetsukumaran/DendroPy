@@ -1096,8 +1096,11 @@ class Taxon(base.DataObject, base.Annotable):
         if isinstance(label, Taxon):
             other_taxon = label
             label = other_taxon.label
-            base.DataObject.__init__(self, label=label)
-            self.deep_copy_annotations_from(other_taxon, memo={id(other_taxon):self})
+            memo={id(other_taxon):self}
+            for k in other_taxon.__dict__:
+                if k != "_annotations":
+                    self.__dict__[k] = copy.deepcopy(other_taxon.__dict__[k], memo=memo)
+            self.deep_copy_annotations_from(other_taxon, memo=memo)
         else:
             label = str(label)
             base.DataObject.__init__(self, label=label)
