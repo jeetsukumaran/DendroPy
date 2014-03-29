@@ -716,8 +716,13 @@ class AnnotationSet(container.OrderedSet):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return (self.target is other.target
-                and container.OrderedSet.__eq__(self, other))
+        return (container.OrderedSet.__eq__(self, other))
+                #and self.target is other.target) # we consider two
+                # AnnotationSet objects equal even if their targets are
+                # different; this is because (a) the target is convenience
+                # artifact, so client code calls to `add_bound_attribute` do
+                # not need to specify an owner, and (b) the target is not part
+                # of the contents of the AnnotationSet
 
     def __str__(self):
         return "AnnotationSet([{}])".format(( ", ".join(str(a) for a in self)))

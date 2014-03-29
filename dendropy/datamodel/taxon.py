@@ -1097,7 +1097,7 @@ class Taxon(base.DataObject, base.Annotable):
             other_taxon = label
             label = other_taxon.label
             base.DataObject.__init__(self, label=label)
-            self.copy_annotations_from(other_taxon)
+            self.deep_copy_annotations_from(other_taxon, memo={id(other_taxon):self})
         else:
             label = str(label)
             base.DataObject.__init__(self, label=label)

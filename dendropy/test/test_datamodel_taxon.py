@@ -95,9 +95,9 @@ class TaxonDeepCopy(compare_and_validate.AnnotableComparator, unittest.TestCase)
         self.compare_annotables(t1, t2)
         t1.label = "x"
         self.assertEqual(t1.annotations[1].value, "x")
-        self.assertEqual(t2.annotations[1].value, "x")
-        t1.label = "z"
-        self.assertEqual(t1.annotations[1].value, "z")
+        self.assertEqual(t2.annotations[1].value, "a")
+        t2.label = "z"
+        self.assertEqual(t1.annotations[1].value, "x")
         self.assertEqual(t2.annotations[1].value, "z")
 
     def test_deepcopy_from_another(self):
