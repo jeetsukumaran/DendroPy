@@ -738,7 +738,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
     def setUp(self):
         self.str_labels = ["a", "a", "b", "c", "d", "e", "_", "_", "_", "z", "z", "z"]
         self.taxa = [ Taxon(label) for label in self.str_labels ]
-        self.tns1 = TaxonNamespace(self.taxa)
+        self.tns1 = TaxonNamespace(self.taxa, label="T1")
 
     def test_construct_from_another(self):
         tns2 = TaxonNamespace(self.tns1)
@@ -748,23 +748,23 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
         for t1, t2 in zip(self.tns1, tns2):
             self.assertIs(t1, t2)
 
-    # def test_construct_from_another_with_simple_annotations(self):
-    #     t1 = Taxon("a")
-    #     t1.annotations.add_new("a", 0)
-    #     t1.annotations.add_new("b", 1)
-    #     t1.annotations.add_new("c", 3)
-    #     t2 = Taxon(t1)
-    #     self.assertIsNot(t1, t2)
-    #     self.assertNotEqual(t1, t2)
-    #     self.assertEqual(t1.label, t2.label)
-    #     self.assertTrue(hasattr(t1, "annotations"))
-    #     self.assertTrue(hasattr(t2, "annotations"))
-    #     self.assertEqual(len(t1.annotations), len(t2.annotations))
-    #     self.compare_annotables(t1, t2)
+    def test_construct_from_another_with_simple_annotations(self):
+        for i, t in enumerate(self.tns1):
+            t.annotations.add_new("a", i)
+            t.annotations.add_new("b", 10000 + i)
+            t.annotations.add_new("c", 100000 + i)
+        self.tns1.annotations.add_new("A", 1)
+        self.tns1.annotations.add_new("B", 2)
+        self.tns1.annotations.add_new("C", 3)
+        tns2 = TaxonNamespace(self.tns1)
+        self.assertIsNot(tns2, self.tns1)
+        self.assertEqual(tns2._taxa, self.tns1._taxa)
+        for t1, t2 in zip(tns2, self.tns1):
+            self.assertIs(t1, t2)
+        self.compare_annotables(tns2, self.tns1)
 
     # def test_construct_from_another_with_complex_annotations(self):
-    #     t1 = Taxon("a")
-    #     t1.annotations.add_new("a", 0)
+    #     self.annotations.add_new("a", 0)
     #     b = t1.annotations.add_new("b", (t1, "label"), is_attribute=True)
     #     b.annotations.add_new("c", 3)
     #     t2 = Taxon(t1)

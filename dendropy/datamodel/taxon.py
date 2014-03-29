@@ -281,11 +281,18 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         if len(args) > 1:
             raise TypeError("TaxonNamespace() takes at most 1 non-keyword argument ({} given)".format(len(args)))
         elif len(args) == 1:
-            for i in args[0]:
+            other = args[0]
+            for i in other:
                 if isinstance(i, Taxon):
                     self.add_taxon(i)
                 else:
                     self.new_taxon(label=i)
+            if isinstance(other, TaxonNamespace):
+                memo = { id(other): self, id(other._taxa): self._taxa }
+                for k in other.__dict__:
+                    if k != "_annotations" and k != "_taxa":
+                        self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
+                self.deep_copy_annotations_from(other, memo=memo)
 
     ###########################################################################
     ## Identity and Comparison
