@@ -303,11 +303,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return self._taxa < o._taxa
 
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return (self.label == other.label
-                and self._taxa == other._taxa
-                and base.Annotable.__eq__(self, other))
+        # enforce non-equivalence of non-identical namespaces
+        return self is other
+        # if not isinstance(other, self.__class__):
+        #     return False
+        # return (self.label == other.label
+        #         and self._taxa == other._taxa
+        #         and base.Annotable.__eq__(self, other))
 
     ###########################################################################
     ## Collection Iteration
