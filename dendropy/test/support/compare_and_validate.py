@@ -36,7 +36,14 @@ class AnnotableComparator(object):
         self.assertEqual(len(x1._annotations), len(x2._annotations))
         for a1, a2 in zip(x1._annotations, x2._annotations):
             self.assertIsNot(a1, a2)
+            if a1.is_attribute:
+                self.assertTrue(a2.is_attribute)
+                self.assertEqual(a1._value[1], a2._value[1])
+            else:
+                self.assertEqual(a1._value, a2._value)
             for k in a1.__dict__:
+                if k == "_value":
+                    continue
                 self.assertIn(k, a2.__dict__)
                 v1 = a1.__dict__[k]
                 v2 = a2.__dict__[k]

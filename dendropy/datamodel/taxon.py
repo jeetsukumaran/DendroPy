@@ -1092,11 +1092,31 @@ class Taxon(base.DataObject, base.Annotable):
             :class:`Taxon` object and all annotations/metadata are copied.
         """
         if isinstance(label, Taxon):
-            self.copy_annotations_from(label)
-            label = label.label
+            other_taxon = label
+            label = other_taxon.label
+            base.DataObject.__init__(self, label=label)
+            self.copy_annotations_from(other_taxon, memo={id(other_taxon):self})
         else:
             label = str(label)
-        base.DataObject.__init__(self, label=label)
+            base.DataObject.__init__(self, label=label)
+
+    def __copy__(self):
+        raise TypeError("Shallow copies of Taxon objects are not allowed")
+
+    def __deepcopy__(self, memo=None):
+        if memo is None:
+            memo = {}
+        try:
+            o = memo[id(self)]
+        except KeyError:
+            # o = type(self).__new__(self.__class__)
+            o = self.__class__.__new__(self.__class__)
+            memo[id(self)] = o
+        for k in self.__dict__:
+            if k != "_annotations":
+                o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        o.copy_annotations_from(self, memo)
+        return o
 
     def __hash__(self):
         return id(self)

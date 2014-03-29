@@ -485,12 +485,17 @@ class Annotable(object):
         else:
             return False
 
-    def copy_annotations_from(self, other):
+    def copy_annotations_from(self, other, memo=None):
         if hasattr(other, "_annotations"):
+            if memo is None:
+                memo = {}
+            # assume that all references to other object should be references
+            # to self?
+            memo[id(other)] = self
             for annote in other._annotations:
-                a2 = copy.deepcopy(annote)
-                if a2.is_attribute and a2.value[0] is other:
-                    a2.value[1] = self
+                a2 = copy.deepcopy(annote, memo)
+                if a2.is_attribute and a2._value[0] is other:
+                    a2._value[0] = self
                 self.annotations.add(a2)
 
     def __deepcopy__(self, memo=None):
@@ -590,7 +595,9 @@ class Annotation(Annotable):
     def __str__(self):
         return "{}='{}'".format(self.name, self.value)
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo=None):
+        if memo is None:
+            memo = {}
         o = Annotable.__deepcopy__(self, memo)
         memo[id(self)] = o
         for k in self.__dict__:
