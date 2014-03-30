@@ -260,16 +260,21 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         >>> print(tns2[0].label)
         >>> Z
 
-        If what is needed is a **full** or **deep-copy** of a
-        :class:`TaxonNamespace`, including copies of the member :class:`Taxon`
-        instances, then  this can be achieved using :func:`copy.deepcopy()` or
-        :meth:`TaxonNamespace.clone()`:
+        In contrast to actual data (i.e., the :class:`Taxon` objects), alll
+        metadata associated with "`tns2`" (i.e., the :class:`AnnotationSet` object,
+        in the :attr:`TaxonNamespace.annotations` attribute), will be a full,
+        independent deep-copy.
 
+        If what is needed is a true deep-copy of the data of a particular
+        :class:`TaxonNamespace` object, including copies of the member
+        :class:`Taxon` instances, then this can be achieved using
+        :func:`copy.deepcopy()`.
+
+        >>> import copy
         >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
-        >>> tns2 = tns1.clone()
-        >>> tns3 = copy.deepcopy(tns2)
+        >>> tns2 = copy.deepcopy(tns1)
         """
-        base.DataObject.__init__(self, label=kwargs.get('label'))
+        base.DataObject.__init__(self, label=kwargs.get('label', None))
         base.Annotable.__init__(self)
         self.is_mutable = kwargs.get('is_mutable', True)
         self._accession_index_taxon_map = {}
@@ -290,9 +295,31 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             if isinstance(other, TaxonNamespace):
                 memo = { id(other): self, id(other._taxa): self._taxa }
                 for k in other.__dict__:
-                    if k != "_annotations" and k != "_taxa":
-                        self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
+                    if k == "_annotations" or k == "_taxa":
+                        continue
+                    if k == "_label" and "label" in kwargs:
+                        continue
+                    self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
                 self.deep_copy_annotations_from(other, memo=memo)
+
+    def __copy__(self):
+        return TaxonNamespace(self)
+
+    def __deepcopy__(self, memo):
+        if memo is None:
+            memo = {}
+        o = self.__class__.__new__(self.__class__)
+        memo[id(self)] = o
+        o._taxa = []
+        memo[id(self._taxa)] = o._taxa
+        for t in self._taxa:
+            o._taxa.append(copy.deepcopy(t, memo))
+        for k in self.__dict__:
+            if k == "_annotations" or k == "_taxa":
+                continue
+            o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        o.deep_copy_annotations_from(self, memo)
+        return o
 
     ###########################################################################
     ## Identity and Comparison
