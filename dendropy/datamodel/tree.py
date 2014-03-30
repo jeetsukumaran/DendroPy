@@ -1710,6 +1710,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     # def __deepcopy__(self, memo):
     #     # we treat the taxa as immutable and copy the reference even in a deepcopy
     #     o = TaxonNamespaceLinked.__deepcopy__(self, memo)
+    #     memo[id(self)] = o
     #     for k, v in self.__dict__.iteritems():
     #         if k not in ['taxon_namespace', "_annotations"]:
     #             o.__dict__[k] = copy.deepcopy(v, memo)

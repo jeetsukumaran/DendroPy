@@ -300,7 +300,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
                     if k == "_label" and "label" in kwargs:
                         continue
                     self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
-                self.copy_annotations_from(other, attribute_object_mapper=memo)
+                self.deep_copy_annotations_from(other, memo=memo)
+                # self.copy_annotations_from(other, attribute_object_mapper=memo)
 
     def __copy__(self):
         return TaxonNamespace(self)
@@ -318,7 +319,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             if k == "_annotations" or k == "_taxa":
                 continue
             o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        o.deep_copy_annotations_from(self, memo)
+        o.deep_copy_annotations_from(self, memo=memo)
+        # o.copy_annotations_from(self, attribute_object_mapper=memo)
         return o
 
     ###########################################################################
@@ -1136,8 +1138,8 @@ class Taxon(base.DataObject, base.Annotable):
             for k in other_taxon.__dict__:
                 if k != "_annotations":
                     self.__dict__[k] = copy.deepcopy(other_taxon.__dict__[k], memo=memo)
-            # self.deep_copy_annotations_from(other_taxon, memo=memo)
-            self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
+            self.deep_copy_annotations_from(other_taxon, memo=memo)
+            # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
             label = str(label)
             base.DataObject.__init__(self, label=label)
@@ -1157,8 +1159,8 @@ class Taxon(base.DataObject, base.Annotable):
         for k in self.__dict__:
             if k != "_annotations":
                 o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        # o.deep_copy_annotations_from(self, memo)
-        o.copy_annotations_from(self, attribute_object_mapper=memo)
+        o.deep_copy_annotations_from(self, memo)
+        # o.copy_annotations_from(self, attribute_object_mapper=memo)
         return o
 
     def __hash__(self):

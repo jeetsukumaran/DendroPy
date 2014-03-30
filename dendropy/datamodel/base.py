@@ -539,11 +539,10 @@ class Annotable(object):
             if attribute_object_mapper is None:
                 attribute_object_mapper = {id(object):self}
             for a1 in other._annotations:
-                a2 = a1.shallow_copy()
+                a2 = a1.clone(attribute_object_mapper=attribute_object_mapper)
                 if a2.is_attribute and a2._value[0] is other:
                     a2._value = (attribute_object_mapper.get(id(other), other), a2._value[1])
                 self.annotations.add(a2)
-
 
     def deep_copy_annotations_from(self, other, memo=None):
         """
@@ -560,7 +559,7 @@ class Annotable(object):
             if memo is None:
                 memo = {}
             for a1 in other._annotations:
-                a2 = a1.deep_copy(memo=memo)
+                a2 = copy.deepcopy(a1, memo=memo)
                 if a2.is_attribute and a1._value[0] is other:
                     a2._value = (self, a1._value[1])
                 self.annotations.add(a2)
@@ -676,22 +675,9 @@ class Annotation(Annotable):
         return "{}='{}'".format(self.name, self.value)
 
     def __copy__(self):
-        return self.shallow_copy()
+        return self.clone()
 
     def __deepcopy__(self, memo=None):
-        return self.deep_copy(memo=memo)
-
-    def shallow_copy(self):
-        o = self.__class__.__new__(self.__class__)
-        if hasattr(self, "_annotations"):
-            o.copy_annotations_from(self)
-        for k in self.__dict__:
-            if k == "_annotations":
-                continue
-            o.__dict__[k] = self.__dict__[k]
-        return o
-
-    def deep_copy(self, memo=None):
         if memo is None:
             memo = {}
         o = self.__class__.__new__(self.__class__)
@@ -699,6 +685,23 @@ class Annotation(Annotable):
         for k in self.__dict__:
             if k not in o.__dict__: # do not add attributes already added by base class
                 o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        return o
+
+    def clone(self, attribute_object_mapper=None):
+        """
+        Essentially a shallow-copy, except that any objects in the `_value`
+        field with an `id` found in `attribute_object_mapper` will be replaced
+        with `attribute_object_mapper[id]`.
+        """
+        o = self.__class__.__new__(self.__class__)
+        if attribute_object_mapper is None:
+            attribute_object_mapper = {id(self):o}
+        if hasattr(self, "_annotations"):
+            o.copy_annotations_from(self)
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            o.__dict__[k] = self.__dict__[k]
         return o
 
     def is_match(self, **kwargs):
