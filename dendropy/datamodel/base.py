@@ -487,15 +487,63 @@ class Annotable(object):
         else:
             return False
 
-    def copy_annotations_from(self, other):
+    def copy_annotations_from(self,
+            other,
+            attribute_object_mapper=None):
+        """
+        Copies annotations from `other`, which must be of :class:`Annotable`
+        type.
+
+        Copies are deep-copies, in that the :class:`Annotation` objects added
+        to the `annotation_set` :class:`AnnotationSet` collection of `self` are
+        independent copies of those in the `annotate_set` collection of
+        `other`. However, dynamic bound-attribute annotations retain references
+        to the original objects as given in `other`, which may or may not be
+        desirable. This is handled by updated the objects to which attributes
+        are bound via mappings found in `attribute_object_mapper`.
+        In dynamic bound-attribute annotations, the `_value` attribute of the
+        annotations object (:attr:`Annotation._value`) is a tuple consisting of
+        "`(obj, attr_name)`", which instructs the :class:`Annotation` object to
+        return "`getattr(obj, attr_name)`" (via: "`getattr(*self._value)`")
+        when returning the value of the Annotation. "`obj`" is typically the object
+        to which the :class:`AnnotationSet` belongs (i.e., `self`). When a copy
+        of :class:`Annotation` is created, the object reference given in the
+        first element of the `_value` tuple of dynamic bound-attribute
+        annotations are unchanged, unless the id of the object reference is fo
+
+        Parameters
+        ----------
+
+        `other` : :class:`Annotable`
+            Source of annotations to copy.
+
+        `attribute_object_mapper` : dict
+            Like the `memo` of `__deepcopy__`, maps object id's to objects. The
+            purpose of this is to update the parent or owner objects of dynamic
+            attribute annotations.
+            If a dynamic attribute :class:`Annotation`
+            gives object `x` as the parent or owner of the attribute (that is,
+            the first element of the :attr:`Annotation._value` tuple is
+            `other`) and `id(x)` is found in `attribute_object_mapper`,
+            then in the copy the owner of the attribute is changed to
+            `attribute_object_mapper[id(x)]`.
+            If `attribute_object_mapper` is `None` (default), then the
+            following mapping is automatically inserted: ``id(other): self``.
+            That is, any references to `other` in any :class:`Annotation`
+            object will be remapped to `self`.  If really no reattribution
+            mappings are desired, then an empty dictionary should be passed
+            instead.
+
+        """
         if hasattr(other, "_annotations"):
+            if attribute_object_mapper is None:
+                attribute_object_mapper = {id(object):self}
             for a1 in other._annotations:
-                # Note: shallow-copy not deep-copy!!!
                 a2 = a1.shallow_copy()
-                # We do not update the attribute object in a shallow ocpy
-                # if a2.is_attribute and a2._value[0] is other:
-                #     a2._value = (self, a2._value[1])
+                if a2.is_attribute and a2._value[0] is other:
+                    a2._value = (attribute_object_mapper.get(id(other), other), a2._value[1])
                 self.annotations.add(a2)
+
 
     def deep_copy_annotations_from(self, other, memo=None):
         """
