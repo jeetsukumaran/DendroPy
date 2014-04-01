@@ -77,6 +77,9 @@ class Edge(base.DataObject, base.Annotable):
     def __hash__(self):
         return id(self)
 
+    def __eq__(self, other):
+        return self is other
+
     def new_edge(self, *args, **kwargs):
         """
         Returns a new edge object of the same class of this edge.
@@ -240,6 +243,10 @@ class Node(base.DataObject, base.Annotable):
 
     def __hash__(self):
         return id(self)
+
+    def __eq__(self, other):
+        ### IMPORTANT LESSON LEARNED: if you define __hash__, you *must* define __eq__
+        return self is other
 
     def __repr__(self):
         return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self.label, repr(self.taxon))
@@ -2986,11 +2993,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                     else:
                         children[0].edge.length += nd.edge.length
                 if nd.parent_node is not None:
-                    pos = nd.parent_node._child_nodes.index(nd)
-                    nd.parent_node.add_child(children[0], pos=pos)
-                    nd.parent_node.remove_child(nd)
+                    parent = nd.parent_node
+                    pos = parent._child_nodes.index(nd)
+                    parent.remove_child(nd)
+                    parent.add_child(children[0], pos=pos)
+                    # assert children[0].parent_node is parent
+                    # assert children[0] in parent._child_nodes
+                    nd.parent_node = None
                 else:
-                    assert nd is self.seed_node
+                    # assert nd is self.seed_node
                     self.seed_node = children[0]
                     self.seed_node.parent_node = None
 
