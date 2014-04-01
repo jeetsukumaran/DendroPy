@@ -34,7 +34,7 @@ from dendropy import dataio
 ##############################################################################
 ## Edge
 
-class Edge(base.Annotable):
+class Edge(base.DataObject, base.Annotable):
     """
     An :term:`edge` on a :term:`tree`.
     """
@@ -66,7 +66,7 @@ class Edge(base.Annotable):
             Label for this edge.
 
         """
-        base.Annotable.__init__(self)
+        base.DataObject.__init__(self, label=label)
         self.tail_node = tail_node
         self.head_node = head_node
         self.rootedge = rootedge
@@ -193,7 +193,7 @@ class Edge(base.Annotable):
 ##############################################################################
 ## Node
 
-class Node(base.Annotable):
+class Node(base.DataObject, base.Annotable):
     """
     A :term:`node` on a :term:`tree`.
     """
@@ -218,8 +218,8 @@ class Node(base.Annotable):
             Length or weight of the edge subtending this node.
 
         """
+        base.DataObject.__init__(self, label=label)
         self.taxon = taxon
-        self.label = label
         self.age = None
         self._edge = None
         self._child_nodes = []
@@ -1523,7 +1523,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             return tree_list[tree_offset]
     _parse_from_stream = classmethod(_parse_from_stream)
 
-    def node_factory(cls, *args, **kwargs):
+    def node_factory(cls, **kwargs):
         """
         Creates and returns a :class:`Node` object.
 
@@ -1532,8 +1532,6 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-        \*args : positional arguments
-            Passed directly to constructor of :class:`Node`.
 
         \*\*kwargs : keyword arguments
             Passed directly to constructor of :class:`Node`.
@@ -1544,7 +1542,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             A new :class:`Node` object.
 
         """
-        return Node(*args, **kwargs)
+        return Node(**kwargs)
     node_factory = classmethod(node_factory)
 
     ###########################################################################
@@ -1679,8 +1677,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             t11.reindex_subcomponent_taxa()
 
         """
+        seed_node = kwargs.pop("seed_node", None)
         super(Tree, self).__init__(*args, **kwargs)
-        self.seed_node = self.node_factory()
+        if seed_node is None:
+            self.seed_node = self.node_factory()
+        else:
+            self.seed_node = seed_node
         self.comments = []
         self._is_rooted = None
         self.weight = None
