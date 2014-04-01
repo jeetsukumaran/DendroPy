@@ -477,16 +477,6 @@ class Annotable(object):
         return hasattr(self, "_annotations") and len(self._annotations) > 0
     has_annotations = property(_has_annotations)
 
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        if ( (not hasattr(self, "_annotations")) and (not hasattr(other, "_annotations")) ):
-            return True
-        elif hasattr(self, "_annotations") and hasattr(other, "_annotations"):
-            return self._annotations == other._annotations
-        else:
-            return False
-
     def copy_annotations_from(self,
             other,
             attribute_object_mapper=None):
