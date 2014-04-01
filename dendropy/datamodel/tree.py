@@ -2975,7 +2975,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def delete_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():
-            children = nd.child_nodes()
+            children = nd._child_nodes
             if len(children) == 1:
                 if nd.edge.length is not None:
                     if children[0].edge.length is None:
@@ -2983,7 +2983,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                     else:
                         children[0].edge.length += nd.edge.length
                 if nd.parent_node is not None:
-                    pos = nd.parent_node.child_nodes().index(nd)
+                    pos = nd.parent_node._child_nodes.index(nd)
                     nd.parent_node.add_child(children[0], pos=pos)
                     nd.parent_node.remove_child(nd)
                 else:
