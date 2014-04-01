@@ -1049,6 +1049,17 @@ class Node(base.DataObject, base.Annotable):
         return [node for node in \
                 self.postorder_iter(lambda x: bool(len(x.child_nodes())==0))]
 
+    def num_child_nodes(self):
+        """
+        Returns number of child nodes.
+
+        Returns
+        -------
+        n : int
+            Number of children in `self`.
+        """
+        return len(self._child_nodes)
+
     def child_nodes(self):
         """
         Returns a shallow-copy list of all child nodes of this node.
