@@ -241,6 +241,9 @@ class Node(base.DataObject, base.Annotable):
     def __hash__(self):
         return id(self)
 
+    def __repr__(self):
+        return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self.label, repr(self.taxon))
+
     ###########################################################################
     ## Iterators
 
@@ -3967,50 +3970,60 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             taxon_namespace = self.taxon_namespace
         if check_splits:
             taxa_mask = self.seed_node.edge.split_bitmask
-        nodes = set()
-        edges = set()
+        nodes = {}
+        edges = {}
         curr_node = self.seed_node
-        assert(curr_node.parent_node is None)
-        assert(curr_node.edge.tail_node is None)
+        assert curr_node.parent_node is None, \
+                "{} is seed node, but has non-`None` parent node: {}".format(curr_node, curr_node.parent_node)
+        assert curr_node.edge.tail_node is None, \
+                "{} is seed node, but edge has non-`None` tail node: {}".format(curr_node, curr_node.edge.parent_node)
         ancestors = []
         siblings = []
         while curr_node:
+            assert curr_node not in nodes, \
+                    "Node {} seen multiple times".format(curr_node)
             curr_edge = curr_node.edge
-            assert(curr_edge not in edges)
-            edges.add(curr_edge)
-            assert(curr_node not in nodes)
-            nodes.add(curr_node)
-            assert(curr_edge.tail_node is curr_node.parent_node)
-            assert(curr_edge.head_node is curr_node)
+            assert curr_edge not in edges, \
+                    "Edge of {}, {}, is also an edge of {}".format(curr_node, curr_node.edge, edges[curr_edge])
+            edges[curr_edge] = curr_node
+            nodes[curr_node] = curr_edge
+            assert curr_edge.head_node is curr_node, \
+                    "Head node of edge of {}, {}, is {}, not {}".format(curr_node, curr_edge, curr_edge.head_node, curr_node)
+            assert curr_edge.tail_node is curr_node.parent_node, \
+                    "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node.parent_node)
             if check_splits:
                 cm = 0
                 split_bitmask = curr_edge.split_bitmask
-                assert((split_bitmask | taxa_mask) == taxa_mask)
-            c = curr_node.child_nodes()
+                assert (split_bitmask | taxa_mask) == taxa_mask, \
+                        "Split mask error: {} (taxa: {})".format(split_bitmask, taxa_mask)
+            c = curr_node._child_nodes
             if c:
                 for child in c:
-                    assert child.parent_node is curr_node
+                    assert child.parent_node is curr_node, \
+                            "Child of {}, {}, has {} as parent".format(curr_node, child, child.parent_node)
                     if check_splits:
                         cm |= child.edge.split_bitmask
             elif check_splits:
-                assert(curr_node.taxon)
+                assert curr_node.taxon is not None, \
+                        "Cannot check splits: {} is a leaf node, but its `taxon` attribute is `None`".format(curr_node)
                 cm = taxon_namespace.taxon_bitmask(curr_node.taxon)
             if check_splits:
-                assert((cm & taxa_mask) == split_bitmask)
-                assert self.split_edges[split_bitmask] == curr_edge
+                assert (cm & taxa_mask) == split_bitmask, \
+                        "Split mask error: {} (taxa: {}, split: {})".format(cm, taxa_mask, split_bitmask)
+                assert self.split_edges[split_bitmask] == curr_edge, \
+                        "Expecting edge {} for split {}, but instead found {}".format(curr_edge, split_bitmask, self.split_edges[split_bitmask])
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
         if check_splits:
             for s, e in self.split_edges.iteritems():
-                assert(e in edges)
+                assert e in edges
         return True
-
-    def _compose_newick(self):
-        return self._as_newick_string(preserve_spaces=True)
 
     def _as_newick_string(self, **kwargs):
         """
-        kwargs["reverse_translate"] can be function that takes a taxon and
-        returns the label to appear in the tree.
+        This returns the Node as a NEWICK statement according to the given
+        formatting rules. This should be used for debugging purposes only.
+        For production purposes, use the the full-fledged 'as_string()'
+        method of the object.
         """
         return self.seed_node._as_newick_string(**kwargs)
 
@@ -4022,6 +4035,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         import sys
         sys.stdout.write(self._as_newick_string(**kwargs))
         sys.stdout.write("\n")
+
+    def _write_newick(self, out, **kwargs):
+        """
+        This returns the Node as a NEWICK statement according to the given
+        formatting rules. This should be used for debugging purposes only.  For
+        production purposes, use the the full-fledged 'write_to_stream()'
+        method of the object.
+        """
+        self.seed_node._write_newick(out, **kwargs)
 
 ##############################################################################
 ## TreeList
