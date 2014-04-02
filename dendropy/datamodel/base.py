@@ -635,25 +635,26 @@ class Annotation(Annotable):
         self.is_hidden = is_hidden
 
     def __eq__(self, o):
-        if not isinstance(o, self.__class__):
-            return False
-        if self._value != o._value:
-            return False
-        if self.is_attribute != o.is_attribute:
-            return False
-        if self.is_attribute and o.is_attribute:
-            if getattr(*self._value) != getattr(*o._value):
-                return False
-        # at this point, we have established that the values
-        # are equal
-        return (self.name == o.name
-                and self._name_prefix == o._name_prefix
-                and self.datatype_hint == o.datatype_hint
-                and self._namespace == o._namespace
-                and self.annotate_as_reference == o.annotate_as_reference
-                and self.is_hidden == o.is_hidden
-                and ( ((not hasattr(self, "_annotations")) and (not hasattr(o, "_annotations")))
-                    or (hasattr(self, "_annotations") and hasattr(o, "_annotations") and self._annotations == o._annotations)))
+        return self is o
+        # if not isinstance(o, self.__class__):
+        #     return False
+        # if self._value != o._value:
+        #     return False
+        # if self.is_attribute != o.is_attribute:
+        #     return False
+        # if self.is_attribute and o.is_attribute:
+        #     if getattr(*self._value) != getattr(*o._value):
+        #         return False
+        # # at this point, we have established that the values
+        # # are equal
+        # return (self.name == o.name
+        #         and self._name_prefix == o._name_prefix
+        #         and self.datatype_hint == o.datatype_hint
+        #         and self._namespace == o._namespace
+        #         and self.annotate_as_reference == o.annotate_as_reference
+        #         and self.is_hidden == o.is_hidden
+        #         and ( ((not hasattr(self, "_annotations")) and (not hasattr(o, "_annotations")))
+        #             or (hasattr(self, "_annotations") and hasattr(o, "_annotations") and self._annotations == o._annotations)))
 
     def __hash__(self):
         return id(self)
