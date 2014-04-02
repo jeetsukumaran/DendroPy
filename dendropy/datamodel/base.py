@@ -146,8 +146,7 @@ class Readable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        fsrc = open(src, "r", newline=None)
-        with fsrc:
+        with open(src, "r", newline=None) as fsrc:
             return cls._parse_from_stream(stream=fsrc,
                     schema=schema,
                     **kwargs)
@@ -337,8 +336,7 @@ class Readable(object):
                 - :class:`CharacterMatrix`: number of sequences
                 - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
-        fsrc = open(filepath, "r", newline=None)
-        with fsrc:
+        with open(filepath, "r", newline=None) as fsrc:
             return self.read(stream=fsrc, schema=schema, **kwargs)
 
     def read_from_string(self, src_str, schema, **kwargs):
@@ -430,8 +428,7 @@ class Writeable(object):
         """
         Writes to file specified by `dest`.
         """
-        f = open(os.path.expandvars(os.path.expanduser(dest)), "w")
-        with f:
+        with open(os.path.expandvars(os.path.expanduser(dest)), "w") as f:
             return self.write(stream=f, schema=schema, **kwargs)
 
     def as_string(self, schema, **kwargs):
