@@ -87,15 +87,22 @@ class Edge(base.DataObject, base.Annotable):
         full, independent instances (though any complex objects in the `value`
         field of :class:`Annotation` objects are also just references).
         """
-        o = self.__class__.__new__(self.__class__)
-        memo[id(self)] = o
+        other = self.__class__.__new__(self.__class__)
+        memo = {}
+        memo[id(self)] = other
         for k in self.__dict__:
             if k == "_annotations":
                 continue
-            o.__dict__[k] = self.__dict__[k]
+            other.__dict__[k] = self.__dict__[k]
             memo[id(k)] = k
-            memo[id(self.__dict__[k])] = o.__dict__[k]
+            memo[id(self.__dict__[k])] = other.__dict__[k]
         self.deep_copy_annotations_from(other, memo=memo)
+
+    def __deepcopy__(self):
+        """
+        Exhaustive deep-copy: all objects are cloned.
+        """
+        raise NotImplementedError
 
     def is_leaf(self):
         "Returns True if the head node has no children"
