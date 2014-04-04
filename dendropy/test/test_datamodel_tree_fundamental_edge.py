@@ -58,19 +58,19 @@ class EdgeIdentity(unittest.TestCase):
 # otherwise setUp will not be called
 class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
-    def test_deepcopy_from_another(self):
+    def test_copy_from_another(self):
         e1 = dendropy.Edge("a")
-        e2 = copy.deepcopy(e1)
+        e2 = copy.copy(e1)
         self.assertIsNot(e1, e2)
         self.assertNotEqual(e1, e2)
         self.assertEqual(e1.label, e2.label)
 
-    def test_deepcopy_from_another_with_simple_annotations(self):
+    def test_copy_from_another_with_simple_annotations(self):
         e1 = dendropy.Edge("a")
         e1.annotations.add_new("a", 0)
         e1.annotations.add_new("b", 1)
         e1.annotations.add_new("c", 3)
-        e2 = copy.deepcopy(e1)
+        e2 = copy.copy(e1)
         self.assertIsNot(e1, e2)
         self.assertNotEqual(e1, e2)
         self.assertEqual(e1.label, e2.label)
@@ -79,12 +79,12 @@ class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
         self.assertEqual(len(e1.annotations), len(e2.annotations))
         self.compare_annotables(e1, e2)
 
-    def test_deepcopy_from_another_with_complex_annotations(self):
+    def test_copy_from_another_with_complex_annotations(self):
         e1 = dendropy.Edge("a")
         e1.annotations.add_new("a", 0)
         b = e1.annotations.add_new("b", (e1, "label"), is_attribute=True)
         b.annotations.add_new("c", 3)
-        e2 = copy.deepcopy(e1)
+        e2 = copy.copy(e1)
         self.assertIsNot(e1, e2)
         self.assertNotEqual(e1, e2)
         self.assertEqual(e1.label, e2.label)

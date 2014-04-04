@@ -96,9 +96,10 @@ class Edge(base.DataObject, base.Annotable):
             other.__dict__[k] = self.__dict__[k]
             memo[id(k)] = k
             memo[id(self.__dict__[k])] = other.__dict__[k]
-        self.deep_copy_annotations_from(other, memo=memo)
+        other.deep_copy_annotations_from(self, memo=memo)
+        return other
 
-    def __deepcopy__(self):
+    def __deepcopy__(self, memo=None):
         """
         Exhaustive deep-copy: all objects are cloned.
         """
