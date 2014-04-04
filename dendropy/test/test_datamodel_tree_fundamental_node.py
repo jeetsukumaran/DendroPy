@@ -35,6 +35,37 @@ class TestNodeConstruction(unittest.TestCase):
         self.assertIs(edge.head_node, nd)
         self.assertIs(edge.tail_node, None)
 
+class NodeIdentity(unittest.TestCase):
+
+    def setUp(self):
+        taxon = dendropy.Taxon("a")
+        self.n1 = dendropy.Node(label="a", taxon=taxon)
+        self.n2 = dendropy.Node(label="a", taxon=taxon)
+
+    def test_equal(self):
+        # two distinct :class:`Node` objects are never equal, even if all
+        # member values are the same.
+        self.assertNotEqual(self.n1, self.n2)
+        self.assertIs(self.n1.taxon, self.n2.taxon)
+
+    def test_hash_dict_membership(self):
+        k = {}
+        k[self.n1] = 1
+        k[self.n2] = 2
+        self.assertEqual(len(k), 2)
+        self.assertEqual(k[self.n1], 1)
+        self.assertEqual(k[self.n2], 2)
+        self.assertIn(self.n1, k)
+        self.assertIn(self.n2, k)
+
+    def test_hash_set_membership(self):
+        k = set()
+        k.add(self.n1)
+        k.add(self.n2)
+        self.assertEqual(len(k), 2)
+        self.assertIn(self.n1, k)
+        self.assertIn(self.n2, k)
+
 class TestNodeSetChildNodes(unittest.TestCase):
 
     def test_set_child_nodes(self):
