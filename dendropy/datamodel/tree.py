@@ -96,6 +96,9 @@ class Edge(base.DataObject, base.Annotable):
         other.deep_copy_annotations_from(self, memo=memo)
         return other
 
+    def __copy__(self):
+        raise NotImplementedError
+
     def taxon_namespace_scoped_copy(self, memo=None):
         raise NotImplementedError
 
@@ -225,39 +228,38 @@ class Node(base.DataObject, base.Annotable):
     ###########################################################################
     ## Life-cycle
 
-    def __init__(self,
-            taxon=None,
-            label=None,
-            edge_length=None):
+    def __init__(self, **kwargs):
         """
-        Parameters
-        ----------
+        Keyword Arguments
+        -----------------
 
-        taxon : :class:`Taxon`
+        taxon : :class:`Taxon`, optional
             The :class:`Taxon` instance representing the operational taxonomic
             unit concept associated with this Node.
-        label : string
+        label : string, optional
             A label for this node.
-        edge_length : numeric
+        edge_length : numeric, optional
             Length or weight of the edge subtending this node.
 
         """
-        base.DataObject.__init__(self, label=label)
-        self.taxon = taxon
+        base.DataObject.__init__(self, label=kwargs.get("label", None))
+        self.taxon = kwargs.get("taxon", None)
         self.age = None
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
-        self.edge = Edge(head_node=self, length=edge_length)
+        self.edge = Edge(head_node=self,
+                length=kwargs.get("edge_length", None))
         self.comments = []
 
-    # def __deepcopy__(self, memo):
-    #     memo[id(self._child_nodes)] = []
-    #     o = TaxonLinked.__deepcopy__(self, memo)
-    #     memo[id(self._child_nodes)] = o._child_nodes
-    #     for c in self._child_nodes:
-    #         o.add_child(copy.deepcopy(c, memo))
-    #     return o
+    def __copy__(self):
+        raise NotImplementedError
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        raise NotImplementedError
+
+    def __deepcopy__(self, memo=None):
+        raise NotImplementedError
 
     ###########################################################################
     ## Identity

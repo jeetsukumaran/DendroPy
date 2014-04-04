@@ -22,6 +22,7 @@ Tests basic Node child management.
 
 import unittest
 import dendropy
+from dendropy.test.support import compare_and_validate
 
 class TestNodeConstruction(unittest.TestCase):
 
@@ -65,6 +66,37 @@ class NodeIdentity(unittest.TestCase):
         self.assertEqual(len(k), 2)
         self.assertIn(self.n1, k)
         self.assertIn(self.n2, k)
+
+class NodeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
+
+    def setUp(self):
+        self.taxa = [dendropy.Taxon(label=label) for label in ["a", "b", "c", "d"]]
+        self.n0 = dendropy.Node(label="0", taxon=self.taxa[0])
+        self.c1 = dendropy.Node(label="1", taxon=None)
+        self.c2 = dendropy.Node(label=None, taxon=self.taxa[1])
+        self.c3 = dendropy.Node(label=None, taxon=None)
+        self.c3 = dendropy.Node(label=None, taxon=self.taxa[2])
+        self.p1 = dendropy.Node(label="-1", taxon=self.taxa[3])
+        self.n0.parent_node = self.p1
+        self.n0.set_child_nodes([self.c1, self.c2])
+        self.c2.set_child_nodes([self.c3])
+        self.nodes = [self.n0, self.c1, self.c2, self.c3, self.p1]
+
+    def test_clone0(self):
+        for focal_node in self.nodes:
+            for clone in (focal_node.clone(0), copy.copy(focal_node)):
+                pass
+
+    def test_clone1(self):
+        for focal_node in self.nodes:
+            for clone in (focal_node.clone(1),
+                    focal_node.taxon_namespace_scoped_copy()):
+                pass
+
+    def test_clone2(self):
+        for focal_node in self.nodes:
+            for clone in (focal_node.clone(2), copy.deepcopy(focal_node)):
+                pass
 
 class TestNodeSetChildNodes(unittest.TestCase):
 

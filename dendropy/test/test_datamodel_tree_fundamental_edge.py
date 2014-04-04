@@ -60,8 +60,8 @@ class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
     def setUp(self):
         self.e0 = dendropy.Edge(label="0", length=1)
-        self.e0.tail_node = dendropy.Node("-1")
-        self.e0.head_node = dendropy.Node("0")
+        self.e0.tail_node = dendropy.Node(label="-1")
+        self.e0.head_node = dendropy.Node(label="0")
         self.e0.rootedge = True
 
     def test_copy_from_another(self):
