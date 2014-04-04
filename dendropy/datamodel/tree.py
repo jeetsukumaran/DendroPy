@@ -74,18 +74,29 @@ class Edge(base.DataObject, base.Annotable):
         self.split_bitmask = None
         self.comments = []
 
-    def __hash__(self):
-        return id(self)
+    def clone(self, level=0):
+        """
+        Creates and returns a copy of `self`.
 
-    def __eq__(self, other):
-        return self is other
+        Parameters
+        ----------
+        level : integer
+            The depth of the copy:
+
+                - 0: shallow-copy: All member objects are references,
+                  except for :attr:`annotation_set` of top-level object and
+                  member :class:`Annotation` objects: these are full,
+                  independent instances (though any complex objects in the
+                  `value` field of :class:`Annotation` objects are also
+                  just references).
+                - 1: referenced-taxon copy: All member objects are full
+                  independent instances, *except* for :class:`TaxonNamespace`
+                  and :class:`Taxon` instances: these are references.
+                - 3: Exhaustive deep-copy: all objects are cloned.
+        """
 
     def __copy__(self):
         """
-        All member objects are references, except for :attr:`annotation_set` of
-        top-level object and member :class:`Annotation` objects: these are
-        full, independent instances (though any complex objects in the `value`
-        field of :class:`Annotation` objects are also just references).
         """
         other = self.__class__.__new__(self.__class__)
         memo = {}
@@ -105,6 +116,13 @@ class Edge(base.DataObject, base.Annotable):
         """
         raise NotImplementedError
 
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
+
     def is_leaf(self):
         "Returns True if the head node has no children"
         return self.head_node and self.head_node.is_leaf()
@@ -120,8 +138,8 @@ class Edge(base.DataObject, base.Annotable):
         """
         Returns a list of all edges that "share" a node with `self`.
         """
-        he = [i for i in self.head_node.get_incident_edges() if i is not self]
-        te = [i for i in self.tail_node.get_incident_edges() if i is not self]
+        he = [i for i in self.head_node.incident_edges() if i is not self]
+        te = [i for i in self.tail_node.incident_edges() if i is not self]
         he.extend(te)
         return he
     adjacent_edges = property(get_adjacent_edges)

@@ -58,44 +58,53 @@ class EdgeIdentity(unittest.TestCase):
 # otherwise setUp will not be called
 class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
+    def setUp(self):
+        self.e0 = dendropy.Edge(label="0", length=1)
+        self.e0.tail_node = dendropy.Node("-1")
+        self.e0.head_node = dendropy.Node("0")
+        self.e0.rootedge = True
+
     def test_copy_from_another(self):
-        e1 = dendropy.Edge("a")
-        e2 = copy.copy(e1)
-        self.assertIsNot(e1, e2)
-        self.assertNotEqual(e1, e2)
-        self.assertEqual(e1.label, e2.label)
+        edge_copy = copy.copy(self.e0)
+        self.assertIsNot(self.e0, edge_copy)
+        self.assertNotEqual(self.e0, edge_copy)
+        self.assertEqual(self.e0.label, edge_copy.label)
+        self.assertEqual(self.e0.length, edge_copy.length)
+        self.assertEqual(self.e0.rootedge, edge_copy.rootedge)
+        self.assertIs(edge_copy.head_node, self.e0.head_node)
+        self.assertIs(edge_copy.tail_node, self.e0.tail_node)
 
     def test_copy_from_another_with_simple_annotations(self):
-        e1 = dendropy.Edge("a")
-        e1.annotations.add_new("a", 0)
-        e1.annotations.add_new("b", 1)
-        e1.annotations.add_new("c", 3)
-        e2 = copy.copy(e1)
-        self.assertIsNot(e1, e2)
-        self.assertNotEqual(e1, e2)
-        self.assertEqual(e1.label, e2.label)
-        self.assertTrue(hasattr(e1, "annotations"))
-        self.assertTrue(hasattr(e2, "annotations"))
-        self.assertEqual(len(e1.annotations), len(e2.annotations))
-        self.compare_annotables(e1, e2)
+        self.e0 = dendropy.Edge("a")
+        self.e0.annotations.add_new("a", 0)
+        self.e0.annotations.add_new("b", 1)
+        self.e0.annotations.add_new("c", 3)
+        edge_copy = copy.copy(self.e0)
+        self.assertIsNot(self.e0, edge_copy)
+        self.assertNotEqual(self.e0, edge_copy)
+        self.assertEqual(self.e0.label, edge_copy.label)
+        self.assertTrue(hasattr(self.e0, "annotations"))
+        self.assertTrue(hasattr(edge_copy, "annotations"))
+        self.assertEqual(len(self.e0.annotations), len(edge_copy.annotations))
+        self.compare_annotables(self.e0, edge_copy)
 
     def test_copy_from_another_with_complex_annotations(self):
-        e1 = dendropy.Edge("a")
-        e1.annotations.add_new("a", 0)
-        b = e1.annotations.add_new("b", (e1, "label"), is_attribute=True)
+        self.e0 = dendropy.Edge("a")
+        self.e0.annotations.add_new("a", 0)
+        b = self.e0.annotations.add_new("b", (self.e0, "label"), is_attribute=True)
         b.annotations.add_new("c", 3)
-        e2 = copy.copy(e1)
-        self.assertIsNot(e1, e2)
-        self.assertNotEqual(e1, e2)
-        self.assertEqual(e1.label, e2.label)
-        self.assertTrue(hasattr(e1, "annotations"))
-        self.assertTrue(hasattr(e2, "annotations"))
-        self.assertEqual(len(e1.annotations), len(e2.annotations))
-        self.compare_annotables(e1, e2)
-        e1.label = "x"
-        e2.label = "y"
-        self.assertEqual(e1.annotations[1].value, "x")
-        self.assertEqual(e2.annotations[1].value, "y")
+        edge_copy = copy.copy(self.e0)
+        self.assertIsNot(self.e0, edge_copy)
+        self.assertNotEqual(self.e0, edge_copy)
+        self.assertEqual(self.e0.label, edge_copy.label)
+        self.assertTrue(hasattr(self.e0, "annotations"))
+        self.assertTrue(hasattr(edge_copy, "annotations"))
+        self.assertEqual(len(self.e0.annotations), len(edge_copy.annotations))
+        self.compare_annotables(self.e0, edge_copy)
+        self.e0.label = "x"
+        edge_copy.label = "y"
+        self.assertEqual(self.e0.annotations[1].value, "x")
+        self.assertEqual(edge_copy.annotations[1].value, "y")
 
 if __name__ == "__main__":
     unittest.main()
