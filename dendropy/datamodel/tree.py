@@ -96,10 +96,10 @@ class Edge(base.DataObject, base.Annotable):
         other.deep_copy_annotations_from(self, memo=memo)
         return other
 
-    def __deepcopy__(self, memo=None):
+    def taxon_namespace_scoped_copy(self, memo=None):
         raise NotImplementedError
 
-    def taxon_namespace_scoped_copy(self, memo=None):
+    def __deepcopy__(self, memo=None):
         raise NotImplementedError
 
     def __hash__(self):
