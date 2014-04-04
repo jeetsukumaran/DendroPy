@@ -294,6 +294,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
                     self.new_taxon(label=i)
             if isinstance(other, TaxonNamespace):
                 memo = { id(other): self, id(other._taxa): self._taxa }
+                for t1, t2 in zip(self._taxa, other._taxa):
+                    memo[id(t2)] = t1
                 for k in other.__dict__:
                     if k == "_annotations" or k == "_taxa":
                         continue
@@ -1145,7 +1147,7 @@ class Taxon(base.DataObject, base.Annotable):
             base.DataObject.__init__(self, label=label)
 
     def __copy__(self):
-        raise TypeError("Shallow copies of Taxon objects are not allowed")
+        return self
 
     def __deepcopy__(self, memo=None):
         if memo is None:

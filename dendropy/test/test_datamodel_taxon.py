@@ -141,8 +141,9 @@ class TaxonCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
 
     def test_simple_copy(self):
         t1 = Taxon("a")
-        with self.assertRaises(TypeError):
-            t2 = copy.copy(t1)
+        self.assertIs(copy.copy(t1), t1)
+        # with self.assertRaises(TypeError):
+        #     t2 = copy.copy(t1)
 
 class TaxonNamespaceTaxonManagement(unittest.TestCase):
 

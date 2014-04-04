@@ -20,11 +20,38 @@
 Tests basic Edge operations.
 """
 
+import copy
 import unittest
 import dendropy
 
 class TestEdge(unittest.TestCase):
-    pass
+
+    def setUp(self):
+        self.e1 = dendropy.Edge("a")
+        self.e2 = dendropy.Edge("a")
+
+    def test_equal(self):
+        # two distinct :class:`Edge` objects are never equal, even if all
+        # member values are the same.
+        self.assertNotEqual(self.e1, self.e2)
+
+    def test_hash_dict_membership(self):
+        k = {}
+        k[self.e1] = 1
+        k[self.e2] = 2
+        self.assertEqual(len(k), 2)
+        self.assertEqual(k[self.e1], 1)
+        self.assertEqual(k[self.e2], 2)
+        self.assertIn(self.e1, k)
+        self.assertIn(self.e2, k)
+
+    def test_hash_set_membership(self):
+        k = set()
+        k.add(self.e1)
+        k.add(self.e2)
+        self.assertEqual(len(k), 2)
+        self.assertIn(self.e1, k)
+        self.assertIn(self.e2, k)
 
 if __name__ == "__main__":
     unittest.main()

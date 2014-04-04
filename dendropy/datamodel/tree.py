@@ -80,12 +80,22 @@ class Edge(base.DataObject, base.Annotable):
     def __eq__(self, other):
         return self is other
 
-    def new_edge(self, *args, **kwargs):
+    def __copy__(self):
         """
-        Returns a new edge object of the same class of this edge.
+        All member objects are references, except for :attr:`annotation_set` of
+        top-level object and member :class:`Annotation` objects: these are
+        full, independent instances (though any complex objects in the `value`
+        field of :class:`Annotation` objects are also just references).
         """
-        edge = self.__class__(*args, **kwargs)
-        return edge
+        o = self.__class__.__new__(self.__class__)
+        memo[id(self)] = o
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            o.__dict__[k] = self.__dict__[k]
+            memo[id(k)] = k
+            memo[id(self.__dict__[k])] = o.__dict__[k]
+        self.deep_copy_annotations_from(other, memo=memo)
 
     def is_leaf(self):
         "Returns True if the head node has no children"
