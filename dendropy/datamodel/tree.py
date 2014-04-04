@@ -74,29 +74,15 @@ class Edge(base.DataObject, base.Annotable):
         self.split_bitmask = None
         self.comments = []
 
-    def clone(self, level=0):
-        """
-        Creates and returns a copy of `self`.
-
-        Parameters
-        ----------
-        level : integer
-            The depth of the copy:
-
-                - 0: shallow-copy: All member objects are references,
-                  except for :attr:`annotation_set` of top-level object and
-                  member :class:`Annotation` objects: these are full,
-                  independent instances (though any complex objects in the
-                  `value` field of :class:`Annotation` objects are also
-                  just references).
-                - 1: referenced-taxon copy: All member objects are full
-                  independent instances, *except* for :class:`TaxonNamespace`
-                  and :class:`Taxon` instances: these are references.
-                - 3: Exhaustive deep-copy: all objects are cloned.
-        """
-
     def __copy__(self):
         """
+        Cloning level: 0.
+
+        All member objects are references, except for :attr:`annotation_set` of
+        top-level object and member :class:`Annotation` objects: these are
+        full, independent instances (though any complex objects in the `value`
+        field of :class:`Annotation` objects are also just references).
+
         """
         other = self.__class__.__new__(self.__class__)
         memo = {}
@@ -111,11 +97,10 @@ class Edge(base.DataObject, base.Annotable):
         return other
 
     def __deepcopy__(self, memo=None):
-        """
-        Exhaustive deep-copy: all objects are cloned.
-        """
         raise NotImplementedError
 
+    def taxon_namespace_scoped_copy(self, memo=None):
+        raise NotImplementedError
 
     def __hash__(self):
         return id(self)

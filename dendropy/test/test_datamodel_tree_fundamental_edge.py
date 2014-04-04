@@ -65,7 +65,7 @@ class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
         self.e0.rootedge = True
 
     def test_copy_from_another(self):
-        edge_copy = copy.copy(self.e0)
+        edge_copy = self.e0.clone(0)
         self.assertIsNot(self.e0, edge_copy)
         self.assertNotEqual(self.e0, edge_copy)
         self.assertEqual(self.e0.label, edge_copy.label)
@@ -79,7 +79,7 @@ class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
         self.e0.annotations.add_new("a", 0)
         self.e0.annotations.add_new("b", 1)
         self.e0.annotations.add_new("c", 3)
-        edge_copy = copy.copy(self.e0)
+        edge_copy = self.e0.clone(0)
         self.assertIsNot(self.e0, edge_copy)
         self.assertNotEqual(self.e0, edge_copy)
         self.assertEqual(self.e0.label, edge_copy.label)
@@ -93,7 +93,7 @@ class EdgeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
         self.e0.annotations.add_new("a", 0)
         b = self.e0.annotations.add_new("b", (self.e0, "label"), is_attribute=True)
         b.annotations.add_new("c", 3)
-        edge_copy = copy.copy(self.e0)
+        edge_copy = self.e0.clone(0)
         self.assertIsNot(self.e0, edge_copy)
         self.assertNotEqual(self.e0, edge_copy)
         self.assertEqual(self.e0.label, edge_copy.label)

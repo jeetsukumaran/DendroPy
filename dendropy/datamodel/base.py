@@ -78,6 +78,45 @@ class DataObject(object):
     #         # setattr(o, k, copy.deepcopy(self.__dict__[k], memo))
     #     return o
 
+    def clone(self, depth=0):
+        """
+        Creates and returns a copy of `self`.
+
+        Parameters
+        ----------
+        depth : integer
+            The depth of the copy:
+
+                - 0: shallow-copy: All member objects are references,
+                  except for :attr:`annotation_set` of top-level object and
+                  member :class:`Annotation` objects: these are full,
+                  independent instances (though any complex objects in the
+                  `value` field of :class:`Annotation` objects are also
+                  just references).
+                - 1: taxon-namespace-scoped copy: All member objects are full
+                  independent instances, *except* for :class:`TaxonNamespace`
+                  and :class:`Taxon` instances: these are references.
+                - 3: Exhaustive deep-copy: all objects are cloned.
+        """
+        if depth == 0:
+            return copy.copy(self)
+        elif depth == 1:
+            return self.taxon_namespace_scoped_copy(memo=None)
+        elif depth == 2:
+            return copy.deepcopy(self)
+        else:
+            raise TypeError("Unsupported cloning depth: {}".format(depth))
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        """
+        Cloning level: 1.
+        Taxon-namespace-scoped copy: All member objects are full independent
+        instances, *except* for :class:`TaxonNamespace` and :class:`Taxon`
+        objects: these are preserved as references.
+        """
+        raise NotImplementedError
+
+
 ##############################################################################
 ## Readable
 

@@ -1,27 +1,27 @@
 
-+--------------------------+-------------------------+-------------------------+-----------------+
-| Object                   | Copy Construction       | copy.copy()             | copy.deepcopy() |
-+==========================+=========================+=========================+=================+
-| :class:`Taxon`           | "total copy"            | <self>                  | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`TaxonNamespace`  | shallow-copy            | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`Node`            | N/A                     | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`Edge`            | N/A                     | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`Tree`            | "referenced-taxon copy" | "referenced-taxon copy" | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`TreeList`        | shallow-copy            | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`CharacterVector` | "referenced-taxon copy" | "reference-taxon copy"  | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`CharacterMatrix` | shallow-copy            | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`DataSet`         | shallow-copy            | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
-| :class:`DataSet`         | shallow-copy            | shallow-copy            | "total copy"    |
-+--------------------------+-------------------------+-------------------------+-----------------+
++--------------------------+-------------------------------+-------------------------------+-----------------+
+| Object                   | Copy Construction             | copy.copy()                   | copy.deepcopy() |
++==========================+===============================+===============================+=================+
+| :class:`Taxon`           | "total copy"                  | <self>                        | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`TaxonNamespace`  | shallow-copy                  | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`Node`            | N/A                           | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`Edge`            | N/A                           | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`Tree`            | "taxon-namespace-scoped copy" | "taxon-namespace-scoped copy" | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`TreeList`        | shallow-copy                  | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`CharacterVector` | "taxon-namespace-scoped copy" | "reference-taxon copy"        | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`CharacterMatrix` | shallow-copy                  | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`DataSet`         | shallow-copy                  | shallow-copy                  | "total copy"    |
+|--------------------------+-------------------------------+-------------------------------+-----------------|
+| :class:`DataSet`         | shallow-copy                  | shallow-copy                  | "total copy"    |
++--------------------------+-------------------------------+-------------------------------+-----------------+
 
 shallow-copy
     All member objects are references, except for :attr:`annotation_set` of
@@ -29,7 +29,7 @@ shallow-copy
     independent instances (though any complex objects in the `value` field of
     :class:`Annotation` objects are also just references).
 
-"referenced-taxon copy"
+"taxon-namespace-scoped copy"
     All member objects are full independent instances, *except* for
     :class:`TaxonNamespace` and :class:`Taxon` instances: these are references.
 
