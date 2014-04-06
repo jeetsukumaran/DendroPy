@@ -103,7 +103,14 @@ class TaxonCloning(compare_and_validate.Comparator, unittest.TestCase):
 
     def test_simple_copy(self):
         t1 = Taxon("a")
-        for t2 in (copy.copy(t1), t1.clone(0), t1.clone(1)):
+        with self.assertRaises(TypeError):
+            copy.copy(t1)
+        with self.assertRaises(TypeError):
+            t1.clone(0)
+
+    def test_taxon_namespace_scoped_copy(self):
+        t1 = Taxon("a")
+        for t2 in (t1.clone(1), t1.taxon_namespace_scoped_copy()):
             self.assertIs(t2, t1)
 
 class TaxonNamespaceTaxonManagement(unittest.TestCase):
@@ -702,11 +709,15 @@ class TaxonNamespaceCloning(compare_and_validate.Comparator, unittest.TestCase):
         self.taxa = [ Taxon(label) for label in self.str_labels ]
         self.tns1 = TaxonNamespace(self.taxa, label="T1")
 
+    def test_taxon_namespace_scoped_copy(self):
+        for tns2 in (self.tns1.clone(1),
+                self.tns1.taxon_namespace_scoped_copy()):
+            self.assertIs(tns2, self.tns1)
+
     def test_construct_from_another(self):
         tns2 = TaxonNamespace(self.tns1)
         for tns2 in (TaxonNamespace(self.tns1),
                 self.tns1.clone(0),
-                self.tns1.clone(1),
                 copy.copy(self.tns1)):
             self.assertIsNot(tns2, self.tns1)
             self.assertEqual(tns2.label, self.tns1.label)
@@ -729,7 +740,6 @@ class TaxonNamespaceCloning(compare_and_validate.Comparator, unittest.TestCase):
     def test_construct_from_changed_label(self):
         for tns2 in (TaxonNamespace(self.tns1),
                 self.tns1.clone(0),
-                self.tns1.clone(1),
                 copy.copy(self.tns1)):
             tns2.label = "T2"
             self.assertNotEqual(tns2.label, self.tns1.label)
@@ -746,7 +756,6 @@ class TaxonNamespaceCloning(compare_and_validate.Comparator, unittest.TestCase):
         self.tns1.annotations.add_new("C", 3)
         for tns2 in (TaxonNamespace(self.tns1),
                 self.tns1.clone(0),
-                self.tns1.clone(1),
                 copy.copy(self.tns1)):
             self.assertIsNot(tns2, self.tns1)
             self.assertEqual(tns2._taxa, self.tns1._taxa)

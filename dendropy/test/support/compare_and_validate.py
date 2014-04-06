@@ -85,7 +85,7 @@ class Comparator(object):
                     self.assertIs(v1.target, a1)
                     self.assertIs(v2.target, a2)
                     for s1, s2 in zip(v1, v2):
-                        self.compare_annotables(s1, s2)
+                        self.compare_distinct_annotables(s1, s2)
                 else:
                     self.assertEqual(v1, v2)
-                self.compare_annotables(a1, a2)
+                self.compare_distinct_annotables(a1, a2)
