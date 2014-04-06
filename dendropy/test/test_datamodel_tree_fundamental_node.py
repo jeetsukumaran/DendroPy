@@ -82,6 +82,18 @@ class NodeCloning(compare_and_validate.Comparator, unittest.TestCase):
         self.n0.set_child_nodes([self.c1, self.c2])
         self.c2.set_child_nodes([self.c3])
         self.nodes = [self.n0, self.c1, self.c2, self.c3, self.p1]
+        for idx, nd in enumerate(self.nodes):
+            if idx % 2 == 0:
+                nd.edge.label = "E{}".format(idx)
+                nd.edge.length = idx
+            an1 = nd.annotations.add_new("a{}".format(idx),
+                    "{}{}{}".format(nd.label, nd.taxon, idx))
+            an2 = nd.annotations.add_bound_attribute("label")
+            an3 = an1.annotations.add_bound_attribute("name")
+            ae1 = nd.edge.annotations.add_new("a{}".format(idx),
+                    "{}{}".format(nd.edge.label, idx))
+            ae2 = nd.edge.annotations.add_bound_attribute("label")
+            ae3 = ae1.annotations.add_bound_attribute("name")
 
     def test_unsupported_copy(self):
         with self.assertRaises(TypeError):
@@ -102,17 +114,6 @@ class NodeCloning(compare_and_validate.Comparator, unittest.TestCase):
                     clone, self.n0,
                     distinct_taxon_objects=True,
                     compare_annotations=True)
-
-    # def test_clone1(self):
-    #     for focal_node in self.nodes:
-    #         for clone in (focal_node.clone(1),
-    #                 focal_node.taxon_namespace_scoped_copy()):
-    #             pass
-
-    # def test_clone2(self):
-    #     for focal_node in self.nodes:
-    #         for clone in (focal_node.clone(2), copy.deepcopy(focal_node)):
-    #             pass
 
 class TestNodeSetChildNodes(unittest.TestCase):
 
