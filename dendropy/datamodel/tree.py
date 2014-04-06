@@ -44,9 +44,6 @@ class Edge(base.DataObject, base.Annotable):
         """
         Keyword Arguments
         -----------------
-        tail_node : :class:`Node`, optional
-            Node from which this edge originates, i.e., the parent node of this
-            edge's `head_node`.
         head_node : :class:`Node`, optional
             Node from to which this edge links, i.e., the child node of this
             node `tail_node`.
@@ -60,14 +57,31 @@ class Edge(base.DataObject, base.Annotable):
         """
         base.DataObject.__init__(self,
                 label=kwargs.pop("label", None))
-        self.tail_node = kwargs.pop("tail_node", None)
-        self.head_node = kwargs.pop("head_node", None)
+        self._head_node = kwargs.pop("head_node", None)
+        if "tail_node" in kwargs:
+            raise TypeError("Setting the tail node directly is no longer supported: instead, set the parent node of the head node")
         self.rootedge = kwargs.pop("rootedge", None)
         self.length = kwargs.pop("length", None)
         if kwargs:
             raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
         self.split_bitmask = None
         self.comments = []
+
+    def _get_tail_node(self):
+        if self._head_node is None:
+            return None
+        return self._head_node._parent_node
+    def _set_tail_node(self, node):
+        if self._head_node is None:
+            raise ValueError("'_head_node' is 'None': cannot assign 'tail_node'")
+        self._head_node._parent_node = node
+    tail_node = property(_get_tail_node, _set_tail_node)
+
+    def _get_head_node(self):
+        return self._head_node
+    def _set_head_node(self, node):
+        self._head_node = node
+    head_node = property(_get_head_node, _set_head_node)
 
     def __copy__(self):
         """
@@ -986,14 +1000,16 @@ class Node(base.DataObject, base.Annotable):
         Returns the edge subtending this node.
         """
         return self._edge
-    def _set_edge(self, edge=None):
+    def _set_edge(self, edge):
         """
         Sets the edge subtending this node, and sets head_node of
         `edge` to point to self.
         """
+        # if edge is None:
+        #     raise ValueError("A Node cannot have 'None' for an edge")
         self._edge = edge
-        if edge:
-            edge.head_node = self
+        if self._edge:
+            self._edge._head_node = self
     edge = property(_get_edge, _set_edge)
 
     def _get_edge_length(self):
@@ -1030,7 +1046,6 @@ class Node(base.DataObject, base.Annotable):
     def _set_parent_node(self, parent):
         """Sets the parent node of this node."""
         self._parent_node = parent
-        self.edge.tail_node = parent
     parent_node = property(_get_parent_node, _set_parent_node)
 
     ###########################################################################
@@ -3266,7 +3281,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         for nd in self.preorder_node_iter():
             if not nd._parent_node:
                 # root node
-                # TODO: stringictly speaking, this might be a terminal if distance_from_root == 0
+                # TODO: strictly speaking, this might be a terminal if distance_from_root == 0
                 pass
             else:
                 if nd.root_distance == distance_from_root:

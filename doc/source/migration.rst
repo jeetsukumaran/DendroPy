@@ -83,6 +83,22 @@ The :class:`Edge` Class
 
 * Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
+* Because `tail_node` is no longer an independent attribute but a dynamic
+  property, bound to :attr:`Node._parent_node` attribute of the `head_node`
+  (see below), the :class:`Edge` constructor does *not* accept ``tail_node`` as
+  an argument.
+
+* The `tail_node` of an :class:`Edge` object is now a dynamic property,
+  referencing the :attr:`Node._parent_node` attribute of the
+  :attr:`Edge._head_node` of the :class:`Edge` object. So, now updating
+  :attr:`Edge._tail_node` of an :class:`Edge` object will set the
+  :attr:`Node._parent_node` of its :attr:`Edge._head_node` to the new value,
+  and vice versa.  This avoids the need for independent book-keeping logic to
+  ensure that :attr:`Node._parent_node` and :attr:`Edge._tail_node` are always
+  synchornized to reference the same :class:`Node` object and all the potential
+  errors this might cause.
+
+
 The :class:`Tree` Class
 =======================
 
