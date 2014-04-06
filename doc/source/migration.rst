@@ -78,6 +78,10 @@ The :class:`Node` Class
 
 * Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
+The :class:`Edge` Class
+=======================
+
+* Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
 The :class:`Tree` Class
 =======================

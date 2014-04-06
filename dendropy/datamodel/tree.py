@@ -26,51 +26,46 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
+import copy
 from dendropy.utility import terminal
 from dendropy.datamodel import base
 from dendropy.datamodel import taxon
 from dendropy import dataio
 
 ##############################################################################
-## Edge
+### Edge
 
 class Edge(base.DataObject, base.Annotable):
     """
     An :term:`edge` on a :term:`tree`.
     """
 
-    def __init__(self,
-            tail_node=None,
-            head_node=None,
-            length=None,
-            rootedge=False,
-            label=None):
+    def __init__(self, **kwargs):
         """
-        Parameters
-        ----------
-        tail_node : :class:`Node`
+        Keyword Arguments
+        -----------------
+        tail_node : :class:`Node`, optional
             Node from which this edge originates, i.e., the parent node of this
             edge's `head_node`.
-
-        head_node : :class:`Node`
+        head_node : :class:`Node`, optional
             Node from to which this edge links, i.e., the child node of this
             node `tail_node`.
-
-        length : numerical
+        length : numerical, optional
             A value representing the weight of the edge.
-
-        rootedge : boolean
+        rootedge : boolean, optional
             Is the child node of this edge the root or seed node of the tree?
-
-        label : string
+        label : string, optional
             Label for this edge.
 
         """
-        base.DataObject.__init__(self, label=label)
-        self.tail_node = tail_node
-        self.head_node = head_node
-        self.rootedge = rootedge
-        self.length = length
+        base.DataObject.__init__(self,
+                label=kwargs.pop("label", None))
+        self.tail_node = kwargs.pop("tail_node", None)
+        self.head_node = kwargs.pop("head_node", None)
+        self.rootedge = kwargs.pop("rootedge", None)
+        self.length = kwargs.pop("length", None)
+        if kwargs:
+            raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
         self.split_bitmask = None
         self.comments = []
 
@@ -97,13 +92,14 @@ class Edge(base.DataObject, base.Annotable):
         return other
 
     def __copy__(self):
-        raise NotImplementedError
+        raise TypeError("Cannot directly shallow-copy Edge")
 
     def taxon_namespace_scoped_copy(self, memo=None):
-        raise NotImplementedError
+        raise TypeError("Cannot directly copy Edge")
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        # call Annotable.__deepcopy__()
+        return super(Edge, self).__deepcopy__(memo=memo)
 
     def __hash__(self):
         return id(self)
@@ -133,7 +129,7 @@ class Edge(base.DataObject, base.Annotable):
     adjacent_edges = property(get_adjacent_edges)
 
     ###########################################################################
-    ## Structural
+    ### Structural
 
     def collapse(self):
         """
@@ -162,7 +158,7 @@ class Edge(base.DataObject, base.Annotable):
         self.head_node, self.tail_node = self.tail_node, self.head_node
 
     ###########################################################################
-    ## Representation
+    ### Representation
 
     def description(self,
             depth=1,
@@ -218,21 +214,20 @@ class Edge(base.DataObject, base.Annotable):
         return s
 
 ##############################################################################
-## Node
+### Node
 
 class Node(base.DataObject, base.Annotable):
     """
-    A :term:`node` on a :term:`tree`.
+    A :term:`Node` on a :term:`Tree`.
     """
 
     ###########################################################################
-    ## Life-cycle
+    ### Life-cycle
 
     def __init__(self, **kwargs):
         """
         Keyword Arguments
         -----------------
-
         taxon : :class:`Taxon`, optional
             The :class:`Taxon` instance representing the operational taxonomic
             unit concept associated with this Node.
@@ -242,40 +237,43 @@ class Node(base.DataObject, base.Annotable):
             Length or weight of the edge subtending this node.
 
         """
-        base.DataObject.__init__(self, label=kwargs.get("label", None))
-        self.taxon = kwargs.get("taxon", None)
+        base.DataObject.__init__(self, label=kwargs.pop("label", None))
+        self.taxon = kwargs.pop("taxon", None)
         self.age = None
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
         self.edge = Edge(head_node=self,
-                length=kwargs.get("edge_length", None))
+                length=kwargs.pop("edge_length", None))
+        if kwargs:
+            raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
         self.comments = []
 
     def __copy__(self):
-        raise NotImplementedError
+        raise TypeError("Cannot directly shallow-copy Node")
 
     def taxon_namespace_scoped_copy(self, memo=None):
-        raise NotImplementedError
+        raise TypeError("Cannot directly copy Node")
 
     def __deepcopy__(self, memo=None):
-        raise NotImplementedError
+        # call Annotable.__deepcopy__()
+        return super(Node, self).__deepcopy__(memo=memo)
 
     ###########################################################################
-    ## Identity
+    ### Identity
 
     def __hash__(self):
         return id(self)
 
     def __eq__(self, other):
-        ### IMPORTANT LESSON LEARNED: if you define __hash__, you *must* define __eq__
+        # IMPORTANT LESSON LEARNED: if you define __hash__, you *must* define __eq__
         return self is other
 
     def __repr__(self):
         return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self.label, repr(self.taxon))
 
     ###########################################################################
-    ## Iterators
+    ### Iterators
 
     def preorder_iter(self, filter_fn=None):
         """
@@ -690,7 +688,7 @@ class Node(base.DataObject, base.Annotable):
                 descending=descending)
 
     ###########################################################################
-    ## Child Node Access and Manipulation
+    ### Child Node Access and Manipulation
 
     def set_child_nodes(self, child_nodes):
         """
@@ -736,10 +734,10 @@ class Node(base.DataObject, base.Annotable):
             The node that was added.
         """
         node.parent_node = self
-        ## Support for this was removed, due to unclear expected behavior when
-        ## `None` is passed: does the client code expect the edge length to be set
-        ## to `None` or simply left untouched? Better approach: client code
-        ## explictly sets the edge.
+        # Support for this was removed, due to unclear expected behavior when
+        # `None` is passed: does the client code expect the edge length to be set
+        # to `None` or simply left untouched? Better approach: client code
+        # explictly sets the edge.
         # if edge_length != None:
         #     node.edge_length = edge_length
         if pos is None:
@@ -885,8 +883,6 @@ class Node(base.DataObject, base.Annotable):
         removed = [(node, self, pos, [], None)]
         node.parent_node = None
         node.edge.tail_node = None
-#             if index > 0:
-#                 self._child_nodes[index-1].next_sib = None
         children.remove(node)
         if suppress_deg_two:
             p = self.parent_node
@@ -932,7 +928,8 @@ class Node(base.DataObject, base.Annotable):
         return removed
 
     def reinsert_nodes(self, nd_connection_list):
-        """This function should be used to "undo" the effects of
+        """
+        This function should be used to "undo" the effects of
         Node.reversible_remove_child NOTE: the behavior is only
         guaranteed if the tree has not been modified between the
         remove_child and reinsert_nodes calls! (or the tree has been
@@ -982,7 +979,7 @@ class Node(base.DataObject, base.Annotable):
         self.set_child_nodes(leaves)
 
     ###########################################################################
-    ## Edge Access and Manipulation
+    ### Edge Access and Manipulation
 
     def _get_edge(self):
         """
@@ -1025,7 +1022,7 @@ class Node(base.DataObject, base.Annotable):
     split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
 
     ###########################################################################
-    ## Parent Access and Manipulation
+    ### Parent Access and Manipulation
 
     def _get_parent_node(self):
         """Returns the parent node of this node."""
@@ -1037,7 +1034,7 @@ class Node(base.DataObject, base.Annotable):
     parent_node = property(_get_parent_node, _set_parent_node)
 
     ###########################################################################
-    ## General Structural Access and Information
+    ### General Structural Access and Information
 
     def is_leaf(self):
         """
@@ -1185,7 +1182,7 @@ class Node(base.DataObject, base.Annotable):
         return self.sibling_nodes()
 
     ###########################################################################
-    ## Metrics
+    ### Metrics
 
     def level(self):
         """
@@ -1271,7 +1268,7 @@ class Node(base.DataObject, base.Annotable):
             return self._distance_from_tip
 
     ###########################################################################
-    ## Representation
+    ### Representation
 
     def description(self, depth=1, indent=0, itemize="", output=None, taxon_namespace=None):
         """
@@ -1330,6 +1327,7 @@ class Node(base.DataObject, base.Annotable):
         return s
 
     ###########################################################################
+    ### Native NEWICK printer
     ## For debugging we build-in a full-fledged NEWICK composition independent
     ## of the nexus/newick family of modules. Client code should prefer to
     ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
@@ -1423,7 +1421,7 @@ class Node(base.DataObject, base.Annotable):
             return tag
 
     ###########################################################################
-    ## alternate representation of tree structure for debugging
+    ### alternate representation of tree structure for debugging
 
     def _get_indented_form(self, **kwargs):
         out = StringIO()
@@ -1458,7 +1456,7 @@ class Node(base.DataObject, base.Annotable):
 
 
 ##############################################################################
-## Tree
+### Tree
 
 class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     """
@@ -1590,7 +1588,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     node_factory = classmethod(node_factory)
 
     ###########################################################################
-    ## Special/Lifecycle methods
+    ### Special/Lifecycle methods
 
     def __init__(self, *args, **kwargs):
         """
@@ -1765,7 +1763,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     #     return o
 
     ###########################################################################
-    ## I/O
+    ### I/O
 
     def read(self, stream, schema, **kwargs):
         """
@@ -1871,7 +1869,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         raise NotImplementedError
 
     ###########################################################################
-    ## Node and Edge Collection Access
+    ### Node and Edge Collection Access
 
     def nodes(self, filter_fn=None):
         """
@@ -1973,7 +1971,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_edge)]
 
     ###########################################################################
-    ## Node Finders
+    ### Node Finders
 
     def find_node(self, filter_fn):
         """
@@ -2201,7 +2199,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             return last_match
 
     ###########################################################################
-    ## Node iterators
+    ### Node iterators
 
     def __iter__(self):
         """
@@ -2468,7 +2466,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 descending=descending)
 
     ###########################################################################
-    ## Edge iterators
+    ### Edge iterators
 
     def preorder_edge_iter(self, filter_fn=None):
         """
@@ -2694,7 +2692,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             yield nd.edge
 
     ###########################################################################
-    ## Taxa Management
+    ### Taxa Management
 
     def infer_taxa(self):
         """
@@ -2764,7 +2762,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                     nd.taxon = self.taxon_namespace.require_taxon(label=label)
 
     ###########################################################################
-    ## Structure
+    ### Structure
 
     def _get_rooting_state_is_undefined(self):
         return self._is_rooted is None
@@ -3289,7 +3287,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         treesplit.encode_splits(self, **kwargs)
 
     ###########################################################################
-    ## Ages, depths, branch lengths etc. (mutation)
+    ### Ages, depths, branch lengths etc. (mutation)
 
     def scale_edges(self, edge_len_multiplier):
         """Multiplies every edge length in `self` by `edge_len_multiplier`"""
@@ -3320,7 +3318,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 nd.edge.length = nd.parent_node.age - nd.age
 
     ###########################################################################
-    ## Ages, depths, branch lengths etc. (calculation)
+    ### Ages, depths, branch lengths etc. (calculation)
 
     def calc_node_ages(self, check_prec=0.0000001):
         """
@@ -3436,7 +3434,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return num_lineages
 
     ###########################################################################
-    ## Metrics -- Unary
+    ### Metrics -- Unary
 
     def B1(self):
         """
@@ -3631,7 +3629,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return internal/(external + internal)
 
     ###########################################################################
-    ## Metrics -- Comparative
+    ### Metrics -- Comparative
 
     def find_missing_splits(self, other_tree):
         """
@@ -3712,7 +3710,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         pass
 
     ###########################################################################
-    ## Metadata
+    ### Metadata
 
     def strip_comments(self):
         """
@@ -3724,7 +3722,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             nd.edge.comments = []
 
     ###########################################################################
-    ## Representation
+    ### Representation
 
     def __str__(self):
         "Dump Newick string."
@@ -3856,7 +3854,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return "\n".join(p)
 
     ###########################################################################
-    ## Representation
+    ### Representation
 
     def as_ascii_plot(self, **kwargs):
         """
@@ -3958,7 +3956,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         out.write("}\n")
 
     ###########################################################################
-    ## Debugging/Testing
+    ### Debugging/Testing
 
     def _assign_node_labels_from_taxon(self):
         for nd in self.postorder_node_iter():
@@ -4080,7 +4078,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         self.seed_node._write_newick(out, **kwargs)
 
 ##############################################################################
-## TreeList
+### TreeList
 
 class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.Writeable):
     """
@@ -4249,7 +4247,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
     tree_factory = classmethod(tree_factory)
 
     ###########################################################################
-    ## Special/Lifecycle methods
+    ### Special/Lifecycle methods
 
     def __init__(self, *args, **kwargs):
         """
@@ -4333,7 +4331,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
         self._trees = []
 
     ###########################################################################
-    ## Representation
+    ### Representation
 
     # def __str__(self):
     #     return "[{}]".format(", ".join([str(i) for i in self._taxa]))
@@ -4345,7 +4343,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
     #     return id(self)
 
     ###########################################################################
-    ## Data I/O
+    ### Data I/O
 
     def _taxon_namespace_pseudofactory(self, *args, **kwargs):
         """
@@ -4456,7 +4454,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
         return new_size - cur_size
 
     ###########################################################################
-    ## List Interface
+    ### List Interface
 
     # def __cmp__(self, o):
     #     return list.__cmp__(self._taxa, o._taxa)
@@ -4536,7 +4534,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
         return tree
 
 ###############################################################################
-## AsciiTreePlot
+### AsciiTreePlot
 
 class AsciiTreePlot(object):
 
@@ -4580,15 +4578,6 @@ class AsciiTreePlot(object):
     def _calc_node_offsets(self, tree):
         if self.plot_metric == 'age' or self.plot_metric == 'depth':
 
-            ## for verification ...
-#            tree.calc_node_ages(check_prec=False)
-#            for nd in tree.postorder_node_iter():
-#                self.node_offset[nd] = nd.age
-#            flipped_origin = max(self.node_offset.values())
-#            for nd in self.node_offset:
-#                self.node_offset[nd] = flipped_origin - self.node_offset[nd]
-#            return
-
             for nd in tree.postorder_node_iter():
                 cnds = nd.child_nodes()
                 if self.plot_metric == 'depth': # 'number of branchings from tip'
@@ -4597,7 +4586,6 @@ class AsciiTreePlot(object):
                     else:
                         depths = [self.node_offset[v] for v in cnds]
                         curr_node_offset = max(depths) + 1
-#                        print curr_node_offset, [self.node_offset[v] for v in cnds]
                 elif self.plot_metric == 'age': # 'sum of edge weights from tip'
                     # note: no enforcement of ultrametricity!
                     if len(cnds) == 0:
@@ -4605,10 +4593,6 @@ class AsciiTreePlot(object):
                     else:
                         if cnds[0].edge.length is not None:
                             curr_node_offset = self.node_offset[cnds[0]] + cnds[0].edge.length
-#                        if len(elens) == 0:
-#                            curr_node_offset = self.node_offset[cnds[0]]
-#                        else:
-#                            curr_node_offset = max(elens) + self.node_offset[cnds[0]]
                 else:
                     raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
                 self.node_offset[nd] = curr_node_offset
@@ -4745,7 +4729,7 @@ class AsciiTreePlot(object):
             pass
 
 ###############################################################################
-## Helper Functions
+### Helper Functions
 
 def _preorder_list_manip(n, siblings, ancestors):
     """

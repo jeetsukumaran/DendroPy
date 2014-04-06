@@ -22,6 +22,7 @@ Tests basic Node child management.
 
 import unittest
 import dendropy
+import copy
 from dendropy.test.support import compare_and_validate
 
 class TestNodeConstruction(unittest.TestCase):
@@ -82,21 +83,41 @@ class NodeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
         self.c2.set_child_nodes([self.c3])
         self.nodes = [self.n0, self.c1, self.c2, self.c3, self.p1]
 
-    def test_clone0(self):
-        for focal_node in self.nodes:
-            for clone in (focal_node.clone(0), copy.copy(focal_node)):
-                pass
+    def test_unsupported_copy(self):
+        with self.assertRaises(TypeError):
+            self.n0.clone(0)
+        with self.assertRaises(TypeError):
+            copy.copy(self.n0)
+        with self.assertRaises(TypeError):
+            self.n0.clone(1)
+        with self.assertRaises(TypeError):
+            self.n0.taxon_namespace_scoped_copy()
 
-    def test_clone1(self):
-        for focal_node in self.nodes:
-            for clone in (focal_node.clone(1),
-                    focal_node.taxon_namespace_scoped_copy()):
-                pass
+    def test_deepcopy(self):
+        for clone in (
+                self.n0.clone(2),
+                copy.deepcopy(self.n0),
+                ):
+            self.assertIsNot(clone, self.n0)
+            self.assertEqual(clone.label, self.n0.label)
+            self.assertIsNot(clone.taxon, self.n0.taxon)
+            self.assertIsNot(clone.edge, self.n0.edge)
+            self.assertIsNot(clone.parent_node, self.p1)
+            self.assertIsNot(clone._child_nodes, self.n0._child_nodes)
+            for ch1 in clone._child_nodes:
+                self.assertNotIn(ch1, self.n0._child_nodes)
+            self.compare_annotables(clone, self.n0)
 
-    def test_clone2(self):
-        for focal_node in self.nodes:
-            for clone in (focal_node.clone(2), copy.deepcopy(focal_node)):
-                pass
+    # def test_clone1(self):
+    #     for focal_node in self.nodes:
+    #         for clone in (focal_node.clone(1),
+    #                 focal_node.taxon_namespace_scoped_copy()):
+    #             pass
+
+    # def test_clone2(self):
+    #     for focal_node in self.nodes:
+    #         for clone in (focal_node.clone(2), copy.deepcopy(focal_node)):
+    #             pass
 
 class TestNodeSetChildNodes(unittest.TestCase):
 

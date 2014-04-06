@@ -309,7 +309,9 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return TaxonNamespace(self)
 
     def taxon_namespace_scoped_copy(self, memo=None):
-        return TaxonNamespace(self)
+        if memo is not None:
+            memo[id(self)] = self
+        return self
 
     def __deepcopy__(self, memo):
         if memo is None:
@@ -1150,7 +1152,8 @@ class Taxon(base.DataObject, base.Annotable):
             base.DataObject.__init__(self, label=label)
 
     def __copy__(self):
-        return self
+        raise TypeError("Cannot shallow-copy Taxon")
+        # return self
 
     def taxon_namespace_scoped_copy(self, memo=None):
         return self
