@@ -34,7 +34,6 @@ from dendropy.utility import bibtex
 
 ##############################################################################
 ## DataObject
-
 class DataObject(object):
 
     """

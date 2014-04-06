@@ -89,7 +89,6 @@ from dendropy.utility import error
 
 ##############################################################################
 ## Helper functions
-
 def taxon_set_deprecation_warning():
     error.dump_stack()
     warnings.warn("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
@@ -107,7 +106,6 @@ def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
 
 ##############################################################################
 ## TaxonAssociated
-
 class TaxonAssociated(base.DataObject):
 
     def __init__(self, **kwargs):
@@ -119,7 +117,6 @@ class TaxonAssociated(base.DataObject):
 
 ##############################################################################
 ## TaxonNamespaceAssociated
-
 class TaxonNamespaceAssociated(base.DataObject):
     """
     Provides infrastructure for the maintenance of references to taxa.
@@ -132,7 +129,6 @@ class TaxonNamespaceAssociated(base.DataObject):
         else:
             self.taxon_namespace = kwargs["taxon_namespace"]
 
-    ## for legacy
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
         taxon_set_deprecation_warning()
@@ -170,7 +166,6 @@ class TaxonNamespaceAssociated(base.DataObject):
 
 ##############################################################################
 ## TaxonNamespace
-
 class TaxonNamespace(base.DataObject, base.Annotable):
     """
     A collection of :class:`Taxon` objects representing a self-contained and complete
@@ -180,8 +175,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
     can be related.
     """
 
-    ###########################################################################
-    ## Life-cycle
+    ### Life-cycle
 
     def __init__(self, *args, **kwargs):
         """
@@ -330,8 +324,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         # o.copy_annotations_from(self, attribute_object_mapper=memo)
         return o
 
-    ###########################################################################
-    ## Identity and Comparison
+    ### Identity and Comparison
 
     def __str__(self):
         return "[{}]".format(", ".join([str(i) for i in self._taxa]))
@@ -354,8 +347,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         #         and self._taxa == other._taxa
         #         and base.Annotable.__eq__(self, other))
 
-    ###########################################################################
-    ## Collection Iteration
+    ### Collection Iteration
 
     def __iter__(self):
         return iter(self._taxa)
@@ -363,8 +355,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
     def __reversed__(self):
         return reversed(self._taxa)
 
-    ###########################################################################
-    ## Collection Data
+    ### Collection Data
 
     def __len__(self):
         """
@@ -372,8 +363,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         return len(self._taxa)
 
-    ###########################################################################
-    ## Collection Access and Management
+    ### Collection Access and Management
 
     def __getitem__(self, key):
         """
@@ -396,8 +386,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         # look-up in dictionary for O(1) instead of O(n) in list
         return taxon in self._taxon_accession_index_map
 
-    ###########################################################################
-    ## Adding Taxa
+    ### Adding Taxa
 
     def add_taxon(self, taxon):
         """
@@ -422,13 +411,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             :attr:`TaxonNamespace.is_mutable` is `False`).
 
         """
-        ### NOTE
-        ### Previously, this was:
-        ###
-        ###     if taxon in self._taxa:
-        ###
-        ### Changing the membership lookup to dictionaries resulted in 10x
-        ### increase in speed!!!!
+        # NOTE
+        # Previously, this was:
+        #
+        #     if taxon in self._taxa:
+        #
+        # Changing the membership lookup to dictionaries resulted in 10x
+        # increase in speed!!!!
         if taxon in self._taxon_accession_index_map:
             return
         if not self.is_mutable:
@@ -515,8 +504,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             taxa.append(self.new_taxon(label=label))
         return taxa
 
-    ###########################################################################
-    ## Removing Taxa
+    ### Removing Taxa
 
     def remove_taxon(self, taxon):
         """
@@ -619,8 +607,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         self._taxon_bitmask_map.clear()
         self._bitmask_taxon_map.clear()
 
-    ###########################################################################
-    ## Look-up and Retrieval of Taxa
+    ### Look-up and Retrieval of Taxa
 
     def _lookup_label(self,
             label,
@@ -873,8 +860,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         taxon = self.new_taxon(label=label)
         return taxon
 
-    ###########################################################################
-    ## Taxon Ordering
+    ### Taxon Ordering
 
     def sort(self, key=None, reverse=False):
         """
@@ -900,8 +886,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         self._taxa.reverse()
 
-    ###########################################################################
-    ## Summarization of Collection
+    ### Summarization of Collection
 
     def labels(self):
         """
@@ -944,8 +929,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             d[t.label] = t
         return d
 
-    ###########################################################################
-    ## Split Management
+    ### Split Management
 
     def complement_split_bitmask(self, split_bitmask):
         """
@@ -1104,7 +1088,6 @@ class TaxonNamespace(base.DataObject, base.Annotable):
 
 ##############################################################################
 ## TaxonSet
-
 class TaxonSet(TaxonNamespace):
     """
     This class is present for (temporary!) legacy support of code written under
@@ -1121,7 +1104,6 @@ class TaxonSet(TaxonNamespace):
 
 ##############################################################################
 ## Taxon
-
 class Taxon(base.DataObject, base.Annotable):
     """
     A taxon associated with a sequence or a node on a tree.
