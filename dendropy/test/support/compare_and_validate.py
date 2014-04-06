@@ -18,9 +18,39 @@
 
 from dendropy.datamodel import base
 
-class AnnotableComparator(object):
 
-    def compare_annotables(self, x1, x2):
+class Comparator(object):
+
+    def compare_distinct_nodes(self,
+            x1, x2,
+            distinct_taxon_objects=True,
+            compare_annotations=True):
+        self.assertIsNot(x1, x2)
+        taxon1 = x1.taxon
+        taxon2 = x2.taxon
+        if distinct_taxon_objects:
+            if taxon1 is None or taxon2 is None:
+                self.assertIs(taxon1, None)
+                self.assertIs(taxon2, None)
+            else:
+                self.assertIsNot(taxon1, taxon2)
+                self.assertEqual(taxon1.label, taxon2.label)
+                if compare_annotations:
+                    self.compare_distinct_annotables(taxon1, taxon2)
+        else:
+            self.assertIs(taxon1, taxon2)
+        self.assertIsNot(x1.edge, x2.edge)
+        self.assertIs(x1.edge.head_node, x1)
+        self.assertIs(x2.edge.head_node, x2)
+        self.assertIsNot(x1.edge.tail_node, x2.edge.tail_node)
+        self.assertEqual(x1.edge.tail_node.label, x2.edge.tail_node.label)
+        self.assertEqual(len(x1._child_nodes), len(x2._child_nodes))
+        for c1, c2 in zip(x1._child_nodes, x2._child_nodes):
+            self.compare_distinct_nodes(c1, c2,
+                    distinct_taxon_objects=distinct_taxon_objects,
+                    compare_annotations=compare_annotations)
+
+    def compare_distinct_annotables(self, x1, x2):
         self.assertIsNot(x1, x2)
         if not x1.has_annotations:
             self.assertTrue( (not hasattr(x1, "_annotations")) or len(x1._annotations) == 0 )

@@ -26,7 +26,7 @@ import copy
 from dendropy import Taxon, TaxonNamespace
 from dendropy.test.support import compare_and_validate
 
-class TaxonIdentity(compare_and_validate.AnnotableComparator, unittest.TestCase):
+class TaxonIdentity(compare_and_validate.Comparator, unittest.TestCase):
 
     def setUp(self):
         self.t1 = Taxon("a")
@@ -55,9 +55,9 @@ class TaxonIdentity(compare_and_validate.AnnotableComparator, unittest.TestCase)
         self.assertIn(self.t1, k)
         self.assertIn(self.t2, k)
 
-# note that compare_and_validate.AnnotableComparator must be listed first,
+# note that compare_and_validate.Comparator must be listed first,
 # otherwise setUp will not be called
-class TaxonCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
+class TaxonCloning(compare_and_validate.Comparator, unittest.TestCase):
 
     def test_construct_from_another(self):
         t1 = Taxon("a")
@@ -78,7 +78,7 @@ class TaxonCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
             self.assertTrue(hasattr(t1, "annotations"))
             self.assertTrue(hasattr(t2, "annotations"))
             self.assertEqual(len(t1.annotations), len(t2.annotations))
-            self.compare_annotables(t1, t2)
+            self.compare_distinct_annotables(t1, t2)
 
     def test_construct_from_another_with_complex_annotations(self):
         t1 = Taxon("a")
@@ -92,7 +92,7 @@ class TaxonCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
             self.assertTrue(hasattr(t1, "annotations"))
             self.assertTrue(hasattr(t2, "annotations"))
             self.assertEqual(len(t1.annotations), len(t2.annotations))
-            self.compare_annotables(t1, t2)
+            self.compare_distinct_annotables(t1, t2)
             t1.label = "x"
             self.assertEqual(t1.annotations[1].value, "x")
             self.assertEqual(t2.annotations[1].value, "a")
@@ -693,9 +693,9 @@ class TaxonNamespaceIdentity(unittest.TestCase):
         self.assertIn(self.tns1, k)
         self.assertIn(self.tns2, k)
 
-# note that compare_and_validate.AnnotableComparator must be listed first,
+# note that compare_and_validate.Comparator must be listed first,
 # otherwise setUp will not be called
-class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
+class TaxonNamespaceCloning(compare_and_validate.Comparator, unittest.TestCase):
 
     def setUp(self):
         self.str_labels = ["a", "a", "b", "c", "d", "e", "_", "_", "_", "z", "z", "z"]
@@ -713,7 +713,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             self.assertEqual(tns2._taxa, self.tns1._taxa)
             for t1, t2 in zip(self.tns1, tns2):
                 self.assertIs(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_construct_from_another_different_label(self):
         tns2 = TaxonNamespace(self.tns1, label="T2")
@@ -724,7 +724,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
         self.assertEqual(tns2._taxa, self.tns1._taxa)
         for t1, t2 in zip(self.tns1, tns2):
             self.assertIs(t1, t2)
-        self.compare_annotables(tns2, self.tns1)
+        self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_construct_from_changed_label(self):
         for tns2 in (TaxonNamespace(self.tns1),
@@ -738,7 +738,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             self.assertEqual(tns2._taxa, self.tns1._taxa)
             for t1, t2 in zip(self.tns1, tns2):
                 self.assertIs(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_construct_from_another_with_simple_annotations(self):
         self.tns1.annotations.add_new("A", 1)
@@ -752,7 +752,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             self.assertEqual(tns2._taxa, self.tns1._taxa)
             for t1, t2 in zip(tns2, self.tns1):
                 self.assertIs(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_construct_from_another_with_complex_annotations(self):
         self.tns1.annotations.add_new("a", 0)
@@ -766,7 +766,7 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             self.assertEqual(tns2._taxa, self.tns1._taxa)
             for t1, t2 in zip(tns2, self.tns1):
                 self.assertIs(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_deepcopy_from_another(self):
         for tns2 in (copy.deepcopy(self.tns1),
@@ -777,8 +777,8 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             for t1, t2 in zip(self.tns1, tns2):
                 self.assertIsNot(t1, t2)
                 self.assertEqual(t1.label, t2.label)
-                self.compare_annotables(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+                self.compare_distinct_annotables(t1, t2)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_deepcopy_from_another_with_simple_annotations(self):
         self.tns1.annotations.add_new("a", 0)
@@ -792,8 +792,8 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             for t1, t2 in zip(self.tns1, tns2):
                 self.assertIsNot(t1, t2)
                 self.assertEqual(t1.label, t2.label)
-                self.compare_annotables(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+                self.compare_distinct_annotables(t1, t2)
+            self.compare_distinct_annotables(tns2, self.tns1)
 
     def test_deepcopy_from_another_with_complex_annotations(self):
         self.tns1.annotations.add_new("a", 0)
@@ -807,8 +807,8 @@ class TaxonNamespaceCloning(compare_and_validate.AnnotableComparator, unittest.T
             for t1, t2 in zip(self.tns1, tns2):
                 self.assertIsNot(t1, t2)
                 self.assertEqual(t1.label, t2.label)
-                self.compare_annotables(t1, t2)
-            self.compare_annotables(tns2, self.tns1)
+                self.compare_distinct_annotables(t1, t2)
+            self.compare_distinct_annotables(tns2, self.tns1)
             self.tns1.label = "x"
             tns2.label = "y"
             self.assertEqual(self.tns1.annotations[1].value, "x")

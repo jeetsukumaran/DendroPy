@@ -33,7 +33,7 @@ class DummyX(TestObject):
     def __init__(self, data=None):
         self.data = data
 
-class AnnotableDeepCopyTester(compare_and_validate.AnnotableComparator, unittest.TestCase):
+class AnnotableDeepCopyTester(compare_and_validate.Comparator, unittest.TestCase):
 
     def test_deep_copy(self):
         x1 = DummyX()
@@ -41,7 +41,7 @@ class AnnotableDeepCopyTester(compare_and_validate.AnnotableComparator, unittest
         a2 = x1.annotations.add_new(name="a2", value="2")
         a3 = x1.annotations.add_new(name="a3", value="3")
         x2 = copy.deepcopy(x1)
-        self.compare_annotables(x1, x2)
+        self.compare_distinct_annotables(x1, x2)
 
     def test_nested_deep_copy(self):
         x1 = DummyX()
@@ -52,7 +52,7 @@ class AnnotableDeepCopyTester(compare_and_validate.AnnotableComparator, unittest
         a5 = a3.annotations.add_new(name="a5", value="5")
         a6 = a5.annotations.add_new(name="a6", value="6")
         x2 = copy.deepcopy(x1)
-        self.compare_annotables(x1, x2)
+        self.compare_distinct_annotables(x1, x2)
 
 
 if __name__ == "__main__":

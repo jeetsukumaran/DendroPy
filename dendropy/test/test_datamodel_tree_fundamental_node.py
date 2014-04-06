@@ -68,7 +68,7 @@ class NodeIdentity(unittest.TestCase):
         self.assertIn(self.n1, k)
         self.assertIn(self.n2, k)
 
-class NodeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
+class NodeCloning(compare_and_validate.Comparator, unittest.TestCase):
 
     def setUp(self):
         self.taxa = [dendropy.Taxon(label=label) for label in ["a", "b", "c", "d"]]
@@ -98,15 +98,10 @@ class NodeCloning(compare_and_validate.AnnotableComparator, unittest.TestCase):
                 self.n0.clone(2),
                 copy.deepcopy(self.n0),
                 ):
-            self.assertIsNot(clone, self.n0)
-            self.assertEqual(clone.label, self.n0.label)
-            self.assertIsNot(clone.taxon, self.n0.taxon)
-            self.assertIsNot(clone.edge, self.n0.edge)
-            self.assertIsNot(clone.parent_node, self.p1)
-            self.assertIsNot(clone._child_nodes, self.n0._child_nodes)
-            for ch1 in clone._child_nodes:
-                self.assertNotIn(ch1, self.n0._child_nodes)
-            self.compare_annotables(clone, self.n0)
+            self.compare_distinct_nodes(
+                    clone, self.n0,
+                    distinct_taxon_objects=True,
+                    compare_annotations=True)
 
     # def test_clone1(self):
     #     for focal_node in self.nodes:
