@@ -633,7 +633,7 @@ class Node(base.DataObject, base.Annotable):
             yield self
         node = self
         while node is not None:
-            node = node.parent_node
+            node = node._parent_node
             if node is not None \
                    and (filter_fn is None or filter_fn(node)):
                 yield node
@@ -684,7 +684,7 @@ class Node(base.DataObject, base.Annotable):
         #         next_el = queued_pairs.pop(0)
         #         age, nd = next_el
         #         in_queue.remove(nd)
-        #         p = nd.parent_node
+        #         p = nd._parent_node
         #         if p and p not in in_queue:
         #             age_nd_tuple = (p.age, p)
         #             queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
@@ -736,8 +736,7 @@ class Node(base.DataObject, base.Annotable):
         """
         self._child_nodes = list(child_nodes)
         for nd in self._child_nodes:
-            nd.parent_node = self
-            nd.edge.tail_node = self
+            nd._parent_node = self
 
     def set_children(self, child_nodes):
         """Deprecated: use :meth:`Node.set_child_nodes()` instead."""
@@ -763,7 +762,7 @@ class Node(base.DataObject, base.Annotable):
         node : :class:`Node`
             The node that was added.
         """
-        node.parent_node = self
+        node._parent_node = self
         # Support for this was removed, due to unclear expected behavior when
         # `None` is passed: does the client code expect the edge length to be set
         # to `None` or simply left untouched? Better approach: client code
@@ -771,8 +770,11 @@ class Node(base.DataObject, base.Annotable):
         # if edge_length != None:
         #     node.edge_length = edge_length
         if pos is None:
-            self._child_nodes.append(node)
+            if node not in self._child_nodes:
+                self._child_nodes.append(node)
         else:
+            if node in self._child_nodes:
+                self._child_nodes.remove(self)
             self._child_nodes.insert(pos, node)
         return node
 
@@ -849,17 +851,17 @@ class Node(base.DataObject, base.Annotable):
             raise ValueError("Tried to remove an non-existing or null node")
         children = self._child_nodes
         if node in children:
-            node.parent_node = None
+            node._parent_node = None
             node.edge.tail_node = None
             index = children.index(node)
             children.remove(node)
             if suppress_deg_two:
-                if self.parent_node:
+                if self._parent_node:
                     if len(children) == 1:
                         child = children[0]
-                        pos = self.parent_node._child_nodes.index(self)
-                        self.parent_node.add_child(child, pos=pos)
-                        self.parent_node.remove_child(self, suppress_deg_two=False)
+                        pos = self._parent_node._child_nodes.index(self)
+                        self._parent_node.add_child(child, pos=pos)
+                        self._parent_node.remove_child(self, suppress_deg_two=False)
                         try:
                             child.edge.length += self.edge.length
                         except:
@@ -911,11 +913,11 @@ class Node(base.DataObject, base.Annotable):
         except:
             raise ValueError("Tried to remove a node that is not listed as a child")
         removed = [(node, self, pos, [], None)]
-        node.parent_node = None
+        node._parent_node = None
         node.edge.tail_node = None
         children.remove(node)
         if suppress_deg_two:
-            p = self.parent_node
+            p = self._parent_node
             if p:
                 if len(children) == 1:
                     child = children[0]
@@ -979,7 +981,7 @@ class Node(base.DataObject, base.Annotable):
             #_LOG.debug(blob)
             n, p, pos, children, e = blob
             for c in children:
-                cp = c.parent_node
+                cp = c._parent_node
                 if cp:
                     cp.remove_child(c)
                 n.add_child(c)
@@ -994,8 +996,8 @@ class Node(base.DataObject, base.Annotable):
         for ch in children:
             if not ch.is_leaf():
                 ch.edge.collapse()
-        if self.parent_node:
-            p = self.parent_node
+        if self._parent_node:
+            p = self._parent_node
             self.edge.collapse()
             p.collapse_neighborhood(dist -1)
         else:
@@ -1061,7 +1063,15 @@ class Node(base.DataObject, base.Annotable):
         return self._parent_node
     def _set_parent_node(self, parent):
         """Sets the parent node of this node."""
+        if self._parent_node is not None:
+            try:
+                self._parent_node._child_nodes.remove(self)
+            except ValueError:
+                pass
         self._parent_node = parent
+        if self._parent_node is not None:
+            if self not in self._parent_node._child_nodes:
+                self._parent_node._child_nodes.append(self)
     parent_node = property(_get_parent_node, _set_parent_node)
 
     ###########################################################################
@@ -1184,8 +1194,8 @@ class Node(base.DataObject, base.Annotable):
             A list with all child nodes and parent node of this node.
         """
         n = [c for c in self._child_nodes]
-        if self.parent_node:
-            n.append(self.parent_node)
+        if self._parent_node:
+            n.append(self._parent_node)
         return n
 
     def get_adjacent_nodes(self):
@@ -1202,7 +1212,7 @@ class Node(base.DataObject, base.Annotable):
             A list of all nodes descended from the same parent as `self`,
             excluding `self`.
         """
-        p = self.parent_node
+        p = self._parent_node
         if not p:
             return []
         sisters = [nd for nd in p.child_nodes() if nd is not self]
@@ -1225,8 +1235,8 @@ class Node(base.DataObject, base.Annotable):
             The number of nodes between `self` and the seed node of the tree,
             or 0 if `self` has no parent.
         """
-        if self.parent_node:
-            return self.parent_node.level() + 1
+        if self._parent_node:
+            return self._parent_node.level() + 1
         else:
             return 0
 
@@ -1240,12 +1250,12 @@ class Node(base.DataObject, base.Annotable):
             Total weight of all edges connecting `self` with the root of the
             tree.
         """
-        if self.parent_node and self.edge.length != None:
-            if self.parent_node.distance_from_root == None:
+        if self._parent_node and self.edge.length != None:
+            if self._parent_node.distance_from_root == None:
                 return float(self.edge.length)
             else:
                 distance_from_root = float(self.edge.length)
-                parent_node = self.parent_node
+                parent_node = self._parent_node
                 # The root is identified when a node with no
                 # parent is encountered. If we want to use some
                 # other criteria (e.g., where a is_root property
@@ -1253,15 +1263,15 @@ class Node(base.DataObject, base.Annotable):
                 while parent_node:
                     if parent_node.edge.length != None:
                         distance_from_root = distance_from_root + float(parent_node.edge.length)
-                    parent_node = parent_node.parent_node
+                    parent_node = parent_node._parent_node
                 return distance_from_root
-        elif not self.parent_node and self.edge.length != None:
+        elif not self._parent_node and self.edge.length != None:
             return float(self.edge.length)
-        elif self.parent_node and self.edge.length == None:
+        elif self._parent_node and self.edge.length == None:
             # what do we do here: parent node exists, but my
             # length does not?
-            return float(self.parent_node.edge.length)
-        elif not self.parent_node and self.edge.length == None:
+            return float(self._parent_node.edge.length)
+        elif not self._parent_node and self.edge.length == None:
             # no parent node, and no edge length
             return 0.0
         else:
@@ -1335,8 +1345,8 @@ class Node(base.DataObject, base.Annotable):
             output_strio.write('\n%s%s' % (leader2, taxon_desc))
 
             output_strio.write('\n%s[Parent]' % leader1)
-            if self.parent_node is not None:
-                parent_node_desc = self.parent_node.description(0)
+            if self._parent_node is not None:
+                parent_node_desc = self._parent_node.description(0)
             else:
                 parent_node_desc = 'None'
             output_strio.write('\n%s%s' % (leader2, parent_node_desc))
@@ -2919,7 +2929,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         if new_seed_node.is_leaf():
             raise ValueError('Rooting at a leaf is not supported')
 
-        old_par = new_seed_node.parent_node
+        old_par = new_seed_node._parent_node
         if old_par is None:
             return
         full_encode = False
@@ -2979,7 +2989,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
-        Assumes that `outgroup_node` and `outgroup_node.parent_node` and are in the tree/
+        Assumes that `outgroup_node` and `outgroup_node._parent_node` and are in the tree/
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
@@ -2987,7 +2997,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
-        p = outgroup_node.parent_node
+        p = outgroup_node._parent_node
         assert p is not None
         self.reseed_at(p, update_splits=update_splits, delete_outdegree_one=delete_outdegree_one)
         p.remove_child(outgroup_node)
@@ -3079,7 +3089,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 break
             elif cur_node.edge.length < plen:
                 plen -= cur_node.edge.length
-                cur_node = cur_node.parent_node
+                cur_node = cur_node._parent_node
             else:
                 break_on_node = cur_node
 
@@ -3111,18 +3121,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                         children[0].edge.length = nd.edge.length
                     else:
                         children[0].edge.length += nd.edge.length
-                if nd.parent_node is not None:
-                    parent = nd.parent_node
+                if nd._parent_node is not None:
+                    parent = nd._parent_node
                     pos = parent._child_nodes.index(nd)
                     parent.remove_child(nd)
                     parent.add_child(children[0], pos=pos)
-                    # assert children[0].parent_node is parent
+                    # assert children[0]._parent_node is parent
                     # assert children[0] in parent._child_nodes
-                    nd.parent_node = None
+                    nd._parent_node = None
                 else:
                     # assert nd is self.seed_node
                     self.seed_node = children[0]
-                    self.seed_node.parent_node = None
+                    self.seed_node._parent_node = None
 
     def collapse_unweighted_edges(self,
             threshold=0.0000001,
@@ -3165,7 +3175,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                         next_child = to_attach.pop()
                         next_sib = rng.sample(attachment_points, 1)[0]
                         next_attachment = Node()
-                        p = next_sib.parent_node
+                        p = next_sib._parent_node
                         p.add_child(next_attachment)
                         p.remove_child(next_sib)
                         next_attachment.add_child(next_sib)
@@ -3195,9 +3205,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         """
         if not node:
             raise ValueError("Tried to remove an non-existing or null node")
-        if node.parent_node is None:
+        if node._parent_node is None:
             raise TypeError('Node has no parent and is implicit root: cannot be pruned')
-        node.parent_node.remove_child(node)
+        node._parent_node.remove_child(node)
         if delete_outdegree_one:
             self.delete_outdegree_one_nodes()
         if update_splits:
@@ -3230,10 +3240,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         parent_nodes = []
         nodes_to_retain.append(self.seed_node)
         for nd in list(nodes_to_retain):
-            parent_node = nd.parent_node
+            parent_node = nd._parent_node
             while parent_node is not None and parent_node not in nodes_to_retain:
                 nodes_to_retain.append(parent_node)
-                parent_node = parent_node.parent_node
+                parent_node = parent_node._parent_node
         # print ">>"
         # for nd in sorted(nodes_to_retain):
         #     print nd.oid
@@ -3399,21 +3409,21 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         tips equal the value of the `age` attribute of the nodes.
         """
         for nd in self.preorder_node_iter():
-            if nd.parent_node is not None:
-                #if nd.parent_node.age < nd.age:
+            if nd._parent_node is not None:
+                #if nd._parent_node.age < nd.age:
                 #    nd.edge.length = 0.0
                 #else:
-                #    nd.edge.length = nd.parent_node.age - nd.age
-                if not allow_negative_edges and nd.parent_node.age < nd.age:
-                    #if nd.parent_node is self.seed_node:
+                #    nd.edge.length = nd._parent_node.age - nd.age
+                if not allow_negative_edges and nd._parent_node.age < nd.age:
+                    #if nd._parent_node is self.seed_node:
                     #    # special case seed node
-                    #    nd.parent_node.age = nd.age + nd.edge_length
+                    #    nd._parent_node.age = nd.age + nd.edge_length
                     #else:
                     #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                    #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
-                    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
-                nd.edge.length = nd.parent_node.age - nd.age
+                    #            % (nd._parent_node.oid, nd._parent_node.age, nd.oid, nd.age))
+                    raise ValueError('Parent node age (%s) is younger than descendent (%s)'
+                            % (nd._parent_node.age, nd.age))
+                nd.edge.length = nd._parent_node.age - nd.age
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
@@ -3718,7 +3728,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         internal = 0.0
         external = 0.0
         for nd in self.postorder_node_iter():
-            if not nd.parent_node:
+            if not nd._parent_node:
                 continue
             if nd.is_leaf():
                 external += nd.edge.length
@@ -4103,10 +4113,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         nodes = {}
         edges = {}
         curr_node = self.seed_node
-        assert curr_node.parent_node is None, \
-                "{} is seed node, but has non-`None` parent node: {}".format(curr_node, curr_node.parent_node)
+        assert curr_node._parent_node is None, \
+                "{} is seed node, but has non-`None` parent node: {}".format(curr_node, curr_node._parent_node)
         assert curr_node.edge.tail_node is None, \
-                "{} is seed node, but edge has non-`None` tail node: {}".format(curr_node, curr_node.edge.parent_node)
+                "{} is seed node, but edge has non-`None` tail node: {}".format(curr_node, curr_node.edge._parent_node)
         ancestors = []
         siblings = []
         while curr_node:
@@ -4119,8 +4129,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             nodes[curr_node] = curr_edge
             assert curr_edge.head_node is curr_node, \
                     "Head node of edge of {}, {}, is {}, not {}".format(curr_node, curr_edge, curr_edge.head_node, curr_node)
-            assert curr_edge.tail_node is curr_node.parent_node, \
-                    "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node.parent_node)
+            assert curr_edge.tail_node is curr_node._parent_node, \
+                    "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node._parent_node)
             if check_splits:
                 cm = 0
                 split_bitmask = curr_edge.split_bitmask
@@ -4129,8 +4139,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             c = curr_node._child_nodes
             if c:
                 for child in c:
-                    assert child.parent_node is curr_node, \
-                            "Child of {}, {}, has {} as parent".format(curr_node, child, child.parent_node)
+                    assert child._parent_node is curr_node, \
+                            "Child of {}, {}, has {} as parent".format(curr_node, child, child._parent_node)
                     if check_splits:
                         cm |= child.edge.split_bitmask
             elif check_splits:
@@ -4708,10 +4718,10 @@ class AsciiTreePlot(object):
                         curr_edge_len = 0
                 else:
                     raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
-                if nd.parent_node is None:
+                if nd._parent_node is None:
                     self.node_offset[nd] = curr_edge_len
                 else:
-                    self.node_offset[nd] =  curr_edge_len + self.node_offset[nd.parent_node]
+                    self.node_offset[nd] =  curr_edge_len + self.node_offset[nd._parent_node]
 #        print "\n".join([str(k) for k in self.node_offset.values()])
 
     def draw(self, tree, dest):
