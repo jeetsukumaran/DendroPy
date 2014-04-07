@@ -22,9 +22,10 @@ Tests basic Tree copying etc.
 
 import unittest
 import dendropy
-from dendropy.test.support import datagen
+from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import compare_and_validate
 
-class TreeIdentity(unittest.TestCase):
+class TestTreeIdentity(unittest.TestCase):
 
     def setUp(self):
         self.t1 = dendropy.Tree()
@@ -50,6 +51,11 @@ class TreeIdentity(unittest.TestCase):
         self.assertEqual(len(k), 2)
         self.assertIn(self.t1, k)
         self.assertIn(self.t2, k)
+
+class TestTreeCopying(datagen_curated_test_tree.CuratedTestTree, compare_and_validate.Comparator, unittest.TestCase):
+    pass
+
+
 
 if __name__ == "__main__":
     unittest.main()

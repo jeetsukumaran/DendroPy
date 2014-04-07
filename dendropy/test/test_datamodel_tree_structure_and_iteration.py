@@ -22,9 +22,9 @@ Tests basic Tree structure and iteration.
 
 import unittest
 import dendropy
-from dendropy.test.support import datagen
+from dendropy.test.support import datagen_curated_test_tree
 
-class TestTreeNodeAndEdgeCollections(datagen.StandardTestTree, unittest.TestCase):
+class TestTreeNodeAndEdgeCollections(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     def test_get_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -107,7 +107,7 @@ class TestTreeNodeAndEdgeCollections(datagen.StandardTestTree, unittest.TestCase
             self.assertEqual(len(child_labels), len(expected_children))
             self.assertEqual(set(child_labels), set(expected_children))
 
-class TestTreeNodeFinders(datagen.StandardTestTree, unittest.TestCase):
+class TestTreeNodeFinders(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     def test_find_node(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -129,7 +129,7 @@ class TestTreeNodeFinders(datagen.StandardTestTree, unittest.TestCase):
         node = tree.find_node_with_label("zzz")
         self.assertIs(node, None)
 
-class TestTreeIterators(datagen.StandardTestTree, unittest.TestCase):
+class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     ### Default Iterator ###
 
@@ -545,7 +545,6 @@ class TestTreeIterators(datagen.StandardTestTree, unittest.TestCase):
             expected_ancestors = [nda for nda in expected_ancestors if self.node_edge_lengths[nda] > 13]
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True, filter_fn=filter_fn)]
             self.assertEqual(ancestors, expected_ancestors)
-
 
 if __name__ == "__main__":
     unittest.main()
