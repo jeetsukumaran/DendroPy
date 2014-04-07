@@ -58,9 +58,28 @@ class TestTreeCopying(
         compare_and_validate.Comparator,
         unittest.TestCase):
 
+    def add_annotations(self, tree):
+        for idx, nd in enumerate(tree):
+            if idx % 2 == 0:
+                nd.edge.label = "E{}".format(idx)
+                nd.edge.length = idx
+            an1 = nd.annotations.add_new("a{}".format(idx),
+                    "{}{}{}".format(nd.label, nd.taxon, idx))
+            an2 = nd.annotations.add_bound_attribute("label")
+            an3 = an1.annotations.add_bound_attribute("name")
+            ae1 = nd.edge.annotations.add_new("a{}".format(idx),
+                    "{}{}".format(nd.edge.label, idx))
+            ae2 = nd.edge.annotations.add_bound_attribute("label")
+            ae3 = ae1.annotations.add_bound_attribute("name")
+        tree.annotations.add_new("a", 0)
+        tree.label = "hello"
+        b = tree.annotations.add_bound_attribute("label")
+        b.annotations.add_new("c", 3)
+
     def test_copy(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
+        self.add_annotations(tree1)
         for tree2 in (
                 tree1.clone(0),
                 copy.copy(tree1),
@@ -84,6 +103,7 @@ class TestTreeCopying(
     def test_deepcopy(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
+        self.add_annotations(tree1)
         for tree2 in (
                 tree1.clone(2),
                 copy.deepcopy(tree1),
