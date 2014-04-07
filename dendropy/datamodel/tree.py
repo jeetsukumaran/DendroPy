@@ -271,8 +271,22 @@ class Node(base.DataObject, base.Annotable):
         raise TypeError("Cannot directly copy Node")
 
     def __deepcopy__(self, memo=None):
-        # call Annotable.__deepcopy__()
         return base.Annotable.__deepcopy__(self, memo=memo)
+        # if memo is None:
+        #     memo = {}
+        # other = base.Annotable.__deepcopy__(self, memo=memo)
+        # memo[id(self._child_nodes)] = other._child_nodes
+        # for ch in self._child_nodes:
+        #     try:
+        #         och = memo[id(ch)]
+        #         if och not in other._child_nodes:
+        #             other._child_nodes.append(och)
+        #     except KeyError:
+        #         och = copy.deepcopy(ch, memo)
+        #         memo[id(chd)] = och
+        #         if och not in other._child_nodes:
+        #             other._child_nodes.append(och)
+        # return other
         # return super(Node, self).__deepcopy__(memo=memo)
 
     ###########################################################################
@@ -1758,12 +1772,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
+            super(Tree, self).__init__(*args, **kwargs)
             self.comments = []
             self._is_rooted = None
             self.weight = None
             self.length_type = None
             self.seed_node = None
-            super(Tree, self).__init__(*args, **kwargs)
             seed_node = kwargs.pop("seed_node", None)
             if seed_node is None:
                 self.seed_node = self.node_factory()
@@ -1772,25 +1786,32 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 self.update_taxon_namespace()
 
     def _clone_from(self, tree, **kwargs):
+        # super(Tree, self).__init__()
         memo = {}
-        memo[id(tree)] = self
-        taxon_namespace = kwargs.get("taxon_namespace", tree.taxon_namespace)
+        # memo[id(tree)] = self
+        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, tree.taxon_namespace)
         memo[id(tree.taxon_namespace)] = taxon_namespace
         if taxon_namespace is not tree.taxon_namespace:
-            for taxon in tree.taxon_namespace:
-                taxon2 = taxon_namespace.require_taxon(label=taxon.label)
-                memo[id(taxon)] = taxon2
+            for t1 in tree.taxon_namespace:
+                t2 = taxon_namespace.require_taxon(label=t1.label)
+                memo[id(t1)] = t2
+        else:
+            for t1 in tree.taxon_namespace:
+                memo[id(t1)] = t1
         label = kwargs.get("label", tree.label)
         memo[id(tree.label)] = label
-        for k in tree.__dict__:
-            if k == "_annotations":
-                continue
-            if k in self.__dict__:
-                # do not copy if already populated, perhaps by a derived class
-                continue
-            self.__dict__[k] = copy.deepcopy(tree.__dict__[k], memo)
-            memo[id(tree.__dict__[k])] = self.__dict__[k]
-        self.deep_copy_annotations_from(tree)
+        t = copy.deepcopy(tree, memo)
+        self.__dict__ = t.__dict__
+        return self
+        # for k in tree.__dict__:
+        #     if k == "_annotations":
+        #         continue
+        #     if k in self.__dict__:
+        #         # do not copy if already populated, perhaps by a derived class
+        #         continue
+        #     self.__dict__[k] = copy.deepcopy(tree.__dict__[k], memo)
+        #     memo[id(tree.__dict__[k])] = self.__dict__[k]
+        # self.deep_copy_annotations_from(tree)
 
     def __copy__(self):
         return self.taxon_namespace_scoped_copy()

@@ -585,6 +585,7 @@ class Annotable(object):
                 memo = {}
             for a1 in other._annotations:
                 a2 = copy.deepcopy(a1, memo=memo)
+                memo[id(a1)] = a2
                 if a2.is_attribute and a1._value[0] is other:
                     a2._value = (self, a1._value[1])
                 self.annotations.add(a2)
@@ -616,7 +617,6 @@ class Annotable(object):
             if k == "_annotations":
                 continue
             if k in other.__dict__:
-                # do not copy if already populated, perhaps by a derived class
                 continue
             other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
             memo[id(self.__dict__[k])] = other.__dict__[k]
@@ -708,15 +708,17 @@ class Annotation(Annotable):
     def __copy__(self):
         return self.clone()
 
-    def __deepcopy__(self, memo=None):
-        if memo is None:
-            memo = {}
-        o = self.__class__.__new__(self.__class__)
-        memo[id(self)] = o
-        for k in self.__dict__:
-            if k not in o.__dict__: # do not add attributes already added by base class
-                o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        return o
+    # def __deepcopy__(self, memo=None):
+    #     if memo is None:
+    #         memo = {}
+    #     o = self.__class__.__new__(self.__class__)
+    #     memo[id(self)] = o
+    #     for k in self.__dict__:
+    #         # if k not in o.__dict__: # do not add attributes already added by base class
+    #         print("--->{}: {}".format(id(o), k))
+    #         o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+    #         memo[id(self.__dict__[k])] = o.__dict__[k]
+    #     return o
 
     def clone(self, attribute_object_mapper=None):
         """

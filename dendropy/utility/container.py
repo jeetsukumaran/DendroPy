@@ -241,7 +241,8 @@ class OrderedSet(object):
         return "[{}]".format(", ".join([str(i) for i in self._item_list]))
 
     def __repr__(self):
-        return "{}([{}])".format((self.__class__.__name__, ", ".join([str(i) for i in self._item_list])))
+        return "{}([{}])".format(self.__class__.__name__,
+            ", ".join([str(i) for i in self._item_list]))
 
     # def __hash__(self):
     #     return id(self)

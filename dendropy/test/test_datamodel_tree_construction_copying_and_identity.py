@@ -81,10 +81,10 @@ class TestTreeCopying(
                 suppress_external_node_taxa=False)
         self.add_annotations(tree1)
         for tree2 in (
-                tree1.clone(0),
-                copy.copy(tree1),
-                tree1.clone(1),
-                tree1.taxon_namespace_scoped_copy(),
+                # tree1.clone(0),
+                # copy.copy(tree1),
+                # tree1.clone(1),
+                # tree1.taxon_namespace_scoped_copy(),
                 dendropy.Tree(tree1),
                 ):
             self.compare_distinct_trees(tree1, tree2,
