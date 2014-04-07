@@ -1836,30 +1836,31 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
     def __deepcopy__(self, memo=None):
         # ensure clone map
-        if memo is None:
-            memo = {}
-        # get or create clone of self
-        try:
-            other = memo[id(self)]
-        except KeyError:
-            # create object without initialization
-            other = self.__class__.__new__(self.__class__)
-            # store
-            memo[id(self)] = other
-        # copy other attributes first, skipping annotations
-        for k in self.__dict__:
-            if k == "_annotations":
-                continue
-            if k in other.__dict__:
-                # do not copy if already populated, perhaps by a derived class
-                continue
-            other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-            memo[id(self.__dict__[k])] = other.__dict__[k]
-            # assert id(self.__dict__[k]) in memo
-        # create annotations
-        other.deep_copy_annotations_from(self, memo)
-        # return
-        return other
+        return base.Annotable.__deepcopy__(self, memo=memo)
+        # if memo is None:
+        #     memo = {}
+        # # get or create clone of self
+        # try:
+        #     other = memo[id(self)]
+        # except KeyError:
+        #     # create object without initialization
+        #     other = self.__class__.__new__(self.__class__)
+        #     # store
+        #     memo[id(self)] = other
+        # # copy other attributes first, skipping annotations
+        # for k in self.__dict__:
+        #     if k == "_annotations":
+        #         continue
+        #     if k in other.__dict__:
+        #         # do not copy if already populated, perhaps by a derived class
+        #         continue
+        #     other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        #     memo[id(self.__dict__[k])] = other.__dict__[k]
+        #     # assert id(self.__dict__[k]) in memo
+        # # create annotations
+        # other.deep_copy_annotations_from(self, memo)
+        # # return
+        # return other
 
     ###########################################################################
     ### I/O
