@@ -22,6 +22,7 @@ Tests basic Tree copying etc.
 
 import unittest
 import dendropy
+import copy
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import compare_and_validate
 
@@ -53,8 +54,17 @@ class TestTreeIdentity(unittest.TestCase):
         self.assertIn(self.t2, k)
 
 class TestTreeCopying(datagen_curated_test_tree.CuratedTestTree, compare_and_validate.Comparator, unittest.TestCase):
-    pass
 
+    def test_copy(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree()
+        for tree2 in (
+                tree1.clone(0),
+                copy.copy(tree1),
+                tree1.clone(1),
+                tree1.taxon_namespace_scoped_copy(),
+                # dendropy.Tree(tree),
+                ):
+            self.compare_distinct_trees(tree1, tree2)
 
 
 if __name__ == "__main__":

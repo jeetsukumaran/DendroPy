@@ -113,7 +113,8 @@ class Edge(base.DataObject, base.Annotable):
 
     def __deepcopy__(self, memo=None):
         # call Annotable.__deepcopy__()
-        return super(Edge, self).__deepcopy__(memo=memo)
+        return base.Annotable.__deepcopy__(self, memo=memo)
+        # return super(Edge, self).__deepcopy__(memo=memo)
 
     def __hash__(self):
         return id(self)
@@ -271,7 +272,8 @@ class Node(base.DataObject, base.Annotable):
 
     def __deepcopy__(self, memo=None):
         # call Annotable.__deepcopy__()
-        return super(Node, self).__deepcopy__(memo=memo)
+        return base.Annotable.__deepcopy__(self, memo=memo)
+        # return super(Node, self).__deepcopy__(memo=memo)
 
     ###########################################################################
     ### Identity
@@ -1473,7 +1475,7 @@ class Node(base.DataObject, base.Annotable):
 ##############################################################################
 ### Tree
 
-class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
+class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.Writeable):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
     edges directing away from the root and toward the tips. The "root" of the
@@ -1745,37 +1747,43 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         self.weight = None
         self.length_type = None
 
-    # def clone_from(self, other):
-    #     """
-    #     Clones the structure and properties of :class:`Tree` object `other`.
+    def __copy__(self):
+        return self.taxon_namespace_scoped_copy()
 
-    #     Parameters
-    #     ----------
-    #     other : :class:`Tree`
-    #         Tree object to clone.
+    def taxon_namespace_scoped_copy(self, memo=None):
+        if memo is None:
+            memo = {}
+        # this populates `memo` with references to the
+        # the TaxonNamespace and Taxon objects
+        self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
+        return self.__deepcopy__(memo=memo)
 
-    #     Returns
-    #     -------
-    #     self : :class:`Tree`
-    #         Returns `self`.
-    #     """
-    #     t = copy.deepcopy(other)
-    #     for k, v in t.__dict__.iteritems():
-    #         if k not in ["_annotations"]:
-    #             self.__dict__[k] = v
-    #     self.annotations = t.annotations
-    #     return self
-
-    # def __deepcopy__(self, memo):
-    #     # we treat the taxa as immutable and copy the reference even in a deepcopy
-    #     o = TaxonNamespaceLinked.__deepcopy__(self, memo)
-    #     memo[id(self)] = o
-    #     for k, v in self.__dict__.iteritems():
-    #         if k not in ['taxon_namespace', "_annotations"]:
-    #             o.__dict__[k] = copy.deepcopy(v, memo)
-    #     o.annotations = copy.deepcopy(self.annotations, memo)
-    #     memo[id(self.annotations)] = o.annotations
-    #     return o
+    def __deepcopy__(self, memo=None):
+        # ensure clone map
+        if memo is None:
+            memo = {}
+        # get or create clone of self
+        try:
+            other = memo[id(self)]
+        except KeyError:
+            # create object without initialization
+            other = self.__class__.__new__(self.__class__)
+            # store
+            memo[id(self)] = other
+        # copy other attributes first, skipping annotations
+        for k in self.__dict__:
+            if k == "_annotations":
+                continue
+            if k in other.__dict__:
+                # do not copy if already populated, perhaps by a derived class
+                continue
+            other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+            memo[id(self.__dict__[k])] = other.__dict__[k]
+            # assert id(self.__dict__[k]) in memo
+        # create annotations
+        other.deep_copy_annotations_from(self, memo)
+        # return
+        return other
 
     ###########################################################################
     ### I/O

@@ -99,7 +99,7 @@ class EdgeCloning(compare_and_validate.Comparator, unittest.TestCase):
                 ):
             self.compare_distinct_nodes(
                     clone._head_node, self.n0,
-                    distinct_taxon_objects=True,
+                    taxon_namespace_scoped=True,
                     compare_annotations=True)
 
 if __name__ == "__main__":

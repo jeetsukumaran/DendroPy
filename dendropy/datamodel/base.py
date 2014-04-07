@@ -615,6 +615,9 @@ class Annotable(object):
         for k in self.__dict__:
             if k == "_annotations":
                 continue
+            if k in other.__dict__:
+                # do not copy if already populated, perhaps by a derived class
+                continue
             other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
             memo[id(self.__dict__[k])] = other.__dict__[k]
             # assert id(self.__dict__[k]) in memo

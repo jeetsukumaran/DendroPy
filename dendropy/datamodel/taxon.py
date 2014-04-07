@@ -303,8 +303,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return TaxonNamespace(self)
 
     def taxon_namespace_scoped_copy(self, memo=None):
-        if memo is not None:
-            memo[id(self)] = self
+        self.populate_memo_for_taxon_namespace_scoped_copy(memo=memo)
         return self
 
     def __deepcopy__(self, memo):
@@ -323,6 +322,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         o.deep_copy_annotations_from(self, memo=memo)
         # o.copy_annotations_from(self, attribute_object_mapper=memo)
         return o
+
+    def populate_memo_for_taxon_namespace_scoped_copy(self, memo):
+        if memo is not None:
+            memo[id(self)] = self
+            for taxon in self._taxa:
+                memo[id(taxon)] = taxon
+        return memo
 
     ### Identity and Comparison
 
@@ -1138,6 +1144,8 @@ class Taxon(base.DataObject, base.Annotable):
         # return self
 
     def taxon_namespace_scoped_copy(self, memo=None):
+        if memo is not None:
+            memo[id(self)] = self
         return self
 
     def __deepcopy__(self, memo=None):

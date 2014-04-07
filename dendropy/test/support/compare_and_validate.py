@@ -21,34 +21,96 @@ from dendropy.datamodel import base
 
 class Comparator(object):
 
-    def compare_distinct_nodes(self,
+
+    def compare_distinct_taxon(self,
             x1, x2,
-            distinct_taxon_objects=True,
+            taxon_namespace_scoped=True,
+            compare_annotations=True):
+        if taxon_namespace_scoped:
+            self.assertIs(x1, x2)
+        else:
+            if x1 is None or x2 is None:
+                self.assertIs(x1, None)
+                self.assertIs(x2, None)
+            else:
+                self.assertIsNot(x1, x2)
+                self.assertEqual(x1.label, x2.label)
+                if compare_annotations:
+                    self.compare_distinct_annotables(x1, x2)
+
+    def compare_distinct_taxon_namespace(self,
+            x1, x2,
+            taxon_namespace_scoped=True,
+            compare_annotations=True):
+        if taxon_namespace_scoped:
+            self.assertIs(x1, x2)
+        else:
+            if x1 is None or x2 is None:
+                self.assertIs(x1, None)
+                self.assertIs(x2, None)
+            else:
+                self.assertIsNot(x1, x2)
+                self.assertEqual(x1.label, x2.label)
+                self.assertEqual(len(x1._taxa), len(x2._taxa))
+                for t1, t2 in zip(x1._taxa, x2._taxa):
+                    self.compare_distinct_taxon(t1, t2,
+                            taxon_namespace_scoped=taxon_namespace_scoped,
+                            compare_annotations=compare_annotations)
+                if compare_annotations:
+                    self.compare_distinct_annotables(x1, x2)
+
+    def compare_distinct_trees(self,
+            x1, x2,
+            taxon_namespace_scoped=True,
             compare_annotations=True):
         self.assertIsNot(x1, x2)
+        self.compare_distinct_taxon_namespace(x1.taxon_namespace, x2.taxon_namespace,
+                taxon_namespace_scoped=taxon_namespace_scoped,
+                compare_annotations=compare_annotations)
+        self.compare_distinct_nodes(x1.seed_node, x2.seed_node,
+                taxon_namespace_scoped=taxon_namespace_scoped,
+                compare_annotations=compare_annotations)
+
+    def compare_distinct_nodes(self,
+            x1, x2,
+            taxon_namespace_scoped=True,
+            compare_annotations=True,
+            check_children=True):
+        self.assertIsNot(x1, x2)
+        self.assertEqual(x1.label, x2.label)
         taxon1 = x1.taxon
         taxon2 = x2.taxon
-        if distinct_taxon_objects:
-            if taxon1 is None or taxon2 is None:
-                self.assertIs(taxon1, None)
-                self.assertIs(taxon2, None)
-            else:
-                self.assertIsNot(taxon1, taxon2)
-                self.assertEqual(taxon1.label, taxon2.label)
-                if compare_annotations:
-                    self.compare_distinct_annotables(taxon1, taxon2)
-        else:
-            self.assertIs(taxon1, taxon2)
+        self.compare_distinct_taxon(x1.taxon, x2.taxon,
+                taxon_namespace_scoped=taxon_namespace_scoped,
+                compare_annotations=compare_annotations)
         self.assertIsNot(x1.edge, x2.edge)
+        self.assertEqual(x1.edge.label, x2.edge.label)
+        self.assertEqual(x1.edge.length, x2.edge.length)
         self.assertIs(x1.edge.head_node, x1)
         self.assertIs(x2.edge.head_node, x2)
-        self.assertIsNot(x1.edge.tail_node, x2.edge.tail_node)
-        self.assertEqual(x1.edge.tail_node.label, x2.edge.tail_node.label)
-        self.assertEqual(len(x1._child_nodes), len(x2._child_nodes))
-        for c1, c2 in zip(x1._child_nodes, x2._child_nodes):
-            self.compare_distinct_nodes(c1, c2,
-                    distinct_taxon_objects=distinct_taxon_objects,
-                    compare_annotations=compare_annotations)
+        if x1._parent_node is None or x2._parent_node is None:
+            self.assertIs(x1._parent_node, None)
+            self.assertIs(x2._parent_node, None)
+            self.assertIs(x1.edge.tail_node, None)
+            self.assertIs(x2.edge.tail_node, None)
+        else:
+            self.compare_distinct_nodes(x1._parent_node, x2._parent_node,
+                    taxon_namespace_scoped=taxon_namespace_scoped,
+                    compare_annotations=compare_annotations,
+                    check_children=False)
+            self.assertIn(x1, x1._parent_node._child_nodes)
+            self.assertNotIn(x1, x2._parent_node._child_nodes)
+            self.assertIn(x2, x2._parent_node._child_nodes)
+            self.assertNotIn(x2, x1._parent_node._child_nodes)
+        if check_children:
+            self.assertEqual(len(x1._child_nodes), len(x2._child_nodes))
+            for c1, c2 in zip(x1._child_nodes, x2._child_nodes):
+                self.compare_distinct_nodes(c1, c2,
+                        taxon_namespace_scoped=taxon_namespace_scoped,
+                        compare_annotations=compare_annotations)
+        if compare_annotations:
+            self.compare_distinct_annotables(x1, x2)
+            self.compare_distinct_annotables(x1.edge, x2.edge)
 
     def compare_distinct_annotables(self, x1, x2):
         self.assertIsNot(x1, x2)
