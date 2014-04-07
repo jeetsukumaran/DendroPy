@@ -55,7 +55,7 @@ import dendropy
 #      f -> n;
 #      f -> h -> o;
 #      h -> p;
-class CuratedTestTree():
+class CuratedTestTree(object):
     dot_str = "a -> b -> i; b -> e -> j; e -> k; a -> c; c -> g; c -> f; g -> l; g -> m; f -> n; f -> h -> o; h -> p;"
     newick_unweighted_edges_str = "((i, (j, k)e)b, ((l, m)g, (n, (o, p)h)f)c)a;"
     newick_weighted_edges_str = "((i:1, (j:2, k:3)e:4)b:5, ((l:6, m:7)g:8, (n:9, (o:10, p:11)h:12)f:13)c:14)a:15;"
@@ -179,8 +179,12 @@ class CuratedTestTree():
     #     p = add_child_node(h, label="p", edge_length=xxx["p"])
     #     return tree
 
-    def get_tree(self):
-        tree = dendropy.Tree()
+    def get_tree(self,
+            suppress_internal_node_taxa=True,
+            suppress_external_node_taxa=True,
+            taxon_namespace=None,
+            ):
+        tree = dendropy.Tree(taxon_namespace=taxon_namespace)
         a = tree.seed_node
         a.label = "a"
         a.edge.length = 15.0
@@ -272,5 +276,13 @@ class CuratedTestTree():
         leaf_nodes = set([i, j, k, l, m, n, o, p])
         internal_nodes = set([b, c, e, f, g, h])
         all_nodes = leaf_nodes | internal_nodes | set([a])
+        if not suppress_internal_node_taxa:
+            for nd in internal_nodes | set([a]):
+                t = tree.taxon_namespace.require_taxon(label=nd.label)
+                nd.taxon = t
+        if not suppress_external_node_taxa:
+            for nd in leaf_nodes:
+                t = tree.taxon_namespace.require_taxon(label=nd.label)
+                nd.taxon = t
         return tree, all_nodes, leaf_nodes, internal_nodes
 

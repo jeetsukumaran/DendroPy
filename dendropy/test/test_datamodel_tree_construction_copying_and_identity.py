@@ -53,10 +53,14 @@ class TestTreeIdentity(unittest.TestCase):
         self.assertIn(self.t1, k)
         self.assertIn(self.t2, k)
 
-class TestTreeCopying(datagen_curated_test_tree.CuratedTestTree, compare_and_validate.Comparator, unittest.TestCase):
+class TestTreeCopying(
+        datagen_curated_test_tree.CuratedTestTree,
+        compare_and_validate.Comparator,
+        unittest.TestCase):
 
     def test_copy(self):
-        tree1, anodes1, lnodes1, inodes1 = self.get_tree()
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
         for tree2 in (
                 tree1.clone(0),
                 copy.copy(tree1),
@@ -64,8 +68,39 @@ class TestTreeCopying(datagen_curated_test_tree.CuratedTestTree, compare_and_val
                 tree1.taxon_namespace_scoped_copy(),
                 # dendropy.Tree(tree),
                 ):
-            self.compare_distinct_trees(tree1, tree2)
+            self.compare_distinct_trees(tree1, tree2,
+                    taxon_namespace_scoped=True,
+                    compare_annotations=True)
+            # Redundant, given the above
+            # But for sanity's sake ...
+            nodes1 = [nd for nd in tree1]
+            nodes2 = [nd for nd in tree2]
+            self.assertEqual(len(nodes1), len(nodes2))
+            for nd1, nd2 in zip(nodes1, nodes2):
+                self.assertIsNot(nd1, nd2)
+                self.assertEqual(nd1.label, nd2.label)
+                self.assertIs(nd1.taxon, nd2.taxon)
 
+    def test_deepcopy(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        for tree2 in (
+                tree1.clone(2),
+                copy.deepcopy(tree1),
+                ):
+            self.compare_distinct_trees(tree1, tree2,
+                    taxon_namespace_scoped=False,
+                    compare_annotations=True)
+            # Redundant, given the above
+            # But for sanity's sake ...
+            nodes1 = [nd for nd in tree1]
+            nodes2 = [nd for nd in tree2]
+            self.assertEqual(len(nodes1), len(nodes2))
+            for nd1, nd2 in zip(nodes1, nodes2):
+                self.assertIsNot(nd1, nd2)
+                self.assertEqual(nd1.label, nd2.label)
+                self.assertIsNot(nd1.taxon, nd2.taxon)
+                self.assertEqual(nd1.taxon.label, nd2.taxon.label)
 
 if __name__ == "__main__":
     unittest.main()
