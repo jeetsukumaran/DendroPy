@@ -98,9 +98,12 @@ The :class:`Edge` Class
   synchornized to reference the same :class:`Node` object and all the potential
   errors this might cause.
 
-
 The :class:`Tree` Class
 =======================
+
+* Constructor no longer supports they ``stream`` keyword argument to construct
+  the new :class:`Tree` object from a data source. Use the factory class
+  method: :meth:`Tree.get_from_stream()` instead.
 
 * :meth:`Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
 

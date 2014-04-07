@@ -162,7 +162,15 @@ class TaxonNamespaceAssociated(base.DataObject):
         object as `self.taxon_namespace`, and that `self.taxon_namespace` has all
         the :class:`Taxon` objects in the various members.
         """
-        pass
+        raise NotImplementedError()
+
+    def update_taxon_namespace(self):
+        """
+        All :class:`Taxon` objects in `self` that are not in
+        `self.taxon_namespace` will be added.
+        """
+        raise NotImplementedError()
+
 
 ##############################################################################
 ## TaxonNamespace

@@ -1676,15 +1676,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             t4 = Tree.get_from_string(s, "newick") # tree will be '((A,B),(C,D))'
             t5 = Tree.get_from_string(s, "newick", tree_offset=1) # tree will be '((A,C),(B,D))'
 
-            # tree from stream passed to constructor
-            t6 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"), schema="newick")
-
             # passing keywords to underlying tree parser
             t7 = dendropy.Tree.get_from_string(
                       "((A,B),(C,D));",
                       schema="newick",
                       taxon_namespace=t3.taxon_namespace,
-                      encode_splits=True)
+                      suppress_internal_taxa=False,
+                      preserve_underscores=True)
 
             # tree structure deep-copied from another tree
             t8 = dendropy.Tree(t7)
@@ -1705,7 +1703,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 assert lves7[i] is not lves8[i]             # and associated Taxon objects
                 assert lves7[i].taxon is lves8[i].taxon     # are the same.
 
-            # to create deep copy of a tree with a different taxon set
+            # To create deep copy of a tree with a different taxon namespace,
+            # Use 'copy.deepcopy()'
+            t9 = copy.deepcopy(t7)
+
+            # Or explicitly pass in a new TaxonNamespace instance
             taxa = TaxonNamespace()
             t9 = dendropy.Tree(t7, taxon_namespace=taxa)
             assert t9 is not t7                             # As above, the trees are distinct
@@ -1735,17 +1737,60 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             t11.taxon_namespace = taxa
             t11.reindex_subcomponent_taxa()
 
+            # You can also explicitly pass in a seed node:
+            seed = Node(label="root")
+            t12 = Tree(seed_node=seed)
+            assert t12.seed_node is seed
+
         """
-        seed_node = kwargs.pop("seed_node", None)
-        super(Tree, self).__init__(*args, **kwargs)
-        if seed_node is None:
-            self.seed_node = self.node_factory()
+        if len(args) > 1:
+            # only allow 1 positional argument
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
+        elif len(args) == 1:
+            if "seed_node" in kwargs:
+                raise TypeError("Cannot specify 'seed_node' if passing in a Tree object to clone")
+            if "stream" in kwargs or "schema" in kwargs:
+                raise TypeError("Constructing from an external stream is no longer supported: use the factory method 'Tree.get_from_stream()'")
+            if isinstance(args[0], Node):
+                raise TypeError("Constructing a tree around a Node passed as a position argument is no longer supported; a keyword argument is now required for this approach: use Tree(seed_node=node)")
+            if isinstance(args[0], Tree):
+                self._clone_from(args[0], **kwargs)
+            else:
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
-            self.seed_node = seed_node
-        self.comments = []
-        self._is_rooted = None
-        self.weight = None
-        self.length_type = None
+            self.comments = []
+            self._is_rooted = None
+            self.weight = None
+            self.length_type = None
+            self.seed_node = None
+            super(Tree, self).__init__(*args, **kwargs)
+            seed_node = kwargs.pop("seed_node", None)
+            if seed_node is None:
+                self.seed_node = self.node_factory()
+            else:
+                self.seed_node = seed_node
+                self.update_taxon_namespace()
+
+    def _clone_from(self, tree, **kwargs):
+        memo = {}
+        memo[id(tree)] = self
+        taxon_namespace = kwargs.get("taxon_namespace", tree.taxon_namespace)
+        memo[id(tree.taxon_namespace)] = taxon_namespace
+        if taxon_namespace is not tree.taxon_namespace:
+            for taxon in tree.taxon_namespace:
+                taxon2 = taxon_namespace.require_taxon(label=taxon.label)
+                memo[id(taxon)] = taxon2
+        label = kwargs.get("label", tree.label)
+        memo[id(tree.label)] = label
+        for k in tree.__dict__:
+            if k == "_annotations":
+                continue
+            if k in self.__dict__:
+                # do not copy if already populated, perhaps by a derived class
+                continue
+            self.__dict__[k] = copy.deepcopy(tree.__dict__[k], memo)
+            memo[id(tree.__dict__[k])] = self.__dict__[k]
+        self.deep_copy_annotations_from(tree)
 
     def __copy__(self):
         return self.taxon_namespace_scoped_copy()
@@ -2719,19 +2764,28 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
     def infer_taxa(self):
         """
-        Returns a new TaxonNamespace object populated with taxa from this
-        tree.
+        Creates (and returns) a new TaxonNamespace object for `self` populated
+        with taxa from this tree.
         """
         taxon_namespace = TaxonNamespace()
         for node in self.postorder_node_iter():
-            if node.taxon is not None and (node.taxon not in taxon_namespace):
+            if node.taxon is not None:
                 taxon_namespace.add(node.taxon)
         self.taxon_namespace = taxon_namespace
         return taxon_namespace
 
+    def update_taxon_namespace(self):
+        """
+        All :class:`Taxon` objects in `self` that are not in
+        `self.taxon_namespace` will be added.
+        """
+        for nd in self:
+            if taxon is not None:
+                self.taxon_namespace.add_taxon(nd.taxon)
+
     def reindex_subcomponent_taxa(self):
         """
-        Reassigns node taxon objects
+        Remaps node taxon objects
         """
         for node in self.postorder_node_iter():
             t = node.taxon

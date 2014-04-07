@@ -85,7 +85,7 @@ class TestTreeCopying(
                 copy.copy(tree1),
                 tree1.clone(1),
                 tree1.taxon_namespace_scoped_copy(),
-                # dendropy.Tree(tree),
+                dendropy.Tree(tree1),
                 ):
             self.compare_distinct_trees(tree1, tree2,
                     taxon_namespace_scoped=True,
@@ -107,6 +107,7 @@ class TestTreeCopying(
         for tree2 in (
                 tree1.clone(2),
                 copy.deepcopy(tree1),
+                dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace()),
                 ):
             self.compare_distinct_trees(tree1, tree2,
                     taxon_namespace_scoped=False,
@@ -121,6 +122,17 @@ class TestTreeCopying(
                 self.assertEqual(nd1.label, nd2.label)
                 self.assertIsNot(nd1.taxon, nd2.taxon)
                 self.assertEqual(nd1.taxon.label, nd2.taxon.label)
+
+class TestSpecialTreeConstruction(
+        datagen_curated_test_tree.CuratedTestTree,
+        compare_and_validate.Comparator,
+        unittest.TestCase):
+
+    def test_construction_from_another_tree_different_label(self):
+        pass
+
+    def test_construction_from_given_seed_node(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
