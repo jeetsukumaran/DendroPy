@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Parsing of NEWICK-format tree from a stream.
+Writing of NEWICK-format tree to a stream.
 """
 
 import re
