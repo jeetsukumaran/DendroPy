@@ -421,7 +421,7 @@ class DataWriter(IOService):
         self._write(
                 stream=stream,
                 taxon_namespaces=None,
-                tree_lists=[tree],
+                tree_lists=[[tree]],
                 char_matrices=None,
                 global_annotations_target=None)
 

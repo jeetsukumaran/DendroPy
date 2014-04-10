@@ -1970,7 +1970,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
         """
         writer = dataio.get_writer(schema, **kwargs)
-        writer.write_tree_list(self, stream)
+        writer.write_tree(self, stream)
 
     ###########################################################################
     ### Node and Edge Collection Access
