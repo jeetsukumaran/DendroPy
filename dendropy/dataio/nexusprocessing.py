@@ -280,6 +280,34 @@ def parse_comment_metadata_to_annotations(
 ###############################################################################
 ## NEWICK/NEXUS formatting support.
 
+def format_annotation_as_comments(annotated, nhx=False):
+    if not annotated.annotations:
+        return ""
+    parts = []
+    for annote in annotated.annotations:
+        if annote.is_hidden:
+            continue
+        key = annote.name
+        value = annote.value
+        if isinstance(value, list) or isinstance(value, tuple):
+            items = ",".join(str(i) for i in value)
+            parts.append("%s={%s}" % (key, items))
+        elif isinstance(value, dict):
+            ### TODO ###
+            pass
+        else:
+            parts.append("%s=%s" % (key, value))
+    if nhx:
+        prefix = "[&&NHX:"
+        separator = ":"
+        suffix = "]"
+    else:
+        prefix = "[&"
+        separator = ","
+        suffix = "]"
+    body = separator.join(parts)
+    return prefix + body + suffix
+
 def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
     """
     Properly protects a NEXUS token.

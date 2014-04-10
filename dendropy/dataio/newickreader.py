@@ -184,17 +184,17 @@ class NewickReader(ioservice.DataReader):
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
         self.rooting = kwargs.pop("rooting", "default-unrooted")
-        self.edge_len_type = kwargs.get("edge_len_type", float)
-        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
-        self.store_tree_weights = kwargs.get("store_tree_weights", False)
-        self.encode_splits = kwargs.get("encode_splits", False)
-        self.finish_node_func = kwargs.get("finish_node_func", None)
-        self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
+        self.edge_len_type = kwargs.pop("edge_len_type", float)
+        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', False)
+        self.store_tree_weights = kwargs.pop("store_tree_weights", False)
+        self.encode_splits = kwargs.pop("encode_splits", False)
+        self.finish_node_func = kwargs.pop("finish_node_func", None)
+        self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
-        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
-        self.suppress_external_node_taxa = kwargs.get("suppress_external_node_taxa", False)
-        self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
-        self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', False)
+        self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
+        self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
+        self.allow_duplicate_taxon_labels = kwargs.pop("allow_duplicate_taxon_labels", False)
+        self.hyphens_as_tokens = kwargs.pop('hyphens_as_tokens', False)
 
     def tree_iter(self,
             stream,
@@ -229,7 +229,7 @@ class NewickReader(ioservice.DataReader):
             if tree is None:
                 raise StopIteration
 
-    def read(self,
+    def _read(self,
             stream,
             taxon_namespace_factory=None,
             tree_list_factory=None,

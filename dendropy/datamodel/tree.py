@@ -1955,8 +1955,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
         Parameters
         ----------
-        `schema` : string
-            <ust be a recognized and tree file schema, such as "nexus",
+        stream : file or file-like object
+            Destination for data.
+        schema : string
+            Must be a recognized and tree file schema, such as "nexus",
             "newick", etc, for which a specialized tree list writer is
             available. If this is not implemented for the schema specified, then
             a UnsupportedSchemaError is raised.
@@ -1965,8 +1967,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.
+
         """
-        raise NotImplementedError
+        writer = dataio.get_writer(schema, **kwargs)
+        writer.write_tree_list(self, stream)
 
     ###########################################################################
     ### Node and Edge Collection Access
@@ -4561,6 +4565,30 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
                 **kwargs)
         new_size = len(self._trees)
         return new_size - cur_size
+
+    def write(self, stream, schema, **kwargs):
+        """
+        Writes out `self` in `schema` format to a destination given by
+        file-like object `stream`.
+
+        Parameters
+        ----------
+        stream : file or file-like object
+            Destination for data.
+        schema : string
+            Must be a recognized and tree file schema, such as "nexus",
+            "newick", etc, for which a specialized tree list writer is
+            available. If this is not implemented for the schema specified, then
+            a UnsupportedSchemaError is raised.
+
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments will be passed directly to the writer for the
+            specified schema. See documentation for details on keyword
+            arguments supported by writers of various schemas.
+
+        """
+        writer = dataio.get_writer(schema, **kwargs)
+        writer.write_tree(self, stream)
 
     ###########################################################################
     ### List Interface

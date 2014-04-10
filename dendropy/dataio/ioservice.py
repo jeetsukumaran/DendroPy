@@ -56,12 +56,12 @@ class DataReader(IOService):
         Parameters
         ----------
 
-        **kwargs : keyword arguments
+        **kwargs : schema- and implementation-specific keyword arguments
 
         """
         IOService.__init__(self, **kwargs)
 
-    def read(self,
+    def _read(self,
             stream,
             taxon_namespace_factory=None,
             tree_list_factory=None,
@@ -186,24 +186,20 @@ class DataReader(IOService):
             exclude_chars=False,
             global_annotations_target=None):
         """
-        Populates the given `DataSet` object from external data source.
+        Populates the given :class:`DataSet` object from external data source.
 
         Parameters
         ----------
 
         stream : file or file-like object
             Source of data.
-
-        dataset : DataSet object
-            The target `DataSet` to populate/build.
-
-        exclude_trees : boolean, default = False
+        dataset : :class:`DataSet` object
+            The target :class:`DataSet` to populate/build.
+        exclude_trees : boolean, default: False
             If set to `True`, tree data will not be read from the source.
-
-        exclude_chars : boolean, default = False
+        exclude_chars : boolean, default: False
             If set to `True`, character data will not be read from the source.
-
-        global_annotations_target : `Annotable` object
+        global_annotations_target : :class:`Annotable` object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
             `None`, then such metadata or annotations will not be stored.
@@ -220,7 +216,6 @@ class DataReader(IOService):
         else:
             tree_list_factory = dataset.new_tree_list
         global_annotations_target = dataset
-
 
     def read_trees(self,
             stream,
@@ -322,7 +317,7 @@ class DataReader(IOService):
 
         """
         # `product` is a namedtuple("DataReaderProducts", ["taxon_namespaces", "tree_lists", "char_matrices"])
-        product = self.read(stream=stream,
+        product = self._read(stream=stream,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=tree_list_factory,
                 char_matrix_factory=None,
@@ -345,15 +340,104 @@ class DataWriter(IOService):
         Constructs and configures a `DataWriter` object by "harvesting" keyword
         arguments and setting state accordingly. Keyword arguments recognized
         and processed will be removed from the keyword argument dictionary.
+
+        Parameters
+        ----------
+
+        **kwargs : schema- and implementation-specific keyword arguments
+
         """
         IOService.__init__(self, **kwargs)
 
-    def write_dataset(self, dataset, stream):
+    def _write(self,
+            stream,
+            taxon_namespaces=None,
+            tree_lists=None,
+            char_matrices=None,
+            global_annotations_target=None):
+        """
+        Deriving classes should implement this method to information to `stream`
+        in schema-specific formatting.
+
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Destination for data.
+        taxon_namespaces : Iterable of :class:`TaxonNamespace` objects
+            Collection of :class:`TaxonNamespace` objects to be serialized.
+        tree_lists : Iterable of :class:`TreeList` objects
+            Collection of :class:`TreeList` objects to be serialized.
+        char_matrices : Iterable of :class:`CharacterMatrix` objects
+            Collection of :class:`CharacterMatrix` objects to be serialized.
+        global_annotations_target : `Annotable` object
+            Any object that will be the source (or subject, in the grammatical
+            sense) of general metadata or annotations for the data. If
+            `None`, then such metadata or annotations will not be stored.
+
+        """
         raise NotImplementedError
+
+    def write_dataset(self,
+            dataset,
+            stream,
+            exclude_trees,
+            exclude_chars,
+            ):
+        """
+        Writes the given :class:`DataSet` object to the file-like object `stream`.
+
+        stream : file or file-like object
+            Destination for data.
+        dataset : :class:`DataSet` object
+            The :class:`DataSet` to write.
+        exclude_trees : boolean, default: False
+            If set to `True`, tree data will not be written to the destination.
+        exclude_chars : boolean, default: False
+            If set to `True`, character data will not be written to the destination.
+        global_annotations_target : :class:`Annotable` object
+            Any object that will be the source (or subject, in the grammatical
+            sense) of general metadata or annotations for the data. If
+            `None`, then such metadata or annotations will not be stored.
+        """
+        tree_lists = dataset.tree_lists if not exclude_trees else None
+        char_matrices = dataset.char_matrices if not exclude_trees else None
+        self.write(
+                stream=stream,
+                taxon_namespaces=dataset.taxon_namespaces,
+                tree_lists=tree_lists,
+                char_matrices=char_matrices,
+                global_annotations_target=dataset)
 
     def write_tree_list(self, tree_list, stream):
-        raise NotImplementedError
+        self._write(
+                stream=stream,
+                taxon_namespaces=None,
+                tree_lists=[tree_list],
+                char_matrices=None,
+                global_annotations_target=None)
+
+    def write_tree(self, tree, stream):
+        self._write(
+                stream=stream,
+                taxon_namespaces=None,
+                tree_lists=[tree],
+                char_matrices=None,
+                global_annotations_target=None)
 
     def write_char_matrices(self, char_matrix_list, stream):
-        raise NotImplementedError
+        self._write(
+                stream=stream,
+                taxon_namespaces=None,
+                tree_lists=None,
+                char_matrices=char_matrix_list,
+                global_annotations_target=None)
+
+    def write_char_matrix(self, char_matrix, stream):
+        self._write(
+                stream=stream,
+                taxon_namespaces=None,
+                tree_lists=None,
+                char_matrices=[char_matrix],
+                global_annotations_target=None)
 

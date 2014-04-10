@@ -19,6 +19,7 @@
 
 import collections
 from dendropy.dataio import newickreader
+from dendropy.dataio import newickwriter
 from dendropy.utility import container
 
 _IOServices = collections.namedtuple(
@@ -27,7 +28,7 @@ _IOServices = collections.namedtuple(
         )
 
 _IO_SERVICE_REGISTRY = container.CaseInsensitiveDict()
-_IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, None, None)
+_IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, None)
 
 def get_reader(schema, **kwargs):
     try:
@@ -42,5 +43,12 @@ def get_reader(schema, **kwargs):
 def get_writer(
         schema,
         **kwargs):
-    pass
+    try:
+        writer_type =_IO_SERVICE_REGISTRY[schema].writer
+        if writer_type is None:
+            raise KeyError
+        writer = writer_type(**kwargs)
+        return writer
+    except KeyError:
+        raise NotImplementedError("'{}' is not a supported data writing schema".format(schema))
 
