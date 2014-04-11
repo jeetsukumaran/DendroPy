@@ -524,7 +524,7 @@ class NewickReader(ioservice.DataReader):
             comment string field name is used directly).
         `field_value_types` : dict
             A dictionary mapping field names (as given in the comment
-            string) to the value type (e.g. {"node-age" : float}.
+            string) to the value type (e.g. {"node-age" : float}).
         `strip_leading_trailing_spaces` : boolean
             Remove whitespace from comments.
 
@@ -540,6 +540,7 @@ class NewickReader(ioservice.DataReader):
             field_name_map=field_name_map,
             field_value_types=field_value_types,
             strip_leading_trailing_spaces=strip_leading_trailing_spaces)
+
 
     def _process_node_comments(self, node, node_comments):
         for comment in node_comments:
