@@ -939,7 +939,7 @@ class NexmlWriter(iosys.DataWriter):
         """
         body = StringIO()
         self.write_annotations(self.dataset, body, indent_level=1)
-        self.write_comments(self.dataset, body, indent_level=1)
+        self.write_comments(self.dataset, body, indent_level=1, newline=True)
         self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=body)
         if not self.exclude_chars:
             self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=body)
@@ -966,7 +966,7 @@ class NexmlWriter(iosys.DataWriter):
             # annotate
 #             self.write_extensions(taxon_set, dest, indent_level=indent_level+1)
             self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
-            self.write_comments(taxon_set, dest, indent_level=indent_level+1)
+            self.write_comments(taxon_set, dest, indent_level=indent_level+1, newline=True)
             for taxon in taxon_set:
                 dest.write(self.indent * (indent_level+1))
                 parts = []
@@ -978,7 +978,7 @@ class NexmlWriter(iosys.DataWriter):
                     dest.write("<%s>\n" % ' '.join(parts))
                     # self.write_extensions(taxon, dest, indent_level=indent_level+2)
                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
-                    self.write_comments(taxon, dest, indent_level=indent_level+2)
+                    self.write_comments(taxon, dest, indent_level=indent_level+2, newline=True)
                     dest.write(self.indent * (indent_level+1))
                     dest.write("</otu>\n")
                 else:
@@ -1001,7 +1001,7 @@ class NexmlWriter(iosys.DataWriter):
             # annotate
 #             self.write_extensions(tree_list, dest, indent_level=indent_level+1)
             self.write_annotations(tree_list, dest, indent_level=indent_level+1)
-            self.write_comments(tree_list, dest, indent_level=indent_level+1)
+            self.write_comments(tree_list, dest, indent_level=indent_level+1, newline=True)
 
             for tree in tree_list:
                 self.write_tree(tree=tree, dest=dest, indent_level=2)
@@ -1065,7 +1065,7 @@ class NexmlWriter(iosys.DataWriter):
             # annotate
 #             self.write_extensions(char_matrix, dest, indent_level=indent_level+1)
             self.write_annotations(char_matrix, dest, indent_level=indent_level+1)
-            self.write_comments(char_matrix, dest, indent_level=indent_level+1)
+            self.write_comments(char_matrix, dest, indent_level=indent_level+1, newline=True)
             state_alphabet_parts = []
             if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
                 for state_alphabet in char_matrix.state_alphabets:
@@ -1145,7 +1145,7 @@ class NexmlWriter(iosys.DataWriter):
 
 #             self.write_extensions(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
             self.write_annotations(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
-            self.write_comments(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
+            self.write_comments(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1, newline=True)
 
             for taxon, row in char_matrix.taxon_seq_map.items():
                 dest.write(self.indent*(indent_level+2))
@@ -1158,7 +1158,7 @@ class NexmlWriter(iosys.DataWriter):
 
 #                 self.write_extensions(row, dest, indent_level=indent_level+3)
                 self.write_annotations(row, dest, indent_level=indent_level+3)
-                self.write_comments(row, dest, indent_level=indent_level+3)
+                self.write_comments(row, dest, indent_level=indent_level+3, newline=True)
 
                 if ( (self.markup_as_sequences is not None and self.markup_as_sequences is False)
                         or (hasattr(char_matrix, 'markup_as_sequences') and not char_matrix.markup_as_sequences)
@@ -1177,7 +1177,7 @@ class NexmlWriter(iosys.DataWriter):
                             dest.write('>\n')
                             # self.write_extensions(cell, dest, indent_level=indent_level+4)
                             self.write_annotations(cell, dest, indent_level=indent_level+4)
-                            self.write_comments(cell, dest, indent_level=indent_level+4)
+                            self.write_comments(cell, dest, indent_level=indent_level+4, newline=True)
                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                         else:
                             dest.write('/>\n')
@@ -1239,7 +1239,7 @@ class NexmlWriter(iosys.DataWriter):
         # annotate
 #         self.write_extensions(tree, dest, indent_level=indent_level+1)
         self.write_annotations(tree, dest, indent_level=indent_level+1)
-        self.write_comments(tree, dest, indent_level=indent_level+1)
+        self.write_comments(tree, dest, indent_level=indent_level+1, newline=True)
 
         for node in tree.preorder_node_iter():
             self.write_node(node=node, dest=dest, indent_level=indent_level+1)
@@ -1313,7 +1313,7 @@ class NexmlWriter(iosys.DataWriter):
             dest.write('>\n')
 #             self.write_extensions(node, dest, indent_level=indent_level+1)
             self.write_annotations(node, dest, indent_level=indent_level+1)
-            self.write_comments(node, dest, indent_level=indent_level+1)
+            self.write_comments(node, dest, indent_level=indent_level+1, newline=True)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
             dest.write(' />\n')
@@ -1352,16 +1352,20 @@ class NexmlWriter(iosys.DataWriter):
                     self.write_annotations(edge, dest,
                                            indent_level=indent_level+1)
                     self.write_comments(edge, dest,
-                                           indent_level=indent_level+1)
+                                           indent_level=indent_level+1, newline=True)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
                 else:
                     dest.write(' />\n')
 
-    def write_comments(self, commented, dest, indent_level=0):
+    def write_comments(self, commented, dest, indent_level=0, newline=False):
         if hasattr(commented, "comments") and commented.comments:
+            if newline:
+                post = "\n"
+            else:
+                post = ""
             for comment in commented.comments:
-                dest.write('%s<!-- %s -->' % ((self.indent * indent_level),
-                    comment))
+                dest.write('%s<!-- %s -->%s' % ((self.indent * indent_level),
+                    comment, post))
 
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
