@@ -6,6 +6,7 @@ from dendropy.test.support import pathmap
 tree_file_titles = [
     'standard-test-trees-n14-unrooted',
     'standard-test-trees-n10-rooted',
+    'standard-test-trees-annotated',
 ]
 
 schema_extension_map = {
