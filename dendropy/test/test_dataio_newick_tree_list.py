@@ -25,6 +25,8 @@ import os
 import unittest
 import dendropy
 import random
+import collections
+import json
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
@@ -34,18 +36,45 @@ _LOG = get_logger(__name__)
 
 class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
 
+    schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
+
+    def compare_comments(self,
+            item,
+            check,
+            metadata_extracted=False):
+        check_comments = list(check["comments"])
+        item_comments = list(item.comments)
+        for comment in item.comments:
+            try:
+                check_comments.remove(comment)
+            except ValueError:
+                pass
+            else:
+                item_comments.remove(comment)
+        self.assertEqual(check_comments, [])
+        if metadata_extracted:
+            self.assertEqual(item_comments, [])
+        else:
+            item_metadata_comments = ",".join(item_comments)
+            if item_metadata_comments.startswith("&"):
+                item_metadata_comments = item_metadata_comments[1:]
+            check_metadata_comments = ",".join(check["metadata_comments"])
+            self.assertEqual(item_metadata_comments, check_metadata_comments)
+
     def compare_to_check_tree(self,
             tree,
             tree_file_title,
             check_tree_idx,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=False):
-        check_tree = datagen_standard_file_test_trees.tree_directory[tree_file_title][check_tree_idx]
-        self.assertEqual(tree.comments, check_tree.comments)
-        self.assertIs(tree.is_rooted, check_tree.rooted)
+            suppress_external_node_taxa=False,
+            metadata_extracted=False):
+        check_tree = datagen_standard_file_test_trees.tree_references[tree_file_title][str(check_tree_idx)]
+        self.compare_comments(tree, check_tree, metadata_extracted)
+        self.assertIs(tree.is_rooted, check_tree["is_rooted"])
         seen_taxa = []
         node_labels = []
         num_visited_nodes = 0
+        return True
         for node_idx, node in enumerate(tree):
             num_visited_nodes += 1
             if node.taxon is not None:
@@ -131,13 +160,16 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
             tree_file_title,
             tree_offset=0,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=False):
+            suppress_external_node_taxa=False,
+            metadata_extracted=False):
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
         if tree_offset < 0:
-            if abs(tree_offset) > datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]:
+            if abs(tree_offset) > expected_number_of_trees:
                 tree_offset = 0
             else:
-                tree_offset = datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title] + tree_offset
-        self.assertEqual(len(tree_list), datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-tree_offset)
+                tree_offset = expected_number_of_trees + tree_offset
+        self.assertEqual(len(tree_list), expected_number_of_trees-tree_offset)
         # for tree_idx, (tree, check_tree) in enumerate(zip(tree_list, datagen_standard_file_test_trees.tree_directory[tree_file_title])):
         for tree_idx, tree in enumerate(tree_list):
             _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
@@ -147,308 +179,316 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     tree_file_title=tree_file_title,
                     check_tree_idx=tree_idx + tree_offset,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
-                    suppress_external_node_taxa=suppress_external_node_taxa)
+                    suppress_external_node_taxa=suppress_external_node_taxa,
+                    metadata_extracted=metadata_extracted)
 
-    def test_default_newick_get_from_path(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick")
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    def test_default_newick(self):
+        for tree_file_title in datagen_standard_file_test_trees.tree_file_titles:
+            tree_filepath = self.schema_tree_filepaths[tree_file_title]
+            with open(tree_filepath, "r") as src:
+                tree_string = src.read()
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.TreeList.get_from_path, tree_filepath),
+                        (dendropy.TreeList.get_from_stream, tree_stream),
+                        (dendropy.TreeList.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = method(src, "newick")
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            metadata_extracted=False)
 
-    def test_default_newick_get_from_string(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            filepath = pathmap.tree_source_path(tree_filename)
-            fsrc = open(filepath, "r", newline=None)
-            with fsrc:
-                s = fsrc.read()
-            tree_list = dendropy.TreeList.get_from_string(s, "newick")
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_default_newick_get_from_string(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         filepath = pathmap.tree_source_path(tree_filename)
+    #         fsrc = open(filepath, "r", newline=None)
+    #         with fsrc:
+    #             s = fsrc.read()
+    #         tree_list = dendropy.TreeList.get_from_string(s, "newick")
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_default_newick_get_from_stream(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            filepath = pathmap.tree_source_path(tree_filename)
-            fsrc = open(filepath, "r", newline=None)
-            with fsrc:
-                tree_list = dendropy.TreeList.get_from_stream(fsrc, "newick")
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_default_newick_get_from_stream(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         filepath = pathmap.tree_source_path(tree_filename)
+    #         fsrc = open(filepath, "r", newline=None)
+    #         with fsrc:
+    #             tree_list = dendropy.TreeList.get_from_stream(fsrc, "newick")
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_default_newick_read_from_path(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            n = tree_list.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick")
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_default_newick_read_from_path(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         n = tree_list.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick")
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_default_newick_read_from_string(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            filepath = pathmap.tree_source_path(tree_filename)
-            fsrc = open(filepath, "r", newline=None)
-            with fsrc:
-                s = fsrc.read()
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            n = tree_list.read_from_string(s, "newick")
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_default_newick_read_from_string(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         filepath = pathmap.tree_source_path(tree_filename)
+    #         fsrc = open(filepath, "r", newline=None)
+    #         with fsrc:
+    #             s = fsrc.read()
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         n = tree_list.read_from_string(s, "newick")
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_default_newick_read_from_stream(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            filepath = pathmap.tree_source_path(tree_filename)
-            fsrc = open(filepath, "r", newline=None)
-            with fsrc:
-                n = tree_list.read_from_stream(fsrc, "newick")
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_default_newick_read_from_stream(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         filepath = pathmap.tree_source_path(tree_filename)
+    #         fsrc = open(filepath, "r", newline=None)
+    #         with fsrc:
+    #             n = tree_list.read_from_stream(fsrc, "newick")
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_notaxa_newick_get_from(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList()
-            tree_list = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
+    # def test_notaxa_newick_get_from(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         tree_list = dendropy.TreeList()
+    #         tree_list = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=True)
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=True)
 
-    def test_notaxa_newick_read_from(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            n = tree_list.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
+    # def test_notaxa_newick_read_from(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         n = tree_list.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=True)
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=True)
 
-    def test_all_taxa_newick_get_from(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False)
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False)
+    # def test_all_taxa_newick_get_from(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         tree_list = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 suppress_internal_node_taxa=False,
+    #                 suppress_external_node_taxa=False)
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=False,
+    #                 suppress_external_node_taxa=False)
 
-    def test_all_taxa_newick_read_from(self):
-        taxon_namespaces = set()
-        for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
-            tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            n = tree_list.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False)
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
-            taxon_namespaces.add(tree_list.taxon_namespace)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False)
+    # def test_all_taxa_newick_read_from(self):
+    #     taxon_namespaces = set()
+    #     for tree_filename in datagen_standard_file_test_trees.newick_tree_filenames:
+    #         tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         n = tree_list.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 suppress_internal_node_taxa=False,
+    #                 suppress_external_node_taxa=False)
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.assertNotIn(tree_list.taxon_namespace, taxon_namespaces)
+    #         taxon_namespaces.add(tree_list.taxon_namespace)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 suppress_internal_node_taxa=False,
+    #                 suppress_external_node_taxa=False)
 
-    def test_tree_offset_newick_get_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[1]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        tree_offsets = set([0, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-1, -1, -datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]])
-        while len(tree_offsets) < 8:
-            tree_offsets.add(random.randint(1, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2))
-        while len(tree_offsets) < 12:
-            tree_offsets.add(random.randint(-datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2, -2))
-        for tree_offset in tree_offsets:
-            tree_list = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=tree_offset,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    tree_offset=tree_offset,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_tree_offset_newick_get_from(self):
+    #     tree_file_title = datagen_standard_file_test_trees.tree_file_titles[1]
+    #     tree_filepath = datagen_standard_file_test_trees.tree_filepaths[tree_file_title]
+    #     tree_offsets = set([0, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-1, -1, -datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]])
+    #     while len(tree_offsets) < 8:
+    #         tree_offsets.add(random.randint(1, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2))
+    #     while len(tree_offsets) < 12:
+    #         tree_offsets.add(random.randint(-datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2, -2))
+    #     for tree_offset in tree_offsets:
+    #         tree_list = dendropy.TreeList.get_from_path(
+    #                 tree_filepath,
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=tree_offset,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 tree_offset=tree_offset,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_tree_offset_newick_read_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[1]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        tree_offsets = set([0, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-1, -1, -datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]])
-        while len(tree_offsets) < 8:
-            tree_offsets.add(random.randint(1, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2))
-        while len(tree_offsets) < 12:
-            tree_offsets.add(random.randint(-datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2, -2))
-        for tree_offset in tree_offsets:
-            tree_list = dendropy.TreeList()
-            old_id = id(tree_list)
-            n = tree_list.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=tree_offset,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
-            self.assertEqual(id(tree_list), old_id)
-            self.assertEqual(n, len(tree_list))
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    tree_offset=tree_offset,
-                    suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=False)
+    # def test_tree_offset_newick_read_from(self):
+    #     tree_file_title = datagen_standard_file_test_trees.tree_file_titles[1]
+    #     tree_filepath = datagen_standard_file_test_trees.tree_filepaths[tree_file_title]
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[1]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     tree_offsets = set([0, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-1, -1, -datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]])
+    #     while len(tree_offsets) < 8:
+    #         tree_offsets.add(random.randint(1, datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2))
+    #     while len(tree_offsets) < 12:
+    #         tree_offsets.add(random.randint(-datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title]-2, -2))
+    #     for tree_offset in tree_offsets:
+    #         tree_list = dendropy.TreeList()
+    #         old_id = id(tree_list)
+    #         n = tree_list.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=tree_offset,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
+    #         self.assertEqual(id(tree_list), old_id)
+    #         self.assertEqual(n, len(tree_list))
+    #         self.verify_standard_trees(
+    #                 tree_list=tree_list,
+    #                 tree_file_title=tree_file_title,
+    #                 tree_offset=tree_offset,
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=False)
 
-    def test_tree_offset_without_collection_offset_newick_get_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        with self.assertRaises(TypeError):
-            t = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=None,
-                    tree_offset=0)
+    # def test_tree_offset_without_collection_offset_newick_get_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     with self.assertRaises(TypeError):
+    #         t = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=None,
+    #                 tree_offset=0)
 
-    def test_tree_offset_without_collection_offset_newick_read_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        with self.assertRaises(TypeError):
-            t.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=None,
-                    tree_offset=0)
+    # def test_tree_offset_without_collection_offset_newick_read_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     with self.assertRaises(TypeError):
+    #         t.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=None,
+    #                 tree_offset=0)
 
-    def test_out_of_range_tree_offset_newick_get_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        with self.assertRaises(IndexError):
-            t = dendropy.TreeList.get_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title])
+    # def test_out_of_range_tree_offset_newick_get_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     with self.assertRaises(IndexError):
+    #         t = dendropy.TreeList.get_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title])
 
-    def test_out_of_range_tree_offset_newick_read_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        with self.assertRaises(IndexError):
-            t.read_from_path(
-                    pathmap.tree_source_path(tree_filename),
-                    "newick",
-                    collection_offset=0,
-                    tree_offset=datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title])
+    # def test_out_of_range_tree_offset_newick_read_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     with self.assertRaises(IndexError):
+    #         t.read_from_path(
+    #                 pathmap.tree_source_path(tree_filename),
+    #                 "newick",
+    #                 collection_offset=0,
+    #                 tree_offset=datagen_standard_file_test_trees.expected_number_of_trees[tree_file_title])
 
-    def test_out_of_range_collection_offset_newick_get_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        for collection_offset in [1, -2]:
-            with self.assertRaises(IndexError):
-                t = dendropy.TreeList.get_from_path(
-                        pathmap.tree_source_path(tree_filename),
-                        "newick",
-                        collection_offset=1,
-                        tree_offset=0)
+    # def test_out_of_range_collection_offset_newick_get_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     for collection_offset in [1, -2]:
+    #         with self.assertRaises(IndexError):
+    #             t = dendropy.TreeList.get_from_path(
+    #                     pathmap.tree_source_path(tree_filename),
+    #                     "newick",
+    #                     collection_offset=1,
+    #                     tree_offset=0)
 
-    def test_out_of_range_collection_offset_newick_read_from(self):
-        tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-        tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-        t = dendropy.TreeList()
-        for collection_offset in [1, -2]:
-            with self.assertRaises(IndexError):
-                t.read_from_path(
-                        pathmap.tree_source_path(tree_filename),
-                        "newick",
-                        collection_offset=1,
-                        tree_offset=0)
+    # def test_out_of_range_collection_offset_newick_read_from(self):
+    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
+    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
+    #     t = dendropy.TreeList()
+    #     for collection_offset in [1, -2]:
+    #         with self.assertRaises(IndexError):
+    #             t.read_from_path(
+    #                     pathmap.tree_source_path(tree_filename),
+    #                     "newick",
+    #                     collection_offset=1,
+    #                     tree_offset=0)
 
     # def test_invalid_tree_offset_newick_get_from(self):
     #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
@@ -493,29 +533,29 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
     #                 collection_offset=-1,
     #                 tree_offset=0)
 
-class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
+# class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
-    def test_shared_taxon_namespace(self):
-        tree_filenames = [
-            ("pythonidae.reference-trees.newick", 33), # ntax = 33
-            ("pythonidae.reference-trees.newick", 33), # ntax = 33
-            ("bird_orders.newick", 56), # ntax = 23
-            ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
-            ("pythonidae.reference-trees.newick", 89), # ntax = 33
-            ("bird_orders.newick", 89), # ntax = 23
-            ]
-        common_taxon_namespace = dendropy.TaxonNamespace()
-        prev_expected_ntax = 0
-        for tree_filename, expected_ntax in tree_filenames:
-            self.assertEqual(len(common_taxon_namespace), prev_expected_ntax)
-            tree_filepath = pathmap.tree_source_path(tree_filename)
-            for reps in range(3):
-                tree_list = dendropy.TreeList.get_from_path(
-                        pathmap.tree_source_path(tree_filename),
-                        "newick",
-                        taxon_namespace=common_taxon_namespace)
-                self.assertEqual(len(common_taxon_namespace), expected_ntax)
-            prev_expected_ntax = expected_ntax
+#     def test_shared_taxon_namespace(self):
+#         tree_filenames = [
+#             ("pythonidae.reference-trees.newick", 33), # ntax = 33
+#             ("pythonidae.reference-trees.newick", 33), # ntax = 33
+#             ("bird_orders.newick", 56), # ntax = 23
+#             ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
+#             ("pythonidae.reference-trees.newick", 89), # ntax = 33
+#             ("bird_orders.newick", 89), # ntax = 23
+#             ]
+#         common_taxon_namespace = dendropy.TaxonNamespace()
+#         prev_expected_ntax = 0
+#         for tree_filename, expected_ntax in tree_filenames:
+#             self.assertEqual(len(common_taxon_namespace), prev_expected_ntax)
+#             tree_filepath = pathmap.tree_source_path(tree_filename)
+#             for reps in range(3):
+#                 tree_list = dendropy.TreeList.get_from_path(
+#                         pathmap.tree_source_path(tree_filename),
+#                         "newick",
+#                         taxon_namespace=common_taxon_namespace)
+#                 self.assertEqual(len(common_taxon_namespace), expected_ntax)
+#             prev_expected_ntax = expected_ntax
 
 if __name__ == "__main__":
     unittest.main()
