@@ -151,6 +151,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
             self.process_source_kwargs(**kwargs)
+        self.comments = []
 
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
@@ -622,7 +623,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         iosys.Readable.__init__(self)
         self.seed_node = Node(edge=Edge())
         self.length_type = None
-        self.comments = None
+        self.comments = []
         self._is_rooted = None
         self.weight = None
         if len(args) == 1:
@@ -3121,6 +3122,7 @@ class Edge(base.AnnotatedDataObject):
         self.head_node = head_node
         self.rootedge = rootedge
         self.length = length
+        self.comments = []
 
     def __deepcopy__(self, memo):
         o = self.__class__()

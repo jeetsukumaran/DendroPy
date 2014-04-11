@@ -22,6 +22,7 @@ by both `dendropy.newick` and `dendropy.nexus` modules.
 """
 
 import re
+import json
 from cStringIO import StringIO
 from dendropy import Annotation
 from dendropy.utility import containers
@@ -51,7 +52,9 @@ def format_annotation_as_comments(annotated, nhx=False):
             parts.append("%s={%s}" % (key, items))
         elif isinstance(value, dict):
             ### TODO ###
-            pass
+            raise NotImplementedError("Dictionary annotations cannot be rendered in NEXUS/NEWICK format in this version of DendroPy")
+        elif isinstance(value, str):
+            parts.append("%s=%s" % (key, json.dumps(value)))
         else:
             parts.append("%s=%s" % (key, value))
     if nhx:

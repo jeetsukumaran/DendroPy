@@ -66,6 +66,7 @@ class DataSet(AnnotatedDataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_matrices = containers.OrderedSet()
+        self.comments = []
         self.attached_taxon_set = None
         taxon_set, attach_taxon_set = self.process_taxon_set_directives(**kwargs)
         stream = kwargs.get("stream")

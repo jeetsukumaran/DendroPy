@@ -401,6 +401,8 @@ class NewickWriter(iosys.DataWriter):
         self.edge_label_compose_func = kwargs.get("edge_label_compose_func", None)
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
+        self.collection_comments = kwargs.get("collection_comments", None)
+        self.collection_annotations = kwargs.get("collection_annotations", None)
 
     def write(self, stream):
         """
@@ -424,6 +426,14 @@ class NewickWriter(iosys.DataWriter):
         """
         if self.exclude_trees:
             return
+        if not self.suppress_annotations or self.annotations_as_nhx:
+            annotation_comments = nexustokenizer.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx)
+        else:
+            annotation_comments = ""
+        treelist_comments = self.compose_comment_string(tree_list)
+        stream.write("%s%s" % (
+                annotation_comments,
+                treelist_comments))
         for tree in tree_list:
             self.write_tree(tree, stream)
 
@@ -544,7 +554,8 @@ class NewickWriter(iosys.DataWriter):
         if not self.suppress_annotations or self.annotations_as_nhx:
             node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
-            statement = statement + node_annotation_comments + edge_annotation_comments
+            edge_comments = self.compose_comment_string(node.edge)
+            statement = statement + node_annotation_comments + edge_annotation_comments + edge_comments
         #if self.nhx_key_to_func:
         #    nhx_to_print = []
         #    for k, v in self.nhx_key_to_func.items():

@@ -172,6 +172,7 @@ class TaxonSet(containers.OrderedSet, base.AnnotatedDataObject):
                 else:
                     self.add(TaxonSet._to_taxon(i))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
+        self.comments = []
 
     def __deepcopy__(self, memo):
         """
@@ -505,6 +506,7 @@ class Taxon(base.AnnotatedDataObject):
         if label is not None:
             self.label = label
         self.oid = oid
+        self.comments = []
 
     def __str__(self):
         "String representation of self = taxon name."

@@ -223,6 +223,11 @@ class NexusWriter(iosys.DataWriter):
                 stream.write("\n")
             else:
                 stream.write("[ %s ]\n\n" % self.file_comments)
+        if hasattr(self.dataset, "comments") and not self.suppress_item_comments:
+            dataset_comment_str = self.compose_comment_string(self.dataset, separator="\n")
+            if dataset_comment_str:
+                stream.write(dataset_comment_str)
+                stream.write("\n")
         if not self.suppress_annotations:
             stream.write(nexustokenizer.format_annotation_as_comments(self.dataset, nhx=self.annotations_as_nhx))
             stream.write("\n")
@@ -283,6 +288,8 @@ class NexusWriter(iosys.DataWriter):
         block.append('BEGIN TAXA;')
         if not self.suppress_annotations:
             block.append(nexustokenizer.format_annotation_as_comments(taxon_set, nhx=self.annotations_as_nhx))
+        if hasattr(taxon_set, "comments"):
+            block.extend(self.compose_comment_string(taxon_set, separator=None))
         if self._link_blocks():
             title = self.compose_block_title(taxon_set)
             if title:
@@ -324,6 +331,8 @@ class NexusWriter(iosys.DataWriter):
         block.append('BEGIN TREES;')
         if not self.suppress_annotations:
             block.append(nexustokenizer.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx))
+        if hasattr(tree_list, "comments") and not self.suppress_item_comments:
+            block.extend(self.compose_comment_string(tree_list, separator=None))
         if self._link_blocks():
             title = self.compose_block_title(tree_list)
             if title:
@@ -358,6 +367,10 @@ class NexusWriter(iosys.DataWriter):
                 nexus.append('    %s;' % title)
             if char_matrix.taxon_set.label:
                 nexus.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(char_matrix.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
+        if not self.suppress_annotations:
+            nexus.append(nexustokenizer.format_annotation_as_comments(char_matrix, nhx=self.annotations_as_nhx))
+        if hasattr(char_matrix, "comments") and not self.suppress_item_comments:
+            nexus.extend(self.compose_comment_string(char_matrix, separator=None))
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    MATRIX')
@@ -452,3 +465,20 @@ class NexusWriter(iosys.DataWriter):
 
         return ' '.join(format)
 
+    def compose_comment_string(self, item, separator=""):
+        if not self.suppress_item_comments and item.comments:
+            item_comments = []
+            if isinstance(item.comments, str):
+                item.comments = [item.comments]
+            for comment in item.comments:
+                item_comments.append("[%s]" % comment)
+            if separator is not None:
+                return separator.join(item_comments)
+            else:
+                return item_comments
+        else:
+            if separator is not None:
+                return ""
+            else:
+                return []
+        return item_comment_str
