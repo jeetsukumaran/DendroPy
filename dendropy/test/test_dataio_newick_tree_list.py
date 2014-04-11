@@ -60,6 +60,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     item_comments[idx] = c[1:]
             item_metadata_comments = ",".join(item_comments)
             check_metadata_comments = ",".join(check["metadata_comments"])
+            self.maxDiff = None
             self.assertEqual(item_metadata_comments, check_metadata_comments)
 
     def label_nodes(self, tree):
