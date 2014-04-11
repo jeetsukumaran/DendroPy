@@ -426,6 +426,12 @@ class NewickWriter(iosys.DataWriter):
         """
         if self.exclude_trees:
             return
+        for tree in tree_list:
+            self.write_tree(tree, stream)
+        # In NEWICK format, no clear way to distinguish between
+        # annotations/comments associated with tree collection and
+        # annotations/comments associated with first tree. So we place them at
+        # *end* of document.
         if not self.suppress_annotations or self.annotations_as_nhx:
             annotation_comments = nexustokenizer.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx)
         else:
@@ -434,8 +440,6 @@ class NewickWriter(iosys.DataWriter):
         stream.write("%s%s" % (
                 annotation_comments,
                 treelist_comments))
-        for tree in tree_list:
-            self.write_tree(tree, stream)
 
     def compose_comment_string(self, item):
         if not self.suppress_item_comments and item.comments:
