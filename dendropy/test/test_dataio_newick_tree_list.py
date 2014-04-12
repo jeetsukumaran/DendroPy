@@ -162,12 +162,12 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
 
             edge = node.edge
             check_edge = check_tree["edges"][node.canonical_label]
-            self.assertAlmostEqual(node.edge.length, float(check_edge["length"]))
             if edge.tail_node is None:
                 self.assertEqual(check_edge["tail_node"], "None")
             else:
                 self.assertEqual(edge.tail_node.canonical_label, check_edge["tail_node"])
             self.assertEqual(edge.head_node.canonical_label, check_edge["head_node"])
+            self.assertAlmostEqual(node.edge.length, float(check_edge["length"]))
 
             # This hackery because NEWICK/NEXUS cannot distinguish between
             # node and edge comments, and everything gets lumped in as a
@@ -214,7 +214,10 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                     metadata_extracted=metadata_extracted)
 
     def test_default_newick_get(self):
-        for tree_file_title in datagen_standard_file_test_trees.tree_file_titles:
+        for tree_file_title in [
+                'standard-test-trees-n14-unrooted-treeshapes',
+                'standard-test-trees-n10-rooted-treeshapes',
+                ]:
             tree_filepath = self.schema_tree_filepaths[tree_file_title]
             with open(tree_filepath, "r") as src:
                 tree_string = src.read()
@@ -234,26 +237,60 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                             metadata_extracted=False)
 
     def test_default_newick_read(self):
-        for tree_file_title in datagen_standard_file_test_trees.tree_file_titles:
-            tree_filepath = self.schema_tree_filepaths[tree_file_title]
-            with open(tree_filepath, "r") as src:
-                tree_string = src.read()
-            with open(tree_filepath, "r") as tree_stream:
-                approaches = (
-                        ("read_from_path", tree_filepath),
-                        ("read_from_stream", tree_stream),
-                        ("read_from_string", tree_string),
-                        )
-                for method, src in approaches:
-                    tree_list = dendropy.TreeList()
-                    old_id = id(tree_list)
-                    f = getattr(tree_list, method)
-                    f(src, "newick")
-                    new_id = id(tree_list)
-                    self.assertEqual(old_id, new_id)
-                    self.verify_standard_trees(
-                            tree_list=tree_list,
+        preloaded_tree_file_title = "standard-test-trees-n33-x10a"
+        preloaded_tree_reference = datagen_standard_file_test_trees.tree_references[preloaded_tree_file_title]
+        tree_file_title = "standard-test-trees-n33-x10a"
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                # prepopulate
+                tree_list = dendropy.TreeList.get_from_path(
+                        self.schema_tree_filepaths[preloaded_tree_file_title],
+                        "newick")
+                # check to make sure trees were loaded
+                old_len = len(tree_list)
+                self.assertEqual(old_len, len(tree_list._trees))
+                self.assertEqual(old_len, preloaded_tree_reference["num_trees"])
+                self.verify_standard_trees(tree_list, preloaded_tree_file_title)
+
+                # load
+                old_id = id(tree_list)
+                f = getattr(tree_list, method)
+                trees_read = f(src, "newick")
+                new_id = id(tree_list)
+                self.assertEqual(old_id, new_id)
+
+                # make sure new trees added
+                new_len = len(tree_list)
+                self.assertEqual(new_len, len(tree_list._trees))
+                expected_number_of_trees = tree_reference["num_trees"]
+                self.assertEqual(old_len + expected_number_of_trees, new_len)
+                self.assertEqual(trees_read, expected_number_of_trees)
+
+                # check new trees
+                for tree_idx, tree in enumerate(tree_list[old_len:]):
+                    self.compare_to_check_tree(
+                            tree=tree,
                             tree_file_title=tree_file_title,
+                            check_tree_idx=tree_idx,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            metadata_extracted=False)
+
+                # make sure old ones still intact
+                for tree_idx, tree in enumerate(tree_list[:old_len]):
+                    self.compare_to_check_tree(
+                            tree=tree,
+                            tree_file_title=preloaded_tree_file_title,
+                            check_tree_idx=tree_idx,
                             suppress_internal_node_taxa=True,
                             suppress_external_node_taxa=False,
                             metadata_extracted=False)

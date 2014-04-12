@@ -8,6 +8,8 @@ tree_file_titles = [
     'standard-test-trees-n10-rooted-treeshapes',
     'standard-test-trees-n12-x2',
     'standard-test-trees-n33-x100a',
+    'standard-test-trees-n33-x10a',
+    'standard-test-trees-n33-x10b',
     'standard-test-trees-n33-annotated',
 ]
 
