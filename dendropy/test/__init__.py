@@ -57,9 +57,9 @@ def get_test_suite(test_module_names=None):
     tests = unittest.defaultTestLoader.loadTestsFromNames(test_module_names)
     return unittest.TestSuite(tests)
 
-def run(test_suite=None):
+def run(test_suite=None, verbosity=1):
     "Runs all of the unittests"
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=verbosity)
     if test_suite is None:
         test_suite = get_test_suite()
     runner.run(test_suite)

@@ -49,6 +49,7 @@ def main():
             help="Do not actually run tests: just print list of test module names and exit.")
     parser.add_argument("-v", "--verbosity",
             default=3,
+            type=int,
             help="Messaging noisiness (default: %(default)s)")
     parser.add_argument("--logging-level",
             default=os.environ.get(messaging._LOGGING_LEVEL_ENVAR, "NOTSET"),
@@ -78,7 +79,7 @@ def main():
         sys.exit(0)
 
     test_suite = test.get_test_suite(test_modules)
-    test.run(test_suite)
+    test.run(test_suite, args.verbosity)
 
 if __name__ == '__main__':
     main()
