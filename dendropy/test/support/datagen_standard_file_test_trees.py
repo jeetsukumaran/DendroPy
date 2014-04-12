@@ -28,6 +28,3 @@ for tree_file_title in tree_file_titles:
     with open(tree_filepaths["json"][tree_file_title]) as src:
         tree_references[tree_file_title] = json.load(src)
 
-small_test_tree_title = 'standard-test-trees-n12-x2'
-small_many_test_tree_title = 'standard-test-trees-n33-x100a'
-

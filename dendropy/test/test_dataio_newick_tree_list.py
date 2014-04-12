@@ -260,7 +260,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
 
     def test_selective_taxa_newick_get(self):
         # skip big files
-        tree_file_title = datagen_standard_file_test_trees.small_test_tree_title
+        tree_file_title = "standard-test-trees-n12-x2"
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -287,7 +287,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
 
     def test_selective_taxa_newick_read(self):
         # skip big files
-        tree_file_title = datagen_standard_file_test_trees.small_test_tree_title
+        tree_file_title = "standard-test-trees-n12-x2"
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -317,7 +317,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                                 metadata_extracted=False)
 
     def test_tree_offset_newick_get_from(self):
-        tree_file_title = datagen_standard_file_test_trees.small_many_test_tree_title
+        tree_file_title = "standard-test-trees-n33-x100a"
         tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
