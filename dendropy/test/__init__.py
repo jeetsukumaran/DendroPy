@@ -46,20 +46,20 @@ def get_test_module_names(filter_patterns=None):
                 test_modules.append("dendropy.test." + os.path.splitext(filename)[0])
     return test_modules
 
-def get_test_suite(test_module_names=None):
+def get_test_suite(test_names=None):
     """
-    If `test_module_names` is not `None`, creates a test suite out of those
+    If `test_names` is not `None`, creates a test suite out of those
     modules. Otherwise, creates a test suite from all of the modules in
     `dendropy.test` using the discovery.
     """
-    if test_module_names is None:
-        test_module_names = discover_test_module_paths()
-    tests = unittest.defaultTestLoader.loadTestsFromNames(test_module_names)
+    if test_names is None:
+        test_names = discover_test_module_paths()
+    tests = unittest.defaultTestLoader.loadTestsFromNames(test_names)
     return unittest.TestSuite(tests)
 
-def run(test_suite=None, verbosity=1):
+def run(test_suite=None, verbosity=1, failfast=False):
     "Runs all of the unittests"
-    runner = unittest.TextTestRunner(verbosity=verbosity)
+    runner = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast)
     if test_suite is None:
         test_suite = get_test_suite()
     runner.run(test_suite)

@@ -23,26 +23,33 @@ import sys
 import os
 import argparse
 import collections
+import unittest
 from dendropy.utility import messaging
 from dendropy import test
 
 def main():
-    names = (
-        (None        , ".*"),
-        ("all"       , ".*"),
-        ("datamodel" , ".*_datamodel_.*"),
-        ("dataio"    , ".*_dataio_.*"),
-        ("newick"    , ".*_newick_.*"),
-        ("tree"      , ".*_tree_.*"),
+    group_names = (
+        ("@all"       , ".*"),
+        ("@datamodel" , ".*_datamodel_.*"),
+        ("@dataio"    , ".*_dataio_.*"),
+        ("@newick"    , ".*_newick_.*"),
+        ("@tree"      , ".*_tree_.*"),
         )
-    test_group_patterns = collections.OrderedDict(names)
+    test_group_patterns = collections.OrderedDict(group_names)
+    test_group_names = list(test_group_patterns)
     parser = argparse.ArgumentParser()
-    parser.add_argument("test_groups",
-            metavar="GROUP",
-            action="append",
-            nargs="?",
-            choices=list(test_group_patterns.keys()),
-            help="Groups of tests to run. May be specified multiple times. Defaults to 'all'.")
+    parser.add_argument("test_names",
+            metavar="TEST",
+            nargs="*",
+            help= "Name of test(s) to run. These can be (dot-)qualified module, test"
+            "case, or test name (e.g., 'test_module', 'test_module.TestCase1',"
+            "'test_module.TestCase1.test1') or special pre-defined groups of"
+            "tests (e.g., '@datamodel', '@dataio'). Type '--help-testgroups' for"
+            "a list of available groups.")
+    parser.add_argument("--help-testgroups",
+            action="store_true",
+            default=False,
+            help="Show list of available test groups and exit.")
     parser.add_argument("--list-only",
             action="store_true",
             default=False,
@@ -55,31 +62,68 @@ def main():
             default=os.environ.get(messaging._LOGGING_LEVEL_ENVAR, "NOTSET"),
             choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             help="Test logging level (default: '%(default)s')")
+    parser.add_argument("-f", "--fail-fast",
+            action="store_true",
+            default=False,
+            help="Stop the test run on the first error or failure.")
     args = parser.parse_args()
+
+    if args.help_testgroups:
+        out = sys.stdout
+        out.write("Available special test groups:\n")
+        for name in test_group_names:
+            out.write("  - {}\n".format(name))
+        sys.exit(0)
 
     # Set logging level:
     os.environ[messaging._LOGGING_LEVEL_ENVAR] = args.logging_level
     _LOG = messaging.get_logger("dendropy")
 
     # get test modules
-    filter_patterns = [test_group_patterns[n] for n in args.test_groups]
-    test_modules = test.get_test_module_names(filter_patterns)
-    test_modules = sorted(set(test_modules))
+    test_names = []
+    filter_patterns = []
+    for name in args.test_names:
+        if name is None:
+            continue
+        if name.startswith("@"):
+            try:
+                filter_patterns.append(test_group_patterns[name])
+            except KeyError:
+                sys.exit("Unrecognized test group name '{}'. Accepted names: {}".format(name, test_group_names))
+        else:
+            if not name.startswith("dendropy.test."):
+                if name.startswith("test."):
+                    name = "dendropy." + name
+                else:
+                    name = "dendropy.test." + name
+            test_names.append(name)
+
+    if not test_names and not filter_patterns:
+        test_names = test.get_test_module_names() # get all
+    if filter_patterns:
+        test_names.extend(test.get_test_module_names(filter_patterns))
+    test_names = sorted(set(test_names))
 
     # 0: nothing
     # 1: errors and mishaps only + 0
     # 2: warnings + 1
     # 3: general messages + 2
     if args.verbosity >= 3 or args.list_only:
-        sys.stderr.write("DendroPy test modules to be run:\n")
-        for mp in test_modules:
-            sys.stderr.write(" + {}\n".format(mp))
+        if args.list_only:
+            out = sys.stdout
+        else:
+            out = sys.stderr
+        out.write("DendroPy tests to be run:\n")
+        for mp in test_names:
+            out.write(" + {}\n".format(mp))
 
     if args.list_only:
         sys.exit(0)
 
-    test_suite = test.get_test_suite(test_modules)
-    test.run(test_suite, args.verbosity)
+    tests = unittest.defaultTestLoader.loadTestsFromNames(test_names)
+    test_suite = unittest.TestSuite(tests)
+    test_runner = unittest.TextTestRunner(verbosity=args.verbosity, failfast=args.fail_fast)
+    test_runner.run(test_suite)
 
 if __name__ == '__main__':
     main()

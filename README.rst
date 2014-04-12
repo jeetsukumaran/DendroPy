@@ -32,15 +32,30 @@ Tests can be run by typing::
 
     $ python -m dendropy.test
 
-You can run specific sub-groups of tests, e.g.::
+By default, all tests are run. You can run specific by providing the
+fully-qualified name of the modules, test cases, or specific test methods to
+run, e.g.::
 
-    $ python -m dendropy.test datamodel
-    $ python -m dendropy.test dataio
+    $ python -m dendropy.test test_tokenizer
+    $ python -m dendropy.test test_tokenizer.TestCase
+    $ python -m dendropy.test test_tokenizer.TestCase.test1
+    $ python -m dendropy.test test_tokenizer test_datamodel_taxon
 
-And select the level at which the test progress is logged, e.g.::
+Or special pre-defined sub-groups of tests, e.g.::
+
+    $ python -m dendropy.test @datamodel
+    $ python -m dendropy.test @dataio
+    $ python -m dendropy.test @datamodel @newick
+
+A list of all available sub-groups can be seen by::
+
+    $ python -m dendropy.test --help-testgroups
+
+For any tests run, you can set the level at which the test progress is logged
+by::
 
     $ python -m dendropy.test -l DEBUG all
 
 For all options, type::
 
-    $ python -m dendrop.test --help
+    $ python -m dendropy.test --help
