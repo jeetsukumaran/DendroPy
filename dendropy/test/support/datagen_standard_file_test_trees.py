@@ -8,6 +8,7 @@ tree_file_titles = [
     'standard-test-trees-n10-rooted',
     'standard-test-trees-annotated',
     'standard-test-trees-small',
+    'standard-test-trees-small-many',
 ]
 
 schema_extension_map = {
@@ -28,4 +29,5 @@ for tree_file_title in tree_file_titles:
         tree_references[tree_file_title] = json.load(src)
 
 small_test_tree_title = 'standard-test-trees-small'
+small_many_test_tree_title = 'standard-test-trees-small-many'
 
