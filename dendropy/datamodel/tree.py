@@ -4308,16 +4308,16 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
                         tree_list_factory=tree_list.__class__,
                         global_annotations_target=None)
             if collection_offset < 0:
-                raise IndexError("Collection offset out of range: {} (minimum offset = 0)".format(collection_offset))
+                raise IndexError("Collection offset out of range: {} (minimum valid tree offset = 0)".format(collection_offset))
             if collection_offset >= len(tree_lists):
-                raise IndexError("Collection offset out of range: {} (number of collecitons = {}, maximum offset = {})".format(collection_offset, len(tree_lists), len(tree_lists)-1))
+                raise IndexError("Collection offset out of range: {} (number of collections = {}, maximum valid collection offset = {})".format(collection_offset, len(tree_lists), len(tree_lists)-1))
             target_tree_list = tree_lists[collection_offset]
             tree_list.copy_annotations_from(target_tree_list)
             if tree_offset is not None:
                 # if tree_offset < 0:
                 #     raise IndexError("Tree offset out of range: {} (minimum offset = 0)".format(tree_offset))
                 if tree_offset >= len(target_tree_list):
-                    raise IndexError("Tree offset out of range: {} (collection size = {}, maximum offset = {})".format(tree_offset, len(target_tree_list), len(target_tree_list)-1))
+                    raise IndexError("Tree offset out of range: {} (number of trees in source = {}, maximum valid tree offset = {})".format(tree_offset, len(target_tree_list), len(target_tree_list)-1))
                 for tree in target_tree_list[tree_offset:]:
                     tree_list._trees.append(tree)
             else:
