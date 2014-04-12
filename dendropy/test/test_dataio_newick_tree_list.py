@@ -317,7 +317,7 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                                 metadata_extracted=False)
 
     def test_tree_offset_newick_get_from(self):
-        tree_file_title = datagen_standard_file_test_trees.tree_file_titles[0]
+        tree_file_title = datagen_standard_file_test_trees.small_many_test_tree_title
         tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
