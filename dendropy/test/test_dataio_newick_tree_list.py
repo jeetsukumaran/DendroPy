@@ -516,72 +516,29 @@ class NewickTreeListReaderStandardTestTreeTest(unittest.TestCase):
                 with self.assertRaises(IndexError):
                     f(src, "newick", collection_offset=1, tree_offset=0)
 
-    # def test_invalid_tree_offset_newick_get_from(self):
-    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-    #     with self.assertRaises(IndexError):
-    #         t = dendropy.TreeList.get_from_path(
-    #                 pathmap.tree_source_path(tree_filename),
-    #                 "newick",
-    #                 collection_offset=0,
-    #                 tree_offset=-1)
+class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
-    # def test_invalid_tree_offset_newick_read_from(self):
-    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-    #     t = dendropy.TreeList()
-    #     with self.assertRaises(IndexError):
-    #         t.read_from_path(
-    #                 pathmap.tree_source_path(tree_filename),
-    #                 "newick",
-    #                 collection_offset=0,
-    #                 tree_offset=-1)
-
-    # def test_invalid_collection_offset_newick_get_from(self):
-    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-    #     t = dendropy.TreeList()
-    #     with self.assertRaises(IndexError):
-    #         t = dendropy.TreeList.get_from_path(
-    #                 pathmap.tree_source_path(tree_filename),
-    #                 "newick",
-    #                 collection_offset=-1,
-    #                 tree_offset=0)
-
-    # def test_invalid_collection_offset_newick_read_from(self):
-    #     tree_filename = datagen_standard_file_test_trees.newick_tree_filenames[0]
-    #     tree_file_title = os.path.splitext(os.path.basename(tree_filename))[0]
-    #     t = dendropy.TreeList()
-    #     with self.assertRaises(IndexError):
-    #         n = t.read_from_path(
-    #                 pathmap.tree_source_path(tree_filename),
-    #                 "newick",
-    #                 collection_offset=-1,
-    #                 tree_offset=0)
-
-# class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
-
-#     def test_shared_taxon_namespace(self):
-#         tree_filenames = [
-#             ("pythonidae.reference-trees.newick", 33), # ntax = 33
-#             ("pythonidae.reference-trees.newick", 33), # ntax = 33
-#             ("bird_orders.newick", 56), # ntax = 23
-#             ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
-#             ("pythonidae.reference-trees.newick", 89), # ntax = 33
-#             ("bird_orders.newick", 89), # ntax = 23
-#             ]
-#         common_taxon_namespace = dendropy.TaxonNamespace()
-#         prev_expected_ntax = 0
-#         for tree_filename, expected_ntax in tree_filenames:
-#             self.assertEqual(len(common_taxon_namespace), prev_expected_ntax)
-#             tree_filepath = pathmap.tree_source_path(tree_filename)
-#             for reps in range(3):
-#                 tree_list = dendropy.TreeList.get_from_path(
-#                         pathmap.tree_source_path(tree_filename),
-#                         "newick",
-#                         taxon_namespace=common_taxon_namespace)
-#                 self.assertEqual(len(common_taxon_namespace), expected_ntax)
-#             prev_expected_ntax = expected_ntax
+    def test_shared_taxon_namespace(self):
+        tree_filenames = [
+            ("pythonidae.reference-trees.newick", 33), # ntax = 33
+            ("pythonidae.reference-trees.newick", 33), # ntax = 33
+            ("bird_orders.newick", 56), # ntax = 23
+            ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
+            ("pythonidae.reference-trees.newick", 89), # ntax = 33
+            ("bird_orders.newick", 89), # ntax = 23
+            ]
+        common_taxon_namespace = dendropy.TaxonNamespace()
+        prev_expected_ntax = 0
+        for tree_filename, expected_ntax in tree_filenames:
+            self.assertEqual(len(common_taxon_namespace), prev_expected_ntax)
+            tree_filepath = pathmap.tree_source_path(tree_filename)
+            for reps in range(3):
+                tree_list = dendropy.TreeList.get_from_path(
+                        pathmap.tree_source_path(tree_filename),
+                        "newick",
+                        taxon_namespace=common_taxon_namespace)
+                self.assertEqual(len(common_taxon_namespace), expected_ntax)
+            prev_expected_ntax = expected_ntax
 
 if __name__ == "__main__":
     unittest.main()

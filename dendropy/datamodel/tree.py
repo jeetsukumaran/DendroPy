@@ -4307,8 +4307,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
                         taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
                         tree_list_factory=tree_list.__class__,
                         global_annotations_target=None)
-            if collection_offset < 0:
-                raise IndexError("Collection offset out of range: {} (minimum valid tree offset = 0)".format(collection_offset))
+            # if collection_offset < 0:
+            #     raise IndexError("Collection offset out of range: {} (minimum valid tree offset = 0)".format(collection_offset))
             if collection_offset >= len(tree_lists):
                 raise IndexError("Collection offset out of range: {} (number of collections = {}, maximum valid collection offset = {})".format(collection_offset, len(tree_lists), len(tree_lists)-1))
             target_tree_list = tree_lists[collection_offset]
