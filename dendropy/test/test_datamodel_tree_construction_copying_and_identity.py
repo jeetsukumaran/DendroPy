@@ -44,6 +44,16 @@ class TestTreeIdentity(unittest.TestCase):
         self.assertEqual(k[self.t2], 2)
         self.assertIn(self.t1, k)
         self.assertIn(self.t2, k)
+        del k[self.t1]
+        self.assertNotIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.t1: 1}
+        k2 = {self.t2: 1}
+        self.assertIn(self.t1, k1)
+        self.assertIn(self.t2, k2)
+        self.assertNotIn(self.t2, k1)
+        self.assertNotIn(self.t1, k2)
 
     def test_hash_set_membership(self):
         k = set()
@@ -52,6 +62,16 @@ class TestTreeIdentity(unittest.TestCase):
         self.assertEqual(len(k), 2)
         self.assertIn(self.t1, k)
         self.assertIn(self.t2, k)
+        k.discard(self.t1)
+        self.assertNotIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.t1: 1}
+        k2 = {self.t2: 1}
+        self.assertIn(self.t1, k1)
+        self.assertIn(self.t2, k2)
+        self.assertNotIn(self.t2, k1)
+        self.assertNotIn(self.t1, k2)
 
 class TestTreeCopying(
         datagen_curated_test_tree.CuratedTestTree,

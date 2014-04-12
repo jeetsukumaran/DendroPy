@@ -59,6 +59,16 @@ class NodeIdentity(unittest.TestCase):
         self.assertEqual(k[self.n2], 2)
         self.assertIn(self.n1, k)
         self.assertIn(self.n2, k)
+        del k[self.n1]
+        self.assertNotIn(self.n1, k)
+        self.assertIn(self.n2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.n1: 1}
+        k2 = {self.n2: 1}
+        self.assertIn(self.n1, k1)
+        self.assertIn(self.n2, k2)
+        self.assertNotIn(self.n2, k1)
+        self.assertNotIn(self.n1, k2)
 
     def test_hash_set_membership(self):
         k = set()
@@ -67,6 +77,16 @@ class NodeIdentity(unittest.TestCase):
         self.assertEqual(len(k), 2)
         self.assertIn(self.n1, k)
         self.assertIn(self.n2, k)
+        k.discard(self.n1)
+        self.assertNotIn(self.n1, k)
+        self.assertIn(self.n2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.n1: 1}
+        k2 = {self.n2: 1}
+        self.assertIn(self.n1, k1)
+        self.assertIn(self.n2, k2)
+        self.assertNotIn(self.n2, k1)
+        self.assertNotIn(self.n1, k2)
 
 class NodeCloning(compare_and_validate.Comparator, unittest.TestCase):
 

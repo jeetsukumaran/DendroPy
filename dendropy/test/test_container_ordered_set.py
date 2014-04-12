@@ -27,7 +27,56 @@ from dendropy.utility import container
 class A(object):
     pass
 
-class TestOrderedSet(unittest.TestCase):
+class TestOrderedSetIdentity(unittest.TestCase):
+
+    def setUp(self):
+        self.t1 = container.OrderedSet(["a", "b"])
+        self.t2 = container.OrderedSet(["a", "b"])
+
+    def test_equal(self):
+        # two distinct :class:`Taxon` objects are never equal, even if all
+        # member values are the same.
+        self.assertNotEqual(self.t1, self.t2)
+
+    def test_hash_dict_membership(self):
+        k = {}
+        k[self.t1] = 1
+        k[self.t2] = 2
+        self.assertEqual(len(k), 2)
+        self.assertEqual(k[self.t1], 1)
+        self.assertEqual(k[self.t2], 2)
+        self.assertIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        del k[self.t1]
+        self.assertNotIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.t1: 1}
+        k2 = {self.t2: 1}
+        self.assertIn(self.t1, k1)
+        self.assertIn(self.t2, k2)
+        self.assertNotIn(self.t2, k1)
+        self.assertNotIn(self.t1, k2)
+
+    def test_hash_set_membership(self):
+        k = set()
+        k.add(self.t1)
+        k.add(self.t2)
+        self.assertEqual(len(k), 2)
+        self.assertIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        k.discard(self.t1)
+        self.assertNotIn(self.t1, k)
+        self.assertIn(self.t2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.t1: 1}
+        k2 = {self.t2: 1}
+        self.assertIn(self.t1, k1)
+        self.assertIn(self.t2, k2)
+        self.assertNotIn(self.t2, k1)
+        self.assertNotIn(self.t1, k2)
+
+class TestOrderedSetCollectionsManagement(unittest.TestCase):
 
     def test_basic_adding(self):
         items = [42, 3.14, "hello", object(), A(), frozenset([1,2,3]), A()]

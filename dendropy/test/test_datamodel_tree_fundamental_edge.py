@@ -45,6 +45,16 @@ class EdgeIdentity(unittest.TestCase):
         self.assertEqual(k[self.e2], 2)
         self.assertIn(self.e1, k)
         self.assertIn(self.e2, k)
+        del k[self.e1]
+        self.assertNotIn(self.e1, k)
+        self.assertIn(self.e2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.e1: 1}
+        k2 = {self.e2: 1}
+        self.assertIn(self.e1, k1)
+        self.assertIn(self.e2, k2)
+        self.assertNotIn(self.e2, k1)
+        self.assertNotIn(self.e1, k2)
 
     def test_hash_set_membership(self):
         k = set()
@@ -53,6 +63,16 @@ class EdgeIdentity(unittest.TestCase):
         self.assertEqual(len(k), 2)
         self.assertIn(self.e1, k)
         self.assertIn(self.e2, k)
+        k.discard(self.e1)
+        self.assertNotIn(self.e1, k)
+        self.assertIn(self.e2, k)
+        self.assertEqual(len(k), 1)
+        k1 = {self.e1: 1}
+        k2 = {self.e2: 1}
+        self.assertIn(self.e1, k1)
+        self.assertIn(self.e2, k2)
+        self.assertNotIn(self.e2, k1)
+        self.assertNotIn(self.e1, k2)
 
 class EdgeCloning(compare_and_validate.Comparator, unittest.TestCase):
 
