@@ -109,7 +109,7 @@ else:
 # Main setup
 
 ### compose long description ###
-long_description = open('README.txt').read()
+long_description = open('README.rst').read()
 long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-{}".format(__version__))
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-{}.tar.gz>`_""".format(__version__))
@@ -149,12 +149,17 @@ setup(name='DendroPy',
       long_description=long_description,
       entry_points = ENTRY_POINTS,
       classifiers = [
-            "Environment :: Console",
             "Intended Audience :: Developers",
             "Intended Audience :: Science/Research",
             "License :: OSI Approved :: BSD License",
             "Natural Language :: English",
             "Operating System :: OS Independent",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.1",
+            "Programming Language :: Python :: 3.2",
+            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3.4",
             "Programming Language :: Python",
             "Topic :: Scientific/Engineering :: Bio-Informatics",
             ],
