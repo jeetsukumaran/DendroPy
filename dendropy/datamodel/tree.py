@@ -774,7 +774,7 @@ class Node(base.DataObject, base.Annotable):
                 self._child_nodes.append(node)
         else:
             if node in self._child_nodes:
-                self._child_nodes.remove(self)
+                self._child_nodes.remove(node)
             self._child_nodes.insert(pos, node)
         return node
 

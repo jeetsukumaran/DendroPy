@@ -78,6 +78,10 @@ The :class:`Node` Class
 
 * Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
+* :meth:`Node.add_child()` no longer accepts `pos` as an argument to indicate
+  position in which a child should be inserted. Use :meth:`Node.insert_child()`
+  for this functionality instead.
+
 The :class:`Edge` Class
 =======================
 
