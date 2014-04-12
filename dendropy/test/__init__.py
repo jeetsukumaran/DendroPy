@@ -24,34 +24,45 @@ import unittest
 import re
 import os
 
-def get_test_file_names():
-    """Get list of test file names."""
+def get_test_module_names(filter_patterns=None):
+    """
+    Discovers test modules. If `filter_patterns` is `None`, then
+    all files in *immediate* directory that begin with 'test' will
+    be added to the set returned. If `filter_patterns` is not `None`, then it
+    should be a list of regular expression patterns, and only files that match
+    at least one of the patterns will be returned.
+    """
+    test_module_pattern = re.compile("^test.*\.py$", re.IGNORECASE)
+    if filter_patterns:
+        filter_pattern = re.compile("(" + r"\|".join(filter_patterns) + ")")
+    else:
+        filter_pattern = None
     path = os.path.dirname(__file__)
-    files = os.listdir(path)
-    test_file_pattern = re.compile("test.*\.py$", re.IGNORECASE)
-    test_files = []
-    for f in files:
-        if test_file_pattern.search(f):
-            test_files.append("dendropy.test." + os.path.splitext(f)[0])
-    return test_files
+    filenames = os.listdir(path)
+    test_modules = []
+    for filename in filenames:
+        if test_module_pattern.match(filename):
+            if filter_pattern is None or filter_pattern.match(filename):
+                test_modules.append("dendropy.test." + os.path.splitext(filename)[0])
+    return test_modules
 
-def get_test_suite(test_file_names=None):
+def get_test_suite(test_module_names=None):
     """
-    Creates a unittest.TestSuite from all of the modules in
-    `dendropy.test`. Right now, assumes (a) no subdirectories (though
-    this can easily be accommodated) and (b) every test to be run is
-    sitting in a module with a file name of 'test*.py', and, conversely,
-    every file with a name of 'test*.py' has test(s) to be run.
+    If `test_module_names` is not `None`, creates a test suite out of those
+    modules. Otherwise, creates a test suite from all of the modules in
+    `dendropy.test` using the discovery.
     """
-    if test_file_names is None:
-        test_file_names = get_test_file_names()
-    tests = unittest.defaultTestLoader.loadTestsFromNames(test_file_names)
+    if test_module_names is None:
+        test_module_names = discover_test_module_paths()
+    tests = unittest.defaultTestLoader.loadTestsFromNames(test_module_names)
     return unittest.TestSuite(tests)
 
-def run():
+def run(test_suite=None):
     "Runs all of the unittests"
     runner = unittest.TextTestRunner()
-    runner.run(get_test_suite())
+    if test_suite is None:
+        test_suite = get_test_suite()
+    runner.run(test_suite)
 
 if __name__ == "__main__":
     run()
