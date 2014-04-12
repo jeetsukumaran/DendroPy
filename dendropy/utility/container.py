@@ -132,6 +132,27 @@ class OrderedSet(object):
                     self._item_set.add(a)
                     self._item_list.append(a)
 
+    def __copy__(self, memo=None):
+        o = OrderedSet(self._item_list)
+        return o
+
+    def __deepcopy__(self, memo=None):
+        other = self.__class__()
+        memo[id(self)] = other
+        memo[id(self._item_set)] = other._item_set
+        memo[id(self._item_list)] = other._item_list
+        for item in self._item_list:
+            c = copy.deepcopy(item, memo)
+            memo[id(item)] = c
+            other._item_set.add(c)
+            other._item_list.append(c)
+        for k in self.__dict__:
+            if k in other.__dict__:
+                continue
+            other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+            memo[id(self.__dict__[k])] = other.__dict__[k]
+        return other
+
     def __len__(self):
         return len(self._item_list)
 
@@ -247,6 +268,9 @@ class OrderedSet(object):
     def __hash__(self):
         return id(self)
     #     return hash( (t for t in self._item_list) )
+
+    def __eq__(self, o):
+        return self._item_list == o._item_list
 
     def __lt__(self, o):
         return self._item_list < o._item_list

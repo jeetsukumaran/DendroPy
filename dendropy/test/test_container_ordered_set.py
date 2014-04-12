@@ -21,22 +21,29 @@ OrderedSet tests.
 """
 
 import random
+import copy
 import unittest
 from dendropy.utility import container
 
 class A(object):
-    pass
+    def __hash__(self):
+        return id(self)
+    def __eq__(self, other):
+        return self is other
+
+class B(object):
+    def __init__(self, v):
+        self.data = [v * random.randint(-1000, 100) for i in range(10)]
+    def __hash__(self):
+        return id(self)
+    def __eq__(self, other):
+        return self.data == other.data
 
 class TestOrderedSetIdentity(unittest.TestCase):
 
     def setUp(self):
         self.t1 = container.OrderedSet(["a", "b"])
         self.t2 = container.OrderedSet(["a", "b"])
-
-    def test_equal(self):
-        # two distinct :class:`Taxon` objects are never equal, even if all
-        # member values are the same.
-        self.assertNotEqual(self.t1, self.t2)
 
     def test_hash_dict_membership(self):
         k = {}
@@ -156,6 +163,27 @@ class TestOrderedSetCollectionsManagement(unittest.TestCase):
             result = [item for item in ordered_set]
             self.assertEqual(result, items)
         self.assertEqual(len(ordered_set), 0)
+
+class TestOrderedSetDeepCopy(unittest.TestCase):
+
+    def setUp(self):
+        self.s1 = container.OrderedSet([0,1,2,3,"a","b","c",])
+        items = [B(1), B(0), B(2), frozenset([1,2,3]), B(3),]
+        self.c1 = container.OrderedSet(items)
+
+    def test_simple_element_deepcopy(self):
+        s2 = copy.deepcopy(self.s1)
+        self.assertEqual(s2, self.s1)
+
+    def test_deepcopy(self):
+        c2 = copy.deepcopy(self.c1)
+        self.assertEqual(len(c2), len(self.c1))
+        for item2, item1 in zip(c2, self.c1):
+            self.assertIsNot(item2, item1)
+            self.assertEqual(item2, item1)
+        for k in self.c1.__dict__:
+            self.assertIn(k, c2.__dict__)
+            self.assertIsNot(c2.__dict__[k], self.c1.__dict__[k])
 
 if __name__ == "__main__":
     unittest.main()
