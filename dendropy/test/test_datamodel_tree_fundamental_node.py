@@ -184,7 +184,7 @@ class TestNodeSetChildNodes(unittest.TestCase):
         for ch in assigned_ch:
             self.assertTrue(ch in parent._child_nodes)
 
-    def test_add_child_at_pos(self):
+    def test_insert_child_at_pos(self):
         new_child_labels = ["c1", "c2", "c3"]
         insert_ch_label = "x1"
         for pos in range(len(new_child_labels)+1):
@@ -192,7 +192,7 @@ class TestNodeSetChildNodes(unittest.TestCase):
             assigned_ch = [dendropy.Node(label=c) for c in new_child_labels]
             parent.set_child_nodes(assigned_ch)
             insert_ch = dendropy.Node(label=insert_ch_label)
-            parent.add_child(insert_ch, pos)
+            parent.insert_child(pos, insert_ch)
             x = 0
             for idx, ch in enumerate(parent._child_nodes):
                 if idx == pos:

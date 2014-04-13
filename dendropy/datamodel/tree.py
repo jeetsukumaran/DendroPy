@@ -734,17 +734,20 @@ class Node(base.DataObject, base.Annotable):
             The (iterable) collection of child nodes to be assigned this node
             as a parent.
         """
-        self._child_nodes = list(child_nodes)
-        for nd in self._child_nodes:
-            nd._parent_node = self
+        self._child_nodes.clear()
+        # Go through add to ensure book-keeping
+        # (e.g. avoiding multiple adds) takes
+        # place.
+        for nd in child_nodes:
+            self.add_child(nd)
 
     def set_children(self, child_nodes):
         """Deprecated: use :meth:`Node.set_child_nodes()` instead."""
         return self.set_child_nodes(child_nodes)
 
-    def add_child(self, node, pos=None):
+    def add_child(self, node):
         """
-        Adds a child node to this node.
+        Adds a child node to this node if it is not already a child.
 
         Results in the `parent_node` attribute of `node` as well as the
         `tail_node` attribute of `node.edge` being assigned to `self`.
@@ -753,9 +756,6 @@ class Node(base.DataObject, base.Annotable):
         ----------
         node : :class:`Node`
             The node to be added as a child of this node.
-        pos : integer, optional
-            If not `None`, the position in the the sequence of children that
-            the new child node should occupy.
 
         Returns
         -------
@@ -763,19 +763,40 @@ class Node(base.DataObject, base.Annotable):
             The node that was added.
         """
         node._parent_node = self
-        # Support for this was removed, due to unclear expected behavior when
-        # `None` is passed: does the client code expect the edge length to be set
-        # to `None` or simply left untouched? Better approach: client code
-        # explictly sets the edge.
-        # if edge_length != None:
-        #     node.edge_length = edge_length
-        if pos is None:
-            if node not in self._child_nodes:
-                self._child_nodes.append(node)
-        else:
-            if node in self._child_nodes:
-                self._child_nodes.remove(node)
-            self._child_nodes.insert(pos, node)
+        if node not in self._child_nodes:
+            self._child_nodes.append(node)
+        return node
+
+    def insert_child(self, index, node):
+        """
+        Adds a child node to this node.
+
+        If the node is already a child of this node, then it is moved
+        to the specified position.
+        Results in the `parent_node` attribute of `node` as well as the
+        `tail_node` attribute of `node.edge` being assigned to `self`.
+
+        Parameters
+        ----------
+        index : integer
+            The index before which to insert the new node.
+        node : :class:`Node`
+            The node to be added as a child of this node.
+
+        Returns
+        -------
+        node : :class:`Node`
+            The node that was added.
+        """
+        node._parent_node = self
+        try:
+            cur_index = self._child_nodes.index(index)
+            if cur_index < index:
+                index = index - 1
+            self._child_nodes.remove(node)
+        except ValueError:
+            pass
+        self._child_nodes.insert(index, node)
         return node
 
     def new_child(self, **kwargs):
@@ -796,7 +817,7 @@ class Node(base.DataObject, base.Annotable):
         node = self.__class__(**kwargs)
         return self.add_child(node=node)
 
-    def insert_new_child(self, pos, **kwargs):
+    def insert_new_child(self, index, **kwargs):
         """
         Create and add a new child to this node at a particular position.
 
@@ -805,9 +826,8 @@ class Node(base.DataObject, base.Annotable):
 
         Parameters
         ----------
-        pos : integer
-            The position in the the sequence of children of `self` that
-            the new child node should occupy.
+        index : integer
+            The index before which to insert the new node.
         \*\*kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the :class:`Node`
             constructor (:meth:`Node.__init()__`).
@@ -818,7 +838,7 @@ class Node(base.DataObject, base.Annotable):
             The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
-        return self.add_child(node=node, pos=pos)
+        return self.insert_child(index=index, node=node)
 
     def remove_child(self, node, suppress_deg_two=False):
         """

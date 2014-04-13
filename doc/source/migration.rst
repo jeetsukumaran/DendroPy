@@ -80,6 +80,7 @@ The :class:`Node` Class
 
 * :meth:`Node.add_child()` no longer accepts `pos` as an argument to indicate
   position in which a child should be inserted. Use :meth:`Node.insert_child()`
+  which takes a position specified by `index` and a node specified by `node`
   for this functionality instead.
 
 The :class:`Edge` Class
