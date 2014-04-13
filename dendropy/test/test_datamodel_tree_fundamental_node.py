@@ -201,7 +201,18 @@ class TestNodeSetChildNodes(unittest.TestCase):
                     self.assertEqual(ch.label, new_child_labels[x])
                     x += 1
 
-    def test_multiple_add(self):
+    def test_redundant_set(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
+        parent.set_child_nodes(assigned_ch)
+        parent.set_child_nodes(assigned_ch)
+        ch2 = assigned_ch + assigned_ch
+        parent.set_child_nodes(ch2)
+        self.assertEqual(parent._child_nodes, assigned_ch)
+        for nd in parent.child_node_iter():
+            self.assertIs(nd.parent_node, parent)
+
+    def test_redundant_add(self):
         parent = dendropy.Node(label="parent")
         assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
         parent.set_child_nodes(assigned_ch)
@@ -216,6 +227,18 @@ class TestNodeSetChildNodes(unittest.TestCase):
         assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
         for ch in assigned_ch:
             ch.parent_node = parent
+        for ch in assigned_ch:
+            self.assertEqual(parent._child_nodes, assigned_ch)
+            for nd in parent.child_node_iter():
+                self.assertIs(nd.parent_node, parent)
+                self.assertIs(nd.edge.tail_node, parent)
+                self.assertIs(nd.edge.head_node, nd)
+
+    def test_edge_tail_node_setting(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
+        for ch in assigned_ch:
+            ch.edge.tail_node = parent
         for ch in assigned_ch:
             self.assertEqual(parent._child_nodes, assigned_ch)
             for nd in parent.child_node_iter():

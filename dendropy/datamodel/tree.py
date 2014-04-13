@@ -74,7 +74,9 @@ class Edge(base.DataObject, base.Annotable):
     def _set_tail_node(self, node):
         if self._head_node is None:
             raise ValueError("'_head_node' is 'None': cannot assign 'tail_node'")
-        self._head_node._parent_node = node
+        # Go through managed property instead of
+        # setting attribute to ensure book-keeping
+        self._head_node.parent_node = node
     tail_node = property(_get_tail_node, _set_tail_node)
 
     def _get_head_node(self):
