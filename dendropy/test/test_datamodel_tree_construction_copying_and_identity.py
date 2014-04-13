@@ -173,18 +173,29 @@ class TestSpecialTreeConstruction(
         tree2 = dendropy.Tree(seed_node=tree1.seed_node)
         self.assertIs(tree2.seed_node, tree1.seed_node)
         self.assertIsNot(tree1.taxon_namespace, tree2.taxon_namespace)
+        self.assertEqual(len(tree1.taxon_namespace), len(tree2.taxon_namespace))
         for taxon1 in tree1.taxon_namespace:
             self.assertIn(taxon1, tree2.taxon_namespace)
         for taxon2 in tree2.taxon_namespace:
             self.assertIn(taxon2, tree1.taxon_namespace)
         for nd in tree2:
-            if nd.taxon is not None:
-                self.assertIn(nd.taxon, tree2.taxon_namespace)
+            self.assertIn(nd.taxon, tree2.taxon_namespace)
 
-    def test_construction_with_taxon_namespace(self):
+    def test_cloning_construction_with_taxon_namespace(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
         tns = dendropy.TaxonNamespace()
-        tree2 = dendropy.Tree(taxon_namespace=tns)
+        tree2 = dendropy.Tree(tree1, taxon_namespace=tns)
         self.assertIs(tree2.taxon_namespace, tns)
+        self.assertIsNot(tree1.taxon_namespace, tree2.taxon_namespace)
+        self.assertEqual(len(tree1.taxon_namespace), len(tree2.taxon_namespace))
+        for nd in tree2:
+            self.assertIn(nd.taxon, tree2.taxon_namespace)
+            self.assertNotIn(nd.taxon, tree1.taxon_namespace)
+        for nd in tree1:
+            self.assertIn(nd.taxon, tree1.taxon_namespace)
+            self.assertNotIn(nd.taxon, tree2.taxon_namespace)
 
 if __name__ == "__main__":
     unittest.main()
