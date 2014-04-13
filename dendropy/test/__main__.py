@@ -91,6 +91,9 @@ def main():
             except KeyError:
                 sys.exit("Unrecognized test group name '{}'. Accepted names: {}".format(name, test_group_names))
         else:
+            name = name.replace(os.sep, ".")
+            if name.endswith(".py"):
+                name = name[:-3]
             if not name.startswith("dendropy.test."):
                 if name.startswith("test."):
                     name = "dendropy." + name
