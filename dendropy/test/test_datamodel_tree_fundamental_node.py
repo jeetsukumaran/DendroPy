@@ -212,6 +212,27 @@ class TestNodeSetChildNodes(unittest.TestCase):
         for nd in parent.child_node_iter():
             self.assertIs(nd.parent_node, parent)
 
+    def test_redundant_insert_child_at_pos(self):
+        new_child_labels = ["c1", "c2", "c3"]
+        for child_to_insert_idx in range(len(new_child_labels)):
+            for insertion_idx in range(len(new_child_labels)):
+                parent = dendropy.Node(label="parent")
+                assigned_ch = [dendropy.Node(label=c) for c in new_child_labels]
+                parent.set_child_nodes(assigned_ch)
+                self.assertEqual(parent._child_nodes, assigned_ch)
+                insert_ch = assigned_ch[child_to_insert_idx]
+                parent.insert_child(insertion_idx, insert_ch)
+                self.assertEqual(len(parent._child_nodes), len(assigned_ch))
+                self.assertEqual(len(set(parent._child_nodes)), len(parent._child_nodes))
+                x = 0
+                for idx, ch in enumerate(parent._child_nodes):
+                    if idx == insertion_idx:
+                        self.assertIs(ch, insert_ch)
+                    self.assertIn(ch, assigned_ch)
+                for ch in assigned_ch:
+                    self.assertIn(ch, parent._child_nodes)
+                    self.assertEqual(parent._child_nodes.count(ch), 1)
+
     def test_redundant_add(self):
         parent = dendropy.Node(label="parent")
         assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]

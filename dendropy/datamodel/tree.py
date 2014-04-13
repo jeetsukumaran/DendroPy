@@ -794,12 +794,13 @@ class Node(base.DataObject, base.Annotable):
         """
         node._parent_node = self
         try:
-            cur_index = self._child_nodes.index(index)
-            if cur_index < index:
-                index = index - 1
-            self._child_nodes.remove(node)
+            cur_index = self._child_nodes.index(node)
         except ValueError:
             pass
+        else:
+            if cur_index == index:
+                return
+            self._child_nodes.remove(node)
         self._child_nodes.insert(index, node)
         return node
 
