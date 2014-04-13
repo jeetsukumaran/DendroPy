@@ -148,8 +148,18 @@ class TestSpecialTreeConstruction(
         compare_and_validate.Comparator,
         unittest.TestCase):
 
+    def setUp(self):
+        self.tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=False)
+
     def test_construction_from_another_tree_different_label(self):
-        pass
+        self.tree1.label = "tree1"
+        self.assertEqual(self.tree1.label, "tree1")
+        tree2 = dendropy.Tree(self.tree1, label="tree2")
+        self.assertEqual(tree2.label, "tree2")
+        self.assertNotEqual(self.tree1.label, "tree2")
+        self.assertNotEqual(self.tree1.label, tree2.label)
 
     def test_construction_from_given_seed_node(self):
         pass
