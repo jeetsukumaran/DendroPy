@@ -280,9 +280,11 @@ class CuratedTestTree(object):
             for nd in internal_nodes | set([a]):
                 t = tree.taxon_namespace.require_taxon(label=nd.label)
                 nd.taxon = t
+                assert t in tree.taxon_namespace
         if not suppress_external_node_taxa:
             for nd in leaf_nodes:
                 t = tree.taxon_namespace.require_taxon(label=nd.label)
                 nd.taxon = t
+                assert t in tree.taxon_namespace
         return tree, all_nodes, leaf_nodes, internal_nodes
 

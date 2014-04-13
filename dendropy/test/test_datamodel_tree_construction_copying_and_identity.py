@@ -150,7 +150,7 @@ class TestSpecialTreeConstruction(
 
     def test_construction_from_another_tree_different_label(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-                suppress_internal_node_taxa=True,
+                suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
         tree1.label = "tree1"
         self.assertEqual(tree1.label, "tree1")
@@ -161,10 +161,30 @@ class TestSpecialTreeConstruction(
 
     def test_construction_from_given_seed_node(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-                suppress_internal_node_taxa=True,
+                suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
         tree2 = dendropy.Tree(seed_node=tree1.seed_node)
         self.assertIs(tree2.seed_node, tree1.seed_node)
+
+    def test_construction_from_given_seed_node(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        tree2 = dendropy.Tree(seed_node=tree1.seed_node)
+        self.assertIs(tree2.seed_node, tree1.seed_node)
+        self.assertIsNot(tree1.taxon_namespace, tree2.taxon_namespace)
+        for taxon1 in tree1.taxon_namespace:
+            self.assertIn(taxon1, tree2.taxon_namespace)
+        for taxon2 in tree2.taxon_namespace:
+            self.assertIn(taxon2, tree1.taxon_namespace)
+        for nd in tree2:
+            if nd.taxon is not None:
+                self.assertIn(nd.taxon, tree2.taxon_namespace)
+
+    def test_construction_with_taxon_namespace(self):
+        tns = dendropy.TaxonNamespace()
+        tree2 = dendropy.Tree(taxon_namespace=tns)
+        self.assertIs(tree2.taxon_namespace, tns)
 
 if __name__ == "__main__":
     unittest.main()
