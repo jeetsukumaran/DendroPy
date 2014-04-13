@@ -591,13 +591,33 @@ class Annotable(object):
                 self.annotations.add(a2)
             memo[id(other._annotations)] = self._annotations
 
-    def __copy__(self):
-        o = self.__class__.__new__(self.__class__)
+    # def __copy__(self):
+    #     o = self.__class__.__new__(self.__class__)
+    #     for k in self.__dict__:
+    #         if k == "_annotations":
+    #             continue
+    #         o.__dict__[k] = self.__dict__[k]
+    #     o.copy_annotations_from(self)
+
+    def __copy__(self, memo=None):
+        """
+        Cloning level: 0.
+        :attr:`annotation_set` of top-level object and member :class:`Annotation`
+        objects are full, independent instances. All other member objects (include
+        objects referenced by dynamically-bound attribute values of
+        :class:`Annotation` objects) are references.
+        All member objects are references, except for
+        """
+        if memo is None:
+            memo = {}
+        other = self.__class__()
+        memo[id(self)] = other
         for k in self.__dict__:
             if k == "_annotations":
                 continue
-            o.__dict__[k] = self.__dict__[k]
-        o.copy_annotations_from(self)
+            other.__dict__[k] = copy.copy(self.__dict__[k])
+            memo[id(self.__dict__[k])] = other.__dict__[k]
+        self.deep_copy_annotations_from(other, memo=memo)
 
     def __deepcopy__(self, memo=None):
         # ensure clone map

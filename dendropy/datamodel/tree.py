@@ -87,30 +87,8 @@ class Edge(base.DataObject, base.Annotable):
         node.edge = self
     head_node = property(_get_head_node, _set_head_node)
 
-    def __copy__(self):
-        """
-        Cloning level: 0.
-
-        All member objects are references, except for :attr:`annotation_set` of
-        top-level object and member :class:`Annotation` objects: these are
-        full, independent instances (though any complex objects in the `value`
-        field of :class:`Annotation` objects are also just references).
-
-        """
-        other = self.__class__.__new__(self.__class__)
-        memo = {}
-        memo[id(self)] = other
-        for k in self.__dict__:
-            if k == "_annotations":
-                continue
-            other.__dict__[k] = self.__dict__[k]
-            memo[id(k)] = k
-            memo[id(self.__dict__[k])] = other.__dict__[k]
-        other.deep_copy_annotations_from(self, memo=memo)
-        return other
-
-    def __copy__(self):
-        raise TypeError("Cannot directly shallow-copy Edge")
+    def __copy__(self, memo=None):
+        raise TypeError("Cannot directly copy Edge")
 
     def taxon_namespace_scoped_copy(self, memo=None):
         raise TypeError("Cannot directly copy Edge")
@@ -268,8 +246,8 @@ class Node(base.DataObject, base.Annotable):
             raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
         self.comments = []
 
-    def __copy__(self):
-        raise TypeError("Cannot directly shallow-copy Node")
+    def __copy__(self, memo=None):
+        raise TypeError("Cannot directly copy Edge")
 
     def taxon_namespace_scoped_copy(self, memo=None):
         raise TypeError("Cannot directly copy Node")
