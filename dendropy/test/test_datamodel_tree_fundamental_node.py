@@ -201,6 +201,16 @@ class TestNodeSetChildNodes(unittest.TestCase):
                     self.assertEqual(ch.label, new_child_labels[x])
                     x += 1
 
+    def test_multiple_add(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
+        parent.set_child_nodes(assigned_ch)
+        for ch in assigned_ch:
+            parent.add_child(ch)
+            self.assertEqual(parent._child_nodes, assigned_ch)
+            for nd in parent.child_node_iter():
+                self.assertIs(nd.parent_node, parent)
+
     def test_new_child(self):
         parent = dendropy.Node(label="parent")
         new_child_labels = ["c1", "c2", "c3"]
