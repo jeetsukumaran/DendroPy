@@ -234,18 +234,6 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 self.assertIs(nd.edge.tail_node, parent)
                 self.assertIs(nd.edge.head_node, nd)
 
-    def test_edge_tail_node_setting(self):
-        parent = dendropy.Node(label="parent")
-        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
-        for ch in assigned_ch:
-            ch.edge.tail_node = parent
-        for ch in assigned_ch:
-            self.assertEqual(parent._child_nodes, assigned_ch)
-            for nd in parent.child_node_iter():
-                self.assertIs(nd.parent_node, parent)
-                self.assertIs(nd.edge.tail_node, parent)
-                self.assertIs(nd.edge.head_node, nd)
-
     def test_new_child(self):
         parent = dendropy.Node(label="parent")
         new_child_labels = ["c1", "c2", "c3"]
@@ -300,6 +288,14 @@ class TestNodeSetChildNodes(unittest.TestCase):
             ch_nodes.remove(to_remove)
             ch_nodes2 = list(parent._child_nodes)
             self.assertEqual(ch_nodes, ch_nodes2)
+
+    def test_edge_head_node_setting(self):
+        node = dendropy.Node(label="x")
+        edge1 = node.edge
+        edge2 = dendropy.Edge()
+        node.edge = edge2
+        self.assertIs(node.edge, edge2)
+        self.assertIs(node.edge.head_node, node)
 
 if __name__ == "__main__":
     unittest.main()

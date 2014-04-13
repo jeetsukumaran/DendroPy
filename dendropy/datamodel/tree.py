@@ -82,7 +82,9 @@ class Edge(base.DataObject, base.Annotable):
     def _get_head_node(self):
         return self._head_node
     def _set_head_node(self, node):
-        self._head_node = node
+        # Go through managed property instead of setting attribute to ensure
+        # book-keeping; following should also set `_head_node` of `self`
+        node.edge = self
     head_node = property(_get_head_node, _set_head_node)
 
     def __copy__(self):
@@ -1049,6 +1051,8 @@ class Node(base.DataObject, base.Annotable):
         #     raise ValueError("A Node cannot have 'None' for an edge")
         self._edge = edge
         if self._edge:
+            # set attribute directly instead of going
+            # through managed property to avoid recursion
             self._edge._head_node = self
     edge = property(_get_edge, _set_edge)
 

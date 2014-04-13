@@ -122,5 +122,48 @@ class EdgeCloning(compare_and_validate.Comparator, unittest.TestCase):
                     taxon_namespace_scoped=False,
                     compare_annotations=True)
 
+class EdgeNodeManagement(unittest.TestCase):
+
+
+    def test_edge_tail_node_setting(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
+        for ch in assigned_ch:
+            ch.edge.tail_node = parent
+        for ch in assigned_ch:
+            self.assertEqual(parent._child_nodes, assigned_ch)
+            for nd in parent.child_node_iter():
+                self.assertIs(nd.parent_node, parent)
+                self.assertIs(nd.edge.tail_node, parent)
+                self.assertIs(nd.edge.head_node, nd)
+
+    def test_edge_head_node_setting(self):
+
+        node1 = dendropy.Node()
+        parent_node1 = dendropy.Node()
+        node1.parent_node = parent_node1
+        self.assertIs(node1._parent_node, parent_node1)
+        edge1 = node1.edge
+        self.assertIs(edge1.head_node, node1)
+        self.assertIs(edge1.tail_node, parent_node1)
+
+        node2 = dendropy.Node()
+        parent_node2 = dendropy.Node()
+        node2.parent_node = parent_node2
+        edge2 = node2.edge
+        self.assertIs(edge2.head_node, node2)
+        self.assertIs(edge2.tail_node, parent_node2)
+
+        new_edge1 = dendropy.Edge()
+        new_edge1.head_node = node1
+        self.assertIs(node1.edge, new_edge1)
+        self.assertIs(new_edge1.head_node, node1)
+        self.assertIs(new_edge1.tail_node, parent_node1)
+
+        edge2.head_node = node1
+        self.assertIs(node1.edge, edge2)
+        self.assertIs(edge2.head_node, node1)
+        self.assertIs(edge2.tail_node, parent_node1)
+
 if __name__ == "__main__":
     unittest.main()
