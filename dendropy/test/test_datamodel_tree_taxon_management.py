@@ -111,19 +111,31 @@ class TestTreeReconstructTaxonNamespace(
 
     def test_reconstruct_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
-        self.tree.taxon_namespace = dendropy.TaxonNamespace()
+        new_tns = dendropy.TaxonNamespace()
+        self.tree.taxon_namespace = new_tns
         self.assertEqual(len(self.tree.taxon_namespace), 0)
-        self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=False)
-        seen_taxa = []
+        self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.assertIs(self.tree.taxon_namespace, new_tns)
+        seen_taxa = set()
+        seen_labels = []
+        expected_labels = [label for label in self.node_label_to_taxon_label_map.values()]
         for nd in self.tree:
-            seen_taxa.append(nd.taxon)
             self.assertIsNot(nd.taxon, nd.original_taxon)
             self.assertEqual(nd.taxon.label, nd.original_taxon.label)
             self.assertNotIn(nd.original_taxon, self.tree.taxon_namespace)
             self.assertIn(nd.original_taxon, self.original_taxa)
             self.assertIn(nd.taxon, self.tree.taxon_namespace)
             self.assertNotIn(nd.taxon, self.original_taxa)
+            self.assertNotIn(nd.taxon, original_tns)
             self.assertEqual(self.node_label_to_taxon_label_map[nd.label], nd.taxon.label)
+            self.assertNotIn(nd.taxon, seen_taxa)
+            seen_labels.append(nd.taxon.label)
+            seen_taxa.add(nd.taxon)
+        c1 = collections.Counter(expected_labels)
+        c2 = collections.Counter(seen_labels)
+        self.assertEqual(c1, c2)
         self.assertEqual(len(self.tree.taxon_namespace), len(self.node_label_to_taxon_label_map))
 
     def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
