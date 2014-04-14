@@ -142,6 +142,64 @@ class TaxonNamespaceAssociated(base.DataObject):
         taxon_set_deprecation_warning()
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
+    def migrate_taxon_namespace_scope(self,
+            taxon_namespace=None,
+            allow_duplicate_labels=False,
+            memo=None):
+        """
+        Current :attr:`self.taxon_namespace` value will be replaced with value
+        given in `taxon_namespace` if this is not `None`, or a new
+        :class:`TaxonNamespace` object. Following this,
+        `reconstruct_taxon_namespace()` will be called: each distinct
+        :class:`Taxon` object associated with `self` or members of `self`, will
+        be replaced with a new :class:`Taxon` object that will be created with
+        the same label and added to :attr:`self.taxon_namespace`.  Calling this
+        method results in the object (and all its member objects) being
+        associated with a new, independent taxon namespace.
+
+        Examples
+        --------
+        Use this method to, e.g., copy an object from one taxon namespace to
+        another::
+
+            # Get handle to the new TaxonNamespace
+            other_taxon_namespace = some_other_data.taxon_namespace
+
+            # Get a taxon-namespace scoped copy of a tree
+            # in another namespace
+            t2 = Tree(t1)
+
+            # Replace taxon namespace of copy
+            t2.migrate_taxon_namespace_scope(other_taxon_namespace)
+
+        See Also
+        --------
+        reconstruct_taxon_namespace
+
+        """
+        raise NotImplementedError()
+
+    def reconstruct_taxon_namespace(self,
+            allow_duplicate_labels=False,
+            memo=None):
+        """
+        Each distinct :class:`Taxon` object
+        associated with `self` or members of `self`, will be replaced with a new
+        :class:`Taxon` object that will be created with the same label and
+        added to :attr:`self.taxon_namespace`.
+        """
+        raise NotImplementedError()
+
+
+    def update_taxon_namespace(self):
+        """
+        All :class:`Taxon` objects associated with `self` or members of `self`
+        that are not in `self.taxon_namespace` will be added. No new
+        :class:`Taxon` objects will be created.
+        """
+        raise NotImplementedError()
+
+
     def reindex_taxa(self, taxon_namespace=None, clear=False):
         """
         Rebuilds `taxon_namespace` from scratch, or assigns :class:`Taxon` objects from
@@ -161,13 +219,6 @@ class TaxonNamespaceAssociated(base.DataObject):
         components, attributes and members all refer to the same :class:`TaxonNamespace`
         object as `self.taxon_namespace`, and that `self.taxon_namespace` has all
         the :class:`Taxon` objects in the various members.
-        """
-        raise NotImplementedError()
-
-    def update_taxon_namespace(self):
-        """
-        All :class:`Taxon` objects in `self` that are not in
-        `self.taxon_namespace` will be added.
         """
         raise NotImplementedError()
 

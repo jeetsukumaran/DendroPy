@@ -28,6 +28,7 @@ except ImportError:
     from io import StringIO # Python 3
 import copy
 from dendropy.utility import terminal
+from dendropy.utility import error
 from dendropy.datamodel import base
 from dendropy.datamodel import taxon
 from dendropy import dataio
@@ -1409,7 +1410,7 @@ class Node(base.DataObject, base.Annotable):
                 child._write_newick(out, **kwargs)
             out.write(')')
 
-        out.write(self._get_node_str(**kwargs))
+        out.write(self._get_node_token(**kwargs))
         if edge_lengths:
             e = self.edge
             if e:
@@ -1428,7 +1429,7 @@ class Node(base.DataObject, base.Annotable):
                         if s:
                             out.write(":%s" % s)
 
-    def _get_node_str(self, **kwargs):
+    def _get_node_token(self, **kwargs):
         """returns a string that is an identifier for the node.  This is called
         by the newick-writing functions, so the kwargs that affect how node
         labels show up in a newick string are the same ones used here:
@@ -1436,35 +1437,30 @@ class Node(base.DataObject, base.Annotable):
         """
         is_leaf = (len(self._child_nodes) == 0)
         if not is_leaf:
-            if kwargs.get("newick", False):
-                return self.as_newick_string()
             if kwargs.get("suppress_internal_labels", False) \
                     or not kwargs.get("include_internal_labels", True):
                 return ""
-        try:
-            t = self.taxon
-            rt = kwargs.get("reverse_translate")
-            if rt:
-                tag = rt(t)
+        if self.taxon is not None:
+            if self.taxon.label:
+                label = self.taxon.label
             else:
-                tag = t.label
-        except AttributeError:
-            tag = ""
-            try:
-                tag = self.label
-            except AttributeError:
-                if not is_leaf:
-                    tag = "n{}".format(id(self))
-        preserve_spaces = kwargs.get("preserve_spaces", False)
-        raw_labels = kwargs.get("raw_labels", False)
-        if raw_labels:
-            return tag
-        elif " " in tag and "_" in tag:
-            if "'" in tag:
-                tag.replace("'", "''")
-            return "'{}'".format(tag)
+                return "_" # taxon, but no label: anonymous
         else:
-            return tag
+            if self.label:
+                label = self.labl
+            else:
+                if is_leaf:
+                    return "_"
+                else:
+                    return ""
+        if kwargs.get("raw_labels", False):
+            return label
+        elif " " in label and "_" in label:
+            if "'" in label:
+                label.replace("'", "''")
+            return "'{}'".format(label)
+        else:
+            return label
 
     ###########################################################################
     ### alternate representation of tree structure for debugging
@@ -2808,10 +2804,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         Creates (and returns) a new TaxonNamespace object for `self` populated
         with taxa from this tree.
         """
-        taxon_namespace = TaxonNamespace()
+        error.dump_stack()
+        warnings.warn("`Tree.infer_taxa()` will no longer be supported in future releases; use `Tree.update_taxon_namespace` instead",
+                FutureWarning, stacklevel=4)
+        taxon_namespace = taxon.TaxonNamespace()
         for node in self.postorder_node_iter():
             if node.taxon is not None:
-                taxon_namespace.add(node.taxon)
+                taxon_namespace.add_taxon(node.taxon)
         self.taxon_namespace = taxon_namespace
         return taxon_namespace
 
@@ -2823,6 +2822,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         for nd in self:
             if taxon is not None:
                 self.taxon_namespace.add_taxon(nd.taxon)
+        return self.taxon_namespace
 
     def reindex_subcomponent_taxa(self):
         """
@@ -3844,7 +3844,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
     def __str__(self):
         "Dump Newick string."
-        return "%s" % self.as_newick_string()
+        return "%s" % self._as_newick_string()
 
     def __repr__(self):
         return "<Tree object at %s>" % (hex(id(self)))
