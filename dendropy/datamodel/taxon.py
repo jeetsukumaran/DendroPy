@@ -142,11 +142,15 @@ class TaxonNamespaceAssociated(base.DataObject):
         taxon_set_deprecation_warning()
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
-    def migrate_taxon_namespace_scope(self,
-            taxon_namespace=None,
-            allow_duplicate_labels=False,
-            memo=None):
+    def migrate_taxon_namespace(self,
+            taxon_namespace,
+            unify_taxa_by_label=False,
+            case_insensitive_label_mapping=False,
+            taxon_mapping_memo=None):
         """
+        Move this object and all members to a new operational taxonomic unit
+        concept namespace scope.
+
         Current :attr:`self.taxon_namespace` value will be replaced with value
         given in `taxon_namespace` if this is not `None`, or a new
         :class:`TaxonNamespace` object. Following this,
@@ -157,10 +161,48 @@ class TaxonNamespaceAssociated(base.DataObject):
         method results in the object (and all its member objects) being
         associated with a new, independent taxon namespace.
 
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace`
+            The :class:`TaxonNamespace` into the scope of which this object
+            will be moved.
+
+        unify_taxa_by_label : boolean, optional
+            If `True`, then references to distinct :class:`Taxon` objects with
+            identical labels in the current namespace will be replaced with a
+            reference to a single :class:`Taxon` object in the new namespace.
+            Defaults to `False`: references to distinct :class:`Taxon` objects
+            will remain distinct, even if the labels are the same.
+
+        case_insensitive_label_mapping : boolean, optional
+            If `True` and `unify_taxa_by_label` is also `True`, then the
+            establishment of correspondence between :class:`Taxon` objects in
+            the old and new namespaces with be based on case-insensitive
+            matching of labels. E.g., if there are four :class:`Taxon` objects with
+            labels 'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then
+            all objects that reference these will reference a single
+            new :class:`Taxon` object in the new namespace (with a label some
+            existing casing variant of 'foo'). Defaults to `False`:
+            if `unify_taxa_by_label` is `True`, :class:`Taxon` objects with
+            labels identical except in case will be considered distinct.
+
+        taxon_mapping_memo : dictionary
+            Similar to `memo` of deepcopy, this is a dictionary that maps
+            :class:`Taxon` objects in the old namespace to corresponding
+            :class:`Taxon` objects in the new namespace. Mostly for interal
+            use when migrating complex data to a new namespace. Note that
+            any mappings here take precedence over all other options: if a
+            :class:`Taxon` object in the old namespace is found in this
+            dictionary, the counterpart in the new namespace will be whatever
+            value is mapped, regardless of, e.g. label values.
+
         Examples
         --------
-        Use this method to, e.g., copy an object from one taxon namespace to
-        another::
+        Use this method to move an object from one taxon namespace to
+        another.
+
+        For example, to get a copy of an object associated with another taxon
+        namespace and associate it with a different namespace::
 
             # Get handle to the new TaxonNamespace
             other_taxon_namespace = some_other_data.taxon_namespace
@@ -170,23 +212,72 @@ class TaxonNamespaceAssociated(base.DataObject):
             t2 = Tree(t1)
 
             # Replace taxon namespace of copy
-            t2.migrate_taxon_namespace_scope(other_taxon_namespace)
+            t2.migrate_taxon_namespace(other_taxon_namespace)
+
+        You can also use this method to get a copy of a structure and then
+        move it to a new namespace:
+
+            t2 = Tree(t1)
+            t2.migrate_taxon_namespace(TaxonNamespace())
+
+            # Note: the same effect can be achived by:
+            t3 = copy.deepcopy(t1)
 
         See Also
         --------
         reconstruct_taxon_namespace
 
         """
-        raise NotImplementedError()
+        if taxon_namespace is None:
+            taxon_namespace = taxon.TaxonNamespace()
+        self.taxon_namespace = taxon_namespace
+        self.reconstruct_taxon_namespace(unify_taxa_by_label=unify_taxa_by_label,
+                taxon_mapping_memo=taxon_mapping_memo)
 
     def reconstruct_taxon_namespace(self,
-            allow_duplicate_labels=False,
-            memo=None):
+            unify_taxa_by_label=False,
+            case_insensitive_label_mapping=False,
+            taxon_mapping_memo=None):
         """
-        Each distinct :class:`Taxon` object
-        associated with `self` or members of `self`, will be replaced with a new
-        :class:`Taxon` object that will be created with the same label and
-        added to :attr:`self.taxon_namespace`.
+        Repopulates the current taxon namespace with new taxon objects,
+        preserving labels.  Each distinct :class:`Taxon` object associated with
+        `self` or members of `self`, will be replaced with a new :class:`Taxon`
+        object that will be created with the same label and added to
+        :attr:`self.taxon_namespace`.
+
+        Note
+        ----
+        Existing :class:`Taxon` objects in `self.taxon_namespace` are *not*
+        removed. This method should thus only be called *only* when
+        `self.taxon_namespace` has been changed. In fact, typical usage would
+        not involve calling this method directly, but rather through
+
+        Parameters
+        ----------
+        unify_taxa_by_label : boolean, optional
+            If `True`, then references to distinct :class:`Taxon` objects with
+            identical labels in the current namespace will be replaced with a
+            reference to a single :class:`Taxon` object in the new namespace.
+            Defaults to `False`: references to distinct :class:`Taxon` objects
+            will remain distinct, even if the labels are the same.
+
+        case_insensitive_label_mapping : boolean, optional
+            If `True` and `unify_taxa_by_label` is also `True`, then the
+            establishment of correspondence between :class:`Taxon` objects in
+            the old and new namespaces with be based on case-insensitive
+            matching of labels. E.g., if there are four :class:`Taxon` objects with
+            labels 'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then
+            all objects that reference these will reference a single
+            new :class:`Taxon` object in the new namespace (with a label some
+            existing casing variant of 'foo'). Defaults to `False`:
+            if `unify_taxa_by_label` is `True`, :class:`Taxon` objects with
+            labels identical except in case will be considered distinct.
+
+        taxon_mapping_memo : dictionary
+            Similar to `memo` of deepcopy, this is a dictionary that maps
+            :class:`Taxon` objects in the old namespace to corresponding
+            :class:`Taxon` objects in the new namespace. Mostly for interal
+            use when migrating complex data to a new namespace.
         """
         raise NotImplementedError()
 
@@ -194,18 +285,23 @@ class TaxonNamespaceAssociated(base.DataObject):
     def update_taxon_namespace(self):
         """
         All :class:`Taxon` objects associated with `self` or members of `self`
-        that are not in `self.taxon_namespace` will be added. No new
-        :class:`Taxon` objects will be created.
+        that are not in `self.taxon_namespace` will be added. Note that, unlike
+        :class:`reconstruct_taxon_namespace`, no new :class:`Taxon` objects
+        will be created.
         """
         raise NotImplementedError()
 
 
     def reindex_taxa(self, taxon_namespace=None, clear=False):
         """
+        DEPRECATED: Use `migrate_taxon_namespace()` instead.
         Rebuilds `taxon_namespace` from scratch, or assigns :class:`Taxon` objects from
         given :class:`TaxonNamespace` object `taxon_namespace` based on label values. Calls
         on `self.reindex_member_taxa()` to synchronize taxa.
         """
+        error.dump_stack()
+        warnings.warn("`reindex_taxa()` will no longer be supported in future releases; use `{}.migrate_taxon_namespace()` instead".format(self.__class__.__name__),
+                FutureWarning, stacklevel=4)
         if taxon_namespace is not None:
             self.taxon_namespace = taxon_namespace
         if clear:
@@ -215,6 +311,7 @@ class TaxonNamespaceAssociated(base.DataObject):
 
     def reindex_subcomponent_taxa():
         """
+        DEPRECATED: Use :meth:`reconstruct_taxon_namespace()` instead.
         Derived classes should override this to ensure that their various
         components, attributes and members all refer to the same :class:`TaxonNamespace`
         object as `self.taxon_namespace`, and that `self.taxon_namespace` has all
@@ -1195,7 +1292,8 @@ class Taxon(base.DataObject, base.Annotable):
             self.deep_copy_annotations_from(other_taxon, memo=memo)
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
-            label = str(label)
+            if label is not None:
+                label = str(label)
             base.DataObject.__init__(self, label=label)
 
     def __copy__(self):

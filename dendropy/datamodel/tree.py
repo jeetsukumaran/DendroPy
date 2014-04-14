@@ -1750,7 +1750,6 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             # *replaces* the current tree with the definition specified in the
             # data source
             t10 = Tree()
-            t10.read(open('boot1.tre', 'rU'), "newick", tree_offset=0)
             t10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
             t10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick", tree_offset=0)
             t10.read_from_path("mle.tre", "newick")
@@ -1794,7 +1793,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 self.seed_node = self.node_factory()
             else:
                 self.seed_node = seed_node
-                self.update_taxon_namespace()
+                self.reconstruct_taxon_namespace()
 
     def _clone_from(self, tree, **kwargs):
         # super(Tree, self).__init__()
@@ -2799,6 +2798,43 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
     ###########################################################################
     ### Taxa Management
 
+    def reconstruct_taxon_namespace(self,
+            unify_taxa_by_label=False,
+            case_insensitive_label_mapping=False,
+            taxon_mapping_memo=None):
+        if taxon_mapping_memo is None:
+            taxon_mapping_memo = {}
+        for node in self:
+            if node.taxon is not None:
+                t = taxon_mapping_memo.get(node.taxon, None)
+                if t is None:
+                    # taxon to use not given and
+                    # we have not yet created a counterpart
+                    if unify_taxa_by_label:
+                        # this will force usage of any taxon with
+                        # a label that matches the current taxon
+                        t = self.taxon_namespace.require_taxon(
+                                label=node.taxon.label,
+                                case_insensitive=case_insensitive_label_mapping)
+                    else:
+                        # this will unconditionally create a new taxon
+                        t = self.taxon_namespace.new_taxon(label=node.taxon.label)
+                    taxon_mapping_memo[node.taxon] = t
+                    node.taxon = t
+                else:
+                    # taxon to use is given by mapping
+                    self.taxon_namespace.add_taxon(t)
+
+    def update_taxon_namespace(self):
+        """
+        All :class:`Taxon` objects in `self` that are not in
+        `self.taxon_namespace` will be added.
+        """
+        for nd in self:
+            if taxon is not None:
+                self.taxon_namespace.add_taxon(nd.taxon)
+        return self.taxon_namespace
+
     def infer_taxa(self):
         """
         Creates (and returns) a new TaxonNamespace object for `self` populated
@@ -2814,20 +2850,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         self.taxon_namespace = taxon_namespace
         return taxon_namespace
 
-    def update_taxon_namespace(self):
-        """
-        All :class:`Taxon` objects in `self` that are not in
-        `self.taxon_namespace` will be added.
-        """
-        for nd in self:
-            if taxon is not None:
-                self.taxon_namespace.add_taxon(nd.taxon)
-        return self.taxon_namespace
-
     def reindex_subcomponent_taxa(self):
         """
         Remaps node taxon objects
         """
+        error.dump_stack()
+        warnings.warn("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
+                FutureWarning, stacklevel=4)
         for node in self.postorder_node_iter():
             t = node.taxon
             if t:
