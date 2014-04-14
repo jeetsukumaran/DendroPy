@@ -31,7 +31,7 @@ def get_calling_code_info(stack_level):
     lineno = inspect.getlineno(frame[0])
     return filename, lineno
 
-def dump_stack(out):
+def dump_stack(out=None):
     if out is None:
         out = sys.stderr
     for frame, filename, line_num, func, source_code, source_index in inspect.stack()[2:]:
