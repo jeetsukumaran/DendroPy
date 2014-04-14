@@ -145,7 +145,6 @@ class TestTreeCopying(
 
 class TestSpecialTreeConstruction(
         datagen_curated_test_tree.CuratedTestTree,
-        compare_and_validate.Comparator,
         unittest.TestCase):
 
     def test_construction_from_another_tree_different_label(self):
