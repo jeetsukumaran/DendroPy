@@ -1793,7 +1793,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 self.seed_node = self.node_factory()
             else:
                 self.seed_node = seed_node
-                self.reconstruct_taxon_namespace()
+                self.update_taxon_namespace()
 
     def _clone_from(self, tree, **kwargs):
         # super(Tree, self).__init__()
