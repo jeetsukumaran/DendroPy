@@ -231,7 +231,9 @@ class TaxonNamespaceAssociated(base.DataObject):
         if taxon_namespace is None:
             taxon_namespace = taxon.TaxonNamespace()
         self.taxon_namespace = taxon_namespace
-        self.reconstruct_taxon_namespace(unify_taxa_by_label=unify_taxa_by_label,
+        self.reconstruct_taxon_namespace(
+                unify_taxa_by_label=unify_taxa_by_label,
+                case_insensitive_label_mapping=case_insensitive_label_mapping,
                 taxon_mapping_memo=taxon_mapping_memo)
 
     def reconstruct_taxon_namespace(self,
