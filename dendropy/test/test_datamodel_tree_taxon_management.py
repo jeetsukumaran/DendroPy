@@ -109,6 +109,58 @@ class TestTreeReconstructTaxonNamespace(
         assert len(self.tree.taxon_namespace) == len(self.node_label_to_taxon_label_map)
         assert len(self.tree.taxon_namespace) == len(self.original_taxa)
 
+    def verify_taxon_namespace_reconstruction(self,
+            unify_taxa_by_label=False,
+            case_insensitive_label_mapping=False,
+            original_tns=None):
+        seen_taxa = []
+        if unify_taxa_by_label:
+            if case_insensitive_label_mapping:
+                expected_labels = list(set((label.upper() if label is not None else None) for label in self.node_label_to_taxon_label_map.values()))
+            else:
+                expected_labels = list(set(label for label in self.node_label_to_taxon_label_map.values()))
+        else:
+            expected_labels = [label for label in self.node_label_to_taxon_label_map.values()]
+        for nd in self.tree:
+            self.assertIsNot(nd.taxon, nd.original_taxon)
+            if case_insensitive_label_mapping and nd.taxon.label is not None:
+                self.assertEqual(nd.taxon.label.upper(), nd.original_taxon.label.upper())
+                self.assertEqual(self.node_label_to_taxon_label_map[nd.label].upper(), nd.taxon.label.upper())
+            else:
+                self.assertEqual(nd.taxon.label, nd.original_taxon.label)
+                self.assertEqual(self.node_label_to_taxon_label_map[nd.label], nd.taxon.label)
+            self.assertNotIn(nd.original_taxon, self.tree.taxon_namespace)
+            self.assertIn(nd.original_taxon, self.original_taxa)
+            self.assertIn(nd.taxon, self.tree.taxon_namespace)
+            self.assertNotIn(nd.taxon, self.original_taxa)
+            if original_tns is not None:
+                self.assertNotIn(nd.taxon, original_tns)
+            if nd.taxon not in seen_taxa:
+                seen_taxa.append(nd.taxon)
+            else:
+                self.assertTrue(unify_taxa_by_label)
+                if case_insensitive_label_mapping:
+                    self.assertIn(nd.taxon.label, [t.label for t in seen_taxa])
+                else:
+                    if nd.taxon.label is None:
+                        self.assertIs(nd.original_taxon.label, None)
+                        self.assertEqual([t.label for t in seen_taxa].count(None), 1)
+                    else:
+                        x1 = [t.label.upper() for t in seen_taxa if t.label is not None]
+                        self.assertIn(nd.taxon.label.upper(), x1)
+        if unify_taxa_by_label:
+            self.assertEqual(len(self.tree.taxon_namespace), len(expected_labels))
+        else:
+            self.assertEqual(len(self.tree.taxon_namespace), len(self.node_label_to_taxon_label_map))
+        self.assertEqual(len(seen_taxa), len(self.tree.taxon_namespace))
+        if case_insensitive_label_mapping:
+            seen_labels = [(t.label.upper() if t.label is not None else None) for t in seen_taxa]
+        else:
+            seen_labels = [t.label for t in seen_taxa]
+        c1 = collections.Counter(expected_labels)
+        c2 = collections.Counter(seen_labels)
+        self.assertEqual(c1, c2)
+
     def test_reconstruct_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
@@ -118,34 +170,37 @@ class TestTreeReconstructTaxonNamespace(
                 case_insensitive_label_mapping=False)
         self.assertIsNot(self.tree.taxon_namespace, original_tns)
         self.assertIs(self.tree.taxon_namespace, new_tns)
-        seen_taxa = set()
-        seen_labels = []
-        expected_labels = [label for label in self.node_label_to_taxon_label_map.values()]
-        for nd in self.tree:
-            self.assertIsNot(nd.taxon, nd.original_taxon)
-            self.assertEqual(nd.taxon.label, nd.original_taxon.label)
-            self.assertNotIn(nd.original_taxon, self.tree.taxon_namespace)
-            self.assertIn(nd.original_taxon, self.original_taxa)
-            self.assertIn(nd.taxon, self.tree.taxon_namespace)
-            self.assertNotIn(nd.taxon, self.original_taxa)
-            self.assertNotIn(nd.taxon, original_tns)
-            self.assertEqual(self.node_label_to_taxon_label_map[nd.label], nd.taxon.label)
-            self.assertNotIn(nd.taxon, seen_taxa)
-            seen_labels.append(nd.taxon.label)
-            seen_taxa.add(nd.taxon)
-        c1 = collections.Counter(expected_labels)
-        c2 = collections.Counter(seen_labels)
-        self.assertEqual(c1, c2)
-        self.assertEqual(len(self.tree.taxon_namespace), len(self.node_label_to_taxon_label_map))
+        self.verify_taxon_namespace_reconstruction(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
 
     def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
-        pass
+        original_tns = self.tree.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        self.tree.taxon_namespace = new_tns
+        self.assertEqual(len(self.tree.taxon_namespace), 0)
+        self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.assertIs(self.tree.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                unify_taxa_by_label=True,
+                case_insensitive_label_mapping=False,
+                original_tns=original_tns)
 
     def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
-        pass
-
-    def test_reconstruct_taxon_namespace_with_taxon_mapping(self):
-        pass
+        original_tns = self.tree.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        self.tree.taxon_namespace = new_tns
+        self.assertEqual(len(self.tree.taxon_namespace), 0)
+        self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+                case_insensitive_label_mapping=True)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.assertIs(self.tree.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                unify_taxa_by_label=True,
+                case_insensitive_label_mapping=True,
+                original_tns=original_tns)
 
 if __name__ == "__main__":
     unittest.main()
