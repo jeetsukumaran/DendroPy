@@ -71,7 +71,7 @@ class TestTreeUpdateTaxonNamespace(
         self.assertEqual(set(tns2._taxa), self.expected_taxa)
         self.assertEqual(len(tns2._taxa), len(self.expected_labels))
 
-class TestTreeReconstructTaxonNamespace(
+class TestTreeMigrateAndReconstructTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
@@ -201,6 +201,33 @@ class TestTreeReconstructTaxonNamespace(
                 unify_taxa_by_label=True,
                 case_insensitive_label_mapping=True,
                 original_tns=original_tns)
+
+    def test_migrate_taxon_namespace_non_unifying(self):
+        original_tns = self.tree.taxon_namespace
+        self.tree.migrate_taxon_namespace(unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.verify_taxon_namespace_migrateion(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+
+    def test_migrate_taxon_namespace_unifying_case_sensitive(self):
+        original_tns = self.tree.taxon_namespace
+        self.tree.migrate_taxon_namespace(unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.verify_taxon_namespace_migrateion(
+                unify_taxa_by_label=True,
+                case_insensitive_label_mapping=False)
+
+    def test_migrate_taxon_namespace_unifying_case_insensitive(self):
+        original_tns = self.tree.taxon_namespace
+        self.tree.migrate_taxon_namespace(unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.verify_taxon_namespace_migrateion(
+                unify_taxa_by_label=True,
+                case_insensitive_label_mapping=True)
 
 if __name__ == "__main__":
     unittest.main()
