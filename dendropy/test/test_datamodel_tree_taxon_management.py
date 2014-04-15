@@ -20,6 +20,7 @@
 Tests Tree taxon management
 """
 
+import os
 import unittest
 import dendropy
 import collections
@@ -344,6 +345,12 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                     case_insensitive_label_mapping=ci,
                     original_tns=original_tns,
                     redundant_taxa=True)
+
+    def test_unassign_taxa(self):
+        self.assertFalse(os.environ.get("DENDROPY_FAIL_INCOMPLETE_TESTS", False))
+
+    def test_randomly_assign_taxa(self):
+        self.assertFalse(os.environ.get("DENDROPY_FAIL_INCOMPLETE_TESTS", False))
 
 if __name__ == "__main__":
     unittest.main()
