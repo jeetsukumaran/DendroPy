@@ -2820,10 +2820,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                         # this will unconditionally create a new taxon
                         t = self.taxon_namespace.new_taxon(label=node.taxon.label)
                     taxon_mapping_memo[node.taxon] = t
-                    node.taxon = t
                 else:
                     # taxon to use is given by mapping
                     self.taxon_namespace.add_taxon(t)
+                node.taxon = t
 
     def update_taxon_namespace(self):
         """

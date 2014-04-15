@@ -1273,7 +1273,7 @@ class Taxon(base.DataObject, base.Annotable):
     A taxon associated with a sequence or a node on a tree.
     """
 
-    def __init__(self, label):
+    def __init__(self, label=None):
         """
         Parameters
         ----------

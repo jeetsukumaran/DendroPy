@@ -202,6 +202,24 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                 case_insensitive_label_mapping=True,
                 original_tns=original_tns)
 
+    def test_reconstruct_taxon_namespace_mapping(self):
+        original_tns = self.tree.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        self.tree.taxon_namespace = new_tns
+        self.assertEqual(len(self.tree.taxon_namespace), 0)
+        memo = {}
+        for taxon in self.original_taxa:
+            memo[taxon] = dendropy.Taxon()
+        memo_copy = dict(memo)
+        self.tree.reconstruct_taxon_namespace(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False,
+                taxon_mapping_memo=memo)
+        self.assertIsNot(self.tree.taxon_namespace, original_tns)
+        self.assertIs(self.tree.taxon_namespace, new_tns)
+        for nd in self.tree:
+            self.assertIs(nd.taxon, memo_copy[nd.original_taxon])
+
     def test_migrate_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
