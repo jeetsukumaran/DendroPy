@@ -324,5 +324,26 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             for nd in self.tree:
                 self.assertIs(nd.taxon, memo_copy[nd.original_taxon])
 
+    def test_migrate_taxon_namespace_with_redundant_taxa(self):
+        for (unify, ci) in [
+                (False, False),
+                (True, False),
+                (True, True), ]:
+            self.setUp()
+            self.create_redundnant_taxa()
+            original_tns = self.tree.taxon_namespace
+            new_tns = dendropy.TaxonNamespace()
+            self.tree.migrate_taxon_namespace(
+                    new_tns,
+                    unify_taxa_by_label=unify,
+                    case_insensitive_label_mapping=ci)
+            self.assertIsNot(self.tree.taxon_namespace, original_tns)
+            self.assertIs(self.tree.taxon_namespace, new_tns)
+            self.verify_taxon_namespace_reconstruction(
+                    unify_taxa_by_label=unify,
+                    case_insensitive_label_mapping=ci,
+                    original_tns=original_tns,
+                    redundant_taxa=True)
+
 if __name__ == "__main__":
     unittest.main()
