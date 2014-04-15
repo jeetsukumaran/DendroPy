@@ -97,15 +97,13 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             "p" : "j",
                 }
         self.original_taxa = []
-        self.label_to_taxa = collections.defaultdict(list)
-        for nd in self.tree:
+        for idx, nd in enumerate(self.tree):
             taxon_label = self.node_label_to_taxon_label_map[nd.label]
             t = dendropy.Taxon(label=taxon_label)
             self.tree.taxon_namespace.add_taxon(t)
             nd.taxon = t
             nd.original_taxon = t
             self.original_taxa.append(t)
-            self.label_to_taxa[t.label].append(t)
         assert len(self.tree.taxon_namespace) == len(self.node_label_to_taxon_label_map)
         assert len(self.tree.taxon_namespace) == len(self.original_taxa)
 
