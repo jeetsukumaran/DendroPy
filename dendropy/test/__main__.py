@@ -60,7 +60,7 @@ def main():
             type=int,
             help="Messaging noisiness (default: %(default)s)")
     parser.add_argument("--logging-level",
-            default=os.environ.get(messaging.LOGGING_LEVEL_ENVAR, "NOTSET"),
+            default=os.environ.get(metavar.LOGGING_LEVEL_ENVAR, "NOTSET"),
             choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             help="Test logging level (default: '%(default)s')")
     parser.add_argument("-f", "--fail-fast",
