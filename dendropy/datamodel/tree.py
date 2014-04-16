@@ -717,7 +717,7 @@ class Node(base.DataObject, base.Annotable):
             The (iterable) collection of child nodes to be assigned this node
             as a parent.
         """
-        self._child_nodes.clear()
+        del self._child_nodes[:] # list.clear() is not in Python 2.7
         # Go through add to ensure book-keeping
         # (e.g. avoiding multiple adds) takes
         # place.
