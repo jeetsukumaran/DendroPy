@@ -27,7 +27,7 @@ from distutils.util import strtobool
 
 FAIL_INCOMPLETE_TESTS_ENVAR = "DENDROPY_FAIL_INCOMPLETE_TESTS"
 
-def get_test_module_names(filter_patterns=None):
+def discover_test_module_paths(filter_patterns=None):
     """
     Discovers test modules. If `filter_patterns` is `None`, then
     all files in *immediate* directory that begin with 'test' will
