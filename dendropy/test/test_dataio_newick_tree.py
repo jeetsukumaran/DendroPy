@@ -28,6 +28,3 @@ from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
-
-# if __name__ == "__main__":
-#     unittest.main()
