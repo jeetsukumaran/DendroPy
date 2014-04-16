@@ -27,6 +27,7 @@ import collections
 import copy
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import compare_and_validate
+from dendropy.test import fail_incomplete_tests
 
 class TestTreeUpdateTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
@@ -347,10 +348,10 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                     redundant_taxa=True)
 
     def test_unassign_taxa(self):
-        self.assertFalse(os.environ.get("DENDROPY_FAIL_INCOMPLETE_TESTS", False))
+        self.assertFalse(fail_incomplete_tests())
 
     def test_randomly_assign_taxa(self):
-        self.assertFalse(os.environ.get("DENDROPY_FAIL_INCOMPLETE_TESTS", False))
+        self.assertFalse(fail_incomplete_tests())
 
 if __name__ == "__main__":
     unittest.main()

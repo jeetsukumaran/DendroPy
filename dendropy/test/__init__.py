@@ -23,6 +23,9 @@ DendroPy testing suite.
 import unittest
 import re
 import os
+from distutils.util import strtobool
+
+FAIL_INCOMPLETE_TESTS_ENVAR = "DENDROPY_FAIL_INCOMPLETE_TESTS"
 
 def get_test_module_names(filter_patterns=None):
     """
@@ -63,6 +66,9 @@ def run(test_suite=None, verbosity=1, failfast=False):
     if test_suite is None:
         test_suite = get_test_suite()
     runner.run(test_suite)
+
+def fail_incomplete_tests():
+    return bool(strtobool(os.environ.get(FAIL_INCOMPLETE_TESTS_ENVAR, "0")))
 
 if __name__ == "__main__":
     run()

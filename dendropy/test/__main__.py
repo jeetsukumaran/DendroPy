@@ -59,13 +59,17 @@ def main():
             type=int,
             help="Messaging noisiness (default: %(default)s)")
     parser.add_argument("--logging-level",
-            default=os.environ.get(messaging._LOGGING_LEVEL_ENVAR, "NOTSET"),
+            default=os.environ.get(messaging.LOGGING_LEVEL_ENVAR, "NOTSET"),
             choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             help="Test logging level (default: '%(default)s')")
     parser.add_argument("-f", "--fail-fast",
             action="store_true",
             default=False,
             help="Stop the test run on the first error or failure.")
+    parser.add_argument("-I", "--fail-incomplete",
+            action="store_true",
+            default=False,
+            help="Fail incomplete or partially-complete test stubs.")
     args = parser.parse_args()
 
     if args.help_testgroups:
@@ -76,8 +80,12 @@ def main():
         sys.exit(0)
 
     # Set logging level:
-    os.environ[messaging._LOGGING_LEVEL_ENVAR] = args.logging_level
+    os.environ[messaging.LOGGING_LEVEL_ENVAR] = args.logging_level
     _LOG = messaging.get_logger("dendropy")
+
+    # Set test specifications
+    if args.fail_incomplete:
+        os.environ[test.FAIL_INCOMPLETE_TESTS_ENVAR] = "1"
 
     # get test modules
     test_names = []

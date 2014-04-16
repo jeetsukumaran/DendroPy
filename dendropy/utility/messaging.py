@@ -28,22 +28,22 @@ import textwrap
 ###############################################################################
 ## LOGGING
 
-_LOGGING_LEVEL_ENVAR="DENDROPY_LOGGING_LEVEL"
-_LOGGING_FORMAT_ENVAR="DENDROPY_LOGGING_FORMAT"
+LOGGING_LEVEL_ENVAR="DENDROPY_LOGGING_LEVEL"
+LOGGING_FORMAT_ENVAR="DENDROPY_LOGGING_FORMAT"
 
 def get_logging_level():
-    if _LOGGING_LEVEL_ENVAR in os.environ:
-        if os.environ[_LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
+    if LOGGING_LEVEL_ENVAR in os.environ:
+        if os.environ[LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
             level = logging.NOTSET
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
+        elif os.environ[LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
             level = logging.DEBUG
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "INFO":
+        elif os.environ[LOGGING_LEVEL_ENVAR].upper() == "INFO":
             level = logging.INFO
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "WARNING":
+        elif os.environ[LOGGING_LEVEL_ENVAR].upper() == "WARNING":
             level = logging.WARNING
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "ERROR":
+        elif os.environ[LOGGING_LEVEL_ENVAR].upper() == "ERROR":
             level = logging.ERROR
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
+        elif os.environ[LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
             level = logging.CRITICAL
         else:
             level = logging.NOTSET
@@ -54,11 +54,11 @@ def get_logging_level():
 def get_logger(name="dendropy"):
     """
     Returns a logger with name set as given, and configured
-    to the level given by the environment variable _LOGGING_LEVEL_ENVAR.
+    to the level given by the environment variable LOGGING_LEVEL_ENVAR.
     """
 
 #     package_dir = os.path.dirname(module_path)
-#     config_filepath = os.path.join(package_dir, _LOGGING_CONFIG_FILE)
+#     config_filepath = os.path.join(package_dir, LOGGING_CONFIG_FILE)
 #     if os.path.exists(config_filepath):
 #         try:
 #             logging.config.fileConfig(config_filepath)
@@ -75,12 +75,12 @@ def get_logger(name="dendropy"):
         raw_formatter = logging.Formatter("%(message)s")
         default_formatter = None
         logging_formatter = default_formatter
-        if _LOGGING_FORMAT_ENVAR in os.environ:
-            if os.environ[_LOGGING_FORMAT_ENVAR].upper() == "RICH":
+        if LOGGING_FORMAT_ENVAR in os.environ:
+            if os.environ[LOGGING_FORMAT_ENVAR].upper() == "RICH":
                 logging_formatter = rich_formatter
-            elif os.environ[_LOGGING_FORMAT_ENVAR].upper() == "SIMPLE":
+            elif os.environ[LOGGING_FORMAT_ENVAR].upper() == "SIMPLE":
                 logging_formatter = simple_formatter
-            elif os.environ[_LOGGING_FORMAT_ENVAR].upper() == "NONE":
+            elif os.environ[LOGGING_FORMAT_ENVAR].upper() == "NONE":
                 logging_formatter = None
             else:
                 logging_formatter = default_formatter
