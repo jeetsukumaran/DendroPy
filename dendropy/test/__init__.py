@@ -26,8 +26,6 @@ import os
 from distutils.util import strtobool
 from dendropy.utility import metavar
 
-FAIL_INCOMPLETE_TESTS_ENVAR = "DENDROPY_FAIL_INCOMPLETE_TESTS"
-
 def discover_test_module_paths(filter_patterns=None):
     """
     Discovers test modules. If `filter_patterns` is `None`, then
