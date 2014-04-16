@@ -24,6 +24,7 @@ import os
 import argparse
 import collections
 import unittest
+from dendropy.utility import metavar
 from dendropy.utility import messaging
 from dendropy import test
 
@@ -80,12 +81,12 @@ def main():
         sys.exit(0)
 
     # Set logging level:
-    os.environ[messaging.LOGGING_LEVEL_ENVAR] = args.logging_level
+    os.environ[metavar.LOGGING_LEVEL_ENVAR] = args.logging_level
     _LOG = messaging.get_logger("dendropy")
 
     # Set test specifications
     if args.fail_incomplete:
-        os.environ[test.FAIL_INCOMPLETE_TESTS_ENVAR] = "1"
+        os.environ[metavar.FAIL_INCOMPLETE_TESTS_ENVAR] = "1"
 
     # get test modules
     test_names = []

@@ -24,6 +24,7 @@ import unittest
 import re
 import os
 from distutils.util import strtobool
+from dendropy.utility import metavar
 
 FAIL_INCOMPLETE_TESTS_ENVAR = "DENDROPY_FAIL_INCOMPLETE_TESTS"
 
@@ -68,7 +69,7 @@ def run(test_suite=None, verbosity=1, failfast=False):
     runner.run(test_suite)
 
 def fail_incomplete_tests():
-    return bool(strtobool(os.environ.get(FAIL_INCOMPLETE_TESTS_ENVAR, "0")))
+    return bool(strtobool(os.environ.get(metavar.FAIL_INCOMPLETE_TESTS_ENVAR, "0")))
 
 if __name__ == "__main__":
     run()
