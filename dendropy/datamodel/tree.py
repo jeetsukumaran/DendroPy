@@ -2911,18 +2911,20 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
     ###########################################################################
     ### Structure
 
-    def _get_rooting_state_is_undefined(self):
+    def _get_is_rootedness_undefined(self):
         return self._is_rooted is None
-    rooting_state_is_undefined = property(_get_rooting_state_is_undefined)
+    is_rootedness_undefined = property(_get_is_rootedness_undefined)
+    # legacy:
+    rooting_state_is_undefined = property(_get_is_rootedness_undefined)
 
     def _get_is_rooted(self):
-        return self._is_rooted
+        return None if self._is_rooted is None else self._is_rooted
     def _set_is_rooted(self, val):
         self._is_rooted = val
     is_rooted = property(_get_is_rooted, _set_is_rooted)
 
     def _get_is_unrooted(self):
-        return not self._is_rooted
+        return None if self._is_rooted is None else (not self._is_rooted)
     def _set_is_unrooted(self, val):
         self._is_rooted = not val
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)

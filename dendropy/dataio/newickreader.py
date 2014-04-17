@@ -270,7 +270,7 @@ class NewickReader(ioservice.DataReader):
         """
         Set rooting interpretation configuration.
         """
-        if val not in ["force-unrooted", "force-rooted", "default-unrooted", "default-rooted"]:
+        if val not in ("force-unrooted", "force-rooted", "default-unrooted", "default-rooted", None,):
             raise ValueError("Unrecognized rooting directive: '{}'".format(val))
         self._rooting = val
     rooting = property(_get_rooting, _set_rooting)
@@ -345,7 +345,9 @@ class NewickReader(ioservice.DataReader):
         Returns rooting state for tree with given rooting comment token, taking
         into account `rooting` configuration.
         """
-        if self._rooting == "force-unrooted":
+        if self._rooting is None:
+            return None
+        elif self._rooting == "force-unrooted":
             return False
         elif self._rooting == "force-rooted":
             return True
@@ -355,7 +357,7 @@ class NewickReader(ioservice.DataReader):
             return False
         elif self._rooting == "default-rooted":
             return True
-        elif self._rooting == "default-unrooted" or self._rooting is None:
+        elif self._rooting == "default-unrooted":
             return False
         else:
             raise TypeError("Unrecognized rooting directive: '{}'".format(self._rooting))

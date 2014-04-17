@@ -2,7 +2,7 @@
 
 import sys
 import json
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger

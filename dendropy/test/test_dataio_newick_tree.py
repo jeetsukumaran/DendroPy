@@ -28,7 +28,8 @@ from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+_LOG = get_logger(__name__)
+if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NewickTreeReaderBasic(
@@ -60,6 +61,72 @@ class NewickTreeReaderBasic(
 
     def test_unsupported_keyword_arguments(self):
         s = self.get_newick_string()
+        with self.assertRaises(TypeError):
+            t = dendropy.Tree.get_from_string(s,
+                    "newick",
+                    suppress_internal_taxa=True,
+                    suppress_external_taxa=False)
+
+    def test_rooting_interpretation(self):
+        rooting_tokens = ("", "[&R]", "[&U]", "[&r]", "[&u]", "[&0]", "[&invalid]", "[R]", "[U]", "[&]")
+        rooting_interpretations = ("force-rooted", "force-unrooted", "default-rooted", "default-unrooted", None)
+        for rooting_token in rooting_tokens:
+            for rooting_interpretation in rooting_interpretations:
+                if rooting_interpretation == "force-rooted":
+                    expected_is_rooted = True
+                    expected_is_unrooted = False
+                    expected_is_rootedness_undefined = False
+                elif rooting_interpretation == "force-unrooted":
+                    expected_is_rooted = False
+                    expected_is_unrooted = True
+                    expected_is_rootedness_undefined = False
+                elif rooting_interpretation == "default-rooted":
+                    if rooting_token.upper() == "[&R]":
+                        expected_is_rooted = True
+                        expected_is_unrooted = False
+                        expected_is_rootedness_undefined = False
+                    elif rooting_token.upper() == "[&U]":
+                        expected_is_rooted = False
+                        expected_is_unrooted = True
+                        expected_is_rootedness_undefined = False
+                    else:
+                        expected_is_rooted = True
+                        expected_is_unrooted = False
+                        expected_is_rootedness_undefined = False
+                elif rooting_interpretation == "default-unrooted":
+                    if rooting_token.upper() == "[&R]":
+                        expected_is_rooted = True
+                        expected_is_unrooted = False
+                        expected_is_rootedness_undefined = False
+                    elif rooting_token.upper() == "[&U]":
+                        expected_is_rooted = False
+                        expected_is_unrooted = True
+                        expected_is_rootedness_undefined = False
+                    else:
+                        expected_is_rooted = False
+                        expected_is_unrooted = True
+                        expected_is_rootedness_undefined = False
+                else:
+                    if rooting_token.upper() == "[&R]":
+                        expected_is_rooted = True
+                        expected_is_unrooted = False
+                        expected_is_rootedness_undefined = False
+                    elif rooting_token.upper() == "[&U]":
+                        expected_is_rooted = False
+                        expected_is_unrooted = True
+                        expected_is_rootedness_undefined = False
+                    else:
+                        expected_is_rooted = None
+                        expected_is_unrooted = None
+                        expected_is_rootedness_undefined = True
+                _LOG.info("Rooting token = '{}', Rooting interpretation = '{}'".format(rooting_token, rooting_interpretation))
+                s = self.get_newick_string(rooting_token=rooting_token)
+                t = dendropy.Tree.get_from_string(s, "newick",
+                        rooting=rooting_interpretation)
+                self.assertIs(t.is_rooted, expected_is_rooted)
+                self.assertIs(t.is_unrooted, expected_is_unrooted)
+                self.assertIs(t.is_rootedness_undefined, expected_is_rootedness_undefined)
+
         with self.assertRaises(TypeError):
             t = dendropy.Tree.get_from_string(s,
                     "newick",
