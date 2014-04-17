@@ -20,6 +20,7 @@
 Test data generation and verification.
 """
 
+import sys
 import dendropy
 
 ###############################################################################
@@ -318,13 +319,15 @@ class CuratedTestTree(object):
             nd.canonical_label = exp_nd
         for nd in tree:
             children = [c.canonical_label for c in nd.child_node_iter()]
-            self.assertItemsEqual(children, self.node_children[nd.canonical_label])
+            if sys.hexversion < 0x03000000:
+                self.assertItemsEqual(children, self.node_children[nd.canonical_label])
+            else:
+                self.assertCountEqual(children, self.node_children[nd.canonical_label])
             if nd.parent_node is None:
                 self.assertEqual(len(self.node_ancestors[nd.canonical_label]), 0)
             else:
                 self.assertEqual(nd.parent_node.canonical_label,
                         self.node_ancestors[nd.canonical_label][0])
-
 
     def get_newick_string(self,
             suppress_edge_lengths=False,

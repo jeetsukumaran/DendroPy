@@ -67,6 +67,5 @@ class NewickTreeReaderBasic(
                     suppress_external_taxa=False)
 
 
-
 if __name__ == "__main__":
     unittest.main()
