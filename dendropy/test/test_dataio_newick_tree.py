@@ -58,6 +58,14 @@ class NewickTreeReaderBasic(
                             suppress_external_taxa=suppress_external_taxa,
                             suppress_edge_lengths=suppress_edge_lengths)
 
+    def test_unsupported_keyword_arguments(self):
+        s = self.get_newick_string()
+        with self.assertRaises(TypeError):
+            t = dendropy.Tree.get_from_string(s,
+                    "newick",
+                    suppress_internal_taxa=True,
+                    suppress_external_taxa=False)
+
 
 
 if __name__ == "__main__":
