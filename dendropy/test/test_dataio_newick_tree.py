@@ -38,7 +38,11 @@ class NewickTreeReader(
     def test_default(self):
         s = self.get_newick_string()
         t = dendropy.Tree.get_from_string(s, "newick")
-        self.verify_curated_tree(t)
+        self.verify_curated_tree(t,
+                suppress_internal_taxa=True,
+                suppress_external_taxa=False,
+                suppress_edge_lengths=False,
+                node_taxon_label_map=None)
 
 
 if __name__ == "__main__":

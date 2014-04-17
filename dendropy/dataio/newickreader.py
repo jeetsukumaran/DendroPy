@@ -137,12 +137,6 @@ class NewickReader(ioservice.DataReader):
             If `True`, then multiple identical taxon labels will be allowed.
             Defaults to `False`: treat multiple identical taxon labels as an
             error.
-        hyphens_as_tokens : boolean, default: `False`
-            If `False`, hyphens are not treated as special punctuation
-            characters (and thus can be used as part of labels or edge length
-            values without requiring that the labels be wrapped in
-            quotes). If `True`, hyphens will be treated as special
-            punctuation characters.
         """
 
         self._rooting = None
@@ -194,7 +188,6 @@ class NewickReader(ioservice.DataReader):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
         self.allow_duplicate_taxon_labels = kwargs.pop("allow_duplicate_taxon_labels", False)
-        self.hyphens_as_tokens = kwargs.pop('hyphens_as_tokens', False)
 
     def tree_iter(self,
             stream,

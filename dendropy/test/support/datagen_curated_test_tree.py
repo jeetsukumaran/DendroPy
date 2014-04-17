@@ -59,46 +59,46 @@ class CuratedTestTree(object):
     dot_str = "a -> b -> i; b -> e -> j; e -> k; a -> c; c -> g; c -> f; g -> l; g -> m; f -> n; f -> h -> o; h -> p;"
     newick_unweighted_edges_str = "((i, (j, k)e)b, ((l, m)g, (n, (o, p)h)f)c)a;"
     newick_weighted_edges_str = "((i:1, (j:2, k:3)e:4)b:5, ((l:6, m:7)g:8, (n:9, (o:10, p:11)h:12)f:13)c:14)a:15;"
-    preorder_sequence = ["a", "b", "i", "e", "j", "k", "c", "g", "l", "m", "f", "n", "h", "o", "p"]
-    postorder_sequence = ["i", "j", "k", "e", "b", "l", "m", "g", "n", "o", "p", "h", "f", "c", "a"]
-    leaf_sequence = ["i", "j", "k", "l", "m", "n", "o", "p"]
-    levelorder_sequence = ["a", "b", "c", "i", "e", "g", "f", "j", "k", "l", "m", "n", "h", "o", "p"]
-    internal_levelorder_sequence = ["a", "bc", "egf", "h"]
-    inorder_sequence = ["i", "b", "j", "e", "k", "a", "l", "g", "m", "c", "n", "f", "o", "h", "p"]
-    ageorder_sequence = ["i", "j", "k", "l", "m", "n", "o", "p", "e", "g", "h", "b", "f", "c", "a"]
+    preorder_sequence = ("a", "b", "i", "e", "j", "k", "c", "g", "l", "m", "f", "n", "h", "o", "p",)
+    postorder_sequence = ("i", "j", "k", "e", "b", "l", "m", "g", "n", "o", "p", "h", "f", "c", "a",)
+    leaf_sequence = ("i", "j", "k", "l", "m", "n", "o", "p",)
+    levelorder_sequence = ("a", "b", "c", "i", "e", "g", "f", "j", "k", "l", "m", "n", "h", "o", "p",)
+    internal_levelorder_sequence = ("a", "bc", "egf", "h",)
+    inorder_sequence = ("i", "b", "j", "e", "k", "a", "l", "g", "m", "c", "n", "f", "o", "h", "p",)
+    ageorder_sequence = ("i", "j", "k", "l", "m", "n", "o", "p", "e", "g", "h", "b", "f", "c", "a",)
     node_children = {
-            "a" : ["b", "c"],
-            "b" : ["i", "e"],
-            "c" : ["g", "f"],
-            "e" : ["j", "k"],
-            "f" : ["n", "h"],
-            "g" : ["l", "m"],
-            "h" : ["o", "p"],
-            "i" : [],
-            "j" : [],
-            "k" : [],
-            "l" : [],
-            "m" : [],
-            "n" : [],
-            "o" : [],
-            "p" : [],
+            "a" : ("b", "c",),
+            "b" : ("i", "e",),
+            "c" : ("g", "f",),
+            "e" : ("j", "k",),
+            "f" : ("n", "h",),
+            "g" : ("l", "m",),
+            "h" : ("o", "p",),
+            "i" : (),
+            "j" : (),
+            "k" : (),
+            "l" : (),
+            "m" : (),
+            "n" : (),
+            "o" : (),
+            "p" : (),
             }
     node_siblings = {
-            "a": [],
-            "b": ["c"],
-            "c": [],
-            "e": [],
-            "f": [],
-            "g": ["f"],
-            "h": [],
-            "i": ["e"],
-            "j": ["k"],
-            "k": [],
-            "l": ["m"],
-            "m": [],
-            "n": ["h"],
-            "o": ["p"],
-            "p": [],
+            "a": (),
+            "b": ("c",),
+            "c": (),
+            "e": (),
+            "f": (),
+            "g": ("f",),
+            "h": (),
+            "i": ("e",),
+            "j": ("k",),
+            "k": (),
+            "l": ("m",),
+            "m": (),
+            "n": ("h",),
+            "o": ("p",),
+            "p": (),
             }
     node_edge_lengths = {
             "a": 15.0,
@@ -135,21 +135,21 @@ class CuratedTestTree(object):
             "p":  0.0,
             }
     node_ancestors = {
-            "a": [],
-            "b": ["a"],
-            "c": ["a"],
-            "e": ["b", "a"],
-            "f": ["c", "a"],
-            "g": ["c", "a"],
-            "h": ["f", "c", "a"],
-            "i": ["b", "a"],
-            "j": ["e", "b", "a"],
-            "k": ["e", "b", "a"],
-            "l": ["g", "c", "a"],
-            "m": ["g", "c", "a"],
-            "n": ["f", "c", "a"],
-            "o": ["h", "f", "c", "a"],
-            "p": ["h", "f", "c", "a"],
+            "a": (),
+            "b": ("a",),
+            "c": ("a",),
+            "e": ("b", "a",),
+            "f": ("c", "a",),
+            "g": ("c", "a",),
+            "h": ("f", "c", "a",),
+            "i": ("b", "a",),
+            "j": ("e", "b", "a",),
+            "k": ("e", "b", "a",),
+            "l": ("g", "c", "a",),
+            "m": ("g", "c", "a",),
+            "n": ("f", "c", "a",),
+            "o": ("h", "f", "c", "a",),
+            "p": ("h", "f", "c", "a",),
             }
 
     # def get_tree(self):
@@ -297,12 +297,34 @@ class CuratedTestTree(object):
             suppress_external_taxa=False,
             suppress_edge_lengths=False,
             node_taxon_label_map=None):
-        self.assertFalse(dendropy.test.fail_incomplete_tests())
+        if node_taxon_label_map is None:
+            node_taxon_label_map = {}
+        for nd, exp_nd in zip(tree, self.preorder_sequence):
+            if ( (nd.is_leaf() and suppress_external_taxa)
+                    or ((not nd.is_leaf()) and suppress_internal_taxa) ):
+                label = nd.label
+            else:
+                self.assertIsNot(nd.taxon, None)
+                label = nd.taxon.label
+            self.assertEqual(label, node_taxon_label_map.get(exp_nd, exp_nd))
+            if not suppress_edge_lengths:
+                self.assertEqual(nd.edge.length, self.node_edge_lengths[exp_nd])
+            nd.canonical_label = exp_nd
+        for nd in tree:
+            children = [c.canonical_label for c in nd.child_node_iter()]
+            self.assertItemsEqual(children, self.node_children[nd.canonical_label])
+            if nd.parent_node is None:
+                self.assertEqual(len(self.node_ancestors[nd.canonical_label]), 0)
+            else:
+                self.assertEqual(nd.parent_node.canonical_label,
+                        self.node_ancestors[nd.canonical_label][0])
+
 
     def get_newick_string(self,
             suppress_edge_lengths=False,
             node_taxon_label_map=None,
-            edge_label_compose_func=None):
+            edge_label_compose_func=None,
+            rooting_token=None):
         node_tag = {}
         if node_taxon_label_map is None:
             node_taxon_label_map = {}
@@ -315,7 +337,11 @@ class CuratedTestTree(object):
                 node_tag[nd] = label
             else:
                 node_tag[nd] = "{}:{}".format(label, edge_label_compose_func(self.node_edge_lengths[nd]))
-        s = "(({i}, ({j}, {k}){e}){b}, (({l}, {m}){g}, ({n}, ({o}, {p}){h}){f}){c}){a};".format(
+        if rooting_token is None:
+            node_tag["rooting"] = ""
+        else:
+            node_tag["rooting"] = rooting_token
+        s = "{rooting}(({i}, ({j}, {k}){e}){b}, (({l}, {m}){g}, ({n}, ({o}, {p}){h}){f}){c}){a};".format(
                 **node_tag
                 )
         return s
