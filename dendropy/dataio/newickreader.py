@@ -200,7 +200,7 @@ class NewickReader(ioservice.DataReader):
         self.encode_splits = kwargs.pop("encode_splits", False)
         self.finish_node_func = kwargs.pop("finish_node_func", None)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
-        self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.preserve_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
         self.allow_duplicate_taxon_labels = kwargs.pop("allow_duplicate_taxon_labels", False)
