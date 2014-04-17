@@ -111,9 +111,9 @@ def main():
             test_names.append(name)
 
     if not test_names and not filter_patterns:
-        test_names = test.get_test_module_names() # get all
+        test_names = test.discover_test_module_paths() # get all
     if filter_patterns:
-        test_names.extend(test.get_test_module_names(filter_patterns))
+        test_names.extend(test.discover_test_module_paths(filter_patterns))
     test_names = sorted(set(test_names))
 
     # 0: nothing
