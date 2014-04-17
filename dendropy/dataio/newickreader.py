@@ -315,10 +315,19 @@ class NewickReader(ioservice.DataReader):
         return tree
 
     def _process_tree_comments(self, tree, tree_comments):
+        # NOTE: this also unconditionally sets the tree rootedness and
+        # weighting if no comment indicating these are found; for this to work
+        # in the current implementation, this method must be called once and
+        # exactly once per tree.
+        rooting_token_found = False
+        weighting_token_found = False
         for comment in tree_comments:
             if comment in ["&u", "&U", "&r", "&R"]:
+                # print("\n\n**********\n**{}\n**{}\n*********".format(comment, self._parse_tree_rooting_state(comment)))
                 tree.is_rooted = self._parse_tree_rooting_state(comment)
+                rooting_token_found = True
             elif comment.startswith("&W") or comment.startswith("&w"):
+                weighting_token_found = True
                 if self.store_tree_weights:
                     try:
                         weight_expression = stream_tokenizer.tree_weight_comment.split(' ')[1]
@@ -339,26 +348,30 @@ class NewickReader(ioservice.DataReader):
                     tree.comments.append(comment)
             else:
                 tree.comments.append(comment)
+        if not rooting_token_found:
+            tree.is_rooted = self._parse_tree_rooting_state("")
+        if self.store_tree_weights and not weighting_token_found:
+            tree.weight = 1.0
 
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """
         Returns rooting state for tree with given rooting comment token, taking
         into account `rooting` configuration.
         """
-        if self._rooting is None:
-            return None
-        elif self._rooting == "force-unrooted":
+        if self._rooting == "force-unrooted":
             return False
         elif self._rooting == "force-rooted":
             return True
         elif rooting_comment == "&R" or rooting_comment == "&r":
             return True
-        elif rooting_comment == "&U" or rooting_comment == "&U":
+        elif rooting_comment == "&U" or rooting_comment == "&u":
             return False
         elif self._rooting == "default-rooted":
             return True
         elif self._rooting == "default-unrooted":
             return False
+        elif self._rooting is None:
+            return None
         else:
             raise TypeError("Unrecognized rooting directive: '{}'".format(self._rooting))
 

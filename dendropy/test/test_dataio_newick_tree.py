@@ -106,7 +106,7 @@ class NewickTreeReaderBasic(
                         expected_is_rooted = False
                         expected_is_unrooted = True
                         expected_is_rootedness_undefined = False
-                else:
+                elif rooting_interpretation is None:
                     if rooting_token.upper() == "[&R]":
                         expected_is_rooted = True
                         expected_is_unrooted = False
@@ -119,8 +119,11 @@ class NewickTreeReaderBasic(
                         expected_is_rooted = None
                         expected_is_unrooted = None
                         expected_is_rootedness_undefined = True
+                else:
+                    raise Exception("Unexpecged rooting interpretation: '{}'".format(rooting_interpretation))
                 _LOG.info("Rooting token = '{}', Rooting interpretation = '{}'".format(rooting_token, rooting_interpretation))
                 s = self.get_newick_string(rooting_token=rooting_token)
+                _LOG.debug(s)
                 t = dendropy.Tree.get_from_string(s, "newick",
                         rooting=rooting_interpretation)
                 self.assertIs(t.is_rooted, expected_is_rooted)
