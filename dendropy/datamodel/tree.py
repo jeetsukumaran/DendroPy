@@ -4317,12 +4317,16 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
         A :class:`TreeList` object.
 
         """
-        reader = dataio.get_reader(schema, **kwargs)
+        # these must be pulled before passing the kwargs
+        # down to the reader
+        tree_list = kwargs.pop("tree_list", None)
         taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
 
+        # get the reader
+        reader = dataio.get_reader(schema, **kwargs)
+
         # Accommodate an existing TreeList object being passed
-        tree_list = kwargs.pop("tree_list", None)
         if tree_list is None:
             tree_list = cls(label=label, taxon_namespace=taxon_namespace)
 
