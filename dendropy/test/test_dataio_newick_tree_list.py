@@ -351,7 +351,25 @@ class NewickTreeListReaderStandardTestTreeTest(
                 with self.assertRaises(IndexError):
                     f(src, "newick", collection_offset=1, tree_offset=0)
 
-    def test_unsupported_keyword_arguments(self):
+    def test_unsupported_keyword_arguments_newick_get(self):
+        tree_file_title = 'standard-test-trees-n12-x2'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.TreeList.get_from_path, tree_filepath),
+                    (dendropy.TreeList.get_from_stream, tree_stream),
+                    (dendropy.TreeList.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(TypeError):
+                    method(src,
+                            "newick",
+                            suppress_internal_taxa=True,
+                            suppress_external_taxa=False)
+
+    def test_unsupported_keyword_arguments_newick_read(self):
         tree_file_title = 'standard-test-trees-n12-x2'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
