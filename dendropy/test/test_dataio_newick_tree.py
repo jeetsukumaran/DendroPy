@@ -25,6 +25,21 @@ import os
 import unittest
 import dendropy
 from dendropy.test.support import datagen_standard_file_test_trees
+from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
-_LOG = get_logger(__name__)
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
+
+class NewickTreeReader(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
+
+    def test_default(self):
+        s = self.get_newick_string()
+        t = dendropy.Tree.get_from_string(s, "newick")
+        self.verify_curated_tree(t)
+
+
+if __name__ == "__main__":
+    unittest.main()

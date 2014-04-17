@@ -183,6 +183,7 @@ class CuratedTestTree(object):
             suppress_internal_node_taxa=True,
             suppress_external_node_taxa=True,
             taxon_namespace=None,
+            node_taxon_label_map=None,
             ):
         tree = dendropy.Tree(taxon_namespace=taxon_namespace)
         a = tree.seed_node
@@ -278,13 +279,44 @@ class CuratedTestTree(object):
         all_nodes = leaf_nodes | internal_nodes | set([a])
         if not suppress_internal_node_taxa:
             for nd in internal_nodes | set([a]):
-                t = tree.taxon_namespace.require_taxon(label=nd.label)
+                label = node_taxon_label_map.get(nd, nd) # default to same label as node
+                t = tree.taxon_namespace.require_taxon(label=label)
                 nd.taxon = t
                 assert t in tree.taxon_namespace
         if not suppress_external_node_taxa:
             for nd in leaf_nodes:
-                t = tree.taxon_namespace.require_taxon(label=nd.label)
+                label = node_taxon_label_map.get(nd, nd) # default to same label as node
+                t = tree.taxon_namespace.require_taxon(label=label)
                 nd.taxon = t
                 assert t in tree.taxon_namespace
         return tree, all_nodes, leaf_nodes, internal_nodes
+
+    def verify_curated_tree(self,
+            tree,
+            suppress_internal_taxa=False,
+            suppress_external_taxa=False,
+            suppress_edge_lengths=False,
+            node_taxon_label_map=None):
+        self.assertFalse(dendropy.test.fail_incomplete_tests())
+
+    def get_newick_string(self,
+            suppress_edge_lengths=False,
+            node_taxon_label_map=None,
+            edge_label_compose_func=None):
+        node_tag = {}
+        if node_taxon_label_map is None:
+            node_taxon_label_map = {}
+        if edge_label_compose_func is None:
+            edge_label_compose_func = lambda e: "{:6.5E}".format(e)
+        node_tag = {}
+        for nd in self.preorder_sequence:
+            label = node_taxon_label_map.get(nd, nd) # default to same label as node
+            if suppress_edge_lengths:
+                node_tag[nd] = label
+            else:
+                node_tag[nd] = "{}:{}".format(label, edge_label_compose_func(self.node_edge_lengths[nd]))
+        s = "(({i}, ({j}, {k}){e}){b}, (({l}, {m}){g}, ({n}, ({o}, {p}){h}){f}){c}){a};".format(
+                **node_tag
+                )
+        return s
 
