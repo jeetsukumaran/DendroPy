@@ -31,7 +31,7 @@ from dendropy.utility.messaging import get_logger
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
-class NewickTreeReader(
+class NewickTreeReaderBasic(
         datagen_curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
@@ -41,8 +41,23 @@ class NewickTreeReader(
         self.verify_curated_tree(t,
                 suppress_internal_taxa=True,
                 suppress_external_taxa=False,
-                suppress_edge_lengths=False,
-                node_taxon_label_map=None)
+                suppress_edge_lengths=False)
+
+    def test_basic_options(self):
+        s = self.get_newick_string()
+        for suppress_internal_taxa in (False, True):
+            for suppress_external_taxa in (False, True):
+                for suppress_edge_lengths in (False, True):
+                    t = dendropy.Tree.get_from_string(s,
+                            "newick",
+                            suppress_internal_node_taxa=suppress_internal_taxa,
+                            suppress_external_node_taxa=suppress_external_taxa,
+                            suppress_edge_lengths=suppress_edge_lengths)
+                    self.verify_curated_tree(t,
+                            suppress_internal_taxa=suppress_internal_taxa,
+                            suppress_external_taxa=suppress_external_taxa,
+                            suppress_edge_lengths=suppress_edge_lengths)
+
 
 
 if __name__ == "__main__":

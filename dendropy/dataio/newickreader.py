@@ -75,6 +75,18 @@ class NewickReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class NewickReaderInvalidValueError(NewickReaderError):
+        def __init__(self,
+                message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NewickReader.NewickReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
     def __init__(self, **kwargs):
         """
         Keyword Arguments
@@ -98,6 +110,9 @@ class NewickReader(ioservice.DataReader):
             Specifies the type of the edge lengths (`int` or `float`). Tokens
             interpreted as branch lengths will be cast to this type.
             Defaults to `float`.
+        suppress_edge_lengths : boolean, default: `False`
+            If `True`, edge length values will not be processed. If `False`,
+            edge length values will be processed.
         extract_comment_metadata : boolean, default: `False`
             If `True`, any comments that begin with '&' or '&&' will be parsed
             and stored as part of the annotation set of the corresponding
@@ -179,6 +194,7 @@ class NewickReader(ioservice.DataReader):
             kwargs["rooting"] = corrected
         self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.edge_len_type = kwargs.pop("edge_len_type", float)
+        self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', False)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
         self.encode_splits = kwargs.pop("encode_splits", False)
@@ -188,6 +204,8 @@ class NewickReader(ioservice.DataReader):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
         self.allow_duplicate_taxon_labels = kwargs.pop("allow_duplicate_taxon_labels", False)
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def tree_iter(self,
             stream,
@@ -429,11 +447,16 @@ class NewickReader(ioservice.DataReader):
             current_node_comments.extend(nexus_tokenizer.pull_captured_comments())
             if nexus_tokenizer.current_token == ":": #246
                 nexus_tokenizer.require_next_token()
-                try:
-                    edge_length = self.edge_len_type(nexus_tokenizer.current_token)
-                except ValueError:
-                    raise
-                current_node.edge.length = edge_length
+                if not self.suppress_edge_lengths:
+                    try:
+                        edge_length = self.edge_len_type(nexus_tokenizer.current_token)
+                    except ValueError:
+                        raise NewickReader.NewickReaderMalformedStatementError(
+                                message="Invalid edge length: '{}'".format(nexus_tokenizer.current_token),
+                                line_num=nexus_tokenizer.token_line_num,
+                                col_num=nexus_tokenizer.token_column_num,
+                                stream=nexus_tokenizer.src)
+                    current_node.edge.length = edge_length
                 nexus_tokenizer.require_next_token()
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
@@ -475,7 +498,7 @@ class NewickReader(ioservice.DataReader):
                     else:
                         label = nexus_tokenizer.current_token
                     if ( (is_internal_node and self.suppress_internal_node_taxa)
-                            or (not is_internal_node and self.suppress_external_node_taxa) ):
+                            or ((not is_internal_node) and self.suppress_external_node_taxa) ):
                         current_node.label = label
                     else:
                         current_node.taxon = taxon_symbol_map_func(label)

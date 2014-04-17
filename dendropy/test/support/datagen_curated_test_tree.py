@@ -304,10 +304,14 @@ class CuratedTestTree(object):
                     or ((not nd.is_leaf()) and suppress_internal_taxa) ):
                 label = nd.label
             else:
+                if nd.taxon is None:
+                    asdas
                 self.assertIsNot(nd.taxon, None)
                 label = nd.taxon.label
             self.assertEqual(label, node_taxon_label_map.get(exp_nd, exp_nd))
-            if not suppress_edge_lengths:
+            if suppress_edge_lengths:
+                self.assertIs(nd.edge.length, None)
+            else:
                 self.assertEqual(nd.edge.length, self.node_edge_lengths[exp_nd])
             nd.canonical_label = exp_nd
         for nd in tree:
