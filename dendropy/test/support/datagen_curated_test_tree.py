@@ -185,6 +185,8 @@ class CuratedTestTree(object):
             taxon_namespace=None,
             node_taxon_label_map=None,
             ):
+        if node_taxon_label_map is None:
+            node_taxon_label_map = {}
         tree = dendropy.Tree(taxon_namespace=taxon_namespace)
         a = tree.seed_node
         a.label = "a"

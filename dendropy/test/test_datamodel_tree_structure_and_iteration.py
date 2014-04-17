@@ -137,7 +137,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.preorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.preorder_sequence)
 
     ### Preorder Node Iterator ###
 
@@ -145,7 +145,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.preorder_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.preorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.preorder_sequence)
 
     def test_preorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -153,7 +153,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.preorder_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Preorder Internal Node Iterator ###
 
@@ -163,7 +163,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 self.node_children[x]]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -172,7 +172,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13)]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_without_root_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -180,7 +180,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 self.node_children[x] and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_without_root_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -189,7 +189,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Postorder Node Iterator ###
 
@@ -197,7 +197,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.postorder_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.postorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.postorder_sequence)
 
     def test_postorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -205,7 +205,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.postorder_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Postorder Internal Node Iterator ###
 
@@ -215,7 +215,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 self.node_children[x]]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -224,7 +224,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13)]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_without_root_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -232,7 +232,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 self.node_children[x] and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_without_root_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -241,7 +241,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Level-Order Node Iterator ###
 
@@ -249,7 +249,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.levelorder_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.levelorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.levelorder_sequence)
 
     def test_levelorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -257,7 +257,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.levelorder_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.levelorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### In-Order Node Iterator ###
 
@@ -265,7 +265,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.inorder_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.inorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.inorder_sequence)
 
     def test_inorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -273,7 +273,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.inorder_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.inorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Leaf Node Iterator ###
 
@@ -281,7 +281,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.leaf_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.leaf_sequence)
+        self.assertSequenceEqual(visited_labels, self.leaf_sequence)
 
     def test_leaf_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -289,7 +289,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.leaf_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.leaf_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Age-Order Node Iterator ###
 
@@ -304,14 +304,14 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.ageorder_node_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.ageorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.ageorder_sequence)
 
     def test_ageorder_node_iter_unfiltered_no_leaves(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.ageorder_node_iter(include_leaves=False)]
         visited_labels = [nd.label for nd in nodes]
         expected = [label for label in self.ageorder_sequence if self.node_children[label]]
-        self.assertEqual(visited_labels, expected)
+        self.assertSequenceEqual(visited_labels, expected)
 
     def test_ageorder_node_iter_unfiltered_reversed(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -320,7 +320,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nda = [ (self.node_ages[x], x) for x in self.preorder_sequence ]
         nda.sort(key=lambda x: x[0], reverse=True)
         exp = [x[1] for x in nda]
-        self.assertEqual(visited_labels, exp)
+        self.assertSequenceEqual(visited_labels, exp)
 
     def test_leaf_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -328,7 +328,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [nd for nd in tree.ageorder_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.ageorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Preorder Edge Iterator ###
 
@@ -336,7 +336,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [edge.head_node for edge in tree.preorder_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.preorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.preorder_sequence)
 
     def test_preorder_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -344,7 +344,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [edge.head_node for edge in tree.preorder_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Preorder Internal Edge Iterator ###
 
@@ -354,7 +354,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 self.node_children[x]]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -363,7 +363,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13)]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_without_root_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -371,7 +371,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 self.node_children[x] and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_without_root_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -380,7 +380,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Postorder Edge Iterator ###
 
@@ -388,7 +388,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [edge.head_node for edge in tree.postorder_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.postorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.postorder_sequence)
 
     def test_postorder_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -396,7 +396,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [edge.head_node for edge in tree.postorder_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Postorder Internal Edge Iterator ###
 
@@ -406,7 +406,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 self.node_children[x]]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -415,7 +415,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13)]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_without_root_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -423,7 +423,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 self.node_children[x] and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_without_root_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -432,7 +432,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
                 (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Level-Order Edge Iterator ###
 
@@ -440,7 +440,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [edge.head_node for edge in tree.levelorder_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.levelorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.levelorder_sequence)
 
     def test_levelorder_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -448,7 +448,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [edge.head_node for edge in tree.levelorder_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.levelorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### In-Order Edge Iterator ###
 
@@ -456,7 +456,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [edge.head_node for edge in tree.inorder_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.inorder_sequence)
+        self.assertSequenceEqual(visited_labels, self.inorder_sequence)
 
     def test_inorder_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -464,7 +464,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [edge.head_node for edge in tree.inorder_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.inorder_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Leaf Edge Iterator ###
 
@@ -472,7 +472,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [edge.head_node for edge in tree.leaf_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
-        self.assertEqual(visited_labels, self.leaf_sequence)
+        self.assertSequenceEqual(visited_labels, self.leaf_sequence)
 
     def test_leaf_edge_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -480,7 +480,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         nodes = [edge.head_node for edge in tree.leaf_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.leaf_sequence if self.node_edge_lengths[x] > 13]
-        self.assertEqual(visited_labels, exp_labels)
+        self.assertSequenceEqual(visited_labels, exp_labels)
 
     ### Special Iterators ###
 
@@ -489,7 +489,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         for nd in anodes:
             expected_children = self.node_children[nd.label]
             children = [ch.label for ch in nd.child_node_iter()]
-            self.assertEqual(children, expected_children)
+            self.assertSequenceEqual(children, expected_children)
 
     def test_child_node_iterator_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -504,7 +504,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         for nd in anodes:
             expected_children = self.node_children[nd.label]
             children = [edge.head_node.label for edge in nd.child_edge_iter()]
-            self.assertEqual(children, expected_children)
+            self.assertSequenceEqual(children, expected_children)
 
     def test_child_edge_iterator_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -519,7 +519,7 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         for nd in anodes:
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=False)]
             expected_ancestors = self.node_ancestors[nd.label]
-            self.assertEqual(ancestors, expected_ancestors)
+            self.assertSequenceEqual(ancestors, expected_ancestors)
 
     def test_ancestor_iterator_exclusive_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -534,14 +534,14 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
         tree, anodes, lnodes, inodes = self.get_tree()
         for nd in anodes:
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True)]
-            expected_ancestors = [nd.label] + self.node_ancestors[nd.label]
+            expected_ancestors = [nd.label] + list(self.node_ancestors[nd.label])
             self.assertEqual(ancestors, expected_ancestors)
 
     def test_ancestor_iterator_inclusive_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         filter_fn = lambda x: x.edge.length > 13
         for nd in anodes:
-            expected_ancestors = [nd.label] + self.node_ancestors[nd.label]
+            expected_ancestors = [nd.label] + list(self.node_ancestors[nd.label])
             expected_ancestors = [nda for nda in expected_ancestors if self.node_edge_lengths[nda] > 13]
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True, filter_fn=filter_fn)]
             self.assertEqual(ancestors, expected_ancestors)
