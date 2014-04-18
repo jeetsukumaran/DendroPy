@@ -24,6 +24,7 @@ import re
 import io
 from dendropy.dataio.tokenizer import Tokenizer
 from dendropy.utility import container
+from dendropy.datamodel import base
 
 ##############################################################################
 ## NexusTokenizer
