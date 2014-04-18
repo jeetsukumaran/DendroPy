@@ -326,7 +326,7 @@ class NewickReader(ioservice.DataReader):
         current_token = nexus_tokenizer.current_token
         if not self.tree_statement_complete:
             raise NewickReader.NewickReaderIncompleteTreeStatementError(
-                    message="Incomplete or improperly-terminated tree statement (missing ';'? last character read was: '{}'.)".format(nexus_tokenizer.current_token),
+                    message="Incomplete or improperly-terminated tree statement (last character read was '{}' instead of a semi-colon ';')".format(nexus_tokenizer.current_token),
                     line_num=nexus_tokenizer.token_line_num,
                     col_num=nexus_tokenizer.token_column_num,
                     stream=nexus_tokenizer.src)

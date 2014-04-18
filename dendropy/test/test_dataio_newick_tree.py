@@ -150,9 +150,6 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             "(a,(b,c))(",
             )
         for s in invalid_tree_statements:
-            # print(s)
-            # t = dendropy.Tree.get_from_string(s, "newick")
-            # print(t._as_newick_string())
             with self.assertRaises(Exception):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
