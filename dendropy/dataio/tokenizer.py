@@ -16,6 +16,7 @@
 ##
 ##############################################################################
 
+import sys
 from dendropy.utility import error
 
 ##############################################################################
@@ -132,12 +133,20 @@ class Tokenizer(object):
             t = self.__next__()
             return t
         except StopIteration:
-            raise Tokenizer.UnexpectedEndOfStreamError(
+            # Python > 3.3 only: handle exception chaining properly
+            # raise Tokenizer.UnexpectedEndOfStreamError(
+            #                 message="Unexpected end of stream",
+            #                 line_num=self.current_line_num,
+            #                 col_num=self.current_column_num,
+            #                 stream=self.src) from None
+            exc = Tokenizer.UnexpectedEndOfStreamError(
                             message="Unexpected end of stream",
                             line_num=self.current_line_num,
                             col_num=self.current_column_num,
                             stream=self.src)
-
+            exc.__context__ = None
+            exc.__cause__ = None
+            raise exc
 
     def clear_captured_comments(self):
         del self.captured_comments[:]
