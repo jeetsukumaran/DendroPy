@@ -188,7 +188,7 @@ class NewickTreeQuotedLabels(unittest.TestCase):
 
 class CommentReadingTests(unittest.TestCase):
 
-    def testSimplePostNodeComments(self):
+    def test_simple_post_node_comments(self):
         s = "((A[A]:1,B[B]:1)AB[AB]:1,(C[C]:1,D[D]:1)CD[CD]:1)Root[Root]:1;"
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(
@@ -197,13 +197,13 @@ class CommentReadingTests(unittest.TestCase):
                 suppress_internal_node_taxa=True,
                 suppress_external_node_taxa=True,
                 )
-        for nd in tree.postorder_node_iter():
+        for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 1)
             self.assertEqual(nd.comments[0], nd.label)
             self.assertEqual(nd.edge.length, 1)
 
-    def testSimplePostEdgeLengthComments(self):
+    def test_simple_post_edge_length_comments(self):
         s = "((A:1[A],B:1[B])AB:1[AB],(C:1[C],D:1[D])CD:1[CD])Root:1[Root];"
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(
@@ -212,12 +212,12 @@ class CommentReadingTests(unittest.TestCase):
                 suppress_internal_node_taxa=True,
                 suppress_external_node_taxa=True,
                 )
-        for nd in tree.postorder_node_iter():
+        for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 1)
             self.assertEqual(nd.comments[0], nd.label)
 
-    def testPostNodeAndEdgeLengthComments(self):
+    def test_post_node_and_edge_comments(self):
         s = "((A[A]:1[A],B[B]:1[B])AB[AB]:1[AB],(C[C]:1[C],D[D]:1[D])CD[CD]:1[CD])Root[Root]:1[Root];"
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(
@@ -226,13 +226,13 @@ class CommentReadingTests(unittest.TestCase):
                 suppress_internal_node_taxa=True,
                 suppress_external_node_taxa=True,
                 )
-        for nd in tree.postorder_node_iter():
+        for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 2)
             self.assertEqual(nd.comments[0], nd.label)
             self.assertEqual(nd.comments[1], nd.label)
 
-    def testMultiPositionComments(self):
+    def test_multi_position_comments(self):
         s = """(([xxx]A[A][A]:[A][A]1[A][A],
                  [xxx]B[B][B]:[B][B]1[B][B])
                  [xxx]AB[AB][AB]:[AB][AB]1[AB][AB],
@@ -247,14 +247,14 @@ class CommentReadingTests(unittest.TestCase):
                 suppress_internal_node_taxa=True,
                 suppress_external_node_taxa=True,
                 )
-        for nd in tree.postorder_node_iter():
+        for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 7)
             self.assertEqual(nd.comments[0], 'xxx')
             for i in range(1,7):
                 self.assertEqual(nd.comments[i], nd.label)
 
-    def testIncompleteMetadata(self):
+    def test_incomplete_metadata(self):
         s = """[&color=blue](A[&region=Asia,id=00012][cryptic],(B[&region=Africa],C[&region=Madagascar,id=19391][two of three]));"""
         tree = dendropy.Tree.get_from_string(
                 s,
@@ -271,6 +271,7 @@ class CommentReadingTests(unittest.TestCase):
                 {},]
         for idx, nd in enumerate(tree.postorder_node_iter()):
             self.assertEqual(nd.annotations.values_as_dict(), expected[idx])
+
 
 if __name__ == "__main__":
     unittest.main()
