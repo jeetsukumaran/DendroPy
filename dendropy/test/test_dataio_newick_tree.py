@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import dendropy
+from dendropy.utility import error
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
@@ -129,12 +130,31 @@ class NewickTreeReaderBasic(
                 self.assertIs(t.is_rooted, expected_is_rooted)
                 self.assertIs(t.is_unrooted, expected_is_unrooted)
                 self.assertIs(t.is_rootedness_undefined, expected_is_rootedness_undefined)
-
         with self.assertRaises(TypeError):
             t = dendropy.Tree.get_from_string(s,
                     "newick",
                     suppress_internal_taxa=True,
                     suppress_external_taxa=False)
+
+class NewickTreeInvalidStatements(unittest.TestCase):
+
+    def test_invalid_trees(self):
+        invalid_tree_statements = (
+            "(a,(b,c))a",
+            "(a,(b,c)) (b,(a,c))",
+            "(a,(b,c)) (d,(e,f))",
+            "(a,(b,c)),",
+            "(a,(b,c)z1)z2,",
+            "(a,(b,c)))",
+            "(a,(b,c)):",
+            "(a,(b,c))(",
+            )
+        for s in invalid_tree_statements:
+            # print(s)
+            # t = dendropy.Tree.get_from_string(s, "newick")
+            # print(t._as_newick_string())
+            with self.assertRaises(Exception):
+                t = dendropy.Tree.get_from_string(s, "newick")
 
 
 if __name__ == "__main__":
