@@ -409,7 +409,6 @@ class NewickTreeListReaderMultipleRedundantSemiColons(
                 suppress_external_taxa=False,
                 suppress_edge_lengths=False)
 
-
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
     def test_shared_taxon_namespace(self):

@@ -153,6 +153,37 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             with self.assertRaises(Exception):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
+class NewickTreeQuotedLabels(unittest.TestCase):
+
+    def test_edge_lengths1(self):
+        tree = dendropy.Tree.get_from_string(
+                """
+                ((('T1 = 1.242e-10':1.242e-10,
+                'T2 is 213.31e-4':213.31e-4)i1:3.44e-3,
+                ('T3 is a (nice) taxon':3.3e7,
+                T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
+                (T5:6.7E+2,
+                'and this so-called ''node'' is ("T6" with a length of ''7.2E-9'')':7.2E-9)i4:4.0E8)'this is the ''root\'\'\':7.0;
+                """,
+                "newick",
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True,
+                )
+        expected_edge_lens = {
+            'T1 = 1.242e-10': 1.242e-10,
+            'T2 is 213.31e-4': 213.31e-4,
+            'i1': 3.44e-3,
+            'T3 is a (nice) taxon': 3.3e7,
+            'T4': 4.4e+8,
+            'this is an internal node called "i2"': 4.0e+1,
+            'i3': 4.0e-4,
+            'T5': 6.7e+2,
+            "and this so-called 'node' is (\"T6\" with a length of '7.2E-9')": 7.2e-9,
+            'i4': 4.0e8,
+            "this is the 'root'": 7.0,
+        }
+        for nd in tree.postorder_node_iter():
+            self.assertAlmostEqual(nd.edge.length, expected_edge_lens[nd.label])
 
 if __name__ == "__main__":
     unittest.main()
