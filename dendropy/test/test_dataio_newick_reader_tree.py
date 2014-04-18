@@ -104,13 +104,32 @@ class NewickTreeReaderBasic(
                                         suppress_edge_lengths=expected_suppress_edge_lengths)
 
     def test_unsupported_keyword_arguments(self):
-        s = self.get_newick_string()
-        with self.assertRaises(TypeError):
-            t = dendropy.Tree.get_from_string(s,
-                    "newick",
-                    suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
-                    gobbledegook=False,
-                    )
+        tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
+        tree_string = self.get_newick_string()
+        reader_kwargs = {
+                "suppress_internal_taxa": True,  # should be suppress_internal_node_taxa
+                "gobbledegook": False,
+        }
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.Tree.get_from_path, tree_filepath),
+                    (dendropy.Tree.get_from_stream, tree_stream),
+                    (dendropy.Tree.get_from_string, tree_string),
+            )
+            for method, src in approaches:
+                with self.assertRaises(TypeError):
+                    t = method(src, "newick", **reader_kwargs)
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+            )
+            for method, src in approaches:
+                t = dendropy.Tree()
+                f = getattr(t, method)
+                with self.assertRaises(TypeError):
+                    f(src, "newick", **reader_kwargs)
 
     def test_rooting_interpretation(self):
         rooting_tokens = ("", "[&R]", "[&U]", "[&r]", "[&u]", "[&0]", "[&invalid]", "[R]", "[U]", "[&]")
