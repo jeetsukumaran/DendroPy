@@ -254,6 +254,59 @@ class CommentReadingTests(unittest.TestCase):
             for i in range(1,7):
                 self.assertEqual(nd.comments[i], nd.label)
 
+
+class CommentMetaDataTests(unittest.TestCase):
+    figtree_metadata_str = """[&Tree1=1,Tree2=2, Tree3={1,2,3}](([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
+                 [xxx]B[&B1=1,B2=2,B3={1,2,3}][B]:[B][B]1[B][B])
+                 [xxx]AB[&AB1=1,AB2=2,AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
+                ([xxx]C[&C1=1,C2=2,C3={1,2,3}][C]:[C][C]1[C][C],
+                 [xxx]D[&D1=1,D2=2,D3={1,2,3}][D]:[D][D]1[D][D])
+                 [xxx]CD[&CD1=1, CD2=2, CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
+                 [xxx]Root[&Root1=1, Root2=2, Root3={1,2,3}][Root]:[Root][Root]1[Root][Root];"""
+
+    nhx_metadata_str = """[&Tree1=1,Tree2=2, Tree3={1,2,3}](([xxx]A[&&A1=1:A2=2:A3={1,2,3}][A]:[A][A]1[A][A],
+                 [xxx]B[&&B1=1:B2=2:B3={1,2,3}][B]:[B][B]1[B][B])
+                 [xxx]AB[&&AB1=1:AB2=2:AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
+                ([xxx]C[&&C1=1:C2=2:C3={1,2,3}][C]:[C][C]1[C][C],
+                 [xxx]D[&&D1=1:D2=2:D3={1,2,3}][D]:[D][D]1[D][D])
+                 [xxx]CD[&&CD1=1: CD2=2: CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
+                 [xxx]Root[&&Root1=1: Root2=2: Root3={1,2,3}][Root]:[Root][Root]1[Root][Root];"""
+
+    def check_results(self, tree):
+        metadata = tree.annotations.values_as_dict()
+        self.assertEqual(metadata, {'Tree1': '1', 'Tree2': '2', 'Tree3':['1','2','3']})
+        for nd in tree.postorder_node_iter():
+            metadata = nd.annotations.values_as_dict()
+            #print("%s: %s => %s" % (nd.label, nd.comments, metadata))
+            self.assertEqual(len(metadata), 3)
+            values = ["1", "2", ["1","2","3"]]
+            for i in range(3):
+                key = "{}{}".format(nd.label, i+1)
+                self.assertTrue(key in metadata)
+                self.assertEqual(metadata[key], values[i])
+
+    def testFigtreeStyleBasic(self):
+        s = self.figtree_metadata_str
+        _LOG.info("Tree = %s" % s)
+        tree = dendropy.Tree.get_from_string(
+                s,
+                "newick",
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True,
+                extract_comment_metadata=True)
+        self.check_results(tree)
+
+    def testNHXBasic(self):
+        s = self.nhx_metadata_str
+        _LOG.info("Tree = %s" % s)
+        tree = dendropy.Tree.get_from_string(
+                s,
+                "newick",
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True,
+                extract_comment_metadata=True)
+        self.check_results(tree)
+
     def test_incomplete_metadata(self):
         s = """[&color=blue](A[&region=Asia,id=00012][cryptic],(B[&region=Africa],C[&region=Madagascar,id=19391][two of three]));"""
         tree = dendropy.Tree.get_from_string(

@@ -133,19 +133,27 @@ class Tokenizer(object):
             t = self.__next__()
             return t
         except StopIteration:
-            # Python > 3.3 only: handle exception chaining properly
-            # raise Tokenizer.UnexpectedEndOfStreamError(
-            #                 message="Unexpected end of stream",
-            #                 line_num=self.current_line_num,
-            #                 col_num=self.current_column_num,
-            #                 stream=self.src) from None
+            # In Python 3, if you catch an exception and then raise an
+            # exception that is not a subclass of the original exception,
+            # the original exception is not considered to have been
+            # handled.
+            # In Python > 3.3, this can be solved by:
+            #
+            #   raise Tokenizer.UnexpectedEndOfStreamError(
+            #                   message="Unexpected end of stream",
+            #                   line_num=self.current_line_num,
+            #                   col_num=self.current_column_num,
+            #                   stream=self.src) from None
+            #
+            # To accommodate other versions, the following
+            # is required:
             exc = Tokenizer.UnexpectedEndOfStreamError(
                             message="Unexpected end of stream",
                             line_num=self.current_line_num,
                             col_num=self.current_column_num,
                             stream=self.src)
-            exc.__context__ = None
-            exc.__cause__ = None
+            exc.__context__ = None # Python 3.0, 3.1, 3.2
+            exc.__cause__ = None # Python 3.3, 3.4
             raise exc
 
     def clear_captured_comments(self):
