@@ -296,7 +296,7 @@ class CuratedTestTree(object):
 
     def verify_curated_tree(self,
             tree,
-            suppress_internal_taxa=False,
+            suppress_internal_taxa=True,
             suppress_external_taxa=False,
             suppress_edge_lengths=False,
             node_taxon_label_map=None):

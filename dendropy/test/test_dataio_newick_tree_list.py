@@ -28,6 +28,7 @@ import random
 import collections
 import json
 from dendropy.test.support import datagen_standard_file_test_trees
+from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -388,6 +389,26 @@ class NewickTreeListReaderStandardTestTreeTest(
                             "newick",
                             suppress_internal_taxa=True,
                             suppress_external_taxa=False)
+
+class NewickTreeListReaderMultipleRedundantSemiColons(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
+
+    def test_multiple_redundant_semicolons(self):
+        tree_str = self.get_newick_string()
+        s = ";;;;;{tree_str};;; ;\n; \n ;       ;;{tree_str};;;  [(a,(b,c)];  ; ;;".format(tree_str=tree_str)
+        trees = dendropy.TreeList.get_from_string(s,
+                "newick",
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=False,
+                suppress_edge_lengths=False)
+        self.assertEqual(len(trees), 2)
+        for t in trees:
+            self.verify_curated_tree(t,
+                suppress_internal_taxa=True,
+                suppress_external_taxa=False,
+                suppress_edge_lengths=False)
+
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
