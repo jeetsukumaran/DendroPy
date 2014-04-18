@@ -838,7 +838,9 @@ class AnnotationSet(container.OrderedSet):
             raise KeyError("deepcopy error: object id {} not found: {}".format((id(self.target), repr(self.target))))
         memo[id(self)] = o
         for a in self:
-            o.add(copy.deepcopy(a, memo))
+            x = copy.deepcopy(a, memo)
+            memo[id(a)] = x
+            o.add(x)
         return o
 
     def add_new(self,

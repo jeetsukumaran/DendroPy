@@ -1706,7 +1706,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                       "((A,B),(C,D));",
                       schema="newick",
                       taxon_namespace=t3.taxon_namespace,
-                      suppress_internal_taxa=False,
+                      suppress_internal_node_taxa=False,
                       preserve_underscores=True)
 
             # tree structure deep-copied from another tree
@@ -1946,7 +1946,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             raise ValueError("Invalid tree source specification")
         self.seed_node = tree.seed_node
         if not ignore_metadata:
-            self.annotations.copy_annotations_from(tree)
+            self.copy_annotations_from(tree)
 
     def write(self, stream, schema, **kwargs):
         """

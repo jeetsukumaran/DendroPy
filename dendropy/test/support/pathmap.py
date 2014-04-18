@@ -21,7 +21,7 @@ Path mapping for various test resources.
 """
 
 import os
-# from dendropy.utility import textutils
+import tempfile
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -36,7 +36,6 @@ except:
     PACKAGE_DIR = os.path.join(TESTS_DIR, os.path.pardir)
     SCRIPTS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "scripts")
     _LOG.info("using local filesystem path mapping")
-
 
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
@@ -97,3 +96,25 @@ def script_source_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(SCRIPTS_DIR, filename)
+
+class SandboxedFile(object):
+
+    def __init__(self, mode="w"):
+        self.mode = "w"
+        self.fileobj = None
+        self.filepath = None
+
+    def __enter__(self):
+        self.fileobj = tempfile.NamedTemporaryFile(
+                mode=self.mode,
+                delete=False)
+        self.filepath = self.fileobj.name
+        return self.fileobj
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.fileobj.flush()
+        self.fileobj.close()
+        try:
+            os.remove(self.filepath)
+        except OSError:
+            pass

@@ -296,19 +296,17 @@ class CuratedTestTree(object):
 
     def verify_curated_tree(self,
             tree,
-            suppress_internal_taxa=True,
-            suppress_external_taxa=False,
+            suppress_internal_node_taxa=True,
+            suppress_external_node_taxa=False,
             suppress_edge_lengths=False,
             node_taxon_label_map=None):
         if node_taxon_label_map is None:
             node_taxon_label_map = {}
         for nd, exp_nd in zip(tree, self.preorder_sequence):
-            if ( (nd.is_leaf() and suppress_external_taxa)
-                    or ((not nd.is_leaf()) and suppress_internal_taxa) ):
+            if ( (nd.is_leaf() and suppress_external_node_taxa)
+                    or ((not nd.is_leaf()) and suppress_internal_node_taxa) ):
                 label = nd.label
             else:
-                if nd.taxon is None:
-                    asdas
                 self.assertIsNot(nd.taxon, None)
                 label = nd.taxon.label
             self.assertEqual(label, node_taxon_label_map.get(exp_nd, exp_nd))

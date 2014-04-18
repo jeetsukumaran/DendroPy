@@ -37,36 +37,80 @@ class NewickTreeReaderBasic(
         datagen_curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
-    def test_default(self):
-        s = self.get_newick_string()
-        t = dendropy.Tree.get_from_string(s, "newick")
-        self.verify_curated_tree(t,
-                suppress_internal_taxa=True,
-                suppress_external_taxa=False,
-                suppress_edge_lengths=False)
-
-    def test_basic_options(self):
-        s = self.get_newick_string()
-        for suppress_internal_taxa in (False, True):
-            for suppress_external_taxa in (False, True):
-                for suppress_edge_lengths in (False, True):
-                    t = dendropy.Tree.get_from_string(s,
-                            "newick",
-                            suppress_internal_node_taxa=suppress_internal_taxa,
-                            suppress_external_node_taxa=suppress_external_taxa,
-                            suppress_edge_lengths=suppress_edge_lengths)
-                    self.verify_curated_tree(t,
-                            suppress_internal_taxa=suppress_internal_taxa,
-                            suppress_external_taxa=suppress_external_taxa,
-                            suppress_edge_lengths=suppress_edge_lengths)
+    def test_basic_parsing(self):
+        tree_string = self.get_newick_string()
+        reader_kwargs = {}
+        with pathmap.SandboxedFile() as tempf:
+            tempf.write(tree_string)
+            tempf.flush()
+            tree_filepath = tempf.name
+            for suppress_internal_node_taxa in (None, False, True):
+                if suppress_internal_node_taxa is None:
+                    expected_suppress_internal_node_taxa = True
+                    reader_kwargs.pop("suppress_internal_node_taxa", None)
+                else:
+                    expected_suppress_internal_node_taxa = suppress_internal_node_taxa
+                    reader_kwargs["suppress_internal_node_taxa"] = suppress_internal_node_taxa
+                for suppress_external_node_taxa in (None, False, True):
+                    if suppress_external_node_taxa is None:
+                        expected_suppress_external_node_taxa = False
+                        reader_kwargs.pop("suppress_external_node_taxa", None)
+                    else:
+                        expected_suppress_external_node_taxa = suppress_external_node_taxa
+                        reader_kwargs["suppress_external_node_taxa"] = suppress_external_node_taxa
+                    for suppress_edge_lengths in (None, False, True):
+                        if suppress_edge_lengths is None:
+                            expected_suppress_edge_lengths = False
+                            reader_kwargs.pop("suppress_edge_lengths", None)
+                        else:
+                            expected_suppress_edge_lengths = suppress_edge_lengths
+                            reader_kwargs["suppress_edge_lengths"] = suppress_edge_lengths
+                        # print("--")
+                        # print(suppress_internal_node_taxa,
+                        #         suppress_external_node_taxa,
+                        #         suppress_edge_lengths)
+                        # print(reader_kwargs)
+                        # print(expected_suppress_internal_node_taxa,
+                        #         expected_suppress_external_node_taxa,
+                        #         expected_suppress_edge_lengths)
+                        with open(tree_filepath, "r") as tree_stream:
+                            approaches = (
+                                    (dendropy.Tree.get_from_path, tree_filepath),
+                                    (dendropy.Tree.get_from_stream, tree_stream),
+                                    (dendropy.Tree.get_from_string, tree_string),
+                                    )
+                            for method, src in approaches:
+                                t = method(src,
+                                        "newick",
+                                        **reader_kwargs
+                                        )
+                                self.verify_curated_tree(t,
+                                        suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
+                                        suppress_external_node_taxa=expected_suppress_external_node_taxa,
+                                        suppress_edge_lengths=expected_suppress_edge_lengths)
+                        with open(tree_filepath, "r") as tree_stream:
+                            approaches = (
+                                    ("read_from_path", tree_filepath),
+                                    ("read_from_stream", tree_stream),
+                                    ("read_from_string", tree_string),
+                                    )
+                            for method, src in approaches:
+                                t = dendropy.Tree()
+                                f = getattr(t, method)
+                                f(src, "newick", **reader_kwargs)
+                                self.verify_curated_tree(t,
+                                        suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
+                                        suppress_external_node_taxa=expected_suppress_external_node_taxa,
+                                        suppress_edge_lengths=expected_suppress_edge_lengths)
 
     def test_unsupported_keyword_arguments(self):
         s = self.get_newick_string()
         with self.assertRaises(TypeError):
             t = dendropy.Tree.get_from_string(s,
                     "newick",
-                    suppress_internal_taxa=True,
-                    suppress_external_taxa=False)
+                    suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
+                    gobbledegook=False,
+                    )
 
     def test_rooting_interpretation(self):
         rooting_tokens = ("", "[&R]", "[&U]", "[&r]", "[&u]", "[&0]", "[&invalid]", "[R]", "[U]", "[&]")
@@ -121,7 +165,7 @@ class NewickTreeReaderBasic(
                         expected_is_unrooted = None
                         expected_is_rootedness_undefined = True
                 else:
-                    raise Exception("Unexpecged rooting interpretation: '{}'".format(rooting_interpretation))
+                    raise Exception("Unexpected rooting interpretation: '{}'".format(rooting_interpretation))
                 _LOG.info("Rooting token = '{}', Rooting interpretation = '{}'".format(rooting_token, rooting_interpretation))
                 s = self.get_newick_string(rooting_token=rooting_token)
                 _LOG.debug(s)
@@ -130,11 +174,6 @@ class NewickTreeReaderBasic(
                 self.assertIs(t.is_rooted, expected_is_rooted)
                 self.assertIs(t.is_unrooted, expected_is_unrooted)
                 self.assertIs(t.is_rootedness_undefined, expected_is_rootedness_undefined)
-        with self.assertRaises(TypeError):
-            t = dendropy.Tree.get_from_string(s,
-                    "newick",
-                    suppress_internal_taxa=True,
-                    suppress_external_taxa=False)
 
 class NewickTreeInvalidStatements(unittest.TestCase):
 

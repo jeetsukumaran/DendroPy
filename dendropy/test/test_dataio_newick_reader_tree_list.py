@@ -367,8 +367,9 @@ class NewickTreeListReaderStandardTestTreeTest(
                 with self.assertRaises(TypeError):
                     method(src,
                             "newick",
-                            suppress_internal_taxa=True,
-                            suppress_external_taxa=False)
+                            suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
+                            gobbledegook=False,
+                            )
 
     def test_unsupported_keyword_arguments_newick_read(self):
         tree_file_title = 'standard-test-trees-n12-x2'
@@ -386,9 +387,10 @@ class NewickTreeListReaderStandardTestTreeTest(
                 f = getattr(tree_list, method)
                 with self.assertRaises(TypeError):
                     f(src,
-                            "newick",
-                            suppress_internal_taxa=True,
-                            suppress_external_taxa=False)
+                      "newick",
+                      suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
+                      gobbledegook=False,
+                    )
 
 class NewickTreeListReaderMultipleRedundantSemiColons(
         datagen_curated_test_tree.CuratedTestTree,
@@ -405,8 +407,8 @@ class NewickTreeListReaderMultipleRedundantSemiColons(
         self.assertEqual(len(trees), 2)
         for t in trees:
             self.verify_curated_tree(t,
-                suppress_internal_taxa=True,
-                suppress_external_taxa=False,
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=False,
                 suppress_edge_lengths=False)
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
