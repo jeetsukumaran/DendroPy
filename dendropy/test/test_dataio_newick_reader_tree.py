@@ -96,7 +96,10 @@ class NewickTreeReaderBasic(
                                     ("read_from_string", tree_string),
                                     )
                             for method, src in approaches:
-                                t = dendropy.Tree()
+                                t = dendropy.Tree.get_from_string("(zzz1,(zzz2,(zzz3,zzz4)));",
+                                        "newick",
+                                        suppress_internal_node_taxa=False,
+                                        suppress_external_node_taxa=False,)
                                 f = getattr(t, method)
                                 f(src, "newick", **reader_kwargs)
                                 self.verify_curated_tree(t,
