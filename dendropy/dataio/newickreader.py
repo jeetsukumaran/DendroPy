@@ -352,12 +352,32 @@ class NewickReader(ioservice.DataReader):
                 weighting_token_found = True
                 if self.store_tree_weights:
                     try:
-                        weight_expression = stripped_comment.split(' ')[1]
-                        tree.weight = eval("/".join(["float(%s)" % cv for cv in weight_expression.split('/')]))
-                    except IndexError:
-                        pass
+                        weight_expression = stripped_comment[2:]
+                        if not weight_expression:
+                            raise ValueError
+                        we_parts = weight_expression.split("/")
+                        if len(we_parts) > 2:
+                            raise ValueError
+                            # raise NewickReader.NewickReaderInvalidValueError(
+                            #         message="Invalid tree weight expression: '{}'".format(weight_expression),
+                            #         line_num=nexus_tokenizer.token_line_num,
+                            #         col_num=nexus_tokenizer.token_column_num,
+                            #         stream=nexus_tokenizer.src)
+                        elif len(we_parts) == 2:
+                            x = float(we_parts[0])
+                            y = float(we_parts[1])
+                            tree.weight = x/y
+                        else:
+                            tree.weight = float(we_parts[0])
                     except ValueError:
-                        pass
+                        exc = NewickReader.NewickReaderInvalidValueError(
+                                message="Invalid tree weight expression: '{}'".format(stripped_comment),
+                                line_num=nexus_tokenizer.token_line_num,
+                                col_num=nexus_tokenizer.token_column_num,
+                                stream=nexus_tokenizer.src)
+                        exc.__context__ = None # Python 3.0, 3.1, 3.2
+                        exc.__cause__ = None # Python 3.3, 3.4
+                        raise exc
                 else:
                     # if tree weight comment is not processed,
                     # just store it
