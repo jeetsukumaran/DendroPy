@@ -415,13 +415,13 @@ class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
     def test_shared_taxon_namespace(self):
         tree_filenames = [
-            ("pythonidae.reference-trees.newick", 33), # ntax = 33
-            ("pythonidae.reference-trees.newick", 33), # ntax = 33
-            ("bird_orders.newick", 56), # ntax = 23
-            ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
-            ("pythonidae.reference-trees.newick", 89), # ntax = 33
-            ("bird_orders.newick", 89), # ntax = 23
-            ]
+                ("pythonidae.reference-trees.newick", 33), # ntax = 33
+                ("pythonidae.reference-trees.newick", 33), # ntax = 33
+                ("bird_orders.newick", 56), # ntax = 23
+                ("pythonidae.reference-trees.taxon-numbers-only.newick", 89), # ntax = 33
+                ("pythonidae.reference-trees.newick", 89), # ntax = 33
+                ("bird_orders.newick", 89), # ntax = 23
+        ]
         common_taxon_namespace = dendropy.TaxonNamespace()
         prev_expected_ntax = 0
         for tree_filename, expected_ntax in tree_filenames:
@@ -434,6 +434,37 @@ class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
                         taxon_namespace=common_taxon_namespace)
                 self.assertEqual(len(common_taxon_namespace), expected_ntax)
             prev_expected_ntax = expected_ntax
+
+class NewickTreeListMetadataTest(
+        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        unittest.TestCase):
+
+    def test_read_metadata(self):
+        tree_file_titles = [
+                'standard-test-trees-n33-annotated',
+        ]
+        for tree_file_title in tree_file_titles:
+            tree_filepath = datagen_standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
+            with open(tree_filepath, "r") as src:
+                tree_string = src.read()
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.TreeList.get_from_path, tree_filepath),
+                        (dendropy.TreeList.get_from_stream, tree_stream),
+                        (dendropy.TreeList.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = method(src,
+                            "newick",
+                            extract_comment_metadata=True)
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            metadata_extracted=True,
+                            distinct_nodes_and_edges=False)
+
 
 if __name__ == "__main__":
     unittest.main()
