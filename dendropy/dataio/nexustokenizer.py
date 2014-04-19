@@ -93,7 +93,7 @@ def parse_comment_metadata(comments,
         field_name_map = {}
     if field_value_types is None:
         field_value_types = {}
-    for comment in comments:
+    for comment_idx, comment in enumerate(comments):
         if comment.startswith("&&NHX:"):
             pattern = NHX_COMMENT_FIELD_PATTERN
             comment = comment[6:]
@@ -692,6 +692,14 @@ class NexusTokenizer(object):
             # print "--- storing metadata: {}".format(", ".join(str(a) for a in self._comment_metadata))
             target.annotations.update(self._comment_metadata)
             self._comment_metadata.clear()
+
+    def pull_comment_metadata(self):
+        if self._comment_metadata:
+            c = set(self._comment_metadata)
+            self._comment_metadata.clear()
+            return c
+        else:
+            return set()
 
     def _raw_read_next_char(self):
             read_char = self.stream_handle.read(1) # returns empty string if EOF

@@ -780,6 +780,8 @@ class NexusReader(iosys.DataReader):
             token = self.stream_tokenizer.read_next_token()
         tree_name = token
         token = self.stream_tokenizer.read_next_token()
+        if self.extract_comment_metadata:
+            pre_annotations = self.stream_tokenizer.pull_comment_metadata()
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
         tree_comments = self.stream_tokenizer.comments
@@ -796,6 +798,13 @@ class NexusReader(iosys.DataReader):
                 edge_len_type=self.edge_len_type,
                 case_sensitive_taxon_labels=self.case_sensitive_taxon_labels)
         tree.label = tree_name
+        if self.extract_comment_metadata:
+            annotations = nexustokenizer.parse_comment_metadata(tree_comments)
+            for annote in annotations:
+                tree.annotations.add(annote)
+            if pre_annotations:
+                for annote in pre_annotations:
+                    tree.annotations.add(annote)
         if tree_comments is not None and len(tree_comments) > 0:
             tree.comments.extend(tree_comments)
         if self.stream_tokenizer.current_token != ';':
