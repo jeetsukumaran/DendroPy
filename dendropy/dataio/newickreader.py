@@ -315,7 +315,7 @@ class NewickReader(ioservice.DataReader):
                     col_num=nexus_tokenizer.token_column_num,
                     stream=nexus_tokenizer.src)
         tree = tree_factory()
-        self._process_tree_comments(tree, tree_comments)
+        self._process_tree_comments(tree, tree_comments, nexus_tokenizer)
         self.tree_statement_complete = False
         self._parse_tree_node_description(
                 nexus_tokenizer=nexus_tokenizer,
@@ -335,7 +335,7 @@ class NewickReader(ioservice.DataReader):
             current_token = nexus_tokenizer.next_token()
         return tree
 
-    def _process_tree_comments(self, tree, tree_comments):
+    def _process_tree_comments(self, tree, tree_comments, nexus_tokenizer):
         # NOTE: this also unconditionally sets the tree rootedness and
         # weighting if no comment indicating these are found; for this to work
         # in the current implementation, this method must be called once and
@@ -348,7 +348,7 @@ class NewickReader(ioservice.DataReader):
                 # print("\n\n**********\n**{}\n**{}\n*********".format(comment, self._parse_tree_rooting_state(comment)))
                 tree.is_rooted = self._parse_tree_rooting_state(stripped_comment)
                 rooting_token_found = True
-            elif stripped_comment.startswith("&W") or stripped_comment.startswith("&w"):
+            elif stripped_comment.startswith("&W ") or stripped_comment.startswith("&w "):
                 weighting_token_found = True
                 if self.store_tree_weights:
                     try:
@@ -381,19 +381,26 @@ class NewickReader(ioservice.DataReader):
                 else:
                     # if tree weight comment is not processed,
                     # just store it
-                    tree.comments.append(comment)
+                    # tree.comments.append(comment)
+                    # OR: if tree weight comment is not to be processed,
+                    # store it as an annotation?
+                    self._process_tree_metadata_comment(tree, comment)
             elif self.extract_comment_metadata and comment.startswith("&"):
-                annotations = self._parse_comment_metadata(comment)
-                if annotations:
-                    tree.annotations.update(annotations)
-                else:
-                    tree.comments.append(comment)
+                self._process_tree_metadata_comment(tree, comment)
             else:
                 tree.comments.append(comment)
         if not rooting_token_found:
             tree.is_rooted = self._parse_tree_rooting_state("")
         if self.store_tree_weights and not weighting_token_found:
             tree.weight = 1.0
+
+    def _process_tree_metadata_comment(self, tree, comment):
+        annotations = self._parse_comment_metadata(comment)
+        if annotations:
+            tree.annotations.update(annotations)
+        else:
+            tree.comments.append(comment)
+
 
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """

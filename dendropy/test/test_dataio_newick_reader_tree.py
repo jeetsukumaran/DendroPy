@@ -192,7 +192,7 @@ class NewickTreeReaderBasic(
                         for extract_comment_metadata in (False, True):
                             # pre_tree_token_candidates = ["[&color=blue]", weighting_token, rooting_token]
                             # for token_combination in itertools.permutations(pre_tree_token_candidates):
-                            token_combination = ["[&color=blue]", weighting_token, "[&rate=0.15]", rooting_token, "[&lnL=-3.14]"]
+                            token_combination = ["[&color=blue]", "[&Why=42]", weighting_token, "[&rate=0.15]", rooting_token, "[&lnL=-3.14]"]
                             token_str = "".join(token_combination)
                             _LOG.debug("Token = '{}', Rooting interpretation = '{}'".format(token_str, rooting_interpretation))
                             s = self.get_newick_string(tree_preamble_tokens=token_str)
@@ -213,6 +213,7 @@ class NewickTreeReaderBasic(
                                 self.assertIs(t.weight, None)
                             if extract_comment_metadata:
                                 self.assertEqual(t.annotations.get_value("color", None), "blue")
+                                self.assertEqual(t.annotations.get_value("Why", None), "42")
 
 class NewickTreeInvalidStatements(unittest.TestCase):
 
