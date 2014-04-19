@@ -23,6 +23,7 @@ Tests for general NEWICK reading.
 import sys
 import os
 import unittest
+import itertools
 import dendropy
 from dendropy.utility import error
 from dendropy.test.support import datagen_standard_file_test_trees
@@ -131,7 +132,7 @@ class NewickTreeReaderBasic(
                 with self.assertRaises(TypeError):
                     f(src, "newick", **reader_kwargs)
 
-    def test_rooting_interpretation(self):
+    def test_rooting_weighting_and_tree_metadata_handling(self):
         rooting_tokens = ("", "[&R]", "[&U]", "[&r]", "[&u]", "[&0]", "[&invalid]", "[R]", "[U]", "[&]")
         rooting_interpretations = ("force-rooted", "force-unrooted", "default-rooted", "default-unrooted", None)
         for rooting_token in rooting_tokens:
@@ -185,14 +186,33 @@ class NewickTreeReaderBasic(
                         expected_is_rootedness_undefined = True
                 else:
                     raise Exception("Unexpected rooting interpretation: '{}'".format(rooting_interpretation))
-                _LOG.info("Rooting token = '{}', Rooting interpretation = '{}'".format(rooting_token, rooting_interpretation))
-                s = self.get_newick_string(rooting_token=rooting_token)
-                _LOG.debug(s)
-                t = dendropy.Tree.get_from_string(s, "newick",
-                        rooting=rooting_interpretation)
-                self.assertIs(t.is_rooted, expected_is_rooted)
-                self.assertIs(t.is_unrooted, expected_is_unrooted)
-                self.assertIs(t.is_rootedness_undefined, expected_is_rootedness_undefined)
+                weighting_tokens = ("", "[&w 0.25]", "[ &W 0.25]", "[&w 1/4]", "[&W 1/4]")
+                for weighting_token in weighting_tokens:
+                    for store_tree_weights in (False, True):
+                        for extract_comment_metadata in (False, True):
+                            # pre_tree_token_candidates = ["[&color=blue]", weighting_token, rooting_token]
+                            # for token_combination in itertools.permutations(pre_tree_token_candidates):
+                            token_combination = ["[&color=blue]", weighting_token, "[&rate=0.15]", rooting_token, "[&lnL=-3.14]"]
+                            token_str = "".join(token_combination)
+                            _LOG.debug("Token = '{}', Rooting interpretation = '{}'".format(token_str, rooting_interpretation))
+                            s = self.get_newick_string(rooting_token=token_str)
+                            _LOG.debug(s)
+                            t = dendropy.Tree.get_from_string(s, "newick",
+                                    rooting=rooting_interpretation,
+                                    store_tree_weights=store_tree_weights,
+                                    extract_comment_metadata=extract_comment_metadata)
+                            self.assertIs(t.is_rooted, expected_is_rooted)
+                            self.assertIs(t.is_unrooted, expected_is_unrooted)
+                            self.assertIs(t.is_rootedness_undefined, expected_is_rootedness_undefined)
+                            if store_tree_weights:
+                                if weighting_token:
+                                    self.assertEqual(t.weight, 0.25)
+                                else:
+                                    self.assertEqual(t.weight, 1.0)
+                            else:
+                                self.assertIs(t.weight, None)
+                            if extract_comment_metadata:
+                                self.assertEqual(t.annotations.get_value("color", None), "blue")
 
 class NewickTreeInvalidStatements(unittest.TestCase):
 

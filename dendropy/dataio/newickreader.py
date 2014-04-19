@@ -343,15 +343,16 @@ class NewickReader(ioservice.DataReader):
         rooting_token_found = False
         weighting_token_found = False
         for comment in tree_comments:
-            if comment in ["&u", "&U", "&r", "&R"]:
+            stripped_comment = comment.strip()
+            if stripped_comment in ["&u", "&U", "&r", "&R"]:
                 # print("\n\n**********\n**{}\n**{}\n*********".format(comment, self._parse_tree_rooting_state(comment)))
-                tree.is_rooted = self._parse_tree_rooting_state(comment)
+                tree.is_rooted = self._parse_tree_rooting_state(stripped_comment)
                 rooting_token_found = True
-            elif comment.startswith("&W") or comment.startswith("&w"):
+            elif stripped_comment.startswith("&W") or stripped_comment.startswith("&w"):
                 weighting_token_found = True
                 if self.store_tree_weights:
                     try:
-                        weight_expression = stream_tokenizer.tree_weight_comment.split(' ')[1]
+                        weight_expression = stripped_comment.split(' ')[1]
                         tree.weight = eval("/".join(["float(%s)" % cv for cv in weight_expression.split('/')]))
                     except IndexError:
                         pass
