@@ -348,59 +348,49 @@ class NewickReader(ioservice.DataReader):
                 # print("\n\n**********\n**{}\n**{}\n*********".format(comment, self._parse_tree_rooting_state(comment)))
                 tree.is_rooted = self._parse_tree_rooting_state(stripped_comment)
                 rooting_token_found = True
-            elif stripped_comment.startswith("&W ") or stripped_comment.startswith("&w "):
-                weighting_token_found = True
-                if self.store_tree_weights:
-                    try:
-                        weight_expression = stripped_comment[2:]
-                        if not weight_expression:
-                            raise ValueError
-                        we_parts = weight_expression.split("/")
-                        if len(we_parts) > 2:
-                            raise ValueError
-                            # raise NewickReader.NewickReaderInvalidValueError(
-                            #         message="Invalid tree weight expression: '{}'".format(weight_expression),
-                            #         line_num=nexus_tokenizer.token_line_num,
-                            #         col_num=nexus_tokenizer.token_column_num,
-                            #         stream=nexus_tokenizer.src)
-                        elif len(we_parts) == 2:
-                            x = float(we_parts[0])
-                            y = float(we_parts[1])
-                            tree.weight = x/y
-                        else:
-                            tree.weight = float(we_parts[0])
-                    except ValueError:
-                        exc = NewickReader.NewickReaderInvalidValueError(
-                                message="Invalid tree weight expression: '{}'".format(stripped_comment),
-                                line_num=nexus_tokenizer.token_line_num,
-                                col_num=nexus_tokenizer.token_column_num,
-                                stream=nexus_tokenizer.src)
-                        exc.__context__ = None # Python 3.0, 3.1, 3.2
-                        exc.__cause__ = None # Python 3.3, 3.4
-                        raise exc
-                else:
-                    # if tree weight comment is not processed,
-                    # just store it
-                    # tree.comments.append(comment)
-                    # OR: if tree weight comment is not to be processed,
-                    # store it as an annotation?
-                    self._process_tree_metadata_comment(tree, comment)
+            elif (self.store_tree_weights
+                    and (stripped_comment.startswith("&W ") or stripped_comment.startswith("&w "))
+                    ):
+                try:
+                    weight_expression = stripped_comment[2:]
+                    if not weight_expression:
+                        raise ValueError
+                    we_parts = weight_expression.split("/")
+                    if len(we_parts) > 2:
+                        raise ValueError
+                        # raise NewickReader.NewickReaderInvalidValueError(
+                        #         message="Invalid tree weight expression: '{}'".format(weight_expression),
+                        #         line_num=nexus_tokenizer.token_line_num,
+                        #         col_num=nexus_tokenizer.token_column_num,
+                        #         stream=nexus_tokenizer.src)
+                    elif len(we_parts) == 2:
+                        x = float(we_parts[0])
+                        y = float(we_parts[1])
+                        tree.weight = x/y
+                    else:
+                        tree.weight = float(we_parts[0])
+                    weighting_token_found = True
+                except ValueError:
+                    exc = NewickReader.NewickReaderInvalidValueError(
+                            message="Invalid tree weight expression: '{}'".format(stripped_comment),
+                            line_num=nexus_tokenizer.token_line_num,
+                            col_num=nexus_tokenizer.token_column_num,
+                            stream=nexus_tokenizer.src)
+                    exc.__context__ = None # Python 3.0, 3.1, 3.2
+                    exc.__cause__ = None # Python 3.3, 3.4
+                    raise exc
             elif self.extract_comment_metadata and comment.startswith("&"):
-                self._process_tree_metadata_comment(tree, comment)
+                annotations = self._parse_comment_metadata(comment)
+                if annotations:
+                    tree.annotations.update(annotations)
+                else:
+                    tree.comments.append(comment)
             else:
                 tree.comments.append(comment)
         if not rooting_token_found:
             tree.is_rooted = self._parse_tree_rooting_state("")
         if self.store_tree_weights and not weighting_token_found:
             tree.weight = 1.0
-
-    def _process_tree_metadata_comment(self, tree, comment):
-        annotations = self._parse_comment_metadata(comment)
-        if annotations:
-            tree.annotations.update(annotations)
-        else:
-            tree.comments.append(comment)
-
 
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """
