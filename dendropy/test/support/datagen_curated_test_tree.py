@@ -331,7 +331,7 @@ class CuratedTestTree(object):
             suppress_edge_lengths=False,
             node_taxon_label_map=None,
             edge_label_compose_func=None,
-            rooting_token=None):
+            tree_preamble_tokens=None):
         node_tag = {}
         if node_taxon_label_map is None:
             node_taxon_label_map = {}
@@ -344,11 +344,11 @@ class CuratedTestTree(object):
                 node_tag[nd] = label
             else:
                 node_tag[nd] = "{}:{}".format(label, edge_label_compose_func(self.node_edge_lengths[nd]))
-        if rooting_token is None:
-            node_tag["rooting"] = ""
+        if tree_preamble_tokens is None:
+            node_tag["preamble"] = ""
         else:
-            node_tag["rooting"] = rooting_token
-        s = "{rooting}(({i}, ({j}, {k}){e}){b}, (({l}, {m}){g}, ({n}, ({o}, {p}){h}){f}){c}){a};".format(
+            node_tag["preamble"] = tree_preamble_tokens
+        s = "{preamble}(({i}, ({j}, {k}){e}){b}, (({l}, {m}){g}, ({n}, ({o}, {p}){h}){f}){c}){a};".format(
                 **node_tag
                 )
         return s

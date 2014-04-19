@@ -195,7 +195,7 @@ class NewickTreeReaderBasic(
                             token_combination = ["[&color=blue]", weighting_token, "[&rate=0.15]", rooting_token, "[&lnL=-3.14]"]
                             token_str = "".join(token_combination)
                             _LOG.debug("Token = '{}', Rooting interpretation = '{}'".format(token_str, rooting_interpretation))
-                            s = self.get_newick_string(rooting_token=token_str)
+                            s = self.get_newick_string(tree_preamble_tokens=token_str)
                             _LOG.debug(s)
                             t = dendropy.Tree.get_from_string(s, "newick",
                                     rooting=rooting_interpretation,
