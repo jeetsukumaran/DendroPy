@@ -465,6 +465,32 @@ class NewickTreeListMetadataTest(
                             metadata_extracted=True,
                             distinct_nodes_and_edges=False)
 
+    def test_correct_rooting_weighting_and_metadata_association(self):
+        tree_str = """\
+                ;;;;
+                [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
+                [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
+                [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
+                [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
+                (a,(b,(c,d)));;;
+        """
+        trees = dendropy.TreeList.get_from_string(tree_str,
+                "newick",
+                extract_comment_metadata=True,
+                store_tree_weights=True)
+        self.assertEqual(len(trees.taxon_namespace), 4)
+        tax_labels = [t.label for t in trees.taxon_namespace]
+        self.assertSequenceEqual(set(tax_labels), set(["a", "b", "c", "d"]))
+        self.assertEqual(len(trees), 3)
+        for tree_idx, tree in enumerate(trees):
+            if tree_idx < 2:
+                self.assertIs(tree.is_rooted, True)
+                self.assertEqual(tree.weight, 0.25)
+                self.assertEqual(tree.annotations.get_value("color", None), "red")
+            else:
+                self.assertIs(tree.is_rooted, None)
+                self.assertEqual(tree.weight, 1.0)
+                self.assertFalse(tree.has_annotations)
 
 if __name__ == "__main__":
     unittest.main()

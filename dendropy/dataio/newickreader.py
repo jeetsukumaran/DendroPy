@@ -40,6 +40,9 @@ class NewickReader(ioservice.DataReader):
     Parser for NEWICK-formatted data.
     """
 
+    _default_rooting_directive = None
+    _default_tree_weight = 1.0
+
     class NewickReaderError(error.DataParseError):
         def __init__(self, message,
                 line_num=None,
@@ -205,11 +208,13 @@ class NewickReader(ioservice.DataReader):
                     FutureWarning, stacklevel=4)
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
-        self.rooting = kwargs.pop("rooting", "default-unrooted")
+        # self.rooting = kwargs.pop("rooting", "default-unrooted")
+        self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
         self.edge_len_type = kwargs.pop("edge_len_type", float)
         self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', False)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
+        self.default_tree_weight = kwargs.pop("default_tree_weight", self.__class__._default_tree_weight)
         self.encode_splits = kwargs.pop("encode_splits", False)
         self.finish_node_func = kwargs.pop("finish_node_func", None)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
@@ -390,7 +395,7 @@ class NewickReader(ioservice.DataReader):
         if not rooting_token_found:
             tree.is_rooted = self._parse_tree_rooting_state("")
         if self.store_tree_weights and not weighting_token_found:
-            tree.weight = 1.0
+            tree.weight = self.default_tree_weight
 
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """
