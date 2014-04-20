@@ -111,37 +111,6 @@ class NewickTreeReaderBasic(
                                         suppress_external_node_taxa=expected_suppress_external_node_taxa,
                                         suppress_edge_lengths=expected_suppress_edge_lengths)
 
-    def test_unsupported_keyword_arguments(self):
-        tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
-        tree_string = self.get_newick_string()
-        reader_kwargs = {
-                "suppress_internal_taxa": True,  # should be suppress_internal_node_taxa
-                "gobbledegook": False,
-        }
-        with open(tree_filepath, "r") as tree_stream:
-            approaches = (
-                    (dendropy.Tree.get_from_path, tree_filepath),
-                    (dendropy.Tree.get_from_stream, tree_stream),
-                    (dendropy.Tree.get_from_string, tree_string),
-            )
-            for method, src in approaches:
-                with self.assertRaises(TypeError):
-                    t = method(src, "newick", **reader_kwargs)
-        with open(tree_filepath, "r") as tree_stream:
-            approaches = (
-                    ("read_from_path", tree_filepath),
-                    ("read_from_stream", tree_stream),
-                    ("read_from_string", tree_string),
-            )
-            for method, src in approaches:
-                t = dendropy.Tree()
-                tns0 = t.taxon_namespace
-                self.assertIs(t.taxon_namespace, tns0)
-                f = getattr(t, method)
-                self.assertIs(t.taxon_namespace, tns0)
-                with self.assertRaises(TypeError):
-                    f(src, "newick", **reader_kwargs)
-
     def test_rooting_weighting_and_tree_metadata_handling(self):
         rooting_tokens = ("", "[&R]", "[&U]", "[&r]", "[&u]", "[&0]", "[&invalid]", "[R]", "[U]", "[&]")
         rooting_interpretations = ("force-rooted", "force-unrooted", "default-rooted", "default-unrooted", None)
@@ -225,6 +194,77 @@ class NewickTreeReaderBasic(
                                 self.assertEqual(t.annotations.get_value("color", None), "blue")
                                 self.assertEqual(t.annotations.get_value("Why", None), "42")
 
+class NewickTreeMultifurcatingtree(unittest.TestCase):
+
+    def test_multifurcating(self):
+        s = """\
+        ((a,b,c,(d,e,f,g)s)p,(t,u,v)w,(h,i,j,k,(l,m,n)o)q)r;
+        """
+        tree = dendropy.Tree.get_from_string(s,
+                "newick",
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True)
+        expected_children = {
+            'a': [],
+            'b': [],
+            'c': [],
+            'd': [],
+            'e': [],
+            'f': [],
+            'g': [],
+            'h': [],
+            'i': [],
+            'j': [],
+            'k': [],
+            'l': [],
+            'm': [],
+            'n': [],
+            'o': ['l','m','n'],
+            'p': ['s', 'a', 'b', 'c'],
+            'q': ['o', 'h', 'i', 'j','k'],
+            'r': ['q','p', 'w'],
+            's': ['d', 'e', 'f', 'g'],
+            't': [],
+            'u': [],
+            'v': [],
+            'w': ['t', 'u', 'v'],
+        }
+        expected_parent = {
+            'a': 'p',
+            'b': 'p',
+            'c': 'p',
+            'd': 's',
+            'e': 's',
+            'f': 's',
+            'g': 's',
+            'h': 'q',
+            'i': 'q',
+            'j': 'q',
+            'k': 'q',
+            'l': 'o',
+            'm': 'o',
+            'n': 'o',
+            'o': 'q',
+            'p': 'r',
+            'q': 'r',
+            'r': None,
+            's': 'p',
+            't': 'w',
+            'u': 'w',
+            'v': 'w',
+            'w': 'r',
+        }
+        for nd in tree:
+            children = [ch.label for ch in nd.child_node_iter()]
+            if sys.hexversion < 0x03000000:
+                self.assertItemsEqual(children, expected_children[nd.label])
+            else:
+                self.assertCountEqual(children, expected_children[nd.label])
+            if nd.parent_node is not None:
+                self.assertEqual(nd.parent_node.label, expected_parent[nd.label])
+            else:
+                self.assertIs(expected_parent[nd.label], None)
+
 class NewickTreeInvalidStatements(unittest.TestCase):
 
     def test_invalid_trees(self):
@@ -241,6 +281,40 @@ class NewickTreeInvalidStatements(unittest.TestCase):
         for s in invalid_tree_statements:
             with self.assertRaises(Exception):
                 t = dendropy.Tree.get_from_string(s, "newick")
+
+class NewickTreeUnsupportedKeywordArguments(unittest.TestCase):
+
+    def test_unsupported_keyword_arguments(self):
+        tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
+        tree_string = self.get_newick_string()
+        reader_kwargs = {
+                "suppress_internal_taxa": True,  # should be suppress_internal_node_taxa
+                "gobbledegook": False,
+        }
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.Tree.get_from_path, tree_filepath),
+                    (dendropy.Tree.get_from_stream, tree_stream),
+                    (dendropy.Tree.get_from_string, tree_string),
+            )
+            for method, src in approaches:
+                with self.assertRaises(TypeError):
+                    t = method(src, "newick", **reader_kwargs)
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+            )
+            for method, src in approaches:
+                t = dendropy.Tree()
+                tns0 = t.taxon_namespace
+                self.assertIs(t.taxon_namespace, tns0)
+                f = getattr(t, method)
+                self.assertIs(t.taxon_namespace, tns0)
+                with self.assertRaises(TypeError):
+                    f(src, "newick", **reader_kwargs)
+
 
 class NewickTreeQuotedLabels(unittest.TestCase):
 
