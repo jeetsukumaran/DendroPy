@@ -292,7 +292,9 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             with self.assertRaises(Exception):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
-class NewickTreeUnsupportedKeywordArguments(unittest.TestCase):
+class NewickTreeUnsupportedKeywordArguments(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
 
     def test_unsupported_keyword_arguments(self):
         tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
