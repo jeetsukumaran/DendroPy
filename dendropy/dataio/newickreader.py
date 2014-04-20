@@ -164,10 +164,6 @@ class NewickReader(ioservice.DataReader):
             If `False`, external node labels will be instantantiated into
             :class:`Taxon` objects. If `True`, external node labels
             will *not* be instantantiated as strings.
-        allow_duplicate_taxon_labels : boolean, default: `False`
-            If `True`, then multiple identical taxon labels will be allowed.
-            Defaults to `False`: treat multiple identical taxon labels as an
-            error.
         """
 
         self._rooting = None
@@ -208,6 +204,14 @@ class NewickReader(ioservice.DataReader):
                     FutureWarning, stacklevel=4)
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
+        if "allow_duplicate_taxon_labels" in kwargs:
+            raise ValueError(
+                "Multiple occurrences of the same taxa on trees are no longer"
+                "supported: trees with duplicate node labels can only be"
+                "processed if the labels are not parsed as operational taxonomic"
+                "unit concepts but instead as simply node labels by specifying"
+                "'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
+            )
         # self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
         self.edge_len_type = kwargs.pop("edge_len_type", float)
@@ -221,7 +225,6 @@ class NewickReader(ioservice.DataReader):
         self.preserve_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
-        self.allow_duplicate_taxon_labels = kwargs.pop("allow_duplicate_taxon_labels", False)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
         self.tree_statement_complete = None
