@@ -287,9 +287,11 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             "(a,(b,c)))",
             "(a,(b,c)):",
             "(a,(b,c))(",
+            "(e,(c,(d,e)a)b;(b,(a,e)c)d;",
             )
         for s in invalid_tree_statements:
-            with self.assertRaises(Exception):
+            # t = dendropy.Tree.get_from_string(s, "newick")
+            with self.assertRaises(error.DataParseError):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
 class NewickTreeUnsupportedKeywordArguments(
@@ -697,10 +699,6 @@ class NewickTreeReaderOffsetTreeTest(
                             distinct_nodes_and_edges=False)
 
     def test_offset_get_with_redundant_semicolons(self):
-        # TODO: bad pattern ;;;;(a,(b,c)d)e;;;;(e,(c,(d,e)a)b;;;;(b,(a,e)c)d;;;;
-        # s = """\
-        #     ;;;;(a,(b,c)d)e;;;;(e,(c,(d,e)a)b;;;;(b,(a,e)c)d;;;;
-        #     """
         s = """\
             ;;;;(a,(b,c)d)e;;;;(e,(c,a)d)b;;;;(b,(a,e)c)d;;;;
             """

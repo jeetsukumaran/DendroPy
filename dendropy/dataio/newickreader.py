@@ -227,7 +227,8 @@ class NewickReader(ioservice.DataReader):
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
-        self.tree_statement_complete = None
+        self._tree_statement_complete = None
+        self._parenthesis_nesting_level = None
 
     def tree_iter(self,
             stream,
@@ -324,7 +325,8 @@ class NewickReader(ioservice.DataReader):
                     stream=nexus_tokenizer.src)
         tree = tree_factory()
         self._process_tree_comments(tree, tree_comments, nexus_tokenizer)
-        self.tree_statement_complete = False
+        self._tree_statement_complete = False
+        self._parenthesis_nesting_level = 1
         self._parse_tree_node_description(
                 nexus_tokenizer=nexus_tokenizer,
                 tree=tree,
@@ -332,7 +334,7 @@ class NewickReader(ioservice.DataReader):
                 taxon_symbol_map_func=taxon_symbol_map_func,
                 is_internal_node=None)
         current_token = nexus_tokenizer.current_token
-        if not self.tree_statement_complete:
+        if not self._tree_statement_complete:
             raise NewickReader.NewickReaderIncompleteTreeStatementError(
                     message="Incomplete or improperly-terminated tree statement (last character read was '{}' instead of a semi-colon ';')".format(nexus_tokenizer.current_token),
                     line_num=nexus_tokenizer.token_line_num,
@@ -440,6 +442,7 @@ class NewickReader(ioservice.DataReader):
         """
         current_node_comments = nexus_tokenizer.pull_captured_comments()
         if nexus_tokenizer.current_token == "(":
+            # self._parenthesis_nesting_level += 1 # handled by calling code
             nexus_tokenizer.require_next_token()
             node_created = False
             while True:
@@ -473,12 +476,14 @@ class NewickReader(ioservice.DataReader):
                         node_created = True;
                 elif nexus_tokenizer.current_token == ")": #206
                     # end of child nodes
+                    self._parenthesis_nesting_level -= 1
                     nexus_tokenizer.require_next_token()
                     break
                 else: #210
                     # assume child nodes: a leaf node (if a label) or
                     # internal (if a parenthesis)
                     if nexus_tokenizer.current_token == "(":
+                        self._parenthesis_nesting_level += 1
                         is_new_internal_node = True
                     else:
                         is_new_internal_node = False
@@ -495,7 +500,7 @@ class NewickReader(ioservice.DataReader):
                     current_node.add_child(new_node);
                     node_created = True;
         label_parsed = False
-        self.tree_statement_complete = False
+        self._tree_statement_complete = False
         if is_internal_node is None:
             # Initial call using `seed_node` does not set `is_internal_node` to
             # `True` or `False`, explicitly, but rather `None`. If this is the
@@ -521,13 +526,14 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer.require_next_token()
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
+                # self._parenthesis_nesting_level -= 1 # handled by calling code
                 self._process_node_comments(node=current_node,
                         node_comments=current_node_comments)
                 self._finish_node(current_node)
                 return current_node
             elif nexus_tokenizer.current_token == ";": #256
                 # end of tree statement
-                self.tree_statement_complete = True
+                self._tree_statement_complete = True
                 nexus_tokenizer.next_token()
                 break
             elif nexus_tokenizer.current_token == ",": #260
@@ -539,6 +545,7 @@ class NewickReader(ioservice.DataReader):
             elif nexus_tokenizer.current_token == "(": #263
                 # start of another node or tree without finishing this
                 # node
+                self._parenthesis_nesting_level += 1
                 raise NewickReader.NewickReaderMalformedStatementError(
                         message="Malformed tree statement",
                         line_num=nexus_tokenizer.token_line_num,
@@ -572,6 +579,12 @@ class NewickReader(ioservice.DataReader):
                     #     ## tree string with no terminating semi-colon ...
                     #     break
         ## if we are here, we have reached the end of the tree
+        if self._parenthesis_nesting_level != 0:
+            raise NewickReader.NewickReaderMalformedStatementError(
+                    message="Unbalanced parentheses at tree statement termination: balance index = {}".format(self._parenthesis_nesting_level),
+                    line_num=nexus_tokenizer.token_line_num,
+                    col_num=nexus_tokenizer.token_column_num,
+                    stream=nexus_tokenizer.src)
         self._process_node_comments(node=current_node,
             node_comments=current_node_comments)
         self._finish_node(current_node)
