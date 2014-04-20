@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import itertools
+import random
 import dendropy
 from dendropy.utility import error
 from dendropy.test.support import datagen_standard_file_test_trees
@@ -100,7 +101,10 @@ class NewickTreeReaderBasic(
                                         "newick",
                                         suppress_internal_node_taxa=False,
                                         suppress_external_node_taxa=False,)
+                                tns0 = t.taxon_namespace
+                                self.assertIs(t.taxon_namespace, tns0)
                                 f = getattr(t, method)
+                                self.assertIs(t.taxon_namespace, tns0)
                                 f(src, "newick", **reader_kwargs)
                                 self.verify_curated_tree(t,
                                         suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
@@ -131,7 +135,10 @@ class NewickTreeReaderBasic(
             )
             for method, src in approaches:
                 t = dendropy.Tree()
+                tns0 = t.taxon_namespace
+                self.assertIs(t.taxon_namespace, tns0)
                 f = getattr(t, method)
+                self.assertIs(t.taxon_namespace, tns0)
                 with self.assertRaises(TypeError):
                     f(src, "newick", **reader_kwargs)
 
@@ -552,6 +559,197 @@ class NewickTreeLabelParsingTest(unittest.TestCase):
         self.assertEqual(labels, set(expected.keys()))
         for nd in tree:
             self.assertEqual(nd.edge.length, expected[nd.taxon.label])
+
+class NewickTreeReaderOffsetTreeTest(
+        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        unittest.TestCase):
+
+    schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
+
+    def test_tree_offset_newick_get(self):
+        tree_file_title = "standard-test-trees-n33-x100a"
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, expected_number_of_trees-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for tree_offset in tree_offsets:
+            tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+            expected_number_of_trees = tree_reference["num_trees"]
+            if tree_offset < 0:
+                if abs(tree_offset) > expected_number_of_trees:
+                    tree_offset = 0
+                else:
+                    tree_offset = expected_number_of_trees + tree_offset
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.Tree.get_from_path, tree_filepath),
+                        (dendropy.Tree.get_from_stream, tree_stream),
+                        (dendropy.Tree.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree = method(
+                            src,
+                            "newick",
+                            collection_offset=0,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            rooting="default-unrooted")
+                    check_tree_idx = tree_offset
+                    self.compare_to_check_tree(
+                            tree=tree,
+                            tree_file_title=tree_file_title,
+                            check_tree_idx=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_tree_offset_newick_read(self):
+        tree_file_title = "standard-test-trees-n33-x100a"
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, expected_number_of_trees-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for tree_offset in tree_offsets:
+            tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+            expected_number_of_trees = tree_reference["num_trees"]
+            if tree_offset < 0:
+                if abs(tree_offset) > expected_number_of_trees:
+                    tree_offset = 0
+                else:
+                    tree_offset = expected_number_of_trees + tree_offset
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        ("read_from_path", tree_filepath),
+                        ("read_from_stream", tree_stream),
+                        ("read_from_string", tree_string),
+                        )
+                for method, src in approaches:
+                    tree = dendropy.Tree()
+                    tns0 = tree.taxon_namespace
+                    f = getattr(tree, method)
+                    trees_read = f(src,
+                            "newick",
+                            collection_offset=0,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            rooting="default-unrooted")
+                    self.assertIs(tree.taxon_namespace, tns0)
+                    check_tree_idx = tree_offset
+                    self.compare_to_check_tree(
+                            tree=tree,
+                            tree_file_title=tree_file_title,
+                            check_tree_idx=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_external_node_taxa=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_tree_offset_without_collection_offset_newick_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        approaches = (
+                dendropy.Tree.get_from_path,
+                dendropy.Tree.get_from_stream,
+                dendropy.Tree.get_from_string,
+                )
+        for approach in approaches:
+            with self.assertRaises(TypeError):
+                approach(tree_filepath, "newick", collection_offset=None, tree_offset=0)
+
+    def test_tree_offset_without_collection_offset_newick_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        approaches = (
+                "read_from_path",
+                "read_from_stream",
+                "read_from_string",
+                )
+        for approach in approaches:
+            tree = dendropy.Tree()
+            f = getattr(tree, approach)
+            with self.assertRaises(TypeError):
+                f(tree_filepath, "newick", collection_offset=None, tree_offset=0)
+
+    def test_out_of_range_tree_offset_newick_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.Tree.get_from_path, tree_filepath),
+                    (dendropy.Tree.get_from_stream, tree_stream),
+                    (dendropy.Tree.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(IndexError):
+                    method(src, "newick", collection_offset=0, tree_offset=expected_number_of_trees)
+
+    def test_out_of_range_tree_offset_newick_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                tree = dendropy.Tree()
+                f = getattr(tree, method)
+                with self.assertRaises(IndexError):
+                    f(src, "newick", collection_offset=0, tree_offset=expected_number_of_trees)
+
+    def test_out_of_range_collection_offset_newick_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.Tree.get_from_path, tree_filepath),
+                    (dendropy.Tree.get_from_stream, tree_stream),
+                    (dendropy.Tree.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(IndexError):
+                    method(src, "newick", collection_offset=1, tree_offset=0)
+
+    def test_out_of_range_collection_offset_newick_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                tree = dendropy.Tree()
+                f = getattr(tree, method)
+                with self.assertRaises(IndexError):
+                    f(src, "newick", collection_offset=1, tree_offset=0)
 
 if __name__ == "__main__":
     unittest.main()

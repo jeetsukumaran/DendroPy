@@ -1447,7 +1447,7 @@ class Node(base.DataObject, base.Annotable):
                 return "_" # taxon, but no label: anonymous
         else:
             if self.label:
-                label = self.labl
+                label = self.label
             else:
                 if is_leaf:
                     return "_"
@@ -1544,16 +1544,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         schema : string
             Identifier of format of data in `stream`
 
-        collection_offset : integer or None
+        collection_offset : integer
             0-based index of tree block or collection in source to be parsed.
 
-        tree_offset : integer or None
-            0-based index of tree in source to be parsed. If
-            `collection_offset` is `None`, then this is the 0-based index of
-            the tree across all collections considered together. Otherwise,
-            this is the 0-based index within a particular collection. If
-            `tree_offset` is `None` or not specified, then the first tree is
-            returned.
+        tree_offset : integer
+            0-based index of tree in source to be parsed.  This is the 0-based
+            index of the tree within the collection specified by
+            `collection_offset` to be retrieved. If not specified or `None`,
+            then the first tree is returned.
 
         \*\*kwargs : keyword arguments
             Arguments to customize parsing and instantiation this :class:`Tree`
@@ -1580,29 +1578,28 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
         """
         taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        if taxon_namespace is None:
+            taxon_namespace = taxon.TaxonNamespace()
+        tns_factory = lambda label: taxon_namespace
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
-        if collection_offset is None:
-            # coerce all tree products into this list
-            tree_list = TreeList(taxon_namespace=taxon_namespace)
-            reader.read_trees(
-                        stream=stream,
-                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
-                        tree_list_factory=tree_list._tree_list_pseudofactory,
-                        global_annotations_target=None)
-        else:
-            tree_lists = reader.read_trees(
-                        stream=stream,
-                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
-                        tree_list_factory=TreeList,
-                        global_annotations_target=None)
-            tree_list = tree_lists[collection_offset]
+        if collection_offset is None and tree_offset is not None:
+                raise TypeError("Cannot specify `tree_offset` without specifying `collection_offset`")
+        elif collection_offset is None:
+            collection_offset = 0
+        if tree_offset is None:
+            tree_offset = 0
+        tree_lists = reader.read_trees(
+                    stream=stream,
+                    taxon_namespace_factory=tns_factory,
+                    tree_list_factory=TreeList,
+                    global_annotations_target=None)
+        if not tree_lists:
+            return None
+        tree_list = tree_lists[collection_offset]
         if not tree_list:
             return None
-        if tree_offset is None:
-            return tree_list[0]
-        else:
-            return tree_list[tree_offset]
+        return tree_list[tree_offset]
     _parse_from_stream = classmethod(_parse_from_stream)
 
     def node_factory(cls, **kwargs):
@@ -1867,15 +1864,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         """
         Redefines this :class:`Tree` object based on data from `source`.
 
-        The current :class:`TaxonNamespace` reference will be retained (and modified
-        if new operational taxonomic unit concept definitions are
-        encountered in the data source), unless a new object or `None`
-        is passed using the `taxon_namespace` argument. Note that any metadata
-        associated with the tree specified in the source will be *added* to the
-        metadata already associated with the current :class:`Tree`. If the current
-        tree has any metadata that should not be associated with the tree
-        structure being read, call `tree.annotations.drop()` to clear any
-        annotations calling this method.
+        The current :class:`TaxonNamespace` reference will be retained (and
+        modified if new operational taxonomic unit concept definitions
+        are encountered in the data source). *All* other information,
+        including metadata/annotations, will be lost or replaced with
+        information from the new data source.
 
         If the source defines multiple tree collections (e.g. multiple NEXUS
         "Trees" blocks), then the `collection_offset` argument
@@ -1932,16 +1925,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             If no valid trees matching criteria found in source.
 
         """
-        ignore_metadata = kwargs.pop("ignore_metadata", False)
         if "taxon_set" in kwargs or "taxon_namespace" in kwargs:
             raise TypeError("Cannot change `taxon_namespace` when reading an existing Tree")
         kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree._parse_from_stream(stream, schema, **kwargs)
         if tree is None:
             raise ValueError("Invalid tree source specification")
-        self.seed_node = tree.seed_node
-        if not ignore_metadata:
-            self.copy_annotations_from(tree)
+        self.__dict__ = tree.__dict__
 
     def write(self, stream, schema, **kwargs):
         """
