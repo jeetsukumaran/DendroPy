@@ -696,6 +696,38 @@ class NewickTreeReaderOffsetTreeTest(
                             suppress_external_node_taxa=False,
                             distinct_nodes_and_edges=False)
 
+    def test_offset_get_with_redundant_semicolons(self):
+        # TODO: bad pattern ;;;;(a,(b,c)d)e;;;;(e,(c,(d,e)a)b;;;;(b,(a,e)c)d;;;;
+        # s = """\
+        #     ;;;;(a,(b,c)d)e;;;;(e,(c,(d,e)a)b;;;;(b,(a,e)c)d;;;;
+        #     """
+        s = """\
+            ;;;;(a,(b,c)d)e;;;;(e,(c,a)d)b;;;;(b,(a,e)c)d;;;;
+            """
+        expected_roots = {
+            0 : 'e',
+            1 : 'b',
+            2 : 'd',
+        }
+        expected_leaves = {
+            0 : ['a', 'b', 'c'],
+            1 : ['e', 'c', 'a'],
+            2 : ['b', 'a', 'e'],
+        }
+        for idx in range(3):
+            tree = dendropy.Tree.get_from_string(
+                    s, "newick",
+                    collection_offset=0,
+                    tree_offset=idx,
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=True)
+            self.assertEqual(tree.seed_node.label, expected_roots[idx])
+            leaves = [nd.label for nd in tree.leaf_node_iter()]
+            if sys.hexversion < 0x03000000:
+                self.assertItemsEqual(leaves, expected_leaves[idx])
+            else:
+                self.assertCountEqual(leaves, expected_leaves[idx])
+
     def test_tree_offset_newick_read(self):
         tree_file_title = "standard-test-trees-n33-x100a"
         tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]

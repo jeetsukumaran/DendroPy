@@ -350,7 +350,6 @@ class NewickReader(ioservice.DataReader):
         for comment in tree_comments:
             stripped_comment = comment.strip()
             if stripped_comment in ["&u", "&U", "&r", "&R"]:
-                # print("\n\n**********\n**{}\n**{}\n*********".format(comment, self._parse_tree_rooting_state(comment)))
                 tree.is_rooted = self._parse_tree_rooting_state(stripped_comment)
                 rooting_token_found = True
             elif (self.store_tree_weights
