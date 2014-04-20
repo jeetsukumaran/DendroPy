@@ -1535,6 +1535,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         If no tree is found in the source according to the specified criteria,
         then `None` is returned.
 
+        Notes
+        -----
+        *All* operational taxonomic unit concepts in the data source will be included
+        in the :class:`TaxonNamespace` object associated with the new
+        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        not associated with tree being retrieved.
+
         Parameters
         ----------
 
@@ -1561,9 +1568,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
                 `label`
                     The label or description of the new :class:`Tree` object.
-                `taxon_namespace`
-                    Specifies the :class:`TaxonNamespace` object to be
-                    attached to the new :class:`Tree` object.
+                * `taxon_namespace` specifies the :class:`TaxonNamespace`
+                   object to be attached to the new :class:`TreeList` object.
+                   Note that *all* operational taxonomic unit concepts in the
+                   data source will be accessioned into the specified
+                   :class:`TaxonNamespace` instance. This includes the
+                   operation taxonomic unit definitions associated with all
+                   tree collections and character matrices in the data source.
 
             Other keyword arguments may be available, depending on the
             implementation of the reader specialized to handle `schema`
@@ -1879,6 +1890,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         the source are merged before considering `tree_offset`.  If
         `tree_offset` is not specified, then the first tree (offset=0) is
         returned.
+
+        Notes
+        -----
+        *All* operational taxonomic unit concepts in the data source will be included
+        in the :class:`TaxonNamespace` object associated with the new
+        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        not associated with tree being retrieved.
 
         Parameters
         ----------
@@ -4231,6 +4249,13 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
         Constructs a new :class:`TreeList` object and populates it with trees from
         file-like object `stream`.
 
+        Notes
+        -----
+        *All* operational taxonomic unit concepts in the data source will be included
+        in the :class:`TaxonNamespace` object associated with the new
+        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        not associated with trees or the particular trees being retrieved.
+
         Parameters
         ----------
 
@@ -4276,10 +4301,15 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                * `label` specifies the label or description of the new
+                * `label` Specifies the label or description of the new
                   :class:`TreeList`.
-                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
-                  attached to the new :class:`TreeList` object.
+                * `taxon_namespace` specifies the :class:`TaxonNamespace`
+                   object to be attached to the new :class:`TreeList` object.
+                   Note that *all* operational taxonomic unit concepts in the
+                   data source will be accessioned into the specified
+                   :class:`TaxonNamespace` instance. This includes the
+                   operation taxonomic unit definitions associated with all
+                   tree collections and character matrices in the data source.
                 * `tree_list` : **SPECIAL** If passed a :class:`TreeList` using
                   this keyword, then this instance is populated and returned
                   (instead of a new instance being created).
@@ -4505,6 +4535,13 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             **kwargs):
         """
         Parses :class:`Tree` objects from data source and adds to this collection.
+
+        Notes
+        -----
+        *All* operational taxonomic unit concepts in the data source will be included
+        in the :class:`TaxonNamespace` object associated with the new
+        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        not associated with trees or the particular trees being retrieved.
 
         Parameters
         ----------
