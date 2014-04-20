@@ -1567,12 +1567,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                     Specifies the :class:`TaxonNamespace` object to be
                     attached to the new :class:`Tree` object.
 
-            All other keyword arguments are passed directly to
-            :meth:`TreeList.read()`.  Other keyword arguments may be available,
-            depending on the implementation of the reader specialized to handle
-            `schema` formats. See documentation for details on keyword
-            arguments supported by readers of various schemas.
-
+            Other keyword arguments may be available, depending on the
+            implementation of the reader specialized to handle `schema`
+            formats. See documentation for details on keyword arguments
+            supported by readers of various schemas.
 
         Returns
         -------
@@ -1916,16 +1914,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             and handled by this constructor:
 
                 `label`
-                    The label or description of the new :class:`Tree` object.
-                `taxon_namespace`
-                    Specifies the :class:`TaxonNamespace` object to be
-                    attached to the new :class:`Tree` object.
+                    The label the tree :class:`Tree` object.
 
-            All other keyword arguments are passed directly to
-            :meth:`TreeList.read()`.  Other keyword arguments may be available,
-            depending on the implementation of the reader specialized to handle
-            `schema` formats. See documentation for details on keyword
-            arguments supported by readers of various schemas.
+            Other keyword arguments may be available, depending on the
+            implementation of the reader specialized to handle `schema`
+            formats. See documentation for details on keyword arguments
+            supported by readers of various schemas.
 
         Returns
         -------
@@ -1939,8 +1933,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 
         """
         ignore_metadata = kwargs.pop("ignore_metadata", False)
-        if "taxon_namespace" not in kwargs and "taxon_set" not in kwargs:
-            kwargs["taxon_namespace"] = self.taxon_namespace
+        if "taxon_set" in kwargs or "taxon_namespace" in kwargs:
+            raise TypeError("Cannot change `taxon_namespace` when reading an existing Tree")
+        kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree._parse_from_stream(stream, schema, **kwargs)
         if tree is None:
             raise ValueError("Invalid tree source specification")

@@ -445,7 +445,28 @@ class CommentMetaDataTests(unittest.TestCase):
         for idx, nd in enumerate(tree.postorder_node_iter()):
             self.assertEqual(nd.annotations.values_as_dict(), expected[idx])
 
-class NewickTreeTaxonHandlingTest(unittest.TestCase):
+class NewickTreeTaxonNamespaceTest(unittest.TestCase):
+
+    def test_namespace_passing(self):
+        tns1 = dendropy.TaxonNamespace()
+        s1 = "(a,(b,c));"
+        tree = dendropy.Tree.get_from_string(
+                s1, "newick", taxon_namespace=tns1)
+        self.assertIs(tree.taxon_namespace, tns1)
+        self.assertEqual(len(tns1), 3)
+        s2 = "((e,f),(g,h));"
+        tree.read_from_string(
+                s2, "newick")
+        self.assertIs(tree.taxon_namespace, tns1)
+        self.assertEqual(len(tns1), 7)
+        tns2 = dendropy.TaxonNamespace()
+        s3 = "((j,k),(l,m));"
+        with self.assertRaises(TypeError):
+            tree.read_from_string(
+                    s3, "newick",
+                    taxon_namespace=tns2)
+
+class NewickTreeLabelParsingTest(unittest.TestCase):
 
     def test_basic_taxa(self):
         s = "(a1:3.14e-2,(b2:1.2,(c3:0.5,d4:0.7)e5:111)f6:222)g7:333;"
