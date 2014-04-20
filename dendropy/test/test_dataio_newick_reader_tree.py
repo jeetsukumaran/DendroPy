@@ -198,7 +198,10 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
 
     def test_multifurcating(self):
         s = """\
-        ((a,b,c,(d,e,f,g)s)p,(t,u,v)w,(h,i,j,k,(l,m,n)o)q)r;
+                ([p]([a]a:1[a],[b]b:2[b],[c]c:3[c],[s]([d]d:4[d],
+         [e]e:5[e],[f]f:6[f],[g]g:7[g])[s]s:19[s])[p]p:16[p],[w]
+         ([t]t:20[t],[u]u:21[u],[v]v:22[v])[w]w:23[w],[q]
+         ([h]h:8[h],[i]i:9[i],[j]j:10[j],[k]k:11[k],[o]([l]l:12[l],[m]m:13[m],[n]n:14[n])[o]o:15[o])[q]q:17[q])[r]r:18[r][r];
         """
         tree = dendropy.Tree.get_from_string(s,
                 "newick",
@@ -264,6 +267,13 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
                 self.assertEqual(nd.parent_node.label, expected_parent[nd.label])
             else:
                 self.assertIs(expected_parent[nd.label], None)
+            if nd.is_leaf():
+                self.assertEqual(len(nd.comments), 2)
+            else:
+                self.assertEqual(len(nd.comments), 3)
+            for comment in nd.comments:
+                self.assertEqual(comment, nd.label)
+            self.assertEqual(nd.edge.length, ord(nd.label) - ord('a') + 1)
 
 class NewickTreeInvalidStatements(unittest.TestCase):
 
