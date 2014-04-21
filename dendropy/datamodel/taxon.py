@@ -124,10 +124,11 @@ class TaxonNamespaceAssociated(base.DataObject):
 
     def __init__(self, **kwargs):
         base.DataObject.__init__(self, label=kwargs.pop('label', None))
-        if "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is None:
+        tns = process_kwargs_for_taxon_namespace(kwargs)
+        if tns is None:
             self.taxon_namespace = TaxonNamespace()
         else:
-            self.taxon_namespace = kwargs["taxon_namespace"]
+            self.taxon_namespace = tns
 
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")

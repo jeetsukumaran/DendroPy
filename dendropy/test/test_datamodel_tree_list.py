@@ -62,7 +62,6 @@ class TreeListIdentity(unittest.TestCase):
             self.t3._trees.append(tree)
         self.assertNotEqual(self.t1, self.t3)
 
-
     def test_hash_dict_membership(self):
         k = {}
         k[self.t1] = 1
@@ -100,6 +99,17 @@ class TreeListIdentity(unittest.TestCase):
         self.assertIn(self.t2, k2)
         self.assertNotIn(self.t2, k1)
         self.assertNotIn(self.t1, k2)
+
+class TreeListCreatingAndCloning(
+        compare_and_validate.Comparator,
+        unittest.TestCase):
+
+    def create_with_taxon_namespace(self):
+        tns = dendropy.TaxonNamespace()
+        tt = TreeList(label="a", taxon_namespace=tns)
+        self.assertEqual(tt.label, "a")
+        self.assertIs(tt.taxon_namespace, tns)
+
 
 if __name__ == "__main__":
     unittest.main()

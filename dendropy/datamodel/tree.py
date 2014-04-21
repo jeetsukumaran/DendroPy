@@ -4236,7 +4236,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
 ##############################################################################
 ### TreeList
 
-class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.Writeable):
+class TreeList(
+        taxon.TaxonNamespaceAssociated,
+        base.Annotable,
+        base.Readable,
+        base.Writeable):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of
     opeational taxonomic unit concepts through the same :class:`TaxonNamespace`
@@ -4475,12 +4479,6 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
                              taxon_namespace=tlst3.taxon_namespace,
                              encode_splits=True)
 
-            # deep-copied (but shallow-copy taxa) from another tree list
-            tlst9 = TreeList(t4)
-
-            # same
-            tlst10 = TreeList([Tree(t) for t in tlst5])
-
             # Subsets of trees can be read:
             # (Note that in most cases, the entire data source is parsed, so
             # this is not more efficient than reading all the trees and
@@ -4497,6 +4495,27 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
             # get the last 10 trees in the second-to-last collection of trees
             trees = TreeList.get_from_path("mcmc.xml", "nexml",
                         collection_offset=-2, tree_offset=-10)
+
+            # Slices give shallow-copy: trees are references
+            tlst4copy0a = t4[:]
+            assert tlst4copy0a[0] is t4[0]
+            tlst4copy0b = t4[:4]
+            assert tlst4copy0b[0] is t4[0]
+
+            # 'Taxon-namespace-scoped' copy:
+            # I.e., Deep-copied objects but taxa and taxon namespace
+            # are copied as references
+            tlst4copy1a = TreeList(t4)
+            tlst4copy1b = TreeList([Tree(t) for t in tlst5])
+            assert tlst4copy1a[0] is not tlst4[0] # True
+            assert tlst4copy1a.taxon_namespace is tlst4.taxon_namespace # True
+            assert tlst4copy1b[0] is not tlst4[0] # True
+            assert tlst4copy1b.taxon_namespace is tlst4.taxon_namespace # True
+
+            # True deep copies via 'copy.deepcopy'
+            tlst4deepcopy = copy.deepcopy(tlst4)
+            assert tlst4deepcopy[0] is not tlst4[0] # True
+            assert tlst4deepcopy.taxon_namespace is not tlst4.taxon_namespace # True
 
         """
         super(TreeList, self).__init__(*args, **kwargs)
