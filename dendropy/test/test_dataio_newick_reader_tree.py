@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import itertools
+import collections
 import random
 import dendropy
 from dendropy.utility import error
@@ -295,9 +296,11 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             with self.assertRaises(error.DataParseError):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
-class NewickTreeDuplicateTaxa(unittest.TestCase):
+class NewickTreeDuplicateTaxa(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
 
-    def test_duplicate_taxa(self):
+    def test_duplicate_taxa1(self):
         tree_statements = (
             "((a,b)c,(b,c)a)d;",
             "((_,_)_,(_,_)_)_;",
@@ -319,20 +322,36 @@ class NewickTreeDuplicateTaxa(unittest.TestCase):
             else:
                 self.assertCountEqual(labels, expected_labels[sidx])
 
-
 class NewickTreeAnonymousTaxa(unittest.TestCase):
 
-    def test_duplicate_taxa(self):
-        # s = "((,),(,));((,),(,));((,),(,));   ((,),(,)); "
-        s = "((_,_),(_,_));"
-        trees = dendropy.TreeList.get_from_string(s, "newick")
-        print("\n\n{}".format(len(trees.taxon_namespace)))
-        for t in trees.taxon_namespace:
-            print(">>> {}".format(t))
-        for t in trees:
-            print(t._as_newick_string())
-            for nd in t:
-                print(nd.label)
+    def test_anonymous_taxa_no_error(self):
+        s = "((,),(,(,(,))));"
+        tree = dendropy.Tree.get_from_string(s,
+                "newick")
+
+    def test_anonymous_taxa(self):
+        s = "((:1[a],:2[b])[c]:3,(:4[d],([e]:5,([f]:6,:7[g]):8[h])[i]:9)[j]:10):11[k];"
+        tree = dendropy.Tree.get_from_string(s,
+                "newick")
+        self.assertEqual(len(tree.taxon_namespace), 0)
+        anodes = [nd for nd in tree]
+        leaves = [nd for nd in tree.leaf_node_iter()]
+        internal = [nd for nd in tree.postorder_internal_node_iter()]
+        self.assertEqual(len(anodes), 11)
+        self.assertEqual(len(leaves), 6)
+        self.assertEqual(len(internal), 5)
+        leaf_labels = [nd.comments[0] for nd in leaves]
+        internal_labels = [nd.comments[0] for nd in internal]
+        if sys.hexversion < 0x03000000:
+            self.assertItemsEqual(leaf_labels, ('a','b','d','e','f','g'))
+            self.assertItemsEqual(internal_labels, ('c','h','i','j','k'))
+        else:
+            self.assertCountEqual(leaf_labels, ('a','b','d','e','f','g'))
+            self.assertCountEqual(internal_labels, ('c','h','i','j','k'))
+        for nd in tree:
+            x = nd.comments[0]
+            k = ord(x) - ord('a') + 1
+            self.assertEqual(nd.edge.length, k)
 
 class NewickTreeUnsupportedKeywordArguments(
         datagen_curated_test_tree.CuratedTestTree,
