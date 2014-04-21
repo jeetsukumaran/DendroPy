@@ -1287,7 +1287,6 @@ class Taxon(base.DataObject, base.Annotable):
             self.deep_copy_annotations_from(other_taxon, memo=memo)
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
-            assert label is None or isinstance(label, str)
             self.initialize_label_from_kwargs_dict({"label":label})
 
     def __copy__(self):
