@@ -1799,6 +1799,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
                 self.seed_node = seed_node
                 self.update_taxon_namespace()
 
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
+
     def _clone_from(self, tree, **kwargs):
         # super(Tree, self).__init__()
         memo = {}
@@ -4499,14 +4505,18 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
     ###########################################################################
     ### Representation
 
-    # def __str__(self):
-    #     return "[{}]".format(", ".join([str(i) for i in self._taxa]))
+    def __str__(self):
+        return "<TreeList {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._trees))
 
-    # def __repr__(self):
-    #     return "<TaxonNamespace {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._taxa))
+    def __hash__(self):
+        return id(self)
 
-    # def __hash__(self):
-    #     return id(self)
+    def __eq__(self, other):
+        return (
+            isinstance(other, TreeList)
+            and (self.taxon_namespace is other.taxon_namespace)
+            and (self._trees == other._trees)
+        )
 
     ###########################################################################
     ### Data I/O
@@ -4678,9 +4688,6 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, ba
 
     def __delitem__(self, tree):
         del self._trees[tree]
-
-    def __eq__(self, other):
-        raise NotImplementedError
 
     def __iter__(self):
         return iter(self._trees)
