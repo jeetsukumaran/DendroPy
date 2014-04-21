@@ -43,7 +43,7 @@ class DataObject(object):
     def initialize_label_from_kwargs_dict(self, kwargs_dict, default=None):
         label = kwargs_dict.pop("label", default)
         if label is not None:
-            self._label = label
+            self._label = str(label)
         else:
             self._label = None
         return self._label
