@@ -34,53 +34,12 @@ from dendropy.utility import bibtex
 
 ##############################################################################
 ## DataObject
+
 class DataObject(object):
 
     """
     Base class for all phylogenetic data objects.
     """
-
-    def initialize_label_from_kwargs_dict(self, kwargs_dict, default=None):
-        label = kwargs_dict.pop("label", default)
-        if label is not None:
-            self._label = str(label)
-        else:
-            self._label = None
-        return self._label
-
-    def _get_label(self):
-        return self._label
-    def _set_label(self, v):
-        self._label = v
-    label = property(_get_label, _set_label)
-
-   # def __copy__(self):
-   #      cls = self.__class__
-   #      result = cls.__new__(cls)
-   #      result.__dict__.update(self.__dict__)
-   #      return result
-
-    # def __deepcopy__(self, memo=None):
-    #     # cls = self.__class__
-    #     # result = cls.__new__(cls)
-    #     # memo[id(self)] = result
-    #     # for k, v in self.__dict__.items():
-    #     #     setattr(result, k, deepcopy(v, memo))
-    #     # return result
-    #     if memo is None:
-    #         memo = {}
-    #     try:
-    #         o = memo[id(self)]
-    #     except KeyError:
-    #         # o = type(self).__new__(self.__class__)
-    #         o = self.__class__.__new__(self.__class__)
-    #         memo[id(self)] = o
-    #     for k in self.__dict__:
-    #         # o.__dict__[copy.deepcopy(k, memo)] = copy.deepcopy(self.__dict__[k], memo)
-    #         o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-    #         # setattr(o, k, copy.deepcopy(self.__dict__[k], memo))
-    #         # setattr(o, k, copy.deepcopy(self.__dict__[k], memo))
-    #     return o
 
     def clone(self, depth=0):
         """
@@ -119,6 +78,25 @@ class DataObject(object):
         objects: these are preserved as references.
         """
         raise NotImplementedError
+
+##############################################################################
+## Labeled
+
+class Labeled(object):
+
+    def initialize_label_from_kwargs_dict(self, kwargs_dict, default=None):
+        label = kwargs_dict.pop("label", default)
+        if label is not None:
+            self._label = str(label)
+        else:
+            self._label = None
+        return self._label
+
+    def _get_label(self):
+        return self._label
+    def _set_label(self, v):
+        self._label = v
+    label = property(_get_label, _set_label)
 
 
 ##############################################################################

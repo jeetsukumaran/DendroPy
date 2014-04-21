@@ -36,7 +36,10 @@ from dendropy import dataio
 ##############################################################################
 ### Edge
 
-class Edge(base.DataObject, base.Annotable):
+class Edge(
+        base.DataObject,
+        base.Labeled,
+        base.Annotable):
     """
     An :term:`edge` on a :term:`tree`.
     """
@@ -213,7 +216,10 @@ class Edge(base.DataObject, base.Annotable):
 ##############################################################################
 ### Node
 
-class Node(base.DataObject, base.Annotable):
+class Node(
+        base.DataObject,
+        base.Labeled,
+        base.Annotable):
     """
     A :term:`Node` on a :term:`Tree`.
     """
@@ -1502,6 +1508,7 @@ class Tree(
         base.Annotable,
         base.Readable,
         base.Writeable,
+        base.Labeled,
         base.DataObject):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
@@ -4249,6 +4256,7 @@ class TreeList(
         base.Annotable,
         base.Readable,
         base.Writeable,
+        base.Labeled,
         base.DataObject):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of

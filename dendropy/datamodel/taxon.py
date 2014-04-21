@@ -316,7 +316,10 @@ class TaxonNamespaceAssociated(object):
 
 ##############################################################################
 ## TaxonNamespace
-class TaxonNamespace(base.DataObject, base.Annotable):
+class TaxonNamespace(
+        base.DataObject,
+        base.Labeled,
+        base.Annotable):
     """
     A collection of :class:`Taxon` objects representing a self-contained and complete
     domain of distinct operational taxonomic unit definitions.
@@ -1261,7 +1264,10 @@ class TaxonSet(TaxonNamespace):
 
 ##############################################################################
 ## Taxon
-class Taxon(base.DataObject, base.Annotable):
+class Taxon(
+        base.DataObject,
+        base.Labeled,
+        base.Annotable):
     """
     A taxon associated with a sequence or a node on a tree.
     """
