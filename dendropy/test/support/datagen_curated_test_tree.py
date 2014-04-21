@@ -282,13 +282,13 @@ class CuratedTestTree(object):
         all_nodes = leaf_nodes | internal_nodes | set([a])
         if not suppress_internal_node_taxa:
             for nd in internal_nodes | set([a]):
-                label = node_taxon_label_map.get(nd, nd) # default to same label as node
+                label = node_taxon_label_map.get(nd.label, nd.label) # default to same label as node
                 t = tree.taxon_namespace.require_taxon(label=label)
                 nd.taxon = t
                 assert t in tree.taxon_namespace
         if not suppress_external_node_taxa:
             for nd in leaf_nodes:
-                label = node_taxon_label_map.get(nd, nd) # default to same label as node
+                label = node_taxon_label_map.get(nd.label, nd.label) # default to same label as node
                 t = tree.taxon_namespace.require_taxon(label=label)
                 nd.taxon = t
                 assert t in tree.taxon_namespace

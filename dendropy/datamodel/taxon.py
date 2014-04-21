@@ -89,12 +89,13 @@ from dendropy.utility import error
 
 ##############################################################################
 ## Helper functions
+
 def taxon_set_deprecation_warning():
     error.dump_stack()
     warnings.warn("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
             FutureWarning, stacklevel=4)
 
-def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
+def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):
     if "taxon_set" in kwargs_dict:
         if "taxon_namespace" in kwargs_dict:
             raise TypeError("Cannot specify both 'taxon_namespace' and 'taxon_set' (legacy support) simultaneously")
@@ -105,30 +106,20 @@ def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
         return kwargs_dict.pop("taxon_namespace", default)
 
 ##############################################################################
-## TaxonAssociated
-class TaxonAssociated(base.DataObject):
-
-    def __init__(self, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.pop('label', None))
-        if "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is None:
-            self.taxon_namespace = TaxonNamespace()
-        else:
-            self.taxon_namespace = kwargs["taxon_namespace"]
-
-##############################################################################
 ## TaxonNamespaceAssociated
-class TaxonNamespaceAssociated(base.DataObject):
+
+class TaxonNamespaceAssociated(object):
     """
     Provides infrastructure for the maintenance of references to taxa.
     """
 
-    def __init__(self, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.pop('label', None))
-        tns = process_kwargs_for_taxon_namespace(kwargs)
+    def initialize_taxon_namespace_from_kwargs_dict(self, kwargs_dict):
+        tns = process_kwargs_dict_for_taxon_namespace(kwargs_dict)
         if tns is None:
             self.taxon_namespace = TaxonNamespace()
         else:
             self.taxon_namespace = tns
+        return self.taxon_namespace
 
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
@@ -427,9 +418,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
         >>> tns2 = copy.deepcopy(tns1)
         """
-        base.DataObject.__init__(self, label=kwargs.get('label', None))
-        base.Annotable.__init__(self)
-        self.is_mutable = kwargs.get('is_mutable', True)
+        kwargs_set_label = self.initialize_label_from_kwargs_dict(kwargs, None)
+        self.is_mutable = kwargs.pop('is_mutable', True)
         self._accession_index_taxon_map = {}
         self._taxa = []
         self._taxon_accession_index_map = {}
@@ -452,11 +442,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
                 for k in other.__dict__:
                     if k == "_annotations" or k == "_taxa":
                         continue
-                    if k == "_label" and "label" in kwargs:
-                        continue
                     self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
                 self.deep_copy_annotations_from(other, memo=memo)
                 # self.copy_annotations_from(other, attribute_object_mapper=memo)
+        if kwargs_set_label is not None:
+            self.label = kwargs_set_label
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def __copy__(self):
         return TaxonNamespace(self)
@@ -1295,9 +1287,8 @@ class Taxon(base.DataObject, base.Annotable):
             self.deep_copy_annotations_from(other_taxon, memo=memo)
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
-            if label is not None:
-                label = str(label)
-            base.DataObject.__init__(self, label=label)
+            assert label is None or isinstance(label, str)
+            self.initialize_label_from_kwargs_dict({"label":label})
 
     def __copy__(self):
         raise TypeError("Cannot shallow-copy Taxon")

@@ -40,8 +40,13 @@ class DataObject(object):
     Base class for all phylogenetic data objects.
     """
 
-    def __init__(self, label=None):
-        self._label=label
+    def initialize_label_from_kwargs_dict(self, kwargs_dict, default=None):
+        label = kwargs_dict.pop("label", default)
+        if label is not None:
+            self._label = label
+        else:
+            self._label = None
+        return self._label
 
     def _get_label(self):
         return self._label
@@ -252,9 +257,6 @@ class Readable(object):
             raise
     get_from_url = classmethod(get_from_url)
 
-    def __init__(self, *args, **kwargs):
-        pass
-
     def _process_source_kwargs(self, **kwargs):
         """
         If `stream` is specified, then _process_source_kwargs:
@@ -446,9 +448,6 @@ class Writeable(object):
     Mixin class which all classes that require serialization should subclass.
     """
 
-    def __init__(self, *args, **kwargs):
-        pass
-
     def write(self, stream, schema, **kwargs):
         """
         Writes the object to the file-like object `stream` in `schema`
@@ -485,9 +484,6 @@ class Annotable(object):
     Mixin class which all classes that need to persist object attributes
     or other information as metadata should subclass.
     """
-
-    def __init__(self):
-        pass
 
     def _get_annotations(self):
         if not hasattr(self, "_annotations"):
@@ -681,7 +677,6 @@ class Annotation(Annotable):
             is_hidden=False,
             label=None,
             ):
-        Annotable.__init__(self)
         self._value = value
         self.is_attribute = is_attribute
         if name_is_prefixed:

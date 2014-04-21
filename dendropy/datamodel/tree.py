@@ -56,8 +56,7 @@ class Edge(base.DataObject, base.Annotable):
             Label for this edge.
 
         """
-        base.DataObject.__init__(self,
-                label=kwargs.pop("label", None))
+        self.initialize_label_from_kwargs_dict(kwargs)
         self._head_node = kwargs.pop("head_node", None)
         if "tail_node" in kwargs:
             raise TypeError("Setting the tail node directly is no longer supported: instead, set the parent node of the head node")
@@ -235,7 +234,7 @@ class Node(base.DataObject, base.Annotable):
             Length or weight of the edge subtending this node.
 
         """
-        base.DataObject.__init__(self, label=kwargs.pop("label", None))
+        self.initialize_label_from_kwargs_dict(kwargs)
         self.taxon = kwargs.pop("taxon", None)
         self.age = None
         self._edge = None
@@ -283,7 +282,7 @@ class Node(base.DataObject, base.Annotable):
         return self is other
 
     def __repr__(self):
-        return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self.label, repr(self.taxon))
+        return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self._label, repr(self.taxon))
 
     ###########################################################################
     ### Iterators
@@ -1498,7 +1497,12 @@ class Node(base.DataObject, base.Annotable):
 ##############################################################################
 ### Tree
 
-class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.Writeable):
+class Tree(
+        taxon.TaxonNamespaceAssociated,
+        base.Annotable,
+        base.Readable,
+        base.Writeable,
+        base.DataObject):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
     edges directing away from the root and toward the tips. The "root" of the
@@ -1586,7 +1590,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             source, or `None` if no valid tree description was found.
 
         """
-        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
             taxon_namespace = taxon.TaxonNamespace()
         tns_factory = lambda label: taxon_namespace
@@ -1608,6 +1612,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         tree_list = tree_lists[collection_offset]
         if not tree_list:
             return None
+        tree = tree_list[tree_offset]
+        tree.label = label
         return tree_list[tree_offset]
     _parse_from_stream = classmethod(_parse_from_stream)
 
@@ -1782,11 +1788,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             if isinstance(args[0], Node):
                 raise TypeError("Constructing a tree around a Node passed as a position argument is no longer supported; a keyword argument is now required for this approach: use Tree(seed_node=node)")
             if isinstance(args[0], Tree):
-                self._clone_from(args[0], **kwargs)
+                self._clone_from(args[0], kwargs)
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
-            super(Tree, self).__init__(*args, **kwargs)
+            self.initialize_label_from_kwargs_dict(kwargs)
+            self.initialize_taxon_namespace_from_kwargs_dict(kwargs)
             self.comments = []
             self._is_rooted = None
             self.weight = None
@@ -1798,6 +1805,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
             else:
                 self.seed_node = seed_node
                 self.update_taxon_namespace()
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def __hash__(self):
         return id(self)
@@ -1805,11 +1814,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
     def __eq__(self, other):
         return self is other
 
-    def _clone_from(self, tree, **kwargs):
+    def _clone_from(self, tree, kwargs_dict):
         # super(Tree, self).__init__()
         memo = {}
         # memo[id(tree)] = self
-        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, tree.taxon_namespace)
+        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree.taxon_namespace)
         memo[id(tree.taxon_namespace)] = taxon_namespace
         if taxon_namespace is not tree.taxon_namespace:
             for t1 in tree.taxon_namespace:
@@ -1818,10 +1827,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Annotable, base.Readable, base.W
         else:
             for t1 in tree.taxon_namespace:
                 memo[id(t1)] = t1
-        label = kwargs.get("label", tree.label)
-        memo[id(tree.label)] = label
         t = copy.deepcopy(tree, memo)
         self.__dict__ = t.__dict__
+        self.label = kwargs_dict.pop("label", tree.label)
         return self
         # for k in tree.__dict__:
         #     if k == "_annotations":
@@ -4240,7 +4248,8 @@ class TreeList(
         taxon.TaxonNamespaceAssociated,
         base.Annotable,
         base.Readable,
-        base.Writeable):
+        base.Writeable,
+        base.DataObject):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of
     opeational taxonomic unit concepts through the same :class:`TaxonNamespace`
@@ -4345,7 +4354,7 @@ class TreeList(
         # these must be pulled before passing the kwargs
         # down to the reader
         tree_list = kwargs.pop("tree_list", None)
-        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
 
         # get the reader
@@ -4387,7 +4396,7 @@ class TreeList(
                 for tree in target_tree_list:
                     tree_list._trees.append(tree)
         return tree_list
-        # taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        # taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         # label = kwargs.pop("label", None)
         # tree_list = cls(label=label,
         #         taxon_namespace=taxon_namespace)
@@ -4518,8 +4527,11 @@ class TreeList(
             assert tlst4deepcopy.taxon_namespace is not tlst4.taxon_namespace # True
 
         """
-        super(TreeList, self).__init__(*args, **kwargs)
+        self.initialize_label_from_kwargs_dict(kwargs)
+        self.initialize_taxon_namespace_from_kwargs_dict(kwargs)
         self._trees = []
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     ###########################################################################
     ### Representation
@@ -4748,7 +4760,7 @@ class TreeList(
         raise NotImplementedError
 
     def new_tree(self, *args, **kwargs):
-        tns = taxon.process_kwargs_for_taxon_namespace(kwargs, self.taxon_namespace)
+        tns = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
         if tns is not self.taxon_namespace:
             raise TypeError("Cannot create new Tree with different TaxonNamespace")
         kwargs["taxon_namespace"] = self.taxon_namespace
