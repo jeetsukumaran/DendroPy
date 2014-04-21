@@ -1444,16 +1444,14 @@ class Node(base.DataObject, base.Annotable):
             if self.taxon.label:
                 label = self.taxon.label
             else:
-                return "_" # taxon, but no label: anonymous
+                # return "_" # taxon, but no label: anonymous
+                label = "" # "_" is not anonoymous/unnamed, but a name of <blank>; so we return nothing instead
         else:
             if self.label:
                 label = self.label
             else:
-                if is_leaf:
-                    return "_"
-                else:
-                    return ""
-        if kwargs.get("raw_labels", False):
+                label = ""
+        if not label or kwargs.get("raw_labels", False):
             return label
         elif " " in label and "_" in label:
             if "'" in label:

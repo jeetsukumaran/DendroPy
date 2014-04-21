@@ -27,6 +27,7 @@ import itertools
 import random
 import dendropy
 from dendropy.utility import error
+from dendropy.dataio import newickreader
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
@@ -293,6 +294,45 @@ class NewickTreeInvalidStatements(unittest.TestCase):
             # t = dendropy.Tree.get_from_string(s, "newick")
             with self.assertRaises(error.DataParseError):
                 t = dendropy.Tree.get_from_string(s, "newick")
+
+class NewickTreeDuplicateTaxa(unittest.TestCase):
+
+    def test_duplicate_taxa(self):
+        tree_statements = (
+            "((a,b)c,(b,c)a)d;",
+            "((_,_)_,(_,_)_)_;",
+        )
+        expected_labels = (
+            ("a","b","c","b","c","a","d"),
+            (" "," "," "," "," "," "," "),
+        )
+        for sidx, s in enumerate(tree_statements):
+            with self.assertRaises(newickreader.NewickReader.NewickReaderDuplicateTaxonError):
+                tree = dendropy.Tree.get_from_string(s, "newick")
+            tree = dendropy.Tree.get_from_string(s,
+                    "newick",
+                    suppress_internal_node_taxa=True,
+                    suppress_external_node_taxa=True)
+            labels = [nd.label for nd in tree]
+            if sys.hexversion < 0x03000000:
+                self.assertItemsEqual(labels, expected_labels[sidx])
+            else:
+                self.assertCountEqual(labels, expected_labels[sidx])
+
+
+class NewickTreeAnonymousTaxa(unittest.TestCase):
+
+    def test_duplicate_taxa(self):
+        # s = "((,),(,));((,),(,));((,),(,));   ((,),(,)); "
+        s = "((_,_),(_,_));"
+        trees = dendropy.TreeList.get_from_string(s, "newick")
+        print("\n\n{}".format(len(trees.taxon_namespace)))
+        for t in trees.taxon_namespace:
+            print(">>> {}".format(t))
+        for t in trees:
+            print(t._as_newick_string())
+            for nd in t:
+                print(nd.label)
 
 class NewickTreeUnsupportedKeywordArguments(
         datagen_curated_test_tree.CuratedTestTree,

@@ -90,7 +90,6 @@ class NewickReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-
     class NewickReaderInvalidValueError(NewickReaderError):
         def __init__(self,
                 message,
@@ -99,6 +98,24 @@ class NewickReader(ioservice.DataReader):
                 stream=None):
             NewickReader.NewickReaderError.__init__(self,
                     message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
+    class NewickReaderDuplicateTaxonError(NewickReaderError):
+        def __init__(self,
+                message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            detailed = ("Multiple occurrences of the same taxa on trees are not"
+            " supported: trees with duplicate node labels can only be"
+            " processed if the labels are not parsed as operational taxonomic"
+            " unit concepts but instead as simply node labels by specifying"
+            " 'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
+            " Duplicate taxon labels: {}").format(message)
+            NewickReader.NewickReaderError.__init__(self,
+                    message=detailed,
                     line_num=line_num,
                     col_num=col_num,
                     stream=stream)
@@ -206,11 +223,11 @@ class NewickReader(ioservice.DataReader):
             kwargs["rooting"] = corrected
         if "allow_duplicate_taxon_labels" in kwargs:
             raise ValueError(
-                "Multiple occurrences of the same taxa on trees are no longer"
-                "supported: trees with duplicate node labels can only be"
-                "processed if the labels are not parsed as operational taxonomic"
-                "unit concepts but instead as simply node labels by specifying"
-                "'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
+                "'allow_duplicate_taxon_labels' is no longer"
+                " supported: trees with duplicate node labels can only be"
+                " processed if the labels are not parsed as operational taxonomic"
+                " unit concepts but instead as simply node labels by specifying"
+                " 'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
             )
         # self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
@@ -227,8 +244,11 @@ class NewickReader(ioservice.DataReader):
         self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+
+        # per-tree book-keeping
         self._tree_statement_complete = None
         self._parenthesis_nesting_level = None
+        self._seen_taxa = None
 
     def tree_iter(self,
             stream,
@@ -327,6 +347,7 @@ class NewickReader(ioservice.DataReader):
         self._process_tree_comments(tree, tree_comments, nexus_tokenizer)
         self._tree_statement_complete = False
         self._parenthesis_nesting_level = 1
+        self._seen_taxa = set()
         self._parse_tree_node_description(
                 nexus_tokenizer=nexus_tokenizer,
                 tree=tree,
@@ -340,6 +361,9 @@ class NewickReader(ioservice.DataReader):
                     line_num=nexus_tokenizer.token_line_num,
                     col_num=nexus_tokenizer.token_column_num,
                     stream=nexus_tokenizer.src)
+        self._seen_taxa = None
+        self._parenthesis_nesting_level = None
+        self._tree_statement_complete = None
         while current_token == ";" and not nexus_tokenizer.is_eof():
             nexus_tokenizer.clear_captured_comments()
             current_token = nexus_tokenizer.next_token()
@@ -569,7 +593,15 @@ class NewickReader(ioservice.DataReader):
                             or ((not is_internal_node) and self.suppress_external_node_taxa) ):
                         current_node.label = label
                     else:
-                        current_node.taxon = taxon_symbol_map_func(label)
+                        node_taxon = taxon_symbol_map_func(label)
+                        if node_taxon in self._seen_taxa:
+                            raise NewickReader.NewickReaderDuplicateTaxonError(
+                                    message=node_taxon.label,
+                                    line_num=nexus_tokenizer.token_line_num,
+                                    col_num=nexus_tokenizer.token_column_num,
+                                    stream=nexus_tokenizer.src)
+                        self._seen_taxa.add(node_taxon)
+                        current_node.taxon = node_taxon
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
                     # try:
