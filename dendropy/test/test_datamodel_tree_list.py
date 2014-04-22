@@ -198,6 +198,44 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
+    # def setUp(self):
+    #     tns = dendropy.TaxonNamespace()
+    #     trees = []
+    #     for idx in range(5):
+    #         tree, anodes, lnodes, inodes = get_tree(
+    #                 suppress_internal_node_taxa=True,
+    #                 suppress_external_node_taxa=True,
+    #                 taxon_namespace=tns)
+    #         trees.append(tree)
+    #     node_label_to_taxon_label_map = {
+    #         "a" : "a",
+    #         "b" : "a",
+    #         "c" : "2",
+    #         "e" : "2",
+    #         "f" : "b",
+    #         "g" : "B",
+    #         "h" : "B",
+    #         "i" : "h",
+    #         "j" : "H",
+    #         "k" : "h",
+    #         "l" : None,
+    #         "m" : None,
+    #         "n" : "H",
+    #         "o" : "J",
+    #         "p" : "j",
+    #             }
+    #     original_taxa = []
+    #     for tree in trees:
+    #         for idx, nd in enumerate(tree):
+    #             taxon_label = node_label_to_taxon_label_map[nd.label]
+    #             t = dendropy.Taxon(label=taxon_label)
+    #             tree.taxon_namespace.add_taxon(t)
+    #             nd.taxon = t
+    #             nd.original_taxon = t
+    #             original_taxa.append(t)
+    #     assert len(tree.taxon_namespace) == len(node_label_to_taxon_label_map)
+    #     assert len(tree.taxon_namespace) == len(original_taxa)
+
     def test_basic_reconstruction(self):
         tns = dendropy.TaxonNamespace()
         trees = []
@@ -212,6 +250,39 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         new_tns = dendropy.TaxonNamespace()
         tree_list.taxon_namespace = new_tns
         tree_list.reconstruct_taxon_namespace(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(tree_list.taxon_namespace, tns)
+        self.assertIs(tree_list.taxon_namespace, new_tns)
+        self.assertEqual(len(tree_list.taxon_namespace), len(tns))
+        original_labels = [t.label for t in tns]
+        new_labels = [t.label for t in new_tns]
+        if sys.hexversion < 0x03000000:
+            self.assertItemsEqual(new_labels, original_labels)
+        else:
+            self.assertCountEqual(new_labels, original_labels)
+        for tree in tree_list:
+            self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
+            for nd in tree:
+                if nd.taxon is not None:
+                    self.assertIn(nd.taxon, tree.taxon_namespace)
+                    self.assertNotIn(nd.taxon, tns)
+
+    def test_basic_migrations(self):
+        tns = dendropy.TaxonNamespace()
+        trees = []
+        for idx in range(5):
+            tree, anodes, lnodes, inodes = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_external_node_taxa=False,
+                    taxon_namespace=tns)
+            trees.append(tree)
+        tree_list = dendropy.TreeList(taxon_namespace=tns)
+        tree_list._trees = trees
+        new_tns = dendropy.TaxonNamespace()
+        tree_list.taxon_namespace = new_tns
+        tree_list.migrate_taxon_namespace(
+                new_tns,
                 unify_taxa_by_label=False,
                 case_insensitive_label_mapping=False)
         self.assertIsNot(tree_list.taxon_namespace, tns)
