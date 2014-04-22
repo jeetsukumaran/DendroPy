@@ -46,25 +46,6 @@ class TestTreeUpdateTaxonNamespace(
         assert len(self.expected_labels) == len(self.anodes1)
         assert len(self.expected_taxa) == len(self.expected_labels)
 
-    # def test_infer_taxa(self):
-    #     tns1 = self.tree1.taxon_namespace
-    #     self.assertEqual(len(tns1), 0)
-    #     tns2 = self.tree1.infer_taxa()
-    #     self.assertNotEqual(len(tns2), 0)
-    #     self.assertIs(self.tree1.taxon_namespace, tns2)
-    #     self.assertIsNot(self.tree1.taxon_namespace, tns1)
-    #     self.assertEqual(set(tns2._taxa), self.expected_taxa)
-
-    # def test_reindex_subcomponent_taxa(self):
-    #     tns1 = self.tree1.taxon_namespace
-    #     self.assertEqual(len(tns1), 0)
-    #     self.tree1.reindex_subcomponent_taxa()
-    #     tns2 = self.tree1.taxon_namespace
-    #     # self.assertIsNot(tns1, tns2) tns1 *IS* tns2
-    #     self.assertEqual(len(tns2), len(self.expected_taxa))
-    #     self.assertEqual(set(t.label for t in self.tree1.taxon_namespace),
-    #             self.expected_labels)
-
     def test_noop_update_with_no_taxa(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=True,
