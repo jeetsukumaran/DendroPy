@@ -4822,6 +4822,8 @@ class TreeList(
             unify_taxa_by_label=False,
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
+        if taxon_mapping_memo is None:
+            taxon_mapping_memo = {}
         for tree in self._trees:
             tree.taxon_namespace = self.taxon_namespace
             tree.reconstruct_taxon_namespace(

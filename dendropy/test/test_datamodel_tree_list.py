@@ -194,6 +194,42 @@ class TestTreeListUpdateTaxonNamespace(
             self.assertCountEqual(new_taxa, self.expected_taxa)
             self.assertCountEqual(new_labels, self.expected_labels)
 
+class TestTreeListMigrateAndReconstructTaxonNamespace(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
+
+    def test_basic_reconstruction(self):
+        tns = dendropy.TaxonNamespace()
+        trees = []
+        for idx in range(5):
+            tree, anodes, lnodes, inodes = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_external_node_taxa=False,
+                    taxon_namespace=tns)
+            trees.append(tree)
+        tree_list = dendropy.TreeList(taxon_namespace=tns)
+        tree_list._trees = trees
+        new_tns = dendropy.TaxonNamespace()
+        tree_list.taxon_namespace = new_tns
+        tree_list.reconstruct_taxon_namespace(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(tree_list.taxon_namespace, tns)
+        self.assertIs(tree_list.taxon_namespace, new_tns)
+        self.assertEqual(len(tree_list.taxon_namespace), len(tns))
+        original_labels = [t.label for t in tns]
+        new_labels = [t.label for t in new_tns]
+        if sys.hexversion < 0x03000000:
+            self.assertItemsEqual(new_labels, original_labels)
+        else:
+            self.assertCountEqual(new_labels, original_labels)
+        for tree in tree_list:
+            self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
+            for nd in tree:
+                if nd.taxon is not None:
+                    self.assertIn(nd.taxon, tree.taxon_namespace)
+                    self.assertNotIn(nd.taxon, tns)
+
 class TreeListCreatingAndCloning(
         compare_and_validate.Comparator,
         unittest.TestCase):
