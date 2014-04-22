@@ -161,7 +161,7 @@ class Tokenizer(object):
 
     def pull_captured_comments(self):
         if not self.captured_comments:
-            return []
+            return None
         c = self.captured_comments[:]
         del self.captured_comments[:]
         return c

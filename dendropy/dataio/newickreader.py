@@ -374,6 +374,11 @@ class NewickReader(ioservice.DataReader):
         # weighting if no comment indicating these are found; for this to work
         # in the current implementation, this method must be called once and
         # exactly once per tree.
+        if not tree_comments:
+            tree.is_rooted = self._parse_tree_rooting_state("")
+            if self.store_tree_weights:
+                tree.weight = self.default_tree_weight
+            return
         rooting_token_found = False
         weighting_token_found = False
         for comment in tree_comments:
@@ -533,8 +538,12 @@ class NewickReader(ioservice.DataReader):
             # internal node. This approach allows for a single-tip tree.
             if current_node._child_nodes:
                 is_internal_node = True
+        if current_node_comments is None:
+            current_node_comments = []
         while True:
-            current_node_comments.extend(nexus_tokenizer.pull_captured_comments())
+            cc = nexus_tokenizer.pull_captured_comments()
+            if cc is not None:
+                current_node_comments.extend(cc)
             if nexus_tokenizer.current_token == ":": #246
                 nexus_tokenizer.require_next_token()
                 if not self.suppress_edge_lengths:
@@ -665,6 +674,8 @@ class NewickReader(ioservice.DataReader):
 
 
     def _process_node_comments(self, node, node_comments):
+        if not node_comments:
+            return
         for comment in node_comments:
             if self.extract_comment_metadata and comment.startswith("&"):
                 annotations = self._parse_comment_metadata(comment)
