@@ -41,6 +41,18 @@ class DataObject(object):
     Base class for all phylogenetic data objects.
     """
 
+    def __init__(self, label=None):
+        self._label = None
+        if label is not None:
+            self._set_label(label)
+
+    def _get_label(self):
+        return self._label
+    def _set_label(self, v):
+        # self._label = str(v) if v is not None else v
+        self._label = v
+    label = property(_get_label, _set_label)
+
     def clone(self, depth=0):
         """
         Creates and returns a copy of `self`.
@@ -78,26 +90,6 @@ class DataObject(object):
         objects: these are preserved as references.
         """
         raise NotImplementedError
-
-##############################################################################
-## Labeled
-
-class Labeled(object):
-
-    def initialize_label_from_kwargs_dict(self, kwargs_dict, default=None):
-        label = kwargs_dict.pop("label", default)
-        if label is not None:
-            self._label = str(label)
-        else:
-            self._label = None
-        return self._label
-
-    def _get_label(self):
-        return self._label
-    def _set_label(self, v):
-        self._label = v
-    label = property(_get_label, _set_label)
-
 
 ##############################################################################
 ## Readable

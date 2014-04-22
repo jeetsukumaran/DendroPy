@@ -38,7 +38,6 @@ from dendropy import dataio
 
 class Edge(
         base.DataObject,
-        base.Labeled,
         base.Annotable):
     """
     An :term:`edge` on a :term:`tree`.
@@ -59,7 +58,7 @@ class Edge(
             Label for this edge.
 
         """
-        self.initialize_label_from_kwargs_dict(kwargs)
+        base.DataObject.__init__(self, label=kwargs.pop("label", None))
         self._head_node = kwargs.pop("head_node", None)
         if "tail_node" in kwargs:
             raise TypeError("Setting the tail node directly is no longer supported: instead, set the parent node of the head node")
@@ -218,7 +217,6 @@ class Edge(
 
 class Node(
         base.DataObject,
-        base.Labeled,
         base.Annotable):
     """
     A :term:`Node` on a :term:`Tree`.
@@ -240,7 +238,7 @@ class Node(
             Length or weight of the edge subtending this node.
 
         """
-        self.initialize_label_from_kwargs_dict(kwargs)
+        base.DataObject.__init__(self, label=kwargs.pop("label", None))
         self.taxon = kwargs.pop("taxon", None)
         self.age = None
         self._edge = None
@@ -1508,7 +1506,6 @@ class Tree(
         base.Annotable,
         base.Readable,
         base.Writeable,
-        base.Labeled,
         base.DataObject):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
@@ -1799,8 +1796,9 @@ class Tree(
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
-            self.initialize_label_from_kwargs_dict(kwargs)
-            self.initialize_taxon_namespace_from_kwargs_dict(kwargs)
+            base.DataObject.__init__(self, label=kwargs.pop("label", None))
+            taxon.TaxonNamespaceAssociated.__init__(self,
+                    taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self.comments = []
             self._is_rooted = None
             self.weight = None
@@ -4256,7 +4254,6 @@ class TreeList(
         base.Annotable,
         base.Readable,
         base.Writeable,
-        base.Labeled,
         base.DataObject):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of
@@ -4535,8 +4532,9 @@ class TreeList(
             assert tlst4deepcopy.taxon_namespace is not tlst4.taxon_namespace # True
 
         """
-        self.initialize_label_from_kwargs_dict(kwargs)
-        self.initialize_taxon_namespace_from_kwargs_dict(kwargs)
+        base.DataObject.__init__(self, label=kwargs.pop("label", None))
+        taxon.TaxonNamespaceAssociated.__init__(self,
+                taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
         self._trees = []
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))

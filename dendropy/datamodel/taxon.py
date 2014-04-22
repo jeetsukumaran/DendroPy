@@ -113,13 +113,19 @@ class TaxonNamespaceAssociated(object):
     Provides infrastructure for the maintenance of references to taxa.
     """
 
-    def initialize_taxon_namespace_from_kwargs_dict(self, kwargs_dict):
-        tns = process_kwargs_dict_for_taxon_namespace(kwargs_dict)
-        if tns is None:
+    # def initialize_taxon_namespace_from_kwargs_dict(self, kwargs_dict):
+    #     tns = process_kwargs_dict_for_taxon_namespace(kwargs_dict)
+    #     if tns is None:
+    #         self.taxon_namespace = TaxonNamespace()
+    #     else:
+    #         self.taxon_namespace = tns
+    #     return self.taxon_namespace
+
+    def __init__(self, taxon_namespace=None):
+        if taxon_namespace is None:
             self.taxon_namespace = TaxonNamespace()
         else:
-            self.taxon_namespace = tns
-        return self.taxon_namespace
+            self.taxon_namespace = taxon_namespace
 
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
@@ -318,7 +324,6 @@ class TaxonNamespaceAssociated(object):
 ## TaxonNamespace
 class TaxonNamespace(
         base.DataObject,
-        base.Labeled,
         base.Annotable):
     """
     A collection of :class:`Taxon` objects representing a self-contained and complete
@@ -421,7 +426,7 @@ class TaxonNamespace(
         >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
         >>> tns2 = copy.deepcopy(tns1)
         """
-        kwargs_set_label = self.initialize_label_from_kwargs_dict(kwargs, None)
+        kwargs_set_label = kwargs.pop("label", None)
         self.is_mutable = kwargs.pop('is_mutable', True)
         self._accession_index_taxon_map = {}
         self._taxa = []
@@ -432,6 +437,7 @@ class TaxonNamespace(
         if len(args) > 1:
             raise TypeError("TaxonNamespace() takes at most 1 non-keyword argument ({} given)".format(len(args)))
         elif len(args) == 1:
+            # special case: construct from argument
             other = args[0]
             for i in other:
                 if isinstance(i, Taxon):
@@ -448,8 +454,11 @@ class TaxonNamespace(
                     self.__dict__[k] = copy.deepcopy(other.__dict__[k], memo)
                 self.deep_copy_annotations_from(other, memo=memo)
                 # self.copy_annotations_from(other, attribute_object_mapper=memo)
-        if kwargs_set_label is not None:
-            self.label = kwargs_set_label
+            # override with label with value passed as argument
+            if kwargs_set_label is not None:
+                self.label = kwargs_set_label
+        else:
+            base.DataObject.__init__(self, label=kwargs_set_label)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -1266,7 +1275,6 @@ class TaxonSet(TaxonNamespace):
 ## Taxon
 class Taxon(
         base.DataObject,
-        base.Labeled,
         base.Annotable):
     """
     A taxon associated with a sequence or a node on a tree.
@@ -1293,7 +1301,7 @@ class Taxon(
             self.deep_copy_annotations_from(other_taxon, memo=memo)
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
-            self.initialize_label_from_kwargs_dict({"label":label})
+            base.DataObject.__init__(self, label=label)
 
     def __copy__(self):
         raise TypeError("Cannot shallow-copy Taxon")
