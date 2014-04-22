@@ -2825,7 +2825,8 @@ class Tree(
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}
         for node in self:
-            if node.taxon is not None and node.taxon not in self.taxon_namespace:
+            if (node.taxon is not None
+                    and (unify_taxa_by_label or node.taxon not in self.taxon_namespace)):
                 t = taxon_mapping_memo.get(node.taxon, None)
                 if t is None:
                     # taxon to use not given and
@@ -4822,7 +4823,7 @@ class TreeList(
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
         for tree in self._trees:
-            assert tree.taxon_namespace is self.taxon_namespace
+            tree.taxon_namespace = self.taxon_namespace
             tree.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
                 case_insensitive_label_mapping=case_insensitive_label_mapping,
@@ -4831,7 +4832,7 @@ class TreeList(
 
     def update_taxon_namespace(self):
         for tree in self._trees:
-            assert tree.taxon_namespace is self.taxon_namespace
+            tree.taxon_namespace = self.taxon_namespace
             tree.update_taxon_namespace()
 
     def reindex_subcomponent_taxa():
