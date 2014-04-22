@@ -448,6 +448,59 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
                 case_insensitive_label_mapping=True,
                 original_tns=original_tns)
 
+class TestTreeListAppend(
+        datagen_curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
+
+    def setUp(self):
+        self.native_tns = dendropy.TaxonNamespace()
+        self.tree_list = dendropy.TreeList(taxon_namespace=self.native_tns)
+        self.foreign_tns = dendropy.TaxonNamespace()
+        self.foreign_tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True,
+                taxon_namespace=self.foreign_tns)
+        for nd in self.foreign_tree:
+            nd.original_taxon = nd.taxon
+        self.check_tns = dendropy.TaxonNamespace()
+        self.check_tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True,
+                taxon_namespace=self.check_tns)
+
+    def test_append_default(self):
+        self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
+        self.tree_list.append(self.foreign_tree)
+        self.assertEqual(len(self.tree_list), 1)
+        self.assertIn(self.foreign_tree, self.tree_list)
+        self.assertIs(self.foreign_tree, self.tree_list[0])
+        self.assertIs(self.tree_list.taxon_namespace, self.native_tns)
+        self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
+        self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
+        for nd in self.foreign_tree:
+            if nd.taxon:
+                self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
+                self.assertIsNot(nd.taxon, nd.original_taxon)
+                self.assertIn(nd.original_taxon, self.foreign_tns)
+                self.assertNotIn(nd.original_taxon, self.tree_list.taxon_namespace)
+                self.assertEqual(nd.taxon.label, nd.original_taxon.label)
+
+    def test_append_add(self):
+        self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
+        self.tree_list.append(self.foreign_tree, taxon_import_strategy="update")
+        self.assertEqual(len(self.tree_list), 1)
+        self.assertIn(self.foreign_tree, self.tree_list)
+        self.assertIs(self.foreign_tree, self.tree_list[0])
+        self.assertIs(self.tree_list.taxon_namespace, self.native_tns)
+        self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
+        self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
+        for nd in self.foreign_tree:
+            if nd.taxon:
+                self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
+                self.assertIs(nd.taxon, nd.original_taxon)
+                self.assertIn(nd.original_taxon, self.foreign_tns)
+                self.assertIn(nd.original_taxon, self.tree_list.taxon_namespace)
+
 class TreeListCreatingAndCloning(
         compare_and_validate.Comparator,
         unittest.TestCase):

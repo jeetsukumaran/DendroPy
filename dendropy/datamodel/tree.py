@@ -4741,7 +4741,7 @@ class TreeList(
 
     def append(self,
             tree,
-            taxon_import_strategy,
+            taxon_import_strategy="migrate",
             **kwargs):
         """
         Adds a new :class:`Tree` object to the collection.
@@ -4754,6 +4754,9 @@ class TreeList(
             - 'migrate'
                 `tree` will be migrated to the :class:`TaxonNamespace`
                 reference of `self.taxon_namespace` before being added.
+                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`'
+                will be called on `tree`, where `kwargs` is as passed
+                to this function.
             - 'update'
                 :class:`Taxon` objects on `tree` that are not already
                 in `self.taxon_namespace` will be added.
@@ -4769,6 +4772,11 @@ class TreeList(
         \*\*kwargs : keyword arguments
             These arguments will be passed directly to
             'migrate_taxon_namespace()' method call on `tree`.
+
+        See Also
+        --------
+
+        :meth:`Tree.migrate_taxon_namespace`
 
         """
         if tree.taxon_namespace is not self.taxon_namespace:
