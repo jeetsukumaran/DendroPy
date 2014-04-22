@@ -65,6 +65,30 @@ class TestTreeUpdateTaxonNamespace(
     #     self.assertEqual(set(t.label for t in self.tree1.taxon_namespace),
     #             self.expected_labels)
 
+    def test_noop_update_with_no_taxa(self):
+        tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True)
+        original_tns = tree.taxon_namespace
+        self.assertEqual(len(original_tns), 0)
+        tree.update_taxon_namespace()
+        self.assertIs(tree.taxon_namespace, original_tns)
+        self.assertEqual(len(original_tns), 0)
+
+    def test_noop_update(self):
+        tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        original_tns = tree.taxon_namespace
+        original_taxa = [t for t in original_tns]
+        original_labels = [t.label for t in original_tns]
+        tree.update_taxon_namespace()
+        self.assertIs(tree.taxon_namespace, original_tns)
+        new_taxa = [t for t in original_tns]
+        new_labels = [t.label for t in original_tns]
+        self.assertEqual(new_taxa, original_taxa)
+        self.assertEqual(new_labels, original_labels)
+
     def test_update_taxon_namespace(self):
         tns1 = self.tree1.taxon_namespace
         self.assertEqual(len(tns1), 0)
@@ -109,7 +133,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
         assert len(self.tree.taxon_namespace) == len(self.node_label_to_taxon_label_map)
         assert len(self.tree.taxon_namespace) == len(self.original_taxa)
 
-    def create_redundnant_taxa(self):
+    def create_redundant_taxa(self):
         nodes_to_unify_taxa = []
         for nd in self.tree:
             if nd.taxon.label and nd.taxon.label.upper() == "J":
@@ -177,6 +201,22 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
         c2 = collections.Counter(seen_labels)
         self.assertEqual(c1, c2)
 
+    def test_noop_taxon_namespace_reconstruction(self):
+        tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        original_tns = tree.taxon_namespace
+        original_taxa = [t for t in original_tns]
+        original_labels = [t.label for t in original_tns]
+        tree.reconstruct_taxon_namespace(
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIs(tree.taxon_namespace, original_tns)
+        new_taxa = [t for t in original_tns]
+        new_labels = [t.label for t in original_tns]
+        self.assertEqual(new_taxa, original_taxa)
+        self.assertEqual(new_labels, original_labels)
+
     def test_reconstruct_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
@@ -224,7 +264,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                 (True, False),
                 (True, True), ]:
             self.setUp()
-            self.create_redundnant_taxa()
+            self.create_redundant_taxa()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
             self.tree.taxon_namespace = new_tns
@@ -261,6 +301,43 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             self.assertIs(self.tree.taxon_namespace, new_tns)
             for nd in self.tree:
                 self.assertIs(nd.taxon, memo_copy[nd.original_taxon])
+
+    def test_noop_migrate_taxon_namespace(self):
+        tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        original_tns = tree.taxon_namespace
+        original_taxa = [t for t in original_tns]
+        original_labels = [t.label for t in original_tns]
+        tree.migrate_taxon_namespace(
+                original_tns,
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIs(tree.taxon_namespace, original_tns)
+        new_taxa = [t for t in original_tns]
+        new_labels = [t.label for t in original_tns]
+        self.assertEqual(new_taxa, original_taxa)
+        self.assertEqual(new_labels, original_labels)
+
+    def test_simple_migrate_taxon_namespace(self):
+        tree, anodes, lnodes, inodes = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_external_node_taxa=True)
+        original_tns = tree.taxon_namespace
+        original_taxa = [t for t in original_tns]
+        original_labels = [t.label for t in original_tns]
+        new_tns = dendropy.TaxonNamespace()
+        tree.migrate_taxon_namespace(
+                new_tns,
+                unify_taxa_by_label=False,
+                case_insensitive_label_mapping=False)
+        self.assertIsNot(tree.taxon_namespace, original_tns)
+        self.assertIs(tree.taxon_namespace, new_tns)
+        new_taxa = [t for t in new_tns]
+        self.assertEqual(len(new_taxa), len(original_taxa))
+        for t1, t2 in zip(new_taxa, original_taxa):
+            self.assertIsNot(t1, t2)
+            self.assertEqual(t1.label, t2.label)
 
     def test_migrate_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
@@ -332,7 +409,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                 (True, False),
                 (True, True), ]:
             self.setUp()
-            self.create_redundnant_taxa()
+            self.create_redundant_taxa()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
             self.tree.migrate_taxon_namespace(

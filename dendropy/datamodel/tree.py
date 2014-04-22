@@ -2825,7 +2825,7 @@ class Tree(
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}
         for node in self:
-            if node.taxon is not None:
+            if node.taxon is not None and node.taxon not in self.taxon_namespace:
                 t = taxon_mapping_memo.get(node.taxon, None)
                 if t is None:
                     # taxon to use not given and
@@ -2851,7 +2851,7 @@ class Tree(
         `self.taxon_namespace` will be added.
         """
         for nd in self:
-            if taxon is not None:
+            if nd.taxon is not None:
                 self.taxon_namespace.add_taxon(nd.taxon)
         return self.taxon_namespace
 
@@ -4738,8 +4738,57 @@ class TreeList(
     def __getitem__(self, tree):
         return self._trees[tree]
 
-    def append(self, tree):
-        raise NotImplementedError
+    def append(self,
+            tree,
+            taxon_import_strategy,
+            **kwargs):
+        """
+        Adds a new :class:`Tree` object to the collection.
+
+        The :class:`TaxonNamespace` reference of `tree` will be set to that of
+        `self`.  Any :class:`Taxon` objects associated with nodes in `tree`
+        that are not already in `self.taxon_namespace` will be handled
+        according to `taxon_import_strategy`:
+
+            - 'migrate'
+                `tree` will be migrated to the :class:`TaxonNamespace`
+                reference of `self.taxon_namespace` before being added.
+            - 'update'
+                :class:`Taxon` objects on `tree` that are not already
+                in `self.taxon_namespace` will be added.
+
+        Parameters
+        ----------
+        tree : A :class:`Tree` instance
+            The :class:`Tree` object to be added.
+        taxon_import_strategy : string
+            If `tree` is associated with a different :class:`TaxonNamespace`,
+            this argument determines how new :class:`Taxon` objects in `tree`
+            are handled: 'migrate' or 'update'. See above for details.
+        \*\*kwargs : keyword arguments
+            These arguments will be passed directly to
+            'migrate_taxon_namespace()' method call on `tree`.
+
+        """
+        if tree.taxon_namespace is not self.taxon_namespace:
+            if taxon_import_strategy == "migrate":
+                tree.migrate_taxon_namespace(taxon_namespace=self.taxon_namespace,
+                        **kwargs)
+            elif taxon_import_strategy == "update":
+                tree.taxon_namespace = self.taxon_namespace
+                tree.update_taxon_namespace()
+            else:
+                raise ValueError("Unrecognized taxon import strategy: '{}'".format(taxon_import_strategy))
+        self._trees.append(tree)
+
+    def new_tree(self, *args, **kwargs):
+        tns = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
+        if tns is not self.taxon_namespace:
+            raise TypeError("Cannot create new Tree with different TaxonNamespace")
+        kwargs["taxon_namespace"] = self.taxon_namespace
+        tree = self.tree_factory(*args, **kwargs)
+        self._trees.append(tree)
+        return tree
 
     def clear(self):
         raise NotImplementedError
@@ -4765,14 +4814,28 @@ class TreeList(
     def sort(self, tree):
         raise NotImplementedError
 
-    def new_tree(self, *args, **kwargs):
-        tns = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
-        if tns is not self.taxon_namespace:
-            raise TypeError("Cannot create new Tree with different TaxonNamespace")
-        kwargs["taxon_namespace"] = self.taxon_namespace
-        tree = self.tree_factory(*args, **kwargs)
-        self._trees.append(tree)
-        return tree
+   ##############################################################################
+   ## Taxon Handling
+
+    def reconstruct_taxon_namespace(self,
+            unify_taxa_by_label=False,
+            case_insensitive_label_mapping=False,
+            taxon_mapping_memo=None):
+        for tree in self._trees:
+            assert tree.taxon_namespace is self.taxon_namespace
+            tree.reconstruct_taxon_namespace(
+                unify_taxa_by_label=unify_taxa_by_label,
+                case_insensitive_label_mapping=case_insensitive_label_mapping,
+                taxon_mapping_memo=taxon_mapping_memo,
+            )
+
+    def update_taxon_namespace(self):
+        for tree in self._trees:
+            assert tree.taxon_namespace is self.taxon_namespace
+            tree.update_taxon_namespace()
+
+    def reindex_subcomponent_taxa():
+        raise NotImplementedError()
 
 ###############################################################################
 ### AsciiTreePlot

@@ -153,11 +153,12 @@ class TaxonNamespaceAssociated(object):
         given in `taxon_namespace` if this is not `None`, or a new
         :class:`TaxonNamespace` object. Following this,
         `reconstruct_taxon_namespace()` will be called: each distinct
-        :class:`Taxon` object associated with `self` or members of `self`, will
-        be replaced with a new :class:`Taxon` object that will be created with
-        the same label and added to :attr:`self.taxon_namespace`.  Calling this
-        method results in the object (and all its member objects) being
-        associated with a new, independent taxon namespace.
+        :class:`Taxon` object associated with `self` or members of `self` that
+        is not alread in `taxon_namespace` will be replaced with a new
+        :class:`Taxon` object that will be created with the same label and
+        added to :attr:`self.taxon_namespace`.  Calling this method results in
+        the object (and all its member objects) being associated with a new,
+        independent taxon namespace.
 
         Parameters
         ----------
@@ -240,8 +241,9 @@ class TaxonNamespaceAssociated(object):
             taxon_mapping_memo=None):
         """
         Repopulates the current taxon namespace with new taxon objects,
-        preserving labels.  Each distinct :class:`Taxon` object associated with
-        `self` or members of `self`, will be replaced with a new :class:`Taxon`
+        preserving labels. Each distinct :class:`Taxon` object associated with
+        `self` or members of `self` that is not already in
+        `self.taxon_namespace` will be replaced with a new :class:`Taxon`
         object that will be created with the same label and added to
         :attr:`self.taxon_namespace`.
 
