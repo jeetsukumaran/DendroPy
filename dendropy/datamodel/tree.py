@@ -2819,7 +2819,7 @@ class Tree(
     ### Taxa Management
 
     def reconstruct_taxon_namespace(self,
-            unify_taxa_by_label=False,
+            unify_taxa_by_label=True,
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
         if taxon_mapping_memo is None:
@@ -4759,7 +4759,10 @@ class TreeList(
                 to this function.
             - 'update'
                 :class:`Taxon` objects on `tree` that are not already
-                in `self.taxon_namespace` will be added.
+                in `self.taxon_namespace` will be added. Note that this might
+                result in :class:`Taxon` objects with duplicate labels as no
+                attempt at mapping to existing :class:`Taxon` objects based on
+                label-matching is done.
 
         Parameters
         ----------
@@ -4827,7 +4830,7 @@ class TreeList(
    ## Taxon Handling
 
     def reconstruct_taxon_namespace(self,
-            unify_taxa_by_label=False,
+            unify_taxa_by_label=True,
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
         if taxon_mapping_memo is None:

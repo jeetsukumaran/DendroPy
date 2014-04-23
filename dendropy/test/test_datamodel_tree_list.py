@@ -457,15 +457,15 @@ class TestTreeListAppend(
         self.tree_list = dendropy.TreeList(taxon_namespace=self.native_tns)
         self.foreign_tns = dendropy.TaxonNamespace()
         self.foreign_tree, anodes, lnodes, inodes = self.get_tree(
-                suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False,
                 taxon_namespace=self.foreign_tns)
         for nd in self.foreign_tree:
             nd.original_taxon = nd.taxon
         self.check_tns = dendropy.TaxonNamespace()
         self.check_tree, anodes, lnodes, inodes = self.get_tree(
-                suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False,
                 taxon_namespace=self.check_tns)
 
     def test_append_default(self):
@@ -485,7 +485,44 @@ class TestTreeListAppend(
                 self.assertNotIn(nd.original_taxon, self.tree_list.taxon_namespace)
                 self.assertEqual(nd.taxon.label, nd.original_taxon.label)
 
-    def test_append_add(self):
+    def test_append_migrate_matching_labels(self):
+        kwargs_groups = [
+                {"taxon_import_strategy": "migrate", "unify_taxa_by_label": True},
+                {"taxon_import_strategy": "migrate", "unify_taxa_by_label": False},
+                {"taxon_import_strategy": "update", },
+        ]
+        for kwargs in kwargs_groups:
+            self.setUp()
+            self.assertEqual(len(self.tree_list.taxon_namespace), 0)
+            native_tree, anodes, lnodes, inodes = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_external_node_taxa=False,
+                    taxon_namespace=self.native_tns)
+            self.assertEqual(len(self.tree_list.taxon_namespace), len(self.postorder_sequence))
+            self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
+            original_tns_len = len(self.tree_list.taxon_namespace)
+            self.tree_list.append(self.foreign_tree, **kwargs)
+            self.assertEqual(len(self.tree_list), 1)
+            self.assertIn(self.foreign_tree, self.tree_list)
+            self.assertIs(self.foreign_tree, self.tree_list[0])
+            self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
+            if kwargs["taxon_import_strategy"] == "update":
+                self.assertEqual(len(self.tree_list.taxon_namespace),
+                        original_tns_len + len(self.foreign_tns))
+                for nd in self.foreign_tree:
+                    self.assertIn(nd.taxon, self.foreign_tns)
+                    self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
+            else:
+                if "unify_taxa_by_label" not in kwargs or not kwargs["unify_taxa_by_label"]:
+                    self.assertEqual(len(self.tree_list.taxon_namespace),
+                            original_tns_len + len(self.foreign_tns))
+                else:
+                    self.assertEqual(len(self.tree_list.taxon_namespace), original_tns_len)
+                for nd in self.foreign_tree:
+                    self.assertNotIn(nd.taxon, self.foreign_tns)
+                    self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
+
+    def test_append_update(self):
         self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
         self.tree_list.append(self.foreign_tree, taxon_import_strategy="update")
         self.assertEqual(len(self.tree_list), 1)

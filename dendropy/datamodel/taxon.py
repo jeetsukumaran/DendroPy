@@ -142,7 +142,7 @@ class TaxonNamespaceAssociated(object):
 
     def migrate_taxon_namespace(self,
             taxon_namespace,
-            unify_taxa_by_label=False,
+            unify_taxa_by_label=True,
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
         """
@@ -170,8 +170,8 @@ class TaxonNamespaceAssociated(object):
             If `True`, then references to distinct :class:`Taxon` objects with
             identical labels in the current namespace will be replaced with a
             reference to a single :class:`Taxon` object in the new namespace.
-            Defaults to `False`: references to distinct :class:`Taxon` objects
-            will remain distinct, even if the labels are the same.
+            If `False`: references to distinct :class:`Taxon` objects will
+            remain distinct, even if the labels are the same.
 
         case_insensitive_label_mapping : boolean, optional
             If `True` and `unify_taxa_by_label` is also `True`, then the
@@ -236,7 +236,7 @@ class TaxonNamespaceAssociated(object):
                 taxon_mapping_memo=taxon_mapping_memo)
 
     def reconstruct_taxon_namespace(self,
-            unify_taxa_by_label=False,
+            unify_taxa_by_label=True,
             case_insensitive_label_mapping=False,
             taxon_mapping_memo=None):
         """
@@ -260,8 +260,8 @@ class TaxonNamespaceAssociated(object):
             If `True`, then references to distinct :class:`Taxon` objects with
             identical labels in the current namespace will be replaced with a
             reference to a single :class:`Taxon` object in the new namespace.
-            Defaults to `False`: references to distinct :class:`Taxon` objects
-            will remain distinct, even if the labels are the same.
+            If `False`: references to distinct :class:`Taxon` objects will
+            remain distinct, even if the labels are the same.
 
         case_insensitive_label_mapping : boolean, optional
             If `True` and `unify_taxa_by_label` is also `True`, then the
