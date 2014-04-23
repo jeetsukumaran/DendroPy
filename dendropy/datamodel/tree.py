@@ -4752,13 +4752,15 @@ class TreeList(
         according to `taxon_import_strategy`:
 
             - 'migrate'
-                `tree` will be migrated to the :class:`TaxonNamespace`
-                reference of `self.taxon_namespace` before being added.
-                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`'
-                will be called on `tree`, where `kwargs` is as passed
-                to this function.
-            - 'update'
-                :class:`Taxon` objects on `tree` that are not already
+                :class:`Taxon` objects associated with `tree` that are not
+                already in `self.taxon_nameaspace` will be remapped based on
+                their labels, with new :class`Taxon` objects being
+                reconstructed if none with matching labels are found.
+                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
+                be called on `tree`, where `kwargs` is as passed to this
+                function.
+            - 'add'
+                :class:`Taxon` objects associated with `tree` that are not already
                 in `self.taxon_namespace` will be added. Note that this might
                 result in :class:`Taxon` objects with duplicate labels as no
                 attempt at mapping to existing :class:`Taxon` objects based on
@@ -4771,7 +4773,7 @@ class TreeList(
         taxon_import_strategy : string
             If `tree` is associated with a different :class:`TaxonNamespace`,
             this argument determines how new :class:`Taxon` objects in `tree`
-            are handled: 'migrate' or 'update'. See above for details.
+            are handled: 'migrate' or 'add'. See above for details.
         \*\*kwargs : keyword arguments
             These arguments will be passed directly to
             'migrate_taxon_namespace()' method call on `tree`.
@@ -4786,7 +4788,7 @@ class TreeList(
             if taxon_import_strategy == "migrate":
                 tree.migrate_taxon_namespace(taxon_namespace=self.taxon_namespace,
                         **kwargs)
-            elif taxon_import_strategy == "update":
+            elif taxon_import_strategy == "add":
                 tree.taxon_namespace = self.taxon_namespace
                 tree.update_taxon_namespace()
             else:

@@ -489,7 +489,7 @@ class TestTreeListAppend(
         kwargs_groups = [
                 {"taxon_import_strategy": "migrate", "unify_taxa_by_label": True},
                 {"taxon_import_strategy": "migrate", "unify_taxa_by_label": False},
-                {"taxon_import_strategy": "update", },
+                {"taxon_import_strategy": "add", },
         ]
         for kwargs in kwargs_groups:
             self.setUp()
@@ -506,7 +506,7 @@ class TestTreeListAppend(
             self.assertIn(self.foreign_tree, self.tree_list)
             self.assertIs(self.foreign_tree, self.tree_list[0])
             self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
-            if kwargs["taxon_import_strategy"] == "update":
+            if kwargs["taxon_import_strategy"] == "add":
                 self.assertEqual(len(self.tree_list.taxon_namespace),
                         original_tns_len + len(self.foreign_tns))
                 for nd in self.foreign_tree:
@@ -522,9 +522,10 @@ class TestTreeListAppend(
                     self.assertNotIn(nd.taxon, self.foreign_tns)
                     self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
 
-    def test_append_update(self):
+    def test_append_add(self):
         self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
-        self.tree_list.append(self.foreign_tree, taxon_import_strategy="update")
+        self.tree_list.append(self.foreign_tree,
+                taxon_import_strategy="add")
         self.assertEqual(len(self.tree_list), 1)
         self.assertIn(self.foreign_tree, self.tree_list)
         self.assertIs(self.foreign_tree, self.tree_list[0])
