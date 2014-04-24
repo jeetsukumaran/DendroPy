@@ -3187,7 +3187,7 @@ class Tree(
                     parent = nd._parent_node
                     pos = parent._child_nodes.index(nd)
                     parent.remove_child(nd)
-                    parent.add_child(children[0], pos=pos)
+                    parent.insert_child(index=pos, node=children[0])
                     # assert children[0]._parent_node is parent
                     # assert children[0] in parent._child_nodes
                     nd._parent_node = None
