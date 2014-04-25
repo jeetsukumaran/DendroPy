@@ -281,6 +281,18 @@ class TestTreeListBasicOperations(
             self.assertTrue(t in tlist._trees)
             self.assertTrue(t in tlist)
 
+    def test_delitem(self):
+        tsize = 5
+        for del_idx in range(-tsize, tsize):
+            tlist = self.get_tree_list(tsize)
+            original_trees = list(tlist._trees)
+            self.assertIn(original_trees[del_idx], tlist._trees)
+            del tlist[del_idx]
+            self.assertNotIn(original_trees[del_idx], tlist._trees)
+            self.assertEqual(len(tlist), tsize - 1)
+            del original_trees[del_idx]
+            self.assertEqual(tlist._trees, original_trees)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
