@@ -4864,8 +4864,30 @@ class TreeList(
     def __len__(self):
         return len(self._trees)
 
-    def __getitem__(self, tree):
-        return self._trees[tree]
+    def __getitem__(self, index):
+        """
+        If `index` is an integer, then :class:`Tree` object at position `index`
+        is returned. If `index` is a slice, then a :class:`TreeList` is returned
+        with references (i.e., not copies or clones, but the actual original
+        instances themselves) to :class:`Tree` objects in the positions given
+        by the slice. The :class:`TaxonNamespace` is the same as `self`.
+
+        Parameters
+        ----------
+        index : integer or slice
+            Index or slice.
+
+        Returns
+        -------
+        t : :class:`Tree` object or :class:`TreeList` object
+
+        """
+        if isinstance(index, slice):
+            r = self._trees[index]
+            return TreeList(r,
+                    taxon_namespace=self.taxon_namespace)
+        else:
+            return self._trees[index]
 
     def clear(self):
         raise NotImplementedError

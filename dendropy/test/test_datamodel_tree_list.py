@@ -314,8 +314,25 @@ class TestTreeListBasicOperations(
         self.assertEqual(len(tlist._trees), len(tlist))
         for idx in range(-tsize, tsize):
             self.assertIs(tlist[idx], tlist._trees[idx])
+            self.assertTrue(isinstance(tlist[idx], dendropy.Tree))
 
-
+    def test_getitem_slice(self):
+        tsize = 5
+        tlist = self.get_tree_list(tsize)
+        self.assertEqual(len(tlist), tsize)
+        self.assertEqual(len(tlist._trees), len(tlist))
+        for a in range(-tsize, tsize):
+            for b in range(-tsize, tsize):
+                for step in range(-tsize, tsize):
+                    if step == 0:
+                        continue
+                    tt = tlist[a:b:step]
+                    k = tlist._trees[a:b:step]
+                    self.assertEqual(len(tt), len(k))
+                    for t1, t2 in zip(tt, k):
+                        self.assertIn(t1, tlist)
+                        self.assertIn(t1, tlist._trees)
+                        self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
 
 class TreeListIdentity(unittest.TestCase):
 
