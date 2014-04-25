@@ -540,8 +540,19 @@ class TestTreeListAppend(
                 self.assertIn(nd.original_taxon, self.tree_list.taxon_namespace)
 
 class TreeListCreatingAndCloning(
+        datagen_curated_test_tree.CuratedTestTree,
         compare_and_validate.Comparator,
         unittest.TestCase):
+
+    def setUp(self):
+        self.tree_list1 = TreeList()
+        self.num_trees = 5
+        for idx in range(self.num_trees):
+            tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_external_node_taxa=False,
+                    taxon_namespace=self.tree_list1.taxon_namespace)
+            self.tree_list1.append(tree1)
 
     def create_with_taxon_namespace(self):
         tns = dendropy.TaxonNamespace()
@@ -549,6 +560,12 @@ class TreeListCreatingAndCloning(
         self.assertEqual(tt.label, "a")
         self.assertIs(tt.taxon_namespace, tns)
 
+    def copy_with_initializer_list(self):
+        trees = self.tree_list1._trees
+        tt = dendropy.TreeList(trees)
+        self.assertEqual(len(tt), self.num_trees)
+        for tcopy, toriginal in zip(tt, self.tree_list):
+            self.assertIs(tcopy, toriginal)
 
 if __name__ == "__main__":
     unittest.main()

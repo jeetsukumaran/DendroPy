@@ -4494,10 +4494,10 @@ class TreeList(
                              taxon_namespace=tlst3.taxon_namespace,
                              encode_splits=True)
 
-            # Subsets of trees can be read:
-            # (Note that in most cases, the entire data source is parsed, so
-            # this is not more efficient than reading all the trees and
-            # then manually-extracting them later; just more convenient
+            # Subsets of trees can be read. Note that in most cases, the entire
+            # data source is parsed, so this is not more efficient than reading
+            # all the trees and then manually-extracting them later; just more
+            # convenient
 
             # skip the first 100 trees in the first collection of trees
             trees = TreeList.get_from_path("mcmc.tre", "newick",
@@ -4527,16 +4527,22 @@ class TreeList(
             assert tlst4copy1b[0] is not tlst4[0] # True
             assert tlst4copy1b.taxon_namespace is tlst4.taxon_namespace # True
 
-            # True deep copies via 'copy.deepcopy'
-            tlst4deepcopy = copy.deepcopy(tlst4)
-            assert tlst4deepcopy[0] is not tlst4[0] # True
-            assert tlst4deepcopy.taxon_namespace is not tlst4.taxon_namespace # True
 
         """
-        base.DataObject.__init__(self, label=kwargs.pop("label", None))
-        taxon.TaxonNamespaceAssociated.__init__(self,
-                taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
-        self._trees = []
+        if len(args) > 1:
+            # only allow 1 positional argument
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
+        elif len(args) == 1 and isinstance(args[0], Tree):
+            self._clone_from(args[0], kwargs)
+        else:
+            base.DataObject.__init__(self, label=kwargs.pop("label", None))
+            taxon.TaxonNamespaceAssociated.__init__(self,
+                    taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
+            self._trees = []
+            if len(args) == 1:
+                for a in args:
+                    tree = Tree(a, taxon_namespace=self.taxon_namespace)
+                    self.append(tree)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
