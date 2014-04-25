@@ -4532,7 +4532,7 @@ class TreeList(
         if len(args) > 1:
             # only allow 1 positional argument
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
-        elif len(args) == 1 and isinstance(args[0], Tree):
+        elif len(args) == 1 and isinstance(args[0], TreeList):
             self._clone_from(args[0], kwargs)
         else:
             base.DataObject.__init__(self, label=kwargs.pop("label", None))
@@ -4540,9 +4540,10 @@ class TreeList(
                     taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self._trees = []
             if len(args) == 1:
-                for a in args:
-                    tree = Tree(a, taxon_namespace=self.taxon_namespace)
-                    self.append(tree)
+                for aidx, a in enumerate(args[0]):
+                    if not isinstance(a, Tree):
+                        raise ValueError("Cannot add object not of 'Tree' type to 'TreeList'")
+                    self.append(a)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
