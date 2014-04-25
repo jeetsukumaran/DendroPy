@@ -293,6 +293,30 @@ class TestTreeListBasicOperations(
             del original_trees[del_idx]
             self.assertEqual(tlist._trees, original_trees)
 
+    def test_iter(self):
+        tlist = self.get_tree_list(5)
+        self.assertEqual(len(tlist), 5)
+        self.assertEqual(len(tlist._trees), len(tlist))
+        for t1, t2 in zip(tlist, tlist._trees):
+            self.assertIs(t1, t2)
+
+    def test_reversed(self):
+        tlist = self.get_tree_list(5)
+        self.assertEqual(len(tlist), 5)
+        self.assertEqual(len(tlist._trees), len(tlist))
+        for t1, t2 in zip(reversed(tlist), reversed(tlist._trees)):
+            self.assertIs(t1, t2)
+
+    def test_getitem_simple(self):
+        tsize = 5
+        tlist = self.get_tree_list(tsize)
+        self.assertEqual(len(tlist), tsize)
+        self.assertEqual(len(tlist._trees), len(tlist))
+        for idx in range(-tsize, tsize):
+            self.assertIs(tlist[idx], tlist._trees[idx])
+
+
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
