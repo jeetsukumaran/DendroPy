@@ -120,7 +120,7 @@ class EdgeCloning(compare_and_validate.Comparator, unittest.TestCase):
             self.compare_distinct_nodes(
                     clone._head_node, self.n0,
                     taxon_namespace_scoped=False,
-                    compare_annotations=True)
+                    compare_tree_annotations=True)
 
 class EdgeNodeManagement(unittest.TestCase):
 
