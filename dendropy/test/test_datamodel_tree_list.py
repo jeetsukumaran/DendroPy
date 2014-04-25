@@ -655,5 +655,17 @@ class TreeListCreatingAndCloning(
                 compare_tree_annotations=True,
                 compare_taxon_annotations=False)
 
+class TestSpecialTreeListConstruction(
+        unittest.TestCase):
+
+    def test_construction_from_another_tree_different_label(self):
+        tlist1 = dendropy.TreeList()
+        tlist1.label = "tlist1"
+        self.assertEqual(tlist1.label, "tlist1")
+        tlist2 = dendropy.TreeList(tlist1, label="tlist2")
+        self.assertEqual(tlist2.label, "tlist2")
+        self.assertNotEqual(tlist1.label, "tlist2")
+        self.assertNotEqual(tlist1.label, tlist2.label)
+
 if __name__ == "__main__":
     unittest.main()
