@@ -635,7 +635,6 @@ class TreeListCreatingAndCloning(
                     compare_tree_annotations=True,
                     compare_taxon_annotations=True)
 
-
     def test_deepcopy_including_namespace(self):
         tlist1 = self.get_tree_list()
         for idx, tlist2 in enumerate((
@@ -646,6 +645,15 @@ class TreeListCreatingAndCloning(
                     taxon_namespace_scoped=False,
                     compare_tree_annotations=True,
                     compare_taxon_annotations=True)
+
+    def test_deepcopy_excluding_namespace(self):
+        tlist1 = self.get_tree_list()
+        tlist2 = dendropy.TreeList(tlist1,
+                taxon_namespace=dendropy.TaxonNamespace())
+        self.compare_distinct_tree_list(tlist2, tlist1,
+                taxon_namespace_scoped=False,
+                compare_tree_annotations=True,
+                compare_taxon_annotations=False)
 
 if __name__ == "__main__":
     unittest.main()

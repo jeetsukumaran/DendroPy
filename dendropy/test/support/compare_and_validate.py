@@ -77,7 +77,6 @@ class Comparator(object):
                     compare_tree_annotations=compare_tree_annotations,
                     compare_taxon_annotations=compare_taxon_annotations)
 
-
     def compare_distinct_trees(self,
             x1, x2,
             taxon_namespace_scoped=True,

@@ -151,23 +151,11 @@ class TestTreeCopying(
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
         self.add_annotations(tree1)
-        for idx, tree2 in enumerate((
-                dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace()),
-                )):
-            self.compare_distinct_trees(tree1, tree2,
-                    taxon_namespace_scoped=False,
-                    compare_tree_annotations=True,
-                    compare_taxon_annotations=False)
-            # Redundant, given the above
-            # But for sanity's sake ...
-            nodes1 = [nd for nd in tree1]
-            nodes2 = [nd for nd in tree2]
-            self.assertEqual(len(nodes1), len(nodes2))
-            for nd1, nd2 in zip(nodes1, nodes2):
-                self.assertIsNot(nd1, nd2)
-                self.assertEqual(nd1.label, nd2.label)
-                self.assertIsNot(nd1.taxon, nd2.taxon)
-                self.assertEqual(nd1.taxon.label, nd2.taxon.label)
+        tree2 = dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace())
+        self.compare_distinct_trees(tree1, tree2,
+                taxon_namespace_scoped=False,
+                compare_tree_annotations=True,
+                compare_taxon_annotations=False)
 
 class TestSpecialTreeConstruction(
         datagen_curated_test_tree.CuratedTestTree,
