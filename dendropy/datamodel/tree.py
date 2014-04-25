@@ -4745,14 +4745,31 @@ class TreeList(
     ###########################################################################
     ### List Interface
 
-    # def __cmp__(self, o):
-    #     return list.__cmp__(self._taxa, o._taxa)
+    def __iadd__(self, other):
+        """
+        In-place addition of :class:`Tree` objects in `other` to `self`.
+        If `other` is a :class:`TreeList`, then the :class:`Trees` are *cloned*
+        and migrated into `self.taxon_namespace`; otherwise, the original
+        objects are migrated into `self.taxon_namespace` and added directly.
+
+        Parameters
+        ----------
+        other : iterable of :class:`Tree` objects
+
+        Returns
+        -------
+        :class:`TreeList` object containing clones of :class:`Tree` objects in `self` and
+        `other`.
+        """
+        raise NotImplementedError
 
     def __add__(self, other):
         """
         Creates and returns new :class:`TreeList` with clones of all :class:`Trees` in `self`
-        as well as all :class:`Tree` objects in `other`. Note that if `other` is a
-        :class:`TreeList`, then the :class:`Trees` are *cloned*; otherwise, they are copied.
+        as well as all :class:`Tree` objects in `other`.  If `other` is a
+        :class:`TreeList`, then the :class:`Trees` are *cloned* and migrated into
+        `self.taxon_namespace`; otherwise, the original objects are migrated into
+        `self.taxon_namespace` and added directly.
 
         Parameters
         ----------
