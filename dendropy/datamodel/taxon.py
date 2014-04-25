@@ -123,9 +123,24 @@ class TaxonNamespaceAssociated(object):
 
     def __init__(self, taxon_namespace=None):
         if taxon_namespace is None:
-            self.taxon_namespace = TaxonNamespace()
+            self._taxon_namespace = TaxonNamespace()
         else:
-            self.taxon_namespace = taxon_namespace
+            self._taxon_namespace = taxon_namespace
+        self.automigrate_taxon_namespace_on_assignment = True
+
+    def _get_taxon_namespace(self):
+        return self._taxon_namespace
+    def _set_taxon_namespace(self, tns):
+        if self.automigrate_taxon_namespace_on_assignment:
+            if tns is not None and self._taxon_namespace is not tns:
+                self.migrate_taxon_namespace(tns)
+            elif tns is None:
+                self._taxon_namespace = None
+        else:
+            self._taxon_namespace = tns
+    def _del_taxon_namespace(self):
+        raise TypeError("Cannot delete 'taxon_namespace' attribute")
+    taxon_namespace = property(_get_taxon_namespace, _set_taxon_namespace, _del_taxon_namespace)
 
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
@@ -229,7 +244,7 @@ class TaxonNamespaceAssociated(object):
         """
         if taxon_namespace is None:
             taxon_namespace = taxon.TaxonNamespace()
-        self.taxon_namespace = taxon_namespace
+        self._taxon_namespace = taxon_namespace
         self.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
                 case_insensitive_label_mapping=case_insensitive_label_mapping,

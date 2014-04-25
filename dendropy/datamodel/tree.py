@@ -4754,7 +4754,7 @@ class TreeList(
                 tree.migrate_taxon_namespace(taxon_namespace=self.taxon_namespace,
                         **kwargs)
             elif taxon_import_strategy == "add":
-                tree.taxon_namespace = self.taxon_namespace
+                tree._taxon_namespace = self.taxon_namespace
                 tree.update_taxon_namespace()
             else:
                 raise ValueError("Unrecognized taxon import strategy: '{}'".format(taxon_import_strategy))
@@ -4958,7 +4958,7 @@ class TreeList(
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}
         for tree in self._trees:
-            tree.taxon_namespace = self.taxon_namespace
+            tree._taxon_namespace = self.taxon_namespace
             tree.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
                 case_insensitive_label_mapping=case_insensitive_label_mapping,
@@ -4967,7 +4967,7 @@ class TreeList(
 
     def update_taxon_namespace(self):
         for tree in self._trees:
-            tree.taxon_namespace = self.taxon_namespace
+            tree._taxon_namespace = self.taxon_namespace
             tree.update_taxon_namespace()
 
     def reindex_subcomponent_taxa():
