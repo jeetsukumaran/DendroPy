@@ -266,15 +266,19 @@ class TestTreeListBasicOperations(
 
     def test_contains(self):
         tlist = self.get_tree_list(5)
+        self.assertEqual(len(tlist._trees), len(tlist))
         self.assertEqual(len(tlist), 5)
         trees = self.get_mock_trees(5)
         self.assertEqual(len(trees), 5)
         for t in tlist:
+            self.assertTrue(t in tlist._trees)
             self.assertTrue(t in tlist)
         for t in trees:
+            self.assertFalse(t in tlist._trees)
             self.assertFalse(t in tlist)
         tlist += trees
         for t in trees:
+            self.assertTrue(t in tlist._trees)
             self.assertTrue(t in tlist)
 
 class TreeListIdentity(unittest.TestCase):
