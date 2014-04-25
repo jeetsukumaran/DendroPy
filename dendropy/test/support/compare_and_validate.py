@@ -58,12 +58,33 @@ class Comparator(object):
                 if compare_annotations:
                     self.compare_distinct_annotables(x1, x2)
 
+    def compare_distinct_tree_list(self,
+            x1, x2,
+            taxon_namespace_scoped=True,
+            compare_tree_annotations=True,
+            compare_taxon_annotations=True):
+        self.assertIsNot(x1, x2)
+        self.assertEqual(len(x1), len(x2))
+        self.compare_distinct_taxon_namespace(x1.taxon_namespace, x2.taxon_namespace,
+                taxon_namespace_scoped=taxon_namespace_scoped,
+                compare_annotations=compare_taxon_annotations,
+                )
+        self.assertEqual(x1.label, x2.label)
+        for t1, t2 in zip(x1, x2):
+            self.assertIsNot(t1, t2)
+            self.compare_distinct_trees(t1, t2,
+                    taxon_namespace_scoped=taxon_namespace_scoped,
+                    compare_tree_annotations=compare_tree_annotations,
+                    compare_taxon_annotations=compare_taxon_annotations)
+
+
     def compare_distinct_trees(self,
             x1, x2,
             taxon_namespace_scoped=True,
             compare_tree_annotations=True,
             compare_taxon_annotations=True):
         self.assertIsNot(x1, x2)
+        self.assertEqual(x1.label, x2.label)
         self.compare_distinct_taxon_namespace(x1.taxon_namespace, x2.taxon_namespace,
                 taxon_namespace_scoped=taxon_namespace_scoped,
                 compare_annotations=compare_taxon_annotations,

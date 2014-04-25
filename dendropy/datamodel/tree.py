@@ -4561,18 +4561,18 @@ class TreeList(
         # super(Tree, self).__init__()
         memo = {}
         # memo[id(tree)] = self
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree.taxon_namespace)
+        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree_list.taxon_namespace)
         memo[id(tree_list.taxon_namespace)] = taxon_namespace
         if taxon_namespace is not tree_list.taxon_namespace:
-            for t1 in tree.taxon_namespace:
+            for t1 in tree_list.taxon_namespace:
                 t2 = taxon_namespace.require_taxon(label=t1.label)
                 memo[id(t1)] = t2
         else:
-            for t1 in tree.taxon_namespace:
+            for t1 in tree_list.taxon_namespace:
                 memo[id(t1)] = t1
         t = copy.deepcopy(tree_list, memo)
         self.__dict__ = t.__dict__
-        self.label = kwargs_dict.pop("label", tree.label)
+        self.label = kwargs_dict.pop("label", tree_list.label)
         return self
 
     def __copy__(self):
@@ -4837,6 +4837,7 @@ class TreeList(
                 tree.update_taxon_namespace()
             else:
                 raise ValueError("Unrecognized taxon import strategy: '{}'".format(taxon_import_strategy))
+        # assert tree.taxon_namespace is self.taxon_namespace
         self._trees.append(tree)
 
     def new_tree(self, *args, **kwargs):

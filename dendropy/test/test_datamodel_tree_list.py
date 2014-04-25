@@ -20,6 +20,7 @@
 Tests for TreeList.
 """
 
+import copy
 import sys
 import unittest
 import collections
@@ -582,27 +583,69 @@ class TreeListCreatingAndCloning(
             a.annotations.add_new("setbytest", "a")
 
     def setUp(self):
-        self.tree_list1 = TreeList()
+        self.num_trees = 5
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        self.original_taxon_labels = [t.label for t in tree1.taxon_namespace]
+        assert len(self.original_taxon_labels) == len(anodes1)
+
+    def get_tree_list(self):
+        tlist1 = TreeList()
         self.num_trees = 5
         for idx in range(self.num_trees):
             tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                     suppress_internal_node_taxa=False,
                     suppress_external_node_taxa=False,
-                    taxon_namespace=self.tree_list1.taxon_namespace)
+                    taxon_namespace=tlist1.taxon_namespace)
             self.add_tree_annotations(tree1)
-            self.tree_list1.append(tree1)
-        self.add_tree_list_annotations(self.tree_list1)
-        self.add_taxon_namespace_annotations(self.tree_list1.taxon_namespace)
+            tlist1.append(tree1)
+        self.add_tree_list_annotations(tlist1)
+        self.add_taxon_namespace_annotations(tlist1.taxon_namespace)
+        return tlist1
 
     def test_shallow_copy_with_initializer_list(self):
-        trees = self.tree_list1._trees
-        for tt in (
-                dendropy.TreeList(trees),
-                self.tree_list1.clone(0),
-        ):
-            self.assertEqual(len(tt), self.num_trees)
-            for tcopy, toriginal in zip(tt, self.tree_list1):
+        tlist1 = self.get_tree_list()
+        trees = tlist1._trees
+        tlist2 = dendropy.TreeList(trees)
+        self.assertEqual(len(tlist2), self.num_trees)
+        for tcopy, toriginal in zip(tlist2, trees):
+            self.assertIs(tcopy, toriginal)
+            self.assertIs(tcopy.taxon_namespace, tlist2.taxon_namespace)
+
+    def test_clone0(self):
+        tlist1 = self.get_tree_list()
+        for tlist2 in (
+                tlist1.clone(0),
+                ):
+            self.assertIs(tlist2.taxon_namespace, tlist1.taxon_namespace)
+            self.assertEqual(len(tlist2), self.num_trees)
+            for tcopy, toriginal in zip(tlist2, tlist1):
                 self.assertIs(tcopy, toriginal)
+                self.assertIs(tcopy.taxon_namespace, tlist2.taxon_namespace)
+
+    def test_taxon_namespace_scoped_copy(self):
+        tlist1 = self.get_tree_list()
+        for tlist2 in (
+                tlist1.clone(1),
+                dendropy.TreeList(tlist1),
+                tlist1.taxon_namespace_scoped_copy(),):
+            self.compare_distinct_tree_list(tlist2, tlist1,
+                    taxon_namespace_scoped=True,
+                    compare_tree_annotations=True,
+                    compare_taxon_annotations=True)
+
+
+    def test_deepcopy_including_namespace(self):
+        tlist1 = self.get_tree_list()
+        for idx, tlist2 in enumerate((
+                tlist1.clone(2),
+                copy.deepcopy(tlist1),
+                )):
+            self.compare_distinct_tree_list(tlist2, tlist1,
+                    taxon_namespace_scoped=False,
+                    compare_tree_annotations=True,
+                    compare_taxon_annotations=True)
 
 if __name__ == "__main__":
     unittest.main()
