@@ -108,16 +108,19 @@ class MockTreeListGenerator(object):
             tlist1.append(t1)
         return tlist1
 
-    def get_disconnected_trees_and_tree_list(self, num_trees):
+    def get_tree_list_and_list_of_trees(self,
+            num_trees,
+            tree_list_taxon_namespace=None,
+            list_of_trees_taxon_namespace=None):
         tlist = self.get_tree_list(
                 num_trees=0,
-                taxon_namespace=None,
+                taxon_namespace=tree_list_taxon_namespace,
                 label=None,
                 suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
         trees = self.get_mock_trees(
                 num_trees=num_trees,
-                taxon_namespace=None,
+                taxon_namespace=list_of_trees_taxon_namespace,
                 label=None,
                 suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
@@ -127,8 +130,8 @@ class TestTreeListBasicOperations(
         MockTreeListGenerator,
         unittest.TestCase):
 
-    def test_append_simple_list(self):
-        tlist, trees = self.get_disconnected_trees_and_tree_list(num_trees=MockTreeListGenerator.default_num_trees)
+    def test_append_simple_list_foreign_namespace(self):
+        tlist, trees = self.get_tree_list_and_list_of_trees(num_trees=MockTreeListGenerator.default_num_trees)
         original_tns = tlist.taxon_namespace
         for t in trees:
             tlist.append(t)
@@ -142,6 +145,52 @@ class TestTreeListBasicOperations(
             for nd in t1:
                 self.assertIn(nd.taxon, tlist.taxon_namespace)
 
+    def test_append_simple_list_same_namespace(self):
+        tns = dendropy.TaxonNamespace()
+        tlist, trees = self.get_tree_list_and_list_of_trees(
+                num_trees=MockTreeListGenerator.default_num_trees,
+                tree_list_taxon_namespace=tns,
+                list_of_trees_taxon_namespace=tns)
+        original_tns = tlist.taxon_namespace
+        for t in trees:
+            tlist.append(t)
+        self.assertEqual(len(tlist), MockTreeListGenerator.default_num_trees)
+        self.assertIs(tlist.taxon_namespace, original_tns)
+        # self.assertEqual(len(tlist.taxon_namespace), len(tlist[0].tax_labels))
+        self.assertEqual(len(tlist.taxon_namespace), 7)
+        for t1, t2 in zip(tlist, trees):
+            self.assertIs(t1, t2)
+            self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+            for nd in t1:
+                self.assertIn(nd.taxon, tlist.taxon_namespace)
+
+    def test_iadd_from_another_tree_list_different_namespace(self):
+        tlist = self.get_tree_list(num_trees=3)
+        original_tns = tlist.taxon_namespace
+        original_tlist_len = len(tlist)
+        original_tree_labels = [t.label for t in tlist]
+        self.assertEqual(len(original_tree_labels), len(tlist))
+        self.assertEqual(original_tlist_len, 3)
+
+        tlist_source = self.get_tree_list(num_trees=5)
+        self.assertEqual(len(tlist_source), 5)
+        source_tree_labels = [t.label for t in tlist_source]
+        self.assertEqual(len(source_tree_labels), len(tlist_source))
+
+        tlist += tlist_source
+        self.assertEqual(len(tlist), original_tlist_len + len(tlist_source))
+        self.assertIs(tlist.taxon_namespace, original_tns)
+        # self.assertEqual(len(tlist.taxon_namespace), len(tlist[0].tax_labels))
+        self.assertEqual(len(tlist.taxon_namespace), 7)
+        expected_tree_labels = original_tree_labels + source_tree_labels
+        self.assertEqual(len(tlist), len(expected_tree_labels))
+        for t1, tlabel in zip(tlist, expected_tree_labels):
+            self.assertIn(t1, tlist)
+            self.assertNotIn(t1, tlist_source)
+            self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+            self.assertEqual(t1.label, tlabel)
+            for nd in t1:
+                self.assertIn(nd.taxon, tlist.taxon_namespace)
 
 class TreeListIdentity(unittest.TestCase):
 

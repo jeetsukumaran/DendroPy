@@ -4761,7 +4761,14 @@ class TreeList(
         :class:`TreeList` object containing clones of :class:`Tree` objects in `self` and
         `other`.
         """
-        raise NotImplementedError
+        if isinstance(other, TreeList):
+            for t0 in other:
+                t1 = Tree(t0, taxon_namespace=self.taxon_namespace)
+                self._trees.append(t1)
+        else:
+            for t0 in other:
+                self.append(t0)
+        return self
 
     def __add__(self, other):
         """
