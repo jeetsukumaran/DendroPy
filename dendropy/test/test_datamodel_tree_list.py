@@ -229,6 +229,41 @@ class TestTreeListBasicOperations(
             for nd in t1:
                 self.assertIn(nd.taxon, tlist.taxon_namespace)
 
+    def test_add_from_another_tree_list_different_namespace(self):
+        tlist_source1 = self.get_tree_list(num_trees=3)
+        original_tns = tlist_source1.taxon_namespace
+        source1_tree_labels = [t.label for t in tlist_source1]
+        self.assertEqual(len(source1_tree_labels), len(tlist_source1))
+        self.assertEqual(len(tlist_source1), 3)
+
+        tlist_source2 = self.get_mock_trees(num_trees=5)
+        self.assertEqual(len(tlist_source2), 5)
+        source2_tree_labels = [t.label for t in tlist_source2]
+        self.assertEqual(len(source2_tree_labels), len(tlist_source2))
+
+        tlist = tlist_source1 + tlist_source2
+
+        self.assertEqual(len(tlist_source1), 3)
+        self.assertEqual(len(tlist_source2), 5)
+
+        self.assertEqual(len(tlist), len(tlist_source1) + len(tlist_source2))
+        self.assertIs(tlist.taxon_namespace, original_tns)
+        self.assertEqual(len(tlist.taxon_namespace), 7)
+        expected_tree_labels = source1_tree_labels + source2_tree_labels
+        self.assertEqual(len(tlist), len(expected_tree_labels))
+        for t1, tlabel in zip(tlist, expected_tree_labels):
+            self.assertIn(t1, tlist)
+            self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+            self.assertEqual(t1.label, tlabel)
+            if t1.label in source1_tree_labels:
+                self.assertNotIn(t1, tlist_source1)
+                self.assertNotIn(t1, tlist_source2)
+            else:
+                self.assertNotIn(t1, tlist_source1)
+                self.assertIn(t1, tlist_source2)
+            for nd in t1:
+                self.assertIn(nd.taxon, tlist.taxon_namespace)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):

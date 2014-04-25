@@ -4758,8 +4758,7 @@ class TreeList(
 
         Returns
         -------
-        :class:`TreeList` object containing clones of :class:`Tree` objects in `self` and
-        `other`.
+        `self` : :class:`TreeList`
         """
         if isinstance(other, TreeList):
             for t0 in other:
@@ -4784,10 +4783,14 @@ class TreeList(
 
         Returns
         -------
-        :class:`TreeList` object containing clones of :class:`Tree` objects in `self` and
-        `other`.
+        tlist : :class:`TreeList` object
+            :class:`TreeList` object containing clones of :class:`Tree` objects
+            in `self` and `other`.
         """
-        raise NotImplementedError
+        tlist = TreeList(taxon_namespace=self.taxon_namespace)
+        tlist += self
+        tlist += other
+        return tlist
 
     def __contains__(self, tree):
         return tree in self._trees
