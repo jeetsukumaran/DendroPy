@@ -539,10 +539,47 @@ class TestTreeListAppend(
                 self.assertIn(nd.original_taxon, self.foreign_tns)
                 self.assertIn(nd.original_taxon, self.tree_list.taxon_namespace)
 
+class TreeListCreatingAndCloning(unittest.TestCase):
+
+    def create_with_taxon_namespace(self):
+        tns = dendropy.TaxonNamespace()
+        tt = TreeList(label="a", taxon_namespace=tns)
+        self.assertEqual(tt.label, "a")
+        self.assertIs(tt.taxon_namespace, tns)
+
 class TreeListCreatingAndCloning(
         datagen_curated_test_tree.CuratedTestTree,
         compare_and_validate.Comparator,
         unittest.TestCase):
+
+    def add_tree_annotations(self, tree):
+        for idx, nd in enumerate(tree):
+            if idx % 2 == 0:
+                nd.edge.label = "E{}".format(idx)
+                nd.edge.length = idx
+            an1 = nd.annotations.add_new("a{}".format(idx),
+                    "{}{}{}".format(nd.label, nd.taxon, idx))
+            an2 = nd.annotations.add_bound_attribute("label")
+            an3 = an1.annotations.add_bound_attribute("name")
+            ae1 = nd.edge.annotations.add_new("a{}".format(idx),
+                    "{}{}".format(nd.edge.label, idx))
+            ae2 = nd.edge.annotations.add_bound_attribute("label")
+            ae3 = ae1.annotations.add_bound_attribute("name")
+        tree.annotations.add_new("a", 0)
+        tree.label = "hello"
+        b = tree.annotations.add_bound_attribute("label")
+        b.annotations.add_new("c", 3)
+
+    def add_tree_list_annotations(self, tree_list):
+        tree_list.annotations.add_new("a", 0)
+        tree_list.label = "hello"
+        b = tree_list.annotations.add_bound_attribute("label")
+        b.annotations.add_new("c", 3)
+
+    def add_taxon_namespace_annotations(self, tns):
+        for idx, taxon in enumerate(tns):
+            a = taxon.annotations.add_new("!color", str(idx))
+            a.annotations.add_new("setbytest", "a")
 
     def setUp(self):
         self.tree_list1 = TreeList()
@@ -552,13 +589,10 @@ class TreeListCreatingAndCloning(
                     suppress_internal_node_taxa=False,
                     suppress_external_node_taxa=False,
                     taxon_namespace=self.tree_list1.taxon_namespace)
+            self.add_tree_annotations(tree1)
             self.tree_list1.append(tree1)
-
-    def create_with_taxon_namespace(self):
-        tns = dendropy.TaxonNamespace()
-        tt = TreeList(label="a", taxon_namespace=tns)
-        self.assertEqual(tt.label, "a")
-        self.assertIs(tt.taxon_namespace, tns)
+        self.add_tree_list_annotations(self.tree_list1)
+        self.add_taxon_namespace_annotations(self.tree_list1.taxon_namespace)
 
     def copy_with_initializer_list(self):
         trees = self.tree_list1._trees

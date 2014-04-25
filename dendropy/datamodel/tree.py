@@ -4438,7 +4438,7 @@ class TreeList(
     tree_factory = classmethod(tree_factory)
 
     ###########################################################################
-    ### Special/Lifecycle methods
+    ### Lifecycle and Identity
 
     def __init__(self, *args, **kwargs):
         """
@@ -4546,12 +4546,6 @@ class TreeList(
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
-    ###########################################################################
-    ### Representation
-
-    def __str__(self):
-        return "<TreeList {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._trees))
-
     def __hash__(self):
         return id(self)
 
@@ -4561,6 +4555,49 @@ class TreeList(
             and (self.taxon_namespace is other.taxon_namespace)
             and (self._trees == other._trees)
         )
+
+    def _clone_from(self, tree_list, kwargs_dict):
+        # super(Tree, self).__init__()
+        memo = {}
+        # memo[id(tree)] = self
+        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree.taxon_namespace)
+        memo[id(tree_list.taxon_namespace)] = taxon_namespace
+        if taxon_namespace is not tree_list.taxon_namespace:
+            for t1 in tree.taxon_namespace:
+                t2 = taxon_namespace.require_taxon(label=t1.label)
+                memo[id(t1)] = t2
+        else:
+            for t1 in tree.taxon_namespace:
+                memo[id(t1)] = t1
+        t = copy.deepcopy(tree_list, memo)
+        self.__dict__ = t.__dict__
+        self.label = kwargs_dict.pop("label", tree.label)
+        return self
+
+    def __copy__(self):
+        other = TreeList(label=self.label, taxon_namespace=self.taxon_namespace)
+        other._trees = list(self._trees)
+        memo = {}
+        memo[id(self)] = other
+        other.deep_copy_annotations_from(self, memo)
+        return other
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        if memo is None:
+            memo = {}
+        # this populates `memo` with references to the
+        # the TaxonNamespace and Taxon objects
+        self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
+        return self.__deepcopy__(memo=memo)
+
+    def __deepcopy__(self, memo=None):
+        return base.Annotable.__deepcopy__(self, memo=memo)
+
+    ###########################################################################
+    ### Representation
+
+    def __str__(self):
+        return "<TreeList {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._trees))
 
     ###########################################################################
     ### Data I/O

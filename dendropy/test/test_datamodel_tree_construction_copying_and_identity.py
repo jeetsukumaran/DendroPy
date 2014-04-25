@@ -95,6 +95,9 @@ class TestTreeCopying(
         tree.label = "hello"
         b = tree.annotations.add_bound_attribute("label")
         b.annotations.add_new("c", 3)
+        for idx, taxon in enumerate(tree.taxon_namespace):
+            a = taxon.annotations.add_new("!color", str(idx))
+            a.annotations.add_new("setbytest", "a")
 
     def test_copy(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
@@ -109,7 +112,8 @@ class TestTreeCopying(
                 ):
             self.compare_distinct_trees(tree1, tree2,
                     taxon_namespace_scoped=True,
-                    compare_annotations=True)
+                    compare_tree_annotations=True,
+                    compare_taxon_annotations=False)
             # Redundant, given the above
             # But for sanity's sake ...
             nodes1 = [nd for nd in tree1]
@@ -120,18 +124,40 @@ class TestTreeCopying(
                 self.assertEqual(nd1.label, nd2.label)
                 self.assertIs(nd1.taxon, nd2.taxon)
 
-    def test_deepcopy(self):
+    def test_deepcopy_including_namespace(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
                 suppress_external_node_taxa=False)
         self.add_annotations(tree1)
-        for tree2 in (
+        for idx, tree2 in enumerate((
                 tree1.clone(2),
                 copy.deepcopy(tree1),
-                dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace()),
-                ):
+                )):
             self.compare_distinct_trees(tree1, tree2,
                     taxon_namespace_scoped=False,
-                    compare_annotations=True)
+                    compare_tree_annotations=True,
+                    compare_taxon_annotations=False)
+            # Redundant, given the above
+            # But for sanity's sake ...
+            nodes1 = [nd for nd in tree1]
+            nodes2 = [nd for nd in tree2]
+            self.assertEqual(len(nodes1), len(nodes2))
+            for nd1, nd2 in zip(nodes1, nodes2):
+                self.assertIsNot(nd1, nd2)
+                self.assertEqual(nd1.label, nd2.label)
+                self.assertIsNot(nd1.taxon, nd2.taxon)
+                self.assertEqual(nd1.taxon.label, nd2.taxon.label)
+
+    def test_deepcopy_excluding_namespace(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        self.add_annotations(tree1)
+        for idx, tree2 in enumerate((
+                dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace()),
+                )):
+            self.compare_distinct_trees(tree1, tree2,
+                    taxon_namespace_scoped=False,
+                    compare_tree_annotations=True,
+                    compare_taxon_annotations=False)
             # Redundant, given the above
             # But for sanity's sake ...
             nodes1 = [nd for nd in tree1]

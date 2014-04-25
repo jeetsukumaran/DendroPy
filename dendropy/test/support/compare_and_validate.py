@@ -21,7 +21,6 @@ from dendropy.datamodel import base
 
 class Comparator(object):
 
-
     def compare_distinct_taxon(self,
             x1, x2,
             taxon_namespace_scoped=True,
@@ -41,7 +40,7 @@ class Comparator(object):
     def compare_distinct_taxon_namespace(self,
             x1, x2,
             taxon_namespace_scoped=True,
-            compare_annotations=True):
+            compare_annotations=True,):
         if taxon_namespace_scoped:
             self.assertIs(x1, x2)
         else:
@@ -62,19 +61,23 @@ class Comparator(object):
     def compare_distinct_trees(self,
             x1, x2,
             taxon_namespace_scoped=True,
-            compare_annotations=True):
+            compare_tree_annotations=True,
+            compare_taxon_annotations=True):
         self.assertIsNot(x1, x2)
         self.compare_distinct_taxon_namespace(x1.taxon_namespace, x2.taxon_namespace,
                 taxon_namespace_scoped=taxon_namespace_scoped,
-                compare_annotations=compare_annotations)
+                compare_annotations=compare_taxon_annotations,
+                )
         self.compare_distinct_nodes(x1.seed_node, x2.seed_node,
                 taxon_namespace_scoped=taxon_namespace_scoped,
-                compare_annotations=compare_annotations)
+                compare_tree_annotations=compare_tree_annotations,
+                compare_taxon_annotations=compare_taxon_annotations)
 
     def compare_distinct_nodes(self,
             x1, x2,
             taxon_namespace_scoped=True,
-            compare_annotations=True,
+            compare_tree_annotations=True,
+            compare_taxon_annotations=True,
             check_children=True):
         self.assertIsNot(x1, x2)
         self.assertEqual(x1.label, x2.label)
@@ -82,7 +85,7 @@ class Comparator(object):
         taxon2 = x2.taxon
         self.compare_distinct_taxon(x1.taxon, x2.taxon,
                 taxon_namespace_scoped=taxon_namespace_scoped,
-                compare_annotations=compare_annotations)
+                compare_annotations=compare_taxon_annotations)
         self.assertIsNot(x1.edge, x2.edge)
         self.assertEqual(x1.edge.label, x2.edge.label)
         self.assertEqual(x1.edge.length, x2.edge.length)
@@ -96,7 +99,8 @@ class Comparator(object):
         else:
             self.compare_distinct_nodes(x1._parent_node, x2._parent_node,
                     taxon_namespace_scoped=taxon_namespace_scoped,
-                    compare_annotations=compare_annotations,
+                    compare_tree_annotations=compare_tree_annotations,
+                    compare_taxon_annotations=compare_taxon_annotations,
                     check_children=False)
             self.assertIn(x1, x1._parent_node._child_nodes)
             self.assertNotIn(x1, x2._parent_node._child_nodes)
@@ -107,8 +111,10 @@ class Comparator(object):
             for c1, c2 in zip(x1._child_nodes, x2._child_nodes):
                 self.compare_distinct_nodes(c1, c2,
                         taxon_namespace_scoped=taxon_namespace_scoped,
-                        compare_annotations=compare_annotations)
-        if compare_annotations:
+                        compare_tree_annotations=compare_tree_annotations,
+                        compare_taxon_annotations=compare_taxon_annotations,
+                        check_children=True)
+        if compare_tree_annotations:
             self.compare_distinct_annotables(x1, x2)
             self.compare_distinct_annotables(x1.edge, x2.edge)
 
