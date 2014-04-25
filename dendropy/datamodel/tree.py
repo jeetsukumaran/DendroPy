@@ -4745,6 +4745,22 @@ class TreeList(
     ###########################################################################
     ### List Interface
 
+    def _import_tree_to_taxon_namespace(self,
+            tree,
+            taxon_import_strategy="migrate",
+            **kwargs):
+        if tree.taxon_namespace is not self.taxon_namespace:
+            if taxon_import_strategy == "migrate":
+                tree.migrate_taxon_namespace(taxon_namespace=self.taxon_namespace,
+                        **kwargs)
+            elif taxon_import_strategy == "add":
+                tree.taxon_namespace = self.taxon_namespace
+                tree.update_taxon_namespace()
+            else:
+                raise ValueError("Unrecognized taxon import strategy: '{}'".format(taxon_import_strategy))
+        # assert tree.taxon_namespace is self.taxon_namespace
+        return tree
+
     def append(self,
             tree,
             taxon_import_strategy="migrate",
@@ -4790,16 +4806,10 @@ class TreeList(
         :meth:`Tree.migrate_taxon_namespace`
 
         """
-        if tree.taxon_namespace is not self.taxon_namespace:
-            if taxon_import_strategy == "migrate":
-                tree.migrate_taxon_namespace(taxon_namespace=self.taxon_namespace,
-                        **kwargs)
-            elif taxon_import_strategy == "add":
-                tree.taxon_namespace = self.taxon_namespace
-                tree.update_taxon_namespace()
-            else:
-                raise ValueError("Unrecognized taxon import strategy: '{}'".format(taxon_import_strategy))
-        # assert tree.taxon_namespace is self.taxon_namespace
+        self._import_tree_to_taxon_namespace(
+                tree=tree,
+                taxon_import_strategy=taxon_import_strategy,
+                **kwargs)
         self._trees.append(tree)
 
     def __iadd__(self, other):
@@ -4888,6 +4898,22 @@ class TreeList(
                     taxon_namespace=self.taxon_namespace)
         else:
             return self._trees[index]
+
+    def __setitem__(self, index, value):
+        if isinstance(index, slice):
+            if isinstance(value, TreeList):
+                tt = []
+                for t0 in value:
+                    t1 = Tree(t0,
+                            taxon_namespace=self.taxon_namespace)
+                    tt.append(t1)
+                value = tt
+            else:
+                for t in value:
+                    self._import_tree_to_taxon_namespace(t)
+            self._trees[index] = value
+        else:
+            self._trees[index] = self._import_tree_to_taxon_namespace(value)
 
     def clear(self):
         raise NotImplementedError

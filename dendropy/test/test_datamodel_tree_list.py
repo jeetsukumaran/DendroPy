@@ -334,6 +334,26 @@ class TestTreeListBasicOperations(
                         self.assertIn(t1, tlist._trees)
                         self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
 
+    def test_setitem_simple(self):
+        tsize = 5
+        for idx in range(-tsize, tsize):
+            tlist = self.get_tree_list(tsize)
+            self.assertEqual(len(tlist), tsize)
+            self.assertEqual(len(tlist._trees), len(tlist))
+            old_tree = tlist[idx]
+            new_tree = self.get_mock_tree()
+            tlist[idx] = new_tree
+            self.assertIs(tlist[idx], new_tree)
+            self.assertIsNot(tlist[idx], old_tree)
+            self.assertIn(new_tree, tlist)
+            self.assertNotIn(old_tree, tlist)
+            self.assertIs(new_tree.taxon_namespace,
+                    tlist.taxon_namespace)
+            self.assertEqual(len(tlist.taxon_namespace), 7)
+            for tree in tlist:
+                for nd in tree:
+                    self.assertIn(nd.taxon, tlist.taxon_namespace)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
