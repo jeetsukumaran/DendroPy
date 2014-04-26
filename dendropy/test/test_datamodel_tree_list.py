@@ -385,6 +385,119 @@ class TestTreeListBasicOperations(
                         for nd in t1:
                             self.assertIn(nd.taxon, tlist.taxon_namespace)
 
+    def test_setitem_slice_from_tree_list(self):
+        tsize = 5
+        for a in range(-tsize, tsize):
+            for b in range(-tsize, tsize):
+                for step in range(-tsize, tsize):
+                    if step == 0:
+                        continue
+                    slice_obj = slice(a, b, step)
+                    slice_indexes = list(range(*slice_obj.indices(tsize)))
+                    slice_len = len(slice_indexes)
+                    if slice_len <= 0:
+                        continue
+                    tlist = self.get_tree_list(tsize)
+                    self.assertEqual(len(tlist), tsize)
+                    self.assertEqual(len(tlist._trees), len(tlist))
+                    copy_list = list(tlist._trees)
+                    source = self.get_tree_list(slice_len)
+                    copy_list[a:b:step] = source._trees
+                    tlist[a:b:step] = source
+                    expected_tree_labels = [t.label for t in copy_list]
+                    self.assertEqual(len(tlist), len(copy_list))
+                    self.assertEqual(len(tlist), len(tlist._trees))
+                    self.assertEqual(len(tlist.taxon_namespace), 7)
+                    for idx, (t1, t2, tlabel) in enumerate(zip(tlist, copy_list, expected_tree_labels)):
+                        self.assertIn(t1, tlist)
+                        self.assertIn(t1, tlist._trees)
+                        self.assertEqual(t1.label, tlabel)
+                        self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+                        if idx in slice_indexes:
+                            self.assertIsNot(t1, t2)
+                            self.assertIn(t1, tlist)
+                            self.assertIn(t1, tlist._trees)
+                            self.assertNotIn(t2, tlist)
+                            self.assertNotIn(t2, tlist._trees)
+                            self.assertNotIn(t1, source)
+                            self.assertNotIn(t1, source._trees)
+                        else:
+                            self.assertIs(t1, t2)
+                        for nd in t1:
+                            self.assertIn(nd.taxon, tlist.taxon_namespace)
+
+    def test_clear(self):
+        tlist = self.get_tree_list(5)
+        self.assertEqual(len(tlist._trees), 5)
+        tlist.clear()
+        self.assertEqual(len(tlist), 0)
+        self.assertEqual(len(tlist._trees), 0)
+
+    def test_extend_from_another_tree_list_different_namespace(self):
+        tlist = self.get_tree_list(num_trees=3)
+        original_tns = tlist.taxon_namespace
+        original_tlist_len = len(tlist)
+        original_tree_labels = [t.label for t in tlist]
+        self.assertEqual(len(original_tree_labels), len(tlist))
+        self.assertEqual(original_tlist_len, 3)
+
+        tlist_source = self.get_tree_list(num_trees=5)
+        self.assertEqual(len(tlist_source), 5)
+        source_tree_labels = [t.label for t in tlist_source]
+        self.assertEqual(len(source_tree_labels), len(tlist_source))
+
+        tlist.extend(tlist_source)
+
+        self.assertEqual(len(tlist), original_tlist_len + len(tlist_source))
+        self.assertIs(tlist.taxon_namespace, original_tns)
+        # self.assertEqual(len(tlist.taxon_namespace), len(tlist[0].tax_labels))
+        self.assertEqual(len(tlist.taxon_namespace), 7)
+        expected_tree_labels = original_tree_labels + source_tree_labels
+        self.assertEqual(len(tlist), len(expected_tree_labels))
+        for t1, tlabel in zip(tlist, expected_tree_labels):
+            self.assertIn(t1, tlist)
+            self.assertNotIn(t1, tlist_source)
+            self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+            self.assertEqual(t1.label, tlabel)
+            for nd in t1:
+                self.assertIn(nd.taxon, tlist.taxon_namespace)
+
+    def test_iadd_from_list_of_trees_different_namespace(self):
+        tlist = self.get_tree_list(num_trees=3)
+        original_tns = tlist.taxon_namespace
+        original_tlist_len = len(tlist)
+        original_tree_labels = [t.label for t in tlist]
+        self.assertEqual(len(original_tree_labels), len(tlist))
+        self.assertEqual(original_tlist_len, 3)
+        source_trees = self.get_mock_trees(
+                num_trees=5,
+                taxon_namespace=None,
+                label=None,
+                suppress_internal_node_taxa=False,
+                suppress_external_node_taxa=False)
+        self.assertEqual(len(source_trees), 5)
+        source_tree_labels = [t.label for t in source_trees]
+        self.assertEqual(len(source_tree_labels), len(source_trees))
+
+        tlist.extend(source_trees)
+
+        self.assertEqual(len(tlist), original_tlist_len + len(source_trees))
+        self.assertIs(tlist.taxon_namespace, original_tns)
+        # self.assertEqual(len(tlist.taxon_namespace), len(tlist[0].tax_labels))
+        self.assertEqual(len(tlist.taxon_namespace), 7)
+        expected_tree_labels = original_tree_labels + source_tree_labels
+        self.assertEqual(len(tlist), len(expected_tree_labels))
+        for t1, tlabel in zip(tlist, expected_tree_labels):
+            self.assertIn(t1, tlist)
+            if tlabel in source_tree_labels:
+                self.assertIn(t1, source_trees)
+            else:
+                self.assertNotIn(t1, source_trees)
+            self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+            self.assertEqual(t1.label, tlabel)
+            for nd in t1:
+                self.assertIn(nd.taxon, tlist.taxon_namespace)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):

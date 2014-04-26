@@ -4812,10 +4812,11 @@ class TreeList(
                 **kwargs)
         self._trees.append(tree)
 
-    def __iadd__(self, other):
+    def extend(self, other):
         """
         In-place addition of :class:`Tree` objects in `other` to `self`.
-        If `other` is a :class:`TreeList`, then the :class:`Trees` are *cloned*
+
+        If `other` is a :class:`TreeList`, then the :class:`Trees` are *copied*
         and migrated into `self.taxon_namespace`; otherwise, the original
         objects are migrated into `self.taxon_namespace` and added directly.
 
@@ -4835,6 +4836,24 @@ class TreeList(
             for t0 in other:
                 self.append(t0)
         return self
+
+    def __iadd__(self, other):
+        """
+        In-place addition of :class:`Tree` objects in `other` to `self`.
+
+        If `other` is a :class:`TreeList`, then the :class:`Trees` are *copied*
+        and migrated into `self.taxon_namespace`; otherwise, the original
+        objects are migrated into `self.taxon_namespace` and added directly.
+
+        Parameters
+        ----------
+        other : iterable of :class:`Tree` objects
+
+        Returns
+        -------
+        `self` : :class:`TreeList`
+        """
+        return self.extend(other)
 
     def __add__(self, other):
         """
@@ -4916,10 +4935,7 @@ class TreeList(
             self._trees[index] = self._import_tree_to_taxon_namespace(value)
 
     def clear(self):
-        raise NotImplementedError
-
-    def extend(self, other):
-        raise NotImplementedError
+        self._trees.clear()
 
     def index(self, tree):
         raise NotImplementedError
