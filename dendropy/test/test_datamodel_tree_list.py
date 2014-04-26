@@ -575,7 +575,14 @@ class TestTreeListBasicOperations(
         for t1, t2 in zip(tlist, clist):
             self.assertIs(t1, t2)
 
-
+    def test_sort(self):
+        for r in (True, False):
+            tlist = self.get_tree_list(5)
+            clist = list(tlist._trees)
+            tlist.sort(key=lambda x: x.label, reverse=r)
+            clist.sort(key=lambda x: x.label, reverse=r)
+            for t1, t2 in zip(tlist, clist):
+                self.assertIs(t1, t2)
 
 class TreeListIdentity(unittest.TestCase):
 
