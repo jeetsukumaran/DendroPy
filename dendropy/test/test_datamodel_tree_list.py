@@ -537,6 +537,12 @@ class TestTreeListBasicOperations(
             for nd in t1:
                 self.assertIn(nd.taxon, tlist.taxon_namespace)
 
+    def test_index(self):
+        tlist = self.get_tree_list(5)
+        for idx, t in enumerate(tlist):
+            self.assertIs(t, tlist[idx])
+            self.assertEqual(tlist.index(t), idx)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):

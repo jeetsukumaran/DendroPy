@@ -4995,17 +4995,17 @@ class TreeList(
     def index(self, tree):
         return self._trees.index(tree)
 
-    def pop(self, tree):
-        raise NotImplementedError
+    def pop(self, index=-1):
+        return self._trees.pop(index)
 
     def remove(self, tree):
-        raise NotImplementedError
+        self._trees.remove(tree)
 
     def reverse(self, tree):
-        raise NotImplementedError
+        self._trees.reverse()
 
-    def sort(self, tree):
-        raise NotImplementedError
+    def sort(self, key=None, reverse=False):
+        self._trees.sort(key=key, reverse=reverse)
 
     def new_tree(self, *args, **kwargs):
         tns = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
