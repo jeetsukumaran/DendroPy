@@ -354,6 +354,37 @@ class TestTreeListBasicOperations(
                 for nd in tree:
                     self.assertIn(nd.taxon, tlist.taxon_namespace)
 
+    def test_setitem_slice_from_list(self):
+        tsize = 5
+        for a in range(-tsize, tsize):
+            for b in range(-tsize, tsize):
+                for step in range(-tsize, tsize):
+                    if step == 0:
+                        continue
+                    slice_obj = slice(a, b, step)
+                    slice_len = len(range(*slice_obj.indices(tsize)))
+                    if slice_len <= 0:
+                        continue
+                    tlist = self.get_tree_list(tsize)
+                    self.assertEqual(len(tlist), tsize)
+                    self.assertEqual(len(tlist._trees), len(tlist))
+                    copy_list = list(tlist._trees)
+                    source = self.get_mock_trees(slice_len)
+                    tlist[a:b:step] = source
+                    copy_list[a:b:step] = source
+                    expected_tree_labels = [t.label for t in copy_list]
+                    self.assertEqual(len(tlist), len(copy_list))
+                    self.assertEqual(len(tlist), len(tlist._trees))
+                    self.assertEqual(len(tlist.taxon_namespace), 7)
+                    for t1, t2, tlabel in zip(tlist, copy_list, expected_tree_labels):
+                        self.assertIs(t1, t2)
+                        self.assertIn(t1, tlist)
+                        self.assertIn(t1, tlist._trees)
+                        self.assertEqual(t1.label, tlabel)
+                        self.assertIs(t1.taxon_namespace, tlist.taxon_namespace)
+                        for nd in t1:
+                            self.assertIn(nd.taxon, tlist.taxon_namespace)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
