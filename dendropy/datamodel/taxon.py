@@ -126,7 +126,7 @@ class TaxonNamespaceAssociated(object):
             self._taxon_namespace = TaxonNamespace()
         else:
             self._taxon_namespace = taxon_namespace
-        self.automigrate_taxon_namespace_on_assignment = True
+        self.automigrate_taxon_namespace_on_assignment = False
 
     def _get_taxon_namespace(self):
         return self._taxon_namespace
