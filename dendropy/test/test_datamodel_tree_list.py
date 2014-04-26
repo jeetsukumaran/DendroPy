@@ -543,6 +543,23 @@ class TestTreeListBasicOperations(
             self.assertIs(t, tlist[idx])
             self.assertEqual(tlist.index(t), idx)
 
+    def test_pop1(self):
+        tlist = self.get_tree_list(5)
+        k = tlist[-1]
+        t = tlist.pop()
+        self.assertIs(t, k)
+        self.assertEqual(len(tlist), 4)
+        self.assertNotIn(t, tlist)
+
+    def test_pop2(self):
+        for idx in range(5):
+            tlist = self.get_tree_list(5)
+            k = tlist[idx]
+            t = tlist.pop(idx)
+            self.assertIs(t, k)
+            self.assertEqual(len(tlist), 4)
+            self.assertNotIn(t, tlist)
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
