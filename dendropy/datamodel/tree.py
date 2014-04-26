@@ -5001,7 +5001,7 @@ class TreeList(
     def remove(self, tree):
         self._trees.remove(tree)
 
-    def reverse(self, tree):
+    def reverse(self):
         self._trees.reverse()
 
     def sort(self, key=None, reverse=False):

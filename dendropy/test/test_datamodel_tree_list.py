@@ -567,6 +567,16 @@ class TestTreeListBasicOperations(
         self.assertEqual(len(tlist), 4)
         self.assertNotIn(t, tlist)
 
+    def test_remove(self):
+        tlist = self.get_tree_list(5)
+        clist = list(tlist._trees)
+        tlist.reverse()
+        clist.reverse()
+        for t1, t2 in zip(tlist, clist):
+            self.assertIs(t1, t2)
+
+
+
 class TreeListIdentity(unittest.TestCase):
 
     def setUp(self):
