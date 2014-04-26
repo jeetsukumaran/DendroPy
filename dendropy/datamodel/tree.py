@@ -4761,12 +4761,67 @@ class TreeList(
         # assert tree.taxon_namespace is self.taxon_namespace
         return tree
 
+    def insert(self,
+            index,
+            tree,
+            taxon_import_strategy="migrate",
+            **kwargs):
+        """
+        Inserts a :class:`Tree` object, `tree`, into the collection before
+        `index`.
+
+        The :class:`TaxonNamespace` reference of `tree` will be set to that of
+        `self`.  Any :class:`Taxon` objects associated with nodes in `tree`
+        that are not already in `self.taxon_namespace` will be handled
+        according to `taxon_import_strategy`:
+
+            - 'migrate'
+                :class:`Taxon` objects associated with `tree` that are not
+                already in `self.taxon_nameaspace` will be remapped based on
+                their labels, with new :class`Taxon` objects being
+                reconstructed if none with matching labels are found.
+                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
+                be called on `tree`, where `kwargs` is as passed to this
+                function.
+            - 'add'
+                :class:`Taxon` objects associated with `tree` that are not already
+                in `self.taxon_namespace` will be added. Note that this might
+                result in :class:`Taxon` objects with duplicate labels as no
+                attempt at mapping to existing :class:`Taxon` objects based on
+                label-matching is done.
+
+        Parameters
+        ----------
+        index : integer
+            Position before which to insert `tree`.
+        tree : A :class:`Tree` instance
+            The :class:`Tree` object to be added.
+        taxon_import_strategy : string
+            If `tree` is associated with a different :class:`TaxonNamespace`,
+            this argument determines how new :class:`Taxon` objects in `tree`
+            are handled: 'migrate' or 'add'. See above for details.
+        \*\*kwargs : keyword arguments
+            These arguments will be passed directly to
+            'migrate_taxon_namespace()' method call on `tree`.
+
+        See Also
+        --------
+
+        :meth:`Tree.migrate_taxon_namespace`
+
+        """
+        self._import_tree_to_taxon_namespace(
+                tree=tree,
+                taxon_import_strategy=taxon_import_strategy,
+                **kwargs)
+        self._trees.insert(index, tree)
+
     def append(self,
             tree,
             taxon_import_strategy="migrate",
             **kwargs):
         """
-        Adds a new :class:`Tree` object to the collection.
+        Adds a :class:`Tree` object, `tree`, to the collection.
 
         The :class:`TaxonNamespace` reference of `tree` will be set to that of
         `self`.  Any :class:`Taxon` objects associated with nodes in `tree`
@@ -4938,10 +4993,7 @@ class TreeList(
         self._trees.clear()
 
     def index(self, tree):
-        raise NotImplementedError
-
-    def insert(self, tree):
-        raise NotImplementedError
+        return self._trees.index(tree)
 
     def pop(self, tree):
         raise NotImplementedError
