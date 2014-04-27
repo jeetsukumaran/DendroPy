@@ -27,6 +27,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 import copy
+import sys
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.datamodel import base
@@ -4993,7 +4994,8 @@ class TreeList(
             self._trees[index] = self._import_tree_to_taxon_namespace(value)
 
     def clear(self):
-        self._trees.clear()
+        # list.clear() only with 3.4 or so ...
+        self._trees = []
 
     def index(self, tree):
         return self._trees.index(tree)

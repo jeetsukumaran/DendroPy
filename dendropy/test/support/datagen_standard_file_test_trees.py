@@ -74,7 +74,7 @@ class StandardTestTreeChecker(object):
             tree_file_title,
             check_tree_idx,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=False,
+            suppress_leaf_node_taxa=False,
             metadata_extracted=False,
             distinct_nodes_and_edges=True):
         check_tree = tree_references[tree_file_title][str(check_tree_idx)]
@@ -111,7 +111,7 @@ class StandardTestTreeChecker(object):
                 self.assertFalse(node.is_internal())
                 self.assertTrue(node.is_leaf())
                 self.assertEqual(len(node._child_nodes), len(check_node_children))
-                if suppress_external_node_taxa:
+                if suppress_leaf_node_taxa:
                     self.assertEqual(node.label, check_node_label)
                     self.assertIs(node.taxon, None)
                     node_labels.append(node.label)
@@ -130,7 +130,7 @@ class StandardTestTreeChecker(object):
                         self.assertEqual(node.parent_node.taxon.label, check_node["parent"])
                         self.assertIs(node.parent_node.label, None)
                 else:
-                    if suppress_external_node_taxa:
+                    if suppress_leaf_node_taxa:
                         self.assertEqual(node.parent_node.label, check_node["parent"])
                         self.assertIs(node.parent_node.taxon, None)
                     else:
@@ -150,7 +150,7 @@ class StandardTestTreeChecker(object):
                         child_labels.append(ch.taxon.label)
                         self.assertIs(ch.label, None)
                 else:
-                    if suppress_external_node_taxa:
+                    if suppress_leaf_node_taxa:
                         self.assertIs(ch.taxon, None)
                         child_labels.append(ch.label)
                     else:
@@ -195,7 +195,7 @@ class StandardTestTreeChecker(object):
             tree_file_title,
             tree_offset=0,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=False,
+            suppress_leaf_node_taxa=False,
             metadata_extracted=False,
             distinct_nodes_and_edges=True):
         tree_reference = tree_references[tree_file_title]
@@ -215,6 +215,6 @@ class StandardTestTreeChecker(object):
                     tree_file_title=tree_file_title,
                     check_tree_idx=tree_idx + tree_offset,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
-                    suppress_external_node_taxa=suppress_external_node_taxa,
+                    suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                     metadata_extracted=metadata_extracted,
                     distinct_nodes_and_edges=distinct_nodes_and_edges)

@@ -182,7 +182,7 @@ class CuratedTestTree(object):
 
     def get_tree(self,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=True,
+            suppress_leaf_node_taxa=True,
             taxon_namespace=None,
             node_taxon_label_map=None,
             ):
@@ -286,7 +286,7 @@ class CuratedTestTree(object):
                 t = tree.taxon_namespace.require_taxon(label=label)
                 nd.taxon = t
                 assert t in tree.taxon_namespace
-        if not suppress_external_node_taxa:
+        if not suppress_leaf_node_taxa:
             for nd in leaf_nodes:
                 label = node_taxon_label_map.get(nd.label, nd.label) # default to same label as node
                 t = tree.taxon_namespace.require_taxon(label=label)
@@ -297,13 +297,13 @@ class CuratedTestTree(object):
     def verify_curated_tree(self,
             tree,
             suppress_internal_node_taxa=True,
-            suppress_external_node_taxa=False,
+            suppress_leaf_node_taxa=False,
             suppress_edge_lengths=False,
             node_taxon_label_map=None):
         if node_taxon_label_map is None:
             node_taxon_label_map = {}
         for nd, exp_nd in zip(tree, self.preorder_sequence):
-            if ( (nd.is_leaf() and suppress_external_node_taxa)
+            if ( (nd.is_leaf() and suppress_leaf_node_taxa)
                     or ((not nd.is_leaf()) and suppress_internal_node_taxa) ):
                 label = nd.label
             else:

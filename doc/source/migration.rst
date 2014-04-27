@@ -146,3 +146,12 @@ The :class:`Tree` Class
     in-order or infix tree traversal has been added:
     :meth:`Tree.inorder_node_iter`, :meth:`Tree.inorder_edge_iter()`.
 
+NEWICK-format Reading
+=====================
+
+* The ``suppress_external_taxon_labels`` and ``suppress_external_node_labels`` keyword
+  arguments have been replaced by ``suppress_leaf_taxon_labels`` and
+  ``suppress_leaf_node_labels``, respectively. This is for consistency with the
+  rest of the library (including writing in NEWICK-format), which uses the term
+  "leaf" rather than "external".
+

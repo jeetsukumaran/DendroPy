@@ -112,7 +112,7 @@ class NewickReader(ioservice.DataReader):
             " supported: trees with duplicate node labels can only be"
             " processed if the labels are not parsed as operational taxonomic"
             " unit concepts but instead as simply node labels by specifying"
-            " 'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
+            " 'suppress_internal_node_taxa=True, suppress_leaf_node_taxa=True'."
             " Duplicate taxon labels: {}").format(message)
             NewickReader.NewickReaderError.__init__(self,
                     message=detailed,
@@ -177,10 +177,10 @@ class NewickReader(ioservice.DataReader):
             If `False`, internal node labels will be instantantiated into
             :class:`Taxon` objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
-        suppress_external_node_taxa : boolean, default: `False`
-            If `False`, external node labels will be instantantiated into
-            :class:`Taxon` objects. If `True`, external node labels
-            will *not* be instantantiated as strings.
+        suppress_leaf_node_taxa : boolean, default: `False`
+            If `False`, leaf (external) node labels will be instantantiated
+            into :class:`Taxon` objects. If `True`, leaff (external) node
+            labels will *not* be instantantiated as strings.
         """
 
         self._rooting = None
@@ -227,7 +227,7 @@ class NewickReader(ioservice.DataReader):
                 " supported: trees with duplicate node labels can only be"
                 " processed if the labels are not parsed as operational taxonomic"
                 " unit concepts but instead as simply node labels by specifying"
-                " 'suppress_internal_node_taxa=True, suppress_external_node_taxa=True'."
+                " 'suppress_internal_node_taxa=True, suppress_leaf_node_taxa=True'."
             )
         # self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
@@ -241,7 +241,8 @@ class NewickReader(ioservice.DataReader):
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
         self.preserve_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
-        self.suppress_external_node_taxa = kwargs.pop("suppress_external_node_taxa", False)
+        self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
+        self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", False)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -599,7 +600,7 @@ class NewickReader(ioservice.DataReader):
                     else:
                         label = nexus_tokenizer.current_token
                     if ( (is_internal_node and self.suppress_internal_node_taxa)
-                            or ((not is_internal_node) and self.suppress_external_node_taxa) ):
+                            or ((not is_internal_node) and self.suppress_leaf_node_taxa) ):
                         current_node.label = label
                     else:
                         node_taxon = taxon_symbol_map_func(label)

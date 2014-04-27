@@ -39,7 +39,7 @@ class MockTreeListGenerator(object):
             taxon_namespace=None,
             label=None,
             suppress_internal_node_taxa=False,
-            suppress_external_node_taxa=False):
+            suppress_leaf_node_taxa=False):
         MockTreeListGenerator.tree_counter += 1
         if taxon_namespace is None:
             taxon_namespace = dendropy.TaxonNamespace()
@@ -57,7 +57,7 @@ class MockTreeListGenerator(object):
         tax_labels = set()
         for nd in t1:
             is_leaf = nd.is_leaf()
-            if is_leaf and not suppress_external_node_taxa:
+            if is_leaf and not suppress_leaf_node_taxa:
                 tax1 = t1.taxon_namespace.require_taxon(nd.label)
                 nd.taxon = tax1
                 tax_labels.add(nd.label)
@@ -77,14 +77,14 @@ class MockTreeListGenerator(object):
             taxon_namespace=None,
             label=None,
             suppress_internal_node_taxa=False,
-            suppress_external_node_taxa=False):
+            suppress_leaf_node_taxa=False):
         trees = []
         for idx in range(num_trees):
             t1 = self.get_mock_tree(
                     taxon_namespace=taxon_namespace,
                     label=label,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
-                    suppress_external_node_taxa=suppress_external_node_taxa)
+                    suppress_leaf_node_taxa=suppress_leaf_node_taxa)
             trees.append(t1)
         return trees
 
@@ -93,7 +93,7 @@ class MockTreeListGenerator(object):
             taxon_namespace=None,
             label=None,
             suppress_internal_node_taxa=False,
-            suppress_external_node_taxa=False):
+            suppress_leaf_node_taxa=False):
         if taxon_namespace is None:
             taxon_namespace = dendropy.TaxonNamespace()
         tlist1 = TreeList(label="1",
@@ -103,7 +103,7 @@ class MockTreeListGenerator(object):
                     taxon_namespace=taxon_namespace,
                     label=label,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
-                    suppress_external_node_taxa=suppress_external_node_taxa)
+                    suppress_leaf_node_taxa=suppress_leaf_node_taxa)
             assert t1.taxon_namespace is tlist1.taxon_namespace
             tlist1.append(t1)
         return tlist1
@@ -117,13 +117,13 @@ class MockTreeListGenerator(object):
                 taxon_namespace=tree_list_taxon_namespace,
                 label=None,
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         trees = self.get_mock_trees(
                 num_trees=num_trees,
                 taxon_namespace=list_of_trees_taxon_namespace,
                 label=None,
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         return tlist, trees
 
 class TestTreeListBasicOperations(
@@ -244,7 +244,7 @@ class TestTreeListBasicOperations(
                 taxon_namespace=None,
                 label=None,
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.assertEqual(len(source_trees), 5)
         source_tree_labels = [t.label for t in source_trees]
         self.assertEqual(len(source_tree_labels), len(source_trees))
@@ -513,7 +513,7 @@ class TestTreeListBasicOperations(
                 taxon_namespace=None,
                 label=None,
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.assertEqual(len(source_trees), 5)
         source_tree_labels = [t.label for t in source_trees]
         self.assertEqual(len(source_tree_labels), len(source_trees))
@@ -668,7 +668,7 @@ class TestTreeListUpdateTaxonNamespace(
         for idx in range(5):
             tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                     suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
+                    suppress_leaf_node_taxa=True)
             trees.append(tree1)
         self.expected_labels = set()
         self.expected_taxa = set()
@@ -720,7 +720,7 @@ class TestTreeListUpdateTaxonNamespace(
         for idx in range(5):
             tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                     suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True,
+                    suppress_leaf_node_taxa=True,
                     taxon_namespace=tns)
             trees.append(tree1)
         tlst = dendropy.TreeList(taxon_namespace=tns)
@@ -761,7 +761,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         for idx in range(8):
             tree, anodes, lnodes, inodes = self.get_tree(
                     suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True,
+                    suppress_leaf_node_taxa=True,
                     taxon_namespace=tns)
             trees.append(tree)
         self.node_label_to_taxon_label_map = {
@@ -861,7 +861,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         for idx in range(5):
             tree, anodes, lnodes, inodes = self.get_tree(
                     suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False,
+                    suppress_leaf_node_taxa=False,
                     taxon_namespace=tns)
             trees.append(tree)
         tree_list = dendropy.TreeList(taxon_namespace=tns)
@@ -934,7 +934,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         for idx in range(5):
             tree, anodes, lnodes, inodes = self.get_tree(
                     suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False,
+                    suppress_leaf_node_taxa=False,
                     taxon_namespace=tns)
             trees.append(tree)
         tree_list = dendropy.TreeList(taxon_namespace=tns)
@@ -1013,14 +1013,14 @@ class TestTreeListAppend(
         self.foreign_tns = dendropy.TaxonNamespace()
         self.foreign_tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False,
+                suppress_leaf_node_taxa=False,
                 taxon_namespace=self.foreign_tns)
         for nd in self.foreign_tree:
             nd.original_taxon = nd.taxon
         self.check_tns = dendropy.TaxonNamespace()
         self.check_tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False,
+                suppress_leaf_node_taxa=False,
                 taxon_namespace=self.check_tns)
 
     def test_append_default(self):
@@ -1051,7 +1051,7 @@ class TestTreeListAppend(
             self.assertEqual(len(self.tree_list.taxon_namespace), 0)
             native_tree, anodes, lnodes, inodes = self.get_tree(
                     suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False,
+                    suppress_leaf_node_taxa=False,
                     taxon_namespace=self.native_tns)
             self.assertEqual(len(self.tree_list.taxon_namespace), len(self.postorder_sequence))
             self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
@@ -1140,7 +1140,7 @@ class TreeListCreatingAndCloning(
         self.num_trees = 5
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.original_taxon_labels = [t.label for t in tree1.taxon_namespace]
         assert len(self.original_taxon_labels) == len(anodes1)
 
@@ -1150,7 +1150,7 @@ class TreeListCreatingAndCloning(
         for idx in range(self.num_trees):
             tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                     suppress_internal_node_taxa=False,
-                    suppress_external_node_taxa=False,
+                    suppress_leaf_node_taxa=False,
                     taxon_namespace=tlist1.taxon_namespace)
             self.add_tree_annotations(tree1)
             tlist1.append(tree1)

@@ -101,7 +101,7 @@ class TestTreeCopying(
 
     def test_copy(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.add_annotations(tree1)
         for tree2 in (
                 # tree1.clone(0),
@@ -126,7 +126,7 @@ class TestTreeCopying(
 
     def test_deepcopy_including_namespace(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.add_annotations(tree1)
         for idx, tree2 in enumerate((
                 tree1.clone(2),
@@ -149,7 +149,7 @@ class TestTreeCopying(
 
     def test_deepcopy_excluding_namespace(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         self.add_annotations(tree1)
         tree2 = dendropy.Tree(tree1, taxon_namespace=dendropy.TaxonNamespace())
         self.compare_distinct_trees(tree1, tree2,
@@ -164,7 +164,7 @@ class TestSpecialTreeConstruction(
     def test_construction_from_another_tree_different_label(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         tree1.label = "tree1"
         self.assertEqual(tree1.label, "tree1")
         tree2 = dendropy.Tree(tree1, label="tree2")
@@ -175,14 +175,14 @@ class TestSpecialTreeConstruction(
     def test_construction_from_given_seed_node(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         tree2 = dendropy.Tree(seed_node=tree1.seed_node)
         self.assertIs(tree2.seed_node, tree1.seed_node)
 
     def test_construction_from_given_seed_node(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         tree2 = dendropy.Tree(seed_node=tree1.seed_node)
         self.assertIs(tree2.seed_node, tree1.seed_node)
         self.assertIsNot(tree1.taxon_namespace, tree2.taxon_namespace)
@@ -197,7 +197,7 @@ class TestSpecialTreeConstruction(
     def test_cloning_construction_with_taxon_namespace(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         tns = dendropy.TaxonNamespace()
         tree2 = dendropy.Tree(tree1, taxon_namespace=tns)
         self.assertIs(tree2.taxon_namespace, tns)

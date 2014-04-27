@@ -36,7 +36,7 @@ class TestTreeUpdateTaxonNamespace(
     def setUp(self):
         self.tree1, self.anodes1, self.lnodes1, self.inodes1 = self.get_tree(
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True)
+                suppress_leaf_node_taxa=True)
         self.expected_labels = set([nd.label for nd in self.anodes1 if nd.label is not None])
         self.expected_taxa = set()
         for nd in self.tree1:
@@ -49,7 +49,7 @@ class TestTreeUpdateTaxonNamespace(
     def test_noop_update_with_no_taxa(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True)
+                suppress_leaf_node_taxa=True)
         original_tns = tree.taxon_namespace
         self.assertEqual(len(original_tns), 0)
         tree.update_taxon_namespace()
@@ -59,7 +59,7 @@ class TestTreeUpdateTaxonNamespace(
     def test_noop_update(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         original_tns = tree.taxon_namespace
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
@@ -85,7 +85,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def setUp(self):
         self.tree, self.anodes, self.lnodes, self.inodes = self.get_tree(
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True)
+                suppress_leaf_node_taxa=True)
         self.node_label_to_taxon_label_map = {
             "a" : "a",
             "b" : "a",
@@ -185,7 +185,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_noop_taxon_namespace_reconstruction(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         original_tns = tree.taxon_namespace
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
@@ -286,7 +286,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_noop_migrate_taxon_namespace(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=False,
-                suppress_external_node_taxa=False)
+                suppress_leaf_node_taxa=False)
         original_tns = tree.taxon_namespace
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
@@ -303,7 +303,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_simple_migrate_taxon_namespace(self):
         tree, anodes, lnodes, inodes = self.get_tree(
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True)
+                suppress_leaf_node_taxa=True)
         original_tns = tree.taxon_namespace
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]

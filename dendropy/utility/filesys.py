@@ -46,7 +46,8 @@ def pre_py34_open(file,
     if errors is not None:
         raise NotImplementedError
     if newline is None:
-        mode = mode + "U"
+        if mode.startswith("r"):
+            mode = mode + "U"
     else:
         raise NotImplementedError
     if closefd is not True:

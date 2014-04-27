@@ -52,7 +52,7 @@ class NewickWriter(ioservice.DataWriter):
             `False`, and a particular leaf node has both a label and is
             associated with taxa, then the final label for that node will be
             the concatentation of the two labels, separated by the value given
-            in `nodel_label_element_separator`
+            in `node_label_element_separator`
         suppress_leaf_node_labels : boolean, default: `True`
             If `False`, then node labels (if available) will be printed for
             leaves. Defaults to `True`: do not print leaf node labels. Note
@@ -64,7 +64,7 @@ class NewickWriter(ioservice.DataWriter):
             `False`, and a particular leaf node has both a label and is
             associated with taxa, then the final label for that node will be
             the concatentation of the two labels, separated by the value given
-            in `nodel_label_element_separator`
+            in `node_label_element_separator`
         suppress_internal_taxon_labels : boolean, default: `False`
             If `True`, then taxon labels will not be printed for internal
             nodes. Default is `False`: print taxon labels for internal nodes.
@@ -72,7 +72,7 @@ class NewickWriter(ioservice.DataWriter):
             `suppress_leaf_node_labels` are `False`, and a particular leaf node
             has both a label and is associated with taxa, then the final label
             for that node will be the concatentation of the two labels,
-            separated by the value given in `nodel_label_element_separator`
+            separated by the value given in `node_label_element_separator`
         suppress_internal_node_labels : boolean, default: `False`
             If `True`, then node labels will not be printed for internal nodes.
             Default is `False`: print node labels for internal nodes.  If both
@@ -80,7 +80,7 @@ class NewickWriter(ioservice.DataWriter):
             `False`, and a particular leaf node has both a label and is
             associated with taxa, then the final label for that node will be
             the concatentation of the two labels, separated by the value given
-            in `nodel_label_element_separator`
+            in `node_label_element_separator`
         suppress_rooting : boolean, default: `False`
             If `True`, will not write rooting token ('[&R]' or '[&U]').
             Default is `False`: rooting token will be written.

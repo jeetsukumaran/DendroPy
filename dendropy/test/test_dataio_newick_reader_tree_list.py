@@ -59,7 +59,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
                             distinct_nodes_and_edges=False)
 
@@ -112,7 +112,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                             tree_file_title=tree_file_title,
                             check_tree_idx=tree_idx,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
                             distinct_nodes_and_edges=False)
 
@@ -123,7 +123,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                             tree_file_title=preloaded_tree_file_title,
                             check_tree_idx=tree_idx,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
                             distinct_nodes_and_edges=False)
 
@@ -134,10 +134,10 @@ class NewickTreeListReaderStandardTestTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for suppress_internal_node_taxa in [True, False]:
-            for suppress_external_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
                 kwargs = {
                         "suppress_internal_node_taxa": suppress_internal_node_taxa,
-                        "suppress_external_node_taxa": suppress_external_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
                 }
                 with open(tree_filepath, "r") as tree_stream:
                     approaches = (
@@ -151,7 +151,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                                 tree_list=tree_list,
                                 tree_file_title=tree_file_title,
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
-                                suppress_external_node_taxa=suppress_external_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                                 metadata_extracted=False,
                                 distinct_nodes_and_edges=False)
 
@@ -162,10 +162,10 @@ class NewickTreeListReaderStandardTestTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for suppress_internal_node_taxa in [True, False]:
-            for suppress_external_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
                 kwargs = {
                         "suppress_internal_node_taxa": suppress_internal_node_taxa,
-                        "suppress_external_node_taxa": suppress_external_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
                 }
                 with open(tree_filepath, "r") as tree_stream:
                     approaches = (
@@ -183,7 +183,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                                 tree_list=tree_list,
                                 tree_file_title=tree_file_title,
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
-                                suppress_external_node_taxa=suppress_external_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                                 metadata_extracted=False,
                                 distinct_nodes_and_edges=False)
 
@@ -213,13 +213,13 @@ class NewickTreeListReaderStandardTestTreeTest(
                             collection_offset=0,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False)
+                            suppress_leaf_node_taxa=False)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             distinct_nodes_and_edges=False)
 
     def test_tree_offset_newick_read(self):
@@ -249,13 +249,13 @@ class NewickTreeListReaderStandardTestTreeTest(
                             collection_offset=0,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False)
+                            suppress_leaf_node_taxa=False)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             distinct_nodes_and_edges=False)
 
     def test_tree_offset_without_collection_offset_newick_get(self):
@@ -402,13 +402,13 @@ class NewickTreeListReaderMultipleRedundantSemiColons(
         trees = dendropy.TreeList.get_from_string(s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=False,
+                suppress_leaf_node_taxa=False,
                 suppress_edge_lengths=False)
         self.assertEqual(len(trees), 2)
         for t in trees:
             self.verify_curated_tree(t,
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=False,
+                suppress_leaf_node_taxa=False,
                 suppress_edge_lengths=False)
 
 class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
@@ -461,7 +461,7 @@ class NewickTreeListMetadataTest(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             metadata_extracted=True,
                             distinct_nodes_and_edges=False)
 

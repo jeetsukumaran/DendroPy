@@ -56,13 +56,13 @@ class NewickTreeReaderBasic(
                 else:
                     expected_suppress_internal_node_taxa = suppress_internal_node_taxa
                     reader_kwargs["suppress_internal_node_taxa"] = suppress_internal_node_taxa
-                for suppress_external_node_taxa in (None, False, True):
-                    if suppress_external_node_taxa is None:
-                        expected_suppress_external_node_taxa = False
-                        reader_kwargs.pop("suppress_external_node_taxa", None)
+                for suppress_leaf_node_taxa in (None, False, True):
+                    if suppress_leaf_node_taxa is None:
+                        expected_suppress_leaf_node_taxa = False
+                        reader_kwargs.pop("suppress_leaf_node_taxa", None)
                     else:
-                        expected_suppress_external_node_taxa = suppress_external_node_taxa
-                        reader_kwargs["suppress_external_node_taxa"] = suppress_external_node_taxa
+                        expected_suppress_leaf_node_taxa = suppress_leaf_node_taxa
+                        reader_kwargs["suppress_leaf_node_taxa"] = suppress_leaf_node_taxa
                     for suppress_edge_lengths in (None, False, True):
                         if suppress_edge_lengths is None:
                             expected_suppress_edge_lengths = False
@@ -83,7 +83,7 @@ class NewickTreeReaderBasic(
                                         )
                                 self.verify_curated_tree(t,
                                         suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
-                                        suppress_external_node_taxa=expected_suppress_external_node_taxa,
+                                        suppress_leaf_node_taxa=expected_suppress_leaf_node_taxa,
                                         suppress_edge_lengths=expected_suppress_edge_lengths)
                         with open(tree_filepath, "r") as tree_stream:
                             approaches = (
@@ -95,7 +95,7 @@ class NewickTreeReaderBasic(
                                 t = dendropy.Tree.get_from_string("(zzz1,(zzz2,(zzz3,zzz4)));",
                                         "newick",
                                         suppress_internal_node_taxa=False,
-                                        suppress_external_node_taxa=False,)
+                                        suppress_leaf_node_taxa=False,)
                                 tns0 = t.taxon_namespace
                                 self.assertIs(t.taxon_namespace, tns0)
                                 f = getattr(t, method)
@@ -103,7 +103,7 @@ class NewickTreeReaderBasic(
                                 f(src, "newick", **reader_kwargs)
                                 self.verify_curated_tree(t,
                                         suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
-                                        suppress_external_node_taxa=expected_suppress_external_node_taxa,
+                                        suppress_leaf_node_taxa=expected_suppress_leaf_node_taxa,
                                         suppress_edge_lengths=expected_suppress_edge_lengths)
 
     def test_rooting_weighting_and_tree_metadata_handling(self):
@@ -201,7 +201,7 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
         tree = dendropy.Tree.get_from_string(s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True)
+                suppress_leaf_node_taxa=True)
         expected_children = {
             'a': [],
             'b': [],
@@ -308,7 +308,7 @@ class NewickTreeDuplicateTaxa(
             tree = dendropy.Tree.get_from_string(s,
                     "newick",
                     suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
+                    suppress_leaf_node_taxa=True)
             labels = [nd.label for nd in tree]
             if sys.hexversion < 0x03000000:
                 self.assertItemsEqual(labels, expected_labels[sidx])
@@ -396,7 +396,7 @@ class NewickTreeQuotedLabels(unittest.TestCase):
                 """,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 )
         expected_edge_lens = {
             'T1 = 1.242e-10': 1.242e-10,
@@ -424,7 +424,7 @@ class CommentReadingTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 )
         for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
@@ -439,7 +439,7 @@ class CommentReadingTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 )
         for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
@@ -453,7 +453,7 @@ class CommentReadingTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 )
         for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
@@ -474,7 +474,7 @@ class CommentReadingTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 )
         for nd in tree:
             _LOG.info("%s: %s" % (nd.label, nd.comments))
@@ -491,7 +491,7 @@ class CommentReadingTests(unittest.TestCase):
             tree = dendropy.Tree.get_from_string(
                     tree_string,
                     "newick",
-                    suppress_external_node_taxa=True)
+                    suppress_leaf_node_taxa=True)
             for nd in tree:
                 exp_brlen = ord(nd.label[0]) - ord('a') + 1
                 self.assertEqual(nd.edge.length, exp_brlen)
@@ -502,8 +502,8 @@ class CommentReadingTests(unittest.TestCase):
     def test_anonymous_node_comment_association(self):
         tree_string1 = "[x1]([x2],[x3]([x4],[x5]([x6],[x7],[x8],[x9])[x10])[x11])[x12];"
         tree_string2 = "[x1](a[x2],[x3]([x4]b,[x5]([x6]c,[x7]d,[x8]e,[x9]f)g[x10])h[x11])i[x12];"
-        tree1 = dendropy.Tree.get_from_string(tree_string1, "newick", suppress_external_node_taxa=True)
-        tree2 = dendropy.Tree.get_from_string(tree_string2, "newick", suppress_external_node_taxa=True)
+        tree1 = dendropy.Tree.get_from_string(tree_string1, "newick", suppress_leaf_node_taxa=True)
+        tree2 = dendropy.Tree.get_from_string(tree_string2, "newick", suppress_leaf_node_taxa=True)
         expected_comments = {
                 "a": ["x2",],
                 "b": ["x4",],
@@ -559,7 +559,7 @@ class CommentMetaDataTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 extract_comment_metadata=True)
         self.check_results(tree)
 
@@ -570,7 +570,7 @@ class CommentMetaDataTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 extract_comment_metadata=True)
         self.check_results(tree)
 
@@ -580,7 +580,7 @@ class CommentMetaDataTests(unittest.TestCase):
                 s,
                 "newick",
                 suppress_internal_node_taxa=True,
-                suppress_external_node_taxa=True,
+                suppress_leaf_node_taxa=True,
                 extract_comment_metadata=True,
                 )
         self.assertEqual(tree.annotations.values_as_dict(), {'color': 'blue'})
@@ -739,7 +739,7 @@ class NewickTreeReaderOffsetTreeTest(
                             collection_offset=0,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             rooting="default-unrooted")
                     check_tree_idx = tree_offset
                     self.compare_to_check_tree(
@@ -747,7 +747,7 @@ class NewickTreeReaderOffsetTreeTest(
                             tree_file_title=tree_file_title,
                             check_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             distinct_nodes_and_edges=False)
 
     def test_offset_get_with_redundant_semicolons(self):
@@ -770,7 +770,7 @@ class NewickTreeReaderOffsetTreeTest(
                     collection_offset=0,
                     tree_offset=idx,
                     suppress_internal_node_taxa=True,
-                    suppress_external_node_taxa=True)
+                    suppress_leaf_node_taxa=True)
             self.assertEqual(tree.seed_node.label, expected_roots[idx])
             leaves = [nd.label for nd in tree.leaf_node_iter()]
             if sys.hexversion < 0x03000000:
@@ -813,7 +813,7 @@ class NewickTreeReaderOffsetTreeTest(
                             collection_offset=0,
                             tree_offset=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             rooting="default-unrooted")
                     self.assertIs(tree.taxon_namespace, tns0)
                     check_tree_idx = tree_offset
@@ -822,7 +822,7 @@ class NewickTreeReaderOffsetTreeTest(
                             tree_file_title=tree_file_title,
                             check_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
-                            suppress_external_node_taxa=False,
+                            suppress_leaf_node_taxa=False,
                             distinct_nodes_and_edges=False)
 
     def test_tree_offset_without_collection_offset_newick_get(self):
