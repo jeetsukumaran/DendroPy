@@ -112,8 +112,13 @@ class SandboxedFile(object):
         return self.fileobj
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.fileobj.flush()
-        self.fileobj.close()
+        try:
+            self.fileobj.flush()
+            self.fileobj.close()
+        except ValueError:
+            # If client code closes:
+            #   ValueError: I/O operation on closed file.
+            pass
         try:
             os.remove(self.filepath)
         except OSError:

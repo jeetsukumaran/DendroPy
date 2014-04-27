@@ -16,8 +16,71 @@
 ##
 ##############################################################################
 
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
+from dendropy.test.support import pathmap
 from dendropy.datamodel import base
 
+class ValidateWriteable(object):
+
+    def write_out_validate_equal_and_return(self,
+            writeable,
+            schema,
+            kwargs):
+        sio = StringIO()
+        writeable.write_to_stream(sio, schema, **kwargs)
+        s0 = sio.getvalue()
+        s1 = writeable.as_string(schema, **kwargs)
+        self.assertEqual(s0, s1)
+        with pathmap.SandboxedFile() as tempf:
+            writeable.write_to_path(tempf.name, schema, **kwargs)
+            tempf.flush()
+            tempf.close()
+            with open(tempf.name, "r") as src:
+                s2 = src.read()
+        self.assertEqual(s0, s2)
+        return s0
+
+class ValidateReadable(object):
+
+    def get_from(self,
+            object_type,
+            source_path,
+            schema,
+            kwargs):
+        results = []
+        with open(source_path, "r") as s0:
+            obj0 = object_type.get_from_stream(s0, schema, **kwargs)
+            results.append(obj0)
+        obj1 = object_type.get_from_path(source_path, schema, **kwargs)
+        results.append(obj1)
+        with open(source_path, "r") as s0:
+            s = s0.read()
+            obj2 = object_type.get_from_string(s, schema, **kwargs)
+        results.append(obj2)
+        return results
+
+    def read_from(self,
+            object_factory,
+            source_path,
+            schema,
+            kwargs):
+        results = []
+        obj0 = object_factory()
+        with open(source_path, "r") as s0:
+            obj0.read_from_stream(s0, schema, **kwargs)
+            results.append(obj0)
+        obj1 = object_factory()
+        obj1.read_from_path(source_path, schema, **kwargs)
+        results.append(obj1)
+        obj2 = object_factory()
+        with open(source_path, "r") as s0:
+            s = s0.read()
+            obj2.read_from_string(s, schema, **kwargs)
+        results.append(obj2)
+        return results
 
 class Comparator(object):
 

@@ -29,6 +29,7 @@ import random
 import dendropy
 from dendropy.utility import error
 from dendropy.dataio import newickreader
+from dendropy.test.support import compare_and_validate
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
@@ -69,14 +70,6 @@ class NewickTreeReaderBasic(
                         else:
                             expected_suppress_edge_lengths = suppress_edge_lengths
                             reader_kwargs["suppress_edge_lengths"] = suppress_edge_lengths
-                        # print("--")
-                        # print(suppress_internal_node_taxa,
-                        #         suppress_external_node_taxa,
-                        #         suppress_edge_lengths)
-                        # print(reader_kwargs)
-                        # print(expected_suppress_internal_node_taxa,
-                        #         expected_suppress_external_node_taxa,
-                        #         expected_suppress_edge_lengths)
                         with open(tree_filepath, "r") as tree_stream:
                             approaches = (
                                     (dendropy.Tree.get_from_path, tree_filepath),

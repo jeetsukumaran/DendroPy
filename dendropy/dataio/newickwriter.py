@@ -168,7 +168,7 @@ class NewickWriter(ioservice.DataWriter):
         self.suppress_internal_taxon_labels = kwargs.pop("suppress_internal_taxon_labels", False)
         # self.suppress_internal_taxon_labels = not kwargs.pop("internal_labels", not sef.suppress_internal_taxon_labels) # legacy
         self.suppress_internal_node_labels = kwargs.pop("suppress_internal_node_labels", False)
-        self.suppress_internal_node_labels = not kwargs.pop("internal_labels", not self.suppress_internal_node_labels) # legacy
+        # self.suppress_internal_node_labels = not kwargs.pop("internal_labels", not self.suppress_internal_node_labels) # legacy
         self.suppress_rooting = kwargs.pop("suppress_rooting", False)
         # self.suppress_rooting = not kwargs.pop("write_rooting", not self.suppress_rooting) # legacy
         self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
@@ -210,6 +210,18 @@ class NewickWriter(ioservice.DataWriter):
         for tree in tree_list:
             self._write_tree(tree, stream)
             stream.write("\n")
+        # In NEWICK format, no clear way to distinguish between
+        # annotations/comments associated with tree collection and
+        # annotations/comments associated with first tree. So we place them at
+        # *end* of document.
+        if ((not self.suppress_annotations) or self.annotations_as_nhx) and (hasattr(tree_list, "_annotations")):
+            annotation_comments = nexusprocessing.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx)
+        else:
+            annotation_comments = ""
+        treelist_comments = self._compose_comment_string(tree_list)
+        stream.write("{}{}".format(
+                annotation_comments,
+                treelist_comments))
 
     def _write_tree(self, tree, stream):
         """
@@ -276,7 +288,7 @@ class NewickWriter(ioservice.DataWriter):
                 if len(tag_parts) > 0:
                     tag = self.node_label_element_separator.join(tag_parts)
                 else:
-                    return "_" # anonymous leaf
+                    return "" # anonymous leaf
             else:
                 if hasattr(node, 'taxon') \
                         and node.taxon \
@@ -291,7 +303,7 @@ class NewickWriter(ioservice.DataWriter):
                 if len(tag_parts) > 0:
                     tag = self.node_label_element_separator.join(tag_parts)
                 else:
-                    return "" # nada
+                    return ""
         if tag:
             tag = nexusprocessing.escape_nexus_token(tag,
                     preserve_spaces=self.preserve_spaces,
@@ -320,15 +332,8 @@ class NewickWriter(ioservice.DataWriter):
         if not self.suppress_annotations or self.annotations_as_nhx:
             node_annotation_comments = nexusprocessing.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexusprocessing.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
-            statement = statement + node_annotation_comments + edge_annotation_comments
-        #if self.nhx_key_to_func:
-        #    nhx_to_print = []
-        #    for k, v in self.nhx_key_to_func.items():
-        #        r = v(node.edge)
-        #        if r is not None:
-        #            nhx_to_print.append("%s=%s" % (k, str(r)))
-        #    if nhx_to_print:
-        #        statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
+            edge_comments = self._compose_comment_string(node.edge)
+            statement = statement + node_annotation_comments + edge_annotation_comments + edge_comments
         node_comment_str = self._compose_comment_string(node)
         statement += node_comment_str
         return statement

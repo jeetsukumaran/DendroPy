@@ -1990,7 +1990,9 @@ class Tree(
 
         """
         writer = dataio.get_writer(schema, **kwargs)
-        writer.write_tree(self, stream)
+        tree_list = TreeList(taxon_namespace=self.taxon_namespace)
+        tree_list.append(self, taxon_import_strategy="add")
+        writer.write_tree_list(tree_list, stream)
 
     ###########################################################################
     ### Node and Edge Collection Access
@@ -4539,6 +4541,7 @@ class TreeList(
             taxon.TaxonNamespaceAssociated.__init__(self,
                     taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self._trees = []
+            self.comments = []
             if len(args) == 1:
                 for aidx, a in enumerate(args[0]):
                     if not isinstance(a, Tree):

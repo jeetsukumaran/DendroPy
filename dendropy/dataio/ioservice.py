@@ -417,11 +417,11 @@ class DataWriter(IOService):
                 char_matrices=None,
                 global_annotations_target=None)
 
-    def write_tree(self, tree, stream):
+    def write_tree_lists(self, tree_lists, stream):
         self._write(
                 stream=stream,
                 taxon_namespaces=None,
-                tree_lists=[[tree]],
+                tree_lists=tree_lists,
                 char_matrices=None,
                 global_annotations_target=None)
 
