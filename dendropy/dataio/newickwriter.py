@@ -46,41 +46,21 @@ class NewickWriter(ioservice.DataWriter):
         Keyword Arguments
         -----------------
         suppress_leaf_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels will not be printed for leaves.
-            Default is `False`:  print leaf taxon labels.  If both
-            `suppress_leaf_taxon_labels` and `suppress_leaf_node_labels` are
-            `False`, and a particular leaf node has both a label and is
-            associated with taxa, then the final label for that node will be
-            the concatentation of the two labels, separated by the value given
-            in `node_label_element_separator`
+            If `True`, then taxon labels will not be rendered for leaves.
+            Default is `False`: render leaf taxon labels. See notes below for
+            details.
         suppress_leaf_node_labels : boolean, default: `True`
             If `False`, then node labels (if available) will be printed for
-            leaves. Defaults to `True`: do not print leaf node labels. Note
-            that DendroPy distinguishes between *taxon* labels and *node*
-            labels. In a typical NEWICK string, taxon labels are printed for
-            leaf nodes, while leaf node labels are ignored (hence the default
-            `True` setting to suppress leaf node labels).  If both
-            `suppress_leaf_taxon_labels` and `suppress_leaf_node_labels` are
-            `False`, and a particular leaf node has both a label and is
-            associated with taxa, then the final label for that node will be
-            the concatentation of the two labels, separated by the value given
-            in `node_label_element_separator`
+            leaves. Defaults to `True`: do not render leaf node labels. See
+            notes below for details.
         suppress_internal_taxon_labels : boolean, default: `False`
             If `True`, then taxon labels will not be printed for internal
             nodes. Default is `False`: print taxon labels for internal nodes.
-            If both `suppress_leaf_taxon_labels` and
-            `suppress_leaf_node_labels` are `False`, and a particular leaf node
-            has both a label and is associated with taxa, then the final label
-            for that node will be the concatentation of the two labels,
-            separated by the value given in `node_label_element_separator`
+            See notes below for details.
         suppress_internal_node_labels : boolean, default: `False`
             If `True`, then node labels will not be printed for internal nodes.
-            Default is `False`: print node labels for internal nodes.  If both
-            `suppress_leaf_taxon_labels` and `suppress_leaf_node_labels` are
-            `False`, and a particular leaf node has both a label and is
-            associated with taxa, then the final label for that node will be
-            the concatentation of the two labels, separated by the value given
-            in `node_label_element_separator`
+            Default is `False`: print node labels for internal nodes. See notes
+            below for details.
         suppress_rooting : boolean, default: `False`
             If `True`, will not write rooting token ('[&R]' or '[&U]').
             Default is `False`: rooting token will be written.
@@ -151,6 +131,36 @@ class NewickWriter(ioservice.DataWriter):
                     node_label_element_separator=' ',
                     node_label_compose_func=None,
                     edge_label_compose_func=None)
+        Notes
+        -----
+
+        DendroPy distinguishes between *taxon* labels and *node*
+        labels.
+
+        In a NEWICK string, however, no such distinction is possible, and
+        any one node can only be rendered with a single token or symbol. Thus,
+        if there is more than one source of label available for a particular
+        node (e.g., if both `suppress_leaf_taxon_labels` and
+        `suppress_leaf_node_labels` are `False`, and a particular leaf
+        node has both a taxon *and* a label associated with it), then
+        the node symbol will be rendered as concatenation of the unsuppressed
+        candidate labels, with each candidate label separated by the value
+        given in `node_label_element_separator`. Note that this concatenated
+        label requires special handling when being re-read to avoid being
+        interpreted as the operational taxonomic unit concept label in
+        its entirety. These defaults can all be overridden using the
+        various keywords, or a custom label can be composed for the
+        node by passing an appropriate function object via the
+        `node_label_compose_func` argument.
+
+        Note that, in typical NEWICK usage, labels of leaf nodes represent
+        operational taxonomic unit concepts, and thus the default setting to
+        render leaf taxon labels but suppress leaf node labels. Internal node
+        labels, on the other hand, are typically used both to represent
+        operational taxonomic unit concepts (e.g., ancestral taxa) as well as
+        other concepts (e.g., support or geographic range), and thus the
+        default internal node rendering is to not to suppress either the taxon
+        labels or the node labels.
 
         """
         legacy = {
@@ -187,6 +197,8 @@ class NewickWriter(ioservice.DataWriter):
         self.edge_label_compose_func = kwargs.pop("edge_label_compose_func", None)
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def _format_edge_length(self, edge):
         """
