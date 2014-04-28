@@ -29,6 +29,7 @@ import random
 import dendropy
 from dendropy.utility import error
 from dendropy.dataio import newickreader
+from dendropy.test.support import dendropytest
 from dendropy.test.support import compare_and_validate
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
@@ -40,7 +41,7 @@ if sys.hexversion < 0x03040000:
 
 class NewickTreeReaderBasic(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_basic_parsing(self):
         tree_string = self.get_newick_string()
@@ -189,7 +190,7 @@ class NewickTreeReaderBasic(
                                 self.assertEqual(t.annotations.get_value("color", None), "blue")
                                 self.assertEqual(t.annotations.get_value("Why", None), "42")
 
-class NewickTreeMultifurcatingtree(unittest.TestCase):
+class NewickTreeMultifurcatingtree(dendropytest.ExtendedTestCase):
 
     def test_multifurcating(self):
         s = """\
@@ -254,10 +255,7 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
         }
         for nd in tree:
             children = [ch.label for ch in nd.child_node_iter()]
-            if sys.hexversion < 0x03020000:
-                self.assertItemsEqual(children, expected_children[nd.label])
-            else:
-                self.assertCountEqual(children, expected_children[nd.label])
+            self.assertCountEqual(children, expected_children[nd.label])
             if nd.parent_node is not None:
                 self.assertEqual(nd.parent_node.label, expected_parent[nd.label])
             else:
@@ -270,7 +268,7 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
                 self.assertEqual(comment, nd.label)
             self.assertEqual(nd.edge.length, ord(nd.label) - ord('a') + 1)
 
-class NewickTreeInvalidStatements(unittest.TestCase):
+class NewickTreeInvalidStatements(dendropytest.ExtendedTestCase):
 
     def test_invalid_trees(self):
         invalid_tree_statements = (
@@ -291,7 +289,7 @@ class NewickTreeInvalidStatements(unittest.TestCase):
 
 class NewickTreeDuplicateTaxa(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_duplicate_taxa1(self):
         tree_statements = (
@@ -310,12 +308,9 @@ class NewickTreeDuplicateTaxa(
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=True)
             labels = [nd.label for nd in tree]
-            if sys.hexversion < 0x03020000:
-                self.assertItemsEqual(labels, expected_labels[sidx])
-            else:
-                self.assertCountEqual(labels, expected_labels[sidx])
+            self.assertCountEqual(labels, expected_labels[sidx])
 
-class NewickTreeAnonymousTaxa(unittest.TestCase):
+class NewickTreeAnonymousTaxa(dendropytest.ExtendedTestCase):
 
     def test_anonymous_taxa_no_error(self):
         s = "((,),(,(,(,))));"
@@ -335,12 +330,8 @@ class NewickTreeAnonymousTaxa(unittest.TestCase):
         self.assertEqual(len(internal), 5)
         leaf_labels = [nd.comments[0] for nd in leaves]
         internal_labels = [nd.comments[0] for nd in internal]
-        if sys.hexversion < 0x03020000:
-            self.assertItemsEqual(leaf_labels, ('a','b','d','e','f','g'))
-            self.assertItemsEqual(internal_labels, ('c','h','i','j','k'))
-        else:
-            self.assertCountEqual(leaf_labels, ('a','b','d','e','f','g'))
-            self.assertCountEqual(internal_labels, ('c','h','i','j','k'))
+        self.assertCountEqual(leaf_labels, ('a','b','d','e','f','g'))
+        self.assertCountEqual(internal_labels, ('c','h','i','j','k'))
         for nd in tree:
             x = nd.comments[0]
             k = ord(x) - ord('a') + 1
@@ -348,7 +339,7 @@ class NewickTreeAnonymousTaxa(unittest.TestCase):
 
 class NewickTreeUnsupportedKeywordArguments(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_unsupported_keyword_arguments(self):
         tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
@@ -382,7 +373,7 @@ class NewickTreeUnsupportedKeywordArguments(
                     f(src, "newick", **reader_kwargs)
 
 
-class NewickTreeQuotedLabels(unittest.TestCase):
+class NewickTreeQuotedLabels(dendropytest.ExtendedTestCase):
 
     def test_edge_lengths1(self):
         tree = dendropy.Tree.get_from_string(
@@ -415,7 +406,7 @@ class NewickTreeQuotedLabels(unittest.TestCase):
             self.assertAlmostEqual(nd.edge.length, expected_edge_lens[nd.label])
 
 
-class CommentReadingTests(unittest.TestCase):
+class CommentReadingTests(dendropytest.ExtendedTestCase):
 
     def test_simple_post_node_comments(self):
         s = "((A[A]:1,B[B]:1)AB[AB]:1,(C[C]:1,D[D]:1)CD[CD]:1)Root[Root]:1;"
@@ -522,7 +513,7 @@ class CommentReadingTests(unittest.TestCase):
             self.assertEqual(nd1.comments, expected_comments[nd2.label])
 
 
-class CommentMetaDataTests(unittest.TestCase):
+class CommentMetaDataTests(dendropytest.ExtendedTestCase):
     figtree_metadata_str = """[&Tree1=1,Tree2=2, Tree3={1,2,3}](([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
                  [xxx]B[&B1=1,B2=2,B3={1,2,3}][B]:[B][B]1[B][B])
                  [xxx]AB[&AB1=1,AB2=2,AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
@@ -592,7 +583,7 @@ class CommentMetaDataTests(unittest.TestCase):
         for idx, nd in enumerate(tree.postorder_node_iter()):
             self.assertEqual(nd.annotations.values_as_dict(), expected[idx])
 
-class NewickTreeTaxonNamespaceTest(unittest.TestCase):
+class NewickTreeTaxonNamespaceTest(dendropytest.ExtendedTestCase):
 
     def test_namespace_passing(self):
         tns1 = dendropy.TaxonNamespace()
@@ -613,7 +604,7 @@ class NewickTreeTaxonNamespaceTest(unittest.TestCase):
                     s3, "newick",
                     taxon_namespace=tns2)
 
-class NewickTreeLabelParsingTest(unittest.TestCase):
+class NewickTreeLabelParsingTest(dendropytest.ExtendedTestCase):
 
     def test_basic_taxa(self):
         s = "(a1:3.14e-2,(b2:1.2,(c3:0.5,d4:0.7)e5:111)f6:222)g7:333;"
@@ -702,7 +693,7 @@ class NewickTreeLabelParsingTest(unittest.TestCase):
 
 class NewickTreeReaderOffsetTreeTest(
         datagen_standard_file_test_trees.StandardTestTreeChecker,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
 
@@ -773,10 +764,7 @@ class NewickTreeReaderOffsetTreeTest(
                     suppress_leaf_node_taxa=True)
             self.assertEqual(tree.seed_node.label, expected_roots[idx])
             leaves = [nd.label for nd in tree.leaf_node_iter()]
-            if sys.hexversion < 0x03020000:
-                self.assertItemsEqual(leaves, expected_leaves[idx])
-            else:
-                self.assertCountEqual(leaves, expected_leaves[idx])
+            self.assertCountEqual(leaves, expected_leaves[idx])
 
     def test_tree_offset_newick_read(self):
         tree_file_title = "standard-test-trees-n33-x100a"

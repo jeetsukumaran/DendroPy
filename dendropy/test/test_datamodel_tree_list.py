@@ -27,6 +27,7 @@ import collections
 import dendropy
 import random
 from dendropy import Taxon, TaxonNamespace, Tree, TreeList
+from dendropy.test.support import dendropytest
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import compare_and_validate
 
@@ -661,7 +662,7 @@ class TreeListIdentity(unittest.TestCase):
 
 class TestTreeListUpdateTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def setUp(self):
         trees = []
@@ -744,16 +745,12 @@ class TestTreeListUpdateTaxonNamespace(
         self.assertIs(self.tree_list.taxon_namespace, original_tns)
         new_taxa = [t for t in original_tns]
         new_labels = [t.label for t in original_tns]
-        if sys.hexversion < 0x03020000:
-            self.assertItemsEqual(new_taxa, self.expected_taxa)
-            self.assertItemsEqual(new_labels, self.expected_labels)
-        else:
-            self.assertCountEqual(new_taxa, self.expected_taxa)
-            self.assertCountEqual(new_labels, self.expected_labels)
+        self.assertCountEqual(new_taxa, self.expected_taxa)
+        self.assertCountEqual(new_labels, self.expected_labels)
 
 class TestTreeListMigrateAndReconstructTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def setUp(self):
         tns = dendropy.TaxonNamespace()
@@ -876,10 +873,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
         original_labels = [t.label for t in tns]
         new_labels = [t.label for t in new_tns]
-        if sys.hexversion < 0x03020000:
-            self.assertItemsEqual(new_labels, original_labels)
-        else:
-            self.assertCountEqual(new_labels, original_labels)
+        self.assertCountEqual(new_labels, original_labels)
         for tree in tree_list:
             self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
             for nd in tree:
@@ -950,10 +944,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
         original_labels = [t.label for t in tns]
         new_labels = [t.label for t in new_tns]
-        if sys.hexversion < 0x03020000:
-            self.assertItemsEqual(new_labels, original_labels)
-        else:
-            self.assertCountEqual(new_labels, original_labels)
+        self.assertCountEqual(new_labels, original_labels)
         for tree in tree_list:
             self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
             for nd in tree:

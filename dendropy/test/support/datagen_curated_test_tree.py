@@ -317,10 +317,7 @@ class CuratedTestTree(object):
             nd.canonical_label = exp_nd
         for nd in tree:
             children = [c.canonical_label for c in nd.child_node_iter()]
-            if sys.hexversion < 0x03020000:
-                self.assertItemsEqual(children, self.node_children[nd.canonical_label])
-            else:
-                self.assertCountEqual(children, self.node_children[nd.canonical_label])
+            self.assertCountEqual(children, self.node_children[nd.canonical_label])
             if nd.parent_node is None:
                 self.assertEqual(len(self.node_ancestors[nd.canonical_label]), 0)
             else:

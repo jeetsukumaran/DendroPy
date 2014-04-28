@@ -27,6 +27,7 @@ import dendropy
 import random
 import collections
 import json
+from dendropy.test.support import dendropytest
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import pathmap
@@ -35,7 +36,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
 
 class NewickTreeListReaderStandardTestTreeTest(
         datagen_standard_file_test_trees.StandardTestTreeChecker,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
 
@@ -394,7 +395,7 @@ class NewickTreeListReaderStandardTestTreeTest(
 
 class NewickTreeListReaderMultipleRedundantSemiColons(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_multiple_redundant_semicolons(self):
         tree_str = self.get_newick_string()
@@ -411,7 +412,7 @@ class NewickTreeListReaderMultipleRedundantSemiColons(
                 suppress_leaf_node_taxa=False,
                 suppress_edge_lengths=False)
 
-class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
+class NewickTreeListReaderTaxonNamespaceTest(dendropytest.ExtendedTestCase):
 
     def test_shared_taxon_namespace(self):
         tree_filenames = [
@@ -437,7 +438,7 @@ class NewickTreeListReaderTaxonNamespaceTest(unittest.TestCase):
 
 class NewickTreeListMetadataTest(
         datagen_standard_file_test_trees.StandardTestTreeChecker,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_read_metadata(self):
         tree_file_titles = [
