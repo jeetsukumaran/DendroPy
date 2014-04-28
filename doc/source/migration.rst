@@ -175,4 +175,11 @@ NEWICK-format Reading
   all trees are assumed to be unrooted unless a rooting token is present that
   explicitly specifies the rooting state.
 
+NEWICK-format Writing
+=====================
+
+* Previously, if ``annotations_as_nhx`` was `True`, metadata annotations would
+  be written out even if ``suppress_annotations`` was `True`. Now,
+  ``suppress_annotations`` must be `True` for annotations to be written out,
+  even if ``annotations_as_nhx`` is `True`.
 
