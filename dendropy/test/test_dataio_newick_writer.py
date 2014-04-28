@@ -36,10 +36,10 @@ class NewickTreeWriterTests(
     schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
 
     def get_simple_tree(self,
-            has_leaf_node_taxa=False,
-            has_leaf_node_labels=False,
-            has_internal_node_taxa=False,
-            has_internal_node_labels=False,
+            has_leaf_node_taxa=True,
+            has_leaf_node_labels=True,
+            has_internal_node_taxa=True,
+            has_internal_node_labels=True,
             has_edge_lengths=True,
             label_pool=None,
             label_separator=' ',
@@ -230,6 +230,38 @@ class NewickTreeWriterTests(
                     self.assertIs(nd2.edge.length, None)
                 else:
                     self.assertEqual(nd2.edge.length, nd1.edge.length)
+
+    def test_unquoted_underscores(self):
+        tree1 = self.get_simple_tree(
+                has_leaf_node_labels=False,
+                has_internal_node_labels=False)
+        for taxon in tree1.taxon_namespace:
+            taxon.label = "{label}_{label}".format(label=taxon.label)
+        for unquoted_underscores in (True, False):
+            kwargs = {
+                    "unquoted_underscores": unquoted_underscores,
+            }
+            s = self.write_out_validate_equal_and_return(
+                    tree1, "newick", kwargs)
+            for preserve_underscores in (True, False):
+                tree2 = dendropy.Tree.get_from_string(
+                        s,
+                        "newick",
+                        suppress_internal_node_taxa=False,
+                        preserve_underscores=preserve_underscores)
+                nodes1 = [nd for nd in tree1]
+                nodes2 = [nd for nd in tree2]
+                self.assertEqual(len(nodes1), len(nodes2))
+                for nd1, nd2 in zip(nodes1, nodes2):
+                    original_label = nd1.taxon.label
+                    if unquoted_underscores:
+                        if preserve_underscores:
+                            expected_label = original_label
+                        else:
+                            expected_label = original_label.replace("_", " ")
+                    else:
+                        expected_label = original_label
+                    self.assertEqual(nd2.taxon.label, expected_label)
 
 if __name__ == "__main__":
     unittest.main()
