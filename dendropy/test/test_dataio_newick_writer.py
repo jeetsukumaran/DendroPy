@@ -291,5 +291,32 @@ class NewickTreeWriterTests(
                     expected_label = original_label.replace(" ", "_")
                 self.assertEqual(nd2.taxon.label, expected_label)
 
+    def test_store_tree_weights(self):
+        tree1 = self.get_simple_tree(
+                has_leaf_node_labels=False,
+                has_internal_node_labels=False)
+        for store_tree_weights in (True, False):
+            for weight in (None, "23.0", "1/2", 1.0):
+                tree1.weight = weight
+                kwargs = {
+                        "store_tree_weights": store_tree_weights,
+                }
+                s = self.write_out_validate_equal_and_return(
+                        tree1, "newick", kwargs)
+                tree2 = dendropy.Tree.get_from_string(
+                        s,
+                        "newick",
+                        store_tree_weights=True)
+                if store_tree_weights and weight is not None:
+                    self.assertTrue("[&W " in s)
+                    try:
+                        w = float(weight)
+                    except ValueError:
+                        w = eval(weight)
+                    self.assertEqual(tree2.weight, w)
+                else:
+                    self.assertFalse("[&W " in s)
+                    self.assertEqual(tree2.weight, 1.0) # default weight
+
 if __name__ == "__main__":
     unittest.main()
