@@ -1990,10 +1990,12 @@ class Tree(
             arguments supported by writers of various schemas.
 
         """
-        writer = dataio.get_writer(schema, **kwargs)
         tree_list = TreeList(taxon_namespace=self.taxon_namespace)
         tree_list.append(self, taxon_import_strategy="add")
-        writer.write_tree_list(tree_list, stream)
+        # Go through TreeList.write() to reduce testing targets (i.e., testing
+        # Tree.write() tests TreeList.write())
+        tree_list.write(stream, schema, **kwargs)
+        # writer.write_tree_list(tree_list, stream)
 
     ###########################################################################
     ### Node and Edge Collection Access
@@ -4744,7 +4746,7 @@ class TreeList(
 
         """
         writer = dataio.get_writer(schema, **kwargs)
-        writer.write_tree(self, stream)
+        writer.write_tree_list(self, stream)
 
     ###########################################################################
     ### List Interface

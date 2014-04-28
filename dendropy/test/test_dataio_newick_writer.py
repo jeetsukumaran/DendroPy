@@ -313,7 +313,7 @@ class NewickTreeWriterTests(
                     try:
                         w = float(weight)
                     except ValueError:
-                        w = eval(weight)
+                        w = eval("/".join(str(float(w)) for w in weight.split("/")))
                     self.assertEqual(tree2.weight, w)
                 else:
                     self.assertFalse("[&W " in s)
