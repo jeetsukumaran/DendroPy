@@ -28,7 +28,6 @@ Unique Object Identifier ("`oid`") Attributes Removed
   to every data object, has been removed. This was an implementation artifact
   from NEXML parsing.
 
-
 :class:`TaxonSet` is now :class:`TaxonNamespace`
 ================================================
 
@@ -100,7 +99,7 @@ The :class:`Edge` Class
   :attr:`Node._parent_node` of its :attr:`Edge._head_node` to the new value,
   and vice versa.  This avoids the need for independent book-keeping logic to
   ensure that :attr:`Node._parent_node` and :attr:`Edge._tail_node` are always
-  synchornized to reference the same :class:`Node` object and all the potential
+  synchronized to reference the same :class:`Node` object and all the potential
   errors this might cause.
 
 The :class:`Tree` Class
@@ -141,10 +140,10 @@ The :class:`Tree` Class
     | `Tree.leaf_iter()`             | :meth:`Tree.leaf_node_iter()`       |
     +--------------------------------+-------------------------------------+
 
-    The old names are still supported for now (with warnings being emitted),
-    but new code should start using the newer names.  In additon, support for
-    in-order or infix tree traversal has been added:
-    :meth:`Tree.inorder_node_iter`, :meth:`Tree.inorder_edge_iter()`.
+  The old names are still supported for now (with warnings being emitted),
+  but new code should start using the newer names.  In additon, support for
+  in-order or infix tree traversal has been added:
+  :meth:`Tree.inorder_node_iter`, :meth:`Tree.inorder_edge_iter()`.
 
 NEWICK-format Reading
 =====================
@@ -154,4 +153,26 @@ NEWICK-format Reading
   ``suppress_leaf_node_labels``, respectively. This is for consistency with the
   rest of the library (including writing in NEWICK-format), which uses the term
   "leaf" rather than "external".
+
+* The various boolean rooting directive switches (``as_rooted``,
+  ``default_as_rooted``, etc.) have been replaced by a single argument:
+  ``rooting``. This can take on one of the following (string) values:
+
+    * rooting="default-unrooted"
+        Interpret trees following rooting token ("``[&R]``" for rooted,
+        "``[&U]``" for unrooted) if present; otherwise, intrepret trees as
+        unrooted.
+    * rooting"default-rooted"
+        Interpret trees following rooting token ("``[&R]``" for rooted,
+        "``[&U]``" for unrooted) if present; otherwise, intrepret trees as
+        rooted.
+    * rooting="force-unrooted"
+        Unconditionally interpret all trees as unrooted.
+    * rooting="force-rooted"
+        Unconditionally interpret all trees as rooted.
+
+  The value of the "``rooting``" argument defaults to "default-unrooted", i.e.,
+  all trees are assumed to be unrooted unless a rooting token is present that
+  explicitly specifies the rooting state.
+
 
