@@ -359,5 +359,33 @@ class NewickTreeWriterTests(
                         self.assertEqual(nd.annotations.get_value("a"), '1')
                         self.assertEqual(nd.annotations.get_value("b"), '2')
 
+    def test_suppress_item_comments(self):
+        tree1 = dendropy.Tree()
+        a1 = tree1.seed_node.new_child()
+        a2 = tree1.seed_node.new_child()
+        tree1.comments.append("t1")
+        for nd in tree1:
+            nd.comments.append("n1")
+            nd.edge.comments.append("e1")
+        for suppress_item_comments in (True, False):
+            kwargs = {
+                    "suppress_item_comments"   :  suppress_item_comments,
+            }
+            s = self.write_out_validate_equal_and_return(
+                    tree1, "newick", kwargs)
+            tree2 = dendropy.Tree.get_from_string(
+                    s,
+                    "newick",
+                    extract_comment_metadata=False)
+            if suppress_item_comments:
+                self.assertEqual(tree2.comments, [])
+                for nd in tree2:
+                    self.assertEqual(nd.comments, [])
+                    self.assertEqual(nd.edge.comments, [])
+            else:
+                self.assertEqual(tree2.comments, ["t1"])
+                for nd in tree2:
+                    self.assertEqual(nd.comments, ["n1", "e1"])
+
 if __name__ == "__main__":
     unittest.main()

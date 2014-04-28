@@ -344,8 +344,8 @@ class NewickWriter(ioservice.DataWriter):
         if not self.suppress_annotations:
             node_annotation_comments = nexusprocessing.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexusprocessing.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
-            edge_comments = self._compose_comment_string(node.edge)
             statement = statement + node_annotation_comments + edge_annotation_comments + edge_comments
+        edge_comment_str = self._compose_comment_string(node.edge)
         node_comment_str = self._compose_comment_string(node)
-        statement += node_comment_str
+        statement = statement + node_comment_str + edge_comment_str
         return statement
