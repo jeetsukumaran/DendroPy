@@ -411,5 +411,24 @@ class NewickTreeWriterTests(
         for nd in tree2:
             self.assertEqual(nd.label, "zzz")
 
+    def test_edge_label_compose_func(self):
+        tree1 = dendropy.Tree()
+        tree1.seed_node.edge.length = 1
+        a1 = tree1.seed_node.new_child(label="a1", edge_length=1)
+        a2 = tree1.seed_node.new_child(label="a1", edge_length=1)
+        f = lambda x: 1000
+        kwargs = {
+                "edge_label_compose_func"   :  f,
+        }
+        s = self.write_out_validate_equal_and_return(
+                tree1, "newick", kwargs)
+        tree2 = dendropy.Tree.get_from_string(
+                s,
+                "newick",
+                suppress_leaf_node_taxa=True,
+                suppress_internal_node_taxa=True)
+        for nd in tree2:
+            self.assertEqual(nd.edge.length, 1000)
+
 if __name__ == "__main__":
     unittest.main()
