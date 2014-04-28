@@ -387,5 +387,29 @@ class NewickTreeWriterTests(
                 for nd in tree2:
                     self.assertEqual(nd.comments, ["n1", "e1"])
 
+    def test_node_label_compose_func(self):
+        tree1 = dendropy.Tree()
+        a1 = tree1.seed_node.new_child(label="a1")
+        a1.taxon = tree1.taxon_namespace.require_taxon("hula")
+        a2 = tree1.seed_node.new_child(label="a1")
+        a2.taxon = tree1.taxon_namespace.require_taxon("hoop")
+        f = lambda x: "zzz"
+        kwargs = {
+                "suppress_leaf_taxon_labels"     :  False ,
+                "suppress_leaf_node_labels"      :  False ,
+                "suppress_internal_taxon_labels" :  False ,
+                "suppress_internal_node_labels"  :  False ,
+                "node_label_compose_func"   :  f,
+        }
+        s = self.write_out_validate_equal_and_return(
+                tree1, "newick", kwargs)
+        tree2 = dendropy.Tree.get_from_string(
+                s,
+                "newick",
+                suppress_leaf_node_taxa=True,
+                suppress_internal_node_taxa=True)
+        for nd in tree2:
+            self.assertEqual(nd.label, "zzz")
+
 if __name__ == "__main__":
     unittest.main()
