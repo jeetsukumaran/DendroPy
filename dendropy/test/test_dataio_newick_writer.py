@@ -263,5 +263,33 @@ class NewickTreeWriterTests(
                         expected_label = original_label
                     self.assertEqual(nd2.taxon.label, expected_label)
 
+    def test_preserve_spaces(self):
+        tree1 = self.get_simple_tree(
+                has_leaf_node_labels=False,
+                has_internal_node_labels=False)
+        for taxon in tree1.taxon_namespace:
+            taxon.label = "{label} {label}".format(label=taxon.label)
+        for preserve_spaces in (True, False):
+            kwargs = {
+                    "preserve_spaces": preserve_spaces,
+            }
+            s = self.write_out_validate_equal_and_return(
+                    tree1, "newick", kwargs)
+            tree2 = dendropy.Tree.get_from_string(
+                    s,
+                    "newick",
+                    suppress_internal_node_taxa=False,
+                    preserve_underscores=True)
+            nodes1 = [nd for nd in tree1]
+            nodes2 = [nd for nd in tree2]
+            self.assertEqual(len(nodes1), len(nodes2))
+            for nd1, nd2 in zip(nodes1, nodes2):
+                original_label = nd1.taxon.label
+                if preserve_spaces:
+                    expected_label = original_label
+                else:
+                    expected_label = original_label.replace(" ", "_")
+                self.assertEqual(nd2.taxon.label, expected_label)
+
 if __name__ == "__main__":
     unittest.main()
