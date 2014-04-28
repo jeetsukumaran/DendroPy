@@ -61,7 +61,10 @@ def get_test_suite(test_names=None):
 
 def run(test_suite=None, verbosity=1, failfast=False):
     "Runs all of the unittests"
-    runner = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast)
+    try:
+        runner = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast)
+    except TypeError:
+        runner = unittest.TextTestRunner(verbosity=verbosity)
     if test_suite is None:
         test_suite = get_test_suite()
     runner.run(test_suite)
