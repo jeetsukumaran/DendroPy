@@ -226,7 +226,7 @@ class NewickWriter(ioservice.DataWriter):
         # annotations/comments associated with tree collection and
         # annotations/comments associated with first tree. So we place them at
         # *end* of document.
-        if ((not self.suppress_annotations) or self.annotations_as_nhx) and (hasattr(tree_list, "_annotations")):
+        if (not self.suppress_annotations) and (hasattr(tree_list, "_annotations")):
             annotation_comments = nexusprocessing.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
@@ -251,7 +251,7 @@ class NewickWriter(ioservice.DataWriter):
             weight = "[&W {}] ".format(tree.weight)
         else:
             weight = ""
-        if not self.suppress_annotations or self.annotations_as_nhx:
+        if not self.suppress_annotations:
             annotation_comments = nexusprocessing.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
@@ -341,7 +341,7 @@ class NewickWriter(ioservice.DataWriter):
             statement = self._choose_display_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
-        if not self.suppress_annotations or self.annotations_as_nhx:
+        if not self.suppress_annotations:
             node_annotation_comments = nexusprocessing.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexusprocessing.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
             edge_comments = self._compose_comment_string(node.edge)

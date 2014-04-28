@@ -24,6 +24,7 @@ Tests for NEWICK writing.
 import collections
 import unittest
 import dendropy
+import re
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen_standard_file_test_trees
 from dendropy.test.support import compare_and_validate
@@ -317,6 +318,46 @@ class NewickTreeWriterTests(
                 else:
                     self.assertFalse("[&W " in s)
                     self.assertEqual(tree2.weight, 1.0) # default weight
+
+    def test_suppress_annotations(self):
+        tree1 = dendropy.Tree()
+        a1 = tree1.seed_node.new_child()
+        a2 = tree1.seed_node.new_child()
+        tree1.annotations.add_new("t", 1)
+        for nd in tree1:
+            nd.annotations.add_new("a", 1)
+            nd.edge.annotations.add_new("b", 2)
+        for suppress_annotations in (True, False):
+            for annotations_as_nhx in (True, False):
+                kwargs = {
+                        "suppress_annotations"   :  suppress_annotations,
+                        "annotations_as_nhx"     :  annotations_as_nhx,
+                }
+                s = self.write_out_validate_equal_and_return(
+                        tree1, "newick", kwargs)
+                tree2 = dendropy.Tree.get_from_string(
+                        s,
+                        "newick",
+                        extract_comment_metadata=True)
+                if suppress_annotations:
+                    self.assertFalse(tree2.has_annotations)
+                    for nd in tree2:
+                        self.assertFalse(nd.has_annotations)
+                else:
+                    if annotations_as_nhx:
+                        self.assertEqual(s.count("[&&NHX"), 7)
+                        # self.assertEqual(len(re.findall(r"\[&&NHX", s)), 7)
+                    else:
+                        self.assertEqual(s.count("[&&NHX"), 0)
+                        self.assertEqual(s.count("[&"), 7)
+                        # self.assertEqual(len(re.findall(r"\[&&NHX", s)), 0)
+                        # self.assertEqual(len(re.findall(r"\[&.*?\]", s)), 7)
+                    self.assertTrue(tree2.has_annotations)
+                    self.assertEqual(tree2.annotations.get_value("t"), '1')
+                    for nd in tree2:
+                        self.assertTrue(nd.has_annotations)
+                        self.assertEqual(nd.annotations.get_value("a"), '1')
+                        self.assertEqual(nd.annotations.get_value("b"), '2')
 
 if __name__ == "__main__":
     unittest.main()
