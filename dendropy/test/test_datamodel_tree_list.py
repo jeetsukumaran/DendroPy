@@ -744,7 +744,7 @@ class TestTreeListUpdateTaxonNamespace(
         self.assertIs(self.tree_list.taxon_namespace, original_tns)
         new_taxa = [t for t in original_tns]
         new_labels = [t.label for t in original_tns]
-        if sys.hexversion < 0x03000000:
+        if sys.hexversion < 0x03020000:
             self.assertItemsEqual(new_taxa, self.expected_taxa)
             self.assertItemsEqual(new_labels, self.expected_labels)
         else:
@@ -876,7 +876,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
         original_labels = [t.label for t in tns]
         new_labels = [t.label for t in new_tns]
-        if sys.hexversion < 0x03000000:
+        if sys.hexversion < 0x03020000:
             self.assertItemsEqual(new_labels, original_labels)
         else:
             self.assertCountEqual(new_labels, original_labels)
@@ -950,7 +950,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
         original_labels = [t.label for t in tns]
         new_labels = [t.label for t in new_tns]
-        if sys.hexversion < 0x03000000:
+        if sys.hexversion < 0x03020000:
             self.assertItemsEqual(new_labels, original_labels)
         else:
             self.assertCountEqual(new_labels, original_labels)

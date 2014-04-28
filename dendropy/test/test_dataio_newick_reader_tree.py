@@ -254,7 +254,7 @@ class NewickTreeMultifurcatingtree(unittest.TestCase):
         }
         for nd in tree:
             children = [ch.label for ch in nd.child_node_iter()]
-            if sys.hexversion < 0x03000000:
+            if sys.hexversion < 0x03020000:
                 self.assertItemsEqual(children, expected_children[nd.label])
             else:
                 self.assertCountEqual(children, expected_children[nd.label])
@@ -310,7 +310,7 @@ class NewickTreeDuplicateTaxa(
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=True)
             labels = [nd.label for nd in tree]
-            if sys.hexversion < 0x03000000:
+            if sys.hexversion < 0x03020000:
                 self.assertItemsEqual(labels, expected_labels[sidx])
             else:
                 self.assertCountEqual(labels, expected_labels[sidx])
@@ -335,7 +335,7 @@ class NewickTreeAnonymousTaxa(unittest.TestCase):
         self.assertEqual(len(internal), 5)
         leaf_labels = [nd.comments[0] for nd in leaves]
         internal_labels = [nd.comments[0] for nd in internal]
-        if sys.hexversion < 0x03000000:
+        if sys.hexversion < 0x03020000:
             self.assertItemsEqual(leaf_labels, ('a','b','d','e','f','g'))
             self.assertItemsEqual(internal_labels, ('c','h','i','j','k'))
         else:
@@ -773,7 +773,7 @@ class NewickTreeReaderOffsetTreeTest(
                     suppress_leaf_node_taxa=True)
             self.assertEqual(tree.seed_node.label, expected_roots[idx])
             leaves = [nd.label for nd in tree.leaf_node_iter()]
-            if sys.hexversion < 0x03000000:
+            if sys.hexversion < 0x03020000:
                 self.assertItemsEqual(leaves, expected_leaves[idx])
             else:
                 self.assertCountEqual(leaves, expected_leaves[idx])
