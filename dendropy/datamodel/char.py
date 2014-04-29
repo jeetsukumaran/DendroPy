@@ -328,12 +328,12 @@ class CharacterMatrix(
             taxon_namespace = taxon.TaxonNamespace()
         tns_factory = lambda label: taxon_namespace
         label = kwargs.pop("label", None)
-        matrix_type = get_char_matrix_type(data_type=cls.data_type)
+        kwargs["data_type"] = cls.data_type
         reader = dataio.get_reader(schema, **kwargs)
         char_matrices = reader.read_char_matrices(
                 stream=stream,
                 taxon_namespace_factory=tns_factory,
-                char_matrix_factory=matrix_type,
+                char_matrix_factory=new_char_matrix,
                 global_annotations_target=None)
         if len(char_matrices) == 0:
             raise ValueError("No character data in data source")
@@ -343,10 +343,11 @@ class CharacterMatrix(
         #             " {} matrices defined (maximum offset = {})".format(
         #             offset, len(char_matrices), len(char_matrices)-1))
         char_matrix = char_matrices[matrix_offset]
-        # if not isinstance(d.char_matrices[index], cls):
-        #     raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
-        #             (d.char_matrices[index].__class__.__name__, cls.__name__))
-        # return d.char_matrices[index]
+        if char_matrix.data_type != cls.data_type:
+            raise ValueError(
+                "Data source (at offset {}) is of type '{}', "
+                "but current CharacterMatrix is of type '{}'.".format(char_matrix.data_type,
+                    cls.data_type))
         return char_matrix
     _parse_from_stream = classmethod(_parse_from_stream)
 
@@ -1074,7 +1075,7 @@ def get_char_matrix_type(data_type):
     return matrix_type
 
 def new_char_matrix(data_type, **kwargs):
-    matrix_type = get_char_matrix(data_type=data_type)
+    matrix_type = get_char_matrix_type(data_type=data_type)
     m = matrix_type(**kwargs)
     return m
 

@@ -14,9 +14,8 @@ from dendropy.utility.error import DataParseError
 class FastaReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
-    supported_data_types = ['dna', 'rna', 'protein', 'standard', 'restriction', 'infinite']
-
     def __init__(self, **kwargs):
+        self.data_type = kwargs.pop("data_type", None)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -27,12 +26,13 @@ class FastaReader(ioservice.DataReader):
             char_matrix_factory=None,
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
-        char_matrix = char_matrix_factory(label=None, taxon_namespace=taxon_namespace)
+        char_matrix = char_matrix_factory(
+                data_type=self.data_type,
+                label=None,
+                taxon_namespace=taxon_namespace)
         symbol_state_map = char_matrix.default_symbol_state_map
-
         curr_vec = None
         curr_taxon = None
-
         for line_index, line in enumerate(stream):
             s = line.strip()
             if not s:
