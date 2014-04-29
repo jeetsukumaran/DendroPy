@@ -1,13 +1,25 @@
 #! /usr/bin/env python
 
+##############################################################################
+##  DendroPy Phylogenetic Computing Library.
+##
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
+##  All rights reserved.
+##
+##  See "LICENSE.txt" for terms and conditions of usage.
+##
+##  If you use this work or any portion thereof in published work,
+##  please cite it as:
+##
+##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
+##
+##############################################################################
+
 """
 Implementation of FASTA-format data reader.
 """
 
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 from dendropy.dataio import ioservice
 from dendropy.utility.error import DataParseError
 
