@@ -217,7 +217,7 @@ class DataReader(IOService):
             tree_list_factory = dataset.new_tree_list
         global_annotations_target = dataset
 
-    def read_trees(self,
+    def read_tree_lists(self,
             stream,
             taxon_namespace_factory,
             tree_list_factory,
@@ -232,7 +232,7 @@ class DataReader(IOService):
         same `TreeList`, then this can be coerced by, e.g.::
 
             t = TreeList()
-            reader.read_trees(
+            reader.read_tree_lists(
                 stream=stream,
                 taxon_namespace_factory=lambda x: t.taxon_namespace,
                 tree_list_factory=lambda x : t)
@@ -323,6 +323,18 @@ class DataReader(IOService):
                 char_matrix_factory=None,
                 global_annotations_target=global_annotations_target)
         return product.tree_lists
+
+    def read_char_matrices(self,
+            stream,
+            taxon_namespace_factory,
+            char_matrix_factory,
+            global_annotations_target=None):
+        product = self._read(stream=stream,
+                taxon_namespace_factory=taxon_namespace_factory,
+                tree_list_factory=None,
+                char_matrix_factory=char_matrix_factory,
+                global_annotations_target=global_annotations_target)
+        return product.char_matrices
 
 ###############################################################################
 ## DataReader

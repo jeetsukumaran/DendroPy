@@ -1607,7 +1607,7 @@ class Tree(
             collection_offset = 0
         if tree_offset is None:
             tree_offset = 0
-        tree_lists = reader.read_trees(
+        tree_lists = reader.read_tree_lists(
                     stream=stream,
                     taxon_namespace_factory=tns_factory,
                     tree_list_factory=TreeList,
@@ -4379,13 +4379,13 @@ class TreeList(
             if tree_offset is not None:
                 raise TypeError("Cannot specify `tree_offset` without specifying `collection_offset`")
             # coerce all tree products into this list
-            reader.read_trees(
+            reader.read_tree_lists(
                         stream=stream,
                         taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
                         tree_list_factory=tree_list._tree_list_pseudofactory,
                         global_annotations_target=None)
         else:
-            tree_lists = reader.read_trees(
+            tree_lists = reader.read_tree_lists(
                         stream=stream,
                         taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
                         tree_list_factory=tree_list.__class__,
