@@ -43,6 +43,16 @@ class NexusTokenizer(Tokenizer):
             comment_end="]",
             capture_comments=True)
 
+    def next_token_ucase(self):
+        try:
+            t = self.__next__()
+            t = t.upper()
+            self.current_token = t
+            return t
+        except StopIteration:
+            self.current_token = None
+            return None
+
 ###############################################################################
 ## Taxon Handling
 
@@ -190,7 +200,6 @@ class NexusTaxonSymbolMapper(object):
 ###############################################################################
 ## Metadata
 
-
 FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
 NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
 
@@ -277,6 +286,21 @@ def parse_comment_metadata_to_annotations(
                 )
         annotations.add(annote)
     return annotations
+
+def process_comments_for_item(item,
+        item_comments,
+        extract_comment_metadata):
+    if not item_comments:
+        return
+    for comment in item_comments:
+        if extract_comment_metadata and comment.startswith("&"):
+            annotations = parse_comment_metadata_to_annotations(comment)
+            if annotations:
+                item.annotations.update(annotations)
+            else:
+                item.comments.append(comment)
+        else:
+            item.comments.append(comment)
 
 ###############################################################################
 ## NEWICK/NEXUS formatting support.

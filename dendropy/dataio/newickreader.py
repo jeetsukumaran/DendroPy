@@ -422,7 +422,8 @@ class NewickReader(ioservice.DataReader):
                     exc.__cause__ = None # Python 3.3, 3.4
                     raise exc
             elif self.extract_comment_metadata and comment.startswith("&"):
-                annotations = self._parse_comment_metadata(comment)
+                annotations = nexusprocessing.parse_comment_metadata_to_annotations(
+                    comment=comment)
                 if annotations:
                     tree.annotations.update(annotations)
                 else:
@@ -484,8 +485,9 @@ class NewickReader(ioservice.DataReader):
                         # no node has been created yet: ',' designates a
                         # preceding blank node
                         new_node = tree.node_factory()
-                        self._process_node_comments(node=new_node,
-                                node_comments=nexus_tokenizer.pull_captured_comments())
+                        nexusprocessing.process_comments_for_item(item=new_node,
+                                item_comments=nexus_tokenizer.pull_captured_comments(),
+                                extract_comment_metadata=self.extract_comment_metadata)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
                         ## node_created = True # do not flag node as created to allow for an extra node to be created in the event of (..,)
@@ -493,8 +495,9 @@ class NewickReader(ioservice.DataReader):
                     while nexus_tokenizer.current_token == ",": #192
                         # another blank node
                         new_node = tree.node_factory()
-                        self._process_node_comments(node=new_node,
-                                node_comments=nexus_tokenizer.pull_captured_comments())
+                        nexusprocessing.process_comments_for_item(item=new_node,
+                                item_comments=nexus_tokenizer.pull_captured_comments(),
+                                extract_comment_metadata=self.extract_comment_metadata)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
                         # node_created = True; # do not flag node as created: extra node needed in the event of (..,)
@@ -502,8 +505,9 @@ class NewickReader(ioservice.DataReader):
                     if not node_created and nexus_tokenizer.current_token == ")": #200
                         # end of node
                         new_node = tree.node_factory();
-                        self._process_node_comments(node=new_node,
-                                node_comments=nexus_tokenizer.pull_captured_comments())
+                        nexusprocessing.process_comments_for_item(item=new_node,
+                                item_comments=nexus_tokenizer.pull_captured_comments(),
+                                extract_comment_metadata=self.extract_comment_metadata)
                         self._finish_node(new_node)
                         current_node.add_child(new_node)
                         node_created = True;
@@ -521,8 +525,9 @@ class NewickReader(ioservice.DataReader):
                     else:
                         is_new_internal_node = False
                     new_node = tree.node_factory();
-                    self._process_node_comments(node=new_node,
-                            node_comments=nexus_tokenizer.pull_captured_comments())
+                    nexusprocessing.process_comments_for_item(item=new_node,
+                            item_comments=nexus_tokenizer.pull_captured_comments(),
+                            extract_comment_metadata=self.extract_comment_metadata)
                     self._parse_tree_node_description(
                             nexus_tokenizer=nexus_tokenizer,
                             tree=tree,
@@ -564,8 +569,9 @@ class NewickReader(ioservice.DataReader):
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
                 # self._parenthesis_nesting_level -= 1 # handled by calling code
-                self._process_node_comments(node=current_node,
-                        node_comments=current_node_comments)
+                nexusprocessing.process_comments_for_item(item=current_node,
+                        item_comments=current_node_comments,
+                        extract_comment_metadata=self.extract_comment_metadata)
                 self._finish_node(current_node)
                 return current_node
             elif nexus_tokenizer.current_token == ";": #256
@@ -575,8 +581,9 @@ class NewickReader(ioservice.DataReader):
                 break
             elif nexus_tokenizer.current_token == ",": #260
                 # end of this node
-                self._process_node_comments(node=current_node,
-                            node_comments=current_node_comments)
+                nexusprocessing.process_comments_for_item(item=current_node,
+                            item_comments=current_node_comments,
+                            extract_comment_metadata=self.extract_comment_metadata)
                 self._finish_node(current_node)
                 return current_node
             elif nexus_tokenizer.current_token == "(": #263
@@ -630,65 +637,11 @@ class NewickReader(ioservice.DataReader):
                     line_num=nexus_tokenizer.token_line_num,
                     col_num=nexus_tokenizer.token_column_num,
                     stream=nexus_tokenizer.src)
-        self._process_node_comments(node=current_node,
-            node_comments=current_node_comments)
+        nexusprocessing.process_comments_for_item(item=current_node,
+                item_comments=current_node_comments,
+                extract_comment_metadata=self.extract_comment_metadata)
         self._finish_node(current_node)
         return current_node
-
-    def _parse_comment_metadata(
-            self,
-            comment,
-            annotations=None,
-            field_name_map=None,
-            field_value_types=None,
-            strip_leading_trailing_spaces=True):
-        """
-        Returns set of :class:`Annotation` objects corresponding to metadata
-        given in comments.
-
-        Parameters
-        ----------
-        `comment` : string
-            A comment token.
-        `annotations` : :class:`AnnotationSet` or `set`
-            Set of :class:`Annotation` objects to which to add this annotation.
-        `field_name_map` : dict
-            A dictionary mapping field names (as given in the comment string)
-            to strings that should be used to represent the field in the
-            metadata dictionary; if not given, no mapping is done (i.e., the
-            comment string field name is used directly).
-        `field_value_types` : dict
-            A dictionary mapping field names (as given in the comment
-            string) to the value type (e.g. {"node-age" : float}).
-        `strip_leading_trailing_spaces` : boolean
-            Remove whitespace from comments.
-
-        Returns
-        -------
-        metadata : :py:class::`set` [:class:`Annotation`]
-            Set of :class:`Annotation` objects corresponding to metadata
-            parsed.
-        """
-        return nexusprocessing.parse_comment_metadata_to_annotations(
-            comment=comment,
-            annotations=annotations,
-            field_name_map=field_name_map,
-            field_value_types=field_value_types,
-            strip_leading_trailing_spaces=strip_leading_trailing_spaces)
-
-
-    def _process_node_comments(self, node, node_comments):
-        if not node_comments:
-            return
-        for comment in node_comments:
-            if self.extract_comment_metadata and comment.startswith("&"):
-                annotations = self._parse_comment_metadata(comment)
-                if annotations:
-                    node.annotations.update(annotations)
-                else:
-                    node.comments.append(comment)
-            else:
-                node.comments.append(comment)
 
     def _finish_node(self, node):
         if self.finish_node_func is not None:
