@@ -847,15 +847,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         CharacterMatrix.__init__(self, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
-        self._default_symbol_state_map = None
         if len(args) > 0:
             self.clone_from(*args)
 
     def _get_default_symbol_state_map(self):
-        if self._default_symbol_state_map is None and self.default_state_alphabet is not None:
-            self._default_symbol_state_map = self.default_state_alphabet.symbol_state_map()
-        return self._default_symbol_state_map
-
+        if self.default_state_alphabet is not None:
+            return self.default_state_alphabet.symbol_state_map
+        return None
     default_symbol_state_map = property(_get_default_symbol_state_map)
 
     def append_taxon_sequence(self, taxon, state_symbols):
@@ -957,7 +955,6 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
     def __deepcopy__(self, memo):
         memo[id(self.default_state_alphabet)] = self.default_state_alphabet
         memo[id(self.state_alphabets)] = list(self.state_alphabets)
-        # memo[id(self._default_symbol_state_map)] = self._default_symbol_state_map
         return DiscreteCharacterMatrix.__deepcopy__(self, memo)
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
