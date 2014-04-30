@@ -1598,7 +1598,12 @@ class Tree(
         taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
             taxon_namespace = taxon.TaxonNamespace()
-        tns_factory = lambda label: taxon_namespace
+
+        def tns_factory(label):
+            if label is not None and taxon_namespace.label is None:
+                taxon_namespace.label = label
+            return taxon_namespace
+
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
         if collection_offset is None and tree_offset is not None:
@@ -4609,18 +4614,22 @@ class TreeList(
     ###########################################################################
     ### Data I/O
 
-    def _taxon_namespace_pseudofactory(self, *args, **kwargs):
+    def _taxon_namespace_pseudofactory(self, **kwargs):
         """
         Dummy factory to coerce all :class:`TaxonNamespace` objects required when
         parsing a data source to reference `self.taxon_namespace`.
         """
+        if "label" in kwargs and kwargs["label"] is not None and self.taxon_namespace.label is None:
+            self.taxon_namespace.label = kwargs["label"]
         return self.taxon_namespace
 
-    def _tree_list_pseudofactory(self, *args, **kwargs):
+    def _tree_list_pseudofactory(self, **kwargs):
         """
         Dummy factory to coerce all :class:`TreeList` objects required when
         parsing a data source to reference `self`.
         """
+        if "label" in kwargs and kwargs["label"] is not None and self.label is None:
+            self.label = kwargs["label"]
         return self
 
     def read(self,

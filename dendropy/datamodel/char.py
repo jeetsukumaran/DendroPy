@@ -326,7 +326,12 @@ class CharacterMatrix(
         taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
             taxon_namespace = taxon.TaxonNamespace()
-        tns_factory = lambda label: taxon_namespace
+
+        def tns_factory(label):
+            if label is not None and taxon_namespace.label is None:
+                taxon_namespace.label = label
+            return taxon_namespace
+
         label = kwargs.pop("label", None)
         kwargs["data_type"] = cls.data_type
         reader = dataio.get_reader(schema, **kwargs)

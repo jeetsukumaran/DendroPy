@@ -21,7 +21,7 @@ Implementation of NEXUS-schema data reader.
 """
 
 import re
-
+import collections
 from dendropy.utility import error
 from dendropy.utility import text
 from dendropy.dataio import ioservice
@@ -56,6 +56,49 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class NexusReaderLinkRequiredError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
+    class NexusReaderNoCharacterBlocksFoundError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
+    class NexusReaderUndefinedBlockError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
+    class NexusReaderMultipleBlockWithSameTitleError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
 
     ###########################################################################
     ## Life-cycle and Setup
@@ -84,8 +127,6 @@ class NexusReader(ioservice.DataReader):
         self._gap_char = '-'
         self._missing_char = '?'
         self._match_char = '.'
-        self._tree_translate_dict = {}
-        self._taxa_blocks = {}
         self._file_specified_ntax = None
         self._file_specified_nchar = None
         self._nexus_tokenizer = None
@@ -93,6 +134,10 @@ class NexusReader(ioservice.DataReader):
         self._tree_list_factory = None
         self._char_matrix_factory = None
         self._global_annotations_target = None
+        self._tree_translate_dict = {}
+        self._taxon_namespaces = []
+        self._char_matrices = []
+        self._tree_lists = []
         self._product = None
 
     ###########################################################################
@@ -113,16 +158,17 @@ class NexusReader(ioservice.DataReader):
         self._tree_list_factory = tree_list_factory
         self._char_matrix_factory = char_matrix_factory
         self._global_annotations_target = global_annotations_target
-        self._product = self.Product(
-                taxon_namespaces=[],
-                tree_lists=[],
-                char_matrices=[])
         self._parse_nexus_file()
+        self._product = self.Product(
+                taxon_namespaces=self._taxon_namespaces,
+                tree_lists=self._tree_lists,
+                char_matrices=self._char_matrices)
+        return self._product
 
     ###########################################################################
     ## Book-keeping Control
 
-    def _data_format_error(self, message, error_type=None):
+    def _nexus_error(self, message, error_type=None):
         if error_type is None:
             error_type = NewickReader.NewickReaderError
         e = error_type(
@@ -147,47 +193,83 @@ class NexusReader(ioservice.DataReader):
     def _new_taxon_namespace(self, title=None):
         # if self.attached_taxon_namespace is not None:
         #     return self.attached_taxon_namespace
-        if title is None:
-            title = 'DEFAULT'
         taxon_namespace = self._taxon_namespace_factory(label=title)
-        self._taxa_blocks[title] = taxon_namespace
+        self._taxon_namespaces.append(taxon_namespace)
         return taxon_namespace
-
-    def _get_char_matrix(self, title=None):
-        if title is None:
-            if len(self.dataset.char_matrices) == 1:
-                return self.dataset.char_matrices[0]
-            elif len(self.dataset.char_matrices) == 0:
-                raise self._data_format_error("No character matrices defined")
-            else:
-                raise self._data_format_error("Multiple character matrices defined: require 'LINK' statement")
-        else:
-            target_matrix = None
-            for char_matrix in self.dataset.char_matrices:
-                if char_matrix.label == title:
-                    if target_matrix is not None:
-                        raise self._data_format_error("Multiple character matrices with title '%s'" % title)
-                    target_matrix = char_matrix
-            if target_matrix is None:
-                raise self._data_format_error("Character matrix with title '%s' not defined" % title)
-            return target_matrix
 
     def _get_taxon_namespace(self, title=None):
         # if self.attached_taxon_namespace is not None:
         #     return self.attached_taxon_namespace
         if title is None:
-            if len(self._taxa_blocks) == 0:
-                self._taxa_blocks['DEFAULT'] = self._taxon_namespace_factory(label='DEFAULT')
-                return self._taxa_blocks['DEFAULT']
-            elif len(self._taxa_blocks) == 1:
-                return self._taxa_blocks.values()[0]
+            if len(self._taxon_namespaces) == 0:
+                return self._new_taxon_namespace(title=title)
+            elif len(self._taxon_namespaces) == 1:
+                return self._taxon_namespaces[0]
             else:
-                raise self._data_format_error("Multiple taxa blocks defined: require 'LINK' statement")
+                raise self._nexus_error("Multiple taxa blocks defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
         else:
-            if title in self._taxa_blocks:
-                return self._taxa_blocks[title]
+            found = []
+            for tns in self._taxon_namespaces:
+                if tns.label.upper() == title.upper():
+                    found.append(tns)
+            if len(found) == 0:
+                raise self._nexus_error("Taxa block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+            elif len(found) > 1:
+                raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+            return found[0]
+
+    def _new_char_matrix(self, data_type, taxon_namespace, title=None):
+        char_matrix = self._char_matrix_factory(
+                data_type=data_type,
+                taxon_namespace=taxon_namespace,
+                label=title)
+        self._char_matrices.append(char_matrix)
+        return char_matrix
+
+    def _get_char_matrix(self, title=None):
+        if title is None:
+            if len(self._char_matrices) == 1:
+                return self.char_matrices[0]
+            elif len(self._char_matrices) == 0:
+                raise self._nexus_error("No character matrices defined", NexusReader.NexusReaderNoCharacterBlocksFoundError)
             else:
-                raise self._data_format_error("TaxaBlock with title '%s' not found" % title)
+                raise self._nexus_error("Multiple character matrices defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
+        else:
+            found = []
+            for cm in self._char_matrices:
+                if cm.label.upper() == title.upper():
+                    found.append(cm)
+            if len(found) == 0:
+                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+            elif len(found) > 1:
+                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+            return found[0]
+
+    def _new_tree_list(self, taxon_namespace, title=None):
+        tree_list = self._tree_list_factory(
+                taxon_namespace=taxon_namespace,
+                label=title)
+        self._tree_lists.append(tree_list)
+        return tree_list
+
+    def _get_tree_list(self, title=None):
+        if title is None:
+            if len(self._tree_lists) == 1:
+                return self._tree_lists[0]
+            elif len(self._tree_lists) == 0:
+                raise self._nexus_error("No tree blocks defined", NexusReader.NexusReaderNoCharacterBlocksFoundError)
+            else:
+                raise self._nexus_error("Multiple tree blocks defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
+        else:
+            found = []
+            for tlst in self._tree_lists:
+                if tlst.label.upper() == title.upper():
+                    found.append(tlst)
+            if len(found) == 0:
+                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+            elif len(found) > 1:
+                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+            return found[0]
 
     # def tree_source_iter(self, stream):
     #     """
@@ -210,7 +292,7 @@ class NexusReader(ioservice.DataReader):
     #             extract_comment_metadata=self.extract_comment_metadata)
     #     token = self._nexus_tokenizer.next_token_ucase()
     #     if token.upper() != "#NEXUS":
-    #         raise self._data_format_error("Expecting '#NEXUS', but found '%s'" % token)
+    #         raise self._nexus_error("Expecting '#NEXUS', but found '%s'" % token)
     #     while not self._nexus_tokenizer.is_eof():
     #         token = self._nexus_tokenizer.next_token_ucase()
     #         while token != None and token != 'BEGIN' and not self._nexus_tokenizer.is_eof():
@@ -258,7 +340,7 @@ class NexusReader(ioservice.DataReader):
         "Main file parsing driver."
         token = self._nexus_tokenizer.next_token()
         if token.upper() != "#NEXUS":
-            raise self._data_format_error("Expecting '#NEXUS', but found '{}'".format(token),
+            raise self._nexus_error("Expecting '#NEXUS', but found '{}'".format(token),
                     NexusReader.NexusReaderNotNexusFileError)
         else:
             while not self._nexus_tokenizer.is_eof():
@@ -413,14 +495,14 @@ class NexusReader(ioservice.DataReader):
             if token == 'TAXA':
                 token = self._nexus_tokenizer.next_token()
                 if token != "=":
-                    raise self._data_format_error("expecting '=' after link taxa")
+                    raise self._nexus_error("expecting '=' after link taxa")
                 token = self._nexus_tokenizer.next_token()
                 links['taxa'] = token
                 token = self._nexus_tokenizer.next_token()
             if token == 'CHARACTERS':
                 token = self._nexus_tokenizer.next_token()
                 if token != "=":
-                    raise self._data_format_error("expecting '=' after link characters")
+                    raise self._nexus_error("expecting '=' after link characters")
                 token = self._nexus_tokenizer.next_token()
                 links['characters'] = token
                 token = self._nexus_tokenizer.next_token()
@@ -464,7 +546,7 @@ class NexusReader(ioservice.DataReader):
                         self._data_type = "standard"
                         self._symbols = "01"
                 else:
-                    raise self._data_format_error("Expecting '=' after DATATYPE keyword")
+                    raise self._nexus_error("Expecting '=' after DATATYPE keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
             elif token == 'SYMBOLS':
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -478,9 +560,9 @@ class NexusReader(ioservice.DataReader):
                                 self._symbols = self._symbols + token
                             token = self._nexus_tokenizer.next_token_ucase()
                     else:
-                        raise self._data_format_error("Expecting '\"' before beginning SYMBOLS list")
+                        raise self._nexus_error("Expecting '\"' before beginning SYMBOLS list")
                 else:
-                    raise self._data_format_error("Expecting '=' after SYMBOLS keyword")
+                    raise self._nexus_error("Expecting '=' after SYMBOLS keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
             elif token == 'GAP':
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -488,7 +570,7 @@ class NexusReader(ioservice.DataReader):
                     token = self._nexus_tokenizer.next_token_ucase()
                     self._gap_char = token
                 else:
-                    raise self._data_format_error("Expecting '=' after GAP keyword")
+                    raise self._nexus_error("Expecting '=' after GAP keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
             elif token == 'INTERLEAVE':
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -507,7 +589,7 @@ class NexusReader(ioservice.DataReader):
                     token = self._nexus_tokenizer.next_token_ucase()
                     self._missing_char = token
                 else:
-                    raise self._data_format_error("Expecting '=' after MISSING keyword")
+                    raise self._nexus_error("Expecting '=' after MISSING keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
             elif token == 'MATCHCHAR':
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -515,7 +597,7 @@ class NexusReader(ioservice.DataReader):
                     token = self._nexus_tokenizer.next_token_ucase()
                     self._match_char = token
                 else:
-                    raise self._data_format_error("Expecting '=' after MISSING keyword")
+                    raise self._nexus_error("Expecting '=' after MISSING keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
             else:
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -534,9 +616,9 @@ class NexusReader(ioservice.DataReader):
                     if token.isdigit():
                         self._file_specified_ntax = int(token)
                     else:
-                        raise self._data_format_error('Expecting numeric value for NTAX')
+                        raise self._nexus_error('Expecting numeric value for NTAX')
                 else:
-                    raise self._data_format_error("Expecting '=' after NTAX keyword")
+                    raise self._nexus_error("Expecting '=' after NTAX keyword")
             elif token == 'NCHAR':
                 token = self._nexus_tokenizer.next_token_ucase()
                 if token == '=':
@@ -544,9 +626,9 @@ class NexusReader(ioservice.DataReader):
                     if token.isdigit():
                         self._file_specified_nchar = int(token)
                     else:
-                        raise self._data_format_error("Expecting numeric value for NCHAR")
+                        raise self._nexus_error("Expecting numeric value for NCHAR")
                 else:
-                    raise self._data_format_error("Expecting '=' after NCHAR keyword")
+                    raise self._nexus_error("Expecting '=' after NCHAR keyword")
             token = self._nexus_tokenizer.next_token_ucase()
 
     def _parse_matrix_statement(self, block_title=None, link_title=None):
@@ -556,14 +638,14 @@ class NexusReader(ioservice.DataReader):
         and that NTAX and NCHAR have been specified accurately.
         """
         if not self._file_specified_ntax:
-            raise self._data_format_error('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
+            raise self._nexus_error('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         elif not self._file_specified_nchar:
-            raise self._data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
+            raise self._nexus_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         taxon_namespace = self._get_taxon_namespace(link_title)
-        char_block = self._char_matrix_factory(
+        char_block = self._new_char_matrix(
                 data_type=self._data_type,
                 taxon_namespace=taxon_namespace,
-                label=block_title)
+                title=block_title)
         if self._data_type == "continuous":
             self._process_continuous_matrix_data(char_block)
         else:
@@ -583,7 +665,7 @@ class NexusReader(ioservice.DataReader):
                         char_group = self._nexus_tokenizer.next_token(ignore_punctuation="-+")
                         char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
                     if len(char_block[taxon]) < self._file_specified_nchar:
-                        raise self._data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+                        raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                             % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
                     token = self._nexus_tokenizer.next_token()
 
@@ -623,37 +705,37 @@ class NexusReader(ioservice.DataReader):
                     else:
                         break
                 if len(char_block[taxon]) < self._file_specified_nchar:
-                    raise self._data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+                    raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
                 token = self._nexus_tokenizer.next_token()
         # for vi, vec in enumerate(char_block.values()):
         #     for ci, cell in enumerate(vec):
         #         cell.character_type = character_type
 
-    def _process_chars(self, char_group, char_block, symbol_state_map, taxon):
-        if self.exclude_chars:
-            return
-        if not char_group:
-            return
-        char_group = self._parse_nexus_multistate(char_group)
-        for char in char_group:
-            if len(char) == 1:
-                try:
-                    state = symbol_state_map[char.upper()]
-                except KeyError:
-                    if self._match_char is not None \
-                        and char.upper() == self._match_char.upper():
-                            state = char_block[0][len(char_block[taxon])].value
-                    else:
-                        raise self._data_format_error("Unrecognized (single) state encountered in '%s': '%s' is not defined in %s" % ("".join(char_group), char, symbol_state_map.keys()))
-            else:
-                if hasattr(char, "open_tag"):
-                    state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
-                else:
-                    raise self._data_format_error("Multiple character state without multi-state mark-up: '%s'" % char)
-            if state is None:
-                raise self._data_format_error("Unrecognized state encountered: '%s'" % char)
-            char_block[taxon].append(dataobject.CharacterDataCell(value=state))
+    # def _process_chars(self, char_group, char_block, symbol_state_map, taxon):
+    #     if self.exclude_chars:
+    #         return
+    #     if not char_group:
+    #         return
+    #     char_group = self._parse_nexus_multistate(char_group)
+    #     for char in char_group:
+    #         if len(char) == 1:
+    #             try:
+    #                 state = symbol_state_map[char.upper()]
+    #             except KeyError:
+    #                 if self._match_char is not None \
+    #                     and char.upper() == self._match_char.upper():
+    #                         state = char_block[0][len(char_block[taxon])].value
+    #                 else:
+    #                     raise self._nexus_error("Unrecognized (single) state encountered in '%s': '%s' is not defined in %s" % ("".join(char_group), char, symbol_state_map.keys()))
+    #         else:
+    #             if hasattr(char, "open_tag"):
+    #                 state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
+    #             else:
+    #                 raise self._nexus_error("Multiple character state without multi-state mark-up: '%s'" % char)
+    #         if state is None:
+    #             raise self._nexus_error("Unrecognized state encountered: '%s'" % char)
+    #         char_block[taxon].append(dataobject.CharacterDataCell(value=state))
 
     # def _parse_nexus_multistate(self, seq):
     #     """
@@ -696,7 +778,7 @@ class NexusReader(ioservice.DataReader):
             return state
         member_states = state_alphabet.get_states(symbols=state_char_seq)
         if member_states is None:
-            raise self._data_format_error("Unrecognized state encountered: '{}'".format(state_char_seq))
+            raise self._nexus_error("Unrecognized state encountered: '{}'".format(state_char_seq))
         state = state_alphabet.match_state(symbols=[ms.symbol for ms in member_states])
         if state is not None:
             return state
@@ -709,24 +791,10 @@ class NexusReader(ioservice.DataReader):
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
 
-#    def _prepare_to_parse_trees(self, taxon_namespace):
-#        self._tree_translate_dict = {}
-#        self.tax_label_lookup = {}
-#        for n, t in enumerate(taxon_namespace):
-#            self._tree_translate_dict[str(n + 1)] = t
-#        # add labels second so that labels have priority over number
-#        for n, t in enumerate(taxon_namespace):
-#            l = t.label
-#            self._tree_translate_dict[l] = t
-#            self.tax_label_lookup[l] = t
-#            if self.encode_splits:
-#                ti = taxon_namespace.index(t)
-#                t.split_bitmask = (1 << ti)
-
-    def store_comment_metadata(self, target):
-        if self.extract_comment_metadata and self._nexus_tokenizer.has_comment_metadata():
-                target.annotations.update(self._nexus_tokenizer.comment_metadata)
-                stream_tokenizer.clear_comment_metadata()
+    # def store_comment_metadata(self, target):
+    #     if self.extract_comment_metadata and self._nexus_tokenizer.has_comment_metadata():
+    #             target.annotations.update(self._nexus_tokenizer.comment_metadata)
+    #             stream_tokenizer.clear_comment_metadata()
 
     def _parse_tree_statement(self, taxon_namespace=None):
         """
@@ -742,7 +810,7 @@ class NexusReader(ioservice.DataReader):
         if self.extract_comment_metadata:
             pre_annotations = self._nexus_tokenizer.pull_comment_metadata()
         if token != '=':
-            raise self._data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
+            raise self._nexus_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
         tree_comments = self._nexus_tokenizer.comments
         tree = nexustokenizer.tree_from_token_stream(stream_tokenizer=self._nexus_tokenizer,
                 taxon_namespace=taxon_namespace,
@@ -792,7 +860,7 @@ class NexusReader(ioservice.DataReader):
             if (not token) or (token == ';'):
                 break
             if token != ',':
-                raise self._data_format_error("Expecting ',' in TRANSLATE statement after definition for %s = '%s', but found '%s' instead." % (translation_token, translation_label, token))
+                raise self._nexus_error("Expecting ',' in TRANSLATE statement after definition for %s = '%s', but found '%s' instead." % (translation_token, translation_label, token))
 
     def _parse_trees_block(self):
         token = 'TREES'
@@ -840,17 +908,17 @@ class NexusReader(ioservice.DataReader):
         keyword = self._nexus_tokenizer.current_token
         token = self._nexus_tokenizer.next_token()
         if self._nexus_tokenizer.is_eof() or not token:
-            raise self._data_format_error('Unexpected end of file or null token')
+            raise self._nexus_error('Unexpected end of file or null token')
         else:
             if not token:
-                raise self._data_format_error("Unexpected end of file or null token")
+                raise self._nexus_error("Unexpected end of file or null token")
             else:
                 charset_name = token
                 token = self._nexus_tokenizer.next_token()
                 if not token:
-                    raise self._data_format_error("Unexpected end of file or null token")
+                    raise self._nexus_error("Unexpected end of file or null token")
                 elif token != '=':
-                    raise self._data_format_error('Expecting "=" after character set name "%s", but instead found "%s"' % (charset_name, token))
+                    raise self._nexus_error('Expecting "=" after character set name "%s", but instead found "%s"' % (charset_name, token))
                 else:
                     positions = self._parse_positions(adjust_to_zero_based=True)
                 char_matrix.new_character_subset(charset_name, positions)
@@ -867,7 +935,7 @@ class NexusReader(ioservice.DataReader):
         max_positions = self._file_specified_nchar
 
         if self._nexus_tokenizer.is_eof() or not token:
-            raise self._data_format_error('Unexpected end of file or null token')
+            raise self._nexus_error('Unexpected end of file or null token')
 
         while token != ';' and token != ',' and not self._nexus_tokenizer.is_eof():
             if token:
@@ -899,9 +967,9 @@ class NexusReader(ioservice.DataReader):
                                                     step = int(token)
                                                     #token = self._nexus_tokenizer.next_token()
                                                 else:
-                                                    raise self._data_format_error('Expecting digit but found "%s".' % (token))
+                                                    raise self._nexus_error('Expecting digit but found "%s".' % (token))
                                             else:
-                                                raise self._data_format_error('Expecting other tokens after "\\", but no more found.')
+                                                raise self._nexus_error('Expecting other tokens after "\\", but no more found.')
                                             token = self._nexus_tokenizer.next_token()
                                         else:
                                             step = 1
@@ -911,11 +979,11 @@ class NexusReader(ioservice.DataReader):
                                         if q <= max_positions:
                                             positions.append(q)
                                 else:
-                                    raise self._data_format_error('Expecting digit or ".", but found "%s".' % (token))
+                                    raise self._nexus_error('Expecting digit or ".", but found "%s".' % (token))
                             else:
-                                raise self._data_format_error('Expecting other tokens after "-", but no more found.')
+                                raise self._nexus_error('Expecting other tokens after "-", but no more found.')
                         else:
-                            raise self._data_format_error('Expecting digit or "all", but found "%s".' % (token))
+                            raise self._nexus_error('Expecting digit or "all", but found "%s".' % (token))
                     else:
                         positions.append(start)
 
@@ -925,7 +993,7 @@ class NexusReader(ioservice.DataReader):
         if verify:
             for position in positions:
                 if position > max_positions:
-                    raise self._data_format_error("Specified position %d, but maximum position is %d" % (position, max_positions))
+                    raise self._nexus_error("Specified position %d, but maximum position is %d" % (position, max_positions))
         if adjust_to_zero_based:
             positions = [position - 1 for position in positions]
         return positions # make unique and return
@@ -960,6 +1028,9 @@ class NexusReader(ioservice.DataReader):
         will result in a list such as:
 
             [<A>, <C>, <T>, <G>, <AC>, <G>, <G>, <T>, <CGG>, <CG>, <G>, <G>]
+
+        where `<.>` is an StateAlphabetElement object with the characters
+        within the brackets as symbol(s).
 
         """
         state_list = []
@@ -1000,7 +1071,7 @@ class NexusReader(ioservice.DataReader):
                         try:
                             state = state_alphabet.symbol_state_map[c.upper()]
                         except KeyError:
-                            raise self._data_format_error("Unrecognized (single) state encountered in '{}': '{}' is not defined in {}".format("".join(char_group),
+                            raise self._nexus_error("Unrecognized (single) state encountered in '{}': '{}' is not defined in {}".format("".join(char_group),
                                     char,
                                     symbol_state_map.keys()))
                         state_list.append(state)
