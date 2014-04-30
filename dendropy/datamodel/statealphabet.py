@@ -183,6 +183,9 @@ class StateAlphabet(
         ):
 
     "A list of states available for a particular character type/format."
+    SINGLE_STATE = StateAlphabetElement.SINGLE_STATE
+    AMBIGUOUS_STATE = StateAlphabetElement.AMBIGUOUS_STATE
+    POLYMORPHIC_STATE = StateAlphabetElement.POLYMORPHIC_STATE
 
     ###########################################################################
     ### Life-Cycle and Identity
@@ -192,8 +195,9 @@ class StateAlphabet(
                 label=kwargs.pop("label", None))
         self._alphabet_elements = list(*args)
         self.missing = None
-        self.symbol_synonyms = {}
+        self._symbol_synonyms = {}
         self.case_sensitive = kwargs.pop('case_sensitive', False)
+        self._symbol_state_map = None
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -213,15 +217,19 @@ class StateAlphabet(
         return self._alphabet_elements
     def _set_alphabet_elements(self, elements):
         self._alphabet_elements = elements
+        self._symbol_state_map = None
     elements = property(_get_alphabet_elements, _set_alphabet_elements)
 
     def insert(self, index, element):
+        self._symbol_state_map = None
         return self._alphabet_elements.insert(index, element)
 
     def append(self, element):
+        self._symbol_state_map = None
         return self._alphabet_elements.append(element)
 
     def extend(self, other):
+        self._symbol_state_map = None
         self._alphabet_elements.extend(other)
 
     def __iadd__(self, other):
@@ -276,8 +284,20 @@ class StateAlphabet(
     def sort(self, key=None, reverse=False):
         self._alphabet_elements.sort(key=key, reverse=reverse)
 
+    def new_state_alphabet_element(self,
+            symbol, multistate_type, member_states):
+        sae = StateAlphabetElement(symbol=symbol,
+            multistate=multistate_type,
+            member_states=member_states)
+        self.append(sae)
+        return sae
+
     ###########################################################################
     ### Specialized Symbol Management
+
+    def add_symbol_synonym(self, symbol, synonym):
+        self._symbol_synonyms[symbol] = synonym
+        self._symbol_state_map = None
 
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
@@ -285,8 +305,8 @@ class StateAlphabet(
             if getattr(state, attr_name) == value:
                 return state
         if attr_name == "symbol":
-            if value in self.symbol_synonyms:
-                return self.symbol_synonyms[value]
+            if value in self._symbol_synonyms:
+                return self._symbol_synonyms[value]
             if value.islower() and not self.case_sensitive:
                 return self.get_state('symbol', value.upper())
         raise Exception("State with {} of '{}' not defined".format(attr_name, str(value)))
@@ -299,38 +319,41 @@ class StateAlphabet(
         for idx, state in enumerate(self._alphabet_elements):
             if state.symbol == symbol:
                 return idx
-        if value in self.symbol_synonyms:
-            return self.index(self.symbol_synonyms[value])
+        if value in self._symbol_synonyms:
+            return self.index(self._symbol_synonyms[value])
         raise Exception("State with symbol of '%s' not defined" % symbol)
 
     def state_for_symbol(self, symbol):
         "Returns a StateAlphabetElement object corresponding to given symbol."
         return self.get_state('symbol', symbol)
 
-    def symbol_state_map(self):
+    def _get_symbol_state_map(self):
         """
         Returns dictionary with symbols as keys and StateAlphabetElement objects
         as values.
         """
-        map = {}
-        for state in self._alphabet_elements:
-            map[state.symbol] = state
-        map.update(self.symbol_synonyms)
-        if not self.case_sensitive:
+        if self._symbol_state_map is None:
+            ssmap = {}
             for state in self._alphabet_elements:
-                if state.symbol.islower():
-                    map[state.symbol.upper()] = state
-                else:
-                    map[state.symbol.lower()] = state
-            for symbol, state in self.symbol_synonyms.items():
-                if symbol.islower():
-                    map[symbol.upper()] = state
-                else:
-                    map[symbol.lower()] = state
-        return map
+                ssmap[state.symbol] = state
+            ssmap.update(self._symbol_synonyms)
+            if not self.case_sensitive:
+                for state in self._alphabet_elements:
+                    if state.symbol.islower():
+                        ssmap[state.symbol.upper()] = state
+                    else:
+                        ssmap[state.symbol.lower()] = state
+                for symbol, state in self._symbol_synonyms.items():
+                    if symbol.islower():
+                        ssmap[symbol.upper()] = state
+                    else:
+                        ssmap[symbol.lower()] = state
+            self._symbol_state_map = ssmap
+        return self._symbol_state_map
+    symbol_state_map = property(_get_symbol_state_map)
 
     def get_legal_symbols_as_str(self):
-        m = self.symbol_state_map()
+        m = self.symbol_state_map
         keys = m.keys()
         for k in keys:
             if len(k) > 1:
@@ -527,7 +550,7 @@ class DnaStateAlphabet(FixedStateAlphabet):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
         _add_iupac(self, DnaStateAlphabet._states, DnaStateAlphabet._ambig)
         self.any_residue = self.N
-        self.symbol_synonyms['X'] = self.missing
+        self.add_symbol_synonym('X', self.missing)
 
 class RnaStateAlphabet(FixedStateAlphabet):
     _states = "ACGU-"
@@ -555,13 +578,13 @@ class RnaStateAlphabet(FixedStateAlphabet):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
         _add_iupac(self, RnaStateAlphabet._states, RnaStateAlphabet._ambig)
         self.any_residue = self.N
-        self.symbol_synonyms['X'] = self.missing
+        self.add_symbol_synonym('X', self.missing)
 
 class NucleotideStateAlphabet(DnaStateAlphabet):
 
     def __init__(self, *args, **kwargs):
         DnaStateAlphabet.__init__(self, *args, **kwargs)
-        self.symbol_synonyms['U'] = self.state_for_symbol('T')
+        self.add_symbol_synonym('U', self.state_for_symbol('T'))
 
 class ProteinStateAlphabet(FixedStateAlphabet):
     _states = "ACDEFGHIKLMNPQRSTUVWY*-"

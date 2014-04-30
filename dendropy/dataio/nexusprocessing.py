@@ -35,13 +35,21 @@ class NexusTokenizer(Tokenizer):
         Tokenizer.__init__(self,
             src=src,
             uncaptured_delimiters=" \t\n\r",
-            captured_delimiters="(),;:",
+            captured_delimiters="(),;:=",
             quote_chars="\"'",
             escape_quote_by_doubling=True,
             escape_chars="",
             comment_begin="[",
             comment_end="]",
             capture_comments=True)
+
+    def set_capture_eol(self, capture_eol):
+        if capture_eol:
+            self.uncaptured_delimiters = " \t"
+            self.captured_delimiters = "(),;:=\n\r"
+        else:
+            self.uncaptured_delimiters = " \t\n\r"
+            self.captured_delimiters = "(),;:="
 
     def next_token_ucase(self):
         try:
@@ -52,6 +60,19 @@ class NexusTokenizer(Tokenizer):
         except StopIteration:
             self.current_token = None
             return None
+
+    def process_and_clear_comments_for_item(self,
+            item,
+            extract_comment_metadata):
+        process_comments_for_item(item,
+                self.captured_comments,
+                extract_comment_metadata)
+        del self.captured_comments[:]
+
+    def skip_to_semicolon(self):
+        token = self.next_token()
+        while token != ';' and not self._cur_char == "" and token != None:
+            token = self.read_next_token()
 
 ###############################################################################
 ## Taxon Handling
@@ -290,7 +311,7 @@ def parse_comment_metadata_to_annotations(
 def process_comments_for_item(item,
         item_comments,
         extract_comment_metadata):
-    if not item_comments:
+    if not item_comments or item is None:
         return
     for comment in item_comments:
         if extract_comment_metadata and comment.startswith("&"):
