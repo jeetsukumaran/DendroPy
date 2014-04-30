@@ -93,15 +93,11 @@ class CharacterDataVector(object):
     CharacterDataCell
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         self._values = list(*args)
-        self.taxon = kwargs.pop("taxon", None)
-        if kwargs:
-            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def __deepcopy__(self, memo):
         other = CharacterDataVector()
-        other.taxon = copy.deepcopy(self.taxon, memo)
         memo[id(self.taxon)] = other.taxon
         for v in self._values:
             v2 = copy.deepcopy(v, memo)
@@ -662,6 +658,15 @@ class CharacterMatrix(
                 if update_taxon_namespace and taxon in self.taxon_namespace:
                     self.taxon_namespace.remove(taxon)
 
+    def new_character_data_vector(self, taxon):
+        if taxon in self.taxon_seq_map:
+            raise ValueError("Character data vector for taxon {} already exists".format(taxon))
+        if taxon not in self.taxon_namespace:
+            raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
+        cv = CharacterDataVector()
+        self.taxon_seq_map[taxon] = cv
+        return cv
+
     # following allows a CharacterMatrix object to simulate a dictionary
     # by `passing-through` calls to the underlying character map
 
@@ -677,19 +682,19 @@ class CharacterMatrix(
         "Dictionary interface implementation for direct access to character map."
         if isinstance(key, int):
             if key >= 0 and key < len(self.taxon_namespace):
-                key = self.taxon_namespace[key]
+                tx = self.taxon_namespace[key]
             else:
                 raise KeyError(key)
         elif isinstance(key, str):
-            label = key
-            key = None
-            for t in self.taxon_namespace:
-                if t.label == label:
-                    key = t
-                    break
-            if key is None:
-                raise KeyError(label)
-        return self.taxon_seq_map[key]
+            tx = self.taxon_namespace.get_taxon(label=key)
+            if tx is None:
+                raise KeyError(key)
+        else:
+            tx = key
+        try:
+            return self.taxon_seq_map[tx]
+        except KeyError:
+            return self.new_character_data_vector(tx)
 
     def __setitem__(self, key, value):
         "Dictionary interface implementation for direct access to character map."
@@ -819,9 +824,6 @@ class CharacterMatrix(
         if output is not None:
             output.write(s)
         return s
-
-    def new_character_data_vector(self, **kwargs):
-        return CharacterDataVector(**kwargs)
 
 ###############################################################################
 ## Specialized Matrices

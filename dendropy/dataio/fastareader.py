@@ -56,8 +56,7 @@ class FastaReader(ioservice.DataReader):
                     raise DataParseError(message="FASTA error: Repeated sequence name ('{}') found".format(name), line_num=line_index + 1, stream=stream)
                 if curr_vec is not None and len(curr_vec) == 0:
                     raise DataParseError(message="FASTA error: Expected sequence, but found another sequence name ('{}')".format(name), line_num=line_index + 1, stream=stream)
-                curr_vec = char_matrix.new_character_data_vector(taxon=curr_taxon)
-                char_matrix[curr_taxon] = curr_vec
+                curr_vec = char_matrix[curr_taxon]
             elif curr_vec is None:
                 raise DataParseError(message="FASTA error: Expecting a lines starting with > before sequences", line_num=line_index + 1, stream=stream)
             else:

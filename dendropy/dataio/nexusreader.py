@@ -652,22 +652,19 @@ class NexusReader(ioservice.DataReader):
             self._process_discrete_matrix_data(char_block)
 
     def _process_continuous_matrix_data(self, char_block):
+        if self._interleave:
+            raise NotImplementedError("Continuous characters in NEXUS schema not yet supported")
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
         while token != ';' and not self._nexus_tokenizer.is_eof():
             taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-            if taxon not in char_block:
-                char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
-                if self._interleave:
-                    raise NotImplementedError("Continuous characters in NEXUS schema not yet supported")
-                else:
-                    while len(char_block[taxon]) < self._file_specified_nchar and not self._nexus_tokenizer.is_eof():
-                        char_group = self._nexus_tokenizer.next_token(ignore_punctuation="-+")
-                        char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
-                    if len(char_block[taxon]) < self._file_specified_nchar:
-                        raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
-                            % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
-                    token = self._nexus_tokenizer.next_token()
+            while len(char_block[taxon]) < self._file_specified_nchar and not self._nexus_tokenizer.is_eof():
+                char_group = self._nexus_tokenizer.next_token(ignore_punctuation="-+")
+                char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
+            if len(char_block[taxon]) < self._file_specified_nchar:
+                raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+                    % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
+            token = self._nexus_tokenizer.next_token()
 
     def _process_discrete_matrix_data(self, char_block):
         if self._data_type == "standard":
@@ -676,34 +673,17 @@ class NexusReader(ioservice.DataReader):
         token = self._nexus_tokenizer.next_token()
         state_alphabet = char_block.default_state_alphabet
         if self._interleave:
-            state_list = []
             try:
                 while token != ";" and not self._nexus_tokenizer.is_eof():
                     taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-                    if taxon not in char_block:
-                        char_block[taxon] = char_block.new_character_data_vector(taxon=taxon)
-                    state_list = self._read_character_states(state_alphabet)
-                    if state_list:
-                        char_block[taxon].extend(state_list)
-                    else:
-                        break
+                    self._read_character_states(char_block[taxon], state_alphabet)
                     token = self._nexus_tokenizer.next_token()
             except NexusReader.BlockTerminatedException:
-                if state_list:
-                    char_block[taxon].extend(state_list)
                 token = self._nexus_tokenizer.next_token()
         else:
             while token != ';' and not self._nexus_tokenizer.is_eof():
                 taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-                if taxon not in char_block:
-                    char_block[taxon] = char_block.new_character_data_vector(taxon=taxon)
-                while len(char_block[taxon]) < self._file_specified_nchar \
-                        and not self._nexus_tokenizer.is_eof():
-                    state_list = self._read_character_states(state_alphabet)
-                    if state_list:
-                        char_block[taxon].extend(state_list)
-                    else:
-                        break
+                self._read_character_states(char_block[taxon], state_alphabet)
                 if len(char_block[taxon]) < self._file_specified_nchar:
                     raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
@@ -1009,6 +989,7 @@ class NexusReader(ioservice.DataReader):
         return token
 
     def _read_character_states(self,
+            character_data_vector,
             state_alphabet,
             ):
         """
@@ -1033,10 +1014,9 @@ class NexusReader(ioservice.DataReader):
         within the brackets as symbol(s).
 
         """
-        state_list = []
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(True)
-        while len(state_list) < self._file_specified_nchar:
+        while len(character_data_vector) < self._file_specified_nchar:
             token = self._nexus_tokenizer.require_next_token()
             if token == "{" or token == "(":
                 if token == "{":
@@ -1055,7 +1035,7 @@ class NexusReader(ioservice.DataReader):
                     multistate_tokens.append(token)
                 c = "".join(subtokens)
                 state = self._get_state_for_multistate_tokens(c, multistate_type, state_alphabet)
-                state_list.append(state)
+                character_data_vector.append(state)
                 num_states_read += 1
             elif token == "\r" or token == "\n":
                 if self._interleave:
@@ -1066,6 +1046,7 @@ class NexusReader(ioservice.DataReader):
                 for c in token:
                     if (self._match_char is not None
                             and (c.upper() == self._match_char)):
+                        # TODO! handle "."
                         raise NotImplementedError
                     else:
                         try:
@@ -1074,8 +1055,8 @@ class NexusReader(ioservice.DataReader):
                             raise self._nexus_error("Unrecognized (single) state encountered in '{}': '{}' is not defined in {}".format("".join(char_group),
                                     char,
                                     symbol_state_map.keys()))
-                        state_list.append(state)
+                        character_data_vector.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
-        return state_list
+        return character_data_vector
 
