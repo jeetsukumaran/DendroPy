@@ -23,7 +23,7 @@ Tests basic Tree structure and iteration.
 import unittest
 import dendropy
 from dendropy.test.support import datagen_curated_test_tree
-from dendropy import test
+from dendropy.test.support import dendropytest
 
 class TestTreeNodeAndEdgeCollections(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
 
@@ -547,81 +547,81 @@ class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.Test
             ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True, filter_fn=filter_fn)]
             self.assertEqual(ancestors, expected_ancestors)
 
-class TreeRootingState(unittest.TestCase):
+class TreeRootingState(dendropytest.ExtendedTestCase):
 
     def test_is_rooted(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_is_unrooted(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
-class TreeRestructuring(unittest.TestCase):
+class TreeRestructuring(dendropytest.ExtendedTestCase):
 
     def test_deroot(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_reseed_at(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_to_outgroup_position(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_reroot_at_node(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_reroot_at_edge(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_reroot_at_midpoint(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_delete_outdegree_one_nodes(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_collapse_unweighted_edges(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_resolve_polytomies(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_prune_subtree(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_prune_leaves_without_taxa(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_prune_taxa(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_prune_nodes(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_prune_taxa_with_labels(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_retain_taxa(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_retain_taxa_with_labels(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_randomly_reorient_tree(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_randomly_rotate(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_ladderize(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_truncate_from_root(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_scale_edges(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_set_edge_lengths_from_node_ages(self):
-        self.assertFalse(test.fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
 if __name__ == "__main__":
     unittest.main()

@@ -26,7 +26,8 @@ import collections
 import unittest
 from dendropy.utility import metavar
 from dendropy.utility import messaging
-from dendropy import test
+sys.path.insert(0, os.path.dirname(__file__))
+from dendropy.test.support import dendropytest
 
 def main():
     group_names = (
@@ -111,9 +112,9 @@ def main():
             test_names.append(name)
 
     if not test_names and not filter_patterns:
-        test_names = test.discover_test_module_paths() # get all
+        test_names = dendropytest.discover_test_module_paths() # get all
     if filter_patterns:
-        test_names.extend(test.discover_test_module_paths(filter_patterns))
+        test_names.extend(dendropytest.discover_test_module_paths(filter_patterns))
     test_names = sorted(set(test_names))
 
     # 0: nothing

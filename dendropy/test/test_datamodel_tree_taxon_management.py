@@ -27,11 +27,11 @@ import collections
 import copy
 from dendropy.test.support import datagen_curated_test_tree
 from dendropy.test.support import compare_and_validate
-from dendropy.test import fail_incomplete_tests
+from dendropy.test.support import dendropytest
 
 class TestTreeUpdateTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def setUp(self):
         self.tree1, self.anodes1, self.lnodes1, self.inodes1 = self.get_tree(
@@ -80,7 +80,7 @@ class TestTreeUpdateTaxonNamespace(
 
 class TestTreeMigrateAndReconstructTaxonNamespace(
         datagen_curated_test_tree.CuratedTestTree,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def setUp(self):
         self.tree, self.anodes, self.lnodes, self.inodes = self.get_tree(
@@ -406,10 +406,10 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                     redundant_taxa=True)
 
     def test_unassign_taxa(self):
-        self.assertFalse(fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
     def test_randomly_assign_taxa(self):
-        self.assertFalse(fail_incomplete_tests())
+        self.assertFalse(self.fail_incomplete_tests())
 
 if __name__ == "__main__":
     unittest.main()

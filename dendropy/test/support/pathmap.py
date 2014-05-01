@@ -27,6 +27,7 @@ _LOG = messaging.get_logger(__name__)
 
 try:
     import pkg_resources
+    # TESTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "tests"))
     TESTS_DIR = pkg_resources.resource_filename("dendropy", "test")
     SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "scripts"))
     _LOG.info("using pkg_resources path mapping")
@@ -36,7 +37,6 @@ except:
     PACKAGE_DIR = os.path.join(TESTS_DIR, os.path.pardir)
     SCRIPTS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "scripts")
     _LOG.info("using local filesystem path mapping")
-
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
 TESTS_COVERAGE_DIR = os.path.join(TESTS_DIR, "coverage")

@@ -4,7 +4,7 @@ import sys
 import json
 if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
-from dendropy.test.support import pathmap
+from . import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 
