@@ -1,7 +1,6 @@
-|dendropy_logo_readme|
 
-Introduction
-============
+Introduction |dendropy_logo_readme|
+===================================
 
 DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and
