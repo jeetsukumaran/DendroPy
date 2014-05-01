@@ -1,5 +1,5 @@
 
-Introduction |dendropy_logo_readme|
+|dendropy_logo_readme| Introduction
 ===================================
 
 DendroPy is a Python library for phylogenetic computing.
@@ -62,6 +62,6 @@ For all options, type::
     $ python -m dendropy.test --help
 
 .. |dendropy_logo_readme| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: top
+   :align: bottom
    :alt: DendroPy
    :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
