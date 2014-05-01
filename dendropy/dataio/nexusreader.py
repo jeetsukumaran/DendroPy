@@ -688,66 +688,6 @@ class NexusReader(ioservice.DataReader):
                     raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
                 token = self._nexus_tokenizer.next_token()
-        # for vi, vec in enumerate(char_block.values()):
-        #     for ci, cell in enumerate(vec):
-        #         cell.character_type = character_type
-
-    # def _process_chars(self, char_group, char_block, symbol_state_map, taxon):
-    #     if self.exclude_chars:
-    #         return
-    #     if not char_group:
-    #         return
-    #     char_group = self._parse_nexus_multistate(char_group)
-    #     for char in char_group:
-    #         if len(char) == 1:
-    #             try:
-    #                 state = symbol_state_map[char.upper()]
-    #             except KeyError:
-    #                 if self._match_char is not None \
-    #                     and char.upper() == self._match_char.upper():
-    #                         state = char_block[0][len(char_block[taxon])].value
-    #                 else:
-    #                     raise self._nexus_error("Unrecognized (single) state encountered in '%s': '%s' is not defined in %s" % ("".join(char_group), char, symbol_state_map.keys()))
-    #         else:
-    #             if hasattr(char, "open_tag"):
-    #                 state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
-    #             else:
-    #                 raise self._nexus_error("Multiple character state without multi-state mark-up: '%s'" % char)
-    #         if state is None:
-    #             raise self._nexus_error("Unrecognized state encountered: '%s'" % char)
-    #         char_block[taxon].append(dataobject.CharacterDataCell(value=state))
-
-    # def _parse_nexus_multistate(self, seq):
-    #     """
-    #     Given a sequence of characters, with ambiguities denoted by
-    #     `{<STATES>}`, this returns a list of characters, with unambiguous
-    #     characters as individual elements, and the ambiguous characters in their
-    #     own string elements. E.g.:
-
-    #         "ACTG(AC)GGT(CGG)(CG)GG"
-
-    #     results in:
-
-    #         ['A', 'C', 'T', 'G', 'AC', 'G', 'G', 'T', 'CGG', 'CG', 'G', 'G']
-
-    #     Two attributes are also added to every set of ambiguous characters,
-    #     `open_tag` and `close_tag` with their values set to the opening and closing
-    #     tokens.
-    #     """
-    #     spat = re.compile('[\(|\{].+?[\)\}]')
-    #     mpat = re.compile('([\(|\{].+?[\)\}])')
-
-    #     unambig = spat.split(seq)
-    #     ambig = mpat.findall(seq)
-    #     result = []
-    #     for i in xrange(len(unambig)-1):
-    #         a = textutils.RichString(ambig[i][1:-1])
-    #         a.open_tag = ambig[i][0]
-    #         a.close_tag = ambig[i][-1]
-    #         result.extend(unambig[i])
-    #         result.append(a)
-    #     result.extend(unambig[-1])
-    #     return [c for c in result if c]
 
     def _get_state_for_multistate_tokens(self,
             state_char_seq,
@@ -770,11 +710,6 @@ class NexusReader(ioservice.DataReader):
 
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
-
-    # def store_comment_metadata(self, target):
-    #     if self.extract_comment_metadata and self._nexus_tokenizer.has_comment_metadata():
-    #             target.annotations.update(self._nexus_tokenizer.comment_metadata)
-    #             stream_tokenizer.clear_comment_metadata()
 
     def _parse_tree_statement(self, taxon_namespace=None):
         """
@@ -1050,11 +985,11 @@ class NexusReader(ioservice.DataReader):
                         raise NotImplementedError
                     else:
                         try:
-                            state = state_alphabet.symbol_state_map[c.upper()]
+                            state = state_alphabet.full_symbol_state_map[c.upper()]
                         except KeyError:
                             raise self._nexus_error("Unrecognized (single) state encountered in '{}': '{}' is not defined in {}".format("".join(char_group),
                                     char,
-                                    symbol_state_map.keys()))
+                                    state_alphabet.symbol_state_map.keys()))
                         character_data_vector.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)

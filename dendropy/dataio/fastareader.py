@@ -42,7 +42,7 @@ class FastaReader(ioservice.DataReader):
                 data_type=self.data_type,
                 label=None,
                 taxon_namespace=taxon_namespace)
-        symbol_state_map = char_matrix.default_symbol_state_map
+        symbol_state_map = char_matrix.default_state_alphabet.full_symbol_state_map
         curr_vec = None
         curr_taxon = None
         for line_index, line in enumerate(stream):

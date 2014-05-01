@@ -28,12 +28,12 @@ except ImportError:
     from io import StringIO # Python 3
 from dendropy.utility import error
 from dendropy.utility import container
-from dendropy.datamodel.statealphabet import DNA_STATE_ALPHABET
-from dendropy.datamodel.statealphabet import RNA_STATE_ALPHABET
-from dendropy.datamodel.statealphabet import NUCLEOTIDE_STATE_ALPHABET
-from dendropy.datamodel.statealphabet import PROTEIN_STATE_ALPHABET
-from dendropy.datamodel.statealphabet import RESTRICTION_SITES_STATE_ALPHABET
-from dendropy.datamodel.statealphabet import INFINITE_SITES_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import RNA_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import NUCLEOTIDE_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import PROTEIN_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import RESTRICTION_SITES_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
 from dendropy.datamodel import base
 from dendropy.datamodel import taxon
 from dendropy import dataio
@@ -853,15 +853,25 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         """
         CharacterMatrix.__init__(self, **kwargs)
         self.state_alphabets = []
-        self.default_state_alphabet = None
+        self._default_state_alphabet = None
         if len(args) > 0:
             self.clone_from(*args)
 
-    def _get_default_symbol_state_map(self):
-        if self.default_state_alphabet is not None:
-            return self.default_state_alphabet.symbol_state_map
+    def _get_default_state_alphabet(self):
+        if self._default_state_alphabet is not None:
+            return self._default_state_alphabet
+        elif len(self.state_alphabets) == 1:
+            return self.state_alphabets[0]
+        elif len(self.state_alphabets) > 1:
+            raise TypeError("Multiple state alphabets defined for this matrix with no default specified")
+        elif len(self.state_alphabets) == 0:
+            raise TypeError("No state alphabets defined for this matrix")
         return None
-    default_symbol_state_map = property(_get_default_symbol_state_map)
+    def _set_default_state_alphabet(self, s):
+        if s not in self.state_alphabets:
+            self.state_alphabets.append(s)
+        self._default_state_alphabet = s
+    default_state_alphabet = property(_get_default_state_alphabet, _set_default_state_alphabet)
 
     def append_taxon_sequence(self, taxon, state_symbols):
         if taxon not in self:
