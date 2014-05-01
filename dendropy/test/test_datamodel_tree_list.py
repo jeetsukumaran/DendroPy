@@ -799,11 +799,11 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
 
     def verify_taxon_namespace_reconstruction(self,
             unify_taxa_by_label=False,
-            case_insensitive_label_mapping=False,
+            case_sensitive_label_mapping=True,
             original_tns=None,
             redundant_taxa=False):
         if unify_taxa_by_label:
-            if case_insensitive_label_mapping:
+            if not case_sensitive_label_mapping:
                 expected_labels = list(set((label.upper() if label is not None else None) for label in self.node_label_to_taxon_label_map.values()))
             else:
                 expected_labels = list(set(label for label in self.node_label_to_taxon_label_map.values()))
@@ -814,7 +814,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
             self.assertIs(tree.taxon_namespace, self.tree_list.taxon_namespace)
             for nd in tree:
                 self.assertIsNot(nd.taxon, nd.original_taxon)
-                if case_insensitive_label_mapping and nd.taxon.label is not None:
+                if not case_sensitive_label_mapping and nd.taxon.label is not None:
                     self.assertEqual(nd.taxon.label.upper(), nd.original_taxon.label.upper())
                     self.assertEqual(self.node_label_to_taxon_label_map[nd.label].upper(), nd.taxon.label.upper())
                 else:
@@ -830,7 +830,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
                     seen_taxa.append(nd.taxon)
                 else:
                     self.assertTrue(unify_taxa_by_label or redundant_taxa)
-                    if case_insensitive_label_mapping:
+                    if not case_sensitive_label_mapping:
                         self.assertIn(nd.taxon.label, [t.label for t in seen_taxa])
                     else:
                         if nd.taxon.label is None:
@@ -840,7 +840,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
                             x1 = [t.label.upper() for t in seen_taxa if t.label is not None]
                             self.assertIn(nd.taxon.label.upper(), x1)
             self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
-            if case_insensitive_label_mapping:
+            if not case_sensitive_label_mapping:
                 seen_labels = [(t.label.upper() if t.label is not None else None) for t in seen_taxa]
             else:
                 seen_labels = [t.label for t in seen_taxa]
@@ -867,7 +867,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         tree_list.taxon_namespace = new_tns
         tree_list.reconstruct_taxon_namespace(
                 unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(tree_list.taxon_namespace, tns)
         self.assertIs(tree_list.taxon_namespace, new_tns)
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
@@ -887,12 +887,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list._taxon_namespace = new_tns
         self.assertEqual(len(self.tree_list.taxon_namespace), 0)
         self.tree_list.reconstruct_taxon_namespace(unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
 
     def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
         original_tns = self.tree_list.taxon_namespace
@@ -900,12 +900,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list._taxon_namespace = new_tns
         self.assertEqual(len(self.tree_list.taxon_namespace), 0)
         self.tree_list.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=False,
+                case_sensitive_label_mapping=True,
                 original_tns=original_tns)
 
     def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
@@ -914,12 +914,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list._taxon_namespace = new_tns
         self.assertEqual(len(self.tree_list.taxon_namespace), 0)
         self.tree_list.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                case_insensitive_label_mapping=True)
+                case_sensitive_label_mapping=False)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=True,
+                case_sensitive_label_mapping=False,
                 original_tns=original_tns)
 
     def test_basic_migration(self):
@@ -938,7 +938,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         tree_list.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(tree_list.taxon_namespace, tns)
         self.assertIs(tree_list.taxon_namespace, new_tns)
         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
@@ -958,12 +958,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=False,
-                case_insensitive_label_mapping=False,
+                case_sensitive_label_mapping=True,
                 original_tns=original_tns)
 
     def test_migrate_taxon_namespace_unifying_case_sensitive(self):
@@ -972,12 +972,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=False)
+                case_sensitive_label_mapping=True)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=False,
+                case_sensitive_label_mapping=True,
                 original_tns=original_tns)
 
     def test_migrate_taxon_namespace_unifying_case_insensitive(self):
@@ -986,12 +986,12 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
         self.tree_list.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=True)
+                case_sensitive_label_mapping=False)
         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
         self.assertIs(self.tree_list.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
                 unify_taxa_by_label=True,
-                case_insensitive_label_mapping=True,
+                case_sensitive_label_mapping=False,
                 original_tns=original_tns)
 
 class TestTreeListAppend(

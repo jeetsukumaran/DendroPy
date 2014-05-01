@@ -21,12 +21,40 @@ Python Version Compatibility
 
     * Python 3: Python 3.1, 3.2, 3.3, 3.4
 
+Library-Wide Changes
+====================
+
+Behind-the-Scenes Module Reorganization
+---------------------------------------
+
+* A number of modules have been renamed, moved, or split into multiple modules.
+  However, all these changes *should* be opaque to most normal usage and
+  client code. Most of the names (classes/methods/variables) in these modules were
+  imported into the '`dendropy`' namespace, and this is how all public code
+  should be accessing them, *or* they were never exposed (or meant to be
+  exposed) for public usage in the first place. A list of module changes:
+
+        +------------------+---------------------------+
+        | DendroPy 3       | DendroPy 4                |
+        +==================+===========================+
+        | dataobject.base  | datamodel.basemodel       |
+        +------------------+---------------------------+
+        | dataobject.taxon | datamodel.taxonmodel      |
+        +------------------+---------------------------+
+        | dataobject.tree  | datamodel.treemodel       |
+        +------------------+---------------------------+
+        | dataobject.char  | datamodel.charstatemodel, |
+        |                  | datamodel.charmatrixmodel |
+        +------------------+---------------------------+
+
+
 Unique Object Identifier ("`oid`") Attributes Removed
-=====================================================
+-----------------------------------------------------
 
 * The entire `oid` system ("object identifier"), i.e., the unique id assigned
   to every data object, has been removed. This was an implementation artifact
-  from NEXML parsing.
+  from NEXML parsing that greatly slowed down a number of operations without
+  any benefit or utility for most normal operations.
 
 :class:`TaxonSet` is now :class:`TaxonNamespace`
 ================================================
@@ -40,18 +68,29 @@ Unique Object Identifier ("`oid`") Attributes Removed
 
 * The API is largely similar with the following differences:
 
-  * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
-    'TaxonNamespace[x]') now only accept integer values as arguments
-    (representing indexes into the list of :class:`Taxon` objects in the
-    internal array).
+    * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
+        'TaxonNamespace[x]') now only accept integer values as arguments
+        (representing indexes into the list of :class:`Taxon` objects in the
+        internal array).
 
-  * :meth:`TaxonSet.has_taxon()` and :meth:`TaxonSet.has_taxa()` have been
-    replaced by :meth:`TaxonNamespace.has_taxon_label()` and
-    :meth:`TaxonNamespace.has_taxa_labels()` respectively.
+    * :meth:`TaxonSet.has_taxon()` and :meth:`TaxonSet.has_taxa()` have been
+        replaced by :meth:`TaxonNamespace.has_taxon_label()` and
+        :meth:`TaxonNamespace.has_taxa_labels()` respectively.
 
-  * Various new methods for accessing and managing the collection of
-    :class:`Taxon` objects (e.g., `findall`, `drop_taxon`, `remove_taxon`,
-    `discard_taxon`, `__delitem__`, etc.)
+    * Various new methods for accessing and managing the collection of
+        :class:`Taxon` objects (e.g., `findall`, `drop_taxon`, `remove_taxon`,
+        `discard_taxon`, `__delitem__`, etc.)
+
+    * Numerous look-up methods took '`case_insensitive`' as an argument that
+      determined whether the look-up was case sensitive or not (when
+      retrieving, for example, a :class:`Taxon` object corresponding to a
+      particular label), which, if not specified, default to `False`, i.e. a
+      non-caseless or a case-sensitive matching criteria. In all cases, this
+      has been changed to to '`case_sensitive`' with a default of `True`. That
+      is, searches by default are still case-sensitive, but now you will have
+      to specify '`case_sensitive=False`' instead of '`case_insensitive=True`'
+      to perform a case-*in*sensitive search. This change was for consistency
+      with the rest of the library.
 
 * In most cases, a simple global search-and-replace of "TaxonSet" with
   "TaxonNamespace" and "`taxon_set`" with "`taxon_namespace`" should be

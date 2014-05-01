@@ -294,8 +294,7 @@ class NewickReader(ioservice.DataReader):
         taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
                 taxon_namespace=taxon_namespace,
                 enable_lookup_by_taxon_number=False,
-                case_insensitive=not self.case_sensitive_taxon_labels)
-                # case_insensitive=False)
+                case_sensitive=self.case_sensitive_taxon_labels)
         tree_factory = tree_list.new_tree
         for tree in self.tree_iter(stream=stream,
                 taxon_symbol_mapper=taxon_symbol_mapper,

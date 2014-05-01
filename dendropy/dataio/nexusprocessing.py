@@ -119,11 +119,11 @@ class NexusTaxonSymbolMapper(object):
     def __init__(self,
             taxon_namespace,
             enable_lookup_by_taxon_number=True,
-            case_insensitive=True):
+            case_sensitive=False):
         self._taxon_namespace = None
         self.taxon_namespace_original_mutability_state = None
-        self.case_insensitive = case_insensitive
-        if self.case_insensitive:
+        self.case_sensitive = case_sensitive
+        if not self.case_sensitive:
             self.token_taxon_map = container.CaseInsensitiveDict()
             self.label_taxon_map = container.CaseInsensitiveDict()
         else:
@@ -156,7 +156,7 @@ class NexusTaxonSymbolMapper(object):
 
     def reset_supplemental_mappings(self):
         self.token_taxon_map.clear()
-        if self.case_insensitive:
+        if not self.case_sensitive:
             self.label_taxon_map = container.CaseInsensitiveDict(self._taxon_namespace.label_taxon_map())
         else:
             self.label_taxon_map = self._taxon_namespace.label_taxon_map()
