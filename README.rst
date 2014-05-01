@@ -1,4 +1,4 @@
-|dendropy_logo|
+|dendropy_logo_readme|
 
 Introduction
 ============
@@ -62,6 +62,7 @@ For all options, type::
 
     $ python -m dendropy.test --help
 
-.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
+.. |dendropy_logo_readme| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
+   :align: top
    :alt: DendroPy
    :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
