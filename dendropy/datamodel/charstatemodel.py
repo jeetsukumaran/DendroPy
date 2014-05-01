@@ -132,7 +132,7 @@ class StateAlphabet(
     ### Life-Cycle and Identity
 
     def __init__(self,
-            fundamental_states,
+            fundamental_states=None,
             ambiguous_states=None,
             polymorphic_states=None,
             symbol_synonyms=None,
@@ -147,25 +147,31 @@ class StateAlphabet(
         self._ambiguous_states = []
         self._polymorphic_states = []
 
+        # Look-up mappings
+        self._canonical_symbol_state_map = None
+        self._full_symbol_state_map = None
+        self._index_state_map = None
+        self._fundamental_states_to_ambiguous_state_map = None
+        self._fundamental_states_to_polymorphic_state_map = None
+
         # Cache invalidation flag
         self._is_dirty = True
 
         # Populate core collection
-        for symbol in fundamental_states:
-            self.new_fundamental_state(symbol)
-        if ambiguous_states:
-            for ss in ambiguous_states:
-                self.new_ambiguous_state(symbol=ss[0], member_state_symbols=ss[1])
-        if polymorphic_states:
-            for ss in polymorphic_states:
-                self.new_polymorphic_state(symbol=ss[0], member_state_symbols=ss[1])
-        if symbol_synonyms:
-            for k in symbol_synonyms:
-                self.new_symbol_synonym(k, symbol_synonyms[v])
-
-        # Build mappings
-        self.compile_lookup_mappings()
-
+        if fundamental_states:
+            for symbol in fundamental_states:
+                self.new_fundamental_state(symbol)
+            if ambiguous_states:
+                for ss in ambiguous_states:
+                    self.new_ambiguous_state(symbol=ss[0], member_state_symbols=ss[1])
+            if polymorphic_states:
+                for ss in polymorphic_states:
+                    self.new_polymorphic_state(symbol=ss[0], member_state_symbols=ss[1])
+            if symbol_synonyms:
+                for k in symbol_synonyms:
+                    self.new_symbol_synonym(k, symbol_synonyms[k])
+            # Build mappings
+            self.compile_lookup_mappings()
 
     def __copy__(self, memo=None):
         raise TypeError("Cannot (shallow) copy {}".format(self.__class__.__name__))
@@ -188,7 +194,7 @@ class StateAlphabet(
                 return state
         raise KeyError(symbol)
 
-    def _direct_get_state_set_for_symbols(self, symbols):
+    def _direct_get_fundamental_state_set_for_symbols_for_symbols(self, symbols):
         """
         Returns the list of :class:`StateLetter` instances corresponding to
         the iterable of symbols given by `symbols`, with each element in
@@ -198,7 +204,7 @@ class StateAlphabet(
         for symbol in symbols:
             state = self._direct_get_state_for_symbol(symbol)
             ss.extend(state.fundamental_states)
-        return ss
+        return frozenset(ss)
 
     def _validate_new_symbol(self, symbol):
         if symbol is None or symbol == "":
@@ -235,8 +241,7 @@ class StateAlphabet(
             member_state_symbols):
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_state_set_for_symbols(member_state_symbols)
-        member_states = frozenset(member_states)
+        member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
         new_state = StateLetter(
                 symbol=symbol,
                 index=None,
@@ -251,8 +256,7 @@ class StateAlphabet(
             member_state_symbols):
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_state_set_for_symbols(member_state_symbols)
-        member_states = frozenset(member_states)
+        member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
         new_state = StateLetter(
                 symbol=symbol,
                 index=None,
@@ -264,10 +268,9 @@ class StateAlphabet(
 
     def new_symbol_synonym(self,
             symbol_synonym, referenced_symbol):
-        if symbol is None or symbol == "":
+        if symbol_synonym is None or symbol_synonym == "":
             raise ValueError("Symbol synonym cannot be empty")
-        if symbol is not None and symbol != "":
-            symbol = self._validate_new_symbol(symbol)
+        symbol_synonym = self._validate_new_symbol(symbol_synonym)
         state = self._direct_get_state_for_symbol(referenced_symbol)
         state.symbol_synonyms.add(symbol_synonym)
         self._is_dirty = True
@@ -292,10 +295,8 @@ class StateAlphabet(
         self._fundamental_states_to_polymorphic_state_map = {}
         for idx, state in enumerate(self.state_iter()):
             if state.symbol:
-                self._set_symbol_mapping(
-                        self._canonical_symbol_state_map,
-                        state.symbol,
-                        state)
+                assert state.symbol not in self._canonical_symbol_state_map
+                self._canonical_symbol_state_map[state.symbol] = state
                 self._set_symbol_mapping(
                         self._full_symbol_state_map,
                         state.symbol,
@@ -356,15 +357,137 @@ class StateAlphabet(
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._canonical_symbol_state_map
-    canonical_symbol_state_map = property(_get_canonical_symbol_state_map)
+    canonical_symbol_state_map = property(_get_canonical_symbol_state_map,
+            "Dictionary with state symbols as keys and states as values."
+            " Does not include symbol synonyms or case variations.")
 
     def _get_full_symbol_state_map(self):
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._full_symbol_state_map
-    full_symbol_state_map = property(_get_full_symbol_state_map)
+    full_symbol_state_map = property(_get_full_symbol_state_map,
+            "Dictionary with state symbols as keys and states as values,"
+            " including symbol synonyms or case variations on symbols.")
 
+    def __getitem__(self, key):
+        if self._is_dirty:
+            self.compile_lookup_mappings()
+        if isinstance(key, int):
+            return self._index_state_map[key]
+        else:
+            return self._full_symbol_state_map[key]
 
+    def get_states_for_symbols(self, symbols):
+        """
+        Returns list of states corresponding to symbols.
+
+        Parameters
+        ----------
+        symbols : iterable of symbols
+
+        Returns
+        -------
+        s : list of :class:`StateLetter`
+            A list of :class:`StateLetter` instances corresponding to symbols
+            given in `symbols`.
+        """
+        states = [self.full_symbol_state_map[s] for s in symbols]
+        return states
+
+    def get_fundamental_state_set_for_symbols(self, symbols):
+        """
+        Returns list of *fundamental* states corresponding to symbols.
+
+        Parameters
+        ----------
+        symbols : iterable of symbols
+
+        Returns
+        -------
+        s : list of :class:`StateLetter`
+            A list of fundamental :class:`StateLetter` instances corresponding
+            to symbols given in `symbols`, with multi-state states expanded
+            into their fundamental symbols.
+        """
+        states = []
+        for symbol in symbols:
+            state = self._full_symbol_state_map[symbol]
+            states.extend(state_fundamental_states)
+        return frozenset(states)
+
+    def match_ambiguous_state(self, symbols):
+        """
+        Returns ambiguous state with fundamental member states
+        represented by symbols given in `symbols`.
+
+        Parameters
+        ----------
+        symbols : iterable of symbols
+
+        Returns
+        -------
+        s : :class:`StateLetter` instance
+        """
+        states = self.get_fundamental_state_set_for_symbols(symbols)
+        return self._fundamental_states_to_ambiguous_state_map[state]
+
+    def match_polymorphic_state(self, symbols):
+        """
+        Returns polymorphic state with fundamental member states
+        represented by symbols given in `symbols`.
+
+        Parameters
+        ----------
+        symbols : iterable of symbols
+
+        Returns
+        -------
+        s : :class:`StateLetter` instance
+        """
+        states = self.get_fundamental_state_set_for_symbols(symbols)
+        return self._fundamental_states_to_polymorphic_state_map[state]
+
+    def match_state(self, symbols):
+        """
+        Returns (multistate) state with fundamental member states
+        represented by symbols given in `symbols`.
+
+        Parameters
+        ----------
+        symbols : iterable of symbols
+
+        Returns
+        -------
+        s : :class:`StateLetter` instance
+        """
+        try:
+            return self.match_ambiguous_state(symbols)
+        except KeyError:
+            return self.match_polymorphic_state(symbols)
+
+    def set_state_as_attribute(self, state, attr_name=None):
+        """
+        Sets the given state as an attribute of this alphabet.
+        The name of the attribute will be `attr_name` if specified,
+        or the state symbol otherwise.
+
+        Parameters
+        ----------
+        state : :class:`StateLetter`
+            The state to be made an attribute of this alphabet.
+        attr_name : string
+            The name of the attribute. If not specified, the state
+            symbol will be used.
+        """
+        if (state not in self._fundamental_states
+                and state not in self._ambiguous_states
+                and state not in self._polymorphic_states):
+            raise ValueError("State {} not defined in current alphabet".format(state))
+        if attr_name is None:
+            attr_name = state.symbol
+        if attr_name is None:
+            raise TypeError("Cannot set attribute: non-None symbol needed for state or non-None attribute name needs to be provided")
+        setattr(self, attr_name, state)
 
 ###############################################################################
 ## StateLetter
@@ -538,41 +661,39 @@ class StateLetter(
         else:
             return self._symbol == other._symbol
 
+class DnaStateAlphabet(StateAlphabet):
+
+    def __init__(self):
+        fundamental_states = "ACGT-"
+        polymorphic_states = ""
+        ambiguous_states = (
+                ("?", ('A', 'C', 'G', 'T', '-')),
+                ("N", ('A', 'C', 'G', 'T')),
+                ("R", ('A', 'G')),
+                ("Y", ('C', 'T')),
+                ("M", ('A', 'C')),
+                ("W", ('A', 'T')),
+                ("S", ('C', 'G')),
+                ("K", ('G', 'T')),
+                ("V", ('A', 'C', 'G')),
+                ("H", ('A', 'C', 'T')),
+                ("D", ('A', 'G', 'T')),
+                ("B", ('C', 'G', 'T')),
+                )
+        symbol_synonyms = {
+                'X': '?' # missing
+        }
+        StateAlphabet.__init__(self,
+                fundamental_states=fundamental_states,
+                polymorphic_states=polymorphic_states,
+                ambiguous_states=ambiguous_states,
+                symbol_synonyms=symbol_synonyms,
+                label="DNA",
+                case_sensitive=False)
+
 if __name__ == "__main__":
-
-    fundamental_states = "ACGT-"
-    ambiguous_states = (
-            ("?", ('A', 'C', 'G', 'T', '-')),
-            ("N", ('A', 'C', 'G', 'T')),
-            ("M", ('A', 'C')),
-            ("R", ('A', 'G')),
-            ("W", ('A', 'T')),
-            ("S", ('C', 'G')),
-            ("Y", ('C', 'T')),
-            ("K", ('G', 'T')),
-            ("V", ('A', 'C', 'G')),
-            ("H", ('A', 'C', 'T')),
-            ("D", ('A', 'G', 'T')),
-            ("B", ('C', 'G', 'T')),
-            )
-    polymorphic_states = (
-            ("ZZZ", ("S", "Y")),
-            ("", ("A", "C", "G", "T")),
-            )
-    symbol_synonyms = {
-            "U": "T",
-            "X": "N",
-            }
-    unknown_state_symbol = 'N'
-
-    dna = StateAlphabet(
-        fundamental_states=fundamental_states,
-        ambiguous_states=ambiguous_states,
-        polymorphic_states=polymorphic_states,
-        )
-    for s in dna.state_iter():
-        print(s, s.symbol, s.member_states)
-    for s in dna.canonical_symbol_state_map:
-        print(s, dna.canonical_symbol_state_map[s])
+    dna = DnaStateAlphabet()
+    for s in dna.full_symbol_state_map:
+        print(s)
 
 

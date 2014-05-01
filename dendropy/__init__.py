@@ -27,8 +27,19 @@ import os
 
 ###############################################################################
 ## Populate the 'dendropy' namespace
-from dendropy.datamodel import *
 
+from dendropy.datamodel.taxon import Taxon
+from dendropy.datamodel.taxon import TaxonNamespace
+from dendropy.datamodel.tree import Edge
+from dendropy.datamodel.tree import Node
+from dendropy.datamodel.tree import Tree
+from dendropy.datamodel.tree import TreeList
+# from dendropy.datamodel.char import DnaCharacterMatrix
+# from dendropy.datamodel.char import RnaCharacterMatrix
+# from dendropy.datamodel.char import ProteinCharacterMatrix
+# from dendropy.datamodel.char import StandardCharacterMatrix
+# from dendropy.datamodel.char import RestrictionSitesCharacterMatrix
+# from dendropy.datamodel.char import InfiniteSitesCharacterMatrix
 
 ###############################################################################
 ## PACKAGE METADATA

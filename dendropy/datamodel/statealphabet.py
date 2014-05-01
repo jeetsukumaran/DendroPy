@@ -40,28 +40,49 @@ class StateAlphabetElement(
     POLYMORPHIC_STATE = 2
 
     def __init__(self,
-                 label=None,
                  symbol=None,
-                 token=None,
+                 index=None,
                  multistate=SINGLE_STATE,
                  member_states=None):
-        base.DataObject.__init__(self, label=label)
-        self.symbol = symbol
-        self.token = token
-        self.multistate = multistate
+        """
+        A state is immutable with respect to its definition and identity.
+        Specifically, it 'symbol', 'index', 'multistate', and 'member_states'
+        properties are set upon definition/creation, and after that are
+        read-only.
+
+        Parameters
+        ----------
+        symbol : string
+            A text symbol or token representation of this character state.
+            E.g., 'G' for the base guanine in a DNA state alphabet, or '1' for
+            presence of a wing in a morphological data set.
+        index : integer
+            The (0-based) numeric index for this state in the state alphabet.
+            E.g., for a DNA alphabet: 0 = 'A'/adenine, 1 = 'C'/cytosine, 2 =
+            'G'/guanine, 3 = 'T'/thymine. Or for a "standard" alphabet: 0 =
+            '0', 1 = '1'. Note that ambiguous and polymorphic state definitions
+            can be indexed as well, though they are typically represented as a
+            vector of "partials": [0.25, 0.25, 0.25, 0.25] for 'N'.
+        """
+        base.DataObject.__init__(self, label=None)
+        self._symbol = symbol
+        self._index = index
+        self._multistate = multistate
         self._member_states = None
         self._fundamental_states = None
         self._fundamental_symbols = None
         self._fundamental_tokens = None
-        self.member_states = member_states
+        self._fundamental_indexes = None
+        self._partials_vector = None
+        self._member_states = member_states
 
     def __str__(self):
         # note that tests currently assume this particular string
         # representation (i.e., undecorated symbol)
-        return str(self.symbol)
+        return str(self._symbol)
 
     def _is_single_state(self):
-        return self.multistate == StateAlphabetElement.SINGLE_STATE
+        return self._multistate == StateAlphabetElement.SINGLE_STATE
     is_single_state = property(_is_single_state)
 
     def _get_member_states(self):
@@ -71,6 +92,8 @@ class StateAlphabetElement(
         self._fundamental_states = None
         self._fundamental_symbols = None
         self._fundamental_tokens = None
+        self._fundamental_indexes = None
+        self._partials_vector = None
     member_states = property(_get_member_states, _set_member_states)
 
     def _get_fundamental_states(self):
@@ -97,21 +120,15 @@ class StateAlphabetElement(
         return self._fundamental_symbols
     fundamental_symbols = property(_get_fundamental_symbols)
 
-    def _get_fundamental_tokens(self):
-        "Returns set of tokens of all _get_fundamental states to which this state maps."
-        if self._fundamental_tokens is None:
-            self._fundamental_tokens = set([state.token for state in self.fundamental_states])
-    fundamental_tokens = property(_get_fundamental_tokens)
-
     def is_exact_correspondence(self, other):
         """
         Tries to determine if two StateAlphabetElement definitions
         are equivalent by matching symbols.
         """
         match = True
-        if self.multistate != other.multistate:
+        if self._multistate != other._multistate:
             return False
-        if self.multistate and other.multistate:
+        if self._multistate and other._multistate:
             xf1 = self.fundamental_states
             xf2 = other.fundamental_states
             if len(xf1) != len(xf2):
@@ -145,9 +162,9 @@ class StateAlphabetElement(
             return match
         else:
             try:
-                return self.symbol.upper() == other.symbol.upper()
+                return self._symbol.upper() == other._symbol.upper()
             except AttributeError:
-                return self.symbol == other.symbol
+                return self._symbol == other._symbol
 
 ###############################################################################
 ## FixedStateAlphabetElement
@@ -158,15 +175,13 @@ class FixedStateAlphabetElement(StateAlphabetElement):
     """
 
     def __init__(self,
-                 label=None,
                  symbol=None,
-                 token=None,
+                 index=None,
                  multistate=StateAlphabetElement.SINGLE_STATE,
                  member_states=None):
          StateAlphabetElement.__init__(self,
-                 label=label,
                  symbol=symbol,
-                 token=token,
+                 index=index,
                  multistate=multistate,
                  member_states=member_states)
 
@@ -194,10 +209,11 @@ class StateAlphabet(
         base.DataObject.__init__(self,
                 label=kwargs.pop("label", None))
         self._alphabet_elements = list(*args)
-        self.missing = None
         self._symbol_synonyms = {}
-        self.case_sensitive = kwargs.pop('case_sensitive', False)
         self._symbol_state_map = None
+        self._index_state_map = None
+        self.missing = None
+        self.case_sensitive = kwargs.pop('case_sensitive', False)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -222,17 +238,22 @@ class StateAlphabet(
 
     def insert(self, index, element):
         self._symbol_state_map = None
+        self._index_state_map = None
         return self._alphabet_elements.insert(index, element)
 
     def append(self, element):
         self._symbol_state_map = None
+        self._index_state_map = None
         return self._alphabet_elements.append(element)
 
     def extend(self, other):
         self._symbol_state_map = None
+        self._index_state_map = None
         self._alphabet_elements.extend(other)
 
     def __iadd__(self, other):
+        self._symbol_state_map = None
+        self._index_state_map = None
         raise NotImplementedError
 
     def __add__(self, other):
@@ -242,6 +263,8 @@ class StateAlphabet(
         raise NotImplementedError
 
     def __delitem__(self, element):
+        self._symbol_state_map = None
+        self._index_state_map = None
         raise NotImplementedError
 
     def __iter__(self):
@@ -263,29 +286,43 @@ class StateAlphabet(
         if isinstance(index, slice):
             raise NotImplementedError
         else:
+            self._symbol_state_map = None
+            self._index_state_map = None
             self._alphabet_elements[index] = value
 
     def clear(self):
         # list.clear() only with 3.4 or so ...
+        self._symbol_state_map = None
+        self._index_state_map = None
         self._alphabet_elements = []
 
     def index(self, element):
         return self._alphabet_elements.index(element)
 
     def pop(self, index=-1):
+        self._symbol_state_map = None
+        self._index_state_map = None
         return self._alphabet_elements.pop(index)
 
     def remove(self, element):
+        self._symbol_state_map = None
+        self._index_state_map = None
         self._alphabet_elements.remove(element)
 
     def reverse(self):
+        self._symbol_state_map = None
+        self._index_state_map = None
         self._alphabet_elements.reverse()
 
     def sort(self, key=None, reverse=False):
+        self._symbol_state_map = None
+        self._index_state_map = None
         self._alphabet_elements.sort(key=key, reverse=reverse)
 
     def new_state_alphabet_element(self,
             symbol, multistate_type, member_states):
+        self._symbol_state_map = None
+        self._index_state_map = None
         sae = StateAlphabetElement(symbol=symbol,
             multistate=multistate_type,
             member_states=member_states)
@@ -503,8 +540,8 @@ class FixedStateAlphabet(StateAlphabet):
         return self
 
 def _add_iupac(alphabet, states, ambig):
-    for sym in states:
-        sae = FixedStateAlphabetElement(symbol=sym)
+    for idx, sym in enumerate(states):
+        sae = FixedStateAlphabetElement(symbol=sym, index=idx)
         alphabet.append(sae)
         if sym == '-':
             alphabet.gap = sae
