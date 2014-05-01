@@ -188,7 +188,7 @@ rst_epilog = """
 .. |Git| replace:: Git
 .. _Git: http://git-scm.com/
 
-.. |dendropy_logo| replace:: /_static/dendropy4-logo-w200.png
+.. |dendropy_logo| replace:: /_static/dendropy_logo.png
 .. |dendropy_library_doc| replace:: /library/index
 .. |dendropy_tutorial_doc| replace:: /tutorial/index
 .. |sumtrees_doc| replace:: /scripts/sumtrees
@@ -262,7 +262,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/dendropy4-logo-w200.png"
+html_logo = "_static/dendropy_logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
