@@ -82,7 +82,7 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
-from dendropy.datamodel import base
+from dendropy.datamodel import basemodel
 from dendropy.utility import text
 from dendropy.utility import container
 from dendropy.utility import error
@@ -340,8 +340,8 @@ class TaxonNamespaceAssociated(object):
 ##############################################################################
 ## TaxonNamespace
 class TaxonNamespace(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     A collection of :class:`Taxon` objects representing a self-contained and complete
     domain of distinct operational taxonomic unit definitions.
@@ -475,7 +475,7 @@ class TaxonNamespace(
             if kwargs_set_label is not None:
                 self.label = kwargs_set_label
         else:
-            base.DataObject.__init__(self, label=kwargs_set_label)
+            basemodel.DataObject.__init__(self, label=kwargs_set_label)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -531,7 +531,7 @@ class TaxonNamespace(
         #     return False
         # return (self.label == other.label
         #         and self._taxa == other._taxa
-        #         and base.Annotable.__eq__(self, other))
+        #         and basemodel.Annotable.__eq__(self, other))
 
     ### Collection Iteration
 
@@ -1291,8 +1291,8 @@ class TaxonSet(TaxonNamespace):
 ##############################################################################
 ## Taxon
 class Taxon(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     A taxon associated with a sequence or a node on a tree.
     """
@@ -1318,7 +1318,7 @@ class Taxon(
             self.deep_copy_annotations_from(other_taxon, memo=memo)
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
-            base.DataObject.__init__(self, label=label)
+            basemodel.DataObject.__init__(self, label=label)
 
     def __copy__(self):
         raise TypeError("Cannot shallow-copy Taxon")

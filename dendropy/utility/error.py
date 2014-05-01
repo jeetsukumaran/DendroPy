@@ -24,7 +24,6 @@ import sys
 import warnings
 import inspect
 
-
 def get_calling_code_info(stack_level):
     frame = inspect.stack()[stacklevel]
     filename = inspect.getfile(frame[0])

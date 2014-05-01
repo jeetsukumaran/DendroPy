@@ -24,7 +24,7 @@ import re
 import io
 from dendropy.dataio.tokenizer import Tokenizer
 from dendropy.utility import container
-from dendropy.datamodel import base
+from dendropy.datamodel import basemodel
 
 ##############################################################################
 ## NexusTokenizer
@@ -294,7 +294,7 @@ def parse_comment_metadata_to_annotations(
                 val = value_type(val)
         if key in field_name_map:
             key = field_name_map[key]
-        annote = base.Annotation(
+        annote = basemodel.Annotation(
                 name=key,
                 value=val,
                 # datatype_hint=datatype_hint,

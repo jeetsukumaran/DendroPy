@@ -21,7 +21,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.test.support import pathmap
-from dendropy.datamodel import base
+from dendropy.datamodel import basemodel
 
 class ValidateWriteable(object):
 
@@ -228,11 +228,11 @@ class Comparator(object):
                 self.assertIn(k, a2.__dict__)
                 v1 = a1.__dict__[k]
                 v2 = a2.__dict__[k]
-                if isinstance(v1, base.DataObject):
-                    self.assertTrue(isinstance(v2, base.DataObject))
+                if isinstance(v1, basemodel.DataObject):
+                    self.assertTrue(isinstance(v2, basemodel.DataObject))
                     self.assertIsNot(v1, v2)
-                elif isinstance(v1, base.AnnotationSet):
-                    self.assertTrue(isinstance(v2, base.AnnotationSet))
+                elif isinstance(v1, basemodel.AnnotationSet):
+                    self.assertTrue(isinstance(v2, basemodel.AnnotationSet))
                     self.assertIs(v1.target, a1)
                     self.assertIs(v2.target, a2)
                     for s1, s2 in zip(v1, v2):

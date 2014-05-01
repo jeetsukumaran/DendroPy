@@ -30,16 +30,16 @@ import copy
 import sys
 from dendropy.utility import terminal
 from dendropy.utility import error
-from dendropy.datamodel import base
-from dendropy.datamodel import taxon
+from dendropy.datamodel import basemodel
+from dendropy.datamodel import taxonmodel
 from dendropy import dataio
 
 ##############################################################################
 ### Edge
 
 class Edge(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     An :term:`edge` on a :term:`tree`.
     """
@@ -59,7 +59,7 @@ class Edge(
             Label for this edge.
 
         """
-        base.DataObject.__init__(self, label=kwargs.pop("label", None))
+        basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
         self._head_node = kwargs.pop("head_node", None)
         if "tail_node" in kwargs:
             raise TypeError("Setting the tail node directly is no longer supported: instead, set the parent node of the head node")
@@ -98,7 +98,7 @@ class Edge(
 
     def __deepcopy__(self, memo=None):
         # call Annotable.__deepcopy__()
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
         # return super(Edge, self).__deepcopy__(memo=memo)
 
     def __hash__(self):
@@ -217,8 +217,8 @@ class Edge(
 ### Node
 
 class Node(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     A :term:`Node` on a :term:`Tree`.
     """
@@ -239,7 +239,7 @@ class Node(
             Length or weight of the edge subtending this node.
 
         """
-        base.DataObject.__init__(self, label=kwargs.pop("label", None))
+        basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
         self.taxon = kwargs.pop("taxon", None)
         self.age = None
         self._edge = None
@@ -258,10 +258,10 @@ class Node(
         raise TypeError("Cannot directly copy Node")
 
     def __deepcopy__(self, memo=None):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
         # if memo is None:
         #     memo = {}
-        # other = base.Annotable.__deepcopy__(self, memo=memo)
+        # other = basemodel.Annotable.__deepcopy__(self, memo=memo)
         # memo[id(self._child_nodes)] = other._child_nodes
         # for ch in self._child_nodes:
         #     try:
@@ -1503,11 +1503,11 @@ class Node(
 ### Tree
 
 class Tree(
-        taxon.TaxonNamespaceAssociated,
-        base.Annotable,
-        base.Readable,
-        base.Writeable,
-        base.DataObject):
+        taxonmodel.TaxonNamespaceAssociated,
+        basemodel.Annotable,
+        basemodel.Readable,
+        basemodel.Writeable,
+        basemodel.DataObject):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
     edges directing away from the root and toward the tips. The "root" of the
@@ -1595,9 +1595,9 @@ class Tree(
             source, or `None` if no valid tree description was found.
 
         """
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = taxon.TaxonNamespace()
+            taxon_namespace = taxonmodel.TaxonNamespace()
 
         def tns_factory(label):
             if label is not None and taxon_namespace.label is None:
@@ -1802,9 +1802,9 @@ class Tree(
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
-            base.DataObject.__init__(self, label=kwargs.pop("label", None))
-            taxon.TaxonNamespaceAssociated.__init__(self,
-                    taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
+            basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
+            taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                    taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self.comments = []
             self._is_rooted = None
             self.weight = None
@@ -1829,7 +1829,7 @@ class Tree(
         # super(Tree, self).__init__()
         memo = {}
         # memo[id(tree)] = self
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree.taxon_namespace)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree.taxon_namespace)
         memo[id(tree.taxon_namespace)] = taxon_namespace
         if taxon_namespace is not tree.taxon_namespace:
             for t1 in tree.taxon_namespace:
@@ -1865,7 +1865,7 @@ class Tree(
 
     def __deepcopy__(self, memo=None):
         # ensure clone map
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
         # if memo is None:
         #     memo = {}
         # # get or create clone of self
@@ -2874,7 +2874,7 @@ class Tree(
         error.dump_stack()
         warnings.warn("`Tree.infer_taxa()` will no longer be supported in future releases; use `Tree.update_taxon_namespace` instead",
                 FutureWarning, stacklevel=4)
-        taxon_namespace = taxon.TaxonNamespace()
+        taxon_namespace = taxonmodel.TaxonNamespace()
         for node in self.postorder_node_iter():
             if node.taxon is not None:
                 taxon_namespace.add_taxon(node.taxon)
@@ -4261,11 +4261,11 @@ class Tree(
 ### TreeList
 
 class TreeList(
-        taxon.TaxonNamespaceAssociated,
-        base.Annotable,
-        base.Readable,
-        base.Writeable,
-        base.DataObject):
+        taxonmodel.TaxonNamespaceAssociated,
+        basemodel.Annotable,
+        basemodel.Readable,
+        basemodel.Writeable,
+        basemodel.DataObject):
     """
     A collection of :class:`Tree` objects, all referencing the same "universe" of
     opeational taxonomic unit concepts through the same :class:`TaxonNamespace`
@@ -4370,7 +4370,7 @@ class TreeList(
         # these must be pulled before passing the kwargs
         # down to the reader
         tree_list = kwargs.pop("tree_list", None)
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
 
         # get the reader
@@ -4412,7 +4412,7 @@ class TreeList(
                 for tree in target_tree_list:
                     tree_list._trees.append(tree)
         return tree_list
-        # taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        # taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         # label = kwargs.pop("label", None)
         # tree_list = cls(label=label,
         #         taxon_namespace=taxon_namespace)
@@ -4545,9 +4545,9 @@ class TreeList(
         elif len(args) == 1 and isinstance(args[0], TreeList):
             self._clone_from(args[0], kwargs)
         else:
-            base.DataObject.__init__(self, label=kwargs.pop("label", None))
-            taxon.TaxonNamespaceAssociated.__init__(self,
-                    taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
+            basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
+            taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                    taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self._trees = []
             self.comments = []
             if len(args) == 1:
@@ -4572,7 +4572,7 @@ class TreeList(
         # super(Tree, self).__init__()
         memo = {}
         # memo[id(tree)] = self
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree_list.taxon_namespace)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree_list.taxon_namespace)
         memo[id(tree_list.taxon_namespace)] = taxon_namespace
         if taxon_namespace is not tree_list.taxon_namespace:
             for t1 in tree_list.taxon_namespace:
@@ -4603,7 +4603,7 @@ class TreeList(
         return self.__deepcopy__(memo=memo)
 
     def __deepcopy__(self, memo=None):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
     ###########################################################################
     ### Representation
@@ -5024,7 +5024,7 @@ class TreeList(
         self._trees.sort(key=key, reverse=reverse)
 
     def new_tree(self, *args, **kwargs):
-        tns = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
+        tns = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, self.taxon_namespace)
         if tns is not self.taxon_namespace:
             raise TypeError("Cannot create new Tree with different TaxonNamespace")
         kwargs["taxon_namespace"] = self.taxon_namespace

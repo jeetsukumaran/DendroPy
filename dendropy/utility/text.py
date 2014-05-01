@@ -16,7 +16,6 @@
 ##
 ##############################################################################
 
-
 """
 Various text-manipulating and formatting utilities.
 """

@@ -27,14 +27,14 @@ of the state alphabet and state alphabet elements).
 
 import collections
 import itertools
-from dendropy.datamodel import base
+from dendropy.datamodel import basemodel
 
 ###############################################################################
 ## StateAlphabet
 
 class StateAlphabet(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
 
     FUNDAMENTAL_STATE = 0
     AMBIGUOUS_STATE = 1
@@ -140,7 +140,7 @@ class StateAlphabet(
             label=None,
             case_sensitive=True):
 
-        base.DataObject.__init__(self, label=label)
+        basemodel.DataObject.__init__(self, label=label)
         self._is_case_sensitive = case_sensitive
 
         # Core collection underlying alphabet
@@ -181,7 +181,7 @@ class StateAlphabet(
         raise TypeError("Cannot (shallow) copy {}".format(self.__class__.__name__))
 
     def __deepcopy__(self, memo=None):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
     ###########################################################################
     ### Symbol Management
@@ -494,8 +494,8 @@ class StateAlphabet(
 ## StateAlphabetElement
 
 class StateAlphabetElement(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     A character state definition, which can either be a fundamental state or
     a mapping to a set of other character states (for polymorphic or ambiguous
@@ -533,7 +533,7 @@ class StateAlphabetElement(
             If a multi-state, then a collection of :class:`StateAlphabetElement`
             instances to which this state maps.
         """
-        base.DataObject.__init__(self, label=None)
+        basemodel.DataObject.__init__(self, label=None)
         self._symbol = symbol
         self._index = index
         self._state_denomination = state_denomination
@@ -872,10 +872,11 @@ class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
 ###############################################################################
 ## GLOBAL STATE ALPHABETS
 
-DNA_STATE_ALPHABET = DnaStateAlphabet()
-RNA_STATE_ALPHABET = RnaStateAlphabet()
-NUCLEOTIDE_STATE_ALPHABET = NucleotideStateAlphabet()
-PROTEIN_STATE_ALPHABET = ProteinStateAlphabet()
-RESTRICTION_SITES_STATE_ALPHABET = RestrictionSitesStateAlphabet()
-INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
+DNA_STATE_ALPHABET                =  DnaStateAlphabet()
+RNA_STATE_ALPHABET                =  RnaStateAlphabet()
+NUCLEOTIDE_STATE_ALPHABET         =  NucleotideStateAlphabet()
+BINARY_STATE_ALPHABET             =  BinaryStateAlphabet()
+PROTEIN_STATE_ALPHABET            =  ProteinStateAlphabet()
+RESTRICTION_SITES_STATE_ALPHABET  =  RestrictionSitesStateAlphabet()
+INFINITE_SITES_STATE_ALPHABET     =  InfiniteSitesStateAlphabet()
 

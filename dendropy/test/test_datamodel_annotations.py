@@ -23,10 +23,10 @@ Annotation tests.
 import collections
 import unittest
 import copy
-from dendropy.datamodel import base
+from dendropy.datamodel import basemodel
 from dendropy.test.support import compare_and_validate
 
-class TestObject(base.Annotable, base.DataObject):
+class TestObject(basemodel.Annotable, basemodel.DataObject):
     pass
 
 class DummyX(TestObject):
@@ -53,7 +53,6 @@ class AnnotableDeepCopyTester(compare_and_validate.Comparator, unittest.TestCase
         a6 = a5.annotations.add_new(name="a6", value="6")
         x2 = copy.deepcopy(x1)
         self.compare_distinct_annotables(x1, x2)
-
 
 if __name__ == "__main__":
     unittest.main()

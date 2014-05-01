@@ -28,18 +28,25 @@ import os
 ###############################################################################
 ## Populate the 'dendropy' namespace
 
-from dendropy.datamodel.taxon import Taxon
-from dendropy.datamodel.taxon import TaxonNamespace
-from dendropy.datamodel.tree import Edge
-from dendropy.datamodel.tree import Node
-from dendropy.datamodel.tree import Tree
-from dendropy.datamodel.tree import TreeList
-from dendropy.datamodel.char import DnaCharacterMatrix
-from dendropy.datamodel.char import RnaCharacterMatrix
-from dendropy.datamodel.char import ProteinCharacterMatrix
-from dendropy.datamodel.char import StandardCharacterMatrix
-from dendropy.datamodel.char import RestrictionSitesCharacterMatrix
-from dendropy.datamodel.char import InfiniteSitesCharacterMatrix
+from dendropy.datamodel.taxonmodel import Taxon
+from dendropy.datamodel.taxonmodel import TaxonNamespace
+from dendropy.datamodel.treemodel import Edge
+from dendropy.datamodel.treemodel import Node
+from dendropy.datamodel.treemodel import Tree
+from dendropy.datamodel.treemodel import TreeList
+from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import RNA_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import NUCLEOTIDE_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import BINARY_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import PROTEIN_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import RESTRICTION_SITES_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
+from dendropy.datamodel.charmatrixmodel import DnaCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import RnaCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import ProteinCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import RestrictionSitesCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import InfiniteSitesCharacterMatrix
 
 ###############################################################################
 ## PACKAGE METADATA

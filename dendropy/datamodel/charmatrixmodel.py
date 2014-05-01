@@ -34,18 +34,18 @@ from dendropy.datamodel.charstatemodel import NUCLEOTIDE_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import PROTEIN_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RESTRICTION_SITES_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
-from dendropy.datamodel import base
-from dendropy.datamodel import taxon
+from dendropy.datamodel import basemodel
+from dendropy.datamodel import taxonmodel
 from dendropy import dataio
 
 ###############################################################################
 ## Continuous Characters
 
 class ContinuousCharElement(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     def __init__(self, value, column_def,  **kwargs):
-        base.DataObject.__init__(self,
+        basemodel.DataObject.__init__(self,
                 label=kwargs.pop("label", None))
         self.value = value
         self.column_def = column_def
@@ -56,15 +56,15 @@ class ContinuousCharElement(
 ## Data Containers
 
 class CharacterType(
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     A character format or type of a particular column: i.e., maps
     a particular set of character state definitions to a column in a character matrix.
     """
 
     def __init__(self, **kwargs):
-        base.DataObject.__init__(self,
+        basemodel.DataObject.__init__(self,
                 label=kwargs.pop("label", None))
         self._state_alphabet = None
         self.state_alphabet = kwargs.pop("state_alphabet", None)
@@ -84,7 +84,7 @@ class CharacterType(
         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
 
     def __deepcopy__(self, memo=None):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
 class CharacterDataVector(object):
     """A list of character data values for a taxon -- a row of a Character Matrix.
@@ -179,8 +179,8 @@ class CharacterDataVector(object):
         self._values.sort(key=key, reverse=reverse)
 
 class CharacterDataMap(dict,
-        base.DataObject,
-        base.Annotable):
+        basemodel.DataObject,
+        basemodel.Annotable):
     """
     An annotable dictionary with Taxon objects as keys and
     CharacterDataVectors objects as values.
@@ -188,7 +188,7 @@ class CharacterDataMap(dict,
 
     def __init__(self, label=None):
         dict.__init__(self)
-        base.DataObject.__init__(self, label=label)
+        basemodel.DataObject.__init__(self, label=label)
 
     def __copy__(self, memo=None):
         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
@@ -197,7 +197,7 @@ class CharacterDataMap(dict,
         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
 
     def __deepcopy__(self, memo=None):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
     def _get_vector_size(self):
         """
@@ -270,8 +270,8 @@ class CharacterDataMap(dict,
 ## Subset of Character (Columns)
 
 class CharacterSubset(
-        base.DataObject,
-        base.Annotable,
+        basemodel.DataObject,
+        basemodel.Annotable,
         ):
     """
     Tracks definition of a subset of characters.
@@ -286,7 +286,7 @@ class CharacterSubset(
                of column positions that constitute this subset.
 
         """
-        base.DataObject.__init__(self, label=label)
+        basemodel.DataObject.__init__(self, label=label)
         if character_indices is None:
             self.character_indices = set()
         else:
@@ -299,17 +299,17 @@ class CharacterSubset(
         return iter(self.character_indices)
 
     def __deepcopy__(self, memo):
-        return base.Annotable.__deepcopy__(self, memo=memo)
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
 ###############################################################################
 ## Base Character Matrix
 
 class CharacterMatrix(
-        taxon.TaxonNamespaceAssociated,
-        base.Annotable,
-        base.Readable,
-        base.Writeable,
-        base.DataObject):
+        taxonmodel.TaxonNamespaceAssociated,
+        basemodel.Annotable,
+        basemodel.Readable,
+        basemodel.Writeable,
+        basemodel.DataObject):
     "Character data container/manager manager."
 
     data_type = None
@@ -319,9 +319,9 @@ class CharacterMatrix(
             schema,
             matrix_offset=0,
             **kwargs):
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = taxon.TaxonNamespace()
+            taxon_namespace = taxonmodel.TaxonNamespace()
 
         def tns_factory(label):
             if label is not None and taxon_namespace.label is None:
@@ -404,7 +404,7 @@ class CharacterMatrix(
         and return the combined character matrix. Component parts will be
         recorded as character subsets.
         """
-        taxon_namespace = taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
             taxon_namespace = TaxonNamespace()
         kwargs["taxon_namespace"] = taxon_namespace
@@ -428,9 +428,9 @@ class CharacterMatrix(
     concatenate_from_paths = classmethod(concatenate_from_paths)
 
     def __init__(self, *args, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.pop("label", None))
-        taxon.TaxonNamespaceAssociated.__init__(self,
-                taxon_namespace=taxon.process_kwargs_dict_for_taxon_namespace(kwargs, None))
+        basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
+        taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
         self.taxon_seq_map = CharacterDataMap()
         self.character_types = []
         self.character_subsets = container.OrderedCaselessDict()
