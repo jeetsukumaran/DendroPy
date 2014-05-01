@@ -1,11 +1,4 @@
-***************************************
-DendroPy Phylogenetic Computing Library
-***************************************
-
-.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: center
-   :alt: DendroPy
-   :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
+|dendropy_logo|
 
 Introduction
 ============
@@ -69,3 +62,6 @@ For all options, type::
 
     $ python -m dendropy.test --help
 
+.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
+   :alt: DendroPy
+   :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
