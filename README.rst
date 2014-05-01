@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
+.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo_large.png
    :width: 200px
    :alt: DendroPy
    :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
