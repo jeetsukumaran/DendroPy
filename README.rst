@@ -1,5 +1,5 @@
 .. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: center
+   :align: right
    :alt: DendroPy
 
 DendroPy is a Python library for phylogenetic computing.
