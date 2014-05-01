@@ -1,8 +1,8 @@
+.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
+   :align: center
+   :alt: DendroPy
 
-Introduction
-============
-
-|dendropy_logo_readme| DendroPy is a Python library for phylogenetic computing.
+DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and
 manipulation of phylogenetic trees and character matrices, and supports the
 reading and writing of phylogenetic data in a range of formats, such as NEXUS,
@@ -61,6 +61,3 @@ For all options, type::
 
     $ python -m dendropy.test --help
 
-.. |dendropy_logo_readme| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: bottom
-   :alt: DendroPy
