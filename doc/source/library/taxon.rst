@@ -1,18 +1,18 @@
-*********************************************
-:mod:`dendropy.datamodel.taxon` -- Taxon Data
-*********************************************
+**************************************************
+:mod:`dendropy.datamodel.taxonmodel` -- Taxon Data
+**************************************************
 
-.. module:: dendropy.datamodel.taxon
+.. module:: dendropy.datamodel.taxonmodel
 
 .. toctree::
     :maxdepth: 2
 
 The :class:`TaxonNamespace` Class
 =================================
-.. autoclass:: dendropy.datamodel.taxon.TaxonNamespace
+.. autoclass:: dendropy.datamodel.taxonmodel.TaxonNamespace
     :members:
 
 The :class:`Taxon` Class
 ========================
-.. autoclass:: dendropy.datamodel.taxon.Taxon
+.. autoclass:: dendropy.datamodel.taxonmodel.Taxon
     :members:
