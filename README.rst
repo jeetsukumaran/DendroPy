@@ -1,5 +1,11 @@
+.. image:: https://github.com/jeetsukumaran/DendroPy/blob/DendroPy4/doc/source/_static/dendropy4-logo-w200.png
+   :width 200px
+   :alt: DendroPy
+   :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
+
 Introduction
 ============
+
 
 DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and
