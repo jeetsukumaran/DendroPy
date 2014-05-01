@@ -63,6 +63,5 @@ For all options, type::
     $ python -m dendropy.test --help
 
 .. |dendropy_logo| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: center
    :alt: DendroPy
    :target: https://github.com/jeetsukumaran/DendroPy/tree/DendroPy4
