@@ -31,6 +31,7 @@ from dendropy.datamodel import base
 
 ###############################################################################
 ## StateAlphabet
+
 class StateAlphabet(
         base.DataObject,
         base.Annotable):
@@ -330,6 +331,30 @@ class StateAlphabet(
                 self._fundamental_states_to_polymorphic_state_map[member_states] = state
         self._is_dirty = False
 
+    def set_state_as_attribute(self, state, attr_name=None):
+        """
+        Sets the given state as an attribute of this alphabet.
+        The name of the attribute will be `attr_name` if specified,
+        or the state symbol otherwise.
+
+        Parameters
+        ----------
+        state : :class:`StateLetter`
+            The state to be made an attribute of this alphabet.
+        attr_name : string
+            The name of the attribute. If not specified, the state
+            symbol will be used.
+        """
+        if (state not in self._fundamental_states
+                and state not in self._ambiguous_states
+                and state not in self._polymorphic_states):
+            raise ValueError("State {} not defined in current alphabet".format(state))
+        if attr_name is None:
+            attr_name = state.symbol
+        if attr_name is None:
+            raise TypeError("Cannot set attribute: non-None symbol needed for state or non-None attribute name needs to be provided")
+        setattr(self, attr_name, state)
+
     ###########################################################################
     ### Symbol Access
 
@@ -464,30 +489,6 @@ class StateAlphabet(
             return self.match_ambiguous_state(symbols)
         except KeyError:
             return self.match_polymorphic_state(symbols)
-
-    def set_state_as_attribute(self, state, attr_name=None):
-        """
-        Sets the given state as an attribute of this alphabet.
-        The name of the attribute will be `attr_name` if specified,
-        or the state symbol otherwise.
-
-        Parameters
-        ----------
-        state : :class:`StateLetter`
-            The state to be made an attribute of this alphabet.
-        attr_name : string
-            The name of the attribute. If not specified, the state
-            symbol will be used.
-        """
-        if (state not in self._fundamental_states
-                and state not in self._ambiguous_states
-                and state not in self._polymorphic_states):
-            raise ValueError("State {} not defined in current alphabet".format(state))
-        if attr_name is None:
-            attr_name = state.symbol
-        if attr_name is None:
-            raise TypeError("Cannot set attribute: non-None symbol needed for state or non-None attribute name needs to be provided")
-        setattr(self, attr_name, state)
 
 ###############################################################################
 ## StateLetter
@@ -661,28 +662,29 @@ class StateLetter(
         else:
             return self._symbol == other._symbol
 
+###############################################################################
+## DnaStateAlphabet
+
 class DnaStateAlphabet(StateAlphabet):
 
     def __init__(self):
         fundamental_states = "ACGT-"
-        polymorphic_states = ""
+        polymorphic_states = None
         ambiguous_states = (
-                ("?", ('A', 'C', 'G', 'T', '-')),
-                ("N", ('A', 'C', 'G', 'T')),
-                ("R", ('A', 'G')),
-                ("Y", ('C', 'T')),
-                ("M", ('A', 'C')),
-                ("W", ('A', 'T')),
-                ("S", ('C', 'G')),
-                ("K", ('G', 'T')),
-                ("V", ('A', 'C', 'G')),
-                ("H", ('A', 'C', 'T')),
-                ("D", ('A', 'G', 'T')),
-                ("B", ('C', 'G', 'T')),
+                ("?", "ACGT-"),
+                ("N", "ACGT"),
+                ("R", "AG"  ),
+                ("Y", "CT"  ),
+                ("M", "AC"  ),
+                ("W", "AT"  ),
+                ("S", "CG"  ),
+                ("K", "GT"  ),
+                ("V", "ACG" ),
+                ("H", "ACT" ),
+                ("D", "AGT" ),
+                ("B", "CGT" ),
                 )
-        symbol_synonyms = {
-                'X': '?' # missing
-        }
+        symbol_synonyms = {"X": "N"}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 polymorphic_states=polymorphic_states,
@@ -690,10 +692,190 @@ class DnaStateAlphabet(StateAlphabet):
                 symbol_synonyms=symbol_synonyms,
                 label="DNA",
                 case_sensitive=False)
+        for state in self.state_iter():
+            if state.symbol == "-":
+                attr_name = "gap"
+            elif state.symbol == "?":
+                attr_name = "missing"
+            else:
+                attr_name = state.symbol
+            self.set_state_as_attribute(state, attr_name)
+        self.any_residue = self.N
+        self.unknown_state_symbol = 'N'
 
-if __name__ == "__main__":
-    dna = DnaStateAlphabet()
-    for s in dna.full_symbol_state_map:
-        print(s)
+###############################################################################
+## RnaStateAlphabet
 
+class RnaStateAlphabet(StateAlphabet):
+
+    def __init__(self):
+        fundamental_states = "ACGU-"
+        polymorphic_states = None
+        ambiguous_states = (
+                ("?", "ACGU-"),
+                ("N", "ACGU"),
+                ("R", "AG"  ),
+                ("Y", "CU"  ),
+                ("M", "AC"  ),
+                ("W", "AU"  ),
+                ("S", "CG"  ),
+                ("K", "GU"  ),
+                ("V", "ACG" ),
+                ("H", "ACU" ),
+                ("D", "AGU" ),
+                ("B", "CGU" ),
+                )
+        symbol_synonyms = {"X": "N"}
+        StateAlphabet.__init__(self,
+                fundamental_states=fundamental_states,
+                polymorphic_states=polymorphic_states,
+                ambiguous_states=ambiguous_states,
+                symbol_synonyms=symbol_synonyms,
+                label="RNA",
+                case_sensitive=False)
+        for state in self.state_iter():
+            if state.symbol == "-":
+                attr_name = "gap"
+            elif state.symbol == "?":
+                attr_name = "missing"
+            else:
+                attr_name = state.symbol
+            self.set_state_as_attribute(state, attr_name)
+        self.any_residue = self.N
+        self.unknown_state_symbol = 'N'
+
+###############################################################################
+## NucleotideStateAlphabet
+
+class NucleotideStateAlphabet(StateAlphabet):
+
+    def __init__(self):
+        fundamental_states = "ACGTU-"
+        polymorphic_states = None
+        ambiguous_states = (
+                ("?", "ACGTU-"),
+                ("N", "ACGTU"),
+                ("R", "AG"  ),
+                ("Y", "CTU"  ),
+                ("M", "AC"  ),
+                ("W", "ATU"  ),
+                ("S", "CG"  ),
+                ("K", "GTU"  ),
+                ("V", "ACG" ),
+                ("H", "ACTU" ),
+                ("D", "AGTU" ),
+                ("B", "CGTU" ),
+                )
+        symbol_synonyms = {"X": "N"}
+        StateAlphabet.__init__(self,
+                fundamental_states=fundamental_states,
+                polymorphic_states=polymorphic_states,
+                ambiguous_states=ambiguous_states,
+                symbol_synonyms=symbol_synonyms,
+                label="Nucleotide",
+                case_sensitive=False)
+        for state in self.state_iter():
+            if state.symbol == "-":
+                attr_name = "gap"
+            elif state.symbol == "?":
+                attr_name = "missing"
+            else:
+                attr_name = state.symbol
+            self.set_state_as_attribute(state, attr_name)
+        self.any_residue = self.N
+        self.unknown_state_symbol = 'N'
+
+###############################################################################
+## ProteinStateAlphabet
+
+class ProteinStateAlphabet(StateAlphabet):
+
+    def __init__(self):
+        fundamental_states = "ACDEFGHIKLMNPQRSTUVWY*-"
+        polymorphic_states = None
+        ambiguous_states = (
+                ("B", "DN"),
+                ("Z", "EQ"),
+                ("X", "ACDEFGHIKLMNPQRSTUVWY*"),
+                ("?", "ACDEFGHIKLMNPQRSTUVWY*-"),
+                )
+        symbol_synonyms = {}
+        StateAlphabet.__init__(self,
+                fundamental_states=fundamental_states,
+                polymorphic_states=polymorphic_states,
+                ambiguous_states=ambiguous_states,
+                symbol_synonyms=symbol_synonyms,
+                label="Protein",
+                case_sensitive=False)
+        for state in self.state_iter():
+            if state.symbol == "-":
+                attr_name = "gap"
+            elif state.symbol == "?":
+                attr_name = "missing"
+            elif state.symbol == "*":
+                attr_name = "stop"
+            else:
+                attr_name = state.symbol
+            self.set_state_as_attribute(state, attr_name)
+        self.any_residue = self.X
+        self.unknown_state_symbol = 'X'
+
+###############################################################################
+## BinaryStateAlphabet
+
+class BinaryStateAlphabet(StateAlphabet):
+
+    def __init__(self, allow_gaps=False, allow_missing=False):
+        fundamental_states = "10"
+        if allow_gaps:
+            fundamental_states += "-"
+        polymorphic_states = None
+        ambiguous_states = []
+        if allow_missing:
+            ambiguous_states.append( ("?", fundamental_states) )
+        symbol_synonyms = {}
+        StateAlphabet.__init__(self,
+                fundamental_states=fundamental_states,
+                polymorphic_states=polymorphic_states,
+                ambiguous_states=ambiguous_states,
+                symbol_synonyms=symbol_synonyms,
+                label="Binary",
+                case_sensitive=False)
+        for state in self.state_iter():
+            if state.symbol == "-":
+                attr_name = "gap"
+            elif state.symbol == "?":
+                attr_name = "missing"
+            elif state.symbol == "*":
+                attr_name = "stop"
+            else:
+                attr_name = state.symbol
+            self.set_state_as_attribute(state, attr_name)
+
+###############################################################################
+## RestrictionSitesStateAlphabet
+
+class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
+
+    def __init__(self, allow_gaps=False, allow_missing=False):
+        BinaryStateAlphabet.__init__(self, allow_gaps=allow_gaps, allow_missing=allow_missing)
+
+###############################################################################
+## InfiniteSitesStateAlphabet
+
+class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
+
+    def __init__(self, allow_gaps=False, allow_missing=False):
+        BinaryStateAlphabet.__init__(self, allow_gaps=allow_gaps, allow_missing=allow_missing)
+
+
+###############################################################################
+## GLOBAL STATE ALPHABETS
+
+DNA_STATE_ALPHABET = DnaStateAlphabet()
+RNA_STATE_ALPHABET = RnaStateAlphabet()
+NUCLEOTIDE_STATE_ALPHABET = NucleotideStateAlphabet()
+PROTEIN_STATE_ALPHABET = ProteinStateAlphabet()
+RESTRICTION_SITES_STATE_ALPHABET = RestrictionSitesStateAlphabet()
+INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 
