@@ -89,7 +89,7 @@ Unique Object Identifier ("`oid`") Attributes Removed
       has been changed to to '`case_sensitive`' with a default of `True`. That
       is, searches by default are still case-sensitive, but now you will have
       to specify '`case_sensitive=False`' instead of '`case_insensitive=True`'
-      to perform a case-*in*sensitive search. This change was for consistency
+      to perform a case-insensitive search. This change was for consistency
       with the rest of the library.
 
 * In most cases, a simple global search-and-replace of "TaxonSet" with

@@ -105,20 +105,30 @@ class StateAlphabet(
     ambiguous_states : iterable of tuples
         An iterable consisting of tuples expressing ambiguous state symbols and
         the set of symbols representing the fundamental states to which they
-        map. The first element in the tuple is the symbol used to represent
-        the ambiguous state; this can be blank (""). The second element is
-        an iterable of fundamental state symbols to which this ambiguous
-        state maps. The fundamental state symbols *must* have already been
-        defined, i.e. given in the value passed to `fundamental_states`.
+        map. The first element in the tuple is the symbol used to represent the
+        ambiguous state; this can be blank (""), but if not blank it needs to
+        be unique across all symbols (including case-variants if the state
+        alphabet is case-insensitive).  The second element is an
+        iterable of fundamental state symbols to which this ambiguous state
+        maps. The fundamental state symbols *must* have already been defined,
+        i.e. given in the value passed to `fundamental_states`. Note: a
+        dictionary may seem like a more tractable structure than iterable of
+        tuples, but we may need to specify multiple anonymous or blank
+        ambiguous states.
 
     polymorphic_states : iterable of tuples
         An iterable consisting of tuples expressing polymorphic state symbols and
         the set of symbols representing the fundamental states to which they
-        map. The first element in the tuple is the symbol used to represent
-        the polymorphic state; this can be blank (""). The second element is
-        an iterable of fundamental state symbols to which this polymorphic
-        state maps. The fundamental state symbols *must* have already been
-        defined, i.e. given in the value passed to `fundamental_states`.
+        map. The first element in the tuple is the symbol used to represent the
+        polymorphic state; this can be blank (""), but if not blank it needs to
+        be unique across all symbols (including case-variants if the state
+        alphabet is case-insensitive).  The second element is an
+        iterable of fundamental state symbols to which this polymorphic state
+        maps. The fundamental state symbols *must* have already been defined,
+        i.e. given in the value passed to `fundamental_states`. Note: a
+        dictionary may seem like a more tractable structure than iterable of
+        tuples, but we may need to specify multiple anonymous or blank
+        polymorphic states.
 
     symbol_synonyms : dictionary
         A mapping of symbols, with keys being the new symbols and values being
@@ -174,11 +184,17 @@ class StateAlphabet(
             # Build mappings
             self.compile_lookup_mappings()
 
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return other is self
+
     def __copy__(self, memo=None):
-        raise TypeError("Cannot (shallow) copy {}".format(self.__class__.__name__))
+        return self
 
     def taxon_namespace_scoped_copy(self, memo=None):
-        raise TypeError("Cannot (shallow) copy {}".format(self.__class__.__name__))
+        return self
 
     def __deepcopy__(self, memo=None):
         return basemodel.Annotable.__deepcopy__(self, memo=memo)
@@ -360,17 +376,87 @@ class StateAlphabet(
 
     def state_iter(self):
         """
-        Returns a "raw" iterator over all state identities.
+        Returns an iterator over all state identities.
         """
         return itertools.chain(
                 self._fundamental_states,
                 self._ambiguous_states,
                 self._polymorphic_states)
 
+    def fundamental_state_iter(self):
+        """
+        Returns an iterator over all fundamental state identities.
+        """
+        return itertools.chain(self._fundamental_states)
+
+    def ambiguous_state_iter(self):
+        """
+        Returns an iterator over all ambiguous state identities.
+        """
+        return itertools.chain(self._ambiguous_states)
+
+    def polymorphic_state_iter(self):
+        """
+        Returns an iterator over all polymorphic state identities.
+        """
+        return itertools.chain(self._polymorphic_states)
+
+    def multistate_state_iter(self):
+        """
+        Returns an iterator over all ambiguous and polymorphic state
+        identities.
+        """
+        return itertools.chain(self._ambiguous_states, self._polymorphoc_states)
+
+    def fundamental_symbol_iter(self, exclude_synonyms=False):
+        """
+        Returns an iterator over all symbols (including synonyms, unless
+        `exclude_synonyms` is `True`) that map to fundamental states.
+        """
+        for state in self.fundamental_state_iter():
+            yield state.symbol
+            if state.symbol_synonyms and not exclude_synonyms:
+                for symbol in state.symbol_synonyms:
+                    yield symbol
+
+    def ambiguous_symbol_iter(self, exclude_synonyms=False):
+        """
+        Returns an iterator over all symbols (including synonyms, unless
+        `exclude_synonyms` is `True`) that map to ambiguous states.
+        """
+        for state in self.ambiguous_state_iter():
+            yield state.symbol
+            if state.symbol_synonyms and not exclude_synonyms:
+                for symbol in state.symbol_synonyms:
+                    yield symbol
+
+    def polymorphic_symbol_iter(self, exclude_synonyms=False):
+        """
+        Returns an iterator over all symbols (including synonyms, unless
+        `exclude_synonyms` is `True`) that map to polymorphic states.
+        """
+        for state in self.polymorphic_state_iter():
+            yield state.symbol
+            if state.symbol_synonyms and not exclude_synonyms:
+                for symbol in state.symbol_synonyms:
+                    yield symbol
+
+    def multistate_symbol_iter(self, exclude_synonyms=False):
+        """
+        Returns an iterator over all symbols (including synonyms, unless
+        `exclude_synonyms` is `True`) that map to multistate states.
+        """
+        for state in self.multistate_state_iter():
+            yield state.symbol
+            if state.symbol_synonyms and not exclude_synonyms:
+                for symbol in state.symbol_synonyms:
+                    yield symbol
+
+
     def symbol_state_pair_iter(self, include_synonyms=True):
         """
-        Returns a "raw" iterator over pairs of symbols and the states to which
-        they correspond.
+        Returns an iterator over all symbols paired with the state to which the
+        they symbols map.
         """
         for state in self.state_iter():
             yield (state.symbol, state)
@@ -395,6 +481,25 @@ class StateAlphabet(
             " including symbol synonyms or case variations on symbols.")
 
     def __getitem__(self, key):
+        """
+        Returns state identity corresponding to `key`.
+
+        Parameters
+        ----------
+        key : integer or string
+            If and integer value, looks up and returns state identity by index.
+            If a string value, looks up and returns state identity by symbol.
+
+        Returns
+        -------
+        s : :class:`StateAlphabetElement` instance
+            Returns a :class:`StateAlphabetElement` corresponding to `key`.
+
+        Raises
+        ------
+        KeyError if `key` is not valid.
+
+        """
         if self._is_dirty:
             self.compile_lookup_mappings()
         if isinstance(key, int):
@@ -533,7 +638,7 @@ class StateAlphabetElement(
             If a multi-state, then a collection of :class:`StateAlphabetElement`
             instances to which this state maps.
         """
-        basemodel.DataObject.__init__(self, label=None)
+        basemodel.DataObject.__init__(self, label=symbol)
         self._symbol = symbol
         self._index = index
         self._state_denomination = state_denomination
@@ -544,6 +649,21 @@ class StateAlphabetElement(
         self._partials_vector = None
         self._member_states = member_states
         self.symbol_synonyms = set()
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return other is self
+
+    def __copy__(self, memo=None):
+        return self
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        return self
+
+    def __deepcopy__(self, memo=None):
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
     def __str__(self):
         if self._symbol:
