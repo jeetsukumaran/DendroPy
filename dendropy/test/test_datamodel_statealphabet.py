@@ -40,7 +40,7 @@ class StateAlphabetTester(object):
         self.assertEqual(len(state_container), len(expected_symbols))
         states = list(state_iter())
         self.assertEqual(len(states), len(expected_symbols))
-        canonical_symbols = list(symbol_iter(exclude_synonyms=True))
+        canonical_symbols = list(symbol_iter(include_synonyms=False))
         self.assertEqual(canonical_symbols, expected_symbols)
         for state, symbol in zip(states, expected_symbols):
             all_synonyms = []
@@ -117,24 +117,39 @@ class StateAlphabetTester(object):
                 case_sensitive=False)
 
     def test_symbol_iter(self):
+        # assumes that the state iterators -- fundamental_state_iter,
+        # ambiguous_state_iter, etc. -- all work as advertised
         iter_groups = (
                 (self.sa.fundamental_symbol_iter, self.sa.fundamental_state_iter),
                 (self.sa.ambiguous_symbol_iter, self.sa.ambiguous_state_iter),
                 (self.sa.polymorphic_symbol_iter, self.sa.polymorphic_state_iter),
+                (self.sa.multistate_symbol_iter, self.sa.multistate_state_iter),
                 )
         for symbol_iter, state_iter in iter_groups:
             states = list(state_iter())
-            for exclude_synonyms in (False, True):
+            for include_synonyms in (False, True):
                 expected_symbols = []
                 for state in states:
                     if state.symbol:
                         expected_symbols.append(state.symbol)
-                    if not exclude_synonyms:
+                    if include_synonyms:
                         for ss in state.symbol_synonyms:
                             expected_symbols.append(ss)
-                obs_symbols = list(symbol_iter(exclude_synonyms=exclude_synonyms))
+                obs_symbols = list(symbol_iter(include_synonyms=include_synonyms))
                 self.assertEqual(expected_symbols, obs_symbols)
 
+    def test_symbol_state_pair_iter(self):
+        states = list(self.sa.state_iter())
+        for include_synonyms in (False, True):
+            expected_pairs = []
+            for state in states:
+                if state.symbol:
+                    expected_pairs.append((state.symbol, state,))
+                if include_synonyms:
+                    for ss in state.symbol_synonyms:
+                        expected_pairs.append((ss, state,))
+            obs_pairs = list(self.sa.symbol_state_pair_iter(include_synonyms=include_synonyms))
+            self.assertEqual(expected_pairs, obs_pairs)
 
     def test_state_iter(self):
         states = list(self.sa.state_iter())

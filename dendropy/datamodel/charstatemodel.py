@@ -505,52 +505,51 @@ class StateAlphabet(
         Returns an iterator over all ambiguous and polymorphic state
         identities.
         """
-        return itertools.chain(self._ambiguous_states, self._polymorphoc_states)
+        return itertools.chain(self._ambiguous_states, self._polymorphic_states)
 
-    def fundamental_symbol_iter(self, exclude_synonyms=False):
+    def fundamental_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `exclude_synonyms` is `True`) that map to fundamental states.
+        `include_synonyms` is `False`) that map to fundamental states.
         """
         for state in self.fundamental_state_iter():
             yield state.symbol
-            if state.symbol_synonyms and not exclude_synonyms:
+            if state.symbol_synonyms and include_synonyms:
                 for symbol in state.symbol_synonyms:
                     yield symbol
 
-    def ambiguous_symbol_iter(self, exclude_synonyms=False):
+    def ambiguous_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `exclude_synonyms` is `True`) that map to ambiguous states.
+        `include_synonyms` is `False`) that map to ambiguous states.
         """
         for state in self.ambiguous_state_iter():
             yield state.symbol
-            if state.symbol_synonyms and not exclude_synonyms:
+            if state.symbol_synonyms and include_synonyms:
                 for symbol in state.symbol_synonyms:
                     yield symbol
 
-    def polymorphic_symbol_iter(self, exclude_synonyms=False):
+    def polymorphic_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `exclude_synonyms` is `True`) that map to polymorphic states.
+        `include_synonyms` is `False`) that map to polymorphic states.
         """
         for state in self.polymorphic_state_iter():
             yield state.symbol
-            if state.symbol_synonyms and not exclude_synonyms:
+            if state.symbol_synonyms and include_synonyms:
                 for symbol in state.symbol_synonyms:
                     yield symbol
 
-    def multistate_symbol_iter(self, exclude_synonyms=False):
+    def multistate_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `exclude_synonyms` is `True`) that map to multistate states.
+        `include_synonyms` is `False`) that map to multistate states.
         """
         for state in self.multistate_state_iter():
             yield state.symbol
-            if state.symbol_synonyms and not exclude_synonyms:
+            if state.symbol_synonyms and include_synonyms:
                 for symbol in state.symbol_synonyms:
                     yield symbol
-
 
     def symbol_state_pair_iter(self, include_synonyms=True):
         """
