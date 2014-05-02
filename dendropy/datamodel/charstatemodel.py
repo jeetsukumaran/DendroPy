@@ -204,7 +204,7 @@ class StateAlphabet(
 
     def _direct_get_state_for_symbol(self, symbol):
         """
-        Returns the :class:`StateAlphabetElement` instance corresponding to `symbol`.
+        Returns the :class:`StateIdentity` instance corresponding to `symbol`.
         """
         for state_symbol, state in self.symbol_state_pair_iter(include_synonyms=True):
             if state_symbol == symbol:
@@ -213,7 +213,7 @@ class StateAlphabet(
 
     def _direct_get_fundamental_state_set_for_symbols_for_symbols(self, symbols):
         """
-        Returns the list of :class:`StateAlphabetElement` instances corresponding to
+        Returns the list of :class:`StateIdentity` instances corresponding to
         the iterable of symbols given by `symbols`, with each element in
         `symbols` corresponding to a single symbol.
         """
@@ -244,7 +244,7 @@ class StateAlphabet(
             raise ValueError("Fundamental states cannot be defined without a valid symbol")
         symbol = self._validate_new_symbol(symbol)
         index = len(self._fundamental_states)
-        new_state = StateAlphabetElement(
+        new_state = StateIdentity(
                 symbol=symbol,
                 index=index,
                 state_denomination=StateAlphabet.FUNDAMENTAL_STATE,
@@ -259,7 +259,7 @@ class StateAlphabet(
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
         member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
-        new_state = StateAlphabetElement(
+        new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
                 state_denomination=StateAlphabet.AMBIGUOUS_STATE,
@@ -274,7 +274,7 @@ class StateAlphabet(
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
         member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
-        new_state = StateAlphabetElement(
+        new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
                 state_denomination=StateAlphabet.POLYMORPHIC_STATE,
@@ -355,7 +355,7 @@ class StateAlphabet(
 
         Parameters
         ----------
-        state : :class:`StateAlphabetElement`
+        state : :class:`StateIdentity`
             The state to be made an attribute of this alphabet.
         attr_name : string
             The name of the attribute. If not specified, the state
@@ -492,8 +492,8 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateAlphabetElement` instance
-            Returns a :class:`StateAlphabetElement` corresponding to `key`.
+        s : :class:`StateIdentity` instance
+            Returns a :class:`StateIdentity` corresponding to `key`.
 
         Raises
         ------
@@ -517,8 +517,8 @@ class StateAlphabet(
 
         Returns
         -------
-        s : list of :class:`StateAlphabetElement`
-            A list of :class:`StateAlphabetElement` instances corresponding to symbols
+        s : list of :class:`StateIdentity`
+            A list of :class:`StateIdentity` instances corresponding to symbols
             given in `symbols`.
         """
         states = [self.full_symbol_state_map[s] for s in symbols]
@@ -534,8 +534,8 @@ class StateAlphabet(
 
         Returns
         -------
-        s : list of :class:`StateAlphabetElement`
-            A list of fundamental :class:`StateAlphabetElement` instances corresponding
+        s : list of :class:`StateIdentity`
+            A list of fundamental :class:`StateIdentity` instances corresponding
             to symbols given in `symbols`, with multi-state states expanded
             into their fundamental symbols.
         """
@@ -556,7 +556,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateAlphabetElement` instance
+        s : :class:`StateIdentity` instance
         """
         states = self.get_fundamental_state_set_for_symbols(symbols)
         return self._fundamental_states_to_ambiguous_state_map[state]
@@ -572,7 +572,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateAlphabetElement` instance
+        s : :class:`StateIdentity` instance
         """
         states = self.get_fundamental_state_set_for_symbols(symbols)
         return self._fundamental_states_to_polymorphic_state_map[state]
@@ -588,7 +588,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateAlphabetElement` instance
+        s : :class:`StateIdentity` instance
         """
         try:
             return self.match_ambiguous_state(symbols)
@@ -596,9 +596,9 @@ class StateAlphabet(
             return self.match_polymorphic_state(symbols)
 
 ###############################################################################
-## StateAlphabetElement
+## StateIdentity
 
-class StateAlphabetElement(
+class StateIdentity(
         basemodel.DataObject,
         basemodel.Annotable):
     """
@@ -634,8 +634,8 @@ class StateAlphabetElement(
             One of: `StateAlphabet.FUNDAMENTAL_STATE`,
             `StateAlphabet.AMBIGUOUS_STATE`, or
             `StateAlphabet.POLYMORPHIC_STATE`.
-        member_states : iterable of :class:`StateAlphabetElement` instances.
-            If a multi-state, then a collection of :class:`StateAlphabetElement`
+        member_states : iterable of :class:`StateIdentity` instances.
+            If a multi-state, then a collection of :class:`StateIdentity`
             instances to which this state maps.
         """
         basemodel.DataObject.__init__(self, label=symbol)
@@ -741,7 +741,7 @@ class StateAlphabetElement(
 
     def is_exact_correspondence(self, other):
         """
-        Tries to determine if two StateAlphabetElement definitions
+        Tries to determine if two StateIdentity definitions
         are equivalent by matching symbols.
         """
         match = True

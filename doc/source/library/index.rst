@@ -5,6 +5,8 @@ DendroPy Library Reference
 .. toctree::
     :maxdepth: 2
 
-    base.rst
-    taxon.rst
-    tree.rst
+    basemodel.rst
+    taxonmodel.rst
+    treemodel.rst
+    charstatemodel.rst
+    charmatrixmodel.rst

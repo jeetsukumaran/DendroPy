@@ -1092,32 +1092,3 @@ def new_char_matrix(data_type, **kwargs):
     matrix_type = get_char_matrix_type(data_type=data_type)
     m = matrix_type(**kwargs)
     return m
-
-###############################################################################
-## Wrappers and Convenience Functions
-
-def get_state_alphabet_from_symbols(symbols, gap_symbol="-", missing_symbol="?"):
-    sa = StateAlphabet()
-    for symbol in symbols:
-        sa.append(StateAlphabetElement(symbol=symbol))
-    if gap_symbol:
-        sa.append(StateAlphabetElement(symbol=gap_symbol,
-                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=sa.get_states(symbols=symbols)))
-    if missing_symbol:
-        sa.append(StateAlphabetElement(symbol=missing_symbol,
-                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=sa.get_states(symbols=symbols)))
-    return sa
-
-###############################################################################
-## Specialized Matrices
-
-class SitePatterns(object):
-    """
-    Tracks distinct site patterns in a character matrix.
-    Useful for efficient computations.
-    """
-
-    def __init__(self, matrix=None):
-        pass

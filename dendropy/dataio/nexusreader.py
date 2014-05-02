@@ -945,8 +945,8 @@ class NexusReader(ioservice.DataReader):
 
             [<A>, <C>, <T>, <G>, <AC>, <G>, <G>, <T>, <CGG>, <CG>, <G>, <G>]
 
-        where `<.>` is an StateAlphabetElement object with the characters
-        within the brackets as symbol(s).
+        where `<.>` is a StateIdentity object with the characters within the
+        brackets as symbol(s).
 
         """
         if self._interleave:
@@ -955,11 +955,11 @@ class NexusReader(ioservice.DataReader):
             token = self._nexus_tokenizer.require_next_token()
             if token == "{" or token == "(":
                 if token == "{":
-                    # multistate_type = dataobject.StateAlphabetElement.AMBIGUOUS_STATE
+                    # multistate_type = dataobject.StateIdentity.AMBIGUOUS_STATE
                     multistate_type = state_alphabet.AMBIGUOUS_STATE
                     closing_token = "}"
                 else:
-                    # multistate_type = dataobject.StateAlphabetElement.POLYMORPHIC_STATE
+                    # multistate_type = dataobject.StateIdentity.POLYMORPHIC_STATE
                     multistate_type = state_alphabet.POLYMORPHIC_STATE
                     closing_token = ")"
                 multistate_tokens = []
