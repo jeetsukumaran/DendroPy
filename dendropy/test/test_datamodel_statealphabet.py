@@ -24,6 +24,7 @@ import itertools
 import unittest
 import collections
 import dendropy
+from dendropy.utility import container
 from dendropy.test.support import dendropytest
 
 class StateAlphabetTester(object):
@@ -180,10 +181,37 @@ class StateAlphabetTester(object):
             if state._index is not None:
                 self.assertIs(alphabet[state._index], state)
 
-    # def test_canonical_symbol_state_map(self):
-    #     m = collections.OrderedDict(self.sa.canonical_symbol_state_map
-    #     states = list(self.sa.state_iter())
-    #     state_symbols = [s.symbol for s in states if s.symbol]
+    def test_compiled_lookup_immutability(self):
+        self.sa.compile_lookup_mappings()
+        for m in (
+                self.sa.canonical_symbol_state_map,
+                self.sa.full_symbol_state_map,
+                self.sa._fundamental_states_to_ambiguous_state_map,
+                self.sa._fundamental_states_to_polymorphic_state_map
+                ):
+            if m:
+                k = list(m.keys())[0]
+            else:
+                k = 1
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                m[k] = 1
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                del m[k]
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                m.pop(k)
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                m.clear()
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                m.update({})
+            with self.assertRaises(container.FrozenOrderedDict.ImmutableTypeError):
+                m.fromkeys([1,2,3])
+        # check if re-compilation is possible
+        self.sa.compile_lookup_mappings()
+
+    def test_canonical_symbol_state_map(self):
+        m = self.sa.canonical_symbol_state_map
+        states = list(self.sa.state_iter())
+        state_symbols = [s.symbol for s in states if s.symbol]
 
     def test_state_iter(self):
         states = list(self.sa.state_iter())
