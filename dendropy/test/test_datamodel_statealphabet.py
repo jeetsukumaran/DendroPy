@@ -20,6 +20,7 @@
 Tests Tree taxon management
 """
 
+import random
 import itertools
 import unittest
 import collections
@@ -240,18 +241,23 @@ class StateAlphabetTester(object):
             if state._index is not None:
                 self.assertIs(alphabet[state._index], state)
 
-    def validate_get_states_for_symbol_for_state(self, state):
-        states_for_symbols = alphabet.get_states_for_symbols(state.symbol)
-        self.assertEqual(len(states_for_symbols), 1)
-        self.assertIs(states_for_symbols[0], state)
+    def test_get_states_for_symbol_for_state(self):
+        states = list(self.sa.state_iter())
+        for rep in range(3):
+            n = random.randint(5, 100)
+            selected_states = [self.rng.choice(states) for _ in range(n)]
+            selected_symbols = [s.symbol for s in selected_states]
+            obs_states = self.sa.get_states_for_symbols(selected_symbols)
+            self.assertEqual(obs_states, selected_states)
 
 class DnaStateAlphabetTest(
         StateAlphabetTester,
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
-        self.expected_fundamental_state_symbols = ["A", "C", "G", "T", "-"]
+        self.rng = random.Random()
 
+        self.expected_fundamental_state_symbols = ["A", "C", "G", "T", "-"]
         self.ambiguous_symbol_mappings = collections.OrderedDict()
         self.ambiguous_symbol_mappings["?"] = "ACGT-"
         self.ambiguous_symbol_mappings["N"] = "ACGT"
