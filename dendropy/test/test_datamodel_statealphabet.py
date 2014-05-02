@@ -116,6 +116,18 @@ class StateAlphabetTester(object):
                 additional_synonyms_map=self.additional_synonyms_map,
                 case_sensitive=False)
 
+    def test_state_iter(self):
+        states = list(self.sa.state_iter())
+        self.assertEqual(len(states), self.num_total_states)
+        self.assertEqual(len(self.sa), len(states))
+        expected_state_symbol_iter = itertools.chain(
+                self.expected_fundamental_state_symbols,
+                self.ambiguous_symbol_mappings,
+                self.polymorphic_symbol_mappings
+                )
+        for state, symbol in zip(states, expected_state_symbol_iter):
+            self.assertEqual(state.symbol, symbol)
+
     def test_symbol_iter(self):
         # assumes that the state iterators -- fundamental_state_iter,
         # ambiguous_state_iter, etc. -- all work as advertised
@@ -151,6 +163,28 @@ class StateAlphabetTester(object):
             obs_pairs = list(self.sa.symbol_state_pair_iter(include_synonyms=include_synonyms))
             self.assertEqual(expected_pairs, obs_pairs)
 
+    def test_state_denomination(self):
+        for state in self.sa.fundamental_state_iter():
+            self.assertEqual(state.state_denomination, self.sa.FUNDAMENTAL_STATE)
+        for state in self.sa.ambiguous_state_iter():
+            self.assertEqual(state.state_denomination, self.sa.AMBIGUOUS_STATE)
+        for state in self.sa.polymorphic_state_iter():
+            self.assertEqual(state.state_denomination, self.sa.POLYMORPHIC_STATE)
+
+    def test_getitem(self):
+        alphabet = self.sa
+        for state in self.sa.state_iter():
+            self.assertIs(alphabet[state.symbol], state)
+            for ss in state.symbol_synonyms:
+                self.assertIs(alphabet[ss], state)
+            if state._index is not None:
+                self.assertIs(alphabet[state._index], state)
+
+    # def test_canonical_symbol_state_map(self):
+    #     m = collections.OrderedDict(self.sa.canonical_symbol_state_map
+    #     states = list(self.sa.state_iter())
+    #     state_symbols = [s.symbol for s in states if s.symbol]
+
     def test_state_iter(self):
         states = list(self.sa.state_iter())
         self.assertEqual(len(states), self.num_total_states)
@@ -162,23 +196,6 @@ class StateAlphabetTester(object):
                 )
         for state, symbol in zip(states, expected_state_symbol_iter):
             self.assertEqual(state.symbol, symbol)
-
-    def test_state_denomination_for_state(self):
-        for state in self.sa.fundamental_state_iter():
-            self.assertEqual(state.state_denomination, self.sa.FUNDAMENTAL_STATE)
-        for state in self.sa.ambiguous_state_iter():
-            self.assertEqual(state.state_denomination, self.sa.AMBIGUOUS_STATE)
-        for state in self.sa.polymorphic_state_iter():
-            self.assertEqual(state.state_denomination, self.sa.POLYMORPHIC_STATE)
-
-    def test_state_getitem_for_state(self):
-        alphabet = self.sa
-        for state in self.sa.state_iter():
-            self.assertIs(alphabet[state.symbol], state)
-            for ss in state.symbol_synonyms:
-                self.assertIs(alphabet[ss], state)
-            if state._index is not None:
-                self.assertIs(alphabet[state._index], state)
 
     def validate_get_states_for_symbol_for_state(self, state):
         states_for_symbols = alphabet.get_states_for_symbols(state.symbol)

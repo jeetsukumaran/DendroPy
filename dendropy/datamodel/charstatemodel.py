@@ -28,6 +28,7 @@ of the state alphabet and state alphabet elements).
 import collections
 import itertools
 from dendropy.datamodel import basemodel
+from dendropy.utility import container
 
 ###############################################################################
 ## StateAlphabet
@@ -396,47 +397,52 @@ class StateAlphabet(
         Builds lookup tables/mappings for quick referencing and dereferencing
         of symbols/states.
         """
-        self._canonical_symbol_state_map = collections.OrderedDict()
-        self._full_symbol_state_map = collections.OrderedDict()
-        self._index_state_map = collections.OrderedDict()
-        self._fundamental_states_to_ambiguous_state_map = {}
-        self._fundamental_states_to_polymorphic_state_map = {}
+        temp_canonical_symbol_state_map = collections.OrderedDict()
+        temp_full_symbol_state_map = collections.OrderedDict()
+        temp_index_state_map = collections.OrderedDict()
+        temp_fundamental_states_to_ambiguous_state_map = {}
+        temp_fundamental_states_to_polymorphic_state_map = {}
         for idx, state in enumerate(self.state_iter()):
             if state.symbol:
-                assert state.symbol not in self._canonical_symbol_state_map
-                self._canonical_symbol_state_map[state.symbol] = state
+                assert state.symbol not in temp_canonical_symbol_state_map
+                temp_canonical_symbol_state_map[state.symbol] = state
                 self._set_symbol_mapping(
-                        self._full_symbol_state_map,
+                        temp_full_symbol_state_map,
                         state.symbol,
                         state)
                 if state.symbol_synonyms:
                     for ss in state.symbol_synonyms:
                         self._set_symbol_mapping(
-                                self._full_symbol_state_map,
+                                temp_full_symbol_state_map,
                                 ss,
                                 state)
             else:
                 assert state.state_denomination != StateAlphabet.FUNDAMENTAL_STATE
-            # if state in self._fundamental_states:
+            # if state in temp_fundamental_states:
             #     assert idx == state._index
             # else:
             #     state._index = idx
             state._index = idx
-            self._index_state_map[idx] = state
+            temp_index_state_map[idx] = state
             if state.state_denomination == StateAlphabet.AMBIGUOUS_STATE:
                 member_states = state.member_states
-                if member_states in self._fundamental_states_to_ambiguous_state_map:
+                if member_states in temp_fundamental_states_to_ambiguous_state_map:
                     raise ValueError("Multiple definitions of ambiguous state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, self._fundamental_states_to_ambiguous_state_map[member_states], state))
-                assert member_states not in self._fundamental_states_to_ambiguous_state_map
-                self._fundamental_states_to_ambiguous_state_map[member_states] = state
+                        state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))
+                assert member_states not in temp_fundamental_states_to_ambiguous_state_map
+                temp_fundamental_states_to_ambiguous_state_map[member_states] = state
             elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
                 member_states = state.member_states
-                if member_states in self._fundamental_states_to_polymorphic_state_map:
+                if member_states in temp_fundamental_states_to_polymorphic_state_map:
                     raise ValueError("Multiple definitions of polymorphic state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, self._fundamental_states_to_polymorphic_state_map[member_states], state))
-                self._fundamental_states_to_polymorphic_state_map[member_states] = state
-        self._is_dirty = False
+                        state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))
+                temp_fundamental_states_to_polymorphic_state_map[member_states] = state
+        self._canonical_symbol_state_map = container.FrozenOrderedDict(temp_canonical_symbol_state_map)
+        self._full_symbol_state_map = container.FrozenOrderedDict(temp_full_symbol_state_map)
+        self._index_state_map = container.FrozenOrderedDict(temp_index_state_map)
+        self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
+        self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
+        temp_is_dirty = False
 
     def set_state_as_attribute(self, state, attr_name=None):
         """
@@ -563,20 +569,28 @@ class StateAlphabet(
                     yield (synonym, state)
 
     def _get_canonical_symbol_state_map(self):
+        """
+        Dictionary with state symbols as keys and states as values. Does not
+        include symbol synonyms or case variations.
+        """
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._canonical_symbol_state_map
     canonical_symbol_state_map = property(_get_canonical_symbol_state_map,
-            "Dictionary with state symbols as keys and states as values."
-            " Does not include symbol synonyms or case variations.")
+            __doc__
+            )
 
     def _get_full_symbol_state_map(self):
+        """
+        Dictionary with state symbols as keys and states as values.
+        Includes symbol synonyms or case variations.
+        """
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._full_symbol_state_map
     full_symbol_state_map = property(_get_full_symbol_state_map,
-            "Dictionary with state symbols as keys and states as values,"
-            " including symbol synonyms or case variations on symbols.")
+            __doc__
+            )
 
     def __getitem__(self, key):
         """
