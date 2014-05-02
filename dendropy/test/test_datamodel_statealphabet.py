@@ -241,14 +241,24 @@ class StateAlphabetTester(object):
             if state._index is not None:
                 self.assertIs(alphabet[state._index], state)
 
-    def test_get_states_for_symbol_for_state(self):
-        states = list(self.sa.state_iter())
+#     def test_get_states_for_symbol(self):
+#         states = list(self.sa.state_iter())
+#         for rep in range(3):
+#             n = random.randint(5, 100)
+#             selected_states = [self.rng.choice(states) for _ in range(n)]
+#             selected_symbols = [s.symbol for s in selected_states]
+#             obs_states = self.sa.get_states_for_symbols(selected_symbols)
+#             self.assertEqual(obs_states, selected_states)
+
+    def test_get_states_for_symbol(self):
+        all_symbols = list(self.sa.full_symbol_state_map.keys())
         for rep in range(3):
             n = random.randint(5, 100)
-            selected_states = [self.rng.choice(states) for _ in range(n)]
-            selected_symbols = [s.symbol for s in selected_states]
+            selected_symbols = [self.rng.choice(all_symbols) for _ in range(n)]
+            selected_states = [self.sa[s] for s in selected_symbols]
             obs_states = self.sa.get_states_for_symbols(selected_symbols)
             self.assertEqual(obs_states, selected_states)
+
 
 class DnaStateAlphabetTest(
         StateAlphabetTester,
