@@ -219,6 +219,27 @@ class StateAlphabetTester(object):
             self.assertEqual(obs_symbol, exp_state.symbol)
             self.assertIs(m[obs_symbol], exp_state)
 
+    def test_full_symbol_state_map(self):
+        m = self.sa.full_symbol_state_map
+        states = list(self.sa.state_iter())
+        exp_symbols = []
+        exp_symbol_state_pairs = []
+        for state in states:
+            if state.symbol:
+                exp_symbols.append(state.symbol)
+                exp_symbol_state_pairs.append((state.symbol, state))
+                for s in state.symbol_synonyms:
+                    exp_symbols.append(s)
+                    exp_symbol_state_pairs.append((s, state))
+        obs_symbols = list(m)
+        self.assertEqual(obs_symbols, exp_symbols)
+        self.assertEqual(len(m), len(exp_symbols))
+        self.assertEqual(len(m), len(exp_symbol_state_pairs))
+        for obs_symbol, exp_symbol, sspair in zip(m, exp_symbols, exp_symbol_state_pairs):
+            self.assertEqual(obs_symbol, exp_symbol)
+            self.assertEqual(obs_symbol, sspair[0])
+            self.assertIs(m[obs_symbol], sspair[1])
+
     def test_state_iter(self):
         states = list(self.sa.state_iter())
         self.assertEqual(len(states), self.num_total_states)
