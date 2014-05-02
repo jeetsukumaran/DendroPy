@@ -235,9 +235,6 @@ class StateAlphabet(
         for state_symbol, state in self.symbol_state_pair_iter(include_synonyms=True):
             if state_symbol == symbol:
                 raise ValueError("State with symbol or symbol synonym of '{}' already defined is this alphabet".format(symbol))
-            if not self._is_case_sensitive:
-                if state_symbol.upper() == symbol.upper():
-                    raise ValueError("State with symbol or symbol synonym of '{}' already defined is this alphabet".format(symbol))
         return symbol
 
     def new_fundamental_state(self, symbol):
@@ -269,6 +266,10 @@ class StateAlphabet(
                 state_denomination=StateAlphabet.FUNDAMENTAL_STATE,
                 member_states=None)
         self._fundamental_states.append(new_state)
+        if not self._is_case_sensitive:
+            for s in (symbol.upper(), symbol.lower()):
+                if s != symbol:
+                    self.new_symbol_synonym(s, symbol)
         self._is_dirty = True
         return new_state
 
@@ -307,6 +308,10 @@ class StateAlphabet(
                 state_denomination=StateAlphabet.AMBIGUOUS_STATE,
                 member_states=member_states)
         self._ambiguous_states.append(new_state)
+        if symbol and not self._is_case_sensitive:
+            for s in (symbol.upper(), symbol.lower()):
+                if s != symbol:
+                    self.new_symbol_synonym(s, symbol)
         self._is_dirty = True
         return new_state
 
@@ -345,6 +350,10 @@ class StateAlphabet(
                 state_denomination=StateAlphabet.POLYMORPHIC_STATE,
                 member_states=member_states)
         self._polymorphic_states.append(new_state)
+        if symbol and not self._is_case_sensitive:
+            for s in (symbol.upper(), symbol.lower()):
+                if s != symbol:
+                    self.new_symbol_synonym(s, symbol)
         self._is_dirty = True
         return new_state
 
@@ -381,11 +390,6 @@ class StateAlphabet(
             raise ValueError("Symbol synonym cannot be empty")
         assert symbol not in d
         d[symbol] = state
-        if not self._is_case_sensitive:
-            for s in (symbol.lower(), symbol.upper()):
-                if s != symbol:
-                    assert s not in d
-                    d[s] = state
 
     def compile_lookup_mappings(self):
         """
@@ -460,6 +464,14 @@ class StateAlphabet(
 
     ###########################################################################
     ### Symbol Access
+
+    def __len__(self):
+        """
+        Number of states.
+        """
+        return ( len(self._fundamental_states)
+                + len(self._ambiguous_states)
+                + len(self._polymorphic_states) )
 
     def state_iter(self):
         """
