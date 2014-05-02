@@ -641,7 +641,7 @@ class StateAlphabet(
         states = []
         for symbol in symbols:
             state = self._full_symbol_state_map[symbol]
-            states.extend(state_fundamental_states)
+            states.extend(state.fundamental_states)
         return frozenset(states)
 
     def match_ambiguous_state(self, symbols):
