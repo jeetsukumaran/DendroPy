@@ -35,11 +35,6 @@ from dendropy.datamodel import basemodel
 class StateAlphabet(
         basemodel.DataObject,
         basemodel.Annotable):
-
-    FUNDAMENTAL_STATE = 0
-    AMBIGUOUS_STATE = 1
-    POLYMORPHIC_STATE = 2
-
     """
     A master registry mapping state symbols to their definitions.
 
@@ -65,7 +60,10 @@ class StateAlphabet(
             of state. With "polymorphic" states, on the other hand, there is no
             uncertaintly or lack of knowledge about the state: the state is
             known definitively, and it consists of multiple fundamental states.
-            An example of an ambiguous state code
+            An example of an ambiguous state would be 'N', representing any
+            base in molecular sequence data. An example of a polymorphic state
+            would be the range of a widespread species found in multiple
+            geographic units.
 
     The fundamental states of a state alphabet are, in principle, immutable:
     they are defined at the initialization/construction of a state alphabet,
@@ -138,6 +136,13 @@ class StateAlphabet(
         states might be defined with '?' as its primary symbol, and a synonym
         symbol for this state might be 'X'.
     """
+
+    ###########################################################################
+    ### CLass-level Constants
+
+    FUNDAMENTAL_STATE = 0
+    AMBIGUOUS_STATE = 1
+    POLYMORPHIC_STATE = 2
 
     ###########################################################################
     ### Life-Cycle and Identity
@@ -238,7 +243,21 @@ class StateAlphabet(
     def new_fundamental_state(self, symbol):
         """
         Adds a new fundamental state to the collection
-        of states.
+        of states in this alphabet.
+
+        Parameters
+        ----------
+        symbol : string
+            The symbol used to represent this state. Cannot have previously
+            been used to refer to any other state, fundamental or otherwise, as
+            a primary or synonymous symbol (including implicit synonyms given
+            by case-variants if the state alphabet is not case-sensitive).
+            Cannot be blank ("") or `None`.
+
+        Returns
+        -------
+        s : :class:`StateIdentity`
+            The new state created and added.
         """
         if symbol is None or symbol == "":
             raise ValueError("Fundamental states cannot be defined without a valid symbol")
@@ -256,6 +275,29 @@ class StateAlphabet(
     def new_ambiguous_state(self,
             symbol,
             member_state_symbols):
+        """
+        Adds a new ambiguous state to the collection
+        of states in this alphabet.
+
+        Parameters
+        ----------
+        symbol : string or None
+            The symbol used to represent this state. Cannot have previously
+            been used to refer to any other state, fundamental or otherwise, as
+            a primary or synonymous symbol (including implicit synonyms given
+            by case-variants if the state alphabet is not case-sensitive). Can
+            be blank ("") or `None` if there.
+
+        member_states : iterable of strings
+            List of symbols representing states to which this state maps. Symbols
+            representing multistates will taken to refer to the set of
+            fundamental states to which they, in turn, map.
+
+        Returns
+        -------
+        s : :class:`StateIdentity`
+            The new state created and added.
+        """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
         member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
@@ -271,6 +313,29 @@ class StateAlphabet(
     def new_polymorphic_state(self,
             symbol,
             member_state_symbols):
+        """
+        Adds a new polymorphic state to the collection
+        of states in this alphabet.
+
+        Parameters
+        ----------
+        symbol : string or None
+            The symbol used to represent this state. Cannot have previously
+            been used to refer to any other state, fundamental or otherwise, as
+            a primary or synonymous symbol (including implicit synonyms given
+            by case-variants if the state alphabet is not case-sensitive). Can
+            be blank ("") or `None` if there.
+
+        member_states : iterable of strings
+            List of symbols representing states to which this state maps. Symbols
+            representing multistates will taken to refer to the set of
+            fundamental states to which they, in turn, map.
+
+        Returns
+        -------
+        s : :class:`StateIdentity`
+            The new state created and added.
+        """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
         member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
@@ -285,6 +350,24 @@ class StateAlphabet(
 
     def new_symbol_synonym(self,
             symbol_synonym, referenced_symbol):
+        """
+        Defines an alternative symbol mapping for an existing state.
+
+        Parameters
+        ----------
+        symbol_synonym : string
+            The (new) alternative symbol.
+
+        referenced_symbol : string
+            The symbol for the state to which the alternative symbol will also
+            map.
+
+        Returns
+        -------
+        s : :class:`StateIdentity`
+            The state to which this synonym maps.
+        ------
+        """
         if symbol_synonym is None or symbol_synonym == "":
             raise ValueError("Symbol synonym cannot be empty")
         symbol_synonym = self._validate_new_symbol(symbol_synonym)
@@ -305,6 +388,10 @@ class StateAlphabet(
                     d[s] = state
 
     def compile_lookup_mappings(self):
+        """
+        Builds lookup tables/mappings for quick referencing and dereferencing
+        of symbols/states.
+        """
         self._canonical_symbol_state_map = collections.OrderedDict()
         self._full_symbol_state_map = collections.OrderedDict()
         self._index_state_map = collections.OrderedDict()
