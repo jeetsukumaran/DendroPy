@@ -172,15 +172,6 @@ class StateAlphabetTester(object):
         for state in self.sa.polymorphic_state_iter():
             self.assertEqual(state.state_denomination, self.sa.POLYMORPHIC_STATE)
 
-    def test_getitem(self):
-        alphabet = self.sa
-        for state in self.sa.state_iter():
-            self.assertIs(alphabet[state.symbol], state)
-            for ss in state.symbol_synonyms:
-                self.assertIs(alphabet[ss], state)
-            if state._index is not None:
-                self.assertIs(alphabet[state._index], state)
-
     def test_compiled_lookup_immutability(self):
         self.sa.compile_lookup_mappings()
         for m in (
@@ -240,17 +231,14 @@ class StateAlphabetTester(object):
             self.assertEqual(obs_symbol, sspair[0])
             self.assertIs(m[obs_symbol], sspair[1])
 
-    def test_state_iter(self):
-        states = list(self.sa.state_iter())
-        self.assertEqual(len(states), self.num_total_states)
-        self.assertEqual(len(self.sa), len(states))
-        expected_state_symbol_iter = itertools.chain(
-                self.expected_fundamental_state_symbols,
-                self.ambiguous_symbol_mappings,
-                self.polymorphic_symbol_mappings
-                )
-        for state, symbol in zip(states, expected_state_symbol_iter):
-            self.assertEqual(state.symbol, symbol)
+    def test_getitem(self):
+        alphabet = self.sa
+        for state in self.sa.state_iter():
+            self.assertIs(alphabet[state.symbol], state)
+            for ss in state.symbol_synonyms:
+                self.assertIs(alphabet[ss], state)
+            if state._index is not None:
+                self.assertIs(alphabet[state._index], state)
 
     def validate_get_states_for_symbol_for_state(self, state):
         states_for_symbols = alphabet.get_states_for_symbols(state.symbol)
