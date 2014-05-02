@@ -211,7 +211,13 @@ class StateAlphabetTester(object):
     def test_canonical_symbol_state_map(self):
         m = self.sa.canonical_symbol_state_map
         states = list(self.sa.state_iter())
-        state_symbols = [s.symbol for s in states if s.symbol]
+        exp_symbols = [s.symbol for s in states if s.symbol]
+        obs_symbols = list(m)
+        self.assertEqual(obs_symbols, exp_symbols)
+        self.assertEqual(len(m), len(states))
+        for obs_symbol, exp_state in zip(m, states):
+            self.assertEqual(obs_symbol, exp_state.symbol)
+            self.assertIs(m[obs_symbol], exp_state)
 
     def test_state_iter(self):
         states = list(self.sa.state_iter())
