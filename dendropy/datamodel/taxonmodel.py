@@ -743,8 +743,9 @@ class TaxonNamespace(
 
         See Also
         --------
-        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not raise an error if no
-        matching :class:`Taxon` objects are found.
+        :meth:`TaxonNamespace.discard_taxon_labels`
+            Similar, but does not raise an error if no matching :class:`Taxon`
+            objects are found.
         """
         taxa = self._lookup_label(label,
                 case_sensitive=case_sensitive,
