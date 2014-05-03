@@ -442,7 +442,7 @@ class StateAlphabet(
         self._index_state_map = container.FrozenOrderedDict(temp_index_state_map)
         self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
         self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
-        temp_is_dirty = False
+        self._is_dirty = False
 
     def set_state_as_attribute(self, state, attr_name=None):
         """
