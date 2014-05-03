@@ -52,7 +52,7 @@ class StateAlphabetTester(object):
             if member_state_map:
                 expected_member_state_symbols = tuple(member_state_map[symbol])
                 self.assertEqual(state.fundamental_symbols, expected_member_state_symbols)
-                fundamental_states = frozenset(self.sa.get_fundamental_states_for_symbols(state.symbol))
+                fundamental_states = self.sa.get_fundamental_states_for_symbols(state.symbol)
                 fss = [fs.symbol for fs in fundamental_states]
                 self.assertEqual(tuple(fss), expected_member_state_symbols)
             else:

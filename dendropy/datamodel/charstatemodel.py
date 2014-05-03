@@ -206,7 +206,7 @@ class StateAlphabet(
                 return state
         raise KeyError(symbol)
 
-    def _direct_get_fundamental_state_set_for_symbols(self, symbols):
+    def _direct_get_fundamental_states_for_symbols(self, symbols):
         """
         Returns the list of :class:`StateIdentity` instances corresponding to
         the iterable of symbols given by `symbols`, with each element in
@@ -216,7 +216,7 @@ class StateAlphabet(
         for symbol in symbols:
             state = self._direct_get_state_for_symbol(symbol)
             ss.extend(state.fundamental_states)
-        return frozenset(ss)
+        return tuple(ss)
 
     def _validate_new_symbol(self, symbol):
         if symbol is None or symbol == "":
@@ -292,7 +292,7 @@ class StateAlphabet(
         """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_state_set_for_symbols(member_state_symbols)
+        member_states = self._direct_get_fundamental_states_for_symbols(member_state_symbols)
         new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
@@ -335,7 +335,7 @@ class StateAlphabet(
         """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_state_set_for_symbols(member_state_symbols)
+        member_states = self._direct_get_fundamental_states_for_symbols(member_state_symbols)
         new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
@@ -387,16 +387,50 @@ class StateAlphabet(
         assert symbol not in d
         d[symbol] = state
 
+    ###########################################################################
+    ### Optimization/Sugar: Lookup Mappings and Attribute Settings
+
     def compile_lookup_mappings(self):
         """
         Builds lookup tables/mappings for quick referencing and dereferencing
         of symbols/states.
         """
+        self.compile_symbol_lookup_mappings()
+        self.compile_member_states_lookup_mappings()
+
+    def compile_member_states_lookup_mappings(self):
+        """
+        Builds lookup tables/mappings for quick referencing and dereferencing
+        of ambiguous/polymorphic states based on the fundamental states to
+        which they map.
+        """
+        temp_fundamental_states_to_ambiguous_state_map = {}
+        temp_fundamental_states_to_polymorphic_state_map = {}
+        for idx, state in enumerate(self.state_iter()):
+            if state.state_denomination == StateAlphabet.AMBIGUOUS_STATE:
+                member_states = frozenset(state.member_states)
+                if member_states in temp_fundamental_states_to_ambiguous_state_map:
+                    raise ValueError("Multiple definitions of ambiguous state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
+                        state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))
+                assert member_states not in temp_fundamental_states_to_ambiguous_state_map
+                temp_fundamental_states_to_ambiguous_state_map[member_states] = state
+            elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+                member_states = frozenset(state.member_states)
+                if member_states in temp_fundamental_states_to_polymorphic_state_map:
+                    raise ValueError("Multiple definitions of polymorphic state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
+                        state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))
+                temp_fundamental_states_to_polymorphic_state_map[member_states] = state
+        self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
+        self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
+
+    def compile_symbol_lookup_mappings(self):
+        """
+        Builds lookup tables/mappings for quick referencing and dereferencing
+        of state symbology.
+        """
         temp_canonical_symbol_state_map = collections.OrderedDict()
         temp_full_symbol_state_map = collections.OrderedDict()
         temp_index_state_map = collections.OrderedDict()
-        temp_fundamental_states_to_ambiguous_state_map = {}
-        temp_fundamental_states_to_polymorphic_state_map = {}
         for idx, state in enumerate(self.state_iter()):
             if state.symbol:
                 assert state.symbol not in temp_canonical_symbol_state_map
@@ -413,30 +447,11 @@ class StateAlphabet(
                                 state)
             else:
                 assert state.state_denomination != StateAlphabet.FUNDAMENTAL_STATE
-            # if state in temp_fundamental_states:
-            #     assert idx == state._index
-            # else:
-            #     state._index = idx
             state._index = idx
             temp_index_state_map[idx] = state
-            if state.state_denomination == StateAlphabet.AMBIGUOUS_STATE:
-                member_states = state.member_states
-                if member_states in temp_fundamental_states_to_ambiguous_state_map:
-                    raise ValueError("Multiple definitions of ambiguous state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))
-                assert member_states not in temp_fundamental_states_to_ambiguous_state_map
-                temp_fundamental_states_to_ambiguous_state_map[member_states] = state
-            elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
-                member_states = state.member_states
-                if member_states in temp_fundamental_states_to_polymorphic_state_map:
-                    raise ValueError("Multiple definitions of polymorphic state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))
-                temp_fundamental_states_to_polymorphic_state_map[member_states] = state
         self._canonical_symbol_state_map = container.FrozenOrderedDict(temp_canonical_symbol_state_map)
         self._full_symbol_state_map = container.FrozenOrderedDict(temp_full_symbol_state_map)
         self._index_state_map = container.FrozenOrderedDict(temp_index_state_map)
-        self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
-        self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
 
     def set_state_as_attribute(self, state, attr_name=None):
         """
@@ -749,11 +764,10 @@ class StateIdentity(
         self._fundamental_symbols = None
         self._fundamental_indexes = None
         self._partials_vector = None
-        self._member_states = member_states
-        # if member_states is not None:
-        #     self._member_states = tuple(member_states)
-        # else:
-        #     self._member_states = None
+        if member_states is not None:
+            self._member_states = tuple(member_states)
+        else:
+            self._member_states = None
         self._str = None
         self._repr = None
         self._member_states_str = None
