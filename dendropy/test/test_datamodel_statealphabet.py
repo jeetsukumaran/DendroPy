@@ -293,6 +293,26 @@ class StateAlphabetTester(object):
             obs_states = self.sa.get_fundamental_states_for_symbols(selected_symbols)
             self.assertEqual(obs_states, selected_states)
 
+    def test_match_state(self):
+        multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
+        match_funcs = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
+        for multistate_states, match_func in zip(multistate_states, match_funcs):
+            for multistate in multistate_states:
+                member_states = list(multistate.member_states)
+                potential_symbols = []
+                for member_state in member_states:
+                    member_symbols = [member_state.symbol]
+                    for ss in member_state.symbol_synonyms:
+                        member_symbols.append(ss)
+                    potential_symbols.append(member_symbols)
+                for rep in range(5):
+                    selected_symbols = [self.rng.choice(x) for x in potential_symbols]
+                    self.rng.shuffle(selected_symbols)
+                    if self.rng.uniform(0, 1) < 0.5:
+                        selected_symbols = "".join(selected_symbols)
+                    matched_state = match_func(selected_symbols)
+                    self.assertIs(matched_state, multistate)
+
 class DnaStateAlphabetTest(
         StateAlphabetTester,
         dendropytest.ExtendedTestCase):

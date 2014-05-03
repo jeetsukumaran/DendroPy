@@ -684,7 +684,7 @@ class StateAlphabet(
         s : :class:`StateIdentity` instance
         """
         states = frozenset(self.get_fundamental_states_for_symbols(symbols))
-        return self._fundamental_states_to_ambiguous_state_map[state]
+        return self._fundamental_states_to_ambiguous_state_map[states]
 
     def match_polymorphic_state(self, symbols):
         """
@@ -700,7 +700,7 @@ class StateAlphabet(
         s : :class:`StateIdentity` instance
         """
         states = frozenset(self.get_fundamental_states_for_symbols(symbols))
-        return self._fundamental_states_to_polymorphic_state_map[state]
+        return self._fundamental_states_to_polymorphic_state_map[states]
 
     def match_state(self, symbols):
         """
