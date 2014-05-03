@@ -576,9 +576,7 @@ class StateAlphabet(
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._canonical_symbol_state_map
-    canonical_symbol_state_map = property(_get_canonical_symbol_state_map,
-            __doc__
-            )
+    canonical_symbol_state_map = property(_get_canonical_symbol_state_map, __doc__)
 
     def _get_full_symbol_state_map(self):
         """
@@ -588,9 +586,7 @@ class StateAlphabet(
         if self._is_dirty:
             self.compile_lookup_mappings()
         return self._full_symbol_state_map
-    full_symbol_state_map = property(_get_full_symbol_state_map,
-            __doc__
-            )
+    full_symbol_state_map = property(_get_full_symbol_state_map, __doc__)
 
     def __getitem__(self, key):
         """
@@ -636,7 +632,7 @@ class StateAlphabet(
         states = [self.full_symbol_state_map[s] for s in symbols]
         return states
 
-    def get_fundamental_state_set_for_symbols(self, symbols):
+    def get_fundamental_states_for_symbols(self, symbols):
         """
         Returns list of *fundamental* states corresponding to symbols.
 
@@ -655,7 +651,24 @@ class StateAlphabet(
         for symbol in symbols:
             state = self._full_symbol_state_map[symbol]
             states.extend(state.fundamental_states)
-        return frozenset(states)
+        return states
+
+    def get_canonical_symbol_for_symbol(self, symbol):
+        """
+        Returns the canonical state symbol for the state to which `symbol`
+        maps. E.g., in a DNA alphabet, return 'A' for 'a'.
+
+        Parameters
+        ----------
+        symbol : string
+
+        Returns
+        -------
+        s : string
+            Canonical symbol for state with symbol or synonym symbol of
+            `symbol`.
+        """
+        return self[symbol].symbol
 
     def match_ambiguous_state(self, symbols):
         """
@@ -670,7 +683,7 @@ class StateAlphabet(
         -------
         s : :class:`StateIdentity` instance
         """
-        states = self.get_fundamental_state_set_for_symbols(symbols)
+        states = frozenset(self.get_fundamental_states_for_symbols(symbols))
         return self._fundamental_states_to_ambiguous_state_map[state]
 
     def match_polymorphic_state(self, symbols):
@@ -686,7 +699,7 @@ class StateAlphabet(
         -------
         s : :class:`StateIdentity` instance
         """
-        states = self.get_fundamental_state_set_for_symbols(symbols)
+        states = frozenset(self.get_fundamental_states_for_symbols(symbols))
         return self._fundamental_states_to_polymorphic_state_map[state]
 
     def match_state(self, symbols):

@@ -51,7 +51,7 @@ class StateAlphabetTester(object):
             if member_state_map:
                 expected_member_state_symbols = frozenset(member_state_map[symbol])
                 self.assertEqual(state.fundamental_symbols, expected_member_state_symbols)
-                fundamental_states = self.sa.get_fundamental_state_set_for_symbols(state.symbol)
+                fundamental_states = frozenset(self.sa.get_fundamental_states_for_symbols(state.symbol))
                 fss = [fs.symbol for fs in fundamental_states]
                 self.assertEqual(set(fss), expected_member_state_symbols)
             else:
@@ -82,8 +82,6 @@ class StateAlphabetTester(object):
                 expected_fundamental_states = self.sa.get_states_for_symbols(expected_fundamental_state_symbols)
                 check_ss = [x.symbol for x in expected_fundamental_states]
                 self.assertEqual(set(check_ss), set(expected_fundamental_state_symbols))
-
-            fundamental_states = self.sa.get_fundamental_state_set_for_symbols(state.symbol)
 
     def test_fundamental_state_definitions(self):
         self.validate_state_identities(
@@ -250,7 +248,7 @@ class StateAlphabetTester(object):
 #             obs_states = self.sa.get_states_for_symbols(selected_symbols)
 #             self.assertEqual(obs_states, selected_states)
 
-    def test_get_states_for_symbol(self):
+    def test_get_states_for_symbols(self):
         all_symbols = list(self.sa.full_symbol_state_map.keys())
         for rep in range(3):
             n = random.randint(5, 100)
@@ -259,6 +257,41 @@ class StateAlphabetTester(object):
             obs_states = self.sa.get_states_for_symbols(selected_symbols)
             self.assertEqual(obs_states, selected_states)
 
+    def test_get_canonical_symbol_for_symbol(self):
+        states = list(self.sa.state_iter())
+        expected = {}
+        for state in states:
+            if state.symbol:
+                expected[state.symbol] = state.symbol
+            for ss in state.symbol_synonyms:
+                expected[ss] = state.symbol
+        for symbol in self.sa.full_symbol_state_map:
+            self.assertEqual(self.sa.get_canonical_symbol_for_symbol(symbol), expected[symbol])
+
+    def test_get_fundamental_states_for_symbols(self):
+        all_symbols = list(self.sa.full_symbol_state_map.keys())
+        for rep in range(3):
+            n = random.randint(5, 100)
+            selected_symbols = [self.rng.choice(all_symbols) for _ in range(n)]
+            selected_states = []
+            for symbol in selected_symbols:
+                state = self.sa[symbol]
+                if state.state_denomination == self.sa.FUNDAMENTAL_STATE:
+                    selected_states.append(state)
+                else:
+                    if state.state_denomination == self.sa.AMBIGUOUS_STATE:
+                        mapping_src = self.ambiguous_symbol_mappings
+                    elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+                        mapping_src = self.polymorphic_symbol_mappings
+                    else:
+                        raise Exception("Unrecognized denomination: {}".format(state.state_denomination))
+                    member_states = []
+                    canonical_symbol = self.sa.get_canonical_symbol_for_symbol(symbol)
+                    for member_symbol in mapping_src[canonical_symbol]:
+                        member_states.append(self.sa[member_symbol])
+                    selected_states.extend(member_states)
+            obs_states = self.sa.get_fundamental_states_for_symbols(selected_symbols)
+            self.assertEqual(obs_states, selected_states)
 
 class DnaStateAlphabetTest(
         StateAlphabetTester,
