@@ -20,6 +20,7 @@
 Tests Tree taxon management
 """
 
+import sys
 import random
 import itertools
 import unittest
@@ -255,7 +256,7 @@ class StateAlphabetTester(object):
             selected_symbols = [self.rng.choice(all_symbols) for _ in range(n)]
             selected_states = [self.sa[s] for s in selected_symbols]
             obs_states = self.sa.get_states_for_symbols(selected_symbols)
-            self.assertEqual(obs_states, selected_states)
+            self.assertEqual(obs_states, selected_states, "random seed: {}".format(self.random_seed))
 
     def test_get_canonical_symbol_for_symbol(self):
         states = list(self.sa.state_iter())
@@ -291,7 +292,7 @@ class StateAlphabetTester(object):
                         member_states.append(self.sa[member_symbol])
                     selected_states.extend(member_states)
             obs_states = self.sa.get_fundamental_states_for_symbols(selected_symbols)
-            self.assertEqual(obs_states, selected_states)
+            self.assertEqual(obs_states, selected_states, "random seed: {}".format(self.random_seed))
 
     def test_match_state(self):
         multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
@@ -311,7 +312,7 @@ class StateAlphabetTester(object):
                     if self.rng.uniform(0, 1) < 0.5:
                         selected_symbols = "".join(selected_symbols)
                     matched_state = match_func(selected_symbols)
-                    self.assertIs(matched_state, multistate)
+                    self.assertIs(matched_state, multistate, "random seed: {}".format(self.random_seed))
 
     def test_on_the_fly_creation_of_multistate(self):
         multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
@@ -338,8 +339,8 @@ class StateAlphabetTester(object):
                     except KeyError:
                         raise
                     else:
-                        # self.assertIs(m2, new_state)
-                        self.assertIn(new_state, state_collection)
+                        self.assertIs(m2, new_state)
+                        self.assertIn(new_state, state_collection, "random seed: {}".format(self.random_seed))
                     finally:
                         state_collection.remove(new_state)
                         self.sa.compile_lookup_mappings()
@@ -351,7 +352,8 @@ class DnaStateAlphabetTest(
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
-        self.rng = random.Random()
+        self.random_seed = random.randint(0, sys.maxsize)
+        self.rng = random.Random(self.random_seed)
 
         self.expected_fundamental_state_symbols = ["A", "C", "G", "T", "-"]
         self.ambiguous_symbol_mappings = collections.OrderedDict()
