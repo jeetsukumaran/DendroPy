@@ -313,6 +313,39 @@ class StateAlphabetTester(object):
                     matched_state = match_func(selected_symbols)
                     self.assertIs(matched_state, multistate)
 
+    def test_on_the_fly_creation_of_multistate(self):
+        multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
+        match_funcs = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
+        add_funcs = [self.sa.new_ambiguous_state, self.sa.new_polymorphic_state]
+        state_collections = [self.sa._ambiguous_states, self.sa._polymorphic_states]
+        symbol_pool = list(self.sa.fundamental_symbol_iter())
+        for multistate_states, match_func, add_func, state_collection in zip(multistate_states, match_funcs, add_funcs, state_collections):
+            pre_existing_symbol_combinations = []
+            new_symbol_combinations = []
+            nreps = 0
+            while len(new_symbol_combinations) < 3 and nreps < 5:
+                nreps += 1
+                n = self.rng.randint(2, 5)
+                selected_symbols = self.rng.sample(symbol_pool, n)
+                try:
+                    matched_state = match_func(selected_symbols)
+                except KeyError:
+                    new_symbol_combinations.append(selected_symbols)
+                    new_state = add_func(symbol=None, member_state_symbols=selected_symbols)
+                    # self.sa.compile_lookup_mappings()
+                    try:
+                        m2 = match_func(selected_symbols)
+                    except KeyError:
+                        raise
+                    else:
+                        # self.assertIs(m2, new_state)
+                        self.assertIn(new_state, state_collection)
+                    finally:
+                        state_collection.remove(new_state)
+                        self.sa.compile_lookup_mappings()
+                else:
+                    pre_existing_symbol_combinations.append(selected_symbols)
+
 class DnaStateAlphabetTest(
         StateAlphabetTester,
         dendropytest.ExtendedTestCase):

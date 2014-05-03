@@ -217,7 +217,7 @@ class StateAlphabet(
                 return state
         raise KeyError(symbol)
 
-    def _direct_get_fundamental_state_set_for_symbols_for_symbols(self, symbols):
+    def _direct_get_fundamental_state_set_for_symbols(self, symbols):
         """
         Returns the list of :class:`StateIdentity` instances corresponding to
         the iterable of symbols given by `symbols`, with each element in
@@ -271,7 +271,8 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        self._is_dirty = True
+        if not self._is_dirty:
+            self.compile_lookup_mappings()
         return new_state
 
     def new_ambiguous_state(self,
@@ -302,7 +303,7 @@ class StateAlphabet(
         """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
+        member_states = self._direct_get_fundamental_state_set_for_symbols(member_state_symbols)
         new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
@@ -313,7 +314,8 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        self._is_dirty = True
+        if not self._is_dirty:
+            self.compile_lookup_mappings()
         return new_state
 
     def new_polymorphic_state(self,
@@ -344,7 +346,7 @@ class StateAlphabet(
         """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_state_set_for_symbols_for_symbols(member_state_symbols)
+        member_states = self._direct_get_fundamental_state_set_for_symbols(member_state_symbols)
         new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
@@ -355,7 +357,8 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        self._is_dirty = True
+        if not self._is_dirty:
+            self.compile_lookup_mappings()
         return new_state
 
     def new_symbol_synonym(self,
@@ -383,7 +386,8 @@ class StateAlphabet(
         symbol_synonym = self._validate_new_symbol(symbol_synonym)
         state = self._direct_get_state_for_symbol(referenced_symbol)
         state.symbol_synonyms.add(symbol_synonym)
-        self._is_dirty = True
+        if not self._is_dirty:
+            self.compile_lookup_mappings()
         return state
 
     def _set_symbol_mapping(self, d, symbol, state):
