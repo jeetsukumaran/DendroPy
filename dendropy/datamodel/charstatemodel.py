@@ -50,41 +50,27 @@ class StateAlphabet(
             The states are second-level or "pseudo-states", in that they are
             not properly states in and of themselves, but rather each consist
             of a set of other states. That is, a multi-state state is a set of
-            two or more fundamental states.
-            Multi-state states are of one of two types: "ambiguous" and
-            "polymorphic" states. "Ambiguous" states represent states in which
-            the true fundamental state is unknown, but consists of one of the
-            fundamental states to which the ambiguous states map. "Polymorphic"
-            states represent states in which the entity actually has multiple
-            fundamental states simultaneously. "Ambiguous" states are an
-            expression of uncertainty or lack of knowledge about the identity
-            of state. With "polymorphic" states, on the other hand, there is no
-            uncertaintly or lack of knowledge about the state: the state is
-            known definitively, and it consists of multiple fundamental states.
-            An example of an ambiguous state would be 'N', representing any
-            base in molecular sequence data. An example of a polymorphic state
-            would be the range of a widespread species found in multiple
-            geographic units.
+            two or more fundamental states.  Multi-state states are of one of
+            two types: "ambiguous" and "polymorphic" states. "Ambiguous" states
+            represent states in which the true fundamental state is unknown,
+            but consists of one of the fundamental states to which the
+            ambiguous states map. "Polymorphic" states represent states in
+            which the entity actually has multiple fundamental states
+            simultaneously. "Ambiguous" states are an expression of uncertainty
+            or lack of knowledge about the identity of state. With
+            "polymorphic" states, on the other hand, there is no uncertaintly
+            or lack of knowledge about the state: the state is known
+            definitively, and it consists of multiple fundamental states.  An
+            example of an ambiguous state would be 'N', representing any base
+            in molecular sequence data. An example of a polymorphic state would
+            be the range of a widespread species found in multiple geographic
+            units.  Note that multi-state states can be specified in terms of
+            other multi-state states, but that upon instantiation, these member
+            multi-states will be expanded to their fundamental states.
 
-    The fundamental states of a state alphabet are, in principle, immutable:
-    they are defined at the initialization/construction of a state alphabet,
-    and after this, both the set of state definition instances (i.e., the
-    particular membership of state instances that make up the fundamental
-    states of a given state alphabet) as well as the state definition instances
-    themselves (i.e., the definition of each state instance and its attributes,
-    such as symbol, index, etc.) are read-only.
-
-    Multi-states of a state alphabet can be defined upon initialization, just
-    like fundamental states. And just like fundamental states, the individual
-    multi-state definitions cannot be changed or removed from a state alphabet
-    (i.e., once defined and added to a state alphabet, a multi-state definition
-    cannot be deleted, or can its symbol, etc. be changed). However, new
-    multi-state states *can* be added to a state alphabet, as long as the
-    symbol of the newly added multi-state do not clash with existing symbols.
-
-    Note that multi-state states can be specified in terms of other multi-state
-    states, but that upon instantiation, these member multi-states will be
-    expanded to their fundamental states.
+    State definitions or identities are immutable: their symbology and mappings
+    cannot be changed after creation/initialization. State definitions and
+    identities, however, can be added/removed from a state alphabet.
 
     Parameters
     ----------
@@ -171,8 +157,8 @@ class StateAlphabet(
         self._fundamental_states_to_ambiguous_state_map = None
         self._fundamental_states_to_polymorphic_state_map = None
 
-        # Cache invalidation flag
-        self._is_dirty = True
+        # Suppress for initialization
+        self.autocompile_lookup_tables = False
 
         # Populate core collection
         if fundamental_states:
@@ -189,6 +175,9 @@ class StateAlphabet(
                     self.new_symbol_synonym(k, symbol_synonyms[k])
             # Build mappings
             self.compile_lookup_mappings()
+
+        # Post-initialization
+        self.autocompile_lookup_tables = True
 
     def __hash__(self):
         return id(self)
@@ -271,7 +260,7 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        if not self._is_dirty:
+        if self.autocompile_lookup_tables:
             self.compile_lookup_mappings()
         return new_state
 
@@ -314,7 +303,7 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        if not self._is_dirty:
+        if self.autocompile_lookup_tables:
             self.compile_lookup_mappings()
         return new_state
 
@@ -357,7 +346,7 @@ class StateAlphabet(
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
-        if not self._is_dirty:
+        if self.autocompile_lookup_tables:
             self.compile_lookup_mappings()
         return new_state
 
@@ -386,7 +375,7 @@ class StateAlphabet(
         symbol_synonym = self._validate_new_symbol(symbol_synonym)
         state = self._direct_get_state_for_symbol(referenced_symbol)
         state.symbol_synonyms.add(symbol_synonym)
-        if not self._is_dirty:
+        if self.autocompile_lookup_tables:
             self.compile_lookup_mappings()
         return state
 
@@ -446,7 +435,6 @@ class StateAlphabet(
         self._index_state_map = container.FrozenOrderedDict(temp_index_state_map)
         self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
         self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
-        self._is_dirty = False
 
     def set_state_as_attribute(self, state, attr_name=None):
         """
@@ -577,8 +565,6 @@ class StateAlphabet(
         Dictionary with state symbols as keys and states as values. Does not
         include symbol synonyms or case variations.
         """
-        if self._is_dirty:
-            self.compile_lookup_mappings()
         return self._canonical_symbol_state_map
     canonical_symbol_state_map = property(_get_canonical_symbol_state_map, __doc__)
 
@@ -587,8 +573,6 @@ class StateAlphabet(
         Dictionary with state symbols as keys and states as values.
         Includes symbol synonyms or case variations.
         """
-        if self._is_dirty:
-            self.compile_lookup_mappings()
         return self._full_symbol_state_map
     full_symbol_state_map = property(_get_full_symbol_state_map, __doc__)
 
@@ -612,8 +596,6 @@ class StateAlphabet(
         KeyError if `key` is not valid.
 
         """
-        if self._is_dirty:
-            self.compile_lookup_mappings()
         if isinstance(key, int):
             return self._index_state_map[key]
         else:
