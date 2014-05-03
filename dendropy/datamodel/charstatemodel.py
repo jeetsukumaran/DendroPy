@@ -192,7 +192,7 @@ class StateAlphabet(
         return self
 
     def __deepcopy__(self, memo=None):
-        return basemodel.Annotable.__deepcopy__(self, memo=memo)
+        return self
 
     ###########################################################################
     ### Symbol Management
@@ -261,7 +261,7 @@ class StateAlphabet(
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
         if self.autocompile_lookup_tables:
-            self.compile_lookup_mappings()
+            self.compile_symbol_lookup_mappings()
         return new_state
 
     def new_ambiguous_state(self,
@@ -304,7 +304,9 @@ class StateAlphabet(
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
         if self.autocompile_lookup_tables:
-            self.compile_lookup_mappings()
+            if symbol:
+                self.compile_symbol_lookup_mappings()
+            self.compile_member_states_lookup_mappings()
         return new_state
 
     def new_polymorphic_state(self,
@@ -347,7 +349,9 @@ class StateAlphabet(
                 if s != symbol:
                     self.new_symbol_synonym(s, symbol)
         if self.autocompile_lookup_tables:
-            self.compile_lookup_mappings()
+            if symbol:
+                self.compile_symbol_lookup_mappings()
+            self.compile_member_states_lookup_mappings()
         return new_state
 
     def new_symbol_synonym(self,
@@ -378,14 +382,8 @@ class StateAlphabet(
             raise ValueError("Symbol synonym '{}' already defined for state '{}".format(symbol_synonym, state))
         state.symbol_synonyms.append(symbol_synonym)
         if self.autocompile_lookup_tables:
-            self.compile_lookup_mappings()
+            self.compile_symbol_lookup_mappings()
         return state
-
-    def _set_symbol_mapping(self, d, symbol, state):
-        if symbol is None or symbol == "":
-            raise ValueError("Symbol synonym cannot be empty")
-        assert symbol not in d
-        d[symbol] = state
 
     ###########################################################################
     ### Optimization/Sugar: Lookup Mappings and Attribute Settings
@@ -422,6 +420,12 @@ class StateAlphabet(
                 temp_fundamental_states_to_polymorphic_state_map[member_states] = state
         self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
         self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
+
+    def _set_symbol_mapping(self, d, symbol, state):
+        if symbol is None or symbol == "":
+            raise ValueError("Symbol synonym cannot be empty")
+        assert symbol not in d
+        d[symbol] = state
 
     def compile_symbol_lookup_mappings(self):
         """
