@@ -704,21 +704,10 @@ class StateAlphabet(
 
     def match_state(self, symbols):
         """
-        Returns (multistate) state with fundamental member states
-        represented by symbols given in `symbols`.
-
-        Parameters
-        ----------
-        symbols : iterable of symbols
-
-        Returns
-        -------
-        s : :class:`StateIdentity` instance
+        No longer supported: use :meth:`StateAlphabet.match_ambiguous_state()` or
+        :meth:`StateAlphabet.match_polymorphic_state()` instead.
         """
-        try:
-            return self.match_ambiguous_state(symbols)
-        except KeyError:
-            return self.match_polymorphic_state(symbols)
+        raise NotImplementedError(__doc__)
 
 ###############################################################################
 ## StateIdentity
