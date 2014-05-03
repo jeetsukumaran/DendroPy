@@ -750,7 +750,14 @@ class StateIdentity(
         self._fundamental_indexes = None
         self._partials_vector = None
         self._member_states = member_states
-        self.symbol_synonyms = []
+        # if member_states is not None:
+        #     self._member_states = tuple(member_states)
+        # else:
+        #     self._member_states = None
+        self._str = None
+        self._repr = None
+        self._member_states_str = None
+        self._symbol_synonyms = []
 
     def __hash__(self):
         return id(self)
@@ -768,52 +775,80 @@ class StateIdentity(
         return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
     def __str__(self):
-        if self._symbol:
-            return str(self._symbol)
-        elif self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE:
-            return ""
-        else:
-            return self.member_states_str
+        if self._str is None:
+            if self._symbol:
+                self._str = str(self._symbol)
+            elif self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE:
+                self._str = ""
+            else:
+                self._str = self.member_states_str
+        return self._str
 
     def __repr__(self):
-        s = str(self)
-        return "<{} at {}: '{}'>".format(self.__class__.__name__,
-                hex(id(self)), str(s))
+        if self._repr is None:
+            s = str(self)
+            self._repr = "<{} at {}: '{}'>".format(self.__class__.__name__,
+                    hex(id(self)), str(s))
+        return self._repr
 
     def _get_member_states_str(self):
-        s = ",".join([m._symbol for m in self._member_states])
-        if self._state_denomination == StateAlphabet.POLYMORPHIC_STATE:
-            return "(" + s + ")"
-        else:
-            return "{" + s + "}"
+        """
+        Representation of member states of self.
+        """
+        if self._member_states_str is None:
+            s = ",".join([m._symbol for m in self._member_states])
+            if self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE:
+                self._member_states_str = str(self)
+            elif self._state_denomination == StateAlphabet.AMBIGUOUS_STATE:
+                self._member_states_str = "{" + s + "}"
+            elif self._state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+                self._member_states_str = "(" + s + ")"
+            else:
+                raise ValueError("Unrecognized state denomination: '{}'".format(self._state_denomination))
+        return self._member_states_str
     member_states_str = property(_get_member_states_str)
 
     def _get_symbol(self):
+        """
+        Canonical (primary) symbol of this state.
+        """
         return self._symbol
     symbol = property(_get_symbol)
 
     def _get_state_denomination(self):
+        """
+        Type of multi-statedness: FUNDAMENTAL (not a multistate), AMBIGUOUS, or
+        POLYMORPHIC.
+        """
         return self._state_denomination
     state_denomination = property(_get_state_denomination)
 
     def _is_single_state(self):
+        """
+        `True` if a FUNDAMENTAL state.
+        """
         return self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE
     is_single_state = property(_is_single_state)
 
     def _is_fundamental_state(self):
+        """
+        `True` if a FUNDAMENTAL state.
+        """
         return self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE
     is_fundamental_state = property(_is_fundamental_state)
 
     def _get_member_states(self):
+        """
+        Returns the (fundamental) member states that this state maps to if not
+        itself a fundamental state.
+        """
         return self._member_states
-    def _set_member_states(self, m):
-        self._member_states = m
-    member_states = property(_get_member_states, _set_member_states)
+    member_states = property(_get_member_states)
 
     def _get_fundamental_states(self):
         """
-        Returns value of self in terms of a set of _get_fundamental states (i.e.,
-        set of single states) that correspond to this state.
+        Returns a tuple of fundamental states (i.e., tupe of single states)
+        to which this state maps.
         """
         if self._fundamental_states is None:
             if self._member_states is None:
@@ -829,18 +864,35 @@ class StateIdentity(
     fundamental_states = property(_get_fundamental_states)
 
     def _get_fundamental_symbols(self):
-        "Returns set of symbols of all _get_fundamental states to which this state maps."
+        """
+        Returns a tuple of fundamental state symbols (i.e., tuple of symbols
+        representing single states) to which this state maps.
+        """
         if self._fundamental_symbols is None:
             self._fundamental_symbols = tuple(state.symbol for state in self.fundamental_states)
         return self._fundamental_symbols
     fundamental_symbols = property(_get_fundamental_symbols)
 
     def _get_fundamental_indexes(self):
-        "Returns set of indexes of all _get_fundamental states to which this state maps."
+        """
+        Returns a tuple of fundamental state indexes (i.e., tuple of index
+        values of single states) to which this state maps.
+        """
         if self._fundamental_indexes is None:
-            self._fundamental_indexes = set([state.index for state in self.fundamental_states])
+            self._fundamental_indexes = tuple([state.index for state in self.fundamental_states])
         return self._fundamental_indexes
     fundamental_indexes = property(_get_fundamental_indexes)
+
+    def _get_symbol_synonyms(self):
+        """
+        The collection of symbol synonyms (alternatives/equivalents to the
+        canonical symbol) which also map to this state.
+        """
+        return self._symbol_synonyms
+    # def _set_symbol_synonyms(self, value):
+    #     self._symbol_synonyms = value
+    # symbol_synonyms = property(_get_symbol_synonyms, _set_symbol_synonyms)
+    symbol_synonyms = property(_get_symbol_synonyms)
 
     def is_exact_correspondence(self, other):
         """
