@@ -272,7 +272,7 @@ class StateAlphabetTester(object):
     def test_get_fundamental_states_for_symbols(self):
         all_symbols = list(self.sa.full_symbol_state_map.keys())
         for rep in range(3):
-            n = random.randint(5, 100)
+            n = random.randint(5, 10)
             selected_symbols = [self.rng.choice(all_symbols) for _ in range(n)]
             selected_states = []
             for symbol in selected_symbols:
@@ -292,7 +292,13 @@ class StateAlphabetTester(object):
                         member_states.append(self.sa[member_symbol])
                     selected_states.extend(member_states)
             obs_states = self.sa.get_fundamental_states_for_symbols(selected_symbols)
-            self.assertEqual(obs_states, selected_states, "random seed: {}".format(self.random_seed))
+            if obs_states != selected_states:
+                print("\nSelected Symbols: {}\n Selected States: {}\nObserved Symbols: {}\nrandom seed: {}".format(
+                        "".join(selected_symbols),
+                        "".join([s.symbol for s in selected_states]),
+                        "".join([s.symbol for s in obs_states]),
+                        self.random_seed))
+            self.assertEqual(obs_states, selected_states)
 
     def test_match_state(self):
         multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]

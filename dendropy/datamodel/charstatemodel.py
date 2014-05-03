@@ -374,7 +374,9 @@ class StateAlphabet(
             raise ValueError("Symbol synonym cannot be empty")
         symbol_synonym = self._validate_new_symbol(symbol_synonym)
         state = self._direct_get_state_for_symbol(referenced_symbol)
-        state.symbol_synonyms.add(symbol_synonym)
+        if symbol_synonym in state.symbol_synonyms:
+            raise ValueError("Symbol synonym '{}' already defined for state '{}".format(symbol_synonym, state))
+        state.symbol_synonyms.append(symbol_synonym)
         if self.autocompile_lookup_tables:
             self.compile_lookup_mappings()
         return state
@@ -748,7 +750,7 @@ class StateIdentity(
         self._fundamental_indexes = None
         self._partials_vector = None
         self._member_states = member_states
-        self.symbol_synonyms = set()
+        self.symbol_synonyms = []
 
     def __hash__(self):
         return id(self)
