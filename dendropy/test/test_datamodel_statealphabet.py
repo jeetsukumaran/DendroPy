@@ -50,14 +50,14 @@ class StateAlphabetTester(object):
             self.assertEqual(state.symbol, symbol)
             self.assertEqual(state.state_denomination, expected_denomination)
             if member_state_map:
-                expected_member_state_symbols = frozenset(member_state_map[symbol])
+                expected_member_state_symbols = tuple(member_state_map[symbol])
                 self.assertEqual(state.fundamental_symbols, expected_member_state_symbols)
                 fundamental_states = frozenset(self.sa.get_fundamental_states_for_symbols(state.symbol))
                 fss = [fs.symbol for fs in fundamental_states]
-                self.assertEqual(set(fss), expected_member_state_symbols)
+                self.assertEqual(tuple(fss), expected_member_state_symbols)
             else:
-                self.assertEqual(state.fundamental_states, set([state]))
-                self.assertEqual(state.fundamental_symbols, set([state.symbol]))
+                self.assertEqual(state.fundamental_states, (state,))
+                self.assertEqual(state.fundamental_symbols, (state.symbol,))
             if case_sensitive:
                 self.assertNotIn(symbol.upper(), state.symbol_synonyms)
                 self.assertNotIn(symbol.lower(), state.symbol_synonyms)
@@ -272,7 +272,7 @@ class StateAlphabetTester(object):
     def test_get_fundamental_states_for_symbols(self):
         all_symbols = list(self.sa.full_symbol_state_map.keys())
         for rep in range(3):
-            n = random.randint(5, 10)
+            n = random.randint(5, 100)
             selected_symbols = [self.rng.choice(all_symbols) for _ in range(n)]
             selected_states = []
             for symbol in selected_symbols:

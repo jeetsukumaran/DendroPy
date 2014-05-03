@@ -817,20 +817,21 @@ class StateIdentity(
         """
         if self._fundamental_states is None:
             if self._member_states is None:
-                return set([self])
+                states = {self:True}
             else:
-                states = set()
+                states = collections.OrderedDict()
                 for state in self._member_states:
                     assert state is not self
-                    states.update(state.fundamental_states)
-                return states
+                    for s in state.fundamental_states:
+                        states[s] = True
+            self._fundamental_states = tuple(states.keys())
         return self._fundamental_states
     fundamental_states = property(_get_fundamental_states)
 
     def _get_fundamental_symbols(self):
         "Returns set of symbols of all _get_fundamental states to which this state maps."
         if self._fundamental_symbols is None:
-            self._fundamental_symbols = set([state.symbol for state in self.fundamental_states])
+            self._fundamental_symbols = tuple(state.symbol for state in self.fundamental_states)
         return self._fundamental_symbols
     fundamental_symbols = property(_get_fundamental_symbols)
 
