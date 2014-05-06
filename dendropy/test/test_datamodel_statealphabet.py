@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Tests Tree taxon management
+Tests state alphabet definition and management.
 """
 
 import sys
