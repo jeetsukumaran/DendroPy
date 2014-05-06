@@ -344,7 +344,8 @@ class StateAlphabetTester(object):
             nreps = 0
             while len(new_symbol_combinations) < 3 and nreps < 5:
                 nreps += 1
-                n = self.rng.randint(2, 5)
+                max_sample_size = min(5, len(self.sa))
+                n = self.rng.randint(2, max_sample_size)
                 selected_symbols = self.rng.sample(symbol_pool, n)
                 try:
                     matched_state = match_func(selected_symbols)
@@ -499,6 +500,29 @@ class ProteinStateAlphabetTest(
         self.expected_ambiguous_state_symbols = list(self.ambiguous_symbol_mappings.keys())
 
         self.sa = dendropy.PROTEIN_STATE_ALPHABET
+        self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
+
+class BinaryStateAlphabetTest(
+        StateAlphabetTester,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.random_seed = random.randint(0, sys.maxsize)
+        self.rng = random.Random(self.random_seed)
+
+        self.expected_fundamental_state_symbols = ["1", "0"]
+        self.ambiguous_symbol_mappings = collections.OrderedDict()
+
+        self.polymorphic_symbol_mappings = collections.OrderedDict()
+
+        # note reverse polarity here: from referenced to referencing
+        self.additional_synonyms_map = collections.OrderedDict()
+        # self.additional_synonyms_map["N"] = "X"
+
+        self.expected_polymorphic_state_symbols = list(self.polymorphic_symbol_mappings.keys())
+        self.expected_ambiguous_state_symbols = list(self.ambiguous_symbol_mappings.keys())
+
+        self.sa = dendropy.BINARY_STATE_ALPHABET
         self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
 
 
