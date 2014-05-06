@@ -400,5 +400,40 @@ class DnaStateAlphabetTest(
         self.sa = dendropy.DNA_STATE_ALPHABET
         self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
 
+class RnaStateAlphabetTest(
+        StateAlphabetTester,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.random_seed = random.randint(0, sys.maxsize)
+        self.rng = random.Random(self.random_seed)
+
+        self.expected_fundamental_state_symbols = ["A", "C", "G", "U", "-"]
+        self.ambiguous_symbol_mappings = collections.OrderedDict()
+        self.ambiguous_symbol_mappings["?"] = "ACGU-"
+        self.ambiguous_symbol_mappings["N"] = "ACGU"
+        self.ambiguous_symbol_mappings["R"] = "AG"
+        self.ambiguous_symbol_mappings["Y"] = "CU"
+        self.ambiguous_symbol_mappings["M"] = "AC"
+        self.ambiguous_symbol_mappings["W"] = "AU"
+        self.ambiguous_symbol_mappings["S"] = "CG"
+        self.ambiguous_symbol_mappings["K"] = "GU"
+        self.ambiguous_symbol_mappings["V"] = "ACG"
+        self.ambiguous_symbol_mappings["H"] = "ACU"
+        self.ambiguous_symbol_mappings["D"] = "AGU"
+        self.ambiguous_symbol_mappings["B"] = "CGU"
+
+        self.polymorphic_symbol_mappings = collections.OrderedDict()
+
+        # note reverse polarity here: from referenced to referencing
+        self.additional_synonyms_map = collections.OrderedDict()
+        self.additional_synonyms_map["N"] = "X"
+
+        self.expected_polymorphic_state_symbols = list(self.polymorphic_symbol_mappings.keys())
+        self.expected_ambiguous_state_symbols = list(self.ambiguous_symbol_mappings.keys())
+
+        self.sa = dendropy.RNA_STATE_ALPHABET
+        self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
+
 if __name__ == "__main__":
     unittest.main()
