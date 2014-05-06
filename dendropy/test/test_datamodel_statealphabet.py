@@ -435,7 +435,6 @@ class RnaStateAlphabetTest(
         self.sa = dendropy.RNA_STATE_ALPHABET
         self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
 
-
 class NucleotideStateAlphabetTest(
         StateAlphabetTester,
         dendropytest.ExtendedTestCase):
@@ -470,6 +469,38 @@ class NucleotideStateAlphabetTest(
 
         self.sa = dendropy.NUCLEOTIDE_STATE_ALPHABET
         self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
+
+class ProteinStateAlphabetTest(
+        StateAlphabetTester,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.random_seed = random.randint(0, sys.maxsize)
+        self.rng = random.Random(self.random_seed)
+
+        self.expected_fundamental_state_symbols = [
+                "A", "C", "D", "E", "F", "G", "H", "I",
+                "K", "L", "M", "N", "P", "Q", "R", "S",
+                "T", "U", "V", "W", "Y", "*", "-",
+                ]
+        self.ambiguous_symbol_mappings = collections.OrderedDict()
+        self.ambiguous_symbol_mappings["B"] = "DN"
+        self.ambiguous_symbol_mappings["Z"] = "EQ"
+        self.ambiguous_symbol_mappings["X"] = "ACDEFGHIKLMNPQRSTUVWY*"
+        self.ambiguous_symbol_mappings["?"] = "ACDEFGHIKLMNPQRSTUVWY*-"
+
+        self.polymorphic_symbol_mappings = collections.OrderedDict()
+
+        # note reverse polarity here: from referenced to referencing
+        self.additional_synonyms_map = collections.OrderedDict()
+        # self.additional_synonyms_map["N"] = "X"
+
+        self.expected_polymorphic_state_symbols = list(self.polymorphic_symbol_mappings.keys())
+        self.expected_ambiguous_state_symbols = list(self.ambiguous_symbol_mappings.keys())
+
+        self.sa = dendropy.PROTEIN_STATE_ALPHABET
+        self.num_total_states = len(self.expected_fundamental_state_symbols) + len(self.ambiguous_symbol_mappings) + len(self.polymorphic_symbol_mappings)
+
 
 if __name__ == "__main__":
     unittest.main()
