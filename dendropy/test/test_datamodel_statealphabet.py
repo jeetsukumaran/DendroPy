@@ -258,6 +258,18 @@ class StateAlphabetTester(object):
             obs_states = self.sa.get_states_for_symbols(selected_symbols)
             self.assertEqual(obs_states, selected_states, "random seed: {}".format(self.random_seed))
 
+    def test_states_property(self):
+        check = list(self.sa.state_iter())
+        self.assertEqual(len(check), len(self.sa.states))
+        for s1, s2 in zip(check, self.sa.states):
+            self.assertIs(s1, s2)
+
+    def test_canonical_symbols_property(self):
+        check = list(self.sa.canonical_symbol_state_map.keys())
+        self.assertEqual(len(check), len(self.sa.states))
+        for s1, s2 in zip(check, self.sa.symbols):
+            self.assertEqual(s1, s2)
+
     def test_get_canonical_symbol_for_symbol(self):
         states = list(self.sa.state_iter())
         expected = {}

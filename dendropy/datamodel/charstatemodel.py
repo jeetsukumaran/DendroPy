@@ -151,6 +151,8 @@ class StateAlphabet(
         self._polymorphic_states = []
 
         # Look-up mappings
+        self._state_identities = None
+        self._canonical_state_symbols = None
         self._canonical_symbol_state_map = None
         self._full_symbol_state_map = None
         self._index_state_map = None
@@ -432,11 +434,15 @@ class StateAlphabet(
         Builds lookup tables/mappings for quick referencing and dereferencing
         of state symbology.
         """
+        temp_states = []
+        temp_symbols = []
         temp_canonical_symbol_state_map = collections.OrderedDict()
         temp_full_symbol_state_map = collections.OrderedDict()
         temp_index_state_map = collections.OrderedDict()
         for idx, state in enumerate(self.state_iter()):
+            temp_states.append(state)
             if state.symbol:
+                temp_symbols.append(state.symbol)
                 assert state.symbol not in temp_canonical_symbol_state_map
                 temp_canonical_symbol_state_map[state.symbol] = state
                 self._set_symbol_mapping(
@@ -453,6 +459,8 @@ class StateAlphabet(
                 assert state.state_denomination != StateAlphabet.FUNDAMENTAL_STATE
             state._index = idx
             temp_index_state_map[idx] = state
+        self._state_identities = tuple(temp_states)
+        self._canonical_state_symbols = tuple(temp_symbols)
         self._canonical_symbol_state_map = container.FrozenOrderedDict(temp_canonical_symbol_state_map)
         self._full_symbol_state_map = container.FrozenOrderedDict(temp_full_symbol_state_map)
         self._index_state_map = container.FrozenOrderedDict(temp_index_state_map)
@@ -491,6 +499,13 @@ class StateAlphabet(
         return ( len(self._fundamental_states)
                 + len(self._ambiguous_states)
                 + len(self._polymorphic_states) )
+
+    def __iter__(self):
+        """
+        Returns :meth:`StateAlphabet.state_iter()`: iterator over all state
+        identities.
+        """
+        return self.state_iter()
 
     def state_iter(self):
         """
@@ -580,6 +595,20 @@ class StateAlphabet(
             if include_synonyms:
                 for synonym in state.symbol_synonyms:
                     yield (synonym, state)
+
+    def _get_state_identities(self):
+        """
+        Tuple of all state identities in this alphabet.
+        """
+        return self._state_identities
+    states = property(_get_state_identities)
+
+    def _get_canonical_state_symbols(self):
+        """
+        Tuple of all state symbols in this alphabet.
+        """
+        return self._canonical_state_symbols
+    symbols = property(_get_canonical_state_symbols)
 
     def _get_canonical_symbol_state_map(self):
         """
