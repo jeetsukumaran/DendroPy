@@ -448,8 +448,60 @@ class CharacterMatrix(
             taxon = key
         return taxon
 
+    def new_sequence(self, taxon, values=None):
+        """
+        Creates a new :class:`CharacterSequence` associated with :class:`Taxon`
+        `taxon`, and populates it with values in `values`.
+
+        Parameters
+        ----------
+        taxon : :class:`Taxon`
+            :class:`Taxon` instance with which this sequence is associated.
+        values : iterable or `None`
+            An initial set of values with which to populate the new character
+            sequence.
+
+        Returns
+        -------
+        s : :class:`CharacterSequence`
+            A new :class:`CharacterSequence` associated with :class:`Taxon`
+            `taxon`.
+        """
+        if taxon in self._taxon_sequence_map:
+            raise ValueError("Character values vector for taxon {} already exists".format(taxon))
+        if taxon not in self.taxon_namespace:
+            raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
+        cv = self.__class__.character_sequence_type(values)
+        self._taxon_sequence_map[taxon] = cv
+        return cv
+
     def __getitem__(self, key):
-        "Dictionary interface implementation for direct access to character map."
+        """
+        Retrieves sequence for `key`, which can be a index or a label of a
+        :class:`Taxon` instance in the current taxon namespace, or a
+        :class:`Taxon` instance directly.
+
+        If no sequence is currently associated with specified :class:`Taxon`, a
+        new one will be created. Note that the :class:`Taxon` object must have
+        already been defined in the curent taxon namespace.
+
+        Parameters
+        ----------
+        key : integer, string, or :class:`Taxon`
+            If an integer, assumed to be an index of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            If a string, assumed to be a label of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            Otherwise, assumed to be :class:`Taxon` instance directly. In all
+            cases, the :class:`Taxon` object must be (already) defined in the
+            current taxon namespace.
+
+        Returns
+        -------
+        s : :class:`CharacterSequence`
+            A sequence associated with the :class:`Taxon` instance referenced
+            by `key`.
+        """
         taxon = self._resolve_key(key)
         try:
             return self._taxon_sequence_map[taxon]
@@ -457,7 +509,27 @@ class CharacterMatrix(
             return self.new_sequence(taxon)
 
     def __setitem__(self, key, values):
-        "Dictionary interface implementation for direct access to character map."
+        """
+        Assigns sequence `values` to taxon specified by `key`, which can be a
+        index or a label of a :class:`Taxon` instance in the current taxon
+        namespace, or a :class:`Taxon` instance directly.
+
+        If no sequence is currently associated with specified :class:`Taxon`, a
+        new one will be created.  Note that the :class:`Taxon` object must have
+        already been defined in the curent taxon namespace.
+
+        Parameters
+        ----------
+        key : integer, string, or :class:`Taxon`
+            If an integer, assumed to be an index of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            If a string, assumed to be a label of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            Otherwise, assumed to be :class:`Taxon` instance directly. In all
+            cases, the :class:`Taxon` object must be (already) defined in the
+            current taxon namespace.
+
+        """
         taxon = self._resolve_key(key)
         if taxon not in self.taxon_namespace:
             raise ValueError(key)
@@ -465,30 +537,54 @@ class CharacterMatrix(
             values = self.__class__.character_sequence_type(values)
         self._taxon_sequence_map[taxon] = values
 
-    def new_sequence(self, taxon, data=None):
-        if taxon in self._taxon_sequence_map:
-            raise ValueError("Character data vector for taxon {} already exists".format(taxon))
-        if taxon not in self.taxon_namespace:
-            raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
-        cv = self.__class__.character_sequence_type(data)
-        self._taxon_sequence_map[taxon] = cv
-        return cv
-
     def __contains__(self, key):
-        "Returns true if character map has `key`"
+        """
+        Returns `True` if a sequence associated with `key` is in `self`, or
+        `False` otherwise.
+
+        Parameters
+        ----------
+        key : integer, string, or :class:`Taxon`
+            If an integer, assumed to be an index of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            If a string, assumed to be a label of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            Otherwise, assumed to be :class:`Taxon` instance directly. In all
+            cases, the :class:`Taxon` object must be (already) defined in the
+            current taxon namespace.
+
+        Returns
+        -------
+        b : boolean
+            `True` if `key` is in `self`; `False` otherwise.
+        """
         return self._taxon_sequence_map.__contains__(key)
 
     def __delitem__(self, key):
-        "Remove item from character map with specified key."
+        """
+        Removes sequence for `key`, which can be a index or a label of a
+        :class:`Taxon` instance in the current taxon namespace, or a
+        :class:`Taxon` instance directly.
+
+        Parameters
+        ----------
+        key : integer, string, or :class:`Taxon`
+            If an integer, assumed to be an index of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            If a string, assumed to be a label of a :class:`Taxon` object in
+            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
+            Otherwise, assumed to be :class:`Taxon` instance directly. In all
+            cases, the :class:`Taxon` object must be (already) defined in the
+            current taxon namespace.
+
+        """
         return self._taxon_sequence_map.__delitem__(key)
 
     def clear(self):
-        "Deletes all items from the character map dictionary."
+        """
+        Removes all sequences from matrix.
+        """
         self._taxon_sequence_map.clear()
-
-    def has_key(self, key):
-        "Returns true if character map has key, regardless of case."
-        return key in self._taxon_sequence_map
 
     ###########################################################################
     ### Column-based Operations
