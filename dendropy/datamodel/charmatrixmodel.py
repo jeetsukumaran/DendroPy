@@ -426,36 +426,43 @@ class CharacterMatrix(
     ###########################################################################
     ### Sequence CRUD
 
-    def __getitem__(self, key):
-        "Dictionary interface implementation for direct access to character map."
+    def _resolve_key(self, key):
+        """
+        Resolves map access key into :class:`Taxon` instance.
+
+        If `key` is integer, assumed to be taxon index.
+        If `key` string, assumed to be taxon label.
+        Otherwise, assumed to be :class:`Taxon` instance directly.
+        """
         if isinstance(key, int):
             if key >= 0 and key < len(self.taxon_namespace):
-                tx = self.taxon_namespace[key]
+                taxon = self.taxon_namespace[key]
             else:
-                raise KeyError(key)
+                raise IndexError(key)
         elif isinstance(key, str):
-            tx = self.taxon_namespace.get_taxon(label=key)
-            if tx is None:
+            taxon = self.taxon_namespace.get_taxon(label=key)
+            if taxon is None:
                 raise KeyError(key)
         else:
-            tx = key
+            taxon = key
+        return taxon
+
+    def __getitem__(self, key):
+        "Dictionary interface implementation for direct access to character map."
+        taxon = self._resolve_key(key)
         try:
-            return self._taxon_seq_map[tx]
+            return self._taxon_seq_map[taxon]
         except KeyError:
-            return self.new_sequence(tx)
+            return self.new_sequence(taxon)
 
     def __setitem__(self, key, values):
         "Dictionary interface implementation for direct access to character map."
-        if isinstance(key, int):
-            if key >= 0 and key < len(self.taxon_namespace):
-                key = self.taxon_namespace[key]
-            else:
-                raise KeyError(key)
-        if key not in self.taxon_namespace:
+        taxon = self._resolve_key(key)
+        if taxon not in self.taxon_namespace:
             raise ValueError(key)
         if not isinstance(values, CharacterSequence):
             values = CharacterSequence(values)
-        self._taxon_seq_map[key] = values
+        self._taxon_seq_map[taxon] = values
 
     def new_sequence(self, taxon, data=None):
         if taxon in self._taxon_seq_map:
