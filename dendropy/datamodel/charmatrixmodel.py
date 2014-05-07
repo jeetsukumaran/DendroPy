@@ -321,7 +321,7 @@ class CharacterMatrix(
         basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
                 taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
-        self._taxon_seq_map = {}
+        self._taxon_sequence_map = {}
         self.character_types = []
         self.character_subsets = container.OrderedCaselessDict()
         self.markup_as_sequences = True
@@ -396,11 +396,11 @@ class CharacterMatrix(
         ti_mutable = self.taxon_namespace._is_mutable
         self.taxon_namespace._is_mutable = True
         new_map = TaxonCharacterSequenceMap()
-        for taxon, seq in self._taxon_seq_map.items():
+        for taxon, seq in self._taxon_sequence_map.items():
             taxon = self.taxon_namespace.require_taxon(label=taxon.label)
             new_map[taxon] = seq
         self.taxon_namespace._is_mutable = ti_mutable
-        self._taxon_seq_map = new_map
+        self._taxon_sequence_map = new_map
 
     def update_taxon_namespace(self):
         """
@@ -408,7 +408,7 @@ class CharacterMatrix(
         Mainly for use after map extension
         """
         assert self.taxon_namespace is not None
-        for taxon in self._taxon_seq_map:
+        for taxon in self._taxon_sequence_map:
             if taxon not in self.taxon_namespace:
                 self.taxon_namespace.add(taxon)
 
@@ -419,8 +419,8 @@ class CharacterMatrix(
         object as well. Otherwise this is not modified (default).
         """
         for taxon in taxa:
-            if taxon in self._taxon_seq_map:
-                del self._taxon_seq_map[taxon]
+            if taxon in self._taxon_sequence_map:
+                del self._taxon_sequence_map[taxon]
                 if update_taxon_namespace and taxon in self.taxon_namespace:
                     self.taxon_namespace.remove(taxon)
 
@@ -452,7 +452,7 @@ class CharacterMatrix(
         "Dictionary interface implementation for direct access to character map."
         taxon = self._resolve_key(key)
         try:
-            return self._taxon_seq_map[taxon]
+            return self._taxon_sequence_map[taxon]
         except KeyError:
             return self.new_sequence(taxon)
 
@@ -463,32 +463,32 @@ class CharacterMatrix(
             raise ValueError(key)
         if not isinstance(values, self.__class__.character_sequence_type):
             values = self.__class__.character_sequence_type(values)
-        self._taxon_seq_map[taxon] = values
+        self._taxon_sequence_map[taxon] = values
 
     def new_sequence(self, taxon, data=None):
-        if taxon in self._taxon_seq_map:
+        if taxon in self._taxon_sequence_map:
             raise ValueError("Character data vector for taxon {} already exists".format(taxon))
         if taxon not in self.taxon_namespace:
             raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
         cv = self.__class__.character_sequence_type(data)
-        self._taxon_seq_map[taxon] = cv
+        self._taxon_sequence_map[taxon] = cv
         return cv
 
     def __contains__(self, key):
         "Returns true if character map has `key`"
-        return self._taxon_seq_map.__contains__(key)
+        return self._taxon_sequence_map.__contains__(key)
 
     def __delitem__(self, key):
         "Remove item from character map with specified key."
-        return self._taxon_seq_map.__delitem__(key)
+        return self._taxon_sequence_map.__delitem__(key)
 
     def clear(self):
         "Deletes all items from the character map dictionary."
-        self._taxon_seq_map.clear()
+        self._taxon_sequence_map.clear()
 
     def has_key(self, key):
         "Returns true if character map has key, regardless of case."
-        return key in self._taxon_seq_map
+        return key in self._taxon_sequence_map
 
     ###########################################################################
     ### Column-based Operations
@@ -508,47 +508,47 @@ class CharacterMatrix(
     def __iter__(self):
         "Returns an iterator over character map's ordered keys."
         for t in self.taxon_namespace:
-            if t in self._taxon_seq_map:
+            if t in self._taxon_sequence_map:
                 yield t
 
     # def iterkeys(self):
     #     "Dictionary interface implementation for direct access to character map."
     #     for t in self.taxon_namespace:
-    #         if t in self._taxon_seq_map:
+    #         if t in self._taxon_sequence_map:
     #             yield t
 
     # def itervalues(self):
     #     "Dictionary interface implementation for direct access to character map."
     #     for t in self.taxon_namespace:
-    #         if t in self._taxon_seq_map:
-    #             yield self._taxon_seq_map[t]
+    #         if t in self._taxon_sequence_map:
+    #             yield self._taxon_sequence_map[t]
 
     # def items(self):
     #     "Returns character map key, value pairs in key-order."
-    #     return [(t, self._taxon_seq_map[t]) for t in self.taxon_namespace if t in self._taxon_seq_map]
+    #     return [(t, self._taxon_sequence_map[t]) for t in self.taxon_namespace if t in self._taxon_seq_map]
 
     # def values(self):
     #     "Returns list of values."
-    #     return [self._taxon_seq_map[t] for t in self.taxon_namespace if t in self._taxon_seq_map]
+    #     return [self._taxon_sequence_map[t] for t in self.taxon_namespace if t in self._taxon_seq_map]
 
     # def pop(self, key, alt_val=None):
     #     "a.pop(k[, x]):  a[k] if k in a, else x (and remove k)"
-    #     return self._taxon_seq_map.pop(key, alt_val)
+    #     return self._taxon_sequence_map.pop(key, alt_val)
 
     # def popitem(self):
     #     "a.popitem()  remove and last (key, value) pair"
-    #     return self._taxon_seq_map.popitem()
+    #     return self._taxon_sequence_map.popitem()
 
     # def keys(self):
     #     "Returns a copy of the ordered list of character map keys."
-    #     return list(self._taxon_seq_map.keys())
+    #     return list(self._taxon_sequence_map.keys())
 
     ###########################################################################
     ### Metrics
 
     def __len__(self):
         "Dictionary interface implementation for direct access to character map."
-        return len(self._taxon_seq_map)
+        return len(self._taxon_sequence_map)
 
     def _get_vector_size(self):
         """
@@ -557,7 +557,7 @@ class CharacterMatrix(
         if len(self):
             # yuck, but len(self.values())
             # means we have to create and populatre a list ...
-            return len(self[next(iter(self._taxon_seq_map))])
+            return len(self[next(iter(self._taxon_sequence_map))])
         else:
             return 0
     vector_size = property(_get_vector_size, None, None, __doc__)
@@ -569,7 +569,7 @@ class CharacterMatrix(
         max_len = 0
         for k in self:
             if len(self[k]) > max_len:
-                max_len  = len(self._taxon_seq_map[k])
+                max_len  = len(self._taxon_sequence_map[k])
         return max_len
     max_vector_size = property(_get_max_vector_size, None, None, __doc__)
 
@@ -600,7 +600,7 @@ class CharacterMatrix(
         this one. Taxa in the second matrix that do not exist in the
         current one are ignored.
         """
-        self._taxon_seq_map.extend_characters(other_matrix.taxon_seq_map)
+        self._taxon_sequence_map.extend_characters(other_matrix.taxon_seq_map)
 
     def extend_map(self,
                       other_map,
@@ -619,7 +619,7 @@ class CharacterMatrix(
         are True,  and a taxon in the other map is already present in
         the current one, then the sequence is ignored.
         """
-        self._taxon_seq_map.extend(other_map,
+        self._taxon_sequence_map.extend(other_map,
             overwrite_existing=overwrite_existing,
             extend_existing=extend_existing)
         self.update_taxon_namespace()
@@ -641,7 +641,7 @@ class CharacterMatrix(
         are True, and a taxon in the other matrix is already present in
         the current one, then the sequence is ignored.
         """
-        self._taxon_seq_map.extend(other_matrix.taxon_seq_map,
+        self._taxon_sequence_map.extend(other_matrix.taxon_seq_map,
             overwrite_existing=overwrite_existing,
             extend_existing=extend_existing)
         self.update_taxon_namespace()
@@ -701,9 +701,9 @@ class CharacterMatrix(
 
     def vectors(self):
         "Returns list of vectors.        "
-        if self.taxon_namespace is not None and self._taxon_seq_map is not None:
-            if len(self._taxon_seq_map) > 0:
-                return [self._taxon_seq_map[t] for t in self.taxon_namespace]
+        if self.taxon_namespace is not None and self._taxon_sequence_map is not None:
+            if len(self._taxon_sequence_map) > 0:
+                return [self._taxon_sequence_map[t] for t in self.taxon_namespace]
             return []
         return None
 
@@ -714,7 +714,7 @@ class CharacterMatrix(
         character indices to include.
         """
         taxon_to_state_indices = {}
-        for t in self._taxon_seq_map.keys():
+        for t in self._taxon_sequence_map.keys():
             cdv = self[t]
             if char_indices is None:
                 ci = range(len(cdv))
@@ -769,12 +769,24 @@ class CharacterMatrix(
                         % (" " * indent,
                            "[%d] " % i,
                            str(t.label),
-                           len(self._taxon_seq_map[t])))
+                           len(self._taxon_sequence_map[t])))
 
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
         return s
+
+    ###########################################################################
+    ### Legacy
+
+    def _get_taxon_seq_map(self):
+        error.dump_stack(msg)
+        warnings.warn(
+                "All methods and features of 'CharacterMatrix.taxon_seq_map' have"
+                " been integrated directly into 'CharacterMatrix', or otherwise"
+                " replaced entirely")
+        return self
+    taxon_seq_map = property(_get_taxon_seq_map)
 
 ###############################################################################
 ## Specialized Matrices
@@ -845,7 +857,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         symbol. Raises KeyError if no matching symbol can be found.
         """
         symbol_state_map = state_alphabet.symbol_state_map()
-        for vi, vec in enumerate(self._taxon_seq_map.values()):
+        for vi, vec in enumerate(self._taxon_sequence_map.values()):
             for ci, cell in enumerate(vec):
                 cell.value = symbol_state_map[cell.value.symbol]
         for ct in self.character_types:
