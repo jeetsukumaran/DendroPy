@@ -113,13 +113,17 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
         tns = self.get_taxon_namespace(3)
         char_matrix = charmatrixmodel.CharacterMatrix()
         t = tns[0]
+        seq = ["a", "b"]
         with self.assertRaises(ValueError):
-            char_matrix[t] = []
+            char_matrix[t] = seq
         char_matrix.taxon_namespace.add_taxon(t)
-        char_matrix[t] = ["a"]
+        char_matrix[t] = seq
         self.assertEqual(len(char_matrix), 1)
         self.assertIn(t, char_matrix)
-        self.assertEqual(char_matrix[t], ["a"])
+        self.assertEqual(len(char_matrix[t]), len(seq))
+        self.assertTrue(isinstance(char_matrix[t], charmatrixmodel.CharacterSequence))
+        for c1, c2 in zip(char_matrix[t], seq):
+            self.assertEqual(c1, c2)
 
     def test_setitem_by_idx_not_in_namespace(self):
         tns = self.get_taxon_namespace(3)
@@ -132,6 +136,29 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
         char_matrix = charmatrixmodel.CharacterMatrix()
         with self.assertRaises(KeyError):
             char_matrix[tns[0].label] = []
+
+    def test_multi_setitem(self):
+        tns = self.get_taxon_namespace(3)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
+        self.assertEqual(len(char_matrix), 0)
+        seqs = [
+                "abcd",
+                [1,2,3,4,],
+                ["a", "b", "c", "d",]
+                ]
+        t = tns[0]
+        for seq in seqs:
+            char_matrix[t] = seq
+        seq = seqs[-1]
+        self.assertEqual(len(char_matrix), 1)
+        self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
+        self.assertEqual(len(char_matrix[0]), len(seq))
+        self.assertTrue(isinstance(char_matrix[0], charmatrixmodel.CharacterSequence))
+        for c1, c2 in zip(char_matrix[0], seq):
+            self.assertEqual(c1, c2)
+        for c1, c2 in zip(char_matrix[0], seqs[1]):
+            self.assertNotEqual(c1, c2)
 
 if __name__ == "__main__":
     unittest.main()
