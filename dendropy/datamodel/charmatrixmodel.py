@@ -689,22 +689,35 @@ class CharacterMatrix(
     ###########################################################################
     ### Mass/Bulk Operations
 
-    def fill(self, state):
+    def fill(self, value, size=None, append=True):
         """
-        Pads out all sequences in `self` by adding `state` to each sequence
-        that is less then the length of the longest sequence.
+        Pads out all sequences in `self` by adding `value` to each sequence
+        that is until its length is `size` long or equal to the length of
+        the longest sequence if `size` is not specified.
 
         Parameters
         ----------
-        state : object
-            A valid state (e.g., a numeric value for continuous characters, or a :class:`StateIdentity`
-            for discrete character).
+        value : object
+            A valid value (e.g., a numeric value for continuous characters, or
+            a :class:`StateIdentity` for discrete character).
+        size : integer or None
+            The size (length) up to which the sequences will be padded. If `None`, then
+            the maximum (longest) sequence size will be used.
+        append : boolean
+            If `True` (default), then new values will be added to the end of
+            each sequence. If `False`, then new values will be inserted to the
+            front of each sequence.
         """
-        max_size = self.max_vector_size
+        if size is None:
+            size = self.max_sequence_size
         for k in self:
             v = self[k]
-            while len(v) < max_size:
-                v.append(state)
+            while len(v) < size:
+                if append:
+                    v.append(value)
+                else:
+                    v.insert(0, value)
+        return size
 
     def extend_characters(self, other_matrix):
         """

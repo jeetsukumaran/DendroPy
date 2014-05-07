@@ -230,5 +230,52 @@ class CharacterMatrixMetricsTest(dendropytest.ExtendedTestCase):
         self.assertEqual(char_matrix.sequence_size, seq_sizes[0])
         self.assertEqual(char_matrix.max_sequence_size, max(seq_sizes))
 
+class CharacterMatrixBulkOpsTestCase(dendropytest.ExtendedTestCase):
+
+    def test_fill(self):
+        seq_sizes = [2, 10, 20, 0, 1]
+        tns = get_taxon_namespace(len(seq_sizes))
+        original_sequences = []
+        for seq_size in seq_sizes:
+            original_sequences.append( ["1"] * seq_size )
+        for size in (None, 50, 1, 0, 8):
+            for append in (False, True, None):
+                kwargs = {}
+                if size is None:
+                    expected_sizes = [max(seq_sizes)] * len(seq_sizes)
+                else:
+                    kwargs["size"] = size
+                    expected_sizes = [max(size, s) for s in seq_sizes]
+                assert len(expected_sizes) == len(original_sequences)
+                if append is None:
+                    append = True
+                else:
+                    kwargs["append"] = append
+                expected_sequences = []
+                for idx, seq in enumerate(original_sequences):
+                    if expected_sizes[idx] <= len(seq):
+                        expected_sequences.append(list(seq))
+                    else:
+                        s1 = list(seq)
+                        diff = expected_sizes[idx] - len(s1)
+                        s2 = ["0"] * diff
+                        if append:
+                            s = s1 + s2
+                        else:
+                            s = s2 + s1
+                        expected_sequences.append(s)
+                    assert len(expected_sequences[idx]) == expected_sizes[idx], \
+                            "{}: {}/{}: {}: {} ({})".format(idx, size, append, expected_sequences[idx], len(expected_sequences[idx]), expected_sizes[idx])
+                char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+                for taxon, seq in zip(tns, original_sequences):
+                    char_matrix[taxon] = seq
+                assert len(char_matrix) == len(seq_sizes)
+                char_matrix.fill("0", **kwargs)
+                for taxon, expected_size, expected_seq in zip(char_matrix, expected_sizes, expected_sequences):
+                    obs_seq = char_matrix[taxon]
+                    self.assertEqual(len(obs_seq), expected_size)
+                    for c1, c2 in zip(obs_seq, expected_seq):
+                        self.assertEqual(c1, c2)
+
 if __name__ == "__main__":
     unittest.main()
