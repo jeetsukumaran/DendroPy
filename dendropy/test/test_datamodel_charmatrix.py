@@ -150,6 +150,11 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
         t = tns[0]
         for seq in seqs:
             char_matrix[t] = seq
+        for taxon in tns:
+            if taxon is t:
+                self.assertIn(taxon, char_matrix)
+            else:
+                self.assertNotIn(taxon, char_matrix)
         seq = seqs[-1]
         self.assertEqual(len(char_matrix), 1)
         self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
