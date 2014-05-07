@@ -165,7 +165,7 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
         for c1, c2 in zip(char_matrix[0], seqs[1]):
             self.assertNotEqual(c1, c2)
 
-    def test_multi_setitem(self):
+    def test_delitem(self):
         tns = self.get_taxon_namespace(3)
         char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
@@ -175,23 +175,21 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
                 [1,2,3,4,],
                 ["a", "b", "c", "d",]
                 ]
-        t = tns[0]
-        for seq in seqs:
-            char_matrix[t] = seq
-        for taxon in tns:
-            if taxon is t:
-                self.assertIn(taxon, char_matrix)
-            else:
-                self.assertNotIn(taxon, char_matrix)
-        seq = seqs[-1]
-        self.assertEqual(len(char_matrix), 1)
+        assert len(seqs) == len(tns)
+        for idx, taxon in enumerate(tns):
+            self.assertFalse(taxon in char_matrix)
+            self.assertNotIn(taxon, char_matrix)
+            char_matrix[taxon] = seqs[idx]
+        self.assertEqual(len(char_matrix._taxon_seq_map), len(tns))
         self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
-        self.assertEqual(len(char_matrix[0]), len(seq))
-        self.assertTrue(isinstance(char_matrix[0], charmatrixmodel.CharacterSequence))
-        for c1, c2 in zip(char_matrix[0], seq):
-            self.assertEqual(c1, c2)
-        for c1, c2 in zip(char_matrix[0], seqs[1]):
-            self.assertNotEqual(c1, c2)
+        for idx, taxon in enumerate(tns):
+            self.assertTrue(taxon in char_matrix)
+            self.assertIn(taxon, char_matrix)
+            del char_matrix[taxon]
+            self.assertFalse(taxon in char_matrix)
+            self.assertNotIn(taxon, char_matrix)
+        self.assertEqual(len(char_matrix._taxon_seq_map), 0)
+        self.assertEqual(len(char_matrix), 0)
 
 if __name__ == "__main__":
     unittest.main()
