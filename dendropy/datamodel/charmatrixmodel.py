@@ -643,31 +643,48 @@ class CharacterMatrix(
     ### Metrics
 
     def __len__(self):
-        "Dictionary interface implementation for direct access to character map."
+        """
+        Number of sequences in matrix.
+
+        Returns
+        -------
+        n : Number of sequences in matrix.
+        """
         return len(self._taxon_sequence_map)
 
-    def _get_vector_size(self):
+    def _get_sequence_size(self):
         """
-        Returns number of characters in *first* sequence.
+        Number of characters in *first* sequence in matrix.
+
+        Returns
+        -------
+        n : integer
+            Number of sequences in matrix.
         """
         if len(self):
             # yuck, but len(self.values())
-            # means we have to create and populatre a list ...
+            # means we have to create and populate a list ...
             return len(self[next(iter(self._taxon_sequence_map))])
         else:
             return 0
-    vector_size = property(_get_vector_size, None, None, __doc__)
+    sequence_size = property(_get_sequence_size, None, None, __doc__)
+    vector_size = property(_get_sequence_size, None, None, __doc__) # legacy
 
-    def _get_max_vector_size(self):
+    def _get_max_sequence_size(self):
         """
-        Returns maximum number of characters across all sequences.
+        Maximum number of characters across all sequences in matrix.
+
+        Returns
+        -------
+        n : integer
+            Maximum number of characters across all sequences in matrix.
         """
         max_len = 0
         for k in self:
             if len(self[k]) > max_len:
                 max_len  = len(self._taxon_sequence_map[k])
         return max_len
-    max_vector_size = property(_get_max_vector_size, None, None, __doc__)
+    max_sequence_size = property(_get_max_sequence_size, None, None, __doc__)
 
     ###########################################################################
     ### Mass/Bulk Operations
