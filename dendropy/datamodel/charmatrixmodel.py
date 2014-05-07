@@ -203,6 +203,7 @@ class CharacterMatrix(
     ### Class Variables
 
     data_type = None
+    character_sequence_type = CharacterSequence
 
     ###########################################################################
     ### Factory (Class) Methods
@@ -460,8 +461,8 @@ class CharacterMatrix(
         taxon = self._resolve_key(key)
         if taxon not in self.taxon_namespace:
             raise ValueError(key)
-        if not isinstance(values, CharacterSequence):
-            values = CharacterSequence(values)
+        if not isinstance(values, self.__class__.character_sequence_type):
+            values = self.__class__.character_sequence_type(values)
         self._taxon_seq_map[taxon] = values
 
     def new_sequence(self, taxon, data=None):
@@ -469,7 +470,7 @@ class CharacterMatrix(
             raise ValueError("Character data vector for taxon {} already exists".format(taxon))
         if taxon not in self.taxon_namespace:
             raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
-        cv = CharacterSequence(data)
+        cv = self.__class__.character_sequence_type(data)
         self._taxon_seq_map[taxon] = cv
         return cv
 
