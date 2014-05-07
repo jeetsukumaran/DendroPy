@@ -27,14 +27,16 @@ from dendropy.test.support import dendropytest
 
 class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
 
-    def setUp(self):
-        self.taxon_namespace = dendropy.TaxonNamespace()
-        for i in range(3):
+    def get_taxon_namespace(self, ntax):
+        taxon_namespace = dendropy.TaxonNamespace()
+        for i in range(ntax):
             label = "T{}".format(i)
-            t = self.taxon_namespace.require_taxon(label=label)
+            t = taxon_namespace.require_taxon(label=label)
+        return taxon_namespace
 
-    def test_setitem(self):
-        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=self.taxon_namespace)
+    def test_setitem_by_taxon(self):
+        tns = self.get_taxon_namespace(3)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
         self.assertEqual(len(char_matrix), 0)
         seqs = [
@@ -42,20 +44,32 @@ class TaxonCharacterMatrixBasicCrud(dendropytest.ExtendedTestCase):
                 [1,2,3,4,],
                 ["a", "b", "c", "d",]
                 ]
-        assert len(seqs) == len(self.taxon_namespace)
-        for idx, taxon in enumerate(self.taxon_namespace):
+        assert len(seqs) == len(tns)
+        for idx, taxon in enumerate(tns):
             self.assertFalse(taxon in char_matrix)
             self.assertNotIn(taxon, char_matrix)
             char_matrix[taxon] = seqs[idx]
-        self.assertEqual(len(char_matrix._taxon_seq_map), len(self.taxon_namespace))
+        self.assertEqual(len(char_matrix._taxon_seq_map), len(tns))
         self.assertEqual(len(char_matrix), len(char_matrix._taxon_seq_map))
-        for idx, taxon in enumerate(self.taxon_namespace):
+        for idx, taxon in enumerate(tns):
             self.assertTrue(taxon in char_matrix)
             self.assertIn(taxon, char_matrix)
             self.assertTrue(isinstance(char_matrix[taxon], charmatrixmodel.CharacterSequence))
             self.assertEqual(len(char_matrix[taxon]), len(seqs[idx]))
             for c1, c2 in zip(char_matrix[taxon], seqs[idx]):
                 self.assertEqual(c1, c2)
+
+    def test_setitem_by_taxon_not_in_namespace(self):
+        tns = self.get_taxon_namespace(3)
+        char_matrix = charmatrixmodel.CharacterMatrix()
+        t = tns[0]
+        with self.assertRaises(ValueError):
+            char_matrix[t] = []
+        char_matrix.taxon_namespace.add_taxon(t)
+        char_matrix[t] = ["a"]
+        self.assertEqual(len(char_matrix), 1)
+        self.assertIn(t, char_matrix)
+        self.assertEqual(char_matrix[t], ["a"])
 
 if __name__ == "__main__":
     unittest.main()

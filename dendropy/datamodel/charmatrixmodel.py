@@ -452,7 +452,7 @@ class CharacterMatrix(
             else:
                 raise KeyError(key)
         if key not in self.taxon_namespace:
-            raise KeyError(key)
+            raise ValueError(key)
         if not isinstance(values, CharacterSequence):
             values = CharacterSequence(values)
         self._taxon_seq_map[key] = values
