@@ -38,8 +38,8 @@ from dendropy.datamodel.charstatemodel import StateAlphabet
 from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RNA_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import NUCLEOTIDE_STATE_ALPHABET
-from dendropy.datamodel.charstatemodel import BINARY_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import PROTEIN_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import BINARY_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RESTRICTION_SITES_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
 from dendropy.datamodel.charmatrixmodel import DnaCharacterMatrix
