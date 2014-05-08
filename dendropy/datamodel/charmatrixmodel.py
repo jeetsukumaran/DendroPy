@@ -886,7 +886,7 @@ class CharacterMatrix(
             if taxon in self._taxon_sequence_map:
                 self._taxon_sequence_map[taxon].extend(other_matrix._taxon_sequence_map[taxon])
             else:
-                self._taxon_sequence_map[taxon]= other_matrix._taxon_sequence_map[taxon]
+                self._taxon_sequence_map[taxon]= self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
     # def extend_characters(self, other_matrix):
     #     """

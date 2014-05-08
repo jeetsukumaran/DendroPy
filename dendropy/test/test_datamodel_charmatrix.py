@@ -332,8 +332,15 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
             self.assertEqual(len(s1), expected_length)
             self.assertEqual(len(s2), expected_length)
         self.assertEqual(len(s1), len(s2))
+        self.assertIsNot(s1, s2)
         for c1, c2 in zip(s1, s2):
             self.assertEqual(c1, c2)
+
+    def verify_independent_matrices(self, c1, c2):
+        assert c1.taxon_namespace is c2.taxon_namespace
+        for taxon in c1.taxon_namespace:
+            if taxon in c1 and taxon in c2:
+                self.assertIsNot(c1[taxon], c2[taxon])
 
     def test_add_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
@@ -344,6 +351,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_add_sequences(self):
         c1, c2, tns = self.get_char_matrices()
         c1.add_sequences(c2)
+        self.verify_independent_matrices(c1, c2)
         self.assertEqual(len(c1), 3)
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
@@ -361,6 +369,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_replace_sequences(self):
         c1, c2, tns = self.get_char_matrices()
         c1.replace_sequences(c2)
+        self.verify_independent_matrices(c1, c2)
         self.assertEqual(len(c1), 2)
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
@@ -377,6 +386,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_update_sequences(self):
         c1, c2, tns = self.get_char_matrices()
         c1.update_sequences(c2)
+        self.verify_independent_matrices(c1, c2)
         self.assertEqual(len(c1), 3)
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
@@ -394,6 +404,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_extend_sequences(self):
         c1, c2, tns = self.get_char_matrices()
         c1.extend_sequences(c2)
+        self.verify_independent_matrices(c1, c2)
         self.assertEqual(len(c1), 2)
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
@@ -410,6 +421,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_extend_matrix(self):
         c1, c2, tns = self.get_char_matrices()
         c1.extend_matrix(c2)
+        self.verify_independent_matrices(c1, c2)
         self.assertEqual(len(c1), 3)
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
