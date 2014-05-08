@@ -800,6 +800,9 @@ class CharacterMatrix(
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceError()
+        for taxon in other_matrix._taxon_sequence_map:
+            if taxon in self._taxon_sequence_map:
+                self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
     def update_sequences(self, other_matrix):
         """
