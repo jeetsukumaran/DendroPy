@@ -22,6 +22,7 @@ Tests character sequence map.
 
 import unittest
 import dendropy
+from dendropy.utility import error
 from dendropy.datamodel import charmatrixmodel
 from dendropy.test.support import dendropytest
 
@@ -230,7 +231,7 @@ class CharacterMatrixMetricsTest(dendropytest.ExtendedTestCase):
         self.assertEqual(char_matrix.sequence_size, seq_sizes[0])
         self.assertEqual(char_matrix.max_sequence_size, max(seq_sizes))
 
-class CharacterMatrixBulkOpsTestCase(dendropytest.ExtendedTestCase):
+class CharacterMatrixFillAndPackTestCase(dendropytest.ExtendedTestCase):
 
     def test_fill(self):
         seq_sizes = [2, 10, 20, 0, 1]
@@ -303,6 +304,47 @@ class CharacterMatrixBulkOpsTestCase(dendropytest.ExtendedTestCase):
             self.assertIn(taxon, char_matrix)
             self.assertEqual(len(char_matrix[taxon]), 10)
 
+class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
+
+    def get_char_matrices(self):
+        tns = get_taxon_namespace(3)
+        c1 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        c2 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        c1[tns[0]] = "111"
+        c1[tns[1]] = "222"
+        c2[tns[1]] = "333"
+        c2[tns[2]] = "444"
+        return c1, c2
+
+    def test_add_sequences_fail(self):
+        c1 = charmatrixmodel.CharacterMatrix()
+        c2 = charmatrixmodel.CharacterMatrix()
+        with self.assertRaises(error.TaxonNamespaceError):
+            c1.add_sequences(c2)
+
+    def test_replace_sequences_fail(self):
+        c1 = charmatrixmodel.CharacterMatrix()
+        c2 = charmatrixmodel.CharacterMatrix()
+        with self.assertRaises(error.TaxonNamespaceError):
+            c1.replace_sequences(c2)
+
+    def test_update_sequences_fail(self):
+        c1 = charmatrixmodel.CharacterMatrix()
+        c2 = charmatrixmodel.CharacterMatrix()
+        with self.assertRaises(error.TaxonNamespaceError):
+            c1.update_sequences(c2)
+
+    def test_extend_sequences_fail(self):
+        c1 = charmatrixmodel.CharacterMatrix()
+        c2 = charmatrixmodel.CharacterMatrix()
+        with self.assertRaises(error.TaxonNamespaceError):
+            c1.extend_sequences(c2)
+
+    def test_extend_matrix_fail(self):
+        c1 = charmatrixmodel.CharacterMatrix()
+        c2 = charmatrixmodel.CharacterMatrix()
+        with self.assertRaises(error.TaxonNamespaceError):
+            c1.extend_matrix(c2)
 
 class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
 

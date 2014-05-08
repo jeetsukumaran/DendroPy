@@ -773,7 +773,8 @@ class CharacterMatrix(
             4. All other sequences will be ignored.
 
         """
-        pass
+        if other_matrix.taxon_namespace is not self.taxon_namespace:
+            raise error.TaxonNamespaceError()
 
     def replace_sequences(self, other_matrix):
         """
@@ -794,7 +795,8 @@ class CharacterMatrix(
                currently associated with that :class:`Taxon` reference in `self`.
             4. All other sequences will be ignored.
         """
-        pass
+        if other_matrix.taxon_namespace is not self.taxon_namespace:
+            raise error.TaxonNamespaceError()
 
     def update_sequences(self, other_matrix):
         """
@@ -817,7 +819,8 @@ class CharacterMatrix(
                `other_matrix` that is also in `self` will replace the sequence
                currently associated with that :class:`Taxon` reference in `self`.
         """
-        pass
+        if other_matrix.taxon_namespace is not self.taxon_namespace:
+            raise error.TaxonNamespaceError()
 
     def extend_sequences(self, other_matrix):
         """
@@ -839,7 +842,8 @@ class CharacterMatrix(
                reference in `self`.
             4. All other sequences will be ignored.
         """
-        pass
+        if other_matrix.taxon_namespace is not self.taxon_namespace:
+            raise error.TaxonNamespaceError()
 
     def extend_matrix(self, other_matrix):
         """
@@ -865,62 +869,63 @@ class CharacterMatrix(
                `other_matrix` that is also in `self` will replace the sequence
                currently associated with that :class:`Taxon` reference in `self`.
         """
-        pass
+        if other_matrix.taxon_namespace is not self.taxon_namespace:
+            raise error.TaxonNamespaceError()
 
-    def extend_characters(self, other_matrix):
-        """
-        DEPRECATED
-        Extends this matrix by adding characters from sequences of taxa
-        in given matrix to sequences of taxa with correspond labels in
-        this one. Taxa in the second matrix that do not exist in the
-        current one are ignored.
-        """
-        self._taxon_sequence_map.extend_characters(other_matrix.taxon_seq_map)
+    # def extend_characters(self, other_matrix):
+    #     """
+    #     DEPRECATED
+    #     Extends this matrix by adding characters from sequences of taxa
+    #     in given matrix to sequences of taxa with correspond labels in
+    #     this one. Taxa in the second matrix that do not exist in the
+    #     current one are ignored.
+    #     """
+    #     self._taxon_sequence_map.extend_characters(other_matrix.taxon_seq_map)
 
-    def extend_map(self,
-                      other_map,
-                      overwrite_existing=False,
-                      extend_existing=False):
-        """
-        DEPRECATED
-        Extends this matrix by adding taxa and characters from the given
-        map to this one.  If `overwrite_existing` is True and a taxon
-        in the other map is already present in the current one, then
-        the sequence associated with the taxon in the second map
-        replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other matrix is already present in
-        the current one, then the squence map with the taxon in
-        the second map will be added to the sequence in the current
-        one. If both are True, then an exception is raised. If neither
-        are True,  and a taxon in the other map is already present in
-        the current one, then the sequence is ignored.
-        """
-        self._taxon_sequence_map.extend(other_map,
-            overwrite_existing=overwrite_existing,
-            extend_existing=extend_existing)
-        self.update_taxon_namespace()
+    # def extend_map(self,
+    #                   other_map,
+    #                   overwrite_existing=False,
+    #                   extend_existing=False):
+    #     """
+    #     DEPRECATED
+    #     Extends this matrix by adding taxa and characters from the given
+    #     map to this one.  If `overwrite_existing` is True and a taxon
+    #     in the other map is already present in the current one, then
+    #     the sequence associated with the taxon in the second map
+    #     replaces the sequence in the current one. If `extend_existing`
+    #     is True and a taxon in the other matrix is already present in
+    #     the current one, then the squence map with the taxon in
+    #     the second map will be added to the sequence in the current
+    #     one. If both are True, then an exception is raised. If neither
+    #     are True,  and a taxon in the other map is already present in
+    #     the current one, then the sequence is ignored.
+    #     """
+    #     self._taxon_sequence_map.extend(other_map,
+    #         overwrite_existing=overwrite_existing,
+    #         extend_existing=extend_existing)
+    #     self.update_taxon_namespace()
 
-    def extend(self,
-               other_matrix,
-               overwrite_existing=False,
-               extend_existing=False):
-        """
-        Extends this matrix by adding taxa and characters from the given
-        matrix to this one.  If `overwrite_existing` is True and a taxon
-        in the other matrix is already present in the current one, then
-        the sequence associated with the taxon in the second matrix
-        replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other matrix is already present in
-        the current one, then the sequence associated with the taxon in
-        the second matrix will be added to the sequence in the current
-        one. If both are True, then an exception is raised. If neither
-        are True, and a taxon in the other matrix is already present in
-        the current one, then the sequence is ignored.
-        """
-        self._taxon_sequence_map.extend(other_matrix.taxon_seq_map,
-            overwrite_existing=overwrite_existing,
-            extend_existing=extend_existing)
-        self.update_taxon_namespace()
+    # def extend(self,
+    #            other_matrix,
+    #            overwrite_existing=False,
+    #            extend_existing=False):
+    #     """
+    #     Extends this matrix by adding taxa and characters from the given
+    #     matrix to this one.  If `overwrite_existing` is True and a taxon
+    #     in the other matrix is already present in the current one, then
+    #     the sequence associated with the taxon in the second matrix
+    #     replaces the sequence in the current one. If `extend_existing`
+    #     is True and a taxon in the other matrix is already present in
+    #     the current one, then the sequence associated with the taxon in
+    #     the second matrix will be added to the sequence in the current
+    #     one. If both are True, then an exception is raised. If neither
+    #     are True, and a taxon in the other matrix is already present in
+    #     the current one, then the sequence is ignored.
+    #     """
+    #     self._taxon_sequence_map.extend(other_matrix.taxon_seq_map,
+    #         overwrite_existing=overwrite_existing,
+    #         extend_existing=extend_existing)
+    #     self.update_taxon_namespace()
 
     ###########################################################################
     ### Character Subset Management

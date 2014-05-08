@@ -146,4 +146,14 @@ class MultipleInitializationSourceError(TypeError):
             message = "{}() does not accept data 'stream' or 'schema' arguments when initializing with another object".format(class_name)
         TypeError.__init__(self, message)
 
+class TaxonNamespaceError(ValueError):
+
+    def __init__(self, message=None):
+        # common = "TaxonNamespace references not identical"
+        common = "TaxonNamespace references not identical"
+        if message is not None:
+            message = common + ": " + message
+        else:
+            message = common
+        ValueError.__init__(self, message)
 
