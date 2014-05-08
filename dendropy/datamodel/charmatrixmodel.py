@@ -769,12 +769,15 @@ class CharacterMatrix(
             1. `other_matrix` must be of same type as `self`.
             2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
             3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               but not in `self` will be added to `self`.
+               but not in `self` will be added to `self` as a shallow-copy.
             4. All other sequences will be ignored.
 
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceError()
+        for taxon in other_matrix._taxon_sequence_map:
+            if taxon not in self._taxon_sequence_map:
+                self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
     def replace_sequences(self, other_matrix):
         """
@@ -790,9 +793,9 @@ class CharacterMatrix(
         -----
             1. `other_matrix` must be of same type as `self`.
             2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               that is also in `self` will replace the sequence
-               currently associated with that :class:`Taxon` reference in `self`.
+            3. Each sequence in `self` associated with a :class:`Taxon` that is
+               also represented in `other_matrix` will be replaced with a
+               shallow-copy of the corresponding sequence from `other_matrix`.
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
@@ -815,9 +818,9 @@ class CharacterMatrix(
             2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
             3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
                but not in `self` will be added to `self`.
-            4. Each sequence associated with a :class:`Taxon` reference in
-               `other_matrix` that is also in `self` will replace the sequence
-               currently associated with that :class:`Taxon` reference in `self`.
+            4. Each sequence in `self` associated with a :class:`Taxon` that is
+               also represented in `other_matrix` will be replaced with a
+               shallow-copy of the corresponding sequence from `other_matrix`.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceError()
@@ -836,10 +839,10 @@ class CharacterMatrix(
         -----
             1. `other_matrix` must be of same type as `self`.
             2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               that is also in `self` will be appending
-               to the sequence currently associated with that :class:`Taxon`
-               reference in `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in
+               `other_matrix` that is also in `self` will be appended to the
+               sequence currently associated with that :class:`Taxon` reference
+               in `self`.
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:

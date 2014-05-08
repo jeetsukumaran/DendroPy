@@ -310,17 +310,37 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
         tns = get_taxon_namespace(3)
         c1 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         c2 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
-        c1[tns[0]] = "111"
-        c1[tns[1]] = "222"
-        c2[tns[1]] = "333"
-        c2[tns[2]] = "444"
-        return c1, c2
+        c1[tns[0]] = [1, 1, 1]
+        c1[tns[1]] = [2, 2, 2]
+        c2[tns[1]] = [3, 3, 3]
+        c2[tns[2]] = [4, 4, 4]
+
+        assert len(c1) == 2
+        assert tns[0] in c1
+        assert tns[1] in c1
+        assert tns[2] not in c1
+
+        assert len(c2) == 2
+        assert tns[0] not in c2
+        assert tns[1] in c2
+        assert tns[2] in c2
+
+        return c1, c2, tns
 
     def test_add_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
         with self.assertRaises(error.TaxonNamespaceError):
             c1.add_sequences(c2)
+
+    def test_add_sequences(self):
+        c1, c2, tns = self.get_char_matrices()
+        c1.add_sequences(c2)
+        self.assertEqual(len(c1), 3)
+        self.assertIn(tns[0], c1)
+        self.assertIn(tns[1], c1)
+        self.assertIn(tns[2], c1)
+        self.assertCountEqual(c1[tns[0]], [1, 1, 1])
 
     def test_replace_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
