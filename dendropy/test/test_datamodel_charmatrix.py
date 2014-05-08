@@ -374,6 +374,17 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
         with self.assertRaises(error.TaxonNamespaceError):
             c1.update_sequences(c2)
 
+    def test_update_sequences(self):
+        c1, c2, tns = self.get_char_matrices()
+        c1.update_sequences(c2)
+        self.assertEqual(len(c1), 3)
+        self.assertIn(tns[0], c1)
+        self.assertIn(tns[1], c1)
+        self.assertIn(tns[2], c1)
+        self.verify_sequence_equal(c1[tns[0]], [1, 1, 1])
+        self.verify_sequence_equal(c1[tns[1]], [3, 3, 3])
+        self.verify_sequence_equal(c1[tns[2]], [4, 4, 4])
+
     def test_extend_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
