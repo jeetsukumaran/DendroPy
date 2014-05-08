@@ -290,6 +290,20 @@ class CharacterMatrixBulkOpsTestCase(dendropytest.ExtendedTestCase):
         for taxon in tns:
             self.assertIn(taxon, char_matrix)
 
+    def test_fill_taxa(self):
+        tns = get_taxon_namespace(5)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        s = ["z"] * 10
+        char_matrix[tns[0]] = s
+        for taxon in tns[1:3]:
+            char_matrix[taxon] = ["x"]
+        char_matrix.pack()
+        self.assertEqual(len(char_matrix), len(tns))
+        for taxon in tns:
+            self.assertIn(taxon, char_matrix)
+            self.assertEqual(len(char_matrix[taxon]), 10)
+
+
 class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
 
     def test_assign_taxon_namespace(self):
