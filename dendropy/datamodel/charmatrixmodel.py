@@ -692,8 +692,8 @@ class CharacterMatrix(
     def fill(self, value, size=None, append=True):
         """
         Pads out all sequences in `self` by adding `value` to each sequence
-        that is until its length is `size` long or equal to the length of
-        the longest sequence if `size` is not specified.
+        until its length is `size` long or equal to the length of the longest
+        sequence if `size` is not specified.
 
         Parameters
         ----------
@@ -719,8 +719,157 @@ class CharacterMatrix(
                     v.insert(0, value)
         return size
 
+    def fill_taxa(self):
+        """
+        Adds a new (empty) sequence for each :class:`Taxon` instance in
+        current taxon namespace that does not have a sequence.
+        """
+        for taxon in self.taxon_namespace:
+            if taxon not in self:
+                self[taxon] = CharacterSequence()
+
+    def pack(self, value=None, size=None, append=True):
+        """
+        Adds missing sequences for all :class:`Taxon` instances in current
+        namespace, and then pads out all sequences in `self` by adding `value`
+        to each sequence until its length is `size` long or equal to the length
+        of the longest sequence if `size` is not specified. A combination of
+        :meth:`CharacterMatrix.fill_taxa()` and
+        :meth:`CharacterMatrix.fill()`.
+
+        Parameters
+        ----------
+        value : object
+            A valid value (e.g., a numeric value for continuous characters, or
+            a :class:`StateIdentity` for discrete character).
+        size : integer or None
+            The size (length) up to which the sequences will be padded. If `None`, then
+            the maximum (longest) sequence size will be used.
+        append : boolean
+            If `True` (default), then new values will be added to the end of
+            each sequence. If `False`, then new values will be inserted to the
+            front of each sequence.
+        """
+        self.fill_taxa()
+        self.fill(value=value, size=size, append=append)
+
+
+    def add_sequences(self, other_matrix):
+        """
+        Adds sequences for :class:`Taxon` objects that are in `other_matrix` but not in
+        `self`.
+
+        Parameters
+        ----------
+        other_matrix : :class:`CharacterMatrix`
+            Matrix from which to add sequences.
+
+        Notes
+        -----
+            1. `other_matrix` must be of same type as `self`.
+            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
+               but not in `self` will be added to `self`.
+            4. All other sequences will be ignored.
+
+        """
+        pass
+
+    def replace_sequences(self, other_matrix):
+        """
+        Replaces sequences for :class:`Taxon` objects shared between `self` and
+        `other_matrix`.
+
+        Parameters
+        ----------
+        other_matrix : :class:`CharacterMatrix`
+            Matrix from which to replace sequences.
+
+        Notes
+        -----
+            1. `other_matrix` must be of same type as `self`.
+            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
+               that is also in `self` will replace the sequence
+               currently associated with that :class:`Taxon` reference in `self`.
+            4. All other sequences will be ignored.
+        """
+        pass
+
+    def update_sequences(self, other_matrix):
+        """
+        Replaces sequences for :class:`Taxon` objects shared between `self` and
+        `other_matrix` and adds sequences for :class:`Taxon` objects that are
+        in `other_matrix` but not in `self`.
+
+        Parameters
+        ----------
+        other_matrix : :class:`CharacterMatrix`
+            Matrix from which to update sequences.
+
+        Notes
+        -----
+            1. `other_matrix` must be of same type as `self`.
+            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
+               but not in `self` will be added to `self`.
+            4. Each sequence associated with a :class:`Taxon` reference in
+               `other_matrix` that is also in `self` will replace the sequence
+               currently associated with that :class:`Taxon` reference in `self`.
+        """
+        pass
+
+    def extend_sequences(self, other_matrix):
+        """
+        Extends sequences in `self` with characters associated with
+        corresponding :class:`Taxon` objects in `other_matrix`.
+
+        Parameters
+        ----------
+        other_matrix : :class:`CharacterMatrix`
+            Matrix from which to extend sequences.
+
+        Notes
+        -----
+            1. `other_matrix` must be of same type as `self`.
+            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
+               that is also in `self` will be appending
+               to the sequence currently associated with that :class:`Taxon`
+               reference in `self`.
+            4. All other sequences will be ignored.
+        """
+        pass
+
+    def extend_matrix(self, other_matrix):
+        """
+        Extends sequences in `self` with characters associated with
+        corresponding :class:`Taxon` objects in `other_matrix` and adds
+        sequences for :class:`Taxon` objects that are in `other_matrix` but not
+        in `self`.
+
+        Parameters
+        ----------
+        other_matrix : :class:`CharacterMatrix`
+            Matrix from which to extend.
+
+        Notes
+        -----
+            1. `other_matrix` must be of same type as `self`.
+            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
+            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
+               that is also in `self` will be appending
+               to the sequence currently associated with that :class:`Taxon`
+               reference in `self`.
+            4. Each sequence associated with a :class:`Taxon` reference in
+               `other_matrix` that is also in `self` will replace the sequence
+               currently associated with that :class:`Taxon` reference in `self`.
+        """
+        pass
+
     def extend_characters(self, other_matrix):
         """
+        DEPRECATED
         Extends this matrix by adding characters from sequences of taxa
         in given matrix to sequences of taxa with correspond labels in
         this one. Taxa in the second matrix that do not exist in the
@@ -733,6 +882,7 @@ class CharacterMatrix(
                       overwrite_existing=False,
                       extend_existing=False):
         """
+        DEPRECATED
         Extends this matrix by adding taxa and characters from the given
         map to this one.  If `overwrite_existing` is True and a taxon
         in the other map is already present in the current one, then
