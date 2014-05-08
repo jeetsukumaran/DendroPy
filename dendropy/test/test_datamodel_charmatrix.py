@@ -277,5 +277,26 @@ class CharacterMatrixBulkOpsTestCase(dendropytest.ExtendedTestCase):
                     for c1, c2 in zip(obs_seq, expected_seq):
                         self.assertEqual(c1, c2)
 
+    def test_fill_taxa(self):
+        tns = get_taxon_namespace(5)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        for taxon in tns[:3]:
+            char_matrix[taxon] = "z"
+        for taxon in tns[:3]:
+            self.assertIn(taxon, char_matrix)
+        for taxon in tns[3:]:
+            self.assertNotIn(taxon, char_matrix)
+        char_matrix.fill_taxa()
+        for taxon in tns:
+            self.assertIn(taxon, char_matrix)
+
+class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
+
+    def test_assign_taxon_namespace(self):
+        tns = get_taxon_namespace(5)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        self.assertIs(char_matrix.taxon_namespace, tns)
+
+
 if __name__ == "__main__":
     unittest.main()
