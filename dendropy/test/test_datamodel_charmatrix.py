@@ -327,6 +327,14 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
 
         return c1, c2, tns
 
+    def verify_sequence_equal(self, s1, s2, expected_length=None):
+        if expected_length is not None:
+            self.assertEqual(len(s1), expected_length)
+            self.assertEqual(len(s2), expected_length)
+        self.assertEqual(len(s1), len(s2))
+        for c1, c2 in zip(s1, s2):
+            self.assertEqual(c1, c2)
+
     def test_add_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
@@ -340,7 +348,9 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
         self.assertIn(tns[0], c1)
         self.assertIn(tns[1], c1)
         self.assertIn(tns[2], c1)
-        self.assertCountEqual(c1[tns[0]], [1, 1, 1])
+        self.verify_sequence_equal(c1[tns[0]], [1, 1, 1])
+        self.verify_sequence_equal(c1[tns[1]], [2, 2, 2])
+        self.verify_sequence_equal(c1[tns[2]], [4, 4, 4])
 
     def test_replace_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
