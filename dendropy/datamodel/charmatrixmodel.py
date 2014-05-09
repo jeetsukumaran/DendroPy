@@ -350,7 +350,6 @@ class CharacterMatrix(
     def __eq__(self, other):
         return self is other
 
-
         # if len(args) > 1:
         #     raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         # if len(args) == 1:
@@ -396,10 +395,23 @@ class CharacterMatrix(
     ###########################################################################
     ### Taxon Management
 
+    def update_taxon_namespace(self):
+        """
+        All :class:`Taxon` objects in `self` that are not in
+        `self.taxon_namespace` will be added.
+        """
+        assert self.taxon_namespace is not None
+        for taxon in self._taxon_sequence_map:
+            if taxon not in self.taxon_namespace:
+                self.taxon_namespace.add_taxon(taxon)
+
     def reindex_subcomponent_taxa(self):
         """
         Synchronizes `Taxon` objects of map to `taxon_namespace` of self.
         """
+        error.dump_stack()
+        warnings.warn("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
+                FutureWarning, stacklevel=4)
         ti_mutable = self.taxon_namespace._is_mutable
         self.taxon_namespace._is_mutable = True
         new_map = TaxonCharacterSequenceMap()
@@ -408,16 +420,6 @@ class CharacterMatrix(
             new_map[taxon] = seq
         self.taxon_namespace._is_mutable = ti_mutable
         self._taxon_sequence_map = new_map
-
-    def update_taxon_namespace(self):
-        """
-        Updates local taxa block by adding taxa not already managed.
-        Mainly for use after map extension
-        """
-        assert self.taxon_namespace is not None
-        for taxon in self._taxon_sequence_map:
-            if taxon not in self.taxon_namespace:
-                self.taxon_namespace.add(taxon)
 
     def prune_taxa(self, taxa, update_taxon_namespace=False):
         """
