@@ -87,6 +87,16 @@ class StateAlphabet(
         "standard" characters, this would be something like `'01'` or `('0',
         '1')`.
 
+    no_data_symbol : string
+        If specified, automatically creates a "no data" ambiguous state,
+        represented by the (canonical, or primary) symbol
+        "no_data_symbol", which maps to all fundamental states.
+        This will also insert `None` into all symbol look-up maps, which, when
+        dereferenced will return this state. Furthermore, the attribute
+        `self.no_data_symbol` will return this symbol and `self.no_data_state`
+        will return this state. The 'no data' state will be an ambiguous
+        multistate type.
+
     ambiguous_states : iterable of tuples
         An iterable consisting of tuples expressing ambiguous state symbols and
         the set of symbols representing the fundamental states to which they
@@ -122,6 +132,7 @@ class StateAlphabet(
         example, an ambiguous state, "unknown", representing all fundamental
         states might be defined with '?' as its primary symbol, and a synonym
         symbol for this state might be 'X'.
+
     """
 
     ###########################################################################
@@ -139,6 +150,7 @@ class StateAlphabet(
             ambiguous_states=None,
             polymorphic_states=None,
             symbol_synonyms=None,
+            no_data_symbol=None,
             label=None,
             case_sensitive=True):
 
@@ -162,10 +174,17 @@ class StateAlphabet(
         # Suppress for initialization
         self.autocompile_lookup_tables = False
 
+        # Set up 'no data'
+        self.no_data_symbol = no_data_symbol
+        self.no_data_state = None # will be created when compiled
+
         # Populate core collection
         if fundamental_states:
             for symbol in fundamental_states:
                 self.new_fundamental_state(symbol)
+            if self.no_data_symbol:
+                self.no_data_state = self.new_ambiguous_state(symbol=self.no_data_symbol,
+                        member_state_symbols=fundamental_states)
             if ambiguous_states:
                 for ss in ambiguous_states:
                     self.new_ambiguous_state(symbol=ss[0], member_state_symbols=ss[1])
@@ -406,6 +425,9 @@ class StateAlphabet(
         """
         temp_fundamental_states_to_ambiguous_state_map = {}
         temp_fundamental_states_to_polymorphic_state_map = {}
+        if self.no_data_state is not None:
+            assert self.no_data_state in self._ambiguous_states
+            self.no_data_state.member_states = tuple(self.fundamental_state_iter())
         for idx, state in enumerate(self.state_iter()):
             if state.state_denomination == StateAlphabet.AMBIGUOUS_STATE:
                 member_states = frozenset(state.member_states)
@@ -439,6 +461,9 @@ class StateAlphabet(
         temp_canonical_symbol_state_map = collections.OrderedDict()
         temp_full_symbol_state_map = collections.OrderedDict()
         temp_index_state_map = collections.OrderedDict()
+        if self.no_data_state is not None:
+            assert self.no_data_symbol == self.no_data_state.symbol
+            temp_full_symbol_state_map[None] = self.no_data_state
         for idx, state in enumerate(self.state_iter()):
             temp_states.append(state)
             if state.symbol:
@@ -890,7 +915,23 @@ class StateIdentity(
         itself a fundamental state.
         """
         return self._member_states
-    member_states = property(_get_member_states)
+
+    def _set_member_states(self, member_states):
+        """
+        Rebuilds member state set.
+        """
+        if member_states is not None:
+            self._member_states = tuple(member_states)
+        else:
+            self._member_states = None
+        self._fundamental_states = None
+        self._fundamental_symbols = None
+        self._fundamental_indexes = None
+        self._partials_vector = None
+        self._str = None
+        self._repr = None
+        self._member_states_str = None
+    member_states = property(_get_member_states, _set_member_states)
 
     def _get_fundamental_states(self):
         """
@@ -993,7 +1034,6 @@ class DnaStateAlphabet(StateAlphabet):
         fundamental_states = "ACGT-"
         polymorphic_states = None
         ambiguous_states = (
-                ("?", "ACGT-"),
                 ("N", "ACGT"),
                 ("R", "AG"  ),
                 ("Y", "CT"  ),
@@ -1009,6 +1049,7 @@ class DnaStateAlphabet(StateAlphabet):
         symbol_synonyms = {"X": "N"}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
+                no_data_symbol="?",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1017,8 +1058,6 @@ class DnaStateAlphabet(StateAlphabet):
         for state in self.state_iter():
             if state.symbol == "-":
                 attr_name = "gap"
-            elif state.symbol == "?":
-                attr_name = "missing"
             else:
                 attr_name = state.symbol
             self.set_state_as_attribute(state, attr_name)
@@ -1034,7 +1073,6 @@ class RnaStateAlphabet(StateAlphabet):
         fundamental_states = "ACGU-"
         polymorphic_states = None
         ambiguous_states = (
-                ("?", "ACGU-"),
                 ("N", "ACGU"),
                 ("R", "AG"  ),
                 ("Y", "CU"  ),
@@ -1050,6 +1088,7 @@ class RnaStateAlphabet(StateAlphabet):
         symbol_synonyms = {"X": "N"}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
+                no_data_symbol="?",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1058,8 +1097,6 @@ class RnaStateAlphabet(StateAlphabet):
         for state in self.state_iter():
             if state.symbol == "-":
                 attr_name = "gap"
-            elif state.symbol == "?":
-                attr_name = "missing"
             else:
                 attr_name = state.symbol
             self.set_state_as_attribute(state, attr_name)
@@ -1075,7 +1112,6 @@ class NucleotideStateAlphabet(StateAlphabet):
         fundamental_states = "ACGTU-"
         polymorphic_states = None
         ambiguous_states = (
-                ("?", "ACGTU-"),
                 ("N", "ACGTU"),
                 ("R", "AG"  ),
                 ("Y", "CTU"  ),
@@ -1091,6 +1127,7 @@ class NucleotideStateAlphabet(StateAlphabet):
         symbol_synonyms = {"X": "N"}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
+                no_data_symbol="?",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1099,8 +1136,6 @@ class NucleotideStateAlphabet(StateAlphabet):
         for state in self.state_iter():
             if state.symbol == "-":
                 attr_name = "gap"
-            elif state.symbol == "?":
-                attr_name = "missing"
             else:
                 attr_name = state.symbol
             self.set_state_as_attribute(state, attr_name)
@@ -1119,11 +1154,11 @@ class ProteinStateAlphabet(StateAlphabet):
                 ("B", "DN"),
                 ("Z", "EQ"),
                 ("X", "ACDEFGHIKLMNPQRSTUVWY*"),
-                ("?", "ACDEFGHIKLMNPQRSTUVWY*-"),
                 )
         symbol_synonyms = {}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
+                no_data_symbol="?",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1132,8 +1167,6 @@ class ProteinStateAlphabet(StateAlphabet):
         for state in self.state_iter():
             if state.symbol == "-":
                 attr_name = "gap"
-            elif state.symbol == "?":
-                attr_name = "missing"
             elif state.symbol == "*":
                 attr_name = "stop"
             else:
@@ -1154,10 +1187,13 @@ class BinaryStateAlphabet(StateAlphabet):
         polymorphic_states = None
         ambiguous_states = []
         if allow_missing:
-            ambiguous_states.append( ("?", fundamental_states) )
+            no_data_symbol = "?"
+        else:
+            no_data_symbol = None
         symbol_synonyms = {}
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
+                no_data_symbol=no_data_symbol,
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,

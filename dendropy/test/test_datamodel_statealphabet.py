@@ -223,6 +223,9 @@ class StateAlphabetTester(object):
                     exp_symbols.append(s)
                     exp_symbol_state_pairs.append((s, state))
         obs_symbols = list(m)
+        if self.sa.no_data_state is not None:
+            exp_symbols.insert(0, None)
+            exp_symbol_state_pairs.insert(0, (None, self.sa.no_data_state))
         self.assertEqual(obs_symbols, exp_symbols)
         self.assertEqual(len(m), len(exp_symbols))
         self.assertEqual(len(m), len(exp_symbol_state_pairs))
@@ -230,6 +233,46 @@ class StateAlphabetTester(object):
             self.assertEqual(obs_symbol, exp_symbol)
             self.assertEqual(obs_symbol, sspair[0])
             self.assertIs(m[obs_symbol], sspair[1])
+
+    def test_no_data_state(self):
+        if self.sa.no_data_state is not None:
+
+            # some setup
+            expected_fundamental_states = list(self.sa.fundamental_state_iter())
+            expected_fundamental_symbols = [s.symbol for s in expected_fundamental_states]
+            test_symbols = [None] + expected_fundamental_symbols
+            expected_states = [self.sa.no_data_state] + expected_fundamental_states
+
+            # check definitions
+            self.assertIn(self.sa.no_data_state, self.sa._ambiguous_states)
+            self.assertEqual(self.sa.no_data_state.symbol, self.sa.no_data_symbol)
+            self.assertEqual(self.sa.no_data_state._member_states, tuple(expected_fundamental_states))
+
+            # check look-up map
+            full_map = self.sa.full_symbol_state_map
+            self.assertIn(None, full_map)
+            self.assertIs(full_map[None], self.sa.no_data_state)
+
+            # __getitem__
+            self.assertIs(self.sa[None], self.sa.no_data_state)
+
+            # get_states_for_symbols
+            s = self.sa.get_states_for_symbols(test_symbols)
+            self.assertEqual(s, expected_states)
+            self.assertIs(s[0], self.sa.no_data_state)
+
+            # get_fundamental_states_for_symbols
+            self.assertEqual(self.sa.get_fundamental_states_for_symbols([None]), expected_fundamental_states)
+
+            # get_canonical_symbol_for_symbol
+            self.assertEqual(self.sa.get_canonical_symbol_for_symbol(None), self.sa.no_data_symbol)
+
+            # match_ambiguous_state
+            self.assertIs(self.sa.match_ambiguous_state(expected_fundamental_symbols), self.sa.no_data_state)
+
+        else:
+            full_map = self.sa.full_symbol_state_map
+            self.assertNotIn(None, full_map)
 
     def test_getitem(self):
         alphabet = self.sa
@@ -273,13 +316,21 @@ class StateAlphabetTester(object):
     def test_get_canonical_symbol_for_symbol(self):
         states = list(self.sa.state_iter())
         expected = {}
+        no_data_state = None
         for state in states:
             if state.symbol:
                 expected[state.symbol] = state.symbol
+            if state is self.sa.no_data_state:
+                no_data_state = state
             for ss in state.symbol_synonyms:
                 expected[ss] = state.symbol
         for symbol in self.sa.full_symbol_state_map:
-            self.assertEqual(self.sa.get_canonical_symbol_for_symbol(symbol), expected[symbol])
+            if symbol is None:
+                self.assertIsNot(self.sa.no_data_state, None)
+                self.assertIsNot(self.sa.no_data_symbol, None)
+                self.assertIs(self.sa.no_data_state, no_data_state)
+            else:
+                self.assertEqual(self.sa.get_canonical_symbol_for_symbol(symbol), expected[symbol])
 
     def test_get_fundamental_states_for_symbols(self):
         all_symbols = list(self.sa.full_symbol_state_map.keys())
@@ -485,10 +536,10 @@ class ProteinStateAlphabetTest(
                 "T", "U", "V", "W", "Y", "*", "-",
                 ]
         self.ambiguous_symbol_mappings = collections.OrderedDict()
+        self.ambiguous_symbol_mappings["?"] = "ACDEFGHIKLMNPQRSTUVWY*-"
         self.ambiguous_symbol_mappings["B"] = "DN"
         self.ambiguous_symbol_mappings["Z"] = "EQ"
         self.ambiguous_symbol_mappings["X"] = "ACDEFGHIKLMNPQRSTUVWY*"
-        self.ambiguous_symbol_mappings["?"] = "ACDEFGHIKLMNPQRSTUVWY*-"
 
         self.polymorphic_symbol_mappings = collections.OrderedDict()
 
