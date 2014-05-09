@@ -541,7 +541,7 @@ class CharacterMatrix(
         """
         taxon = self._resolve_key(key)
         if taxon not in self.taxon_namespace:
-            raise ValueError(key)
+            raise ValueError(repr(key))
         if not isinstance(values, self.__class__.character_sequence_type):
             values = self.__class__.character_sequence_type(values)
         self._taxon_sequence_map[taxon] = values
