@@ -344,6 +344,13 @@ class CharacterMatrix(
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
 
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
+
+
         # if len(args) > 1:
         #     raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         # if len(args) == 1:
