@@ -20,6 +20,7 @@
 Tests character sequence map.
 """
 
+import random
 import unittest
 import dendropy
 from dendropy.utility import error
@@ -437,6 +438,28 @@ class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
         char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         self.assertIs(char_matrix.taxon_namespace, tns)
 
+class CharacterMatrixIteratorTests(dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.rng = random.Random()
+
+    def test_standard_iterator(self):
+        tns = get_taxon_namespace(100)
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        taxa = list(tns)
+        self.rng.shuffle(taxa)
+        included = set()
+        excluded = set()
+        for idx, taxon in enumerate(taxa):
+            if self.rng.uniform(0, 1) < 0.5:
+                included.add(taxon)
+                char_matrix[taxon] = [0]
+            else:
+                excluded.add(taxon)
+        expected = [taxon for taxon in tns if taxon in included]
+        self.assertEqual(len(char_matrix), len(expected))
+        observed = [taxon for taxon in char_matrix]
+        self.assertEqual(observed, expected)
 
 if __name__ == "__main__":
     unittest.main()
