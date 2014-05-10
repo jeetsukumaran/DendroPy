@@ -733,7 +733,9 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 original_tns=original_tns)
 
     def test_reconstruct_taxon_namespace_unifying_case_sensitive_fail(self):
-        char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
+        char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix._taxon_namespace = new_tns
         with self.assertRaises(error.TaxonNamespaceReconstructionError):
             char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
                     case_sensitive_label_mapping=True)
@@ -759,288 +761,113 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 self.get_char_matrix_with_case_insensitive_label_collisions(),
                 self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions(),
                 ):
+            new_tns = dendropy.TaxonNamespace()
+            char_matrix._taxon_namespace = new_tns
             with self.assertRaises(error.TaxonNamespaceReconstructionError):
-                char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                        case_sensitive_label_mapping=True)
+                char_matrix.reconstruct_taxon_namespace(
+                        unify_taxa_by_label=True,
+                        case_sensitive_label_mapping=False)
 
+    def test_basic_migration(self):
+        char_matrix = self.get_char_matrix()
+        tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix.migrate_taxon_namespace(
+                new_tns,
+                unify_taxa_by_label=False,
+                case_sensitive_label_mapping=True)
+        self.assertIsNot(char_matrix.taxon_namespace, tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.assertEqual(len(char_matrix), char_matrix.nseqs)
+        self.assertEqual(len(char_matrix), len(char_matrix.original_seqs))
+        assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
+        if len(char_matrix.taxon_namespace) != len(tns):
+            x1 = [t.label for t in char_matrix.taxon_namespace]
+            x2 = [t.label for t in tns]
+            c1 = collections.Counter(x1)
+            c2 = collections.Counter(x2)
+            c3 = c2 - c1
+            print(c3)
+        self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
+        original_labels = [t.label for t in tns]
+        new_labels = [t.label for t in new_tns]
+        self.assertCountEqual(new_labels, original_labels)
+        for taxon in char_matrix:
+            self.assertIn(taxon, char_matrix.taxon_namespace)
+            self.assertNotIn(taxon, tns)
+            self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
+            self.assertIn(char_matrix[taxon], char_matrix.original_seqs)
+            char_matrix.original_seqs.remove(char_matrix[taxon])
+        self.assertEqual(char_matrix.original_seqs, [])
 
-#     def test_basic_migration(self):
-#         tns = dendropy.TaxonNamespace()
-#         trees = []
-#         for idx in range(5):
-#             tree, anodes, lnodes, inodes = self.get_tree(
-#                     suppress_internal_node_taxa=False,
-#                     suppress_leaf_node_taxa=False,
-#                     taxon_namespace=tns)
-#             trees.append(tree)
-#         char_matrix = dendropy.TreeList(taxon_namespace=tns)
-#         char_matrix._trees = trees
-#         new_tns = dendropy.TaxonNamespace()
-#         char_matrix.taxon_namespace = new_tns
-#         char_matrix.migrate_taxon_namespace(
-#                 new_tns,
-#                 unify_taxa_by_label=False,
-#                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(char_matrix.taxon_namespace, tns)
-#         self.assertIs(char_matrix.taxon_namespace, new_tns)
-#         self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
-#         original_labels = [t.label for t in tns]
-#         new_labels = [t.label for t in new_tns]
-#         self.assertCountEqual(new_labels, original_labels)
-#         for tree in char_matrix:
-#             self.assertIs(tree.taxon_namespace, char_matrix.taxon_namespace)
-#             for nd in tree:
-#                 if nd.taxon is not None:
-#                     self.assertIn(nd.taxon, tree.taxon_namespace)
-#                     self.assertNotIn(nd.taxon, tns)
+    def test_migrate_taxon_namespace_non_unifying(self):
+        char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
+        original_tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix.migrate_taxon_namespace(
+                new_tns,
+                unify_taxa_by_label=False,
+                case_sensitive_label_mapping=True)
+        self.assertIsNot(char_matrix.taxon_namespace, original_tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                char_matrix=char_matrix,
+                unify_taxa_by_label=False,
+                case_sensitive_label_mapping=True)
 
-#     def test_migrate_taxon_namespace_non_unifying(self):
-#         original_tns = self.char_matrix.taxon_namespace
-#         new_tns = dendropy.TaxonNamespace()
-#         self.char_matrix.migrate_taxon_namespace(
-#                 new_tns,
-#                 unify_taxa_by_label=False,
-#                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
-#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
-#         self.verify_taxon_namespace_reconstruction(
-#                 unify_taxa_by_label=False,
-#                 case_sensitive_label_mapping=True,
-#                 original_tns=original_tns)
+    def test_migrate_taxon_namespace_unifying_case_sensitive(self):
+        char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
+        original_tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix.migrate_taxon_namespace(
+                new_tns,
+                unify_taxa_by_label=True,
+                case_sensitive_label_mapping=True)
+        self.assertIsNot(char_matrix.taxon_namespace, original_tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                char_matrix=char_matrix,
+                unify_taxa_by_label=True,
+                case_sensitive_label_mapping=True,
+                original_tns=original_tns)
 
-#     def test_migrate_taxon_namespace_unifying_case_sensitive(self):
-#         original_tns = self.char_matrix.taxon_namespace
-#         new_tns = dendropy.TaxonNamespace()
-#         self.char_matrix.migrate_taxon_namespace(
-#                 new_tns,
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
-#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
-#         self.verify_taxon_namespace_reconstruction(
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=True,
-#                 original_tns=original_tns)
+    def test_migrate_taxon_namespace_unifying_case_sensitive_fail(self):
+        char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
+        new_tns = dendropy.TaxonNamespace()
+        with self.assertRaises(error.TaxonNamespaceReconstructionError):
+            char_matrix.migrate_taxon_namespace(
+                    new_tns,
+                    unify_taxa_by_label=True,
+                    case_sensitive_label_mapping=True)
 
-#     def test_migrate_taxon_namespace_unifying_case_insensitive(self):
-#         original_tns = self.char_matrix.taxon_namespace
-#         new_tns = dendropy.TaxonNamespace()
-#         self.char_matrix.migrate_taxon_namespace(
-#                 new_tns,
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=False)
-#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
-#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
-#         self.verify_taxon_namespace_reconstruction(
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=False,
-#                 original_tns=original_tns)
+    def test_migrate_taxon_namespace_unifying_case_insensitive(self):
+        char_matrix = self.get_char_matrix()
+        original_tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix.migrate_taxon_namespace(
+                new_tns,
+                unify_taxa_by_label=True,
+                case_sensitive_label_mapping=False)
+        self.assertIsNot(char_matrix.taxon_namespace, original_tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                char_matrix=char_matrix,
+                unify_taxa_by_label=True,
+                case_sensitive_label_mapping=False,
+                original_tns=original_tns)
 
-# class TestTreeListAppend(
-#         datagen_curated_test_tree.CuratedTestTree,
-#         unittest.TestCase):
-
-#     def setUp(self):
-#         self.native_tns = dendropy.TaxonNamespace()
-#         self.tree_list = dendropy.TreeList(taxon_namespace=self.native_tns)
-#         self.foreign_tns = dendropy.TaxonNamespace()
-#         self.foreign_tree, anodes, lnodes, inodes = self.get_tree(
-#                 suppress_internal_node_taxa=False,
-#                 suppress_leaf_node_taxa=False,
-#                 taxon_namespace=self.foreign_tns)
-#         for nd in self.foreign_tree:
-#             nd.original_taxon = nd.taxon
-#         self.check_tns = dendropy.TaxonNamespace()
-#         self.check_tree, anodes, lnodes, inodes = self.get_tree(
-#                 suppress_internal_node_taxa=False,
-#                 suppress_leaf_node_taxa=False,
-#                 taxon_namespace=self.check_tns)
-
-#     def test_append_default(self):
-#         self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
-#         self.tree_list.append(self.foreign_tree)
-#         self.assertEqual(len(self.tree_list), 1)
-#         self.assertIn(self.foreign_tree, self.tree_list)
-#         self.assertIs(self.foreign_tree, self.tree_list[0])
-#         self.assertIs(self.tree_list.taxon_namespace, self.native_tns)
-#         self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
-#         self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
-#         for nd in self.foreign_tree:
-#             if nd.taxon:
-#                 self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
-#                 self.assertIsNot(nd.taxon, nd.original_taxon)
-#                 self.assertIn(nd.original_taxon, self.foreign_tns)
-#                 self.assertNotIn(nd.original_taxon, self.tree_list.taxon_namespace)
-#                 self.assertEqual(nd.taxon.label, nd.original_taxon.label)
-
-#     def test_append_migrate_matching_labels(self):
-#         kwargs_groups = [
-#                 {"taxon_import_strategy": "migrate", "unify_taxa_by_label": True},
-#                 {"taxon_import_strategy": "migrate", "unify_taxa_by_label": False},
-#                 {"taxon_import_strategy": "add", },
-#         ]
-#         for kwargs in kwargs_groups:
-#             self.setUp()
-#             self.assertEqual(len(self.tree_list.taxon_namespace), 0)
-#             native_tree, anodes, lnodes, inodes = self.get_tree(
-#                     suppress_internal_node_taxa=False,
-#                     suppress_leaf_node_taxa=False,
-#                     taxon_namespace=self.native_tns)
-#             self.assertEqual(len(self.tree_list.taxon_namespace), len(self.postorder_sequence))
-#             self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
-#             original_tns_len = len(self.tree_list.taxon_namespace)
-#             self.tree_list.append(self.foreign_tree, **kwargs)
-#             self.assertEqual(len(self.tree_list), 1)
-#             self.assertIn(self.foreign_tree, self.tree_list)
-#             self.assertIs(self.foreign_tree, self.tree_list[0])
-#             self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
-#             if kwargs["taxon_import_strategy"] == "add":
-#                 self.assertEqual(len(self.tree_list.taxon_namespace),
-#                         original_tns_len + len(self.foreign_tns))
-#                 for nd in self.foreign_tree:
-#                     self.assertIn(nd.taxon, self.foreign_tns)
-#                     self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
-#             else:
-#                 if "unify_taxa_by_label" not in kwargs or not kwargs["unify_taxa_by_label"]:
-#                     self.assertEqual(len(self.tree_list.taxon_namespace),
-#                             original_tns_len + len(self.foreign_tns))
-#                 else:
-#                     self.assertEqual(len(self.tree_list.taxon_namespace), original_tns_len)
-#                 for nd in self.foreign_tree:
-#                     self.assertNotIn(nd.taxon, self.foreign_tns)
-#                     self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
-
-#     def test_append_add(self):
-#         self.assertIsNot(self.tree_list.taxon_namespace, self.foreign_tree.taxon_namespace)
-#         self.tree_list.append(self.foreign_tree,
-#                 taxon_import_strategy="add")
-#         self.assertEqual(len(self.tree_list), 1)
-#         self.assertIn(self.foreign_tree, self.tree_list)
-#         self.assertIs(self.foreign_tree, self.tree_list[0])
-#         self.assertIs(self.tree_list.taxon_namespace, self.native_tns)
-#         self.assertIs(self.foreign_tree.taxon_namespace, self.tree_list.taxon_namespace)
-#         self.assertEqual(len(self.tree_list.taxon_namespace), len(self.foreign_tns))
-#         for nd in self.foreign_tree:
-#             if nd.taxon:
-#                 self.assertIn(nd.taxon, self.tree_list.taxon_namespace)
-#                 self.assertIs(nd.taxon, nd.original_taxon)
-#                 self.assertIn(nd.original_taxon, self.foreign_tns)
-#                 self.assertIn(nd.original_taxon, self.tree_list.taxon_namespace)
-
-# class TreeListCreation(unittest.TestCase):
-
-#     def test_create_with_taxon_namespace(self):
-#         tns = dendropy.TaxonNamespace()
-#         tt = TreeList(label="a", taxon_namespace=tns)
-#         self.assertEqual(tt.label, "a")
-#         self.assertIs(tt.taxon_namespace, tns)
-
-# class TreeListCreatingAndCloning(
-#         datagen_curated_test_tree.CuratedTestTree,
-#         compare_and_validate.Comparator,
-#         unittest.TestCase):
-
-#     def add_tree_annotations(self, tree):
-#         for idx, nd in enumerate(tree):
-#             if idx % 2 == 0:
-#                 nd.edge.label = "E{}".format(idx)
-#                 nd.edge.length = idx
-#             an1 = nd.annotations.add_new("a{}".format(idx),
-#                     "{}{}{}".format(nd.label, nd.taxon, idx))
-#             an2 = nd.annotations.add_bound_attribute("label")
-#             an3 = an1.annotations.add_bound_attribute("name")
-#             ae1 = nd.edge.annotations.add_new("a{}".format(idx),
-#                     "{}{}".format(nd.edge.label, idx))
-#             ae2 = nd.edge.annotations.add_bound_attribute("label")
-#             ae3 = ae1.annotations.add_bound_attribute("name")
-#         tree.annotations.add_new("a", 0)
-#         tree.label = "hello"
-#         b = tree.annotations.add_bound_attribute("label")
-#         b.annotations.add_new("c", 3)
-
-#     def add_tree_list_annotations(self, tree_list):
-#         tree_list.annotations.add_new("a", 0)
-#         tree_list.label = "hello"
-#         b = tree_list.annotations.add_bound_attribute("label")
-#         b.annotations.add_new("c", 3)
-
-#     def add_taxon_namespace_annotations(self, tns):
-#         for idx, taxon in enumerate(tns):
-#             a = taxon.annotations.add_new("!color", str(idx))
-#             a.annotations.add_new("setbytest", "a")
-
-#     def setUp(self):
-#         self.num_trees = 5
-#         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-#                 suppress_internal_node_taxa=False,
-#                 suppress_leaf_node_taxa=False)
-#         self.original_taxon_labels = [t.label for t in tree1.taxon_namespace]
-#         assert len(self.original_taxon_labels) == len(anodes1)
-
-#     def get_tree_list(self):
-#         tlist1 = TreeList()
-#         self.num_trees = 5
-#         for idx in range(self.num_trees):
-#             tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-#                     suppress_internal_node_taxa=False,
-#                     suppress_leaf_node_taxa=False,
-#                     taxon_namespace=tlist1.taxon_namespace)
-#             self.add_tree_annotations(tree1)
-#             tlist1.append(tree1)
-#         self.add_tree_list_annotations(tlist1)
-#         self.add_taxon_namespace_annotations(tlist1.taxon_namespace)
-#         return tlist1
-
-#     def test_shallow_copy_with_initializer_list(self):
-#         tlist1 = self.get_tree_list()
-#         trees = tlist1._trees
-#         tlist2 = dendropy.TreeList(trees)
-#         self.assertEqual(len(tlist2), self.num_trees)
-#         for tcopy, toriginal in zip(tlist2, trees):
-#             self.assertIs(tcopy, toriginal)
-#             self.assertIs(tcopy.taxon_namespace, tlist2.taxon_namespace)
-
-#     def test_clone0(self):
-#         tlist1 = self.get_tree_list()
-#         for tlist2 in (
-#                 tlist1.clone(0),
-#                 ):
-#             self.assertIs(tlist2.taxon_namespace, tlist1.taxon_namespace)
-#             self.assertEqual(len(tlist2), self.num_trees)
-#             for tcopy, toriginal in zip(tlist2, tlist1):
-#                 self.assertIs(tcopy, toriginal)
-#                 self.assertIs(tcopy.taxon_namespace, tlist2.taxon_namespace)
-
-#     def test_taxon_namespace_scoped_copy(self):
-#         tlist1 = self.get_tree_list()
-#         for tlist2 in (
-#                 tlist1.clone(1),
-#                 dendropy.TreeList(tlist1),
-#                 tlist1.taxon_namespace_scoped_copy(),):
-#             self.compare_distinct_tree_list(tlist2, tlist1,
-#                     taxon_namespace_scoped=True,
-#                     compare_tree_annotations=True,
-#                     compare_taxon_annotations=True)
-
-#     def test_deepcopy_including_namespace(self):
-#         tlist1 = self.get_tree_list()
-#         for idx, tlist2 in enumerate((
-#                 tlist1.clone(2),
-#                 copy.deepcopy(tlist1),
-#                 )):
-#             self.compare_distinct_tree_list(tlist2, tlist1,
-#                     taxon_namespace_scoped=False,
-#                     compare_tree_annotations=True,
-#                     compare_taxon_annotations=True)
-
-#     def test_deepcopy_excluding_namespace(self):
-#         tlist1 = self.get_tree_list()
-#         tlist2 = dendropy.TreeList(tlist1,
-#                 taxon_namespace=dendropy.TaxonNamespace())
-#         self.compare_distinct_tree_list(tlist2, tlist1,
-#                 taxon_namespace_scoped=False,
-#                 compare_tree_annotations=True,
-#                 compare_taxon_annotations=False)
+    def test_migrate_taxon_namespace_unifying_case_insensitive_fail(self):
+        for char_matrix in (
+                self.get_char_matrix_with_case_insensitive_label_collisions(),
+                self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions(),
+                ):
+            new_tns = dendropy.TaxonNamespace()
+            char_matrix._taxon_namespace = new_tns
+            with self.assertRaises(error.TaxonNamespaceReconstructionError):
+                char_matrix.migrate_taxon_namespace(
+                        new_tns,
+                        unify_taxa_by_label=True,
+                        case_sensitive_label_mapping=False)
 
 if __name__ == "__main__":
     unittest.main()
