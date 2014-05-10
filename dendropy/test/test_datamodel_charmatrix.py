@@ -558,6 +558,7 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 "B", "h", "H", "h", None, None,
                 "H", "J", "j",
                 ]
+        # labels = [str(i) for i in range(15)]
         char_matrix.expected_labels = set()
         char_matrix.expected_taxa = set()
         char_matrix.original_taxa = []
@@ -576,6 +577,8 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
 
     def setUp(self):
         self.char_matrix = self.get_char_matrix()
+        # for t in self.char_matrix:
+        #     print("{}: {}".format(repr(t), self.char_matrix[t]))
 
     def verify_taxon_namespace_reconstruction(self,
             unify_taxa_by_label=False,
@@ -631,24 +634,30 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         if not unify_taxa_by_label and not redundant_taxa:
             self.assertEqual(len(char_matrix.taxon_namespace), len(self.old_label_to_new_label_map))
 
-    # def test_basic_reconstruction(self):
-    #     char_matrix = self.get_char_matrix()
-    #     tns = char_matrix.taxon_namespace
-    #     new_tns = dendropy.TaxonNamespace()
-    #     char_matrix.taxon_namespace = new_tns
-    #     char_matrix.reconstruct_taxon_namespace(
-    #             unify_taxa_by_label=False,
-    #             case_sensitive_label_mapping=True)
-    #     self.assertIsNot(char_matrix.taxon_namespace, tns)
-    #     self.assertIs(char_matrix.taxon_namespace, new_tns)
-    #     self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
-    #     original_labels = [t.label for t in tns]
-    #     new_labels = [t.label for t in new_tns]
-    #     self.assertCountEqual(new_labels, original_labels)
-    #     for taxon in char_matrix:
-    #         self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
-    #         self.assertIn(taxon, char_matrix.taxon_namespace)
-    #         self.assertNotIn(taxon, tns)
+    def test_basic_reconstruction(self):
+        char_matrix = self.get_char_matrix()
+        tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix.taxon_namespace = new_tns
+        char_matrix.reconstruct_taxon_namespace(
+                unify_taxa_by_label=False,
+                case_sensitive_label_mapping=True)
+        # print("\n--\n")
+        # for t in self.char_matrix:
+            # print("{}: {}".format(repr(t), self.char_matrix[t]))
+            # assert t in self.char_matrix.taxon_namespace
+        self.assertIsNot(char_matrix.taxon_namespace, tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        if len(char_matrix.taxon_namespace) != len(tns):
+            print("--\n{}\n{}\n".format(char_matrix.taxon_namespace, tns))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
+        original_labels = [t.label for t in tns]
+        new_labels = [t.label for t in new_tns]
+        self.assertCountEqual(new_labels, original_labels)
+        for taxon in char_matrix:
+            self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
+            self.assertIn(taxon, char_matrix.taxon_namespace)
+            self.assertNotIn(taxon, tns)
 
 #     def test_reconstruct_taxon_namespace_non_unifying(self):
 #         original_tns = self.tree_list.taxon_namespace

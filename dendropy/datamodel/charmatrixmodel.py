@@ -395,6 +395,34 @@ class CharacterMatrix(
     ###########################################################################
     ### Taxon Management
 
+    def reconstruct_taxon_namespace(self,
+            unify_taxa_by_label=True,
+            case_sensitive_label_mapping=True,
+            taxon_mapping_memo=None):
+        if taxon_mapping_memo is None:
+            taxon_mapping_memo = {}
+        for original_taxon in self._taxon_sequence_map:
+            if unify_taxa_by_label or original_taxon not in self.taxon_namespace:
+                t = taxon_mapping_memo.get(original_taxon, None)
+                if t is None:
+                    # taxon to use not given and
+                    # we have not yet created a counterpart
+                    if unify_taxa_by_label:
+                        # this will force usage of any taxon with
+                        # a label that matches the current taxon
+                        t = self.taxon_namespace.require_taxon(
+                                label=original_taxon.label,
+                                case_sensitive=case_sensitive_label_mapping)
+                    else:
+                        # this will unconditionally create a new taxon
+                        t = self.taxon_namespace.new_taxon(label=original_taxon.label)
+                    taxon_mapping_memo[original_taxon] = t
+                else:
+                    # taxon to use is given by mapping
+                    self.taxon_namespace.add_taxon(t)
+                self._taxon_sequence_map[t] = self._taxon_sequence_map[original_taxon]
+                del self._taxon_sequence_map[original_taxon]
+
     def update_taxon_namespace(self):
         """
         All :class:`Taxon` objects in `self` that are not in
