@@ -34,17 +34,6 @@ def get_taxon_namespace(ntax):
         t = taxon_namespace.require_taxon(label=label)
     return taxon_namespace
 
-def get_labeled_namespace():
-    taxon_namespace = dendropy.TaxonNamespace()
-    labels = [
-            "a", "b", "c", "e", "f",
-            "g", "h", "i", "j", "k",
-            "l", "m", "n", "o", "p",
-            ]
-    for label in labels:
-        t = taxon_namespace.require_taxon(label=label)
-    return taxon_namespace
-
 class CharacterMatrixBasicCRUDTests(dendropytest.ExtendedTestCase):
 
     def test_setitem_by_taxon(self):
@@ -525,46 +514,20 @@ class TestCharacterMatrixUpdateTaxonNamespace(
         dendropytest.ExtendedTestCase):
 
     def get_char_matrix(self):
-        tns = get_labeled_namespace()
+        labels = [
+            "z01" , "<NONE>" , "z03" , "z04" , "z05" ,
+            "z06" , None     , None  , "z09" , "z10" ,
+            "z11" , "<NONE>" , None  , "z14" , "z15" ,
+                ]
         char_matrix = charmatrixmodel.CharacterMatrix()
-        char_matrix.expected_labels = set()
+        char_matrix.expected_labels = []
         char_matrix.expected_taxa = set()
-        char_matrix.node_label_to_taxon_label_map = {
-            "a" : "z01",
-            "b" : "<NONE>",
-            "c" : "z03",
-            "e" : "z04",
-            "f" : "z05",
-            "g" : "z06",
-            "h" : None,
-            "i" : None,
-            "j" : "z09",
-            "k" : "z10",
-            "l" : "z11",
-            "m" : "<NONE>",
-            "n" : None,
-            "o" : "z14",
-            "p" : "z15",
-                }
-        registry = {}
-        for seq_idx, taxon in enumerate(tns):
-            if taxon.label == "<NONE>":
-                try:
-                    t = registry[None]
-                except KeyError:
-                    t = dendropy.Taxon(label=None)
-                    registry[None] = t
-                char_matrix.expected_labels.add(None)
-            else:
-                try:
-                    t = registry[taxon.label]
-                except KeyError:
-                    t = dendropy.Taxon(label=taxon.label)
-                    registry[taxon.label] = t
-                char_matrix.expected_labels.add(taxon.label)
-            char_matrix.expected_taxa.add(t)
+        for label in labels:
+            t = dendropy.Taxon(label=None)
             char_matrix.taxon_namespace.add_taxon(t)
             char_matrix[t] = [1,1,1]
+            char_matrix.expected_taxa.add(t)
+            char_matrix.expected_labels.append(t.label)
         char_matrix.taxon_namespace = dendropy.TaxonNamespace()
         return char_matrix
 
@@ -589,131 +552,103 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         dendropytest.ExtendedTestCase):
 
     def get_char_matrix(self):
-        tns = get_labeled_namespace()
-        char_matrix.node_label_to_taxon_label_map = {
-            "a" : "a",
-            "b" : "a",
-            "c" : "2",
-            "e" : "2",
-            "f" : "b",
-            "g" : "B",
-            "h" : "B",
-            "i" : "h",
-            "j" : "H",
-            "k" : "h",
-            "l" : None,
-            "m" : None,
-            "n" : "H",
-            "o" : "J",
-            "p" : "j",
-                }
-        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        char_matrix = charmatrixmodel.CharacterMatrix()
+        labels = [
+                "a", "a", "2", "2", "b", "B",
+                "B", "h", "H", "h", None, None,
+                "H", "J", "j",
+                ]
         char_matrix.expected_labels = set()
         char_matrix.expected_taxa = set()
         char_matrix.original_taxa = []
         registry = {}
-        for taxon in tns:
-            seq.label = taxon.label
-#         for tree in trees:
-#             for idx, nd in enumerate(tree):
-#                 try:
-#                     t = registry[nd.label]
-#                 except KeyError:
-#                     taxon_label = self.node_label_to_taxon_label_map[nd.label]
-#                     t = dendropy.Taxon(label=taxon_label)
-#                     registry[nd.label] = t
-#                     self.original_taxa.append(t)
-#                 tree.taxon_namespace.add_taxon(t)
-#                 nd.taxon = t
-#                 nd.original_taxon = t
-#         assert len(tree.taxon_namespace) == len(self.node_label_to_taxon_label_map)
-#         assert len(tree.taxon_namespace) == len(self.original_taxa)
-#         self.tree_list = dendropy.TreeList(taxon_namespace=tns)
-#         self.tree_list._trees = trees
+        for label in labels:
+            t = dendropy.Taxon(label=label)
+            char_matrix.taxon_namespace.add_taxon(t)
+            char_matrix.original_taxa.append(t)
+            char_matrix[t].original_taxon = t
+            seq = [random.randint(0, 100) for _ in range(4)]
+            char_matrix[t] = seq
+            char_matrix[t].original_seq = char_matrix[t]
+            char_matrix[t].label = label
+        assert len(char_matrix.taxon_namespace) == len(char_matrix.original_taxa)
+        return char_matrix
 
-#     def verify_taxon_namespace_reconstruction(self,
-#             unify_taxa_by_label=False,
-#             case_sensitive_label_mapping=True,
-#             original_tns=None,
-#             redundant_taxa=False):
-#         if unify_taxa_by_label:
-#             if not case_sensitive_label_mapping:
-#                 expected_labels = list(set((label.upper() if label is not None else None) for label in self.node_label_to_taxon_label_map.values()))
-#             else:
-#                 expected_labels = list(set(label for label in self.node_label_to_taxon_label_map.values()))
-#         else:
-#             expected_labels = [label for label in self.node_label_to_taxon_label_map.values()]
-#         for tree in self.tree_list:
-#             seen_taxa = []
-#             self.assertIs(tree.taxon_namespace, self.tree_list.taxon_namespace)
-#             for nd in tree:
-#                 self.assertIsNot(nd.taxon, nd.original_taxon)
-#                 if not case_sensitive_label_mapping and nd.taxon.label is not None:
-#                     self.assertEqual(nd.taxon.label.upper(), nd.original_taxon.label.upper())
-#                     self.assertEqual(self.node_label_to_taxon_label_map[nd.label].upper(), nd.taxon.label.upper())
-#                 else:
-#                     self.assertEqual(nd.taxon.label, nd.original_taxon.label)
-#                     self.assertEqual(self.node_label_to_taxon_label_map[nd.label], nd.taxon.label)
-#                 self.assertNotIn(nd.original_taxon, tree.taxon_namespace)
-#                 self.assertIn(nd.original_taxon, self.original_taxa)
-#                 self.assertIn(nd.taxon, tree.taxon_namespace)
-#                 self.assertNotIn(nd.taxon, self.original_taxa)
-#                 if original_tns is not None:
-#                     self.assertNotIn(nd.taxon, original_tns)
-#                 if nd.taxon not in seen_taxa:
-#                     seen_taxa.append(nd.taxon)
-#                 else:
-#                     self.assertTrue(unify_taxa_by_label or redundant_taxa)
-#                     if not case_sensitive_label_mapping:
-#                         self.assertIn(nd.taxon.label, [t.label for t in seen_taxa])
-#                     else:
-#                         if nd.taxon.label is None:
-#                             self.assertIs(nd.original_taxon.label, None)
-#                             self.assertEqual([t.label for t in seen_taxa].count(None), 1)
-#                         else:
-#                             x1 = [t.label.upper() for t in seen_taxa if t.label is not None]
-#                             self.assertIn(nd.taxon.label.upper(), x1)
-#             self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
-#             if not case_sensitive_label_mapping:
-#                 seen_labels = [(t.label.upper() if t.label is not None else None) for t in seen_taxa]
-#             else:
-#                 seen_labels = [t.label for t in seen_taxa]
-#             c1 = collections.Counter(expected_labels)
-#             c2 = collections.Counter(seen_labels)
-#             self.assertEqual(c1, c2)
+    def setUp(self):
+        self.char_matrix = self.get_char_matrix()
 
-#         self.assertEqual(len(tree.taxon_namespace), len(expected_labels))
-#         if not unify_taxa_by_label and not redundant_taxa:
-#             self.assertEqual(len(tree.taxon_namespace), len(self.node_label_to_taxon_label_map))
+    def verify_taxon_namespace_reconstruction(self,
+            unify_taxa_by_label=False,
+            case_sensitive_label_mapping=True,
+            original_tns=None,
+            redundant_taxa=False):
+        if unify_taxa_by_label:
+            if not case_sensitive_label_mapping:
+                expected_labels = list(set((label.upper() if label is not None else None) for label in self.old_label_to_new_label_map.values()))
+            else:
+                expected_labels = list(set(label for label in self.old_label_to_new_label_map.values()))
+        else:
+            expected_labels = [label for label in self.old_label_to_new_label_map.values()]
+        seen_taxa = []
+        for taxon in char_matrix:
+            seq = char_matrix[taxon]
+            self.assertIsNot(taxon, seq.original_taxon)
+            if not case_sensitive_label_mapping and taxon.label is not None:
+                self.assertEqual(taxon.label.upper(), seq.original_taxon.label.upper())
+                self.assertEqual(self.old_label_to_new_label_map[seq.label].upper(), taxon.label.upper())
+            else:
+                self.assertEqual(taxon.label, seq.original_taxon.label)
+                self.assertEqual(self.old_label_to_new_label_map[seq.label], taxon.label)
+            self.assertNotIn(seq.original_taxon, char_matrix.taxon_namespace)
+            self.assertIn(seq.original_taxon, self.original_taxa)
+            self.assertIn(taxon, char_matrix.taxon_namespace)
+            self.assertNotIn(taxon, self.original_taxa)
+            if original_tns is not None:
+                self.assertNotIn(taxon, original_tns)
+            if taxon not in seen_taxa:
+                seen_taxa.append(taxon)
+            else:
+                self.assertTrue(unify_taxa_by_label or redundant_taxa)
+                if not case_sensitive_label_mapping:
+                    self.assertIn(taxon.label, [t.label for t in seen_taxa])
+                else:
+                    if taxon.label is None:
+                        self.assertIs(seq.original_taxon.label, None)
+                        self.assertEqual([t.label for t in seen_taxa].count(None), 1)
+                    else:
+                        x1 = [t.label.upper() for t in seen_taxa if t.label is not None]
+                        self.assertIn(taxon.label.upper(), x1)
+        self.assertEqual(len(seen_taxa), len(char_matrix.taxon_namespace))
+        if not case_sensitive_label_mapping:
+            seen_labels = [(t.label.upper() if t.label is not None else None) for t in seen_taxa]
+        else:
+            seen_labels = [t.label for t in seen_taxa]
+        c1 = collections.Counter(expected_labels)
+        c2 = collections.Counter(seen_labels)
+        self.assertEqual(c1, c2)
 
-#     def test_basic_reconstruction(self):
-#         tns = dendropy.TaxonNamespace()
-#         trees = []
-#         for idx in range(5):
-#             tree, anodes, lnodes, inodes = self.get_tree(
-#                     suppress_internal_node_taxa=False,
-#                     suppress_leaf_node_taxa=False,
-#                     taxon_namespace=tns)
-#             trees.append(tree)
-#         tree_list = dendropy.TreeList(taxon_namespace=tns)
-#         tree_list._trees = trees
-#         new_tns = dendropy.TaxonNamespace()
-#         tree_list.taxon_namespace = new_tns
-#         tree_list.reconstruct_taxon_namespace(
-#                 unify_taxa_by_label=False,
-#                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(tree_list.taxon_namespace, tns)
-#         self.assertIs(tree_list.taxon_namespace, new_tns)
-#         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
-#         original_labels = [t.label for t in tns]
-#         new_labels = [t.label for t in new_tns]
-#         self.assertCountEqual(new_labels, original_labels)
-#         for tree in tree_list:
-#             self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
-#             for nd in tree:
-#                 if nd.taxon is not None:
-#                     self.assertIn(nd.taxon, tree.taxon_namespace)
-#                     self.assertNotIn(nd.taxon, tns)
+        self.assertEqual(len(char_matrix.taxon_namespace), len(expected_labels))
+        if not unify_taxa_by_label and not redundant_taxa:
+            self.assertEqual(len(char_matrix.taxon_namespace), len(self.old_label_to_new_label_map))
+
+    # def test_basic_reconstruction(self):
+    #     char_matrix = self.get_char_matrix()
+    #     tns = char_matrix.taxon_namespace
+    #     new_tns = dendropy.TaxonNamespace()
+    #     char_matrix.taxon_namespace = new_tns
+    #     char_matrix.reconstruct_taxon_namespace(
+    #             unify_taxa_by_label=False,
+    #             case_sensitive_label_mapping=True)
+    #     self.assertIsNot(char_matrix.taxon_namespace, tns)
+    #     self.assertIs(char_matrix.taxon_namespace, new_tns)
+    #     self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
+    #     original_labels = [t.label for t in tns]
+    #     new_labels = [t.label for t in new_tns]
+    #     self.assertCountEqual(new_labels, original_labels)
+    #     for taxon in char_matrix:
+    #         self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
+    #         self.assertIn(taxon, char_matrix.taxon_namespace)
+    #         self.assertNotIn(taxon, tns)
 
 #     def test_reconstruct_taxon_namespace_non_unifying(self):
 #         original_tns = self.tree_list.taxon_namespace
