@@ -422,7 +422,7 @@ class CharacterMatrix(
                     # taxon to use is given by mapping
                     self.taxon_namespace.add_taxon(t)
                 if t in self._taxon_sequence_map:
-                    raise ValueError("Multiple sequences for taxon with label '{}'".format(t.label))
+                    raise error.TaxonNamespaceReconstructionError("Multiple sequences for taxon with label '{}'".format(t.label))
                 self._taxon_sequence_map[t] = self._taxon_sequence_map[original_taxon]
                 del self._taxon_sequence_map[original_taxon]
 

@@ -584,7 +584,7 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix.nseqs = len(char_matrix)
         return char_matrix
 
-    def get_char_matrix_with_case_insensitivelabel_collisions(self):
+    def get_char_matrix_with_case_insensitive_label_collisions(self):
         labels = [
                 "a", "A", "b", "B", "c", "C",
                 ]
@@ -716,19 +716,28 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 unify_taxa_by_label=False,
                 case_sensitive_label_mapping=True)
 
-    # def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
-    #     original_tns = self.char_matrix.taxon_namespace
-    #     new_tns = dendropy.TaxonNamespace()
-    #     self.char_matrix._taxon_namespace = new_tns
-    #     self.assertEqual(len(self.char_matrix.taxon_namespace), 0)
-    #     self.char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-    #             case_sensitive_label_mapping=True)
-    #     self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
-    #     self.assertIs(self.char_matrix.taxon_namespace, new_tns)
-    #     self.verify_taxon_namespace_reconstruction(
-    #             unify_taxa_by_label=True,
-    #             case_sensitive_label_mapping=True,
-    #             original_tns=original_tns)
+    def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
+        char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
+        original_tns = char_matrix.taxon_namespace
+        new_tns = dendropy.TaxonNamespace()
+        char_matrix._taxon_namespace = new_tns
+        self.assertEqual(len(char_matrix.taxon_namespace), 0)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+                case_sensitive_label_mapping=True)
+        self.assertIsNot(char_matrix.taxon_namespace, original_tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.verify_taxon_namespace_reconstruction(
+                char_matrix=char_matrix,
+                unify_taxa_by_label=True,
+                case_sensitive_label_mapping=True,
+                original_tns=original_tns)
+
+    def test_reconstruct_taxon_namespace_unifying_case_sensitive_fail(self):
+        char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
+        with self.assertRaises(error.TaxonNamespaceReconstructionError):
+            char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+                    case_sensitive_label_mapping=True)
+
 
     # def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
     #     original_tns = self.char_matrix.taxon_namespace
