@@ -523,6 +523,7 @@ class TestCharacterMatrixUpdateTaxonNamespace(
         char_matrix = charmatrixmodel.CharacterMatrix()
         char_matrix.expected_labels = []
         char_matrix.expected_taxa = set()
+        random.shuffle(labels)
         for label in labels:
             t = dendropy.Taxon(label=None)
             char_matrix.taxon_namespace.add_taxon(t)
@@ -530,6 +531,9 @@ class TestCharacterMatrixUpdateTaxonNamespace(
             char_matrix.expected_taxa.add(t)
             char_matrix.expected_labels.append(t.label)
         char_matrix.taxon_namespace = dendropy.TaxonNamespace()
+        assert len(char_matrix) == len(labels)
+        assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
+        char_matrix.nseqs = len(char_matrix)
         return char_matrix
 
     def test_update(self):
@@ -548,6 +552,8 @@ class TestCharacterMatrixUpdateTaxonNamespace(
         new_labels = [t.label for t in original_tns]
         self.assertCountEqual(new_taxa, char_matrix.expected_taxa)
         self.assertCountEqual(new_labels, char_matrix.expected_labels)
+        self.assertEqual(len(char_matrix), char_matrix.nseqs)
+        assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
 
 class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         dendropytest.ExtendedTestCase):
@@ -558,6 +564,7 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
             labels = [str(i) for i in range(1000)]
         char_matrix.expected_labels = []
         char_matrix.original_taxa = []
+        char_matrix.original_seqs = []
         self.rng.shuffle(labels)
         for label in labels:
             t = dendropy.Taxon(label=label)
@@ -568,9 +575,13 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
             seq = [self.rng.randint(0, 100) for _ in range(4)]
             char_matrix[t] = seq
             char_matrix[t].original_seq = char_matrix[t]
+            char_matrix.original_seqs.append(char_matrix[t])
             char_matrix[t].original_taxon = t
             char_matrix[t].label = label
         assert len(char_matrix.taxon_namespace) == len(char_matrix.original_taxa)
+        assert len(char_matrix) == len(char_matrix.original_taxa)
+        assert len(char_matrix) == len(labels)
+        char_matrix.nseqs = len(char_matrix)
         return char_matrix
 
     def setUp(self):
@@ -589,6 +600,9 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
             original_tns=None):
         if char_matrix is None:
             char_matrix = self.char_matrix
+        self.assertEqual(len(char_matrix), char_matrix.nseqs)
+        self.assertEqual(len(char_matrix), len(char_matrix.original_seqs))
+        assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
         if unify_taxa_by_label:
             if not case_sensitive_label_mapping:
                 expected_labels = list(set((label.upper() if label is not None else None) for label in char_matrix.expected_labels))
@@ -599,6 +613,9 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         seen_taxa = []
         for taxon in char_matrix:
             seq = char_matrix[taxon]
+            self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
+            self.assertIn(char_matrix[taxon], char_matrix.original_seqs)
+            char_matrix.original_seqs.remove(char_matrix[taxon])
             self.assertIsNot(taxon, seq.original_taxon)
             if not case_sensitive_label_mapping and taxon.label is not None:
                 self.assertEqual(taxon.label.upper(), seq.original_taxon.label.upper())
@@ -638,6 +655,7 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         self.assertEqual(len(char_matrix.taxon_namespace), len(expected_labels))
         if not unify_taxa_by_label:
             self.assertEqual(len(char_matrix.taxon_namespace), len(char_matrix.original_taxa))
+        self.assertEqual(char_matrix.original_seqs, [])
 
     def test_basic_reconstruction(self):
         char_matrix = self.get_char_matrix()
@@ -653,6 +671,9 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
             # assert t in self.char_matrix.taxon_namespace
         self.assertIsNot(char_matrix.taxon_namespace, tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
+        self.assertEqual(len(char_matrix), char_matrix.nseqs)
+        self.assertEqual(len(char_matrix), len(char_matrix.original_seqs))
+        assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
         if len(char_matrix.taxon_namespace) != len(tns):
             x1 = [t.label for t in char_matrix.taxon_namespace]
             x2 = [t.label for t in tns]
@@ -665,9 +686,12 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         new_labels = [t.label for t in new_tns]
         self.assertCountEqual(new_labels, original_labels)
         for taxon in char_matrix:
-            self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
             self.assertIn(taxon, char_matrix.taxon_namespace)
             self.assertNotIn(taxon, tns)
+            self.assertIs(char_matrix[taxon], char_matrix[taxon].original_seq)
+            self.assertIn(char_matrix[taxon], char_matrix.original_seqs)
+            char_matrix.original_seqs.remove(char_matrix[taxon])
+        self.assertEqual(char_matrix.original_seqs, [])
 
     def test_reconstruct_taxon_namespace_non_unifying(self):
         original_tns = self.char_matrix.taxon_namespace
