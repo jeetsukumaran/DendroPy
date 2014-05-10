@@ -20,6 +20,7 @@
 Tests character sequence map.
 """
 
+import collections
 import random
 import unittest
 import dendropy
@@ -558,17 +559,17 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 "B", "h", "H", "h", None, None,
                 "H", "J", "j",
                 ]
-        # labels = [str(i) for i in range(15)]
+        labels = [str(i) for i in range(1000)]
         char_matrix.expected_labels = set()
         char_matrix.expected_taxa = set()
         char_matrix.original_taxa = []
-        registry = {}
+        self.rng.shuffle(labels)
         for label in labels:
             t = dendropy.Taxon(label=label)
             char_matrix.taxon_namespace.add_taxon(t)
             char_matrix.original_taxa.append(t)
             char_matrix[t].original_taxon = t
-            seq = [random.randint(0, 100) for _ in range(4)]
+            seq = [self.rng.randint(0, 100) for _ in range(4)]
             char_matrix[t] = seq
             char_matrix[t].original_seq = char_matrix[t]
             char_matrix[t].label = label
@@ -576,6 +577,7 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         return char_matrix
 
     def setUp(self):
+        self.rng = random.Random()
         self.char_matrix = self.get_char_matrix()
         # for t in self.char_matrix:
         #     print("{}: {}".format(repr(t), self.char_matrix[t]))
@@ -649,7 +651,12 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         self.assertIsNot(char_matrix.taxon_namespace, tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         if len(char_matrix.taxon_namespace) != len(tns):
-            print("--\n{}\n{}\n".format(char_matrix.taxon_namespace, tns))
+            x1 = [t.label for t in char_matrix.taxon_namespace]
+            x2 = [t.label for t in tns]
+            c1 = collections.Counter(x1)
+            c2 = collections.Counter(x2)
+            c3 = c2 - c1
+            print(c3)
         self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
         original_labels = [t.label for t in tns]
         new_labels = [t.label for t in new_tns]

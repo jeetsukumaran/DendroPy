@@ -401,7 +401,8 @@ class CharacterMatrix(
             taxon_mapping_memo=None):
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}
-        for original_taxon in self._taxon_sequence_map:
+        original_taxa = list(self._taxon_sequence_map.keys())
+        for original_taxon in original_taxa:
             if unify_taxa_by_label or original_taxon not in self.taxon_namespace:
                 t = taxon_mapping_memo.get(original_taxon, None)
                 if t is None:
