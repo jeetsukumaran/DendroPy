@@ -584,22 +584,30 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix.nseqs = len(char_matrix)
         return char_matrix
 
-    def setUp(self):
-        self.rng = random.Random()
+    def get_char_matrix_with_case_insensitivelabel_collisions(self):
+        labels = [
+                "a", "A", "b", "B", "c", "C",
+                ]
+        char_matrix = self.get_char_matrix(labels=labels)
+        return char_matrix
+
+    def get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions(self):
         labels = [
                 "a", "a", "2", "2", "b", "B",
                 "B", "h", "H", "h", None, None,
                 "H", "J", "j",
                 ]
-        self.char_matrix = self.get_char_matrix(labels=labels)
+        char_matrix = self.get_char_matrix(labels=labels)
+        return char_matrix
+
+    def setUp(self):
+        self.rng = random.Random()
 
     def verify_taxon_namespace_reconstruction(self,
-            char_matrix=None,
+            char_matrix,
             unify_taxa_by_label=False,
             case_sensitive_label_mapping=True,
             original_tns=None):
-        if char_matrix is None:
-            char_matrix = self.char_matrix
         self.assertEqual(len(char_matrix), char_matrix.nseqs)
         self.assertEqual(len(char_matrix), len(char_matrix.original_seqs))
         assert len(char_matrix) == len(char_matrix._taxon_sequence_map)
@@ -694,45 +702,47 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         self.assertEqual(char_matrix.original_seqs, [])
 
     def test_reconstruct_taxon_namespace_non_unifying(self):
-        original_tns = self.char_matrix.taxon_namespace
+        char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
+        original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        self.char_matrix._taxon_namespace = new_tns
-        self.assertEqual(len(self.char_matrix.taxon_namespace), 0)
-        self.char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=False,
+        char_matrix._taxon_namespace = new_tns
+        self.assertEqual(len(char_matrix.taxon_namespace), 0)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=False,
                 case_sensitive_label_mapping=True)
-        self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
-        self.assertIs(self.char_matrix.taxon_namespace, new_tns)
+        self.assertIsNot(char_matrix.taxon_namespace, original_tns)
+        self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
+                char_matrix=char_matrix,
                 unify_taxa_by_label=False,
                 case_sensitive_label_mapping=True)
 
-#     def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
-#         original_tns = self.tree_list.taxon_namespace
-#         new_tns = dendropy.TaxonNamespace()
-#         self.tree_list._taxon_namespace = new_tns
-#         self.assertEqual(len(self.tree_list.taxon_namespace), 0)
-#         self.tree_list.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
-#         self.assertIs(self.tree_list.taxon_namespace, new_tns)
-#         self.verify_taxon_namespace_reconstruction(
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=True,
-#                 original_tns=original_tns)
+    # def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
+    #     original_tns = self.char_matrix.taxon_namespace
+    #     new_tns = dendropy.TaxonNamespace()
+    #     self.char_matrix._taxon_namespace = new_tns
+    #     self.assertEqual(len(self.char_matrix.taxon_namespace), 0)
+    #     self.char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+    #             case_sensitive_label_mapping=True)
+    #     self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
+    #     self.assertIs(self.char_matrix.taxon_namespace, new_tns)
+    #     self.verify_taxon_namespace_reconstruction(
+    #             unify_taxa_by_label=True,
+    #             case_sensitive_label_mapping=True,
+    #             original_tns=original_tns)
 
-#     def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
-#         original_tns = self.tree_list.taxon_namespace
-#         new_tns = dendropy.TaxonNamespace()
-#         self.tree_list._taxon_namespace = new_tns
-#         self.assertEqual(len(self.tree_list.taxon_namespace), 0)
-#         self.tree_list.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=False)
-#         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
-#         self.assertIs(self.tree_list.taxon_namespace, new_tns)
-#         self.verify_taxon_namespace_reconstruction(
-#                 unify_taxa_by_label=True,
-#                 case_sensitive_label_mapping=False,
-#                 original_tns=original_tns)
+    # def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
+    #     original_tns = self.char_matrix.taxon_namespace
+    #     new_tns = dendropy.TaxonNamespace()
+    #     self.char_matrix._taxon_namespace = new_tns
+    #     self.assertEqual(len(self.char_matrix.taxon_namespace), 0)
+    #     self.char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
+    #             case_sensitive_label_mapping=False)
+    #     self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
+    #     self.assertIs(self.char_matrix.taxon_namespace, new_tns)
+    #     self.verify_taxon_namespace_reconstruction(
+    #             unify_taxa_by_label=True,
+    #             case_sensitive_label_mapping=False,
+    #             original_tns=original_tns)
 
 #     def test_basic_migration(self):
 #         tns = dendropy.TaxonNamespace()
@@ -743,64 +753,64 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
 #                     suppress_leaf_node_taxa=False,
 #                     taxon_namespace=tns)
 #             trees.append(tree)
-#         tree_list = dendropy.TreeList(taxon_namespace=tns)
-#         tree_list._trees = trees
+#         char_matrix = dendropy.TreeList(taxon_namespace=tns)
+#         char_matrix._trees = trees
 #         new_tns = dendropy.TaxonNamespace()
-#         tree_list.taxon_namespace = new_tns
-#         tree_list.migrate_taxon_namespace(
+#         char_matrix.taxon_namespace = new_tns
+#         char_matrix.migrate_taxon_namespace(
 #                 new_tns,
 #                 unify_taxa_by_label=False,
 #                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(tree_list.taxon_namespace, tns)
-#         self.assertIs(tree_list.taxon_namespace, new_tns)
-#         self.assertEqual(len(tree_list.taxon_namespace), len(tns))
+#         self.assertIsNot(char_matrix.taxon_namespace, tns)
+#         self.assertIs(char_matrix.taxon_namespace, new_tns)
+#         self.assertEqual(len(char_matrix.taxon_namespace), len(tns))
 #         original_labels = [t.label for t in tns]
 #         new_labels = [t.label for t in new_tns]
 #         self.assertCountEqual(new_labels, original_labels)
-#         for tree in tree_list:
-#             self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
+#         for tree in char_matrix:
+#             self.assertIs(tree.taxon_namespace, char_matrix.taxon_namespace)
 #             for nd in tree:
 #                 if nd.taxon is not None:
 #                     self.assertIn(nd.taxon, tree.taxon_namespace)
 #                     self.assertNotIn(nd.taxon, tns)
 
 #     def test_migrate_taxon_namespace_non_unifying(self):
-#         original_tns = self.tree_list.taxon_namespace
+#         original_tns = self.char_matrix.taxon_namespace
 #         new_tns = dendropy.TaxonNamespace()
-#         self.tree_list.migrate_taxon_namespace(
+#         self.char_matrix.migrate_taxon_namespace(
 #                 new_tns,
 #                 unify_taxa_by_label=False,
 #                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
-#         self.assertIs(self.tree_list.taxon_namespace, new_tns)
+#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
+#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
 #         self.verify_taxon_namespace_reconstruction(
 #                 unify_taxa_by_label=False,
 #                 case_sensitive_label_mapping=True,
 #                 original_tns=original_tns)
 
 #     def test_migrate_taxon_namespace_unifying_case_sensitive(self):
-#         original_tns = self.tree_list.taxon_namespace
+#         original_tns = self.char_matrix.taxon_namespace
 #         new_tns = dendropy.TaxonNamespace()
-#         self.tree_list.migrate_taxon_namespace(
+#         self.char_matrix.migrate_taxon_namespace(
 #                 new_tns,
 #                 unify_taxa_by_label=True,
 #                 case_sensitive_label_mapping=True)
-#         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
-#         self.assertIs(self.tree_list.taxon_namespace, new_tns)
+#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
+#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
 #         self.verify_taxon_namespace_reconstruction(
 #                 unify_taxa_by_label=True,
 #                 case_sensitive_label_mapping=True,
 #                 original_tns=original_tns)
 
 #     def test_migrate_taxon_namespace_unifying_case_insensitive(self):
-#         original_tns = self.tree_list.taxon_namespace
+#         original_tns = self.char_matrix.taxon_namespace
 #         new_tns = dendropy.TaxonNamespace()
-#         self.tree_list.migrate_taxon_namespace(
+#         self.char_matrix.migrate_taxon_namespace(
 #                 new_tns,
 #                 unify_taxa_by_label=True,
 #                 case_sensitive_label_mapping=False)
-#         self.assertIsNot(self.tree_list.taxon_namespace, original_tns)
-#         self.assertIs(self.tree_list.taxon_namespace, new_tns)
+#         self.assertIsNot(self.char_matrix.taxon_namespace, original_tns)
+#         self.assertIs(self.char_matrix.taxon_namespace, new_tns)
 #         self.verify_taxon_namespace_reconstruction(
 #                 unify_taxa_by_label=True,
 #                 case_sensitive_label_mapping=False,
