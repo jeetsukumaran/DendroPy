@@ -336,7 +336,27 @@ class CharacterMatrix(
         Values are the sequences (more generally, iterable of values).  If
         values are of type :class:`CharacterSequence`, then they are added
         as-is.  Otherwise :class:`CharacterSequence` instances are
-        created for them.
+        created for them. Values may be coerced into types compatible with
+        particular matrices. The classmethod `cls.coerce_values()` will be
+        called for this.
+
+        Examples
+        --------
+
+        The following creates a :class:`DnaCharacterMatrix` instance with three
+        sequences::
+
+            d = {
+                    "s1" : "TCCAA",
+                    "s2" : "TGCAA",
+                    "s3" : "TG-AA",
+            }
+            dna = DnaCharacterMatrix.from_dict(d)
+
+        Three :class:`Taxon` objects will be created, corresponding to the
+        labels 's1', 's2', 's3'. Each associated string sequence will be
+        converted to a :class:`CharacterSequence`, with each symbol ("A", "C",
+        etc.) being replaced by the DNA state represented by the symbol.
 
         Parameters
         ----------
@@ -371,9 +391,39 @@ class CharacterMatrix(
                 taxon = key
                 if taxon not in char_matrix.taxon_namespace:
                     char_matrix.taxon_namespace.add_taxon(taxon)
-            char_matrix[taxon] = source_dict[key]
+            s = cls.coerce_values(source_dict[key])
+            char_matrix[taxon] = s
         return char_matrix
     from_dict = classmethod(from_dict)
+
+    def coerce_values(cls, values):
+        """
+        Converts elements of `values` to type of matrix.
+
+        This method is called by :meth:`CharacterMatrix.from_dict` to create
+        sequences from iterables of values.
+        This method should be overridden by derived classes to ensure that
+        `values` consists of types compatible with the particular type of
+        matrix. For example, a CharacterMatrix type with a fixed state alphabet
+        (such as :class:`DnaCharacterMatrix` would dereference the string elements
+        of `values` to return a list of :class:`StateIdentity` objects
+        corresponding to the symbols represented by the strings.
+        If there is no value-type conversion done, then `values` should be
+        returned as-is. If no value-type conversion is possible (e.g., when the
+        type of a value is dependent on positionaly information), then a
+        `TypeError` should be raised.
+
+        Parameters
+        ----------
+        values : iterable
+            Iterable of values to be converted.
+
+        Returns
+        -------
+        v : list of values.
+        """
+        return values
+    coerce_values = classmethod(coerce_values)
 
     ###########################################################################
     ### Lifecycle and Identity
@@ -534,29 +584,7 @@ class CharacterMatrix(
         """
         Synchronizes `Taxon` objects of map to `taxon_namespace` of self.
         """
-        error.dump_stack()
-        warnings.warn("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
-                FutureWarning, stacklevel=4)
-        ti_mutable = self.taxon_namespace._is_mutable
-        self.taxon_namespace._is_mutable = True
-        new_map = TaxonCharacterSequenceMap()
-        for taxon, seq in self._taxon_sequence_map.items():
-            taxon = self.taxon_namespace.require_taxon(label=taxon.label)
-            new_map[taxon] = seq
-        self.taxon_namespace._is_mutable = ti_mutable
-        self._taxon_sequence_map = new_map
-
-    def prune_taxa(self, taxa, update_taxon_namespace=False):
-        """
-        Removes given taxa from matrix. If `preserve_taxon_namespace` is
-        `True`, then the taxa are removed from the associated TaxonNamespace
-        object as well. Otherwise this is not modified (default).
-        """
-        for taxon in taxa:
-            if taxon in self._taxon_sequence_map:
-                del self._taxon_sequence_map[taxon]
-                if update_taxon_namespace and taxon in self.taxon_namespace:
-                    self.taxon_namespace.remove(taxon)
+        raise NotImplementedError("'reindex_subcomponent_taxa()' is no longer supported; use '{}.reconstruct_taxon_namespace()' instead".format(self.__class__.__name__))
 
     ###########################################################################
     ### Sequence CRUD
