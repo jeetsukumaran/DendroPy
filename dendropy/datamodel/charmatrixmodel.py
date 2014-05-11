@@ -22,6 +22,7 @@ Character and character-sequence data structures.
 
 import warnings
 import copy
+import collections
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
@@ -314,41 +315,134 @@ class CharacterMatrix(
         return cls.concatenate_from_streams(streams, schema, **kwargs)
     concatenate_from_paths = classmethod(concatenate_from_paths)
 
+    def from_dict(cls,
+            source_dict,
+            char_matrix=None,
+            case_sensitive_taxon_labels=False,
+            **kwargs):
+        """
+        Populates character matrix from dictionary (or similar mapping type),
+        creating :class:`Taxon` objects and sequences as needed.
+
+        Keys must be strings representing labels :class:`Taxon` objects or
+        :class:`Taxon` objects directly. If key is specified as string, then it
+        will be dereferenced to the first existing :class:`Taxon` object in the
+        current taxon namespace with the same label. If no such :class:`Taxon`
+        object can be found, then a new :class:`Taxon` object is created and
+        added to the current namespace. If a key is specified as a
+        :class:`Taxon` object, then this is used directly. If it is not in the
+        current taxon namespace, it will be added.
+
+        Values are the sequences (more generally, iterable of values).  If
+        values are of type :class:`CharacterSequence`, then they are added
+        as-is.  Otherwise :class:`CharacterSequence` instances are
+        created for them.
+
+        Parameters
+        ----------
+        source_dict : dict or other mapping type
+            Keys must be strings representing labels :class:`Taxon` objects or
+            :class:`Taxon` objects directly. Values are sequences. See above
+            for details.
+        char_matrix : :class:`CharacterMatrix`
+            Instance of :class:`CharacterMatrix` to populate with data. If not
+            specified, a new one will be created using keyword arguments
+            specified by `kwargs`.
+        case_sensitive_taxon_labels : boolean
+            If `True`, matching of string labels specified as keys in `d` will
+            be matched to :class:`Taxon` objects in current taxon namespace
+            with case being respected. If `False`, then case will be ignored.
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments to be passed to constructor of
+            :class:`CharacterMatrix` when creating new instance to populate, if
+            no target instance is provided via `char_matrix`.
+
+        Returns
+        -------
+        char_matrix : :class:`CharacterMatrix`
+            :class:`CharacterMatrix` populated by data from `d`.
+        """
+        if char_matrix is None:
+            char_matrix = cls(**kwargs)
+        for key in source_dict:
+            if isinstance(key, str):
+                taxon = char_matrix.taxon_namespace.require_taxon(key, case_sensitive=case_sensitive_taxon_labels)
+            else:
+                taxon = key
+                if taxon not in char_matrix.taxon_namespace:
+                    char_matrix.taxon_namespace.add_taxon(taxon)
+            char_matrix[taxon] = source_dict[key]
+        return char_matrix
+    from_dict = classmethod(from_dict)
+
     ###########################################################################
     ### Lifecycle and Identity
 
     def __init__(self, *args, **kwargs):
-        basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
-        taxonmodel.TaxonNamespaceAssociated.__init__(self,
-                taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
-        self._taxon_sequence_map = {}
-        self.character_types = []
-        self.character_subsets = container.OrderedCaselessDict()
-        self.markup_as_sequences = True
 
-        if len(args) > 0:
-            raise NotImplementedError
-
-    def clone_from(self, *args):
-        "TODO: may need to check that we are not overwriting oid"
         if len(args) > 1:
+            # only allow 1 positional argument
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
-        elif len(args) == 1:
-            if isinstance(args[0],  self.__class__):
-                ca = copy.deepcopy(args[0])
-                for k, v in ca.__dict__.iteritems():
-                    if k not in ["_annotations"]:
-                        self.__dict__[k] = v
-                self.annotations = ca.annotations
-            else:
-                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
-        return self
+        elif len(args) == 1 and isinstance(args[0], CharacterMatrix):
+            self._clone_from(args[0], kwargs)
+        else:
+            basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
+            taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                    taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
+            self._taxon_sequence_map = {}
+            self.character_types = []
+            self.character_subsets = container.OrderedCaselessDict()
+            self.markup_as_sequences = True
+            if len(args) == 1:
+                # takes care of all possible initializations, including. e.g.,
+                # tuples and so on
+                d = collections.OrderedDict(args[0])
+                self.__class__.from_dict(d, char_matrix=self)
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     def __hash__(self):
         return id(self)
 
     def __eq__(self, other):
         return self is other
+
+    def clone_from(self, src, kwargs):
+        # super(Tree, self).__init__()
+        memo = {}
+        # memo[id(tree)] = self
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree_list.taxon_namespace)
+        memo[id(tree_list.taxon_namespace)] = taxon_namespace
+        if taxon_namespace is not tree_list.taxon_namespace:
+            for t1 in tree_list.taxon_namespace:
+                t2 = taxon_namespace.require_taxon(label=t1.label)
+                memo[id(t1)] = t2
+        else:
+            for t1 in tree_list.taxon_namespace:
+                memo[id(t1)] = t1
+        t = copy.deepcopy(tree_list, memo)
+        self.__dict__ = t.__dict__
+        self.label = kwargs_dict.pop("label", tree_list.label)
+        return self
+
+    def __copy__(self):
+        other = TreeList(label=self.label, taxon_namespace=self.taxon_namespace)
+        other._trees = list(self._trees)
+        memo = {}
+        memo[id(self)] = other
+        other.deep_copy_annotations_from(self, memo)
+        return other
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        if memo is None:
+            memo = {}
+        # this populates `memo` with references to the
+        # the TaxonNamespace and Taxon objects
+        self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
+        return self.__deepcopy__(memo=memo)
+
+    def __deepcopy__(self, memo=None):
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
         # if len(args) > 1:
         #     raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -626,6 +720,18 @@ class CharacterMatrix(
         """
         self._taxon_sequence_map.clear()
 
+    def sequences(self):
+        """
+        List of all sequences in self.
+
+        Returns
+        -------
+        s : list of :class:`CharacterSequence` objects in self
+
+        """
+        s = [self[taxon] for taxon in self]
+        return s
+
     ###########################################################################
     ### Column-based Operations
 
@@ -792,7 +898,6 @@ class CharacterMatrix(
         """
         self.fill_taxa()
         self.fill(value=value, size=size, append=append)
-
 
     def add_sequences(self, other_matrix):
         """

@@ -27,6 +27,7 @@ import dendropy
 from dendropy.utility import error
 from dendropy.datamodel import charmatrixmodel
 from dendropy.test.support import dendropytest
+from dendropy.test.support import compare_and_validate
 
 def get_taxon_namespace(ntax):
     taxon_namespace = dendropy.TaxonNamespace()
@@ -868,6 +869,104 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                         new_tns,
                         unify_taxa_by_label=True,
                         case_sensitive_label_mapping=False)
+
+class CharacterMatrixCreatingAndCloning(
+        compare_and_validate.Comparator,
+        dendropytest.ExtendedTestCase):
+
+    def add_annotations(self, char_matrix):
+        tns = char_matrix.taxon_namespace
+        for idx, taxon in enumerate(tns):
+            a = taxon.annotations.add_new("!color", str(idx))
+            a.annotations.add_new("setbytest", "a")
+        char_matrix.annotations.add_new("a", 0)
+        char_matrix.label = "hello"
+        b = char_matrix.annotations.add_bound_attribute("label")
+        b.annotations.add_new("c", 3)
+        for idx, taxon in enumerate(char_matrix):
+            seq = char_matrix[taxon]
+            an1 = seq.annotations.add_new("a{}".format(idx),
+                    "{}{}{}".format(seq.label, seq.taxon, idx))
+            an2 = seq.annotations.add_bouseq_attribute("label")
+            an3 = an1.annotations.add_bouseq_attribute("name")
+            ae3 = ae1.annotations.add_bouseq_attribute("name")
+
+    def get_char_matrix(self, taxon_namespace=None):
+        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=taxon_namespace)
+        labels = [str(i) for i in range(1000)]
+        # self.rng.shuffle(labels)
+        for label in labels:
+            t = dendropy.Taxon(label=label)
+            char_matrix.taxon_namespace.add_taxon(t)
+            seq = [self.rng.randint(0, 100) for _ in range(4)]
+            char_matrix[t] = seq
+        return char_matrix
+
+    def setUp(self):
+        self.rng = random.Random()
+
+    def test_shallow_copy_with_initializer_list(self):
+        tns1 = dendropy.TaxonNamespace()
+        char_matrix1 = self.get_char_matrix(taxon_namespace=tns1)
+        original_tns_length = len(tns1)
+        self.assertIs(char_matrix1.taxon_namespace, tns1)
+        d = collections.OrderedDict()
+        for taxon in char_matrix1:
+            d[taxon] = char_matrix1[taxon]
+        tns2 = dendropy.TaxonNamespace()
+        char_matrix2 = charmatrixmodel.CharacterMatrix(d, taxon_namespace=tns2)
+        self.assertIs(char_matrix2.taxon_namespace, tns2)
+        self.assertEqual(len(tns1), original_tns_length)
+        self.assertEqual(len(tns2), original_tns_length)
+        self.assertEqual(len(char_matrix2), len(char_matrix1))
+        for tcopy, toriginal in zip(char_matrix2, char_matrix1):
+            self.assertIs(tcopy, toriginal)
+            seq_copy = char_matrix2[tcopy]
+            seq_original = char_matrix1[toriginal]
+            self.assertIs(seq_copy, seq_original)
+
+    # def test_clone0(self):
+    #     tlist1 = self.get_tree_list()
+    #     for tlist2 in (
+    #             tlist1.clone(0),
+    #             ):
+    #         self.assertIs(tlist2.taxon_namespace, tlist1.taxon_namespace)
+    #         self.assertEqual(len(tlist2), self.num_trees)
+    #         for tcopy, toriginal in zip(tlist2, tlist1):
+    #             self.assertIs(tcopy, toriginal)
+    #             self.assertIs(tcopy.taxon_namespace, tlist2.taxon_namespace)
+
+    # def test_taxon_namespace_scoped_copy(self):
+    #     tlist1 = self.get_tree_list()
+    #     for tlist2 in (
+    #             tlist1.clone(1),
+    #             dendropy.TreeList(tlist1),
+    #             tlist1.taxon_namespace_scoped_copy(),):
+    #         self.compare_distinct_tree_list(tlist2, tlist1,
+    #                 taxon_namespace_scoped=True,
+    #                 compare_tree_annotations=True,
+    #                 compare_taxon_annotations=True)
+
+    # def test_deepcopy_including_namespace(self):
+    #     tlist1 = self.get_tree_list()
+    #     for idx, tlist2 in enumerate((
+    #             tlist1.clone(2),
+    #             copy.deepcopy(tlist1),
+    #             )):
+    #         self.compare_distinct_tree_list(tlist2, tlist1,
+    #                 taxon_namespace_scoped=False,
+    #                 compare_tree_annotations=True,
+    #                 compare_taxon_annotations=True)
+
+    # def test_deepcopy_excluding_namespace(self):
+    #     tlist1 = self.get_tree_list()
+    #     tlist2 = dendropy.TreeList(tlist1,
+    #             taxon_namespace=dendropy.TaxonNamespace())
+    #     self.compare_distinct_tree_list(tlist2, tlist1,
+    #             taxon_namespace_scoped=False,
+    #             compare_tree_annotations=True,
+    #             compare_taxon_annotations=False)
+
 
 if __name__ == "__main__":
     unittest.main()
