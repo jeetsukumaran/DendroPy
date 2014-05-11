@@ -476,8 +476,11 @@ class CharacterMatrix(
         return self
 
     def __copy__(self):
-        other = TreeList(label=self.label, taxon_namespace=self.taxon_namespace)
-        other._trees = list(self._trees)
+        other = self.__class__(label=self.label,
+            taxon_namespace=self.taxon_namespace)
+        for taxon in self._taxon_sequence_map:
+            # other._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(self._taxon_sequence_map[taxon])
+            other._taxon_sequence_map[taxon] = self._taxon_sequence_map[taxon]
         memo = {}
         memo[id(self)] = other
         other.deep_copy_annotations_from(self, memo)
