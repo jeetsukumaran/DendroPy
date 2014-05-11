@@ -985,7 +985,7 @@ class NexusReader(ioservice.DataReader):
                         raise NotImplementedError
                     else:
                         try:
-                            state = state_alphabet.full_symbol_state_map[c.upper()]
+                            state = state_alphabet.full_symbol_state_map[c]
                         except KeyError:
                             raise self._nexus_error("Unrecognized (single) state encountered in '{}': '{}' is not defined in {}".format("".join(char_group),
                                     char,
