@@ -872,7 +872,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 #                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
                         cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=chartype)
-                        annotations = [i for i in nxtaxon.findall_annotations]
+                        annotations = [i for i in nxcell.findall_annotations]
                         for annotation in annotations:
                             self.parse_annotations(cell, annotation)
                         character_vector.set_cell_by_index(pos_idx, cell)
