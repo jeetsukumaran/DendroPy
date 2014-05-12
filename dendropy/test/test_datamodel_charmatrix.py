@@ -20,6 +20,7 @@
 Tests character sequence map.
 """
 
+import copy
 import collections
 import random
 import unittest
@@ -950,26 +951,27 @@ class CharacterMatrixCreatingAndCloning(
                     compare_sequence_annotations=True,
                     compare_taxon_annotations=True)
 
-    # def test_deepcopy_including_namespace(self):
-    #     char_matrix1 = self.get_tree_list()
-    #     for idx, char_matrix2 in enumerate((
-    #             char_matrix1.clone(2),
-    #             copy.deepcopy(char_matrix1),
-    #             )):
-    #         self.compare_distinct_tree_list(char_matrix2, char_matrix1,
-    #                 taxon_namespace_scoped=False,
-    #                 compare_tree_annotations=True,
-    #                 compare_taxon_annotations=True)
+    def test_deepcopy_including_namespace(self):
+        char_matrix1 = self.get_char_matrix()
+        for idx, char_matrix2 in enumerate((
+                char_matrix1.clone(2),
+                copy.deepcopy(char_matrix1),
+                )):
+            self.compare_distinct_char_matrix(char_matrix2, char_matrix1,
+                    taxon_namespace_scoped=False,
+                    compare_matrix_annotations=True,
+                    compare_sequence_annotations=True,
+                    compare_taxon_annotations=True)
 
-    # def test_deepcopy_excluding_namespace(self):
-    #     char_matrix1 = self.get_tree_list()
-    #     char_matrix2 = dendropy.TreeList(char_matrix1,
-    #             taxon_namespace=dendropy.TaxonNamespace())
-    #     self.compare_distinct_tree_list(char_matrix2, char_matrix1,
-    #             taxon_namespace_scoped=False,
-    #             compare_tree_annotations=True,
-    #             compare_taxon_annotations=False)
-
+    def test_deepcopy_excluding_namespace(self):
+        char_matrix1 = self.get_char_matrix()
+        char_matrix2 = dendropy.CharacterMatrix(char_matrix1,
+                taxon_namespace=dendropy.TaxonNamespace())
+        self.compare_distinct_char_matrix(char_matrix2, char_matrix1,
+                taxon_namespace_scoped=False,
+                compare_matrix_annotations=True,
+                compare_sequence_annotations=True,
+                compare_taxon_annotations=False)
 
 if __name__ == "__main__":
     unittest.main()
