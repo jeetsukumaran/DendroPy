@@ -115,6 +115,43 @@ class CharacterSequence(
         else:
             super(CharacterSequence, self).__init__()
 
+#     def __copy__(self, memo=None):
+#         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
+
+#     def taxon_namespace_scoped_copy(self, memo=None):
+#         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
+
+    def __deepcopy__(self, memo=None):
+        other = basemodel.Annotable.__deepcopy__(self, memo=memo)
+        for v0 in self:
+            v1 = copy.deepcopy(v0)
+            memo[id(v0)] = v1
+            other.append(v1)
+        # # ensure clone map
+        # if memo is None:
+        #     memo = {}
+        # # get or create clone of self
+        # try:
+        #     other = memo[id(self)]
+        # except KeyError:
+        #     # create object without initialization
+        #     # other = type(self).__new__(self.__class__)
+        #     other = self.__class__.__new__(self.__class__)
+        #     # store
+        #     memo[id(self)] = other
+        # # copy other attributes first, skipping annotations
+        # for k in self.__dict__:
+        #     if k == "_annotations":
+        #         continue
+        #     if k in other.__dict__:
+        #         continue
+        #     other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        #     memo[id(self.__dict__[k])] = other.__dict__[k]
+        #     # assert id(self.__dict__[k]) in memo
+        # # create annotations
+        # other.deep_copy_annotations_from(self, memo)
+        return other
+
     def values(self):
         """
         Returns list of values of this vector.
@@ -457,22 +494,22 @@ class CharacterMatrix(
     def __eq__(self, other):
         return self is other
 
-    def clone_from(self, src, kwargs):
+    def _clone_from(self, src, kwargs_dict):
         # super(Tree, self).__init__()
         memo = {}
         # memo[id(tree)] = self
-        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs_dict, tree_list.taxon_namespace)
-        memo[id(tree_list.taxon_namespace)] = taxon_namespace
-        if taxon_namespace is not tree_list.taxon_namespace:
-            for t1 in tree_list.taxon_namespace:
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs_dict, src.taxon_namespace)
+        memo[id(src.taxon_namespace)] = taxon_namespace
+        if taxon_namespace is not src.taxon_namespace:
+            for t1 in src.taxon_namespace:
                 t2 = taxon_namespace.require_taxon(label=t1.label)
                 memo[id(t1)] = t2
         else:
-            for t1 in tree_list.taxon_namespace:
+            for t1 in src.taxon_namespace:
                 memo[id(t1)] = t1
-        t = copy.deepcopy(tree_list, memo)
+        t = copy.deepcopy(src, memo)
         self.__dict__ = t.__dict__
-        self.label = kwargs_dict.pop("label", tree_list.label)
+        self.label = kwargs_dict.pop("label", src.label)
         return self
 
     def __copy__(self):
@@ -496,19 +533,6 @@ class CharacterMatrix(
 
     def __deepcopy__(self, memo=None):
         return basemodel.Annotable.__deepcopy__(self, memo=memo)
-
-        # if len(args) > 1:
-        #     raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
-        # if len(args) == 1:
-        #     if ("stream" in kwargs and kwargs["stream"] is not None) \
-        #             or ("schema" in kwargs and kwargs["schema"] is not None):
-        #         raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
-        #     if isinstance(args[0], self.__class__):
-        #         self.clone_from(args[0])
-        #     else:
-        #         raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
-        # if "label" in kwargs:
-        #     self.label = kwargs["label"]
 
     ###########################################################################
     ### Data I/O

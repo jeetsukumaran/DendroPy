@@ -938,16 +938,17 @@ class CharacterMatrixCreatingAndCloning(
                 seq_original = char_matrix1[toriginal]
                 self.assertIs(seq_copy, seq_original)
 
-    # def test_taxon_namespace_scoped_copy(self):
-    #     char_matrix1 = self.get_tree_list()
-    #     for char_matrix2 in (
-    #             char_matrix1.clone(1),
-    #             dendropy.TreeList(char_matrix1),
-    #             char_matrix1.taxon_namespace_scoped_copy(),):
-    #         self.compare_distinct_tree_list(char_matrix2, char_matrix1,
-    #                 taxon_namespace_scoped=True,
-    #                 compare_tree_annotations=True,
-    #                 compare_taxon_annotations=True)
+    def test_taxon_namespace_scoped_copy(self):
+        char_matrix1 = self.get_char_matrix()
+        for char_matrix2 in (
+                char_matrix1.clone(1),
+                dendropy.CharacterMatrix(char_matrix1),
+                char_matrix1.taxon_namespace_scoped_copy(),):
+            self.compare_distinct_char_matrix(char_matrix2, char_matrix1,
+                    taxon_namespace_scoped=True,
+                    compare_matrix_annotations=True,
+                    compare_sequence_annotations=True,
+                    compare_taxon_annotations=True)
 
     # def test_deepcopy_including_namespace(self):
     #     char_matrix1 = self.get_tree_list()

@@ -22,6 +22,7 @@ except ImportError:
     from io import StringIO # Python 3
 from . import pathmap
 from dendropy.datamodel import basemodel
+from dendropy.datamodel import charmatrixmodel
 
 class ValidateWriteable(object):
 
@@ -120,6 +121,47 @@ class Comparator(object):
                             compare_annotations=compare_annotations)
                 if compare_annotations:
                     self.compare_distinct_annotables(x1, x2)
+
+    def compare_distinct_sequences(self,
+            x1, x2,
+            compare_annotations=True):
+        self.assertIsNot(x1, x2)
+        self.assertEqual(len(x1), len(x2))
+        for c1, c2 in zip(x1, x2):
+            self.assertEqual(c1, c2)
+        if compare_annotations:
+            self.compare_distinct_annotables(x1, x2)
+
+    def compare_distinct_char_matrix(self,
+            x1, x2,
+            taxon_namespace_scoped=True,
+            compare_matrix_annotations=True,
+            compare_sequence_annotations=True,
+            compare_taxon_annotations=True):
+        self.assertIsNot(x1, x2)
+        self.assertEqual(len(x1), len(x2))
+        self.compare_distinct_taxon_namespace(x1.taxon_namespace, x2.taxon_namespace,
+                taxon_namespace_scoped=taxon_namespace_scoped,
+                compare_annotations=compare_taxon_annotations,
+                )
+        self.assertEqual(x1.label, x2.label)
+        self.assertEqual(x1.data_type, x2.data_type)
+        if isinstance(x1, charmatrixmodel.DiscreteCharacterMatrix):
+            self.assertEqual(len(x1.state_alphabets), len(x2.state_alphabets))
+            for sa1, sa2 in zip(x1.state_alphabets, x2.state_alphabets):
+                self.assertIs(sa1, sa2)
+            self.assertIs(x1._default_state_alphabet, x2._default_state_alphabet)
+        for t1, t2 in zip(x1, x2):
+            if taxon_namespace_scoped:
+                self.assertIs(t1, t2)
+            else:
+                self.assertIsNot(t1, t2)
+            s1 = x1[t1]
+            s2 = x2[t2]
+            self.compare_distinct_sequences(s1, s2,
+                    compare_annotations=compare_sequence_annotations)
+        if compare_matrix_annotations:
+            self.compare_distinct_annotables(x1, x2)
 
     def compare_distinct_tree_list(self,
             x1, x2,
