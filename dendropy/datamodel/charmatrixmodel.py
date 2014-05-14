@@ -234,7 +234,9 @@ class CharacterMatrix(
         basemodel.DataObject):
     """
     A data structure that manages assocation of operational taxononomic unit
-    concepts to sequences of character state identities or values.
+    concepts to sequences of character state identities or values. This is
+    a base class that provides general functionality; derived classes
+    specialize for particular data types.
     """
 
     ###########################################################################
@@ -438,17 +440,16 @@ class CharacterMatrix(
         Converts elements of `values` to type of matrix.
 
         This method is called by :meth:`CharacterMatrix.from_dict` to create
-        sequences from iterables of values.
-        This method should be overridden by derived classes to ensure that
-        `values` consists of types compatible with the particular type of
-        matrix. For example, a CharacterMatrix type with a fixed state alphabet
-        (such as :class:`DnaCharacterMatrix` would dereference the string elements
-        of `values` to return a list of :class:`StateIdentity` objects
-        corresponding to the symbols represented by the strings.
-        If there is no value-type conversion done, then `values` should be
-        returned as-is. If no value-type conversion is possible (e.g., when the
-        type of a value is dependent on positionaly information), then a
-        `TypeError` should be raised.
+        sequences from iterables of values.  This method should be overridden
+        by derived classes to ensure that `values` consists of types compatible
+        with the particular type of matrix. For example, a CharacterMatrix type
+        with a fixed state alphabet (such as :class:`DnaCharacterMatrix`) would
+        dereference the string elements of `values` to return a list of
+        :class:`StateIdentity` objects corresponding to the symbols represented
+        by the strings.  If there is no value-type conversion done, then
+        `values` should be returned as-is. If no value-type conversion is
+        possible (e.g., when the type of a value is dependent on positionaly
+        information), then a `TypeError` should be raised.
 
         Parameters
         ----------
@@ -466,7 +467,6 @@ class CharacterMatrix(
     ### Lifecycle and Identity
 
     def __init__(self, *args, **kwargs):
-
         if len(args) > 1:
             # only allow 1 positional argument
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -786,18 +786,6 @@ class CharacterMatrix(
         """
         s = [self[taxon] for taxon in self]
         return s
-
-    ###########################################################################
-    ### Column-based Operations
-
-    def remove_column(self, index):
-        raise NotImplementedError()
-
-    def append_column(self, index):
-        raise NotImplementedError()
-
-    def insert_column(self, index, values):
-        raise NotImplementedError()
 
     ###########################################################################
     ### Sequence Iteration
@@ -1195,40 +1183,6 @@ class CharacterMatrix(
                 if cell_idx not in indices:
                     del(vec[cell_idx])
         return clone
-
-    def vectors(self):
-        "Returns list of vectors.        "
-        if self.taxon_namespace is not None and self._taxon_sequence_map is not None:
-            if len(self._taxon_sequence_map) > 0:
-                return [self._taxon_sequence_map[t] for t in self.taxon_namespace]
-            return []
-        return None
-
-    def create_taxon_to_state_set_map(self, char_indices=None):
-        """Returns a dictionary that maps taxon objects to lists of sets of state
-        indices
-        if `char_indices` is not None it should be a iterable collection of
-        character indices to include.
-        """
-        taxon_to_state_indices = {}
-        for t in self._taxon_sequence_map.keys():
-            cdv = self[t]
-            if char_indices is None:
-                ci = range(len(cdv))
-            else:
-                ci = char_indices
-            v = []
-            for char_index in ci:
-                cell = cdv[char_index]
-                cell_value = cell.value
-                try:
-                    state_alphabet = cell.character_type.state_alphabet
-                except AttributeError:
-                    state_alphabet = self.default_state_alphabet
-                inds = [state_alphabet.index(i) for i in cell_value.fundamental_states]
-                v.append(set(inds))
-            taxon_to_state_indices[t] = v
-        return taxon_to_state_indices
 
     ###########################################################################
     ### Representation
