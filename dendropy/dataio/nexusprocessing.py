@@ -35,7 +35,7 @@ class NexusTokenizer(Tokenizer):
         Tokenizer.__init__(self,
             src=src,
             uncaptured_delimiters=" \t\n\r",
-            captured_delimiters="(),;:=",
+            captured_delimiters="{}(),;:=",
             quote_chars="\"'",
             escape_quote_by_doubling=True,
             escape_chars="",
@@ -46,10 +46,10 @@ class NexusTokenizer(Tokenizer):
     def set_capture_eol(self, capture_eol):
         if capture_eol:
             self.uncaptured_delimiters = " \t"
-            self.captured_delimiters = "(),;:=\n\r"
+            self.captured_delimiters = "{}(),;:=\n\r"
         else:
             self.uncaptured_delimiters = " \t\n\r"
-            self.captured_delimiters = "(),;:="
+            self.captured_delimiters = "{}(),;:="
 
     def next_token_ucase(self):
         try:

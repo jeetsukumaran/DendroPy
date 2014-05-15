@@ -856,8 +856,8 @@ class CharacterMatrix(
             return len(self[next(iter(self._taxon_sequence_map))])
         else:
             return 0
-    sequence_size = property(_get_sequence_size, None, None, __doc__)
-    vector_size = property(_get_sequence_size, None, None, __doc__) # legacy
+    sequence_size = property(_get_sequence_size, None, None)
+    vector_size = property(_get_sequence_size, None, None) # legacy
 
     def _get_max_sequence_size(self):
         """
@@ -873,7 +873,7 @@ class CharacterMatrix(
             if len(self[k]) > max_len:
                 max_len  = len(self._taxon_sequence_map[k])
         return max_len
-    max_sequence_size = property(_get_max_sequence_size, None, None, __doc__)
+    max_sequence_size = property(_get_max_sequence_size, None, None)
 
     ###########################################################################
     ### Mass/Bulk Operations

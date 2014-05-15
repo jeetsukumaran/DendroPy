@@ -641,7 +641,7 @@ class StateAlphabet(
         include symbol synonyms or case variations.
         """
         return self._canonical_symbol_state_map
-    canonical_symbol_state_map = property(_get_canonical_symbol_state_map, __doc__)
+    canonical_symbol_state_map = property(_get_canonical_symbol_state_map)
 
     def _get_full_symbol_state_map(self):
         """
@@ -649,7 +649,7 @@ class StateAlphabet(
         Includes symbol synonyms or case variations.
         """
         return self._full_symbol_state_map
-    full_symbol_state_map = property(_get_full_symbol_state_map, __doc__)
+    full_symbol_state_map = property(_get_full_symbol_state_map)
 
     def __getitem__(self, key):
         """
@@ -763,12 +763,25 @@ class StateAlphabet(
         states = frozenset(self.get_fundamental_states_for_symbols(symbols))
         return self._fundamental_states_to_polymorphic_state_map[states]
 
-    def match_state(self, symbols):
+    def match_state(self, symbols, state_denomination):
         """
-        No longer supported: use :meth:`StateAlphabet.match_ambiguous_state()` or
-        :meth:`StateAlphabet.match_polymorphic_state()` instead.
+        Returns ambiguous or polymorphic state with fundamental member states
+        represented by symbols given in `symbols`.
+
+        Parameters
+        ----------
+        symbols : iterable of string symbols
+            Symbols representing states to be dereferenced.
+        state_denomination : {StateAlphabet.AMBIGUOUS or StateAlphabet.POLYPMORPHIC_STATE}
+
+        Returns
+        -------
+        s : :class:`StateIdentity` instance
         """
-        raise NotImplementedError(__doc__)
+        if state_denomination == StateAlphabet.AMBIGUOUS_STATE:
+            return self.match_ambiguous_state(symbols=symbols)
+        else:
+            return self.match_polymorphic_state(symbols=symbols)
 
 ###############################################################################
 ## StateIdentity

@@ -757,20 +757,25 @@ class NexusReader(ioservice.DataReader):
             state_char_seq,
             multistate_type,
             state_alphabet):
-        state = state_alphabet.match_state(state_char_seq)
-        if state is not None:
+        try:
+            state = state_alphabet.match_state(state_char_seq,
+                    state_denomination=multistate_type)
+        except KeyError:
+            try:
+                if multistate_type == state_alphabet.AMBIGUOUS_STATE:
+                    sae = state_alphabet.new_ambiguous_state(
+                            symbol=None,
+                            member_state_symbols=state_char_seq)
+                else:
+                    sae = state_alphabet.new_polymorphic_state(
+                            symbol=None,
+                            member_state_symbols=state_char_seq)
+            except KeyError:
+                raise self._nexus_error("Unrecognized state symbols encountered in multistate sequence: '{}'".format(state_char_seq))
+            else:
+                return sae
+        else:
             return state
-        member_states = state_alphabet.get_states(symbols=state_char_seq)
-        if member_states is None:
-            raise self._nexus_error("Unrecognized state encountered: '{}'".format(state_char_seq))
-        state = state_alphabet.match_state(symbols=[ms.symbol for ms in member_states])
-        if state is not None:
-            return state
-        sae = state_alphabet.new_state_alphabet_element(
-                symbol=None,
-                multistate=multistate_type,
-                member_states=member_states)
-        return sae
 
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
@@ -1029,16 +1034,15 @@ class NexusReader(ioservice.DataReader):
                     closing_token = ")"
                 multistate_tokens = []
                 while True:
-                    token = self.require_next_token()
+                    token = self._nexus_tokenizer.require_next_token()
                     if token == closing_token:
                         break
                     multistate_tokens.append(token)
-                c = "".join(subtokens)
+                c = "".join(multistate_tokens)
                 state = self._get_state_for_multistate_tokens(c, multistate_type, state_alphabet)
                 if len(character_data_vector) == self._file_specified_nchar:
-                    raise self._too_many_characters_error(subtokens)
+                    raise self._too_many_characters_error(c)
                 character_data_vector.append(state)
-                num_states_read += 1
             elif token == "\r" or token == "\n":
                 if self._interleave:
                     break

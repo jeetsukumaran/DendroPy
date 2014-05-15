@@ -40,6 +40,7 @@ class NexusCharactersReaderTestCase(
                 "standard-test-chars-dna.basic.nexus",
                 "standard-test-chars-dna.interleaved.nexus",
                 "standard-test-chars-dna.matchchar.nexus",
+                "standard-test-chars-dna.multi.nexus",
                 ]
         for src_idx, src_filename in enumerate(src_filenames):
             # print(src_idx, src_filename)
