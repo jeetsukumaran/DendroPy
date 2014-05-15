@@ -34,18 +34,24 @@ class NexusCharactersReaderTestCase(
     def setUpClass(cls):
         cls.build()
 
-    def test_basic_fasta(self):
-        src_path = pathmap.char_source_path("standard-test-chars-dna.basic.nexus")
-        self.verify_get_from(
-                matrix_type=dendropy.DnaCharacterMatrix,
-                src_filepath=src_path,
-                schema="nexus",
-                factory_kwargs={},
-                check_taxon_annotations=False,
-                check_matrix_annotations=False,
-                check_sequence_annotations=False,
-                check_column_annotations=False,
-                check_cell_annotations=False)
+    def test_basic_nexus(self):
+        src_filenames = [
+                "standard-test-chars-dna.simple.nexus",
+                "standard-test-chars-dna.basic.nexus",
+                "standard-test-chars-dna.interleaved.nexus",
+                ]
+        for src_idx, src_filename in enumerate(src_filenames):
+            src_path = pathmap.char_source_path(src_filename)
+            self.verify_get_from(
+                    matrix_type=dendropy.DnaCharacterMatrix,
+                    src_filepath=src_path,
+                    schema="nexus",
+                    factory_kwargs={},
+                    check_taxon_annotations=False,
+                    check_matrix_annotations=False,
+                    check_sequence_annotations=False,
+                    check_column_annotations=False,
+                    check_cell_annotations=False)
 
 if __name__ == "__main__":
     unittest.main()

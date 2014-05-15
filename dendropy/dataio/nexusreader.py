@@ -100,6 +100,20 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class NexusReaderMultipleBlockWithSameTitleError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
+    class BlockTerminatedException(Exception):
+        pass
+
     ###########################################################################
     ## Life-cycle and Setup
 
