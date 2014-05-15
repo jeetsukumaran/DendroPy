@@ -731,18 +731,23 @@ class NexusReader(ioservice.DataReader):
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
         state_alphabet = char_block.default_state_alphabet
+        first_sequence_defined = None
         if self._interleave:
             try:
                 while token != ";" and not self._nexus_tokenizer.is_eof():
                     taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-                    self._read_character_states(char_block[taxon], state_alphabet, char_block)
+                    self._read_character_states(char_block[taxon], state_alphabet, first_sequence_defined)
+                    if first_sequence_defined is None:
+                        first_sequence_defined = char_block[taxon]
                     token = self._nexus_tokenizer.next_token()
             except NexusReader.BlockTerminatedException:
                 token = self._nexus_tokenizer.next_token()
         else:
             while token != ';' and not self._nexus_tokenizer.is_eof():
                 taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-                self._read_character_states(char_block[taxon], state_alphabet, char_block)
+                self._read_character_states(char_block[taxon], state_alphabet, first_sequence_defined)
+                if first_sequence_defined is None:
+                    first_sequence_defined = char_block[taxon]
                 if len(char_block[taxon]) < self._file_specified_nchar:
                     raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
@@ -985,7 +990,7 @@ class NexusReader(ioservice.DataReader):
     def _read_character_states(self,
             character_data_vector,
             state_alphabet,
-            char_block,
+            first_sequence_defined,
             ):
         """
         Reads character sequence data substatement until the number of
@@ -1042,7 +1047,21 @@ class NexusReader(ioservice.DataReader):
             else:
                 for c in token:
                     if c in self._match_char:
-                        state = char_block[0][len(character_data_vector)]
+                        try:
+                            state = first_sequence_defined[len(character_data_vector)]
+                        except TypeError:
+                            exc = self._nexus_error("Cannot dereference MATCHCHAR '{}' on first sequence".format(c), NexusReader.NexusReaderError)
+                            exc.__context__ = None # Python 3.0, 3.1, 3.2
+                            exc.__cause__ = None # Python 3.3, 3.4
+                            raise exc
+                        except IndexError:
+                            exc = self._nexus_error("Cannot dereference MATCHCHAR '{}': current position ({}) exceeds length of first sequence ({})".format(c,
+                                    len(character_data_vector),
+                                    len(first_sequence_defined),
+                                    NexusReader.NexusReaderError))
+                            exc.__context__ = None # Python 3.0, 3.1, 3.2
+                            exc.__cause__ = None # Python 3.3, 3.4
+                            raise exc
                     else:
                         try:
                             state = state_alphabet.full_symbol_state_map[c]
