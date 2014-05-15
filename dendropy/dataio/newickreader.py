@@ -340,15 +340,18 @@ class NewickReader(ioservice.DataReader):
         if nexus_tokenizer.is_eof():
             return None
         if current_token != "(":
-            raise NewickReader.NewickReaderInvalidTokenError(
-                    message="Expecting '{}' but found '{}'".format("(", current_token),
-                    line_num=nexus_tokenizer.token_line_num,
-                    col_num=nexus_tokenizer.token_column_num,
-                    stream=nexus_tokenizer.src)
+            # allow for possibility of single node tree, e.g.: T0:10;
+            self._parenthesis_nesting_level = 0
+            # raise NewickReader.NewickReaderInvalidTokenError(
+            #         message="Expecting '{}' but found '{}'".format("(", current_token),
+            #         line_num=nexus_tokenizer.token_line_num,
+            #         col_num=nexus_tokenizer.token_column_num,
+            #         stream=nexus_tokenizer.src)
+        else:
+            self._parenthesis_nesting_level = 1
         tree = tree_factory()
         self._process_tree_comments(tree, tree_comments, nexus_tokenizer)
         self._tree_statement_complete = False
-        self._parenthesis_nesting_level = 1
         self._seen_taxa = set()
         self._parse_tree_node_description(
                 nexus_tokenizer=nexus_tokenizer,
