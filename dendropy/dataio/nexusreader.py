@@ -34,6 +34,9 @@ from dendropy.dataio import newickreader
 class NexusReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a NEXUS schema file."
 
+    class BlockTerminatedException(Exception):
+        pass
+
     class NexusReaderError(error.DataParseError):
         def __init__(self, message,
                 line_num=None,
@@ -45,7 +48,7 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderNotNexusFileError(NexusReaderError):
+    class NotNexusFileError(NexusReaderError):
         def __init__(self, message,
                 line_num=None,
                 col_num=None,
@@ -56,7 +59,7 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderLinkRequiredError(NexusReaderError):
+    class LinkRequiredError(NexusReaderError):
         def __init__(self, message,
                 line_num=None,
                 col_num=None,
@@ -67,7 +70,7 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderNoCharacterBlocksFoundError(NexusReaderError):
+    class NoCharacterBlocksFoundError(NexusReaderError):
         def __init__(self, message,
                 line_num=None,
                 col_num=None,
@@ -78,7 +81,7 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderUndefinedBlockError(NexusReaderError):
+    class UndefinedBlockError(NexusReaderError):
         def __init__(self, message,
                 line_num=None,
                 col_num=None,
@@ -89,7 +92,7 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderMultipleBlockWithSameTitleError(NexusReaderError):
+    class MultipleBlockWithSameTitleError(NexusReaderError):
         def __init__(self, message,
                 line_num=None,
                 col_num=None,
@@ -100,19 +103,24 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-    class NexusReaderMultipleBlockWithSameTitleError(NexusReaderError):
-        def __init__(self, message,
+    class TooManyTaxaError(NexusReaderError):
+
+        def __init__(self,
+                taxon_namespace,
+                max_taxa,
+                label,
                 line_num=None,
                 col_num=None,
                 stream=None):
+            message = "Cannot add taxon with label '{}': Declared number of taxa ({}) already defined: {}".format(
+                            label,
+                            max_taxa,
+                            str(["{}".format(t.label) for t in taxon_namespace]))
             NexusReader.NexusReaderError.__init__(self,
                     message=message,
                     line_num=line_num,
                     col_num=col_num,
                     stream=stream)
-
-    class BlockTerminatedException(Exception):
-        pass
 
     ###########################################################################
     ## Life-cycle and Setup
@@ -184,7 +192,7 @@ class NexusReader(ioservice.DataReader):
 
     def _nexus_error(self, message, error_type=None):
         if error_type is None:
-            error_type = NewickReader.NewickReaderError
+            error_type = NexusReader.NexusReaderError
         e = error_type(
                 message=message,
                 line_num=self._nexus_tokenizer.token_line_num,
@@ -192,14 +200,19 @@ class NexusReader(ioservice.DataReader):
                 stream=self._nexus_tokenizer.src)
         return e
 
-    def too_many_taxa_error(self, taxon_namespace, label):
+    def _too_many_taxa_error(self, taxon_namespace, label):
         """
         Returns an exception object parameterized with line and
         column number values.
         """
-        return self._nexus_tokenizer.too_many_taxa_error(taxon_namespace=taxon_namespace,
+        e = NexusReader.TooManyTaxaError(
+                taxon_namespace=taxon_namespace,
                 max_taxa=self._file_specified_ntax,
-                label=label)
+                label=label,
+                line_num=self._nexus_tokenizer.token_line_num,
+                col_num=self._nexus_tokenizer.token_column_num,
+                stream=self._nexus_tokenizer.src)
+        return e
 
     ###########################################################################
     ## Data Management
@@ -220,16 +233,16 @@ class NexusReader(ioservice.DataReader):
             elif len(self._taxon_namespaces) == 1:
                 return self._taxon_namespaces[0]
             else:
-                raise self._nexus_error("Multiple taxa blocks defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
+                raise self._nexus_error("Multiple taxa blocks defined: require 'LINK' statement", NexusReader.LinkRequiredError)
         else:
             found = []
             for tns in self._taxon_namespaces:
                 if tns.label.upper() == title.upper():
                     found.append(tns)
             if len(found) == 0:
-                raise self._nexus_error("Taxa block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+                raise self._nexus_error("Taxa block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
             elif len(found) > 1:
-                raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+                raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
     def _new_char_matrix(self, data_type, taxon_namespace, title=None):
@@ -245,18 +258,18 @@ class NexusReader(ioservice.DataReader):
             if len(self._char_matrices) == 1:
                 return self.char_matrices[0]
             elif len(self._char_matrices) == 0:
-                raise self._nexus_error("No character matrices defined", NexusReader.NexusReaderNoCharacterBlocksFoundError)
+                raise self._nexus_error("No character matrices defined", NexusReader.NoCharacterBlocksFoundError)
             else:
-                raise self._nexus_error("Multiple character matrices defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
+                raise self._nexus_error("Multiple character matrices defined: require 'LINK' statement", NexusReader.LinkRequiredError)
         else:
             found = []
             for cm in self._char_matrices:
                 if cm.label.upper() == title.upper():
                     found.append(cm)
             if len(found) == 0:
-                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
             elif len(found) > 1:
-                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
     def _new_tree_list(self, taxon_namespace, title=None):
@@ -271,18 +284,18 @@ class NexusReader(ioservice.DataReader):
             if len(self._tree_lists) == 1:
                 return self._tree_lists[0]
             elif len(self._tree_lists) == 0:
-                raise self._nexus_error("No tree blocks defined", NexusReader.NexusReaderNoCharacterBlocksFoundError)
+                raise self._nexus_error("No tree blocks defined", NexusReader.NoCharacterBlocksFoundError)
             else:
-                raise self._nexus_error("Multiple tree blocks defined: require 'LINK' statement", NexusReader.NexusReaderLinkRequiredError)
+                raise self._nexus_error("Multiple tree blocks defined: require 'LINK' statement", NexusReader.LinkRequiredError)
         else:
             found = []
             for tlst in self._tree_lists:
                 if tlst.label.upper() == title.upper():
                     found.append(tlst)
             if len(found) == 0:
-                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.NexusReaderUndefinedBlockError)
+                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
             elif len(found) > 1:
-                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.NexusReaderMultipleBlockWithSameTitleError)
+                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
     # def tree_source_iter(self, stream):
@@ -355,7 +368,7 @@ class NexusReader(ioservice.DataReader):
         token = self._nexus_tokenizer.next_token()
         if token.upper() != "#NEXUS":
             raise self._nexus_error("Expecting '#NEXUS', but found '{}'".format(token),
-                    NexusReader.NexusReaderNotNexusFileError)
+                    NexusReader.NotNexusFileError)
         else:
             while not self._nexus_tokenizer.is_eof():
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -471,7 +484,7 @@ class NexusReader(ioservice.DataReader):
         else:
             taxon = taxon_namespace.get_taxon(label=label, case_sensitive=self.case_sensitive_taxon_labels)
         if taxon is None:
-            raise self.too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
+            raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
         return taxon
 
     def _parse_taxlabels_statement(self, taxon_namespace=None):
@@ -487,11 +500,11 @@ class NexusReader(ioservice.DataReader):
             # if taxon_namespace.has_taxon(label=label):
             #     pass
             # elif len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
-            #     raise self.too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
+            #     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
             # else:
             #     taxon_namespace.require_taxon(label=label)
             if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
-                raise self.too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
+                raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
             taxon = taxon_namespace.require_taxon(label=label)
             token = self._nexus_tokenizer.next_token()
             self._nexus_tokenizer.process_and_clear_comments_for_item(taxon,
