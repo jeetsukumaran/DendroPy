@@ -103,6 +103,17 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class InvalidCharacterStateSymbolError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
     class TooManyTaxaError(NexusReaderError):
 
         def __init__(self,
@@ -138,7 +149,6 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
-
     ###########################################################################
     ## Life-cycle and Setup
 
@@ -165,7 +175,7 @@ class NexusReader(ioservice.DataReader):
         self._symbols = ""
         self._gap_char = '-'
         self._missing_char = '?'
-        self._match_char = '.'
+        self._match_char = frozenset('.')
         self._file_specified_ntax = None
         self._file_specified_nchar = None
         self._nexus_tokenizer = None
@@ -644,7 +654,7 @@ class NexusReader(ioservice.DataReader):
                 token = self._nexus_tokenizer.next_token_ucase()
                 if token == '=':
                     token = self._nexus_tokenizer.next_token_ucase()
-                    self._match_char = token
+                    self._match_char = frozenset([token, token.lower()])
                 else:
                     raise self._nexus_error("Expecting '=' after MISSING keyword")
                 token = self._nexus_tokenizer.next_token_ucase()
@@ -1031,13 +1041,16 @@ class NexusReader(ioservice.DataReader):
                 raise NexusReader.BlockTerminatedException
             else:
                 for c in token:
-                    if (self._match_char is not None
-                            and (c.upper() == self._match_char)):
-                        # TODO! handle "."
-                        # raise NotImplementedError
+                    if c in self._match_char:
                         state = char_block[0][len(character_data_vector)]
                     else:
-                        state = state_alphabet.full_symbol_state_map[c]
+                        try:
+                            state = state_alphabet.full_symbol_state_map[c]
+                        except KeyError:
+                            exc = self._nexus_error("Unrecognized character state symbol: '{}'".format(c), NexusReader.InvalidCharacterStateSymbolError)
+                            exc.__context__ = None # Python 3.0, 3.1, 3.2
+                            exc.__cause__ = None # Python 3.3, 3.4
+                            raise exc
                     if len(character_data_vector) == self._file_specified_nchar:
                         raise self._too_many_characters_error(c)
                     character_data_vector.append(state)
