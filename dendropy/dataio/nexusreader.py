@@ -1056,7 +1056,7 @@ class NexusReader(ioservice.DataReader):
                             raise exc
                         except IndexError:
                             exc = self._nexus_error("Cannot dereference MATCHCHAR '{}': current position ({}) exceeds length of first sequence ({})".format(c,
-                                    len(character_data_vector),
+                                    len(character_data_vector)+1,
                                     len(first_sequence_defined),
                                     NexusReader.NexusReaderError))
                             exc.__context__ = None # Python 3.0, 3.1, 3.2
