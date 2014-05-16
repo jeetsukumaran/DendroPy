@@ -25,6 +25,8 @@ import os
 import unittest
 import dendropy
 from dendropy.utility import error
+from dendropy.test.support import dendropytest
+from dendropy.dataio import nexusreader
 from dendropy.dataio import nexusprocessing
 
 class TaxonSymbolMappingTest(unittest.TestCase):
@@ -256,6 +258,22 @@ class NexusTaxaCaseInsensitivityTest(unittest.TestCase):
         for i, x in enumerate(observed):
             self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_namespace), 5)
+
+class NexusTooManyTaxaTest(
+        dendropytest.ExtendedTestCase):
+
+    def testTooManyTaxaNonInterleaved(self):
+        data_str = """\
+        #NEXUS
+        BEGIN TAXA;
+            DIMENSIONS NTAX=2;
+            TAXLABELS AAA BBB CCC DDD EEE;
+        END;
+        """
+        self.assertRaises(nexusreader.NexusReader.TooManyTaxaError,
+                dendropy.DnaCharacterMatrix.get_from_string,
+                data_str,
+                'nexus')
 
 if __name__ == "__main__":
     unittest.main()
