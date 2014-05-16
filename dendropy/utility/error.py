@@ -28,8 +28,6 @@ import sys
 import warnings
 import inspect
 
-__warningregistry__ = {}
-
 
 def get_calling_code_info(stack_level):
     frame = inspect.stack()[stacklevel]
@@ -66,23 +64,6 @@ def critical_deprecation_alert(message, stacklevel=4):
             filename=inspect.getfile(frame),
             lineno=inspect.getlineno(frame),
             )
-
-# def critical_deprecation_alert(message,
-#         logger_obj=None,
-#         stacklevel=4,
-#         force_warning=True):
-#     with warnings.catch_warnings() as w:
-#         if force_warning:
-#             frame = inspect.stack()[stacklevel]
-#             warnings.warn_explicit(
-#                     message=message,
-#                     category=UserWarning,
-#                     filename=inspect.getfile(frame[0]),
-#                     lineno=inspect.getlineno(frame[0]))
-#         else:
-#             warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
-#     if logger_obj:
-#         logger_obj.warning(message)
 
 class DataError(Exception):
 
