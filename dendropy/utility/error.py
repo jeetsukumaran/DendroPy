@@ -48,15 +48,7 @@ class CriticalDeprecationWarning(DeprecationWarning):
     pass
 
 def critical_deprecation_alert(message, stacklevel=4):
-    # out = StringIO()
     frame, filename, line_num, func, source_code, source_index = inspect.stack()[-1]
-    # if source_code is None:
-    #     out.write("{}: {}".format(filename, line_num))
-    # else:
-    #     out.write("{}: {}: {}".format(filename, line_num, source_code[source_index].strip()))
-    # out.write(": {}".format(message))
-    # warnings.warn(out.getvalue(),
-    #         Warning, stacklevel=stacklevel)
     warnings.simplefilter('once')
     warnings.warn_explicit(
             message=message,
