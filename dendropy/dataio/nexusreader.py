@@ -158,6 +158,7 @@ class NexusReader(ioservice.DataReader):
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
         self.data_type = kwargs.pop("data_type", "standard")
+        self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
         # The following are used by NewickReader in addition to NexusReader,
         # or have different defaults. So they are extracted/set here and

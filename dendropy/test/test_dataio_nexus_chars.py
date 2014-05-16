@@ -22,9 +22,11 @@ Tests for general NEXUS character matrix reading.
 
 import unittest
 import dendropy
+from dendropy.utility import error
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen_standard_file_test_chars
+from dendropy.dataio import nexusreader
 
 class NexusCharactersReaderTestCase(
         datagen_standard_file_test_chars.DnaTestChecker,
@@ -55,6 +57,162 @@ class NexusCharactersReaderTestCase(
                     check_sequence_annotations=False,
                     check_column_annotations=False,
                     check_cell_annotations=False)
+
+class NexusTooManyTaxaTest(
+        dendropytest.ExtendedTestCase):
+
+    def testTooManyTaxaNonInterleaved(self):
+        data_str = """\
+        #NEXUS
+        BEGIN TAXA;
+            DIMENSIONS NTAX=2;
+            TAXLABELS AAA BBB ;
+        END;
+        BEGIN CHARACTERS;
+            DIMENSIONS  NCHAR=8;
+            FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+            MATRIX
+                AAA ACGTACGT
+                BBB ACGTACGT
+                CCC ACGTACGT
+            ;
+        END;
+        """
+        self.assertRaises(nexusreader.NexusReader.TooManyTaxaError,
+                dendropy.DnaCharacterMatrix.get_from_string,
+                data_str,
+                'nexus')
+
+    # def testTooManyTaxaInterleaved(self):
+    #     data_str = """\
+# #NEXUS
+
+# BEGIN TAXA;
+    # DIMENSIONS NTAX=5;
+    # TAXLABELS AAA BBB CCC DDD EEE;
+# END;
+
+# BEGIN CHARACTERS;
+    # DIMENSIONS  NCHAR=8;
+    # FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=. INTERLEAVE;
+    # MATRIX
+    #     AAA ACGT
+    #     BBB ACGT
+    #     CCC ACGT
+    #     DDD ACGT
+    #     EEE ACGT
+
+    #     AAA ACGT
+    #     BBB ACGT
+    #     CCC ACGT
+    #     DDD ACGT
+    #     EEE ACGT
+    #     FFF ACGT
+    # ;
+# END;
+# """
+    #     #d = dendropy.DnaCharacterMatrix.get_from_string(data_str, 'nexus')
+    #     self.assertRaises(TooManyTaxaError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
+
+# class NexusInternalNodeLabelsAsNonTaxa(extendedtest.ExtendedTestCase):
+
+#     def setUp(self):
+#         self.trees_string = """\
+# #NEXUS
+
+# begin taxa;
+#     dimensions ntax=5;
+#     taxlabels aaa bbb ccc ddd eee;
+# end;
+
+# begin trees;
+#     translate
+#         1  aaa,
+#         2  bbb,
+#         3  ccc,
+#         4  ddd,
+#         5  eee
+#     ;
+#     tree 0 = (((1, 2)1,(3,4)1),5)1;
+# end;
+# """
+
+#     def testParseWithKeyword(self):
+#         t = dendropy.TreeList.get_from_string(self.trees_string, 'nexus', suppress_internal_node_taxa=True)
+
+# class NexusCharsSubsetsTest(datatest.AnnotatedDataObjectVerificationTestCase):
+
+#     def verify_subsets(self, src_filename, expected_sets):
+#         """
+#         `src_filename` -- name of file containing full data and charsets
+#                           statement
+#         `expected_sets` -- dictionary with keys = label of charset, and values
+#                            = name of file with subset of characters correspond
+#                            to the charset.
+#         """
+#         _LOG.debug(src_filename)
+#         src_data = dendropy.DnaCharacterMatrix.get_from_path(
+#                 pathmap.char_source_path(src_filename),
+#                 'nexus')
+#         state_alphabet = src_data.default_state_alphabet
+#         self.assertEqual(len(src_data.character_subsets), len(expected_sets))
+#         for label, expected_data_file in expected_sets.items():
+
+#             _LOG.debug(label)
+
+#             self.assertTrue(label in src_data.character_subsets)
+#             result_subset = src_data.export_character_subset(label)
+#             expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
+#                 pathmap.char_source_path(expected_data_file),
+#                 'nexus')
+
+#             # confirm subset is correct
+#             self.assertDistinctButEqualDiscreteCharMatrix(result_subset, expected_subset)
+
+#             # mutate new and confirm that old remains unchanged
+#             e1_symbols = src_data[0].symbols_as_string()
+#             r1 = result_subset[0]
+#             dummy_state = state_alphabet.state_for_symbol('A')
+#             for idx in range(len(r1)):
+#                 r1[idx].value = dummy_state
+#             self.assertEqual(e1_symbols, src_data[0].symbols_as_string())
+
+#             # mutate old and confirm that new remains unchanged
+#             r2_symbols = result_subset[1].symbols_as_string()
+#             e2 = src_data[1]
+#             dummy_state = state_alphabet.state_for_symbol('A')
+#             for idx in range(len(e2)):
+#                 e2[idx].value = dummy_state
+#             self.assertEqual(r2_symbols, result_subset[1].symbols_as_string())
+
+#     def testNonInterleaved(self):
+#         """
+#         Charsets here go through all forms of position specification.
+#         """
+#         expected_sets = {
+#                 "coding" : "primates.chars.subsets-coding.nexus",
+#                 "noncoding" : "primates.chars.subsets-noncoding.nexus",
+#                 "1stpos" : "primates.chars.subsets-1stpos.nexus",
+#                 "2ndpos" : "primates.chars.subsets-2ndpos.nexus",
+#                 "3rdpos" : "primates.chars.subsets-3rdpos.nexus",
+#                 }
+#         self.verify_subsets('primates.chars.subsets-all.nexus', expected_sets)
+
+#     def testInterleaved(self):
+#         """
+#         A bug in DendroPy resulted in the block immediately following an
+#         interleaved character matrix DATA or CHARACTERS block being skipped.
+#         This tests for it by ensuring that the ASSUMPTIONS block following an
+#         interleaved CHARACTERS block is parsed. A better test would approach
+#         the issue more directly, by checking to see if block parsing left the
+#         stream reader in the correct position.
+#         """
+#         expected_sets = {
+#                 "c1" : "interleaved-charsets-c1.nex",
+#                 "c2" : "interleaved-charsets-c2.nex",
+#                 "c3" : "interleaved-charsets-c3.nex",
+#                 }
+#         self.verify_subsets('interleaved-charsets-all.nex', expected_sets)
 
 if __name__ == "__main__":
     unittest.main()
