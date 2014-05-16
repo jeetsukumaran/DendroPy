@@ -215,9 +215,8 @@ class NewickReader(ioservice.DataReader):
                 else:
                     corrected = "default-unrooted"
             msg = StringIO()
-            error.dump_stack(msg)
-            warnings.warn("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
-                    FutureWarning, stacklevel=4)
+            error.critical_deprecation_alert("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
+                    stacklevel=4)
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
         if "allow_duplicate_taxon_labels" in kwargs:

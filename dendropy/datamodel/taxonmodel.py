@@ -91,9 +91,8 @@ from dendropy.utility import error
 ## Helper functions
 
 def taxon_set_deprecation_warning():
-    error.dump_stack()
-    warnings.warn("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
-            FutureWarning, stacklevel=4)
+    error.critical_deprecation_alert("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
+            stacklevel=4)
 
 def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):
     if "taxon_set" in kwargs_dict:
@@ -316,9 +315,9 @@ class TaxonNamespaceAssociated(object):
         given :class:`TaxonNamespace` object `taxon_namespace` based on label values. Calls
         on `self.reindex_member_taxa()` to synchronize taxa.
         """
-        error.dump_stack()
-        warnings.warn("`reindex_taxa()` will no longer be supported in future releases; use `{}.migrate_taxon_namespace()` instead".format(self.__class__.__name__),
-                FutureWarning, stacklevel=4)
+        # error.dump_stack()
+        error.critical_deprecation_alert("`reindex_taxa()` will no longer be supported in future releases; use `{}.migrate_taxon_namespace()` instead".format(self.__class__.__name__),
+                stacklevel=4)
         if taxon_namespace is not None:
             self.taxon_namespace = taxon_namespace
         if clear:
@@ -1283,9 +1282,9 @@ class TaxonSet(TaxonNamespace):
     :class:`TaxonNamespace`.
     """
     def __new__(cls):
-        error.dump_stack()
-        warnings.warn(":class:`TaxonSet` will no longer be supported in future releases; use :class:`TaxonNamespace` instead",
-                FutureWarning, stacklevel=3)
+        # error.dump_stack()
+        error.critical_deprecation_alert(":class:`TaxonSet` will no longer be supported in future releases; use :class:`TaxonNamespace` instead",
+                stacklevel=3)
         o = super(TaxonSet, cls).__new__(cls)
         return o
 

@@ -1231,7 +1231,7 @@ class CharacterMatrix(
     ### Legacy
 
     def _get_taxon_seq_map(self):
-        error.dump_stack(msg)
+        # error.dump_stack(msg)
         warnings.warn(
                 "All methods and features of 'CharacterMatrix.taxon_seq_map' have"
                 " been integrated directly into 'CharacterMatrix', or otherwise"

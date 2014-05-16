@@ -480,8 +480,8 @@ class Node(
         """
         DEPRECATED: Use :meth:`Node.levelorder_iter()` instead.
         """
-        warnings.warn("Use 'levelorder_iter()' instead of 'level_order_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'levelorder_iter()' instead of 'level_order_iter()'",
+                stacklevel=2)
         return self.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_iter(self, filter_fn=None):
@@ -698,8 +698,8 @@ class Node(
         """
         Deprecated: use :meth:`Node.ageorder_iter()` instead.
         """
-        warnings.warn("Use 'ageorder_iter()' instead of 'age_order_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'ageorder_iter()' instead of 'age_order_iter()'",
+                stacklevel=2)
         return self.ageorder_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
@@ -2491,8 +2491,8 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.levelorder_node_iter()` instead.
         """
-        warnings.warn("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
+                stacklevel=2)
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_node_iter(self, filter_fn=None):
@@ -2546,8 +2546,8 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.leaf_node_iter()` instead.
         """
-        warnings.warn("Use 'leaf_node_iter()' instead of 'leaf_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'leaf_node_iter()' instead of 'leaf_iter()'",
+                stacklevel=2)
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
     def ageorder_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
@@ -2593,8 +2593,8 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.ageorder_node_iter()` instead.
         """
-        warnings.warn("Use 'ageorder_node_iter()' instead of 'age_order_node_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'ageorder_node_iter()' instead of 'age_order_node_iter()'",
+                stacklevel=2)
         return self.ageorder_node_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
@@ -2764,8 +2764,8 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.levelorder_edge_iter()` instead.
         """
-        warnings.warn("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
-                FutureWarning, stacklevel=2)
+        error.critical_deprecation_alert("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
+                stacklevel=2)
         return self.levelorder_edge_iter(filter_fn=filter_fn)
 
     def inorder_edge_iter(self, filter_fn=None):
@@ -2871,9 +2871,9 @@ class Tree(
         Creates (and returns) a new TaxonNamespace object for `self` populated
         with taxa from this tree.
         """
-        error.dump_stack()
-        warnings.warn("`Tree.infer_taxa()` will no longer be supported in future releases; use `Tree.update_taxon_namespace` instead",
-                FutureWarning, stacklevel=4)
+        # error.dump_stack()
+        error.critical_deprecation_alert("`Tree.infer_taxa()` will no longer be supported in future releases; use `Tree.update_taxon_namespace` instead",
+                stacklevel=4)
         taxon_namespace = taxonmodel.TaxonNamespace()
         for node in self.postorder_node_iter():
             if node.taxon is not None:
@@ -2885,9 +2885,9 @@ class Tree(
         """
         Remaps node taxon objects
         """
-        error.dump_stack()
-        warnings.warn("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
-                FutureWarning, stacklevel=4)
+        # error.dump_stack()
+        error.critical_deprecation_alert("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
+                stacklevel=4)
         for node in self.postorder_node_iter():
             t = node.taxon
             if t:

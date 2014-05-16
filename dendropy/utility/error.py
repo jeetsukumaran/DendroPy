@@ -17,12 +17,19 @@
 ##############################################################################
 
 """
-Exceptions and errors.
+Errors, exceptions, warnings, etc.
 """
 
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
 import sys
 import warnings
 import inspect
+
+__warningregistry__ = {}
+
 
 def get_calling_code_info(stack_level):
     frame = inspect.stack()[stacklevel]
@@ -39,10 +46,31 @@ def dump_stack(out=None):
         else:
             out.write("{}: {}: {}\n".format(filename, line_num, source_code[source_index].strip()))
 
-# def deprecation_alert(message,
+class CriticalDeprecationWarning(DeprecationWarning):
+    pass
+
+def critical_deprecation_alert(message, stacklevel=4):
+    # out = StringIO()
+    frame, filename, line_num, func, source_code, source_index = inspect.stack()[-1]
+    # if source_code is None:
+    #     out.write("{}: {}".format(filename, line_num))
+    # else:
+    #     out.write("{}: {}: {}".format(filename, line_num, source_code[source_index].strip()))
+    # out.write(": {}".format(message))
+    # warnings.warn(out.getvalue(),
+    #         Warning, stacklevel=stacklevel)
+    warnings.simplefilter('once')
+    warnings.warn_explicit(
+            message=message,
+            category=CriticalDeprecationWarning,
+            filename=inspect.getfile(frame),
+            lineno=inspect.getlineno(frame),
+            )
+
+# def critical_deprecation_alert(message,
 #         logger_obj=None,
-#         stacklevel=2,
-#         force_warning=False):
+#         stacklevel=4,
+#         force_warning=True):
 #     with warnings.catch_warnings() as w:
 #         if force_warning:
 #             frame = inspect.stack()[stacklevel]
