@@ -289,7 +289,7 @@ class NexusReader(ioservice.DataReader):
     def _get_char_matrix(self, title=None):
         if title is None:
             if len(self._char_matrices) == 1:
-                return self.char_matrices[0]
+                return self._char_matrices[0]
             elif len(self._char_matrices) == 0:
                 raise self._nexus_error("No character matrices defined", NexusReader.NoCharacterBlocksFoundError)
             else:
@@ -914,8 +914,9 @@ class NexusReader(ioservice.DataReader):
         Parses a character position list. Expects next character read to be the first item in a position list.
         """
         positions = []
-        hyphens_as_tokens = self._nexus_tokenizer.hyphens_as_tokens
-        self._nexus_tokenizer.hyphens_as_tokens = True
+        # hyphens_as_tokens = self._nexus_tokenizer.hyphens_as_tokens
+        # self._nexus_tokenizer.hyphens_as_tokens = True
+        self._nexus_tokenizer.set_hyphens_as_tokens(False)
         token = self._nexus_tokenizer.next_token()
         max_positions = self._file_specified_nchar
 
@@ -971,8 +972,7 @@ class NexusReader(ioservice.DataReader):
                             raise self._nexus_error('Expecting digit or "all", but found "%s".' % (token))
                     else:
                         positions.append(start)
-
-        self._nexus_tokenizer.hyphens_as_tokens = hyphens_as_tokens
+        self._nexus_tokenizer.set_hyphens_as_tokens(True)
         positions = list(set(positions))
         positions.sort()
         if verify:

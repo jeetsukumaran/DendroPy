@@ -34,8 +34,8 @@ class NexusTokenizer(Tokenizer):
     def __init__(self, src):
         Tokenizer.__init__(self,
             src=src,
-            uncaptured_delimiters=" \t\n\r",
-            captured_delimiters="{}(),;:=",
+            uncaptured_delimiters=list(" \t\n\r"),
+            captured_delimiters=list("{}(),;:=\\"),
             quote_chars="\"'",
             escape_quote_by_doubling=True,
             escape_chars="",
@@ -45,11 +45,41 @@ class NexusTokenizer(Tokenizer):
 
     def set_capture_eol(self, capture_eol):
         if capture_eol:
-            self.uncaptured_delimiters = " \t"
-            self.captured_delimiters = "{}(),;:=\n\r"
+            try:
+                self.uncaptured_delimiters.remove("\n")
+            except ValueError:
+                pass
+            try:
+                self.uncaptured_delimiters.remove("\r")
+            except ValueError:
+                pass
+            if "\n" not in self.captured_delimiters:
+                self.captured_delimiters.append("\n")
+            if "\r" not in self.captured_delimiters:
+                self.captured_delimiters.append("\r")
         else:
-            self.uncaptured_delimiters = " \t\n\r"
-            self.captured_delimiters = "{}(),;:="
+            try:
+                self.captured_delimiters.remove("\n")
+            except ValueError:
+                pass
+            try:
+                self.captured_delimiters.remove("\r")
+            except ValueError:
+                pass
+            if "\n" not in self.uncaptured_delimiters:
+                self.uncaptured_delimiters.append("\n")
+            if "\r" not in self.uncaptured_delimiters:
+                self.uncaptured_delimiters.append("\r")
+
+    def set_hyphens_as_tokens(self, hyphens_as_tokens):
+        if hyphens_as_tokens:
+            try:
+                self.captured_delimiters.remove("-")
+            except ValueError:
+                pass
+        else:
+            if "-" not in self.captured_delimiters:
+                self.captured_delimiters.append("-")
 
     def next_token_ucase(self):
         try:
@@ -72,7 +102,7 @@ class NexusTokenizer(Tokenizer):
     def skip_to_semicolon(self):
         token = self.next_token()
         while token != ';' and not self._cur_char == "" and token != None:
-            token = self.read_next_token()
+            token = self.next_token()
 
 ###############################################################################
 ## Taxon Handling

@@ -15,7 +15,7 @@ begin taxa;
 end;
 
 Begin characters;
-	dimensions ntax=8 nchar=3159;
+	dimensions ntax=8 nchar=4716;
 	Format datatype=dna missing=? interleave=yes;
 	Matrix
 
