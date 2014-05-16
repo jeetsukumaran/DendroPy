@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import dendropy
+from dendropy.utility import error
 from dendropy.dataio import nexusprocessing
 
 class TaxonSymbolMappingTest(unittest.TestCase):
@@ -198,6 +199,63 @@ class TaxonSymbolMappingTest(unittest.TestCase):
         del tsm
         self.assertTrue(tns.is_mutable)
 
+class NexusTaxaCaseInsensitivityTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_str = """\
+            #NEXUS
+
+            BEGIN TAXA;
+                DIMENSIONS NTAX=5;
+                TAXLABELS AAA BBB CCC DDD EEE;
+            END;
+
+            BEGIN CHARACTERS;
+                DIMENSIONS  NCHAR=8;
+                FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=. INTERLEAVE;
+                MATRIX
+                    AAA ACGT
+                    BBB ACGT
+                    CCC ACGT
+                    DDD ACGT
+                    EEE ACGT
+
+                    aaa ACGT
+                    bbb ACGT
+                    ccc ACGT
+                    ddd ACGT
+                    eee ACGT
+                ;
+            END;
+            """
+
+    def testCaseInsensitiveChars(self):
+        d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_sensitive_taxon_labels=False)
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_namespace]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
+        self.assertEqual(len(d.taxon_namespace), 5)
+
+    def testCaseSensitiveChars(self):
+        #d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_sensitive_taxon_labels=False)
+        self.assertRaises(error.DataParseError,
+                dendropy.DnaCharacterMatrix.get_from_string,
+                self.data_str,
+                'nexus',
+                case_sensitive_taxon_labels=True)
+
+    def testDefaultCaseSensitivityChars(self):
+        d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus')
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_namespace]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
+        self.assertEqual(len(d.taxon_namespace), 5)
 
 if __name__ == "__main__":
     unittest.main()
