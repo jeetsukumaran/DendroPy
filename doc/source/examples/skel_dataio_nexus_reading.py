@@ -3,7 +3,7 @@
 data = dendropy.DataSet.get_from_path(
         "data.nex",
         "nexus",
-        taxon_set=None,
+        taxon_namespace=None,
         exclude_trees=False,
         exclude_chars=False,
         as_rooted=None,
@@ -28,7 +28,7 @@ data = dendropy.DataSet.get_from_path(
 trees = dendropy.TreeList.get_from_path(
         "data.nex",
         "nexus",
-        taxon_set=None,
+        taxon_namespace=None,
         exclude_trees=False,
         exclude_chars=True,
         as_rooted=None,
@@ -52,7 +52,7 @@ trees = dendropy.TreeList.get_from_path(
 dna = dendropy.DnaCharacterSet.get_from_path(
         "data.nex",
         "nexus",
-        taxon_set=None,
+        taxon_namespace=None,
         exclude_trees=True,
         exclude_chars=False,
         as_rooted=None,

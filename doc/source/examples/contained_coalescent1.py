@@ -9,8 +9,8 @@ sp_tree_str = """\
 """
 
 sp_tree = dendropy.Tree.get_from_string(sp_tree_str, "newick")
-gene_to_species_map = dendropy.TaxonSetMapping.create_contained_taxon_mapping(
-        containing_taxon_set=sp_tree.taxon_set,
+gene_to_species_map = dendropy.TaxonNamespaceMapping.create_contained_taxon_mapping(
+        containing_taxon_namespace=sp_tree.taxon_namespace,
         num_contained=3)
 gene_tree = treesim.contained_coalescent(containing_tree=sp_tree,
     gene_to_containing_taxon_map=gene_to_species_map)

@@ -2,13 +2,13 @@
 Taxa and Taxon Management
 *************************
 
-Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonSet| objects.
+Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonNamespace| objects.
 
-Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonSet| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.
+Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonNamespace| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.
 Some data formats do not have explicit definition of taxa, e.g. a Newick tree source.
 These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a Newick file).
 
-Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonSet| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonSet| object, and used to represent the taxon.
+Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonNamespace| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonNamespace| object, and used to represent the taxon.
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped
@@ -30,7 +30,7 @@ This is illustrated by the following:
 
 Which produces the following, almost certainly incorrect, result::
 
-    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 4 Taxa
+    TaxonNamespace object at 0x43b4e0 (TaxonNamespace4437216): 4 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
         [2] Taxon object at 0x22867d0 (Taxon36202448): 'Python_regius'
@@ -47,7 +47,7 @@ You could simply avoid underscores and use only spaces instead:
 
 Which results in::
 
-    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
+    TaxonNamespace object at 0x43b4e0 (TaxonNamespace4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python_sebae'
 
@@ -58,7 +58,7 @@ Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data
 
 Which results in the same as the preceding example::
 
-    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
+    TaxonNamespace object at 0x43b4e0 (TaxonNamespace4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
 
@@ -69,7 +69,7 @@ You can also wrap the underscore-bearing labels in the NEXUS/Newick source in qu
 
 Which will result in::
 
-    TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
+    TaxonNamespace object at 0x43c780 (TaxonNamespace4441984): 2 Taxa
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regius'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
@@ -80,7 +80,7 @@ Finally, you can also override the default behavior of DendroPy's NEXUS/Newick p
 
 will result in::
 
-    TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
+    TaxonNamespace object at 0x43c780 (TaxonNamespace4441984): 2 Taxa
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regius'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
@@ -90,7 +90,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
     #NEXUS
 
     BEGIN TAXA;
-        TITLE TaxonSet5736800;
+        TITLE TaxonNamespace5736800;
         DIMENSIONS NTAX=2;
         TAXLABELS
             'Python_regius'
@@ -100,7 +100,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
 
     BEGIN CHARACTERS;
         TITLE DnaCharacterMatrix37505040;
-        LINK TAXA = TaxonSet5736800;
+        LINK TAXA = TaxonNamespace5736800;
         DIMENSIONS  NCHAR=5;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
@@ -111,7 +111,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
 
     BEGIN CHARACTERS;
         TITLE DnaCharacterMatrix37504848;
-        LINK TAXA = TaxonSet5736800;
+        LINK TAXA = TaxonNamespace5736800;
         DIMENSIONS  NCHAR=4;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
@@ -127,7 +127,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
     #NEXUS
 
     BEGIN TAXA;
-        TITLE TaxonSet5736800;
+        TITLE TaxonNamespace5736800;
         DIMENSIONS NTAX=2;
         TAXLABELS
             Python_regius
@@ -137,7 +137,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
 
     BEGIN CHARACTERS;
         TITLE DnaCharacterMatrix37505040;
-        LINK TAXA = TaxonSet5736800;
+        LINK TAXA = TaxonNamespace5736800;
         DIMENSIONS  NCHAR=5;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
@@ -148,7 +148,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
 
     BEGIN CHARACTERS;
         TITLE DnaCharacterMatrix37504848;
-        LINK TAXA = TaxonSet5736800;
+        LINK TAXA = TaxonNamespace5736800;
         DIMENSIONS  NCHAR=4;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX

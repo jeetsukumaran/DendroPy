@@ -76,13 +76,13 @@ As above, fine-grained control over the output format can be specified using :re
 Taxon Management with Character Matrices
 ========================================
 
-Taxon management with |CharacterMatrix|-derived objects work very much the same as it does with |Tree| or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a |CharacterMatrix|-derived object is independentally created or read, a new |TaxonSet| is created, unless an existing one is specified.
-Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common |TaxonSet| reference::
+Taxon management with |CharacterMatrix|-derived objects work very much the same as it does with |Tree| or |TreeList| objects every time a |CharacterMatrix|-derived object is independentally created or read, a new |TaxonNamespace| is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common |TaxonNamespace| reference::
 
     >>> import dendropy
-    >>> taxa = dendropy.TaxonSet()
-    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
-    >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace()
+    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_namespace=taxa)
+    >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_namespace=taxa)
 
 
 Accessing Data
@@ -95,7 +95,7 @@ Thus, to get the character sequence vector associated with the first taxon ("``P
     >>> cytb = DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> v1 = cytb[0]
     >>> v2 = cytb['Python regius']
-    >>> v3 = cytb[cytb.taxon_set[0]]
+    >>> v3 = cytb[cytb.taxon_namespace[0]]
     >>> v1 == v2 == v3
     True
 

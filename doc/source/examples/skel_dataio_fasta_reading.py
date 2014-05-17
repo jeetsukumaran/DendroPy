@@ -6,21 +6,21 @@
 d = dendropy.DnaCharacterMatrix.get_from_path(
         "data.fas",
         "fasta",
-        taxon_set=None,
+        taxon_namespace=None,
         row_type='rich')
 
 # Otherwise ...
 d = dendropy.DataSet.get_from_path(
         "data.fas",
         "fasta",
-        taxon_set=None,
+        taxon_namespace=None,
         data_type="dna",
         row_type='rich')
 # Or ..
 d = dendropy.DataSet.get_from_path(
         "data.fas",
         "fasta",
-        taxon_set=None,
+        taxon_namespace=None,
         char_matrix_type=dendropy.DnaCharacterMatrix,
         row_type='rich')
 

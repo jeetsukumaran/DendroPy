@@ -2,7 +2,7 @@
 Working with Metadata Annotations
 *********************************
 
-|DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
+|DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
 These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`dendropy.utility.containers.OrderedSet`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
 Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annotation element.
 These annotations will be rendered as ``meta`` elements when writing to NeXML format or ampersand-prepended comemnt strings when writing to NEXUS/NEWICK format.
@@ -42,7 +42,7 @@ This class has the following attributes:
 
 These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`.
 This is a specialization of :class:`dendropy.utility.containers.OrderedSet` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`.
-The full set of annotations associated with each object of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
+The full set of annotations associated with each object of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
 The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following additional methods to support the creation, access, and management of the :class:`~dendropy.dataobject.base.Annotation` object elements contained within it:
 
     - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
@@ -58,7 +58,7 @@ The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following addi
     The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
     Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
     These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`dendropy.utility.containers.OrderedSet`".
-    Phylogenetic data objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+    Phylogenetic data objects of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
         The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
 
@@ -144,10 +144,10 @@ For example::
     "nexml")
     for a in ds.annotations:
         print "Data Set '%s': %s" % (ds.label, a)
-    for taxon_set in ds.taxon_sets:
-        for a in taxon_set.annotations:
-            print "Taxon Set '%s': %s" % (taxon_set.label, a)
-        for taxon in taxon_set:
+    for taxon_namespace in ds.taxon_namespaces:
+        for a in taxon_namespace.annotations:
+            print "Taxon Set '%s': %s" % (taxon_namespace.label, a)
+        for taxon in taxon_namespace:
             for a in taxon.annotations:
                 print "Taxon '%s': %s" % (taxon.label, a)
     for tree_list in ds.tree_lists:
@@ -892,7 +892,7 @@ This syntax corresponds to the BEAST or FigTree style of metadata annotation.
 However, this association might not be preserved.
 For example, metadata annotations associated with edges and nodes of trees will be written out fully in NEXUS and NEWICK formats, but when read in again will all be associated with nodes.
 The keyword argument ``annotations_as_nhx=True`` passed to the call to write the data in NEXUS/NEWICK format will result in a double ampersand prefix to the comment, thus (partially) conforming to NHX specifications.
-Metadata associated with |DataSet| objects will be written in out in the same BEAST/FigTree/NHX syntax at the top of the file, while metadata associated with |TaxonSet| and |Taxon| objects will be written out immediately after the start of the Taxa Block and taxon labels respectively.
+Metadata associated with |DataSet| objects will be written in out in the same BEAST/FigTree/NHX syntax at the top of the file, while metadata associated with |TaxonNamespace| and |Taxon| objects will be written out immediately after the start of the Taxa Block and taxon labels respectively.
 This is very fragile: for example, a metadata annotation *before* a taxon label will be associated with the *previous* taxon when being read in again.
 As noted above, if metadata annotations are important for yourself, your workflow, or your task, then the NeXML format should be used rather than NEXUS or NEWICK.
 

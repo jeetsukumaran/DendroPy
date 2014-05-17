@@ -18,8 +18,8 @@ By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no paren
 Tree Lists
 ----------
 
-|TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonSet|.
-Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_set` attribute assigned to the |TaxonSet| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
+|TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonNamespace|.
+Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_namespace` attribute assigned to the |TaxonNamespace| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
 
 |Tree| and |TreeList| Creation and Reading
 ==========================================
@@ -117,7 +117,7 @@ Taxon Management with Trees and Tree Lists
 Taxon Management with Trees
 ---------------------------
 
-It is important to recognize that, by default, DendroPy will create new |TaxonSet| object every time a data source is parsed (and, if the data source has multiple taxon objects, there may be more than one |TaxonSet| created).
+It is important to recognize that, by default, DendroPy will create new |TaxonNamespace| object every time a data source is parsed (and, if the data source has multiple taxon objects, there may be more than one |TaxonNamespace| created).
 
 Consider the following example::
 
@@ -127,17 +127,17 @@ Consider the following example::
     >>> print(t1.description(2))
     Tree object at 0x64b130 (Tree6599856): 7 Nodes, 7 Edges
         [Taxon Set]
-            TaxonSet object at 0x64c270 (TaxonSet6603376): 4 Taxa
+            TaxonNamespace object at 0x64c270 (TaxonNamespace6603376): 4 Taxa
         [Tree]
             ((A,B),(C,D))
     >>> print(t2.description(2))
     Tree object at 0x64b190 (Tree6600560): 7 Nodes, 7 Edges
         [Taxon Set]
-            TaxonSet object at 0x64c1e0 (TaxonSet6603232): 4 Taxa
+            TaxonNamespace object at 0x64c1e0 (TaxonNamespace6603232): 4 Taxa
         [Tree]
             ((A,B),(C,D))
 
-We now have two distinct |Tree| objects, each associated with a distinct |TaxonSet| objects, each with its own set of |Taxon| objects that, while having the same labels, are distinct from one another::
+We now have two distinct |Tree| objects, each associated with a distinct |TaxonNamespace| objects, each with its own set of |Taxon| objects that, while having the same labels, are distinct from one another::
 
     >>> t1.leaf_nodes()[0].taxon == t2.leaf_nodes()[0].taxon
     False
@@ -156,45 +156,45 @@ This means that even though the tree shape and structure is identical between th
         value_type=float)
 
       File "/Users/jeet/Documents/Projects/dendropy/dendropy/treecalc.py", line 200, in splits_distance
-        % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
+        % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
 
-    TypeError: Trees have different TaxonSet objects: 0x101f630 vs. 0x103bf30
+    TypeError: Trees have different TaxonNamespace objects: 0x101f630 vs. 0x103bf30
 
-The solution is to explicitly specify the same ``taxon_set`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonSet| objects have constructors, factory methods, and ``read_from_*`` methods take a specific :class:`TaxonSet` object as an argument using the ``taxon_set`` a keyword. For example::
+The solution is to explicitly specify the same ``taxon_namespace`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonNamespace| objects have constructors, factory methods, and ``read_from_*`` methods take a specific :class:`TaxonNamespace` object as an argument using the ``taxon_namespace`` a keyword. For example::
 
-    >>> taxa = dendropy.TaxonSet()
-    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_set=taxa)
-    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace()
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_namespace=taxa)
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_namespace=taxa)
     >>> treecalc.robinson_foulds_distance(t1, t2)
     0.0
 
 Taxon Management with Tree Lists
 --------------------------------
 
-The |TreeList| class is designed to manage collections of |Tree| objects that share the same |TaxonSet|.
-As |Tree| objects are appended to a |TreeList| object, the |TreeList| object will automatically take care of remapping the |TaxonSet| and associated |Taxon| objects::
+The |TreeList| class is designed to manage collections of |Tree| objects that share the same |TaxonNamespace|.
+As |Tree| objects are appended to a |TreeList| object, the |TreeList| object will automatically take care of remapping the |TaxonNamespace| and associated |Taxon| objects::
 
     >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
     >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
-    >>> print(repr(t1.taxon_set))
-    <TaxonSet object at 0x1243a20>
-    >>> repr(t1.taxon_set)
-    '<TaxonSet object at 0x1243a20>'
-    >>> repr(t2.taxon_set)
-    '<TaxonSet object at 0x12439f0>'
+    >>> print(repr(t1.taxon_namespace))
+    <TaxonNamespace object at 0x1243a20>
+    >>> repr(t1.taxon_namespace)
+    '<TaxonNamespace object at 0x1243a20>'
+    >>> repr(t2.taxon_namespace)
+    '<TaxonNamespace object at 0x12439f0>'
     >>> trees = dendropy.TreeList()
     >>> trees.append(t1)
     >>> trees.append(t2)
-    >>> repr(t1.taxon_set)
-    '<TaxonSet object at 0x1243870>'
-    >>> repr(t2.taxon_set)
-    '<TaxonSet object at 0x1243870>'
+    >>> repr(t1.taxon_namespace)
+    '<TaxonNamespace object at 0x1243870>'
+    >>> repr(t2.taxon_namespace)
+    '<TaxonNamespace object at 0x1243870>'
     >>> treecalc.robinson_foulds_distance(t1, t2)
     0.0
 
-The same applies when using the :meth:`read_from_*` method of a |TreeList| object: all trees read from the data source will be assigned the same |TaxonSet| object, and the taxa referenced in the tree definition will be mapped to corresponding |Taxon| objects, identified by label, in the |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
+The same applies when using the :meth:`read_from_*` method of a |TreeList| object: all trees read from the data source will be assigned the same |TaxonNamespace| object, and the taxa referenced in the tree definition will be mapped to corresponding |Taxon| objects, identified by label, in the |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
 
-While |TreeList| objects ensure that all |Tree| objects created, read or added using them all have the same |TaxonSet| object reference, if two |TreeList| objects are independentally created, they will each have their own, distinct, |TaxonSet| object reference.
+While |TreeList| objects ensure that all |Tree| objects created, read or added using them all have the same |TaxonNamespace| object reference, if two |TreeList| objects are independentally created, they will each have their own, distinct, |TaxonNamespace| object reference.
 For example, if you want to read in two collections of trees and compare trees between the two collections, the following will **not** work:
 
 
@@ -202,24 +202,24 @@ For example, if you want to read in two collections of trees and compare trees b
     >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus')
     >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus')
 
-Of course, reading both data sources into the same  |TreeList| object *will* work insofar as ensuring all the |Tree| objects have the same |TaxonSet|  reference, but then you will lose the distinction between the two sources, unless you keep track of the indexes of where one source begins and the other ends, which error-prone and tedious.
-A better approach would be simply to create a |TaxonSet| object, and pass it to the factory methods of both  |TreeList| objects::
+Of course, reading both data sources into the same  |TreeList| object *will* work insofar as ensuring all the |Tree| objects have the same |TaxonNamespace|  reference, but then you will lose the distinction between the two sources, unless you keep track of the indexes of where one source begins and the other ends, which error-prone and tedious.
+A better approach would be simply to create a |TaxonNamespace| object, and pass it to the factory methods of both  |TreeList| objects::
 
     >>> import dendropy
-    >>> taxa = dendropy.TaxonSet()
-    >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus', taxon_set=taxa)
-    >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus', taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace()
+    >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus', taxon_namespace=taxa)
+    >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus', taxon_namespace=taxa)
 
-Now both ``mcmc1`` and ``mcmc2`` share the same |TaxonSet|, and thus so do the |Tree| objects created within them, which means the |Tree| objects can be compared both within and between the collections.
+Now both ``mcmc1`` and ``mcmc2`` share the same |TaxonNamespace|, and thus so do the |Tree| objects created within them, which means the |Tree| objects can be compared both within and between the collections.
 
-You can also pass the |TaxonSet| to the constructor of |TreeList|.
+You can also pass the |TaxonNamespace| to the constructor of |TreeList|.
 So, for example, the following is logically identical to the previous::
 
     >>> import dendropy
-    >>> taxa = dendropy.TaxonSet()
-    >>> mcmc1 = dendropy.TreeList(taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace()
+    >>> mcmc1 = dendropy.TreeList(taxon_namespace=taxa)
     >>> mcmc1.read_from_path('pythonidae.mcmc1.nex', 'nexus')
-    >>> mcmc2 = dendropy.TreeList(taxon_set=taxa)
+    >>> mcmc2 = dendropy.TreeList(taxon_namespace=taxa)
     >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
 
 Efficiently Iterating Over Trees in a File
@@ -243,9 +243,9 @@ For example, the following script reads a model tree from a file, and then itera
 .. literalinclude:: /examples/tree_iter1.py
     :linenos:
 
-Note how a |TaxonSet| object is created and passed to both the :meth:`~dendropy.dataobject.Tree.get_from_path()` and the :func:`~dendropy.dataio.tree_source_iter()` functions using the ``taxon_set`` keyword argument.
+Note how a |TaxonNamespace| object is created and passed to both the :meth:`~dendropy.dataobject.Tree.get_from_path()` and the :func:`~dendropy.dataio.tree_source_iter()` functions using the ``taxon_namespace`` keyword argument.
 This is to ensure that the corresponding taxa in both sources get mapped to the same |Taxon| objects in DendroPy object space, so as to enable comparisons of the trees.
-If this was not done, then each tree would have its own distinct |TaxonSet| object (and associated |Taxon| objects), making comparisons impossible.
+If this was not done, then each tree would have its own distinct |TaxonNamespace| object (and associated |Taxon| objects), making comparisons impossible.
 
 Also note how the ``tree_offset`` keyword is used to skip over the burn-in trees from the MCMC sample.
 

@@ -10,5 +10,5 @@ ds = dendropy.DataSet(trees)
 ds.read_from_path('pythonidae_cytb.fasta',
                   schema='fasta',
                   data_type='dna',
-                  taxon_set=ds.taxon_sets[0])
+                  taxon_namespace=ds.taxon_namespaces[0])
 ds.write_to_path('pythonidae_combined.nex', 'nexus')

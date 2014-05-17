@@ -192,7 +192,7 @@ Generating Character Matrix Objects from GenBank Data
 =====================================================
 
 The "``generate_char_matrix()``" method of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` objects creates and returns a |CharacterMatrix| object of the appropriate type out of the data collected in them.
-When called without any arguments, it generates a new |TaxonSet| block, creating one new |Taxon| object for every sequence in the collection with a label corresponding to the identifier used to request the sequence::
+When called without any arguments, it generates a new |TaxonNamespace| block, creating one new |Taxon| object for every sequence in the collection with a label corresponding to the identifier used to request the sequence::
 
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
@@ -229,7 +229,7 @@ Customizing/Controlling Sequence Taxa
 The taxon assignment can be controlled in one of two ways:
 
     1. Using the "``label_components``" and optionally the "``label_component_separator``" arguments.
-    2. Specifying a custom function using the "``gb_to_taxon_func``" argument that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonSet| object passed using the "``taxon_set``" argument.
+    2. Specifying a custom function using the "``gb_to_taxon_func``" argument that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonNamespace| object passed using the "``taxon_namespace``" argument.
 
 Specifying a Custom Label for Sequence Taxa
 ...........................................
@@ -246,12 +246,12 @@ For example::
     >>> char_matrix = gb_dna.generate_char_matrix(
     ... label_components=["accession", "organism", ],
     ... label_component_separator="_")
-    >>> print [t.label for t in char_matrix.taxon_set]
+    >>> print [t.label for t in char_matrix.taxon_namespace]
     ['EU105474_Homo_sapiens', 'EU105475_Homo_sapiens']
     >>> char_matrix = gb_dna.generate_char_matrix(
     ... label_components=["organism", "moltype", "gi"],
     ... label_component_separator=".")
-    >>> print [t.label for t in char_matrix.taxon_set]
+    >>> print [t.label for t in char_matrix.taxon_namespace]
     ['Homo.sapiens.DNA.158930545', 'Homo.sapiens.DNA.158930546']
 
 Specifying a Custom Taxon-Discovery Function
@@ -259,7 +259,7 @@ Specifying a Custom Taxon-Discovery Function
 
 Full control over the |Taxon| object assignment process is given by using the "``gb_to_taxon_func``" argument.
 This should be used to specify a function that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence.
-The specification of a |TaxonSet| object passed using the "``taxon_set``" argument is also required, so that this can be assigned to the |CharacterMatrix| object.
+The specification of a |TaxonNamespace| object passed using the "``taxon_namespace``" argument is also required, so that this can be assigned to the |CharacterMatrix| object.
 
 A simple example that illustrates the usage of the "``gb_to_taxon_func``" argument by creating a custom label::
 
@@ -274,19 +274,19 @@ A simple example that illustrates the usage of the "``gb_to_taxon_func``" argume
         taxon = dendropy.Taxon(label=label)
         return taxon
 
-    taxon_set = dendropy.TaxonSet()
+    taxon_namespace = dendropy.TaxonNamespace()
 
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(
-        taxon_set=taxon_set,
+        taxon_namespace=taxon_namespace,
         gb_to_taxon_func=gb_to_taxon)
-    print [t.label for t in char_matrix.taxon_set]
+    print [t.label for t in char_matrix.taxon_namespace]
 
 which results in::
 
     ['GI158930545.Ache', 'GI158930546.Arara']
 
-A more complex case might be where you may already have a |TaxonSet| with existing |Taxon| objects that you may want to associate with the sequences.
+A more complex case might be where you may already have a |TaxonNamespace| with existing |Taxon| objects that you may want to associate with the sequences.
 The following illustrates how to do this::
 
 
@@ -300,7 +300,7 @@ The following illustrates how to do this::
         "newick")
     def gb_to_taxon(gb):
         locality = gb.feature_table.find("source").qualifiers.find("note").value
-        taxon = tree.taxon_set.get_taxon(label=locality)
+        taxon = tree.taxon_namespace.get_taxon(label=locality)
         assert taxon is not None
         return taxon
 
@@ -308,11 +308,11 @@ The following illustrates how to do this::
 
     gb_dna = genbank.GenBankDna(ids=gb_ids)
     char_matrix = gb_dna.generate_char_matrix(
-        taxon_set=tree.taxon_set,
+        taxon_namespace=tree.taxon_namespace,
         gb_to_taxon_func=gb_to_taxon)
-    print [t.label for t in char_matrix.taxon_set]
-    print tree.taxon_set is char_matrix.taxon_set
-    for taxon in tree.taxon_set:
+    print [t.label for t in char_matrix.taxon_namespace]
+    print tree.taxon_namespace is char_matrix.taxon_namespace
+    for taxon in tree.taxon_namespace:
         print "{}: {}".format(
             taxon.label,
             char_matrix[taxon].symbols_as_string()[:10])
@@ -344,7 +344,7 @@ For example::
     from dendropy.interop import genbank
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(set_taxon_attr="gb_rec")
-    for taxon in char_matrix.taxon_set:
+    for taxon in char_matrix.taxon_namespace:
         print "Data for taxon '{}' is based on GenBank record: {}".format(
             taxon.label,
             taxon.gb_rec.definition)
@@ -365,7 +365,7 @@ Alternatively, the following::
     for sidx, sequence in enumerate(char_matrix.vectors()):
         print "Sequence {} ('{}') is based on GenBank record: {}".format(
             sidx+1,
-            char_matrix.taxon_set[sidx].label,
+            char_matrix.taxon_namespace[sidx].label,
             sequence.gb_rec.defline)
 
 will result in::

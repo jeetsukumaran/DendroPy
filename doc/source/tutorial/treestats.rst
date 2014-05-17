@@ -58,7 +58,7 @@ Numbers of Deep Coalescences
 
     :func:`~dendropy.reconcile.monophyletic_partition_discordance`
         Given a |Tree| object as the first argument, and a list of lists of
-        |Taxon| objects representing the expected monophyletic partitioning of the |TaxonSet| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument. This statistic corresponds to the Slatkin and Maddison (1989) **s** statistic, as described `here <http://mesquiteproject.org/Mesquite_Folder/docs/mesquite/popGen/popGen.html#s>`_.
+        |Taxon| objects representing the expected monophyletic partitioning of the |TaxonNamespace| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument. This statistic corresponds to the Slatkin and Maddison (1989) **s** statistic, as described `here <http://mesquiteproject.org/Mesquite_Folder/docs/mesquite/popGen/popGen.html#s>`_.
 
     .. versionchanged:: 3.3.0
         Renamed and moved to :mod:`~dendropy.reconcile` module.
@@ -70,12 +70,12 @@ Imagine we wanted to generate the distribution of the number of deep coalescence
 In this case, the containing tree and the embedded trees have different leaf sets, and there is a many-to-one mapping of embedded tree taxa to containing tree taxa.
 
 The :class:`~dendropy.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
-It requires a |TaxonSetMapping| object, which provides an association between the embedded taxa and the containing taxa.
-The easiest way to get a |TaxonSetMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
-This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
-It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
-If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
-This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonSetPartition` object: you can use a function, attribute or dictionary.
+It requires a |TaxonNamespaceMapping| object, which provides an association between the embedded taxa and the containing taxa.
+The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+This will create a new |TaxonNamespace| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
+It takes two arguments: the |TaxonNamespace| of the containing tree, and the number of genes you want sampled from each species.
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
 
 The :class:`~dendropy.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time.
 
@@ -150,7 +150,7 @@ Using the :mod:`~dendropy.treecalc` Module
 ------------------------------------------
 
 The :mod:`~dendropy.treecalc` module provides for these operations as independent functions that take two |Tree| objects as arguments.
-These independent functions require that both trees have the same |TaxonSet| reference, otherwise an exception is raised::
+These independent functions require that both trees have the same |TaxonNamespace| reference, otherwise an exception is raised::
 
         >>> import dendropy
         >>> from dendropy import treecalc
@@ -164,25 +164,25 @@ These independent functions require that both trees have the same |TaxonSet| ref
           File "treecalc.py", line 240, in symmetric_difference
             t = false_positives_and_negatives(tree1, tree2)
           File "treecalc.py", line 254, in false_positives_and_negatives
-            % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))
-        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
+            % (hex(id(reference_tree.taxon_namespace)), hex(id(test_tree.taxon_namespace))))
+        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
         >>> treecalc.euclidean_distance(tree1, tree2)
         Traceback (most recent call last):
           File "<stdin>", line 1, in <module>
           File "treecalc.py", line 236, in euclidean_distance
             value_type=value_type)
           File "treecalc.py", line 160, in splits_distance
-            % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
-        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
+            % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
+        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
         >>> treecalc.robinson_foulds_distance(tree1, tree2)
         Traceback (most recent call last):
           File "<stdin>", line 1, in <module>
           File "treecalc.py", line 223, in robinson_foulds_distance
             value_type=float)
           File "treecalc.py", line 160, in splits_distance
-            % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
-        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
-        >>> tree3 = dendropy.Tree.get_from_string(s2, 'newick', taxon_set=tree1.taxon_set)
+            % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
+        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
+        >>> tree3 = dendropy.Tree.get_from_string(s2, 'newick', taxon_namespace=tree1.taxon_namespace)
         >>> treecalc.symmetric_difference(tree1, tree3)
         0
         >>> treecalc.euclidean_distance(tree1, tree3)

@@ -72,7 +72,7 @@ For example, the following accumulates post-burn-in trees from several different
     >>> print(post_trees.description())
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
-The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonSet| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonSet| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
+The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonNamespace| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonNamespace| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
 
 In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| and |DataSet| objects, the :meth:`read_from_*()` methods of |Tree|- and |CharacterMatrix|-derived objects show replacement behavior. For example, the following changes the contents of a |Tree| by re-reading it::
 
@@ -126,13 +126,13 @@ Some of these keyword arguments apply generally, regardless of the format of the
 All Formats
 ^^^^^^^^^^^
 
-    ``attached_taxon_set``
-        If |True| when reading into a |DataSet| object, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
+    ``attached_taxon_namespace``
+        If |True| when reading into a |DataSet| object, then a new |TaxonNamespace| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_namespaces` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonNamespace| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
 
-    ``taxon_set``
-        If passed a |TaxonSet| object, then this |TaxonSet| will be used to manage all taxon references in the data source.
-        When creating a new |Tree|, |TreeList| or |CharacterMatrix| object from a data source, the |TaxonSet| object passed by this keyword will be used as the |TaxonSet| associated with the object.
-        When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created. By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
+    ``taxon_namespace``
+        If passed a |TaxonNamespace| object, then this |TaxonNamespace| will be used to manage all taxon references in the data source.
+        When creating a new |Tree|, |TreeList| or |CharacterMatrix| object from a data source, the |TaxonNamespace| object passed by this keyword will be used as the |TaxonNamespace| associated with the object.
+        When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonNamespace| object will be created. By passing a |TaxonNamespace| object through the ``taxon_namespace`` keyword, you can force DendroPy to use the same |TaxonNamespace| object for all taxon references.
 
     ``exclude_trees``
         If |True|, then all tree data in the data source will be skipped.

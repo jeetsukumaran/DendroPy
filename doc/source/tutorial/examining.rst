@@ -12,7 +12,7 @@ This method optionally takes a numeric value as its first argument that determin
     >>> print(d.description(3))
     DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Matrices
         [Taxon Sets]
-            [0] TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
+            [0] TaxonNamespace object at 0x5a4a20 (TaxonNamespace5917216): 29 Taxa
                 [0] Taxon object at 0x22c0fd0 (Taxon36442064): 'Python regius'
                 [1] Taxon object at 0x22c0f10 (Taxon36441872): 'Python sebae'
                 [2] Taxon object at 0x22c0ed0 (Taxon36441808): 'Python brongersmai'
@@ -45,7 +45,7 @@ This method optionally takes a numeric value as its first argument that determin
         [Character Matrices]
             [0] DnaCharacterMatrix object at 0x22c0f90 (DnaCharacterMatrix36442000):  29 Sequences
                 [Taxon Set]
-                    TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
+                    TaxonNamespace object at 0x5a4a20 (TaxonNamespace5917216): 29 Taxa
                 [Characters]
                     [0] Python regius : 1114 characters
                     [1] Python sebae : 1114 characters

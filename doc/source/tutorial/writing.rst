@@ -47,8 +47,8 @@ The writing of data can be controlled or fine-tuned using keyword arguments. As 
 All Formats
 ^^^^^^^^^^^
 
-    ``taxon_set``
-        When writing a |DataSet| object, if passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is |None|, meaning that all data in the |DataSet| object will be written.
+    ``taxon_namespace``
+        When writing a |DataSet| object, if passed a specific |TaxonNamespace|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonNamespace| will be written. By default, this is |None|, meaning that all data in the |DataSet| object will be written.
 
     ``exclude_trees``
         When writing a |DataSet| object, if |True|, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all tree data will be written.

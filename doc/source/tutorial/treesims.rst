@@ -48,19 +48,19 @@ While to get a continuous time tree generated under the same rates after 6 time 
 
 If both conditions are given simultaneously, then tree growth will terminate when
 *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-of tips == len(taxon_set) or maximum time == `max_time`) are met.
+of tips == len(taxon_namespace) or maximum time == `max_time`) are met.
 
-Specifying a |TaxonSet|
------------------------
+Specifying a |TaxonNamespace|
+-----------------------------
 
-By default, a new |Taxon| object will be created and associated with each leaf (labeled "T1", "T2", etc.),  all belonging to a new |TaxonSet| object associated with the resulting tree.
+By default, a new |Taxon| object will be created and associated with each leaf (labeled "T1", "T2", etc.),  all belonging to a new |TaxonNamespace| object associated with the resulting tree.
 
-You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword::
+You can pass in an explicit |TaxonNamespace| object using the "``taxon_namespace``" keyword::
 
     >>> import dendropy
     >>> from dendropy import treesim
-    >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
-    >>> t = treesim.birth_death(0.4, 0.1, taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+    >>> t = treesim.birth_death(0.4, 0.1, taxon_namespace=taxa)
     >>> t.print_plot()
                 /-------------------------------------- h
                 |
@@ -79,15 +79,15 @@ You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword:
                                           \------------ b
 
 
-In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the |TaxonSet| "``taxa``", and the |Taxon| objects in "``taxa``" will be randomly assigned to the leaves.
+In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the |TaxonNamespace| "``taxa``", and the |Taxon| objects in "``taxa``" will be randomly assigned to the leaves.
 
-The "``taxon_set``" keyword can be combined with the "``ntax``" keyword.
-If the size of the |TaxonSet| object given by the ``taxon_set`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonSet| will be assigned to the leaves::
+The "``taxon_namespace``" keyword can be combined with the "``ntax``" keyword.
+If the size of the |TaxonNamespace| object given by the ``taxon_namespace`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonNamespace| will be assigned to the leaves::
 
     >>> import dendropy
     >>> from dendropy import treesim
-    >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
-    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_namespace=taxa)
     >>> t.print_plot()
     /-------------------------------------------------- g
     |
@@ -99,12 +99,12 @@ If the size of the |TaxonSet| object given by the ``taxon_set`` argument is grea
                 |
                 \-------------------------------------- f
 
-If the size of the |TaxonSet| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonSet| object as well as associated with the leaves::
+If the size of the |TaxonNamespace| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonNamespace| object as well as associated with the leaves::
 
     >>> import dendropy
     >>> from dendropy import treesim
-    >>> taxa = dendropy.TaxonSet(['a', 'b'])
-    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
+    >>> taxa = dendropy.TaxonNamespace(['a', 'b'])
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_namespace=taxa)
     >>> t.print_plot()
                                      /---------------- a
     /--------------------------------+
@@ -200,11 +200,11 @@ Another example draws birth and death rates from a normal distribution with the 
 Star Trees
 ==========
 
-The :func:`~dendropy.treesim.star_tree()` generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the ``taxon_set`` argument.
+The :func:`~dendropy.treesim.star_tree()` generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonNamespace| object given by the ``taxon_namespace`` argument.
 For example::
 
     >>> from dendropy import treesim
-    >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e'])
+    >>> taxa = dendropy.TaxonNamespace(['a', 'b', 'c', 'd', 'e'])
     >>> tree = treesim.star_tree(taxa)
     >>> print(tree.as_ascii_plot())
     /-------------------------------------- a
@@ -226,7 +226,7 @@ Coming soon: :func:`~dendropy.treesim.pop_gen_tree()`.
 (Pure Neutral) Coalescent Trees
 ===============================
 
-The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under an unconstrained neutral coalescent model. The first argument to this function, ``taxon_set``, is a |TaxonSet| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
+The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under an unconstrained neutral coalescent model. The first argument to this function, ``taxon_namespace``, is a |TaxonNamespace| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
 
 .. literalinclude:: /examples/pure_kingman1.py
 
@@ -237,7 +237,7 @@ Contained Coalescent Trees
 
 The :func:`~dendropy.treesim.contained_coalescent()` function returns a tree generated under a neutral coalescent model conditioned on population splitting times or events given by a containing species or population tree.
 Such a tree is often referred to as a contained, embedded, censored, truncated, or constrained genealogy/tree.
-At a minimum, this function takes two arguments: a |Tree| object representing the containing (species or population) tree, and a |TaxonSetMapping| object describing how the sampled gene taxa map or are associated with the species/population |Tree| taxa.
+At a minimum, this function takes two arguments: a |Tree| object representing the containing (species or population) tree, and a |TaxonNamespaceMapping| object describing how the sampled gene taxa map or are associated with the species/population |Tree| taxa.
 
 The |Tree| object representing the containing species or population tree should be rooted and ultrametric.
 If edge lengths are given in generations, then a meaningful population size needs to be communicated to the :func:`~dendropy.treesim.contained_coalescent()` function.
@@ -253,21 +253,21 @@ For example::
     for edge in tree.postorder_edge_iter():
             edge.pop_size = 100000
 
-The easiest way to get a |TaxonSetMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
-This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
-It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
+The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+This will create a new |TaxonNamespace| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
+It takes two arguments: the |TaxonNamespace| of the containing tree, and the number of genes you want sampled from each species.
 
-The following example shows how to create a |TaxonSetMapping| using :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`, and then calls :meth:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
+The following example shows how to create a |TaxonNamespaceMapping| using :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`, and then calls :meth:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
 
 .. literalinclude:: /examples/contained_coalescent1.py
 
 In the above example, the branch lengths were in haploid population units, so we did not specify a population size.
-If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`:
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`:
 
 
 .. literalinclude:: /examples/contained_coalescent2.py
 
-This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonSetPartition` object: you can use a function, attribute or dictionary.
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
 
 .. _Simulating_and_Counting_Deep_Coalescences:
 

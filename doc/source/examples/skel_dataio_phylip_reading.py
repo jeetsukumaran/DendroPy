@@ -6,7 +6,7 @@
 d = dendropy.DnaCharacterMatrix.get_from_path(
         "data.dat",
         "phylip",
-        taxon_set=None,
+        taxon_namespace=None,
         strict=False,
         interleaved=False,
         multispace_delimiter=False,
@@ -17,7 +17,7 @@ d = dendropy.DnaCharacterMatrix.get_from_path(
 d = dendropy.DataSet.get_from_path(
         "data.dat",
         "phylip",
-        taxon_set=None,
+        taxon_namespace=None,
         datatype="dna",
         strict=False,
         interleaved=False,
@@ -29,7 +29,7 @@ d = dendropy.DataSet.get_from_path(
 d = dendropy.DataSet.get_from_path(
         "data.dat",
         "phylip",
-        taxon_set=None,
+        taxon_namespace=None,
         char_matrix_type=dendropy.DnaCharacterMatrix,
         strict=False,
         interleaved=False,

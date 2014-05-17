@@ -3,15 +3,15 @@
 import dendropy
 from dendropy import continuous
 
-taxa = dendropy.TaxonSet()
+taxa = dendropy.TaxonNamespace()
 tree = dendropy.Tree.get_from_path(
         "primates.cc.tre",
         "newick",
-        taxon_set=taxa)
+        taxon_namespace=taxa)
 chars = dendropy.ContinuousCharacterMatrix.get_from_path(
         "primates.cc.nex",
         "nexus",
-        taxon_set=taxa)
+        taxon_namespace=taxa)
 pic = dendropy.continuous.PhylogeneticIndependentConstrasts(
         tree=tree,
         char_matrix=chars)

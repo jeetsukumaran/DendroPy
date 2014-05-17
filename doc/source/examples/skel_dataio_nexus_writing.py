@@ -1,7 +1,7 @@
 d.write_to_path(
         'data.nex',
         'nexus',
-        taxon_set=None,
+        taxon_namespace=None,
         exclude_trees=False,
         exclude_chars=False,
         simple=False,

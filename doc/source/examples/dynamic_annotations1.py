@@ -13,7 +13,7 @@ categories = {
 tree = dendropy.Tree.get_from_string(
         "(A,(B,(C,(D,E))));",
         "newick")
-for taxon in tree.taxon_set:
+for taxon in tree.taxon_namespace:
     taxon.category = categories[taxon.label]
     taxon.annotations.add_bound_attribute("category")
 for node in tree.postorder_node_iter():
