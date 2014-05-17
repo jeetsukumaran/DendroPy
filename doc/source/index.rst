@@ -23,7 +23,7 @@ DendroPy can thus function as a stand-alone library for phylogenetics, a compone
 Prerequisites
 =============
 
-DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 3 and Python 2.7. If you want to run DendroPy under Python version of less than 2.4, you should download the `DendroPy legacy release <https://github.com/jeetsukumaran/DendroPy/releases/tag/v3.12.1>`_.
+DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 3 and Python 2.7. If you want to run DendroPy under Python version of less than 2.7, you should download the `DendroPy legacy release <https://github.com/jeetsukumaran/DendroPy/releases/tag/v3.12.1>`_.
 
 .. versionchanged:: 4.0.0
    Python 2.4, 2.5, and 2.6 support removed.
@@ -85,11 +85,8 @@ Suggestions, Comments, Help, or Bug Reports
 The |dendropy_users|_ discussion group is available for general discussion on the usage of the DendroPy library.
 If you want more information on how to use a particular feature or carry out specific task, would like to request a new feature or change an existing one, or even just want to make some general comments on the DendroPy library, you should post a message to the |dendropy_users|_ discussion group.
 I follow and respond to messages on this group fairly regularly, so you should get a response within 24 hours.
-If you prefer, you can also contact me directly via e-mail at jeet@ku.edu, but by posting to the |dendropy_users|_ group forum, you allow other users, current as well as future, to benefit from the discussion and results.
 
 The |dendropy_users|_ discussion group is also a suitable forum for the reporting of bugs or errors encountered with DendroPy, as most other users would also appreciate learning of problems and issues with library.
-However, again, if you prefer you can contact me directly via e-mail at jeet@ku.edu.
-
 
 .. include:: license.inc
 .. include:: acknowledgements.inc
