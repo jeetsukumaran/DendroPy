@@ -25,6 +25,7 @@ import collections
 import random
 import unittest
 import dendropy
+import itertools
 from dendropy.utility import error
 from dendropy.datamodel import charmatrixmodel
 from dendropy.test.support import dendropytest
@@ -871,9 +872,8 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                         unify_taxa_by_label=True,
                         case_sensitive_label_mapping=False)
 
-class CharacterMatrixCreatingAndCloning(
-        compare_and_validate.Comparator,
-        dendropytest.ExtendedTestCase):
+class MatrixCreatingAndCloningTester(
+        compare_and_validate.Comparator):
 
     def add_annotations(self, char_matrix):
         tns = char_matrix.taxon_namespace
@@ -893,18 +893,17 @@ class CharacterMatrixCreatingAndCloning(
             ae3 = ae1.annotations.add_bouseq_attribute("name")
 
     def get_char_matrix(self, taxon_namespace=None):
-        char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=taxon_namespace)
+        char_matrix = self.__class__.matrix_type(taxon_namespace=taxon_namespace)
         labels = [str(i) for i in range(1000)]
-        # self.rng.shuffle(labels)
+        self.__class__.rng.shuffle(labels)
+        seq_iter = itertools.cycle(self.__class__.sequence_source)
+        nchar = len(self.__class__.sequence_source) * 10
         for label in labels:
             t = dendropy.Taxon(label=label)
             char_matrix.taxon_namespace.add_taxon(t)
-            seq = [self.rng.randint(0, 100) for _ in range(4)]
+            seq = [next(seq_iter) for s in range(nchar)]
             char_matrix[t] = seq
         return char_matrix
-
-    def setUp(self):
-        self.rng = random.Random()
 
     def test_shallow_copy_with_initializer_list(self):
         tns1 = dendropy.TaxonNamespace()
@@ -915,7 +914,7 @@ class CharacterMatrixCreatingAndCloning(
         for taxon in char_matrix1:
             d[taxon] = char_matrix1[taxon]
         tns2 = dendropy.TaxonNamespace()
-        char_matrix2 = charmatrixmodel.CharacterMatrix(d, taxon_namespace=tns2)
+        char_matrix2 = self.__class__.matrix_type(d, taxon_namespace=tns2)
         self.assertIs(char_matrix2.taxon_namespace, tns2)
         self.assertEqual(len(tns1), original_tns_length)
         self.assertEqual(len(tns2), original_tns_length)
@@ -943,7 +942,7 @@ class CharacterMatrixCreatingAndCloning(
         char_matrix1 = self.get_char_matrix()
         for char_matrix2 in (
                 char_matrix1.clone(1),
-                dendropy.CharacterMatrix(char_matrix1),
+                self.__class__.matrix_type(char_matrix1),
                 char_matrix1.taxon_namespace_scoped_copy(),):
             self.compare_distinct_char_matrix(char_matrix2, char_matrix1,
                     taxon_namespace_scoped=True,
@@ -965,13 +964,28 @@ class CharacterMatrixCreatingAndCloning(
 
     def test_deepcopy_excluding_namespace(self):
         char_matrix1 = self.get_char_matrix()
-        char_matrix2 = dendropy.CharacterMatrix(char_matrix1,
+        char_matrix2 = self.__class__.matrix_type(char_matrix1,
                 taxon_namespace=dendropy.TaxonNamespace())
         self.compare_distinct_char_matrix(char_matrix2, char_matrix1,
                 taxon_namespace_scoped=False,
                 compare_matrix_annotations=True,
                 compare_sequence_annotations=True,
                 compare_taxon_annotations=False)
+
+class CharacterMatrixCreatingAndCloningTestCase(
+        MatrixCreatingAndCloningTester,
+        dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def build(cls):
+        cls.rng = random.Random()
+        cls.matrix_type = dendropy.CharacterMatrix
+        cls.sequence_source = [1,2,3,4]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.build()
+
 
 if __name__ == "__main__":
     unittest.main()
