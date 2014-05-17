@@ -118,21 +118,41 @@ The string can be one of the following:
 Customizing Data Creation and Reading
 =====================================
 
-When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
-Some of these keyword arguments apply generally, regardless of the format of the data source or the data object being created, while others are specific to the data object type or the data source format.
+When specifying a data source from which to create or populate data objects
+using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source
+stream to a constructor, you can also specify keyword arguments that provide
+fine-grained control over how the data source is parsed.
 
-.. _Customizing_Reading_All_Formats:
+Some of these keyword arguments apply generally, regardless of the format of
+the data source or the data object being created, while others are specific to
+the data object type or the data source format.
 
-All Formats
+All Schemas
 ^^^^^^^^^^^
 
     ``attached_taxon_namespace``
-        If |True| when reading into a |DataSet| object, then a new |TaxonNamespace| object will be created and added to the :attr:`~dendropy.datamodel.datasetmodel.DataSet.taxon_namespaces` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonNamespace| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
+        If |True| when reading into a |DataSet| object, then a new
+        |TaxonNamespace| object will be created and added to the
+        :attr:`~dendropy.datamodel.datasetmodel.DataSet.taxon_namespaces` list
+        of the |DataSet| object, and the |DataSet| object will be placed in
+        "attached" (or single) taxon set mode, i.e., all taxa in any data
+        sources parsed or read will be mapped to the same |TaxonNamespace|
+        object. By default, this is |False|, resulting in a multi-taxon set
+        mode |DataSet| object.
 
     ``taxon_namespace``
-        If passed a |TaxonNamespace| object, then this |TaxonNamespace| will be used to manage all taxon references in the data source.
-        When creating a new |Tree|, |TreeList| or |CharacterMatrix| object from a data source, the |TaxonNamespace| object passed by this keyword will be used as the |TaxonNamespace| associated with the object.
-        When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonNamespace| object will be created. By passing a |TaxonNamespace| object through the ``taxon_namespace`` keyword, you can force DendroPy to use the same |TaxonNamespace| object for all taxon references.
+        If passed a |TaxonNamespace| object, then this |TaxonNamespace| will be
+        used to manage all taxon references in the data source.  When creating
+        a new |Tree|, |TreeList| or |CharacterMatrix| object from a data
+        source, the |TaxonNamespace| object passed by this keyword will be used
+        as the |TaxonNamespace| associated with the object.
+        When reading into a |DataSet| object, if the data source defines
+        multiple collections of taxa (as is possible with, for example, the
+        NEXML schema, or the Mesquite variant of the NEXUS schema), then
+        multiple new |TaxonNamespace| object will be created. By passing a
+        |TaxonNamespace| object through the ``taxon_namespace`` keyword, you
+        can force DendroPy to use the same |TaxonNamespace| object for all
+        taxon references.
 
     ``exclude_trees``
         If |True|, then all tree data in the data source will be skipped.
@@ -142,145 +162,29 @@ All Formats
         If |True|, then all character data in the data source will be skipped.
         Default value is |False|, i.e., all character data will be included.
 
-.. _Customizing_Reading_NEXUS_and_Newick:
+Schema-Specific
+^^^^^^^^^^^^^^^
 
-NEXUS/Newick
-^^^^^^^^^^^^
 
-The following snippets serve to show all the keywords that can be passed to various ":meth:`read_from_*()`" or ":meth:`get_from_*()`" methods when the schema is NEXUS or Newick:
+Newick
+......
 
-.. literalinclude:: /examples/skel_dataio_nexus_reading.py
+.. autodocstringonly:: dendropy.dataio.newickreader.NewickReader.__init__
 
-The special keywords supported for reading NEXUS-formatted or NEWICK-formatted data include:
+NEXUS
+.....
 
-    ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
-
-        When reading into a |Tree|, |TreeList|, or |DataSet| object, this keyword determines how trees in the data source will be rooted.
-        The rooting state of a |Tree| object is set by the :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` property.
-        When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
-        If these tags are not present, then the trees are assumed to be unrooted.
-        This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
-
-        The ``as_rooted`` keyword argument, if |True|, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
-        Conversely, if |False|, all trees will be interpreted as unrooted.
-        For semantic clarity, you can also specify ``as_unrooted`` to be |True| to force all trees to be unrooted.
-
-        .. literalinclude:: /examples/tree_rootings1.py
-            :linenos:
-
-        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if |True|, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
-        Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
-        Conversely, if ``default_as_rooted`` is |False|, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
-        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be |True| to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
-
-    ``edge_len_type``
-
-        Specifies the type of the edge lengths (int or float).
-
-    ``extract_comment_metadata``
-
-        If |True|, comments that begin with '&' or '&&' associated with items
-        will be processed and stored as part of the annotation set of the
-        object (`annotations`) If False, this will be skipped. Defaults to
-        |False|.
-
-    ``store_tree_weights``
-
-        If |True|, process the tree weight ("[&W 1/2]") comment
-        associated with each tree, if any.
-
-    ``encode_splits``
-
-        Specifies whether or not split bitmasks will be calculated and
-        attached to the edges.
-
-    ``finish_node_func``
-
-        Is a function that will be applied to each node after it has
-        been constructed.
-
-    ``case_sensitive_taxon_labels``
-
-        If |True|, then taxon labels are case sensitive (different cases
-        = different taxa); defaults to |False|.
-
-    ``allow_duplicate_taxon_labels``
-
-        if |True|, allow duplicate labels on trees
-
-    ``preserve_underscores``
-
-        If |True|, unquoted underscores in labels will *not* converted to
-        spaces. Defaults to |False|: all underscores not protected by
-        quotes will be converted to spaces.
-
-    ``suppress_internal_node_taxa``
-
-        If |False|, internal node labels will be instantantiatd into Taxon
-        objects.  Defaults to |True|: internal node labels will *not* be
-        treated as taxa.
-
-    ``allow_duplicate_taxon_labels``
-
-        If |True|, then multiple identical taxon labels will be allowed.
-        Defaults to |False|: treat multiple identical taxon labels as an
-        error.
-
-    ``hyphens_as_tokens``
-
-        If |True|, hyphens will be treated as special punctuation
-        characters. Defaults to |False|, hyphens not treated as special
-        punctuation characters.
-
-.. _Customizing_Reading_FASTA:
+.. autodocstringonly:: dendropy.dataio.nexusreader.NexusReader.__init__
 
 FASTA
-^^^^^
+.....
 
-The following snippets show all the keywords that can be passed to various ":meth:`read_from_*()`" or ":meth:`get_from_*()`" methods when the schema is FASTA:
-
-.. literalinclude:: /examples/skel_dataio_fasta_reading.py
-
-The special keywords supported for reading FASTA-formatted data include:
-
-    ``data_type``
-        As noted above, if not reading into a |CharacterMatrix| of a particular type, the FASTA format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
-
-    ``row_type``
-        Defaults to '``rich``': characters will be read into the full DendroPy character data object model. Alternately, '``str``' can be specified: characters will be read as simple strings.
-
-.. _Customizing_Reading_PHYLIP:
+.. autodocstringonly:: dendropy.dataio.fastareader.FastaReader.__init__
 
 PHYLIP
-^^^^^^
+......
 
-The following snippets illustrate typical keyword arguments and their defaults when reading data from PHYLIP-formatted sources:
-
-.. literalinclude:: /examples/skel_dataio_phylip_reading.py
-
-The special keywords supported for reading PHYLIP-formatted data include:
-
-    ``data_type``
-        As noted above, if not reading into a |CharacterMatrix| of a particular type, the PHYLIP format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
-
-    ``strict``
-        By default, the PHYLIP parser works in "relaxed" mode, which means that taxon labels can be of arbitrary length, and taxon labels and corresponding sequences are separated by one or more spaces. By specifying ``strict=True``, the parse will behave in strict mode, i.e., where taxon labels are limited to 10 characters in length, and sequences start on column 11.
-
-    ``interleaved``
-        By default, the PHYLIP parsers assumes that the data source is in sequential format. If the data is in interleaved format, you should specify ``interleaved=True``.
-
-    ``multispace_delimiter``
-        The default "relaxed" mode of the PHYLIP parser assumes that taxon labels are separated from sequence characters by one or more spaces. By specifying ``multispace_delimiter=True``, the parser will require two or more spaces to separate taxon labels from sequence characters, thus allowing you to use single spaces in your taxon labels.
-
-    ``ignore_invalid_chars``
-        By default, the PHYLIP parser will fail with an error if invalid characters are found in a sequence. By specifying ``ignore_invalid_chars=True``, the parser will simply ignore these characters.
-
-    ``underscores_to_spaces``
-        In the default relaxed PHYLIP format mode, since the first occurrence of a space in the data format is taken to denote the end of the taxon label, spaces are not permitted within taxon labels. A common convention is to use underscores in place of spaces in cases like this. By specifying ``underscores_to_spaces=True``, the parser will automatically substitute any underscores found in taxon labels with spaces, thus allowing for correspondence with the same taxa represented in other formats that allow spaces, such as NEXUS or Newick.
 
 BEAST Summary Trees
-^^^^^^^^^^^^^^^^^^^
-
-    ``ignore_missing_node_info``
-        If any nodes are missing annotations (given as a NEXUS-style square-bracket wrapped comment string, with the first character of the comment string an ampersand), then by default the parser will throw an exception. If ``ignore_missing_node_info`` is ``True``, then missing annotations are silently ignored and all relevant attribute values will be set to to ``None``.
+...................
 
