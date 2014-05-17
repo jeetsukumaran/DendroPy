@@ -857,7 +857,7 @@ class StateIdentity(
         return self
 
     def __deepcopy__(self, memo=None):
-        return basemodel.Annotable.__deepcopy__(self, memo=memo)
+        return self
 
     def __str__(self):
         if self._str is None:

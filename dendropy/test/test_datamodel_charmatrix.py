@@ -1011,6 +1011,5 @@ class DnaCharacterMatrixCreatingAndCloningTestCase(
         cls.nseqs = 100
         cls.build()
 
-
 if __name__ == "__main__":
     unittest.main()
