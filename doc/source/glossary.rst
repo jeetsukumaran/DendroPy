@@ -4,13 +4,25 @@ Tree Terminology
 .. glossary::
     :sorted:
 
+    edge
+        A path or link connecting two :term:`nodes` on a tree, modeled in
+        DendroPy by the :class:`Edge` class. An edge connects a "tail node"
+        (also called an origin or source node) to a "head node" (also called a
+        target or destination node), with the with the "head node" of an edge
+        being one of the children (or :term:`child nodes`) of the "tail node".
+
+    nodes
     node
-        A node is a structure which may contain a value or condition, or represent
-        a separate data structure (which could be a tree of its own). Each node in
-        a tree has zero or more child nodes, which are below it in the tree (by
-        convention, trees are drawn growing downwards). A node that has a
-        child is called the child's parent node (or ancestor node, or superior).
-        A node has at most one parent.
+        A node is a structure which may contain a value or condition, or
+        represent a separate data structure (which could be a tree of its own).
+        Each node in a tree has zero or more child nodes, which are below it in
+        the tree (by convention, trees are drawn growing downwards). A node
+        that has a child is called the child's parent node (or ancestor node,
+        or superior).  A node has at most one parent, to which it is connected
+        by its subtending :term:`edge`.  A node has exactly one subtending
+        edge, and this is typically accessed as an attribute of the node. A
+        node may have zero or more outgoing edges, which connect it to its
+        :term:`child nodes`.
 
     parent node
         A :term:`node` that is the immediate ancestor of a given node.
@@ -39,8 +51,10 @@ Tree Terminology
         node) is any :term:`node` of a tree that has child nodes.
 
     leaf node
+    leaf nodes
     leaf
     tip
+    tips
     terminal node
     external node
     outer node
@@ -72,6 +86,14 @@ Tree Terminology
         an empty tree (tree with no nodes, if such are allowed) has depth and
         height 1.
 
+    rooted
+        A state of a :term:`tree` in which its :term:`seed node` represents the
+        most-recent common ancestor of all the :class:`leaf nodes` on the tree.
+
+    schema
+        The format or syntax of data serialized. Examples are NEXUS, NEWICk,
+        Phylip, NeXML, etc.
+
     subtree
         A subtree of a tree T is a tree consisting of a node in T and all of
         its descendants in T.[c][1] Nodes thus correspond to subtrees (each
@@ -80,3 +102,16 @@ Tree Terminology
         node is the root node of the subtree it determines; the subtree
         corresponding to any other node is called a proper subtree (in analogy
         to the term proper subset).
+
+    tree
+        An `arborescence
+        <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, or a
+        fully-connected `directed acylic graph
+        <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ in which the
+        directionality is from the :term:`root` (or ":term:`seed node`" in
+        DendroPy's parlance) in which the direction to the :term:`tips`.
+
+    unrooted
+        A state of a :term:`tree` in which its :term:`seed node` is an
+        algorithmic artifact, and not necessarily represents the most-recent
+        common ancestor of all the :class:`leaf nodes` on the tree.

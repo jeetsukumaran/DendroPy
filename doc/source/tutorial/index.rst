@@ -9,4 +9,3 @@ The DendroPy Tutorial
     :maxdepth: 3
     :numbered:
 
-.. autodocstringonly:: dendropy.dataio.newickreader.NewickReader.__init__
