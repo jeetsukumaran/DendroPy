@@ -46,6 +46,7 @@ from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
 from dendropy.datamodel.charmatrixmodel import CharacterMatrix
 from dendropy.datamodel.charmatrixmodel import DnaCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import RnaCharacterMatrix
+from dendropy.datamodel.charmatrixmodel import NucleotideCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ProteinCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import RestrictionSitesCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import InfiniteSitesCharacterMatrix
