@@ -986,6 +986,20 @@ class CharacterMatrixCreatingAndCloningTestCase(
     def setUpClass(cls):
         cls.build()
 
+class ContinuousCharacterMatrixCreatingAndCloningTestCase(
+        MatrixCreatingAndCloningTester,
+        dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def build(cls):
+        cls.rng = random.Random()
+        cls.matrix_type = dendropy.ContinuousCharacterMatrix
+        cls.sequence_source = [-1.0e-1, 42, 2.5e-6, 3.14e5, -1]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.build()
+
 
 if __name__ == "__main__":
     unittest.main()
