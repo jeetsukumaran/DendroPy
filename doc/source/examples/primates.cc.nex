@@ -1,0 +1,12 @@
+#NEXUS
+BEGIN DATA;
+    DIMENSIONS  NTAX=5 NCHAR=2;
+    FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
+    MATRIX
+        Homo      4.09434   4.74493
+        Pongo     3.61092   3.33220
+        Macaca    2.37024   3.36730
+        Ateles    2.02815   2.89037
+        Galago   -1.46968   2.30259
+    ;
+END;
