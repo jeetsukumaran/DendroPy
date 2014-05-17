@@ -27,7 +27,7 @@ class FastaReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, **kwargs):
-        self.data_type = kwargs.pop("data_type", None)
+        self.data_type_name = kwargs.pop("data_type_name", None)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -39,7 +39,7 @@ class FastaReader(ioservice.DataReader):
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
         char_matrix = char_matrix_factory(
-                data_type=self.data_type,
+                data_type_name=self.data_type_name,
                 label=None,
                 taxon_namespace=taxon_namespace)
         symbol_state_map = char_matrix.default_state_alphabet.full_symbol_state_map

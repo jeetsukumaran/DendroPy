@@ -242,7 +242,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Class Variables
 
-    data_type = None
+    data_type_name = None
     character_sequence_type = CharacterSequence
 
     ###########################################################################
@@ -261,7 +261,7 @@ class CharacterMatrix(
                 taxon_namespace.label = label
             return taxon_namespace
         label = kwargs.pop("label", None)
-        kwargs["data_type"] = cls.data_type
+        kwargs["data_type_name"] = cls.data_type_name
         reader = dataio.get_reader(schema, **kwargs)
         char_matrices = reader.read_char_matrices(
                 stream=stream,
@@ -271,11 +271,11 @@ class CharacterMatrix(
         if len(char_matrices) == 0:
             raise ValueError("No character data in data source")
         char_matrix = char_matrices[matrix_offset]
-        if char_matrix.data_type != cls.data_type:
+        if char_matrix.data_type_name != cls.data_type_name:
             raise ValueError(
                 "Data source (at offset {}) is of type '{}', "
-                "but current CharacterMatrix is of type '{}'.".format(char_matrix.data_type,
-                    cls.data_type))
+                "but current CharacterMatrix is of type '{}'.".format(char_matrix.data_type_name,
+                    cls.data_type_name))
         return char_matrix
     _parse_from_stream = classmethod(_parse_from_stream)
 
@@ -1245,7 +1245,7 @@ class CharacterMatrix(
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
-    data_type = "continuous"
+    data_type_name = "continuous"
 
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
@@ -1258,18 +1258,16 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     and self.default_state_alphabet
     """
 
-    data_type = "fixed"
+    data_type_name = "discrete"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
         Unnamed args are passed to clone_from.
         """
-        CharacterMatrix.__init__(self, **kwargs)
+        CharacterMatrix.__init__(self, *args, **kwargs)
         self.state_alphabets = []
         self._default_state_alphabet = None
-        if len(args) > 0:
-            self.clone_from(*args)
 
     def _get_default_state_alphabet(self):
         if self._default_state_alphabet is not None:
@@ -1331,159 +1329,72 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 state_alphabet=self.default_state_alphabet,
                 purge_other_state_alphabets=purge_other_state_alphabets)
 
-class StandardCharacterMatrix(DiscreteCharacterMatrix):
-    "`standard` data."
-
-    data_type = "standard"
-
-    def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
-        DiscreteCharacterMatrix.__init__(self, **kwargs)
-        if len(args) > 0:
-            self.clone_from(*args)
-
-    def extend(self,
-               other_matrix,
-               overwrite_existing=False,
-               extend_existing=False):
-        """
-        Extends this matrix by adding taxa and characters from the given
-        matrix to this one.  If `overwrite_existing` is True and a taxon
-        in the other matrix is already present in the current one, then
-        the sequence associated with the taxon in the second matrix
-        replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other matrix is already present in
-        the current one, then the sequence associated with the taxon in
-        the second matrix will be added to the sequence in the current
-        one. If both are True, then an exception is raised. If neither
-        are True, and a taxon in the other matrix is already present in
-        the current one, then the sequence is ignored.
-        """
-        CharacterMatrix.extend(self,
-                other_matrix=other_matrix,
-                overwrite_existing=overwrite_existing,
-                extend_existing=extend_existing)
-        for s in other_matrix.state_alphabets:
-            if s not in self.state_alphabets:
-                self.state_alphabets.append(s)
-
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    data_type = "fixed"
+    data_type_name = "fixed"
+    data_type_alphabet = None
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
         Unnamed args are passed to clone_from.
         """
-        DiscreteCharacterMatrix.__init__(self, **kwargs)
-        if len(args) > 0:
-            self.clone_from(*args)
-
-    def __deepcopy__(self, memo):
-        memo[id(self.default_state_alphabet)] = self.default_state_alphabet
-        memo[id(self.state_alphabets)] = list(self.state_alphabets)
-        return DiscreteCharacterMatrix.__deepcopy__(self, memo)
+        DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
+        self.state_alphabets.append(self.__class__.data_type_alphabet)
+        self._default_state_alphabet = self.__class__.data_type_alphabet
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
-    data_type = "dna"
-
-    def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = DNA_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+    data_type_name = "dna"
+    data_type_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
-    data_type = "rna"
-
-    def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = RNA_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+    data_type_name = "rna"
+    data_type_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
-    data_type = "nucleotide"
-
-    def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_namespace`."
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = NUCLEOTIDE_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+    data_type_name = "nucleotide"
+    data_type_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
-    data_type = "protein"
-
-    def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxon_namespace`.
-        """
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = PROTEIN_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+    data_type_name = "protein"
+    data_type_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
-    data_type = "restriction"
-
-    def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+    data_type_name = "restriction"
+    data_type_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
-    data_type = "infinite"
+    data_type_name = "infinite"
+    data_type_alphabet = INFINITE_SITES_STATE_ALPHABET
+
+class StandardCharacterMatrix(DiscreteCharacterMatrix):
+    "`standard` data."
+
+    data_type_name = "standard"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
         Unnamed args are passed to clone_from.
         """
-        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
-        self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
-        self.state_alphabets.append(self.default_state_alphabet)
-        if len(args) > 0:
-            self.clone_from(*args)
+        DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
 
 ###############################################################################
 ## Main Character Matrix Factory Function
 
-data_type_matrix_map = {
+data_type_name_matrix_map = {
     'continuous' : ContinuousCharacterMatrix,
     'dna' : DnaCharacterMatrix,
     'rna' : RnaCharacterMatrix,
@@ -1493,16 +1404,16 @@ data_type_matrix_map = {
     'infinite' : InfiniteSitesCharacterMatrix,
 }
 
-def get_char_matrix_type(data_type):
-    if data_type is None:
-        raise TypeError("'data_type' must be specified")
-    matrix_type = data_type_matrix_map.get(data_type, None)
+def get_char_matrix_type(data_type_name):
+    if data_type_name is None:
+        raise TypeError("'data_type_name' must be specified")
+    matrix_type = data_type_name_matrix_map.get(data_type_name, None)
     if matrix_type is None:
-        raise KeyError("Unrecognized data type specification: '{}'".format(data_type,
-            sorted(data_type_matrix_map.keys())))
+        raise KeyError("Unrecognized data type specification: '{}'".format(data_type_name,
+            sorted(data_type_name_matrix_map.keys())))
     return matrix_type
 
-def new_char_matrix(data_type, **kwargs):
-    matrix_type = get_char_matrix_type(data_type=data_type)
+def new_char_matrix(data_type_name, **kwargs):
+    matrix_type = get_char_matrix_type(data_type_name=data_type_name)
     m = matrix_type(**kwargs)
     return m

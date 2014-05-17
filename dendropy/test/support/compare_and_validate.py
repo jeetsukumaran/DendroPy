@@ -145,8 +145,9 @@ class Comparator(object):
                 compare_annotations=compare_taxon_annotations,
                 )
         self.assertEqual(x1.label, x2.label)
-        self.assertEqual(x1.data_type, x2.data_type)
+        self.assertEqual(x1.data_type_name, x2.data_type_name)
         if isinstance(x1, charmatrixmodel.DiscreteCharacterMatrix):
+            print(x1.data_type_name, x1.data_type_alphabet)
             self.assertEqual(len(x1.state_alphabets), len(x2.state_alphabets))
             for sa1, sa2 in zip(x1.state_alphabets, x2.state_alphabets):
                 self.assertIs(sa1, sa2)

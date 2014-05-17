@@ -875,6 +875,12 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
 class MatrixCreatingAndCloningTester(
         compare_and_validate.Comparator):
 
+    @classmethod
+    def build(cls):
+        cls.rng = random.Random()
+        if not hasattr(cls, "nseqs"):
+            cls.nseqs = 1000
+
     def add_annotations(self, char_matrix):
         tns = char_matrix.taxon_namespace
         for idx, taxon in enumerate(tns):
@@ -894,10 +900,10 @@ class MatrixCreatingAndCloningTester(
 
     def get_char_matrix(self, taxon_namespace=None):
         char_matrix = self.__class__.matrix_type(taxon_namespace=taxon_namespace)
-        labels = [str(i) for i in range(1000)]
+        labels = [str(i) for i in range(self.__class__.nseqs)]
         self.__class__.rng.shuffle(labels)
         seq_iter = itertools.cycle(self.__class__.sequence_source)
-        nchar = len(self.__class__.sequence_source) * 10
+        nchar = len(self.__class__.sequence_source) * 2
         for label in labels:
             t = dendropy.Taxon(label=label)
             char_matrix.taxon_namespace.add_taxon(t)
@@ -977,13 +983,10 @@ class CharacterMatrixCreatingAndCloningTestCase(
         dendropytest.ExtendedTestCase):
 
     @classmethod
-    def build(cls):
-        cls.rng = random.Random()
+    def setUpClass(cls):
         cls.matrix_type = dendropy.CharacterMatrix
         cls.sequence_source = [1,2,3,4]
-
-    @classmethod
-    def setUpClass(cls):
+        cls.nseqs = 1000
         cls.build()
 
 class ContinuousCharacterMatrixCreatingAndCloningTestCase(
@@ -991,13 +994,21 @@ class ContinuousCharacterMatrixCreatingAndCloningTestCase(
         dendropytest.ExtendedTestCase):
 
     @classmethod
-    def build(cls):
-        cls.rng = random.Random()
+    def setUpClass(cls):
         cls.matrix_type = dendropy.ContinuousCharacterMatrix
         cls.sequence_source = [-1.0e-1, 42, 2.5e-6, 3.14e5, -1]
+        cls.nseqs = 1000
+        cls.build()
+
+class DnaCharacterMatrixCreatingAndCloningTestCase(
+        MatrixCreatingAndCloningTester,
+        dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.matrix_type = dendropy.DnaCharacterMatrix
+        cls.sequence_source = list(cls.matrix_type.data_type_alphabet)
+        cls.nseqs = 100
         cls.build()
 
 
