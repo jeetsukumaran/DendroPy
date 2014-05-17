@@ -127,7 +127,7 @@ All Formats
 ^^^^^^^^^^^
 
     ``attached_taxon_namespace``
-        If |True| when reading into a |DataSet| object, then a new |TaxonNamespace| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_namespaces` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonNamespace| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
+        If |True| when reading into a |DataSet| object, then a new |TaxonNamespace| object will be created and added to the :attr:`~dendropy.datamodel.datasetmodel.DataSet.taxon_namespaces` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonNamespace| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
 
     ``taxon_namespace``
         If passed a |TaxonNamespace| object, then this |TaxonNamespace| will be used to manage all taxon references in the data source.
@@ -156,7 +156,7 @@ The special keywords supported for reading NEXUS-formatted or NEWICK-formatted d
     ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
 
         When reading into a |Tree|, |TreeList|, or |DataSet| object, this keyword determines how trees in the data source will be rooted.
-        The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
+        The rooting state of a |Tree| object is set by the :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` property.
         When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
         If these tags are not present, then the trees are assumed to be unrooted.
         This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:

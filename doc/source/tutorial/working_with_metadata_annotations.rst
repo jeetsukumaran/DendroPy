@@ -3,63 +3,63 @@ Working with Metadata Annotations
 *********************************
 
 |DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
-These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`dendropy.utility.containers.OrderedSet`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
-Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annotation element.
+These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.datamodel.basemodel.AnnotationSet` class, which is an iterable (derived from :class:`dendropy.utility.containers.OrderedSet`) that serves to manage a collection of :class:`~dendropy.datamodel.basemodel.Annotation` objects.
+Each :class:`~dendropy.datamodel.basemodel.Annotation` object tracks a single annotation element.
 These annotations will be rendered as ``meta`` elements when writing to NeXML format or ampersand-prepended comemnt strings when writing to NEXUS/NEWICK format.
 Note that full and robust expression of metadata annotations, including stable and consistent round-tripping of information, can only be achieved while in the NeXML format.
 
 Overview of the Infrastructure for Metadata Annotation in |DendroPy|
 ====================================================================
 
-Each item of metadata is maintained in an object of the :class:`~dendropy.dataobject.base.Annotation` class.
+Each item of metadata is maintained in an object of the :class:`~dendropy.datamodel.basemodel.Annotation` class.
 This class has the following attributes:
 
-    :attr:`~dendropy.dataobject.base.Annotation.name`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.name`
         The name of the metadata item or annotation.
 
-    :attr:`~dendropy.dataobject.base.Annotation.value`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.value`
         The value or content of the metadata item or annotation.
 
-    :attr:`~dendropy.dataobject.base.Annotation.datatype_hint`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.datatype_hint`
         Custom data type indication for NeXML output (e.g. "xsd:string").
 
-    :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.name_prefix`
         Prefix that represents an abbreviation of the namespace associated with
         this metadata item.
 
-    :attr:`~dendropy.dataobject.base.Annotation.namespace`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.namespace`
         The namespace (e.g. "http://www.w3.org/XML/1998/namespace") of this
         metadata item (NeXML output).
 
-    :attr:`~dendropy.dataobject.base.Annotation.annotate_as_reference`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.annotate_as_reference`
         If |True|, indicates that this annotation should not be interpreted semantically as a literal value, but rather as a source to be dereferenced.
 
-    :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.is_hidden`
         If |True|, indicates that this annotation should not be printed or written out.
 
-    :attr:`~dendropy.dataobject.base.Annotation.prefixed_name`
+    :attr:`~dendropy.datamodel.basemodel.Annotation.prefixed_name`
         Returns the name of this annotation with its namespace prefix (e.g. "dc:subject").
 
-These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`.
-This is a specialization of :class:`dendropy.utility.containers.OrderedSet` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`.
-The full set of annotations associated with each object of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
-The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following additional methods to support the creation, access, and management of the :class:`~dendropy.dataobject.base.Annotation` object elements contained within it:
+These :class:`~dendropy.datamodel.basemodel.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.datamodel.basemodel.AnnotationSet`.
+This is a specialization of :class:`dendropy.utility.containers.OrderedSet` whose elements are instances of :class:`~dendropy.datamodel.basemodel.Annotation`.
+The full set of annotations associated with each object of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.datamodel.basemodel.AnnotationSet`.
+The :class:`~dendropy.datamodel.basemodel.AnnotationSet` includes the following additional methods to support the creation, access, and management of the :class:`~dendropy.datamodel.basemodel.Annotation` object elements contained within it:
 
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.findall()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.find()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_citation()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.find()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.drop()`
+    - :meth:`~dendropy.datamodel.basemodel.AnnotationSet.values_as_dict()`
 
 
 ..
-    The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
-    Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
-    These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`dendropy.utility.containers.OrderedSet`".
-    Phylogenetic data objects of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
-        The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+    The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.datamodel.basemodel.Annotation` object.
+    Each :class:`~dendropy.datamodel.basemodel.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.datamodel.basemodel.Annotation.name`" and  ":attr:`~dendropy.datamodel.basemodel.Annotation.value`" respectively.
+    These :class:`~dendropy.datamodel.basemodel.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.datamodel.basemodel.AnnotationSet`, which is a specialization of ":class:`dendropy.utility.containers.OrderedSet`".
+    Phylogenetic data objects of |DataSet|, |TaxonNamespace|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.datamodel.basemodel.AnnotationSet` class, and whose elements are :class:`~dendropy.datamodel.basemodel.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+        The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.datamodel.basemodel.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
 
 The following code snippet reads in a data file in NeXML format, and dumps out the annotations::
@@ -132,9 +132,9 @@ Reading Data from an External Source
 
 When reading data in NeXML format, metadata annotations given in the source are automatically created and associated with the corresponding data objects.
 
-The metadata annotations associated with the phylogenetic data objects are collected in the attribute ``annotations`` of the objects, which is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
+The metadata annotations associated with the phylogenetic data objects are collected in the attribute ``annotations`` of the objects, which is an object of type :class:`~dendropy.datamodel.basemodel.AnnotationSet`.
 Each annotation item is represented as an
-object of type :class:`~dendropy.dataobject.base.Annotation`.
+object of type :class:`~dendropy.datamodel.basemodel.Annotation`.
 
 For example::
 
@@ -225,7 +225,7 @@ The NeXML format provides for rich, flexible and robust metadata annotation for 
 Direct Composition with Literal Values
 --------------------------------------
 
-The :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method of the :attr:`annotations` attribute allows for direct adding of metadata. This method has two mandatory arguments, "``name``" and "``value``"::
+The :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new` method of the :attr:`annotations` attribute allows for direct adding of metadata. This method has two mandatory arguments, "``name``" and "``value``"::
 
     >>> import dendropy
     >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.tree', 'nexus')
@@ -257,7 +257,7 @@ When printing the tree in NeXML, the metadata will be rendered as a "``<meta>``"
     .
 
 As can be seen, by default, the metadata property is mapped to the "``dendropy``" namespace (i.e., '``xmlns:dendropy="http://packages.python.org/DendroPy/"``').
-This can be customized by using the "``name_prefix``" and "``namespace``" arguments to the call to :meth:`~dendropy.dataobject.base.AnnotationSet.add_new`::
+This can be customized by using the "``name_prefix``" and "``namespace``" arguments to the call to :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new`::
 
     >>> tree.annotations.add_new(
     ... name="subject",
@@ -346,7 +346,7 @@ Passing the ``is_hidden=True`` argument will result in the annotation being supp
     ... is_hidden=True,
     ... )
 
-The ``is_hidden`` attribute of the an :class:`~dendropy.dataobject.base.Annotation` object can also be set directly::
+The ``is_hidden`` attribute of the an :class:`~dendropy.datamodel.basemodel.Annotation` object can also be set directly::
 
     >>> subject_annotations = tree.annotations.findall(name="citation")
     >>> for a in subject_annotations:
@@ -356,7 +356,7 @@ Dynamically Binding Annotation Values to Object Attribute Values
 ----------------------------------------------------------------
 
 In some cases, instead of "hard-wiring" in metadata for an object, you may want to write out metadata that takes its value from the value of an attribute of the object.
-The :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method allows you to do this.
+The :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute` method allows you to do this.
 This method takes, as a minimum, a *string* specifying the *name* of an existing attribute to which the value of the annotation will be dynamically bound.
 
 For example:
@@ -435,9 +435,9 @@ results in::
     </nex:nexml>
 
 
-By default, the :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
+By default, the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
 The "``annotation_name``" argument allows you explictly set the name of the annotation.
-In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``annotate_as_reference``", "``is_hidden``", etc.::
+In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``annotate_as_reference``", "``is_hidden``", etc.::
 
     >>> tree.source_uri = None
     >>> tree.annotations.add_bound_attribute(
@@ -449,7 +449,7 @@ In addition, the method call also supports the other customization arguments of 
 Adding Citation Metadata
 ------------------------
 
-You can add citation annotations using the :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation` method.
+You can add citation annotations using the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_citation` method.
 This method takes at least one argument, ``citation``.
 This can be a string representing the citation as a BibTex record or a dictionary with BibTex fields as keys and field content as values.
 
@@ -516,12 +516,12 @@ This argument can take one of the following values:
         <meta xsi:type="nex:LiteralMeta" property="prism:publicationName" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320461712" />
 
 
-In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
+In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
 
 Copying Metadata Annotations from One Phylogenetic Data Object to Another
 -------------------------------------------------------------------------
 
-As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`dendropy.utility.containers.OrderedSet`, it has the :meth:`dendropy.utility.containers.OrderedSet.add` and :meth:`dendropy.utility.containers.OrderedSet.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
+As the :class:`~dendropy.datamodel.basemodel.AnnotationSet` is derived from :class:`dendropy.utility.containers.OrderedSet`, it has the :meth:`dendropy.utility.containers.OrderedSet.add` and :meth:`dendropy.utility.containers.OrderedSet.update` methods available for direct addition of :class:`~dendropy.datamodel.basemodel.Annotation` objects.
 The following example shows how to add metadata annotations associated with a |DataSet| object to all its |Tree| objects::
 
     import dendropy
@@ -550,7 +550,7 @@ Metadata Annotation Access and Manipulation
 Iterating Over Collections of Annotations
 -----------------------------------------
 
-The collection of :class:`~dendropy.dataobject.base.Annotation` objects representing metadata annotations associated with particular phylgoenetic data objects can be accessed through the :attr:`annotations` attribute of each particular object.
+The collection of :class:`~dendropy.datamodel.basemodel.Annotation` objects representing metadata annotations associated with particular phylgoenetic data objects can be accessed through the :attr:`annotations` attribute of each particular object.
 
 For example::
 
@@ -573,9 +573,9 @@ will result in::
 Retrieving Annotations By Search Criteria
 -----------------------------------------
 
-Instead of interating through every element in the :attr:`annotations` attribute of data objects, you can use the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method of the the :attr:`annotations` object to return a *collection* of :class:`~dendropy.dataobject.base.Annotation` objects that match the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call.
-These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
-Multiple keyword-value pairs can be specified, and only :class:`~dendropy.dataobject.base.Annotation` objects that match *all* the criteria will be returned.
+Instead of interating through every element in the :attr:`annotations` attribute of data objects, you can use the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` method of the the :attr:`annotations` object to return a *collection* of :class:`~dendropy.datamodel.basemodel.Annotation` objects that match the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` call.
+These keyword arguments should specify attributes of :class:`~dendropy.datamodel.basemodel.Annotation` and the corresponding value to be matched.
+Multiple keyword-value pairs can be specified, and only :class:`~dendropy.datamodel.basemodel.Annotation` objects that match *all* the criteria will be returned.
 
 For example, the following returns a collection of annotations that have a name of "contributor"::
 
@@ -632,7 +632,7 @@ The following, in turn, searches for and suppresses printing of annotations that
     for a in results:
         a.is_hidden = True
 
-Modifying the :class:`~dendropy.dataobject.base.Annotation` objects in a returned collection modifies the metadata of the parent data object. For example, the following sets all the field values to upper case characters::
+Modifying the :class:`~dendropy.datamodel.basemodel.Annotation` objects in a returned collection modifies the metadata of the parent data object. For example, the following sets all the field values to upper case characters::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
@@ -653,9 +653,9 @@ and results in::
     ALTAMIRA I.V.
     WIKLUND H.
 
-The collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
-However, while modifying :class:`~dendropy.dataobject.base.Annotation` objects in this collection will result in the metadata of the parent object being modified (as in the previous example), adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
-Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call::
+The collection returned by the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` method is an object of type :class:`~dendropy.datamodel.basemodel.AnnotationSet`.
+However, while modifying :class:`~dendropy.datamodel.basemodel.Annotation` objects in this collection will result in the metadata of the parent object being modified (as in the previous example), adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
+Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` call::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
@@ -675,9 +675,9 @@ The above produces::
 
 As can be seen, no new annotations are added to the data set metadata.
 
-If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then the :class:`~dendropy.dataobject.base.AnnotationSet` that is returned is empty.
+If no matching :class:`~dendropy.datamodel.basemodel.Annotation` objects are found then the :class:`~dendropy.datamodel.basemodel.AnnotationSet` that is returned is empty.
 
-If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotation.findall`, then *all* annotations are returned::
+If *no* keyword arguments are passed to :meth:`~dendropy.datamodel.basemodel.Annotation.findall`, then *all* annotations are returned::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
@@ -692,9 +692,9 @@ The above produces::
 Retrieving a Single Annotation By Search Criteria
 -------------------------------------------------
 
-The :meth:`~dendropy.dataobject.base.AnnotationSet.find` method of the the :attr:`annotations` object return a the *first* :class:`~dendropy.dataobject.base.Annotation` object that matches the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call.
-These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
-Multiple keyword-value pairs can be specified, and only the first :class:`~dendropy.dataobject.base.Annotation` object that matches *all* the criteria will be returned.
+The :meth:`~dendropy.datamodel.basemodel.AnnotationSet.find` method of the the :attr:`annotations` object return a the *first* :class:`~dendropy.datamodel.basemodel.Annotation` object that matches the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` call.
+These keyword arguments should specify attributes of :class:`~dendropy.datamodel.basemodel.Annotation` and the corresponding value to be matched.
+Multiple keyword-value pairs can be specified, and only the first :class:`~dendropy.datamodel.basemodel.Annotation` object that matches *all* the criteria will be returned.
 
 For example::
 
@@ -718,18 +718,18 @@ and results in::
 
     subject='wood-fall'
 
-If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then a default of |None| is returned::
+If no matching :class:`~dendropy.datamodel.basemodel.Annotation` objects are found then a default of |None| is returned::
 
     >>> print ds.annotations.find(name="author")
     None
 
-Unlike :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, it is invalid to call :meth:`~dendropy.dataobject.base.AnnotationSet.find` with no search criteria keyword arguments, and an ``TypeError`` exception will be raised.
+Unlike :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall`, it is invalid to call :meth:`~dendropy.datamodel.basemodel.AnnotationSet.find` with no search criteria keyword arguments, and an ``TypeError`` exception will be raised.
 
 Retrieving the Value of a Single Annotation
 -------------------------------------------
 
-For convenience, the :meth:`~dendropy.dataobject.base.AnnotationSet.get_value`, method is provided.
-This will search the :class:`~dendropy.dataobject.base.AnnotationSet` for the *first* :class:`~dendropy.dataobject.base.Annotation` that has its name field equal to the first argument passed to the :meth:`~dendropy.dataobject.base.AnnotationSet.get_value` method, and return its value.
+For convenience, the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.get_value`, method is provided.
+This will search the :class:`~dendropy.datamodel.basemodel.AnnotationSet` for the *first* :class:`~dendropy.datamodel.basemodel.Annotation` that has its name field equal to the first argument passed to the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.get_value` method, and return its value.
 If no match is found, the second argument is returned (or |None|, if no second argument is specified).
 Examples::
 
@@ -745,9 +745,9 @@ Examples::
 Transforming Annotations to a Dictionary
 ----------------------------------------
 
-In some applications, it might be more convenient to work with dictionaries rather than :class:`~dendropy.dataobject.base.AnnotationSet` objects.
-The :meth:`~dendropy.dataobject.base.Annotation.values_as_dict` methods creates a dictionary populated with key-value pairs from the collection.
-By default, the keys are the ``name`` attribute of the :class:`~dendropy.dataobject.base.Annotation` object and the values are the ``value`` attribute.
+In some applications, it might be more convenient to work with dictionaries rather than :class:`~dendropy.datamodel.basemodel.AnnotationSet` objects.
+The :meth:`~dendropy.datamodel.basemodel.Annotation.values_as_dict` methods creates a dictionary populated with key-value pairs from the collection.
+By default, the keys are the ``name`` attribute of the :class:`~dendropy.datamodel.basemodel.Annotation` object and the values are the ``value`` attribute.
 Thus, the following::
 
     import dendropy
@@ -779,7 +779,7 @@ results in::
     'title.study': 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific',
     'subject': 'molecular phylogeny'}
 
-Note that no attempt is made to prevent or account for key collision: :class:`~dendropy.dataobject.base.Annotation` with the same name value will overwrite each other in the dictionary.
+Note that no attempt is made to prevent or account for key collision: :class:`~dendropy.datamodel.basemodel.Annotation` with the same name value will overwrite each other in the dictionary.
 Custom control of the dictionary key/value generation can be specified via keyword arguments:
 
     ``key_attr``
@@ -810,7 +810,7 @@ For example::
             value_attr="value")
 
 
-As the collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`, this can also be transformed to a dictionary.
+As the collection returned by the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` method is an object of type :class:`~dendropy.datamodel.basemodel.AnnotationSet`, this can also be transformed to a dictionary.
 For example::
 
     import dendropy
@@ -830,13 +830,13 @@ will result in::
 
 Note how only one entry for "contributor" is present: the others were overwritten/replaced.
 
-Adding to, deleting, or modifying either the keys or the values of the dictionary returned by :meth:`~dendropy.dataobject.base.Annotation.values_as_dict` in *no way* changes any of the original metadata: it is serves as snapshot copy of literal values of the metadata.
+Adding to, deleting, or modifying either the keys or the values of the dictionary returned by :meth:`~dendropy.datamodel.basemodel.Annotation.values_as_dict` in *no way* changes any of the original metadata: it is serves as snapshot copy of literal values of the metadata.
 
 
 Deleting or Removing Metadata Annotations
 -----------------------------------------
 
-The :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method of :class:`~dendropy.dataobject.base.AnnotationSet` objects takes search criteria similar to :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, but instead of returning the matched  :class:`~dendropy.dataobject.base.Annotation` objects, it *removes* them from the parent collection.
+The :meth:`~dendropy.datamodel.basemodel.AnnotationSet.drop` method of :class:`~dendropy.datamodel.basemodel.AnnotationSet` objects takes search criteria similar to :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall`, but instead of returning the matched  :class:`~dendropy.datamodel.basemodel.Annotation` objects, it *removes* them from the parent collection.
 For example, the following removes all metadata annotations with the name prefix "dc" from the |DataSet| object ``ds``::
 
     import dendropy
@@ -853,17 +853,17 @@ and results in::
     Removed: 16 items
     Current: 14 items
 
-As can be seen, the :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method returns the individual :class:`~dendropy.dataobject.base.Annotation` removed as a new :class:`~dendropy.dataobject.base.AnnotationSet` collection.
-This is useful if you still want to use the removed :class:`~dendropy.dataobject.base.Annotation` objects elsewhere.
+As can be seen, the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.drop` method returns the individual :class:`~dendropy.datamodel.basemodel.Annotation` removed as a new :class:`~dendropy.datamodel.basemodel.AnnotationSet` collection.
+This is useful if you still want to use the removed :class:`~dendropy.datamodel.basemodel.Annotation` objects elsewhere.
 
-As with the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method, multiple keyword criteria can be specified::
+As with the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` method, multiple keyword criteria can be specified::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
     ds.annotations.drop(name_prefix="dc", name="contributor")
 
-In addition, again similar in behavior to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method, *no* keyword arguments result in *all* the annotations being removed.
+In addition, again similar in behavior to the :meth:`~dendropy.datamodel.basemodel.AnnotationSet.findall` method, *no* keyword arguments result in *all* the annotations being removed.
 Thus, the following results in all metadata annotations being deleted from the |DataSet| object ``ds``::
 
     import dendropy

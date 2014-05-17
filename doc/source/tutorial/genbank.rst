@@ -376,7 +376,7 @@ will result in::
 Annotating with GenBank Data and Metadata
 -----------------------------------------
 
-To persist the information in a the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object through serialization and deserialization, you can request that this information gets added as an  :class:`~dendropy.dataobject.base.Annotation` (see ":doc:`Working with Metadata Annotations </tutorial/working_with_metadata_annotations>`") to the corresponding |Taxon| or |CharacterDataVector| object.
+To persist the information in a the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object through serialization and deserialization, you can request that this information gets added as an  :class:`~dendropy.datamodel.basemodel.Annotation` (see ":doc:`Working with Metadata Annotations </tutorial/working_with_metadata_annotations>`") to the corresponding |Taxon| or |CharacterDataVector| object.
 
 Reference Annotation
 ....................

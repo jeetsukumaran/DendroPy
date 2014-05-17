@@ -200,22 +200,22 @@ rst_epilog = """
 .. |dendropy_users| replace:: DendroPy Users
 .. _dendropy_users: http://groups.google.com/group/dendropy-users
 
-.. |Tree| replace:: :class:`~dendropy.dataobject.tree.Tree`
-.. |TreeList| replace:: :class:`~dendropy.dataobject.tree.TreeList`
-.. |Node| replace:: :class:`~dendropy.dataobject.tree.Node`
-.. |Edge| replace:: :class:`~dendropy.dataobject.tree.Edge`
-.. |Taxon| replace:: :class:`~dendropy.dataobject.taxon.Taxon`
-.. |TaxonNamespace| replace:: :class:`~dendropy.dataobject.taxon.TaxonNamespace`
-.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.dataobject.taxon.TaxonNamespaceMapping`
-.. |DataSet| replace:: :class:`~dendropy.dataobject.dataset.DataSet`
-.. |CharacterMatrix| replace:: :class:`~dendropy.dataobject.char.CharacterMatrix`
-.. |DnaCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.DnaCharacterMatrix`
-.. |RnaCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.RnaCharacterMatrix`
-.. |ProteinCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ProteinCharacterMatrix`
-.. |StandardCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.StandardCharacterMatrix`
-.. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`
-.. |CharacterDataVector| replace:: :class:`~dendropy.dataobject.char.CharacterDataVector`
-.. |CharacterDataCell| replace:: :class:`~dendropy.dataobject.char.CharacterDataCell`
+.. |Taxon| replace:: :class:`~dendropy.datamodel.taxonmodel.Taxon`
+.. |TaxonNamespace| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace`
+.. |Tree| replace:: :class:`~dendropy.datamodel.treemodel.Tree`
+.. |TreeList| replace:: :class:`~dendropy.datamodel.treemodel.TreeList`
+.. |Node| replace:: :class:`~dendropy.datamodel.treemodel.Node`
+.. |Edge| replace:: :class:`~dendropy.datamodel.treemodel.Edge`
+.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
+.. |DataSet| replace:: :class:`~dendropy.datamodel.datasetmodel.DataSet`
+.. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmodel.CharacterMatrix`
+.. |DnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix`
+.. |RnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix`
+.. |ProteinCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix`
+.. |StandardCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix`
+.. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix`
+.. |CharacterDataVector| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataVector`
+.. |CharacterDataCell| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataCell`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`

@@ -9,17 +9,17 @@ Trees
 -----
 
 Trees in DendroPy are represented by the class |Tree|.
-Every |Tree| object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
-The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on the tree, is a |Node| object.
+Every |Tree| object has a :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
+The :attr:`~dendropy.datamodel.treemodel.Tree.seed_node`, like every other node on the tree, is a |Node| object.
 Every |Node| object maintains a list of its immediate child |Node| objects as well as a reference to its parent |Node| object.
-You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
-By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
+You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.datamodel.treemodel.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.datamodel.treemodel.Node.parent_node` attribute.
+By definition, the :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
 
 Tree Lists
 ----------
 
 |TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonNamespace|.
-Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_namespace` attribute assigned to the |TaxonNamespace| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
+Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.datamodel.treemodel.Tree.taxon_namespace` attribute assigned to the |TaxonNamespace| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
 
 |Tree| and |TreeList| Creation and Reading
 ==========================================
@@ -243,7 +243,7 @@ For example, the following script reads a model tree from a file, and then itera
 .. literalinclude:: /examples/tree_iter1.py
     :linenos:
 
-Note how a |TaxonNamespace| object is created and passed to both the :meth:`~dendropy.dataobject.Tree.get_from_path()` and the :func:`~dendropy.dataio.tree_source_iter()` functions using the ``taxon_namespace`` keyword argument.
+Note how a |TaxonNamespace| object is created and passed to both the :meth:`~dendropy.datamodel.treemodel.Tree.get_from_path()` and the :func:`~dendropy.dataio.tree_source_iter()` functions using the ``taxon_namespace`` keyword argument.
 This is to ensure that the corresponding taxa in both sources get mapped to the same |Taxon| objects in DendroPy object space, so as to enable comparisons of the trees.
 If this was not done, then each tree would have its own distinct |TaxonNamespace| object (and associated |Taxon| objects), making comparisons impossible.
 
@@ -263,7 +263,7 @@ Viewing and Displaying Trees
 
 Sometimes it is useful to get a visual representation of a |Tree|.
 
-For quick inspection, the :meth:`~dendropy.dataobject.tree.Tree.print_plot()` will write an ASCII text plot to the standard output stream::
+For quick inspection, the :meth:`~dendropy.datamodel.treemodel.Tree.print_plot()` will write an ASCII text plot to the standard output stream::
 
     >>> t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
     >>> t.print_plot()
@@ -275,7 +275,7 @@ For quick inspection, the :meth:`~dendropy.dataobject.tree.Tree.print_plot()` wi
                      \----------+
                                 \------------------- D
 
-If you need to store this representation as a string instead, you can use :meth:`~dendropy.dataobject.tree.Tree.as_ascii_plot()`::
+If you need to store this representation as a string instead, you can use :meth:`~dendropy.datamodel.treemodel.Tree.as_ascii_plot()`::
 
     >>> s = t.as_ascii_plot()
     >>> print(s)
@@ -287,7 +287,7 @@ If you need to store this representation as a string instead, you can use :meth:
                      \----------+
                                 \------------------- D
 
-While the :meth:`~dendropy.dataobject.tree.Tree.write_to_path()`, :meth:`~dendropy.dataobject.tree.Tree.write_to_stream()` and :meth:`~dendropy.dataobject.tree.Tree.as_string()` methods provide for a rich and flexible way to write representations of a |Tree| in various formats to various destinations, the :meth:`~dendropy.dataobject.tree.Tree.print_newick()` provides a quick-and-dirty way to get a snapshot NEWICK string of the tree::
+While the :meth:`~dendropy.datamodel.treemodel.Tree.write_to_path()`, :meth:`~dendropy.datamodel.treemodel.Tree.write_to_stream()` and :meth:`~dendropy.datamodel.treemodel.Tree.as_string()` methods provide for a rich and flexible way to write representations of a |Tree| in various formats to various destinations, the :meth:`~dendropy.datamodel.treemodel.Tree.print_newick()` provides a quick-and-dirty way to get a snapshot NEWICK string of the tree::
 
     >>> t.print_newick()
     (A,(B,(C,D)))

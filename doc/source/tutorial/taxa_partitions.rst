@@ -4,10 +4,10 @@ Partitions of Taxon Sets
 
 A number of different applications require a specification of a partition of a set of taxa.
 For example, when calculating population genetic summary statistics for a multi-population sample or numbers of deep coalescences given a particular monophyletic groupings of taxa.
-The :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object describes a partitioning of a :class:`~dendropy.dataobject.taxon.TaxonNamespace` into an exhaustive set of mutually-exclusive :class:`~dendropy.dataobject.taxon.TaxonNamespace` subsets.
+The :class:`~dendropy.datamodel.taxonmodel.TaxonNamespacePartition` object describes a partitioning of a :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace` into an exhaustive set of mutually-exclusive :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace` subsets.
 
 There are four different ways to specify a partitioning scheme: by using a function, attribute, dictionary or list.
-The first three of these rely on providing a mapping of a :class:`~dendropy.dataobject.taxon.Taxon` object to a subset membership identifier, i.e., a string, integer or some other type of value that identifies the grouping. The last explicitly describes the grouping as a list of lists.
+The first three of these rely on providing a mapping of a :class:`~dendropy.datamodel.taxonmodel.Taxon` object to a subset membership identifier, i.e., a string, integer or some other type of value that identifies the grouping. The last explicitly describes the grouping as a list of lists.
 
 For example, consider the following::
 
@@ -41,7 +41,7 @@ For example, consider the following::
     >>> seqs = DnaCharacterMatrix.get_from_string(seqstr, 'nexus')
     >>> taxon_namespace = seqs.taxon_namespace
 
-Here we have sequences sampled from four populations, with the population identified by the first character of the taxon label. To create a parition of the |TaxonNamespace| resulting from parsing the file, we call the :meth:`~dendropy.dataobject.taxon.TaxonNamespace.partition` method. This method takes one of the following four keyword arguments:
+Here we have sequences sampled from four populations, with the population identified by the first character of the taxon label. To create a parition of the |TaxonNamespace| resulting from parsing the file, we call the :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespace.partition` method. This method takes one of the following four keyword arguments:
 
         ``membership_func``
             A function that takes a ``Taxon`` object as an argument and
@@ -62,7 +62,7 @@ Here we have sequences sampled from four populations, with the population identi
             ``Taxon`` object in ``taxon_namespace`` represented once and only
             once in the sub-containers.
 
-For example, using the membership function approach, we define a function that returns the first character of the taxon label, and pass it to the :meth:`~dendropy.dataobject.taxon.TaxonNamespace.partition` using the ``membership_func`` keyword argument::
+For example, using the membership function approach, we define a function that returns the first character of the taxon label, and pass it to the :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespace.partition` using the ``membership_func`` keyword argument::
 
     >>> def mf(t):
     ...     return t.label[0]
@@ -127,7 +127,7 @@ Finally, a list of lists can be constructed and passed using the ``membership_li
     >>> pops.append(taxon_namespace[11:13])
     >>> tax_parts = taxon_namespace.partition(membership_lists=pops)
 
-Again, a :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object with four |TaxonNamespace| subsets is the result, only this time the subset labels are based on the list indices::
+Again, a :class:`~dendropy.datamodel.taxonmodel.TaxonNamespacePartition` object with four |TaxonNamespace| subsets is the result, only this time the subset labels are based on the list indices::
 
     >>> subsets = tax_parts.subsets()
     >>> print(subsets)

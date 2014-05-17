@@ -46,7 +46,7 @@ In addition to the 0-based index first argument, ``character_index``, the :meth:
     ``annotate_pic_statistics``
         If |True| then the PIC statistics attributes will be *annotated* (i.e., serialized or persisted when the tree is written out or saved. Defaults to |False|.
     ``state_values_as_node_labels``
-        If |True| then the :class:`~dendropy.dataobject.Tree.Node.label` attribute of each |Node| object will be set to the value of the character.
+        If |True| then the :attr:`~dendropy.datamodel.treemodel.Node.label` attribute of each |Node| object will be set to the value of the character.
     ``corrected_edge_lengths``
         If |True| then the |Tree| returned will have its edge lengths adjusted to the corrected edge lengths as yielded by the PIC analysis.
 

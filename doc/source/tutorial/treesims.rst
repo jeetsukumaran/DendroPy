@@ -185,7 +185,7 @@ Building a Tree in Multiple Stages under Different Conditions
 
 You might want to generate a tree under different condition in different stages.
 To do this, you would start with an empty tree and passing it to the birth-death function as an argument using the "``tree``" keyword argument, and at the same time suppress the automatic taxon assignment using the "``assign_taxa=False``" keyword argument to avoid taxa being assigned to what will eventually become internal nodes.
-When the tree is ready, you will call the :meth:`~dendropy.dataobject.Tree.randomly_assign_taxa()` function to assign taxa at random to the leaves.
+When the tree is ready, you will call the :meth:`~dendropy.datamodel.treemodel.Tree.randomly_assign_taxa()` function to assign taxa at random to the leaves.
 
 For example, the following generates a birth-death tree with equal birth and death rates, but both rates shifting for a short while to a temporarily higher (though equal) rates:
 
@@ -253,21 +253,21 @@ For example::
     for edge in tree.postorder_edge_iter():
             edge.pop_size = 100000
 
-The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
 This will create a new |TaxonNamespace| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
 It takes two arguments: the |TaxonNamespace| of the containing tree, and the number of genes you want sampled from each species.
 
-The following example shows how to create a |TaxonNamespaceMapping| using :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`, and then calls :meth:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
+The following example shows how to create a |TaxonNamespaceMapping| using :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`, and then calls :meth:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
 
 .. literalinclude:: /examples/contained_coalescent1.py
 
 In the above example, the branch lengths were in haploid population units, so we did not specify a population size.
-If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`:
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`:
 
 
 .. literalinclude:: /examples/contained_coalescent2.py
 
-This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
 
 .. _Simulating_and_Counting_Deep_Coalescences:
 

@@ -5,7 +5,7 @@ Tree Statistics, Metrics, and Calculations
 Tree Length
 ===========
 
-The :meth:`~dendropy.dataobject.tree.Tree.length()` method returns the sum of edge lengths of a |Tree| object, with edges that do not have any length assigned being treated as edges with length 0.
+The :meth:`~dendropy.datamodel.treemodel.Tree.length()` method returns the sum of edge lengths of a |Tree| object, with edges that do not have any length assigned being treated as edges with length 0.
 The following example shows how to identify the "critical" value for an `Archie-Faith-Cranston or PTP test <http://hymenoptera.tamu.edu/courses/ento606/Suggested%20Readings/Slowinksi_Crother_1998.pdf>`_ from a sample of |Tree| objects, i.e. a tree length equal to or greater than 95% of the trees in the sample:
 
 .. literalinclude:: /examples/tree_length_crit.py
@@ -14,7 +14,7 @@ The following example shows how to identify the "critical" value for an `Archie-
 Node Ages
 =========
 
-The :meth:`~dendropy.dataobject.tree.Tree.calc_node_ages()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to the :attr:`~dendropy.dataobject.tree.Node.age` attribute. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
+The :meth:`~dendropy.datamodel.treemodel.Tree.calc_node_ages()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to the :attr:`~dendropy.datamodel.treemodel.Node.age` attribute. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
 
 .. literalinclude:: /examples/node_ages1.py
     :linenos:
@@ -22,7 +22,7 @@ The :meth:`~dendropy.dataobject.tree.Tree.calc_node_ages()` method calculates th
 Pybus-Harvey Gamma
 ==================
 
-The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.dataobject.tree.Tree.pybus_harvey_gamma()` instance method. The following example iterates through the post-burn-in of an MCMC sample of trees, reporting the mean Pybus-Harvey Gamma statistic:
+The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.datamodel.treemodel.Tree.pybus_harvey_gamma()` instance method. The following example iterates through the post-burn-in of an MCMC sample of trees, reporting the mean Pybus-Harvey Gamma statistic:
 
 .. literalinclude:: /examples/pbhg.py
     :linenos:
@@ -71,11 +71,11 @@ In this case, the containing tree and the embedded trees have different leaf set
 
 The :class:`~dendropy.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
 It requires a |TaxonNamespaceMapping| object, which provides an association between the embedded taxa and the containing taxa.
-The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
 This will create a new |TaxonNamespace| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
 It takes two arguments: the |TaxonNamespace| of the containing tree, and the number of genes you want sampled from each species.
-If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
-This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
 
 The :class:`~dendropy.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time.
 
@@ -90,7 +90,7 @@ For more details on simulating contained coalescent trees and counting numbers o
 Majority-Rule Consensus Tree from a Collection of Trees
 =======================================================
 
-To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.dataobject.tree.TreeList.consensus()` instance method.
+To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.datamodel.treemodel.TreeList.consensus()` instance method.
 You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
 The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a Newick string:
 
@@ -100,7 +100,7 @@ The following example aggregates the post-burn-in trees from four MCMC samples i
 Frequency of a Split in a Collection of Trees
 =============================================
 
-The :meth:`~dendropy.dataobject.tree.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
+The :meth:`~dendropy.datamodel.treemodel.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
 The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
 The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across four MCMC samples:
 
@@ -118,16 +118,16 @@ Native |Tree| Methods
 The |Tree| class provides methods for calculating distances between two trees:
 
 
-    :meth:`~dendropy.dataobject.tree.Tree.symmetric_difference`
+    :meth:`~dendropy.datamodel.treemodel.Tree.symmetric_difference`
         This method returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of the number of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
 
-    :meth:`~dendropy.dataobject.tree.Tree.false_positives_and_negatives`
-        This method returns a tuple pair, with the first element the number of splits in the current |Tree| object *not* found in the |Tree| object to which it is being compared, while the second element is the number of splits in the second |Tree| object that are not in the current |Tree|. The sum of these two elements is exactly equal to the value reported by :meth:`~dendropy.dataobject.tree.Tree.symmetric_distance`.
+    :meth:`~dendropy.datamodel.treemodel.Tree.false_positives_and_negatives`
+        This method returns a tuple pair, with the first element the number of splits in the current |Tree| object *not* found in the |Tree| object to which it is being compared, while the second element is the number of splits in the second |Tree| object that are not in the current |Tree|. The sum of these two elements is exactly equal to the value reported by :meth:`~dendropy.datamodel.treemodel.Tree.symmetric_distance`.
 
-    :meth:`~dendropy.dataobject.tree.Tree.euclidean_distance`
+    :meth:`~dendropy.datamodel.treemodel.Tree.euclidean_distance`
         This method returns the "branch length distance" of Felsenstein (2004), i.e. the sum of absolute differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
 
-    :meth:`~dendropy.dataobject.tree.Tree.robinson_foulds_distance`
+    :meth:`~dendropy.datamodel.treemodel.Tree.robinson_foulds_distance`
         This method returns the Robinsons-Foulds distance between two trees, i.e., the sum of the square of differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
 
 For example::
