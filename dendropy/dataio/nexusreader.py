@@ -154,10 +154,12 @@ class NexusReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
 
-        # Fallowing are NEXUS-parsing specific (i.e., not used by NEWICK parsers)
+        # Following are NEXUS-parsing specific (i.e., not used by NEWICK
+        # parsers), and need to be removed so as not to cause problems with our
+        # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
-        self.data_type = kwargs.pop("data_type", "standard")
+        self._data_type_name = kwargs.pop("data_type_name", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
         # The following are used by NewickReader in addition to NexusReader,
@@ -278,9 +280,9 @@ class NexusReader(ioservice.DataReader):
                 raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
-    def _new_char_matrix(self, data_type, taxon_namespace, title=None):
+    def _new_char_matrix(self, data_type_name, taxon_namespace, title=None):
         char_matrix = self._char_matrix_factory(
-                data_type=data_type,
+                data_type_name=data_type_name,
                 taxon_namespace=taxon_namespace,
                 label=title)
         self._char_matrices.append(char_matrix)
@@ -592,18 +594,18 @@ class NexusReader(ioservice.DataReader):
                 if token == '=':
                     token = self._nexus_tokenizer.next_token_ucase()
                     if token == "DNA" or token == "NUCLEOTIDES":
-                        self._data_type = "dna"
+                        self._data_type_name = "dna"
                     elif token == "RNA":
-                        self._data_type = "rna"
+                        self._data_type_name = "rna"
                     elif token == "NUCLEOTIDE":
-                        self._data_type = "nucleotide"
+                        self._data_type_name = "nucleotide"
                     elif token == "PROTEIN":
-                        self._data_type = "protein"
+                        self._data_type_name = "protein"
                     elif token == "CONTINUOUS":
-                        self._data_type = "continuous"
+                        self._data_type_name = "continuous"
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
-                        self._data_type = "standard"
+                        self._data_type_name = "standard"
                         self._symbols = "01"
                 else:
                     raise self._nexus_error("Expecting '=' after DATATYPE keyword")
@@ -703,10 +705,10 @@ class NexusReader(ioservice.DataReader):
             raise self._nexus_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         taxon_namespace = self._get_taxon_namespace(link_title)
         char_block = self._new_char_matrix(
-                data_type=self._data_type,
+                data_type_name=self._data_type_name,
                 taxon_namespace=taxon_namespace,
                 title=block_title)
-        if self._data_type == "continuous":
+        if self._data_type_name == "continuous":
             self._process_continuous_matrix_data(char_block)
         else:
             self._process_discrete_matrix_data(char_block)
@@ -727,7 +729,7 @@ class NexusReader(ioservice.DataReader):
             token = self._nexus_tokenizer.next_token()
 
     def _process_discrete_matrix_data(self, char_block):
-        if self._data_type == "standard":
+        if self._data_type_name == "standard":
             self._build_state_alphabet(char_block, self._symbols)
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
