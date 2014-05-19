@@ -100,7 +100,7 @@ def script_source_path(filename=None):
 class SandboxedFile(object):
 
     def __init__(self, mode="w"):
-        self.mode = "w"
+        self.mode = mode
         self.fileobj = None
         self.filepath = None
 
