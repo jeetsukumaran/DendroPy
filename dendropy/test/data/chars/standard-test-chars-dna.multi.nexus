@@ -34,10 +34,10 @@ White   {ACGT}{AG}{CT}{AC}ACGT-{ACGT}
 Black   -{ACGT}{AG}WSKVHDR
 
 Red     HDB{ACGT-}A{ACGT}ACGT
-Blue    GTVHAB{ACGT-}ACG
-Green   WSB{ACGT-}AKVHDA
-White   WSKVADB{ACGT-}DB
-Black   {CT}{AC}WSAVHCGT
+Blue    GTVH.B{ACGT-}ACG
+Green   WSB{ACGT-}.KVHDA
+White   WSKV.DB{ACGT-}DB
+Black   {CT}{AC}WS.VH...
 
 Red     -{ACGT}{AG}WSKVHDA
 Blue    .....KVHDC
