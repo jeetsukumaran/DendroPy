@@ -1245,6 +1245,36 @@ class CharacterMatrix(
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
+    class ContinuousCharacterSequence(CharacterSequence):
+        """
+        A sequence of continuous character values for a particular taxon or entry
+        in a data matrix. Specializes :class:`CharacterSequence` by assuming all
+        values are primitive numerics (i.e., either floats or integers) when
+        copying or representing self.
+        """
+
+        def __deepcopy__(self, memo=None):
+            other = basemodel.Annotable.__deepcopy__(self, memo=memo)
+            for v0 in self:
+                other.append(v0)
+            return other
+
+        def symbols_as_list(self):
+            """
+            Returns list of string representation of values of this vector.
+
+            Returns
+            -------
+            v : list
+                List of string representation of values making up this vector.
+            """
+            return [str(v) for v in self]
+
+        def symbols_as_string(self, sep=" "):
+            # different default
+            return CharacterSequence.symbols_as_string(self, sep=sep)
+
+    character_sequence_type = ContinuousCharacterSequence
     data_type_name = "continuous"
 
     def __init__(self, *args, **kwargs):
@@ -1257,6 +1287,10 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     That adds the attributes self.state_alphabets (a list of alphabets)
     and self.default_state_alphabet
     """
+
+    class DiscreteCharacterSequence(CharacterSequence):
+        pass
+    character_sequence_type = DiscreteCharacterSequence
 
     data_type_name = "discrete"
 
@@ -1331,6 +1365,9 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
+    class FixedAlphabetCharacterSequence(CharacterSequence):
+        pass
+    character_sequence_type = FixedAlphabetCharacterSequence
     data_type_name = "fixed"
     data_type_alphabet = None
 
@@ -1346,41 +1383,63 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
+    class DnaCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = DnaCharacterSequence
     data_type_name = "dna"
     data_type_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
+    class RnaCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = RnaCharacterSequence
     data_type_name = "rna"
     data_type_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
+    class NucleotideCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = NucleotideCharacterSequence
     data_type_name = "nucleotide"
     data_type_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
+    class ProteinCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = ProteinCharacterSequence
     data_type_name = "protein"
     data_type_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
+    class RestrictionSitesCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = RestrictionSitesCharacterSequence
     data_type_name = "restriction"
     data_type_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
+    class InfiniteSitesCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+        pass
+    character_sequence_type = InfiniteSitesCharacterSequence
     data_type_name = "infinite"
     data_type_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
+
+    class StandardCharacterSequence(DiscreteCharacterMatrix.DiscreteCharacterSequence):
+        pass
+    character_sequence_type = StandardCharacterSequence
 
     data_type_name = "standard"
 
