@@ -788,13 +788,19 @@ class CharacterMatrix(
         return s
 
     ###########################################################################
-    ### Sequence Iteration
+    ### Sequence Access Iteration
 
     def __iter__(self):
         "Returns an iterator over character map's ordered keys."
         for t in self.taxon_namespace:
             if t in self._taxon_sequence_map:
                 yield t
+
+    def values(self):
+        """
+        Returns list of values (i.e. sequences) in this matrix.
+        """
+        return [self[t] for t in self]
 
     # def iterkeys(self):
     #     "Dictionary interface implementation for direct access to character map."
@@ -1178,7 +1184,7 @@ class CharacterMatrix(
         """
         clone = self.__class__(self)
         # clone.clone_from(self)
-        for vec in clone.taxon_seq_map.values():
+        for vec in clone.values():
             for cell_idx in range(len(vec)-1, -1, -1):
                 if cell_idx not in indices:
                     del(vec[cell_idx])
@@ -1232,10 +1238,8 @@ class CharacterMatrix(
 
     def _get_taxon_seq_map(self):
         # error.dump_stack(msg)
-        warnings.warn(
-                "All methods and features of 'CharacterMatrix.taxon_seq_map' have"
-                " been integrated directly into 'CharacterMatrix', or otherwise"
-                " replaced entirely")
+        warnings.warn("All methods and features of 'CharacterMatrix.taxon_seq_map' have been integrated directly into 'CharacterMatrix', or otherwise replaced entirely",
+                stacklevel=2)
         return self
     taxon_seq_map = property(_get_taxon_seq_map)
 

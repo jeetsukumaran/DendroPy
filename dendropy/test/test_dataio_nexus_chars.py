@@ -26,6 +26,7 @@ from dendropy.utility import error
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen_standard_file_test_chars
+from dendropy.test.support import compare_and_validate
 from dendropy.dataio import nexusreader
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -86,6 +87,7 @@ class NexusTooManyTaxaTest(
                 'nexus')
 
 class NexusCharsSubsetsTest(
+        compare_and_validate.Comparator,
         dendropytest.ExtendedTestCase):
 
     def verify_subsets(self, src_filename, expected_sets):
@@ -96,39 +98,45 @@ class NexusCharsSubsetsTest(
                            = name of file with subset of characters correspond
                            to the charset.
         """
+
         src_data = dendropy.DnaCharacterMatrix.get_from_path(
                 pathmap.char_source_path(src_filename),
                 'nexus')
-        # state_alphabet = src_data.default_state_alphabet
-        # self.assertEqual(len(src_data.character_subsets), len(expected_sets))
-        # for label, expected_data_file in expected_sets.items():
 
-        #     _LOG.debug(label)
+        state_alphabet = src_data.default_state_alphabet
+        self.assertEqual(len(src_data.character_subsets), len(expected_sets))
+        for label, expected_data_file in expected_sets.items():
 
-        #     self.assertTrue(label in src_data.character_subsets)
-        #     result_subset = src_data.export_character_subset(label)
-        #     expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
-        #         pathmap.char_source_path(expected_data_file),
-        #         'nexus')
+            _LOG.debug(label)
 
-        #     # confirm subset is correct
-        #     self.assertDistinctButEqualDiscreteCharMatrix(result_subset, expected_subset)
+            self.assertTrue(label in src_data.character_subsets)
+            result_subset = src_data.export_character_subset(label)
+            expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
+                pathmap.char_source_path(expected_data_file),
+                'nexus')
 
-        #     # mutate new and confirm that old remains unchanged
-        #     e1_symbols = src_data[0].symbols_as_string()
-        #     r1 = result_subset[0]
-        #     dummy_state = state_alphabet.state_for_symbol('A')
-        #     for idx in range(len(r1)):
-        #         r1[idx].value = dummy_state
-        #     self.assertEqual(e1_symbols, src_data[0].symbols_as_string())
+            # confirm subset is correct
+            self.compare_distinct_char_matrix(
+                    result_subset,
+                    expected_subset,
+                    taxon_namespace_scoped=False,
+                    )
 
-        #     # mutate old and confirm that new remains unchanged
-        #     r2_symbols = result_subset[1].symbols_as_string()
-        #     e2 = src_data[1]
-        #     dummy_state = state_alphabet.state_for_symbol('A')
-        #     for idx in range(len(e2)):
-        #         e2[idx].value = dummy_state
-        #     self.assertEqual(r2_symbols, result_subset[1].symbols_as_string())
+            # mutate new and confirm that old remains unchanged
+            e1_symbols = src_data[0].symbols_as_string()
+            r1 = result_subset[0]
+            dummy_state = state_alphabet["A"]
+            for idx in range(len(r1)):
+                r1[idx].value = dummy_state
+            self.assertEqual(e1_symbols, src_data[0].symbols_as_string())
+
+            # mutate old and confirm that new remains unchanged
+            r2_symbols = result_subset[1].symbols_as_string()
+            e2 = src_data[1]
+            dummy_state = state_alphabet["A"]
+            for idx in range(len(e2)):
+                e2[idx].value = dummy_state
+            self.assertEqual(r2_symbols, result_subset[1].symbols_as_string())
 
     def testNonInterleaved(self):
         """
