@@ -31,7 +31,7 @@ from dendropy.dataio import nexusreader
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-class NexusCharactersReaderTestCase(
+class NexusCharactersReaderDnaTestCase(
         datagen_standard_file_test_chars.DnaTestChecker,
         dendropytest.ExtendedTestCase):
 
@@ -60,6 +60,36 @@ class NexusCharactersReaderTestCase(
                     check_sequence_annotations=False,
                     check_column_annotations=False,
                     check_cell_annotations=False)
+
+# class NexusCharactersReaderRnaTestCase(
+#         datagen_standard_file_test_chars.RnaTestChecker,
+#         dendropytest.ExtendedTestCase):
+
+#     @classmethod
+#     def setUpClass(cls):
+#         cls.build()
+
+#     def test_basic_nexus(self):
+#         src_filenames = [
+#                 "standard-test-chars-rna.simple.nexus",
+#                 "standard-test-chars-rna.basic.nexus",
+#                 "standard-test-chars-rna.interleaved.nexus",
+#                 "standard-test-chars-rna.matchchar.nexus",
+#                 "standard-test-chars-rna.multi.nexus",
+#                 ]
+#         for src_idx, src_filename in enumerate(src_filenames):
+#             # print(src_idx, src_filename)
+#             src_path = pathmap.char_source_path(src_filename)
+#             self.verify_get_from(
+#                     matrix_type=dendropy.RnaCharacterMatrix,
+#                     src_filepath=src_path,
+#                     schema="nexus",
+#                     factory_kwargs={},
+#                     check_taxon_annotations=False,
+#                     check_matrix_annotations=False,
+#                     check_sequence_annotations=False,
+#                     check_column_annotations=False,
+#                     check_cell_annotations=False)
 
 class NexusTooManyTaxaTest(
         dendropytest.ExtendedTestCase):

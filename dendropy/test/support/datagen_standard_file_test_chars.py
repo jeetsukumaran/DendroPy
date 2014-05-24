@@ -121,4 +121,24 @@ class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
                 seq_symbols=seq_symbols,
                 labels=labels)
 
+class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
+
+    @classmethod
+    def build(cls, labels=None):
+        seq_symbols = (
+            #  0         1         2         3         4         5
+            #  012345678901234567890123456789012345678901234567890
+               "ACGU-NRYMWSKVHDB?ACGU-NRYMWSKVHDB?AXACGU-NRWSKVHDA",
+               "ACGU-NRYMWSKU-NVHDB?XXACRYMWSKGUVHAB?ACG-NRWSKVHDC",
+               "U-NRYMWSKVHDCGUXACGU-NRW-NRYMXWSB?AKVHDAKVHDB?ACGG",
+               "NKVHDB?ACGU-NXXACGU-NRYMACGU-NWSKVADB?DB?XNXACGU-U",
+               "RYMWSRYMWSKVHDB?ACGU-NRWSKVHDRYMWSAVHCGUA-RWSKVHD-",
+                )
+        FixedStateAlphabetCharacterTestChecker.build(
+                state_alphabet=charstatemodel.RNA_STATE_ALPHABET,
+                seq_symbols=seq_symbols,
+                labels=labels)
+
+
+
 
