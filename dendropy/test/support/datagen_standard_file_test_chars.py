@@ -4,34 +4,6 @@ import collections
 from dendropy.datamodel import charstatemodel
 
 class CharacterTestChecker(object):
-    pass
-
-class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
-
-    @classmethod
-    def build(cls,
-            state_alphabet,
-            seq_symbols,
-            labels=None):
-        if labels is None:
-            cls.labels = (
-                    "Red",
-                    "Blue",
-                    "Green",
-                    "White",
-                    "Black",
-                    )
-        else:
-            cls.labels = tuple(labels)
-        cls.state_alphabet = state_alphabet
-        cls.seq_symbols = seq_symbols
-        assert len(cls.seq_symbols) == len(cls.labels)
-        cls.seq_states = []
-        cls.label_sequence_map = collections.OrderedDict()
-        for label, ss in zip(cls.labels, cls.seq_symbols):
-            seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
-            cls.seq_states.append(seq_states)
-            cls.label_sequence_map[label] = seq_states
 
     def verify_taxa(self,
             taxon_namespace,
@@ -41,13 +13,22 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
         for taxon, label in zip(taxon_namespace, cls.labels):
             self.assertEqual(taxon.label, label)
 
+    def verify_character_cell_states(self,
+            c1, c2,
+            check_annotations=True):
+        raise NotImplementedError
+        if check_annotations:
+            pass # not yet implemented
+
     def verify_sequences(self,
             s1, s2,
             check_sequence_annotations=True,
             check_cell_annotations=True):
         self.assertEqual(len(s1), len(s2))
         for c1, c2 in zip(s1, s2):
-            self.assertIs(c1, c2)
+            self.verify_character_cell_states(
+                    c1, c2,
+                    check_cell_annotations)
 
     def verify_char_matrix(self,
             char_matrix,
@@ -89,6 +70,38 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
             check_sequence_annotations=check_sequence_annotations,
             check_column_annotations=check_column_annotations,
             check_cell_annotations=check_cell_annotations)
+
+class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
+
+    @classmethod
+    def build(cls,
+            state_alphabet,
+            seq_symbols,
+            labels=None):
+        if labels is None:
+            cls.labels = (
+                    "Red",
+                    "Blue",
+                    "Green",
+                    "White",
+                    "Black",
+                    )
+        else:
+            cls.labels = tuple(labels)
+        cls.state_alphabet = state_alphabet
+        cls.seq_symbols = seq_symbols
+        assert len(cls.seq_symbols) == len(cls.labels)
+        cls.seq_states = []
+        cls.label_sequence_map = collections.OrderedDict()
+        for label, ss in zip(cls.labels, cls.seq_symbols):
+            seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
+            cls.seq_states.append(seq_states)
+            cls.label_sequence_map[label] = seq_states
+
+    def verify_character_cell_states(self,
+            c1, c2,
+            check_annotations=True):
+        self.assertIs(c1, c2)
 
 class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
