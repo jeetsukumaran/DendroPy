@@ -1,0 +1,50 @@
+
+#NEXUS
+
+BEGIN TAXA;
+	DIMENSIONS NTAX=5;
+	TAXLABELS
+        Red
+        Blue
+        Green
+        White
+        Black
+	;
+END;
+
+BEGIN CHARACTERS;
+	DIMENSIONS NCHAR=50;
+	FORMAT DATATYPE=RNA GAP=- INTERLEAVE=yes;
+	MATRIX
+Red     ACGU-NRYMW
+Blue    ACGU-NRYMW
+Green   U-NRYMWSKV
+White   NKVHDB?ACG
+Black   RYMWSRYMWS
+
+Red     SKVHDB?ACG
+Blue    SKU-NVHDB?
+Green   HDCGUXACGU
+White   U-NXXACGU-
+Black   KVHDB?ACGU
+
+Red     U-NRYMWSKV
+Blue    XXACRYMWSK
+Green   -NRW-NRYMX
+White   NRYMACGU-N
+Black   -NRWSKVHDR
+
+Red     HDB?AXACGU
+Blue    GUVHAB?ACG
+Green   WSB?AKVHDA
+White   WSKVADB?DB
+Black   YMWSAVHCGU
+
+Red     -NRWSKVHDA
+Blue    -NRWSKVHDC
+Green   KVHDB?ACGG
+White   ?XNXACGU-U
+Black   A-RWSKVHD-
+	;
+END;
+

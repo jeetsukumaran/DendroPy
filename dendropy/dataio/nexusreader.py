@@ -1073,7 +1073,11 @@ class NexusReader(ioservice.DataReader):
                         try:
                             state = state_alphabet.full_symbol_state_map[c]
                         except KeyError:
-                            exc = self._nexus_error("Unrecognized character state symbol: '{}'".format(c), NexusReader.InvalidCharacterStateSymbolError)
+                            exc = self._nexus_error("Unrecognized character state symbol for state alphabet '{}' ({}) : '{}'".format(
+                                        state_alphabet.label,
+                                        state_alphabet.__class__.__name__,
+                                        c),
+                                        NexusReader.InvalidCharacterStateSymbolError)
                             exc.__context__ = None # Python 3.0, 3.1, 3.2
                             exc.__cause__ = None # Python 3.3, 3.4
                             raise exc
