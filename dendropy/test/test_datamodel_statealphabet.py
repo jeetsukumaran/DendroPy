@@ -533,13 +533,13 @@ class ProteinStateAlphabetTest(
         self.expected_fundamental_state_symbols = [
                 "A", "C", "D", "E", "F", "G", "H", "I",
                 "K", "L", "M", "N", "P", "Q", "R", "S",
-                "T", "U", "V", "W", "Y", "*", "-",
+                "T",  "V", "W", "Y", "*", "-",
                 ]
         self.ambiguous_symbol_mappings = collections.OrderedDict()
-        self.ambiguous_symbol_mappings["?"] = "ACDEFGHIKLMNPQRSTUVWY*-"
+        self.ambiguous_symbol_mappings["?"] = "ACDEFGHIKLMNPQRSTVWY*-"
         self.ambiguous_symbol_mappings["B"] = "DN"
         self.ambiguous_symbol_mappings["Z"] = "EQ"
-        self.ambiguous_symbol_mappings["X"] = "ACDEFGHIKLMNPQRSTUVWY*"
+        self.ambiguous_symbol_mappings["X"] = "ACDEFGHIKLMNPQRSTVWY*"
 
         self.polymorphic_symbol_mappings = collections.OrderedDict()
 
