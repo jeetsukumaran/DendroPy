@@ -881,15 +881,16 @@ class StateIdentity(
         Representation of member states of self.
         """
         if self._member_states_str is None:
-            s = ",".join([m._symbol for m in self._member_states])
             if self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE:
                 self._member_states_str = str(self)
-            elif self._state_denomination == StateAlphabet.AMBIGUOUS_STATE:
-                self._member_states_str = "{" + s + "}"
-            elif self._state_denomination == StateAlphabet.POLYMORPHIC_STATE:
-                self._member_states_str = "(" + s + ")"
             else:
-                raise ValueError("Unrecognized state denomination: '{}'".format(self._state_denomination))
+                s = ",".join([m._symbol for m in self._member_states])
+                if self._state_denomination == StateAlphabet.AMBIGUOUS_STATE:
+                    self._member_states_str = "{" + s + "}"
+                elif self._state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+                    self._member_states_str = "(" + s + ")"
+                else:
+                    raise ValueError("Unrecognized state denomination: '{}'".format(self._state_denomination))
         return self._member_states_str
     member_states_str = property(_get_member_states_str)
 
