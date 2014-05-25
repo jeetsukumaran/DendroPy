@@ -6,17 +6,17 @@ from dendropy.datamodel import charstatemodel
 def general_verify_taxa(
         test_case,
         char_matrix,
-        validation_class,
+        checker_reference_class,
         taxon_namespace,
         check_annotations=True):
-    test_case.assertEqual(len(taxon_namespace), len(validation_class.labels))
-    for taxon, label in zip(taxon_namespace, validation_class.labels):
+    test_case.assertEqual(len(taxon_namespace), len(checker_reference_class.labels))
+    for taxon, label in zip(taxon_namespace, checker_reference_class.labels):
         test_case.assertEqual(taxon.label, label)
 
 def general_verify_character_cell_states(
         test_case,
         char_matrix,
-        validation_class,
+        checker_reference_class,
         c1, c2,
         check_annotations=True):
     if char_matrix.data_type_name != "continuous":
@@ -29,7 +29,7 @@ def general_verify_character_cell_states(
 def general_verify_sequences(
         test_case,
         char_matrix,
-        validation_class,
+        checker_reference_class,
         s1, s2,
         check_sequence_annotations=True,
         check_cell_annotations=True):
@@ -38,7 +38,7 @@ def general_verify_sequences(
         general_verify_character_cell_states(
                 test_case=test_case,
                 char_matrix=char_matrix,
-                validation_class=validation_class,
+                checker_reference_class=checker_reference_class,
                 c1=c1,
                 c2=c2,
                 check_annotations=check_cell_annotations)
@@ -46,27 +46,27 @@ def general_verify_sequences(
 def general_char_matrix_checker(
         test_case,
         char_matrix,
-        validation_class,
+        checker_reference_class,
         check_taxon_annotations=True,
         check_matrix_annotations=True,
         check_sequence_annotations=True,
         check_column_annotations=True,
         check_cell_annotations=True):
-    test_case.assertEqual(len(char_matrix), len(validation_class.labels))
+    test_case.assertEqual(len(char_matrix), len(checker_reference_class.labels))
     general_verify_taxa(
         test_case=test_case,
         char_matrix=char_matrix,
-        validation_class=validation_class,
+        checker_reference_class=checker_reference_class,
         taxon_namespace=char_matrix.taxon_namespace,
         check_annotations=check_taxon_annotations)
-    for taxon, label in zip(char_matrix, validation_class.labels):
+    for taxon, label in zip(char_matrix, checker_reference_class.labels):
         test_case.assertEqual(taxon.label, label)
         s1 = char_matrix[taxon]
         s2 = test_case.label_sequence_map[label]
         general_verify_sequences(
             test_case=test_case,
             char_matrix=char_matrix,
-            validation_class=validation_class,
+            checker_reference_class=checker_reference_class,
             s1=s1,
             s2=s2,
             check_sequence_annotations=check_sequence_annotations,
