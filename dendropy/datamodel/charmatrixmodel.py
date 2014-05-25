@@ -274,7 +274,9 @@ class CharacterMatrix(
         if char_matrix.data_type_name != cls.data_type_name:
             raise ValueError(
                 "Data source (at offset {}) is of type '{}', "
-                "but current CharacterMatrix is of type '{}'.".format(char_matrix.data_type_name,
+                "but current CharacterMatrix is of type '{}'.".format(
+                    matrix_offset,
+                    char_matrix.data_type_name,
                     cls.data_type_name))
         return char_matrix
     _parse_from_stream = classmethod(_parse_from_stream)

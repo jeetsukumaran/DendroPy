@@ -1161,12 +1161,12 @@ class NucleotideStateAlphabet(StateAlphabet):
 class ProteinStateAlphabet(StateAlphabet):
 
     def __init__(self):
-        fundamental_states = "ACDEFGHIKLMNPQRSTUVWY*-"
+        fundamental_states = "ACDEFGHIKLMNPQRSTVWY*-"
         polymorphic_states = None
         ambiguous_states = (
                 ("B", "DN"),
                 ("Z", "EQ"),
-                ("X", "ACDEFGHIKLMNPQRSTUVWY*"),
+                ("X", "ACDEFGHIKLMNPQRSTVWY*"),
                 )
         symbol_synonyms = {}
         StateAlphabet.__init__(self,

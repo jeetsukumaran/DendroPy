@@ -161,8 +161,6 @@ class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
     @classmethod
     def build(cls, labels=None):
         seq_symbols = (
-            #  0         1         2         3         4         5
-            #  012345678901234567890123456789012345678901234567890
                "ACGU-NRYMWSKVHDB?ACGU-NRYMWSKVHDB?AXACGU-NRWSKVHDA",
                "ACGU-NRYMWSKU-NVHDB?XXACRYMWSKGUVHAB?ACG-NRWSKVHDC",
                "U-NRYMWSKVHDCGUXACGU-NRW-NRYMXWSB?AKVHDAKVHDB?ACGG",
@@ -171,6 +169,22 @@ class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
                 )
         FixedStateAlphabetCharacterTestChecker.build(
                 state_alphabet=charstatemodel.RNA_STATE_ALPHABET,
+                seq_symbols=seq_symbols,
+                labels=labels)
+
+class ProteinTestChecker(FixedStateAlphabetCharacterTestChecker):
+
+    @classmethod
+    def build(cls, labels=None):
+        seq_symbols = (
+               "Y?LTDCQWD-RIISDM*WZ?PTYBEWAT*LW?NYFILESB?VR?CAWYP-CXG?-FHVHZXTEKDW?R-FGES*KA-FZCGNX*LMVWZGFZMHEQPSD???P*RNLTPRSAINMGVQKBNMYIXBXKHACWWWHBKQQVA",
+               "Y?LTDCQWD-QKBNMYIXBR-FGES*KA-FZCGNX*LMVWZGFZMHEQPSDRIISDM*WZ?PTRNLTPRSAINMGV???P*VXKHACWWWHBKQQVYBEWAT*LW?NYFILESB?VR?CAWYP-CXG?-FHVHZXTEKDW?",
+               "Y?LTDCQWD-HVHZXTEKDW?R-FGES*KA-FW?NYFILESB?VR?CAAINRIISDM*WZ?PTYBEWYP-CXG?-FMGVQKBNMYIXBXKHACWWWHBKQQVZCGNX*LMVWZGFZMHEQPSD???P*RNLTPRSWAT*LV",
+               "KHACWWWHBKAT*LW?NYFILESB?VR?CAWYP-CXG?-FHVHZXTEKDW?QQVDCQWD-RIISDM*WZ?PTYBEWR-FGES*KA-FZCGNX*LMVWZGY?LTFZMHEQPSD???P*RNLTPRSAINMGVQKBNMYIXBXV",
+               "YKDW?R-FGES*KA-FZCGNX*LMVWZGFZMHEQPSD???P*RNLTPRSAINMGVQKBNMYIXBXKHACWWWHBKQQV?LTDCQWD-RIISDM*WZ?PTYBEWAT*LW?NYFILESB?VR?CAWYP-CXG?-FHVHZXTEV",
+                )
+        FixedStateAlphabetCharacterTestChecker.build(
+                state_alphabet=charstatemodel.PROTEIN_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
                 labels=labels)
 

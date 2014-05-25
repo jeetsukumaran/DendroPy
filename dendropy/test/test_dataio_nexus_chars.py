@@ -91,6 +91,37 @@ class NexusCharactersReaderRnaTestCase(
                     check_column_annotations=False,
                     check_cell_annotations=False)
 
+
+class NexusCharactersReaderProteinTestCase(
+        datagen_standard_file_test_chars.ProteinTestChecker,
+        dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.build()
+
+    def test_basic_nexus(self):
+        src_filenames = [
+                "standard-test-chars-protein.simple.nexus",
+                # "standard-test-chars-protein.basic.nexus",
+                # "standard-test-chars-protein.interleaved.nexus",
+                # "standard-test-chars-protein.matchchar.nexus",
+                # "standard-test-chars-protein.multi.nexus",
+                ]
+        for src_idx, src_filename in enumerate(src_filenames):
+            # print(src_idx, src_filename)
+            src_path = pathmap.char_source_path(src_filename)
+            self.verify_get_from(
+                    matrix_type=dendropy.ProteinCharacterMatrix,
+                    src_filepath=src_path,
+                    schema="nexus",
+                    factory_kwargs={},
+                    check_taxon_annotations=False,
+                    check_matrix_annotations=False,
+                    check_sequence_annotations=False,
+                    check_column_annotations=False,
+                    check_cell_annotations=False)
+
 class NexusTooManyTaxaTest(
         dendropytest.ExtendedTestCase):
 
