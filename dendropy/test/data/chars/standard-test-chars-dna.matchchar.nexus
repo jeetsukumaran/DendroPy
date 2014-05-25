@@ -13,7 +13,7 @@ end;
 
 begin characters;
 	dimensions nchar=50;
-	format datatype=dna gap=- interleave=yes;
+	format datatype=dna gap=- interleave=no;
 	matrix
 Red     ACGT-NRYMW SKVHDB?ACG T-NRYMWSKV HDB?AXACGT -NRWSKVHDA
 Blue    .......... ..T-NVHDB? XXACRYMWSK GTVH.B?ACG .........C

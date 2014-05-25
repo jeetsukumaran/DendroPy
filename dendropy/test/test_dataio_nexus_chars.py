@@ -105,7 +105,7 @@ class NexusCharactersReaderProteinTestCase(
                 "standard-test-chars-protein.simple.nexus",
                 "standard-test-chars-protein.basic.nexus",
                 "standard-test-chars-protein.interleaved.nexus",
-                # "standard-test-chars-protein.matchchar.nexus",
+                "standard-test-chars-protein.matchchar.nexus",
                 # "standard-test-chars-protein.multi.nexus",
                 ]
         for src_idx, src_filename in enumerate(src_filenames):
