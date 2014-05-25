@@ -3,32 +3,76 @@
 import collections
 from dendropy.datamodel import charstatemodel
 
+def general_verify_taxa(
+        test_case,
+        char_matrix,
+        validation_class,
+        taxon_namespace,
+        check_annotations=True):
+    test_case.assertEqual(len(taxon_namespace), len(validation_class.labels))
+    for taxon, label in zip(taxon_namespace, validation_class.labels):
+        test_case.assertEqual(taxon.label, label)
+
+def general_verify_character_cell_states(
+        test_case,
+        char_matrix,
+        validation_class,
+        c1, c2,
+        check_annotations=True):
+    if char_matrix.data_type_name != "continuous":
+        test_case.assertIs(c1, c2)
+    else:
+        test_case.assertEqual(c1, c2)
+    if check_annotations:
+        pass # not yet implemented
+
+def general_verify_sequences(
+        test_case,
+        char_matrix,
+        validation_class,
+        s1, s2,
+        check_sequence_annotations=True,
+        check_cell_annotations=True):
+    test_case.assertEqual(len(s1), len(s2))
+    for c1, c2 in zip(s1, s2):
+        general_verify_character_cell_states(
+                test_case=test_case,
+                char_matrix=char_matrix,
+                validation_class=validation_class,
+                c1=c1,
+                c2=c2,
+                check_annotations=check_cell_annotations)
+
+def general_char_matrix_checker(
+        test_case,
+        char_matrix,
+        validation_class,
+        check_taxon_annotations=True,
+        check_matrix_annotations=True,
+        check_sequence_annotations=True,
+        check_column_annotations=True,
+        check_cell_annotations=True):
+    test_case.assertEqual(len(char_matrix), len(validation_class.labels))
+    general_verify_taxa(
+        test_case=test_case,
+        char_matrix=char_matrix,
+        validation_class=validation_class,
+        taxon_namespace=char_matrix.taxon_namespace,
+        check_annotations=check_taxon_annotations)
+    for taxon, label in zip(char_matrix, validation_class.labels):
+        test_case.assertEqual(taxon.label, label)
+        s1 = char_matrix[taxon]
+        s2 = test_case.label_sequence_map[label]
+        general_verify_sequences(
+            test_case=test_case,
+            char_matrix=char_matrix,
+            validation_class=validation_class,
+            s1=s1,
+            s2=s2,
+            check_sequence_annotations=check_sequence_annotations,
+            check_cell_annotations=check_cell_annotations)
+
 class CharacterTestChecker(object):
-
-    def verify_taxa(self,
-            taxon_namespace,
-            check_annotations=True):
-        cls = self.__class__
-        self.assertEqual(len(taxon_namespace), len(cls.labels))
-        for taxon, label in zip(taxon_namespace, cls.labels):
-            self.assertEqual(taxon.label, label)
-
-    def verify_character_cell_states(self,
-            c1, c2,
-            check_annotations=True):
-        raise NotImplementedError
-        if check_annotations:
-            pass # not yet implemented
-
-    def verify_sequences(self,
-            s1, s2,
-            check_sequence_annotations=True,
-            check_cell_annotations=True):
-        self.assertEqual(len(s1), len(s2))
-        for c1, c2 in zip(s1, s2):
-            self.verify_character_cell_states(
-                    c1, c2,
-                    check_cell_annotations)
 
     def verify_char_matrix(self,
             char_matrix,
@@ -37,18 +81,14 @@ class CharacterTestChecker(object):
             check_sequence_annotations=True,
             check_column_annotations=True,
             check_cell_annotations=True):
-        cls = self.__class__
-        self.assertEqual(len(char_matrix), len(cls.labels))
-        self.verify_taxa(char_matrix.taxon_namespace,
-            check_annotations=check_taxon_annotations)
-        for taxon, label in zip(char_matrix, cls.labels):
-            self.assertEqual(taxon.label, label)
-            s1 = char_matrix[taxon]
-            s2 = self.label_sequence_map[label]
-            self.verify_sequences(
-                s1, s2,
+        general_char_matrix_checker(self,
+                char_matrix,
+                self.__class__,
+                check_taxon_annotations=check_taxon_annotations,
+                check_matrix_annotations=check_matrix_annotations,
                 check_sequence_annotations=check_sequence_annotations,
-                check_cell_annotations=check_cell_annotations)
+                check_column_annotations=check_column_annotations,
+                check_cell_annotations=check_cell_annotations,)
 
     def verify_get_from(self,
             matrix_type,
@@ -97,11 +137,6 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
             seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
             cls.seq_states.append(seq_states)
             cls.label_sequence_map[label] = seq_states
-
-    def verify_character_cell_states(self,
-            c1, c2,
-            check_annotations=True):
-        self.assertIs(c1, c2)
 
 class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
