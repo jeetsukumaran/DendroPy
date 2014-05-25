@@ -1,21 +1,20 @@
-
 #NEXUS
 
-BEGIN TAXA;
-	DIMENSIONS NTAX=5;
-	TAXLABELS
+begin taxa;
+	dimensions ntax=5;
+	taxlabels
         Red
         Blue
         Green
         White
         Black
 	;
-END;
+end;
 
-BEGIN CHARACTERS;
-	DIMENSIONS NCHAR=50;
-	FORMAT DATATYPE=DNA GAP=- INTERLEAVE=yes;
-	MATRIX
+begin characters;
+	dimensions nchar=50;
+	format datatype=dna gap=- interleave=yes;
+	matrix
 Red     ACGT-NRYMW
 Blue    ACGT-NRYMW
 Green   T-NRYMWSKV
@@ -46,5 +45,5 @@ Green   KVHDB?ACGG
 White   ?XNXACGT-T
 Black   A-RWSKVHD-
 	;
-END;
+end;
 

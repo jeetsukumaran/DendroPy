@@ -103,8 +103,8 @@ class NexusCharactersReaderProteinTestCase(
     def test_basic_nexus(self):
         src_filenames = [
                 "standard-test-chars-protein.simple.nexus",
-                # "standard-test-chars-protein.basic.nexus",
-                # "standard-test-chars-protein.interleaved.nexus",
+                "standard-test-chars-protein.basic.nexus",
+                "standard-test-chars-protein.interleaved.nexus",
                 # "standard-test-chars-protein.matchchar.nexus",
                 # "standard-test-chars-protein.multi.nexus",
                 ]
