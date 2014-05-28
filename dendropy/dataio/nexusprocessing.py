@@ -71,15 +71,15 @@ class NexusTokenizer(Tokenizer):
             if "\r" not in self.uncaptured_delimiters:
                 self.uncaptured_delimiters.append("\r")
 
-    def set_hyphens_as_tokens(self, hyphens_as_tokens):
-        if hyphens_as_tokens:
+    def set_hyphens_as_captured_delimiters(self, hyphens_as_captured_delimiters):
+        if hyphens_as_captured_delimiters:
+            if "-" not in self.captured_delimiters:
+                self.captured_delimiters.append("-")
+        else:
             try:
                 self.captured_delimiters.remove("-")
             except ValueError:
                 pass
-        else:
-            if "-" not in self.captured_delimiters:
-                self.captured_delimiters.append("-")
 
     def next_token_ucase(self):
         try:

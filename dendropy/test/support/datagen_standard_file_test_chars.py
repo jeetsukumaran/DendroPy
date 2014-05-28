@@ -197,17 +197,20 @@ class ProteinTestChecker(FixedStateAlphabetCharacterTestChecker):
                 seq_symbols=seq_symbols,
                 labels=labels)
 
-# class ContinuousTestChecker(CharacterTestChecker):
+class ContinuousTestChecker(CharacterTestChecker):
 
-#     @classmethod
-#     def build(cls, labels=None):
-#         seq_values = (
-#                 1
-#                 )
-#         FixedStateAlphabetCharacterTestChecker.build(
-#                 state_alphabet=charstatemodel.PROTEIN_STATE_ALPHABET,
-#                 seq_symbols=seq_symbols,
-#                 labels=labels)
+    @classmethod
+    def build(cls, labels=None):
+        states_lists = (
+                    (-0.0230 , -0.3273 , -13.4836 , +0.0868 , -0.3942 , -0.0752 , -1020.0652),
+                    (-1.3153 , +1.2542 , +14.4277 , +1.1204 , -0.1048 , -0.0473 , -2210.0548),
+                    (-2.1870 , +2.0093 , +15.4810 , +0.6872 , -0.1293 , +0.3246 , +10301.2798),
+                    (+3.1097 , +3.1443 , +16.2746 , +1.0220 , -0.0353 , +1.0085 , +20.1666),
+                    (+4.4274 , +4.4127 , -17.1721 , +0.7207 , -1.2134 , +0.4868 , -0.1480),
+                )
+        CharacterTestChecker.build(
+                states_lists=states_lists,
+                labels=labels)
 
 
 

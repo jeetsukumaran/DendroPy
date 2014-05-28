@@ -114,6 +114,17 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class InvalidContinuousCharacterValueError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
     class TooManyTaxaError(NexusReaderError):
 
         def __init__(self,
@@ -714,19 +725,42 @@ class NexusReader(ioservice.DataReader):
             self._process_discrete_matrix_data(char_block)
 
     def _process_continuous_matrix_data(self, char_block):
-        if self._interleave:
-            raise NotImplementedError("Continuous interleaved characters in NEXUS schema not yet supported")
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
-        while token != ';' and not self._nexus_tokenizer.is_eof():
-            taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
-            while len(char_block[taxon]) < self._file_specified_nchar and not self._nexus_tokenizer.is_eof():
-                char_group = self._nexus_tokenizer.next_token(ignore_punctuation="-+")
-                char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
-            if len(char_block[taxon]) < self._file_specified_nchar:
-                raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
-                    % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
-            token = self._nexus_tokenizer.next_token()
+        first_sequence_defined = None
+        if self._interleave:
+            try:
+                while token != ";" and not self._nexus_tokenizer.is_eof():
+                    taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
+                    self._read_continuous_character_values(char_block[taxon])
+                    # if first_sequence_defined is None:
+                    #     first_sequence_defined = char_block[taxon]
+                    token = self._nexus_tokenizer.next_token()
+            except NexusReader.BlockTerminatedException:
+                token = self._nexus_tokenizer.next_token()
+        else:
+            while token != ';' and not self._nexus_tokenizer.is_eof():
+                taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
+                self._read_continuous_character_values(char_block[taxon])
+                # if first_sequence_defined is None:
+                #     first_sequence_defined = char_block[taxon]
+                if len(char_block[taxon]) < self._file_specified_nchar:
+                    raise self._nexus_error("Insufficient characters given for taxon '{}': expecting {} but only found {} ('{}')".format(taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
+                token = self._nexus_tokenizer.next_token()
+        # if self._interleave:
+        #     raise NotImplementedError("Continuous interleaved characters in NEXUS schema not yet supported")
+        # taxon_namespace = char_block.taxon_namespace
+        # token = self._nexus_tokenizer.next_token()
+        # while token != ';' and not self._nexus_tokenizer.is_eof():
+        #     taxon = self._get_taxon(taxon_namespace=taxon_namespace, label=token)
+        #     while len(char_block[taxon]) < self._file_specified_nchar and not self._nexus_tokenizer.is_eof():
+        #         # char_group = self._nexus_tokenizer.next_token(ignore_punctuation="-+")
+        #         char_group = self._nexus_tokenizer.next_token()
+        #         char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
+        #     if len(char_block[taxon]) < self._file_specified_nchar:
+        #         raise self._nexus_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+        #             % (taxon.label, self._file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
+        #     token = self._nexus_tokenizer.next_token()
 
     def _process_discrete_matrix_data(self, char_block):
         if self._data_type_name == "standard":
@@ -918,7 +952,7 @@ class NexusReader(ioservice.DataReader):
         positions = []
         # hyphens_as_tokens = self._nexus_tokenizer.hyphens_as_tokens
         # self._nexus_tokenizer.hyphens_as_tokens = True
-        self._nexus_tokenizer.set_hyphens_as_tokens(False)
+        self._nexus_tokenizer.set_hyphens_as_captured_delimiters(True)
         token = self._nexus_tokenizer.next_token()
         max_positions = self._file_specified_nchar
 
@@ -926,55 +960,56 @@ class NexusReader(ioservice.DataReader):
             raise self._nexus_error('Unexpected end of file or null token')
 
         while token != ';' and token != ',' and not self._nexus_tokenizer.is_eof():
-            if token:
-                if token.upper() == 'ALL':
-                    positions = range(1, max_positions + 1)
-                    break
-                elif token.isdigit():
-                    start = int(token)
-                    token = self._nexus_tokenizer.next_token()
-                    if token:
-                        if token == ',' or token.isdigit() or token == ';':
-                            positions.append(start)
-                        elif token == '-':
-                            token = self._nexus_tokenizer.next_token()
-                            if token:
-                                if token.isdigit() or token == '.':
-                                    if token == '.':
-                                        end = max_positions
-                                        #token = self._nexus_tokenizer.next_token()
-                                    else:
-                                        end = int(token)
-                                        #token = self._nexus_tokenizer.next_token()
-                                    token = self._nexus_tokenizer.next_token()
-                                    if token:
-                                        if token == '\\' or token == '/': # (NEXUS standard only accepts '\')
-                                            token = self._nexus_tokenizer.next_token()
-                                            if token:
-                                                if token.isdigit():
-                                                    step = int(token)
-                                                    #token = self._nexus_tokenizer.next_token()
-                                                else:
-                                                    raise self._nexus_error('Expecting digit but found "%s".' % (token))
+            if not token:
+                break
+            if token.upper() == 'ALL':
+                positions = range(1, max_positions + 1)
+                break
+            elif token.isdigit():
+                start = int(token)
+                token = self._nexus_tokenizer.next_token()
+                if token:
+                    if token == ',' or token.isdigit() or token == ';':
+                        positions.append(start)
+                    elif token == '-':
+                        token = self._nexus_tokenizer.next_token()
+                        if token:
+                            if token.isdigit() or token == '.':
+                                if token == '.':
+                                    end = max_positions
+                                    #token = self._nexus_tokenizer.next_token()
+                                else:
+                                    end = int(token)
+                                    #token = self._nexus_tokenizer.next_token()
+                                token = self._nexus_tokenizer.next_token()
+                                if token:
+                                    if token == '\\' or token == '/': # (NEXUS standard only accepts '\')
+                                        token = self._nexus_tokenizer.next_token()
+                                        if token:
+                                            if token.isdigit():
+                                                step = int(token)
+                                                #token = self._nexus_tokenizer.next_token()
                                             else:
-                                                raise self._nexus_error('Expecting other tokens after "\\", but no more found.')
-                                            token = self._nexus_tokenizer.next_token()
+                                                raise self._nexus_error('Expecting digit but found "%s".' % (token))
                                         else:
-                                            step = 1
+                                            raise self._nexus_error('Expecting other tokens after "\\", but no more found.')
+                                        token = self._nexus_tokenizer.next_token()
                                     else:
                                         step = 1
-                                    for q in range(start, end+1, step):
-                                        if q <= max_positions:
-                                            positions.append(q)
                                 else:
-                                    raise self._nexus_error('Expecting digit or ".", but found "%s".' % (token))
+                                    step = 1
+                                for q in range(start, end+1, step):
+                                    if q <= max_positions:
+                                        positions.append(q)
                             else:
-                                raise self._nexus_error('Expecting other tokens after "-", but no more found.')
+                                raise self._nexus_error('Expecting digit or ".", but found "%s".' % (token))
                         else:
-                            raise self._nexus_error('Expecting digit or "all", but found "%s".' % (token))
+                            raise self._nexus_error('Expecting other tokens after "-", but no more found.')
                     else:
-                        positions.append(start)
-        self._nexus_tokenizer.set_hyphens_as_tokens(True)
+                        raise self._nexus_error('Expecting digit or "all", but found "%s".' % (token))
+                else:
+                    positions.append(start)
+        self._nexus_tokenizer.set_hyphens_as_captured_delimiters(False)
         positions = list(set(positions))
         positions.sort()
         if verify:
@@ -1084,6 +1119,70 @@ class NexusReader(ioservice.DataReader):
                     if len(character_data_vector) == self._file_specified_nchar:
                         raise self._too_many_characters_error(c)
                     character_data_vector.append(state)
+        if self._interleave:
+            self._nexus_tokenizer.set_capture_eol(False)
+        return character_data_vector
+
+    def _read_continuous_character_values(self,
+            character_data_vector,
+            data_type=float,
+            ):
+        """
+        Reads character sequence data substatement until the number of
+        character states read is equal to `self._file_specified_nchar` (with
+        multi-state characters, such as '(AG)' counting as a single
+        state) or, if `self._interleave` is `True`, until an EOL is
+        reached.
+        """
+        if self._interleave:
+            self._nexus_tokenizer.set_capture_eol(True)
+        while len(character_data_vector) < self._file_specified_nchar:
+            token = self._nexus_tokenizer.require_next_token()
+            if token == "\r" or token == "\n":
+                if self._interleave:
+                    break
+            elif token == ";":
+                raise NexusReader.BlockTerminatedException
+            else:
+                try:
+                    state = float(token)
+                except ValueError:
+                    exc = self._nexus_error("Invalid value for continuous character type: '{invalid_value}'".format(data_type=data_type, invalid_value=token),
+                                NexusReader.InvalidContinuousCharacterValueError)
+                    exc.__context__ = None # Python 3.0, 3.1, 3.2
+                    exc.__cause__ = None # Python 3.3, 3.4
+                    raise exc
+                    # if c in self._match_char:
+                    #     try:
+                    #         state = first_sequence_defined[len(character_data_vector)]
+                    #     except TypeError:
+                    #         exc = self._nexus_error("Cannot dereference MATCHCHAR '{}' on first sequence".format(c), NexusReader.NexusReaderError)
+                    #         exc.__context__ = None # Python 3.0, 3.1, 3.2
+                    #         exc.__cause__ = None # Python 3.3, 3.4
+                    #         raise exc
+                    #     except IndexError:
+                    #         exc = self._nexus_error("Cannot dereference MATCHCHAR '{}': current position ({}) exceeds length of first sequence ({})".format(c,
+                    #                 len(character_data_vector)+1,
+                    #                 len(first_sequence_defined),
+                    #                 NexusReader.NexusReaderError))
+                    #         exc.__context__ = None # Python 3.0, 3.1, 3.2
+                    #         exc.__cause__ = None # Python 3.3, 3.4
+                    #         raise exc
+                    # else:
+                    #     try:
+                    #         state = state_alphabet.full_symbol_state_map[c]
+                    #     except KeyError:
+                    #         exc = self._nexus_error("Unrecognized character state symbol for state alphabet '{}' ({}) : '{}'".format(
+                    #                     state_alphabet.label,
+                    #                     state_alphabet.__class__.__name__,
+                    #                     c),
+                    #                     NexusReader.InvalidCharacterStateSymbolError)
+                    #         exc.__context__ = None # Python 3.0, 3.1, 3.2
+                    #         exc.__cause__ = None # Python 3.3, 3.4
+                    #         raise exc
+                if len(character_data_vector) == self._file_specified_nchar:
+                    raise self._too_many_characters_error(c)
+                character_data_vector.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
         return character_data_vector
