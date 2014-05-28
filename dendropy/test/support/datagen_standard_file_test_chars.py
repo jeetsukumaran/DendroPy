@@ -74,6 +74,25 @@ def general_char_matrix_checker(
 
 class CharacterTestChecker(object):
 
+    @classmethod
+    def build(cls,
+            states_lists,
+            labels=None):
+        if labels is None:
+            cls.labels = (
+                    "Red",
+                    "Blue",
+                    "Green",
+                    "White",
+                    "Black",
+                    )
+        else:
+            cls.labels = tuple(labels)
+        assert len(cls.labels) == len(states_lists)
+        cls.label_sequence_map = collections.OrderedDict()
+        for label, ss in zip(cls.labels, states_lists):
+            cls.label_sequence_map[label] = ss
+
     def verify_char_matrix(self,
             char_matrix,
             check_taxon_annotations=True,
@@ -118,25 +137,15 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
             state_alphabet,
             seq_symbols,
             labels=None):
-        if labels is None:
-            cls.labels = (
-                    "Red",
-                    "Blue",
-                    "Green",
-                    "White",
-                    "Black",
-                    )
-        else:
-            cls.labels = tuple(labels)
         cls.state_alphabet = state_alphabet
         cls.seq_symbols = seq_symbols
-        assert len(cls.seq_symbols) == len(cls.labels)
-        cls.seq_states = []
-        cls.label_sequence_map = collections.OrderedDict()
-        for label, ss in zip(cls.labels, cls.seq_symbols):
+        states_lists = []
+        for ss in cls.seq_symbols:
             seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
-            cls.seq_states.append(seq_states)
-            cls.label_sequence_map[label] = seq_states
+            states_lists.append(seq_states)
+        CharacterTestChecker.build(
+                states_lists=states_lists,
+                labels=labels)
 
 class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
@@ -187,6 +196,18 @@ class ProteinTestChecker(FixedStateAlphabetCharacterTestChecker):
                 state_alphabet=charstatemodel.PROTEIN_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
                 labels=labels)
+
+# class ContinuousTestChecker(CharacterTestChecker):
+
+#     @classmethod
+#     def build(cls, labels=None):
+#         seq_values = (
+#                 1
+#                 )
+#         FixedStateAlphabetCharacterTestChecker.build(
+#                 state_alphabet=charstatemodel.PROTEIN_STATE_ALPHABET,
+#                 seq_symbols=seq_symbols,
+#                 labels=labels)
 
 
 
