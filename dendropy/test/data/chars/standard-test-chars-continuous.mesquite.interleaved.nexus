@@ -1,0 +1,44 @@
+#NEXUS
+
+begin taxa;
+	title taxa;
+	dimensions ntax=5;
+	taxlabels
+		Red Blue Green White Black
+	;
+
+end;
+
+begin characters;
+	title  matrix_#1_simulated_by_evolve_continuous_characters;
+	link taxa = taxa;
+	dimensions nchar=7;
+	format datatype = continuous items = ( )  gap = - missing = ? interleave=yes;
+	matrix
+
+          Red      -0.0230    -0.3273
+          Blue     -1.3153    +1.2542
+          Green    -2.1870    +2.0093
+          White    +3.1097    +3.1443
+          Black    +4.4274    +4.4127
+
+          Red      -13.4836    +0.0868
+          Blue     +14.4277    +1.1204
+          Green    +15.4810    +0.6872
+          White    +16.2746    +1.0220
+          Black    -17.1721    +0.7207
+
+          Red      -0.3942    -0.0752
+          Blue     -0.1048    -0.0473
+          Green    -0.1293    +0.3246
+          White    -0.0353    +1.0085
+          Black    -1.2134    +0.4868
+
+          Red      -1020.0652
+          Blue     -2210.0548
+          Green    +10301.2798
+          White    +20.1666
+          Black    -0.1480
+
+    ;
+end;

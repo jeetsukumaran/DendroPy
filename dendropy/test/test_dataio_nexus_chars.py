@@ -132,7 +132,7 @@ class NexusCharactersContinuousTestCase(
     def test_basic_nexus(self):
         src_filenames = [
                 "standard-test-chars-continuous.mesquite.nexus",
-                # "standard-test-chars-continuous.mesquite.interleaved.nexus",
+                "standard-test-chars-continuous.mesquite.interleaved.nexus",
                 ]
         for src_idx, src_filename in enumerate(src_filenames):
             # print(src_idx, src_filename)
