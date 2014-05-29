@@ -66,6 +66,7 @@ class DataReader(IOService):
             taxon_namespace_factory=None,
             tree_list_factory=None,
             char_matrix_factory=None,
+            state_alphabet_factory=None,
             global_annotations_target=None):
         """
         Deriving classes should implement this method to build a data product
@@ -164,6 +165,10 @@ class DataReader(IOService):
 
             If `char_matrix_factory` is `None`, then no character data will be
             parsed.
+
+        state_alphabet_factory : function object
+            A function that takes all the arguments of :class:`StateAlphabet`
+            and returns a properly configured instance.
 
         global_annotations_target : `Annotable` object
             Any object that will be the target (or subject, in the grammatical
@@ -328,11 +333,13 @@ class DataReader(IOService):
             stream,
             taxon_namespace_factory,
             char_matrix_factory,
+            state_alphabet_factory,
             global_annotations_target=None):
         product = self._read(stream=stream,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=None,
                 char_matrix_factory=char_matrix_factory,
+                state_alphabet_factory=state_alphabet_factory,
                 global_annotations_target=global_annotations_target)
         return product.char_matrices
 

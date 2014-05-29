@@ -35,8 +35,8 @@ class NexusTokenizer(Tokenizer):
         Tokenizer.__init__(self,
             src=src,
             uncaptured_delimiters=list(" \t\n\r"),
-            captured_delimiters=list("{}(),;:=\\"),
-            quote_chars="\"'",
+            captured_delimiters=list("{}(),;:=\\\""),
+            quote_chars="'",
             escape_quote_by_doubling=True,
             escape_chars="",
             comment_begin="[",
@@ -80,6 +80,12 @@ class NexusTokenizer(Tokenizer):
                 self.captured_delimiters.remove("-")
             except ValueError:
                 pass
+
+    def require_next_token_ucase(self):
+        t = self.require_next_token()
+        t = t.upper()
+        self.current_token = t
+        return t
 
     def next_token_ucase(self):
         try:

@@ -13,6 +13,15 @@ def general_verify_taxa(
     for taxon, label in zip(taxon_namespace, checker_reference_class.labels):
         test_case.assertEqual(taxon.label, label)
 
+def general_verify_state_alphabet_symbols(
+        test_case,
+        state_alphabet,
+        checker_reference_class):
+    fundamental_symbols = list(state_alphabet.fundamental_symbol_iter())
+    test_case.assertEqual(len(fundamental_symbols), len(checker_reference_class.state_alphabet_fundamental_symbols))
+    for s1, s2 in zip(fundamental_symbols, checker_reference_class.state_alphabet_fundamental_symbols):
+        test_case.assertEqual(s1, s2)
+
 def general_verify_character_cell_states(
         test_case,
         char_matrix,
@@ -75,23 +84,28 @@ def general_char_matrix_checker(
 class CharacterTestChecker(object):
 
     @classmethod
-    def build(cls,
-            states_lists,
-            labels=None):
+    def build(cls, states_lists, labels=None):
+        cls.build_labels(labels=labels)
+        cls.build_label_sequence_map(states_lists=states_lists)
+
+    @classmethod
+    def build_label_sequence_map(cls, states_lists):
+        assert len(cls.labels) == len(states_lists)
+        cls.label_sequence_map = collections.OrderedDict()
+        for label, ss in zip(cls.labels, states_lists):
+            cls.label_sequence_map[label] = ss
+
+    @classmethod
+    def build_labels(cls, labels=None):
         if labels is None:
             cls.labels = (
                     "Red",
                     "Blue",
                     "Green",
                     "White",
-                    "Black",
-                    )
+                    "Black")
         else:
             cls.labels = tuple(labels)
-        assert len(cls.labels) == len(states_lists)
-        cls.label_sequence_map = collections.OrderedDict()
-        for label, ss in zip(cls.labels, states_lists):
-            cls.label_sequence_map[label] = ss
 
     def verify_char_matrix(self,
             char_matrix,
@@ -130,6 +144,59 @@ class CharacterTestChecker(object):
             check_column_annotations=check_column_annotations,
             check_cell_annotations=check_cell_annotations)
 
+class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
+
+    @classmethod
+    def build(cls,
+            state_alphabet_fundamental_symbols,
+            seq_symbols,
+            labels=None):
+        cls.state_alphabet_fundamental_symbols = list(state_alphabet_fundamental_symbols)
+        CharacterTestChecker.build_labels(labels=labels)
+        cls.states_symbols_lists = []
+        for ss in seq_symbols:
+            cls.states_symbols_lists.append(list(ss))
+
+    def verify_char_matrix(self,
+            char_matrix,
+            check_taxon_annotations=True,
+            check_matrix_annotations=True,
+            check_sequence_annotations=True,
+            check_column_annotations=True,
+            check_cell_annotations=True):
+        general_verify_state_alphabet_symbols(
+                self,
+                char_matrix.default_state_alphabet,
+                self.__class__)
+        states = []
+        for ss in self.__class__.states_symbols_lists:
+            states.append(char_matrix.default_state_alphabet.get_states_for_symbols(ss))
+        CharacterTestChecker.build_label_sequence_map(states_lists=states)
+        general_char_matrix_checker(self,
+                char_matrix,
+                self.__class__,
+                check_taxon_annotations=check_taxon_annotations,
+                check_matrix_annotations=check_matrix_annotations,
+                check_sequence_annotations=check_sequence_annotations,
+                check_column_annotations=check_column_annotations,
+                check_cell_annotations=check_cell_annotations,)
+
+class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):
+
+    @classmethod
+    def build(cls, labels=None):
+        seq_symbols = (
+                "00-10000000000-00000110-112031101000000000100000012100001000?00101010010011000011?000101100410000010000010010000111033",
+                "03000100?00001100011111001110001111011000001111000011130201002011111001100001101111111011011101111?????010?0???????0?1",
+                "01000000?440100110001111100100011111?10000011010?0010010101012110111001100001100011111011011100011??????????0??0111??1",
+                "030000000000011000111110011100011110?10000011110?0010011111032010111001100301101011111011011100111??????10???????????1",
+                "01000000?000011000011110011103011110?10000011110?0010010111302110111011??????????1111101101?10?111???????????????????1",
+                )
+        GenericDiscreteCharacterTestChecker.build(
+                state_alphabet_fundamental_symbols="01234-",
+                seq_symbols=seq_symbols,
+                labels=labels)
+
 class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
 
     @classmethod
@@ -138,9 +205,8 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
             seq_symbols,
             labels=None):
         cls.state_alphabet = state_alphabet
-        cls.seq_symbols = seq_symbols
         states_lists = []
-        for ss in cls.seq_symbols:
+        for ss in seq_symbols:
             seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
             states_lists.append(seq_states)
         CharacterTestChecker.build(
@@ -211,7 +277,5 @@ class ContinuousTestChecker(CharacterTestChecker):
         CharacterTestChecker.build(
                 states_lists=states_lists,
                 labels=labels)
-
-
 
 

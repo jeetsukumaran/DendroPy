@@ -29,6 +29,7 @@ except ImportError:
     from io import StringIO # Python 3
 from dendropy.utility import error
 from dendropy.utility import container
+from dendropy.datamodel import charstatemodel
 from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RNA_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import NUCLEOTIDE_STATE_ALPHABET
@@ -267,6 +268,7 @@ class CharacterMatrix(
                 stream=stream,
                 taxon_namespace_factory=tns_factory,
                 char_matrix_factory=new_char_matrix,
+                state_alphabet_factory=charstatemodel.StateAlphabet,
                 global_annotations_target=None)
         if len(char_matrices) == 0:
             raise ValueError("No character data in data source")

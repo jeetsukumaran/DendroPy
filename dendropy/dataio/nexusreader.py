@@ -211,6 +211,7 @@ class NexusReader(ioservice.DataReader):
             taxon_namespace_factory=None,
             tree_list_factory=None,
             char_matrix_factory=None,
+            state_alphabet_factory=None,
             global_annotations_target=None):
         """
         Instantiates and returns a DataSet object based on the
@@ -220,6 +221,7 @@ class NexusReader(ioservice.DataReader):
         self._taxon_namespace_factory = taxon_namespace_factory
         self._tree_list_factory = tree_list_factory
         self._char_matrix_factory = char_matrix_factory
+        self._state_alphabet_factory = state_alphabet_factory
         self._global_annotations_target = global_annotations_target
         self._parse_nexus_file()
         self._product = self.Product(
@@ -299,6 +301,9 @@ class NexusReader(ioservice.DataReader):
         self._char_matrices.append(char_matrix)
         return char_matrix
 
+    def _new_state_alphabet(self, *args, **kwargs):
+        return self._state_alphabet_factory(*args, **kwargs)
+
     def _get_char_matrix(self, title=None):
         if title is None:
             if len(self._char_matrices) == 1:
@@ -343,68 +348,6 @@ class NexusReader(ioservice.DataReader):
             elif len(found) > 1:
                 raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
-
-    # def tree_source_iter(self, stream):
-    #     """
-    #     Iterates over a NEXUS-formatted source of trees.
-    #     Only trees will be returned, and any and all character data will
-    #     be skipped. The iterator will span over multiple tree blocks,
-    #     but, because our NEXUS data model implementation currently does
-    #     not recognize multiple taxon collection definnitions, taxa in
-    #     those tree blocks will be aggregated into the same `TaxonSet` (a
-    #     new one created, or the one passed to this method via the
-    #     `taxon_namespace` argument). This behavior is similar to how multiple
-    #     tree blocks are handled by a full NEXUS data file read.
-    #     """
-    #     self._reset()
-    #     if self.dataset is None:
-    #         self.dataset = dataobject.DataSet()
-    #     self._nexus_tokenizer = nexustokenizer.NexusTokenizer(stream,
-    #             preserve_underscores=self.preserve_underscores,
-    #             hyphens_as_tokens=self.hyphens_as_tokens,
-    #             extract_comment_metadata=self.extract_comment_metadata)
-    #     token = self._nexus_tokenizer.next_token_ucase()
-    #     if token.upper() != "#NEXUS":
-    #         raise self._nexus_error("Expecting '#NEXUS', but found '%s'" % token)
-    #     while not self._nexus_tokenizer.is_eof():
-    #         token = self._nexus_tokenizer.next_token_ucase()
-    #         while token != None and token != 'BEGIN' and not self._nexus_tokenizer.is_eof():
-    #             token = self._nexus_tokenizer.next_token_ucase()
-    #         token = self._nexus_tokenizer.next_token_ucase()
-    #         if token == 'TAXA':
-    #             self._parse_taxa_block()
-    #         elif token == 'TREES':
-    #             self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
-    #             link_title = None
-    #             taxon_namespace = None
-    #             self._tree_translate_dict.clear()
-    #             while not (token == 'END' or token == 'ENDBLOCK') \
-    #                     and not self._nexus_tokenizer.is_eof() \
-    #                     and not token==None:
-    #                 token = self._nexus_tokenizer.next_token_ucase()
-    #                 if token == 'LINK':
-    #                     link_title = self._parse_link_statement().get('taxa')
-    #                 if token == 'TRANSLATE':
-    #                     if not taxon_namespace:
-    #                         taxon_namespace = self._get_taxon_namespace(link_title)
-    #                         self._prepopulate_translate_dict(taxon_namespace)
-    #                     self._parse_translate_statement(taxon_namespace)
-    #                 if token == 'TREE':
-    #                     if not taxon_namespace:
-    #                         taxon_namespace = self._get_taxon_namespace(link_title)
-    #                         self._prepopulate_translate_dict(taxon_namespace)
-    #                     tree = self._parse_tree_statement(taxon_namespace)
-    #                     yield tree
-    #             self._nexus_tokenizer.skip_to_semicolon() # move past END command
-    #         else:
-    #             # unknown block
-    #             while not (token == 'END' or token == 'ENDBLOCK') \
-    #                 and not self._nexus_tokenizer.is_eof() \
-    #                 and not token==None:
-    #                 self._nexus_tokenizer.skip_to_semicolon()
-    #                 token = self._nexus_tokenizer.next_token_ucase()
-    #     self._reset()
-
 
     ###########################################################################
     ## Main Stream Parse Driver
@@ -587,9 +530,12 @@ class NexusReader(ioservice.DataReader):
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
 
     def _build_state_alphabet(self, char_block, symbols):
-        sa = dataobject.get_state_alphabet_from_symbols(symbols,
-                gap_symbol=self._gap_char,
-                missing_symbol=self._missing_char)
+        if self._gap_char and self._gap_char not in symbols:
+            symbols = symbols + self._gap_char
+        sa = self._new_state_alphabet(
+                fundamental_states=symbols,
+                no_data_symbol=self._missing_char,
+                case_sensitive=False)
         char_block.state_alphabets = [sa]
         char_block.default_state_alphabet = char_block.state_alphabets[0]
 
@@ -598,12 +544,12 @@ class NexusReader(ioservice.DataReader):
         Processes a FORMAT command. Assumes that the file reader is
         positioned right after the "FORMAT" token in a FORMAT command.
         """
-        token = self._nexus_tokenizer.next_token_ucase()
+        token = self._nexus_tokenizer.require_next_token_ucase()
         while token != ';':
             if token == 'DATATYPE':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     if token == "DNA" or token == "NUCLEOTIDES":
                         self._data_type_name = "dna"
                     elif token == "RNA":
@@ -620,72 +566,72 @@ class NexusReader(ioservice.DataReader):
                         self._symbols = "01"
                 else:
                     raise self._nexus_error("Expecting '=' after DATATYPE keyword")
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
             elif token == 'SYMBOLS':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     if token == '"':
                         self._symbols = ""
-                        token = self._nexus_tokenizer.next_token_ucase()
+                        token = self._nexus_tokenizer.require_next_token_ucase()
                         while token != '"':
                             if token not in self._symbols:
                                 self._symbols = self._symbols + token
-                            token = self._nexus_tokenizer.next_token_ucase()
+                            token = self._nexus_tokenizer.require_next_token_ucase()
                     else:
                         raise self._nexus_error("Expecting '\"' before beginning SYMBOLS list")
                 else:
                     raise self._nexus_error("Expecting '=' after SYMBOLS keyword")
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
             elif token == 'GAP':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     self._gap_char = token
                 else:
                     raise self._nexus_error("Expecting '=' after GAP keyword")
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
             elif token == 'INTERLEAVE':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     if token.startswith("N"):
                         self._interleave = False
                     else:
                         self._interleave = True
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                 else:
                     self._interleave = True
             elif token == 'MISSING':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     self._missing_char = token
                 else:
                     raise self._nexus_error("Expecting '=' after MISSING keyword")
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
             elif token == 'MATCHCHAR':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     self._match_char = frozenset([token, token.lower()])
                 else:
                     raise self._nexus_error("Expecting '=' after MISSING keyword")
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
             else:
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
 
     def _parse_dimensions_statement(self):
         """
         Processes a DIMENSIONS command. Assumes that the file reader is
         positioned right after the "DIMENSIONS" token in a DIMENSIONS command.
         """
-        token = self._nexus_tokenizer.next_token_ucase()
+        token = self._nexus_tokenizer.require_next_token_ucase()
         while token != ';':
             if token == 'NTAX':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     if token.isdigit():
                         self._file_specified_ntax = int(token)
                     else:
@@ -693,16 +639,16 @@ class NexusReader(ioservice.DataReader):
                 else:
                     raise self._nexus_error("Expecting '=' after NTAX keyword")
             elif token == 'NCHAR':
-                token = self._nexus_tokenizer.next_token_ucase()
+                token = self._nexus_tokenizer.require_next_token_ucase()
                 if token == '=':
-                    token = self._nexus_tokenizer.next_token_ucase()
+                    token = self._nexus_tokenizer.require_next_token_ucase()
                     if token.isdigit():
                         self._file_specified_nchar = int(token)
                     else:
                         raise self._nexus_error("Expecting numeric value for NCHAR")
                 else:
                     raise self._nexus_error("Expecting '=' after NCHAR keyword")
-            token = self._nexus_tokenizer.next_token_ucase()
+            token = self._nexus_tokenizer.require_next_token_ucase()
 
     def _parse_matrix_statement(self, block_title=None, link_title=None):
         """
