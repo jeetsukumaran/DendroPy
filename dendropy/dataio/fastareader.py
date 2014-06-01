@@ -36,6 +36,7 @@ class FastaReader(ioservice.DataReader):
             taxon_namespace_factory=None,
             tree_list_factory=None,
             char_matrix_factory=None,
+            state_alphabet_factory=None,
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
         char_matrix = char_matrix_factory(
