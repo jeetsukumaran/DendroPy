@@ -2,9 +2,11 @@
 
 import sys
 import json
+import random
+import dendropy
+from dendropy.test.support import pathmap
 if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
-from . import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 
@@ -218,3 +220,364 @@ class StandardTestTreeChecker(object):
                     suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                     metadata_extracted=metadata_extracted,
                     distinct_nodes_and_edges=distinct_nodes_and_edges)
+
+class TreeListReaderStandardTestTreeTest(
+        StandardTestTreeChecker):
+
+    @classmethod
+    def build(cls, schema):
+        cls.schema = schema
+        cls.schema_tree_filepaths = dict(tree_filepaths[cls.schema])
+
+    def test_default_get(self):
+        for tree_file_title in [
+                'standard-test-trees-n14-unrooted-treeshapes',
+                'standard-test-trees-n10-rooted-treeshapes',
+                ]:
+            tree_filepath = self.schema_tree_filepaths[tree_file_title]
+            with open(tree_filepath, "r") as src:
+                tree_string = src.read()
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.TreeList.get_from_path, tree_filepath),
+                        (dendropy.TreeList.get_from_stream, tree_stream),
+                        (dendropy.TreeList.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = method(src, self.__class__.schema)
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False,
+                            metadata_extracted=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_default_read(self):
+        preloaded_tree_file_title = "standard-test-trees-n33-x10a"
+        preloaded_tree_reference = tree_references[preloaded_tree_file_title]
+        tree_file_title = "standard-test-trees-n33-x10a"
+        tree_reference = tree_references[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                # prepopulate
+                tree_list = dendropy.TreeList.get_from_path(
+                        self.schema_tree_filepaths[preloaded_tree_file_title],
+                        self.__class__.schema)
+                # check to make sure trees were loaded
+                old_len = len(tree_list)
+                self.assertEqual(old_len, len(tree_list._trees))
+                self.assertEqual(old_len, preloaded_tree_reference["num_trees"])
+                self.verify_standard_trees(
+                        tree_list,
+                        preloaded_tree_file_title,
+                        distinct_nodes_and_edges=False)
+
+                # load
+                old_id = id(tree_list)
+                f = getattr(tree_list, method)
+                trees_read = f(src, self.__class__.schema)
+                new_id = id(tree_list)
+                self.assertEqual(old_id, new_id)
+
+                # make sure new trees added
+                new_len = len(tree_list)
+                self.assertEqual(new_len, len(tree_list._trees))
+                expected_number_of_trees = tree_reference["num_trees"]
+                self.assertEqual(old_len + expected_number_of_trees, new_len)
+                self.assertEqual(trees_read, expected_number_of_trees)
+
+                # check new trees
+                for tree_idx, tree in enumerate(tree_list[old_len:]):
+                    self.compare_to_check_tree(
+                            tree=tree,
+                            tree_file_title=tree_file_title,
+                            check_tree_idx=tree_idx,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False,
+                            metadata_extracted=False,
+                            distinct_nodes_and_edges=False)
+
+                # make sure old ones still intact
+                for tree_idx, tree in enumerate(tree_list[:old_len]):
+                    self.compare_to_check_tree(
+                            tree=tree,
+                            tree_file_title=preloaded_tree_file_title,
+                            check_tree_idx=tree_idx,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False,
+                            metadata_extracted=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_selective_taxa_get(self):
+        # skip big files
+        tree_file_title = "standard-test-trees-n12-x2"
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for suppress_internal_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
+                kwargs = {
+                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
+                }
+                with open(tree_filepath, "r") as tree_stream:
+                    approaches = (
+                            (dendropy.TreeList.get_from_path, tree_filepath),
+                            (dendropy.TreeList.get_from_stream, tree_stream),
+                            (dendropy.TreeList.get_from_string, tree_string),
+                            )
+                    for method, src in approaches:
+                        tree_list = method(src, self.__class__.schema, **kwargs)
+                        self.verify_standard_trees(
+                                tree_list=tree_list,
+                                tree_file_title=tree_file_title,
+                                suppress_internal_node_taxa=suppress_internal_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
+                                metadata_extracted=False,
+                                distinct_nodes_and_edges=False)
+
+    def test_selective_taxa_read(self):
+        # skip big files
+        tree_file_title = "standard-test-trees-n12-x2"
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for suppress_internal_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
+                kwargs = {
+                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
+                }
+                with open(tree_filepath, "r") as tree_stream:
+                    approaches = (
+                            ("read_from_path", tree_filepath),
+                            ("read_from_stream", tree_stream),
+                            ("read_from_string", tree_string),
+                            )
+                    for method, src in approaches:
+                        tree_list = dendropy.TreeList()
+                        old_id = id(tree_list)
+                        f = getattr(tree_list, method)
+                        f(src, self.__class__.schema, **kwargs)
+                        new_id = id(tree_list)
+                        self.verify_standard_trees(
+                                tree_list=tree_list,
+                                tree_file_title=tree_file_title,
+                                suppress_internal_node_taxa=suppress_internal_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
+                                metadata_extracted=False,
+                                distinct_nodes_and_edges=False)
+
+    def test_tree_offset_get(self):
+        tree_file_title = "standard-test-trees-n33-x100a"
+        tree_reference = tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, expected_number_of_trees-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for tree_offset in tree_offsets:
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.TreeList.get_from_path, tree_filepath),
+                        (dendropy.TreeList.get_from_stream, tree_stream),
+                        (dendropy.TreeList.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = method(
+                            src,
+                            self.__class__.schema,
+                            collection_offset=0,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False)
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_tree_offset_read(self):
+        tree_file_title = "standard-test-trees-n33-x100a"
+        tree_reference = tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
+        while len(tree_offsets) < 8:
+            tree_offsets.add(random.randint(1, expected_number_of_trees-2))
+        while len(tree_offsets) < 12:
+            tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for tree_offset in tree_offsets:
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        ("read_from_path", tree_filepath),
+                        ("read_from_stream", tree_stream),
+                        ("read_from_string", tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = dendropy.TreeList()
+                    f = getattr(tree_list, method)
+                    trees_read = f(src,
+                            self.__class__.schema,
+                            collection_offset=0,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False)
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title,
+                            tree_offset=tree_offset,
+                            suppress_internal_node_taxa=True,
+                            suppress_leaf_node_taxa=False,
+                            distinct_nodes_and_edges=False)
+
+    def test_tree_offset_without_collection_offset_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        approaches = (
+                dendropy.TreeList.get_from_path,
+                dendropy.TreeList.get_from_stream,
+                dendropy.TreeList.get_from_string,
+                )
+        for approach in approaches:
+            with self.assertRaises(TypeError):
+                approach(tree_filepath, self.__class__.schema, collection_offset=None, tree_offset=0)
+
+    def test_tree_offset_without_collection_offset_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        approaches = (
+                "read_from_path",
+                "read_from_stream",
+                "read_from_string",
+                )
+        for approach in approaches:
+            tree_list = dendropy.TreeList()
+            f = getattr(tree_list, approach)
+            with self.assertRaises(TypeError):
+                f(tree_filepath, self.__class__.schema, collection_offset=None, tree_offset=0)
+
+    def test_out_of_range_tree_offset_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_reference = tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.TreeList.get_from_path, tree_filepath),
+                    (dendropy.TreeList.get_from_stream, tree_stream),
+                    (dendropy.TreeList.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(IndexError):
+                    method(src, self.__class__.schema, collection_offset=0, tree_offset=expected_number_of_trees)
+
+    def test_out_of_range_tree_offset_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_reference = tree_references[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                tree_list = dendropy.TreeList()
+                f = getattr(tree_list, method)
+                with self.assertRaises(IndexError):
+                    f(src, self.__class__.schema, collection_offset=0, tree_offset=expected_number_of_trees)
+
+    def test_out_of_range_collection_offset_get(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.TreeList.get_from_path, tree_filepath),
+                    (dendropy.TreeList.get_from_stream, tree_stream),
+                    (dendropy.TreeList.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(IndexError):
+                    method(src, self.__class__.schema, collection_offset=1, tree_offset=0)
+
+    def test_out_of_range_collection_offset_read(self):
+        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                tree_list = dendropy.TreeList()
+                f = getattr(tree_list, method)
+                with self.assertRaises(IndexError):
+                    f(src, self.__class__.schema, collection_offset=1, tree_offset=0)
+
+    def test_unsupported_keyword_arguments_get(self):
+        tree_file_title = 'standard-test-trees-n12-x2'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.TreeList.get_from_path, tree_filepath),
+                    (dendropy.TreeList.get_from_stream, tree_stream),
+                    (dendropy.TreeList.get_from_string, tree_string),
+                    )
+            for method, src in approaches:
+                with self.assertRaises(TypeError):
+                    method(src,
+                            self.__class__.schema,
+                            suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
+                            gobbledegook=False,
+                            )
+
+    def test_unsupported_keyword_arguments_read(self):
+        tree_file_title = 'standard-test-trees-n12-x2'
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    ("read_from_path", tree_filepath),
+                    ("read_from_stream", tree_stream),
+                    ("read_from_string", tree_string),
+                    )
+            for method, src in approaches:
+                tree_list = dendropy.TreeList()
+                f = getattr(tree_list, method)
+                with self.assertRaises(TypeError):
+                    f(src,
+                      self.__class__.schema,
+                      suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
+                      gobbledegook=False,
+                    )
