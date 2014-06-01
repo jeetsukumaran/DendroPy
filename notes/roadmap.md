@@ -1,6 +1,5 @@
 
 -   NEXUS
-    -   Continuous characters
     -   Trees
 -   FASTA
     -   Protein
