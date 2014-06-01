@@ -25,14 +25,14 @@ import dendropy
 from dendropy.utility import error
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
-from dendropy.test.support import datagen_standard_file_test_chars
+from dendropy.test.support import standard_file_test_chars
 from dendropy.test.support import compare_and_validate
 from dendropy.dataio import nexusreader
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 class NexusCharactersReaderDnaTestCase(
-        datagen_standard_file_test_chars.DnaTestChecker,
+        standard_file_test_chars.DnaTestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
@@ -62,7 +62,7 @@ class NexusCharactersReaderDnaTestCase(
                     check_cell_annotations=False)
 
 class NexusCharactersReaderRnaTestCase(
-        datagen_standard_file_test_chars.RnaTestChecker,
+        standard_file_test_chars.RnaTestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
@@ -92,7 +92,7 @@ class NexusCharactersReaderRnaTestCase(
                     check_cell_annotations=False)
 
 class NexusCharactersReaderProteinTestCase(
-        datagen_standard_file_test_chars.ProteinTestChecker,
+        standard_file_test_chars.ProteinTestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
@@ -122,7 +122,7 @@ class NexusCharactersReaderProteinTestCase(
                     check_cell_annotations=False)
 
 class NexusCharactersContinuousTestCase(
-        datagen_standard_file_test_chars.ContinuousTestChecker,
+        standard_file_test_chars.ContinuousTestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
@@ -149,7 +149,7 @@ class NexusCharactersContinuousTestCase(
                     check_cell_annotations=False)
 
 class NexusStandardCharacters01234TestCase(
-        datagen_standard_file_test_chars.Standard01234TestChecker,
+        standard_file_test_chars.Standard01234TestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod

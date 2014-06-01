@@ -24,10 +24,10 @@ import unittest
 import dendropy
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
-from dendropy.test.support import datagen_standard_file_test_chars
+from dendropy.test.support import standard_file_test_chars
 
 class FastaReaderTestCase(
-        datagen_standard_file_test_chars.DnaTestChecker,
+        standard_file_test_chars.DnaTestChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod

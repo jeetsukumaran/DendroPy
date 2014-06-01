@@ -31,8 +31,8 @@ from dendropy.utility import error
 from dendropy.dataio import newickreader
 from dendropy.test.support import dendropytest
 from dendropy.test.support import compare_and_validate
-from dendropy.test.support import datagen_standard_file_test_trees
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import standard_file_test_trees
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
@@ -40,7 +40,7 @@ if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NewickTreeReaderBasic(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def test_basic_parsing(self):
@@ -288,7 +288,7 @@ class NewickTreeInvalidStatements(dendropytest.ExtendedTestCase):
                 t = dendropy.Tree.get_from_string(s, "newick")
 
 class NewickTreeDuplicateTaxa(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def test_duplicate_taxa1(self):
@@ -338,7 +338,7 @@ class NewickTreeAnonymousTaxa(dendropytest.ExtendedTestCase):
             self.assertEqual(nd.edge.length, k)
 
 class NewickTreeUnsupportedKeywordArguments(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def test_unsupported_keyword_arguments(self):
@@ -692,14 +692,14 @@ class NewickTreeLabelParsingTest(dendropytest.ExtendedTestCase):
             self.assertEqual(nd.edge.length, expected[nd.taxon.label])
 
 class NewickTreeReaderOffsetTreeTest(
-        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreeChecker,
         dendropytest.ExtendedTestCase):
 
-    schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
+    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
 
     def test_tree_offset_newick_get(self):
         tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -710,7 +710,7 @@ class NewickTreeReaderOffsetTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
-            tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+            tree_reference = standard_file_test_trees.tree_references[tree_file_title]
             expected_number_of_trees = tree_reference["num_trees"]
             if tree_offset < 0:
                 if abs(tree_offset) > expected_number_of_trees:
@@ -768,7 +768,7 @@ class NewickTreeReaderOffsetTreeTest(
 
     def test_tree_offset_newick_read(self):
         tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -779,7 +779,7 @@ class NewickTreeReaderOffsetTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
-            tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+            tree_reference = standard_file_test_trees.tree_references[tree_file_title]
             expected_number_of_trees = tree_reference["num_trees"]
             if tree_offset < 0:
                 if abs(tree_offset) > expected_number_of_trees:
@@ -842,7 +842,7 @@ class NewickTreeReaderOffsetTreeTest(
     def test_out_of_range_tree_offset_newick_get(self):
         tree_file_title = 'standard-test-trees-n33-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -859,7 +859,7 @@ class NewickTreeReaderOffsetTreeTest(
     def test_out_of_range_tree_offset_newick_read(self):
         tree_file_title = 'standard-test-trees-n33-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()

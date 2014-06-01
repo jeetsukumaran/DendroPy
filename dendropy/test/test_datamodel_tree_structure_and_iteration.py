@@ -22,10 +22,10 @@ Tests basic Tree structure and iteration.
 
 import unittest
 import dendropy
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import dendropytest
 
-class TestTreeNodeAndEdgeCollections(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
+class TestTreeNodeAndEdgeCollections(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     def test_get_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -108,7 +108,7 @@ class TestTreeNodeAndEdgeCollections(datagen_curated_test_tree.CuratedTestTree, 
             self.assertEqual(len(child_labels), len(expected_children))
             self.assertEqual(set(child_labels), set(expected_children))
 
-class TestTreeNodeFinders(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
+class TestTreeNodeFinders(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     def test_find_node(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -130,7 +130,7 @@ class TestTreeNodeFinders(datagen_curated_test_tree.CuratedTestTree, unittest.Te
         node = tree.find_node_with_label("zzz")
         self.assertIs(node, None)
 
-class TestTreeIterators(datagen_curated_test_tree.CuratedTestTree, unittest.TestCase):
+class TestTreeIterators(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     ### Default Iterator ###
 

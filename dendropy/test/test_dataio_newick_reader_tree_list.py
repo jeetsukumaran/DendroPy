@@ -28,17 +28,17 @@ import random
 import collections
 import json
 from dendropy.test.support import dendropytest
-from dendropy.test.support import datagen_standard_file_test_trees
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import standard_file_test_trees
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NewickTreeListReaderStandardTestTreeTest(
-        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreeChecker,
         dendropytest.ExtendedTestCase):
 
-    schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
+    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
 
     def test_default_newick_get(self):
         for tree_file_title in [
@@ -66,9 +66,9 @@ class NewickTreeListReaderStandardTestTreeTest(
 
     def test_default_newick_read(self):
         preloaded_tree_file_title = "standard-test-trees-n33-x10a"
-        preloaded_tree_reference = datagen_standard_file_test_trees.tree_references[preloaded_tree_file_title]
+        preloaded_tree_reference = standard_file_test_trees.tree_references[preloaded_tree_file_title]
         tree_file_title = "standard-test-trees-n33-x10a"
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -190,7 +190,7 @@ class NewickTreeListReaderStandardTestTreeTest(
 
     def test_tree_offset_newick_get(self):
         tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -225,7 +225,7 @@ class NewickTreeListReaderStandardTestTreeTest(
 
     def test_tree_offset_newick_read(self):
         tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -288,7 +288,7 @@ class NewickTreeListReaderStandardTestTreeTest(
     def test_out_of_range_tree_offset_newick_get(self):
         tree_file_title = 'standard-test-trees-n33-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -305,7 +305,7 @@ class NewickTreeListReaderStandardTestTreeTest(
     def test_out_of_range_tree_offset_newick_read(self):
         tree_file_title = 'standard-test-trees-n33-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = datagen_standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -394,7 +394,7 @@ class NewickTreeListReaderStandardTestTreeTest(
                     )
 
 class NewickTreeListReaderMultipleRedundantSemiColons(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def test_multiple_redundant_semicolons(self):
@@ -437,7 +437,7 @@ class NewickTreeListReaderTaxonNamespaceTest(dendropytest.ExtendedTestCase):
             prev_expected_ntax = expected_ntax
 
 class NewickTreeListMetadataTest(
-        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreeChecker,
         dendropytest.ExtendedTestCase):
 
     def test_read_metadata(self):
@@ -445,7 +445,7 @@ class NewickTreeListMetadataTest(
                 'standard-test-trees-n33-annotated',
         ]
         for tree_file_title in tree_file_titles:
-            tree_filepath = datagen_standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
+            tree_filepath = standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
             with open(tree_filepath, "r") as src:
                 tree_string = src.read()
             with open(tree_filepath, "r") as tree_stream:

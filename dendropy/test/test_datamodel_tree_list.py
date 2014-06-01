@@ -28,7 +28,7 @@ import dendropy
 import random
 from dendropy import Taxon, TaxonNamespace, Tree, TreeList
 from dendropy.test.support import dendropytest
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import compare_and_validate
 
 class MockTreeListGenerator(object):
@@ -661,7 +661,7 @@ class TreeListIdentity(unittest.TestCase):
         self.assertNotIn(self.t1, k2)
 
 class TestTreeListUpdateTaxonNamespace(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
@@ -749,7 +749,7 @@ class TestTreeListUpdateTaxonNamespace(
         self.assertCountEqual(new_labels, self.expected_labels)
 
 class TestTreeListMigrateAndReconstructTaxonNamespace(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
@@ -995,7 +995,7 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
                 original_tns=original_tns)
 
 class TestTreeListAppend(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
     def setUp(self):
@@ -1094,7 +1094,7 @@ class TreeListCreation(unittest.TestCase):
         self.assertIs(tt.taxon_namespace, tns)
 
 class TreeListCreatingAndCloning(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         compare_and_validate.Comparator,
         unittest.TestCase):
 

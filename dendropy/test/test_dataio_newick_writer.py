@@ -25,15 +25,15 @@ import unittest
 import dendropy
 import re
 from dendropy.test.support import pathmap
-from dendropy.test.support import datagen_standard_file_test_trees
+from dendropy.test.support import standard_file_test_trees
 from dendropy.test.support import compare_and_validate
 
 class NewickTreeWriterTests(
-        datagen_standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreeChecker,
         compare_and_validate.ValidateWriteable,
         unittest.TestCase):
 
-    schema_tree_filepaths = dict(datagen_standard_file_test_trees.tree_filepaths["newick"])
+    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
 
     def get_simple_tree(self,
             has_leaf_node_taxa=True,
@@ -88,7 +88,7 @@ class NewickTreeWriterTests(
 
     def test_roundtrip_full(self):
         tree_file_title = 'standard-test-trees-n33-annotated'
-        tree_filepath = datagen_standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
+        tree_filepath = standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
         tree1 = dendropy.Tree.get_from_path(
                 tree_filepath,
                 "newick",

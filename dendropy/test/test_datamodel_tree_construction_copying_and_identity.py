@@ -23,7 +23,7 @@ Tests basic Tree copying etc.
 import unittest
 import dendropy
 import copy
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import compare_and_validate
 
 class TestTreeIdentity(unittest.TestCase):
@@ -74,7 +74,7 @@ class TestTreeIdentity(unittest.TestCase):
         self.assertNotIn(self.t1, k2)
 
 class TestTreeCopying(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         compare_and_validate.Comparator,
         unittest.TestCase):
 
@@ -158,7 +158,7 @@ class TestTreeCopying(
                 compare_taxon_annotations=False)
 
 class TestSpecialTreeConstruction(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
     def test_construction_from_another_tree_different_label(self):

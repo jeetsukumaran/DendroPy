@@ -25,12 +25,12 @@ import unittest
 import dendropy
 import collections
 import copy
-from dendropy.test.support import datagen_curated_test_tree
+from dendropy.test.support import curated_test_tree
 from dendropy.test.support import compare_and_validate
 from dendropy.test.support import dendropytest
 
 class TestTreeUpdateTaxonNamespace(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
@@ -79,7 +79,7 @@ class TestTreeUpdateTaxonNamespace(
         self.assertEqual(len(tns2._taxa), len(self.expected_labels))
 
 class TestTreeMigrateAndReconstructTaxonNamespace(
-        datagen_curated_test_tree.CuratedTestTree,
+        curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 
     def setUp(self):
