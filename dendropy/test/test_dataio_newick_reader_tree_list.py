@@ -36,7 +36,8 @@ class NewickStandardTreeListReaderTestCase(
 
     @classmethod
     def build(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="newick")
+        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="newick",
+                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
     @classmethod
     def setUpClass(cls):

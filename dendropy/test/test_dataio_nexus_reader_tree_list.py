@@ -36,7 +36,8 @@ class NexusStandardTreeListReaderTestCase(
 
     @classmethod
     def build(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="nexus")
+        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="nexus",
+                taxa_on_tree_equal_taxa_in_taxon_namespace=False)
 
     @classmethod
     def setUpClass(cls):

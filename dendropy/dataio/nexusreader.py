@@ -343,9 +343,9 @@ class NexusReader(ioservice.DataReader):
                 if tlst.label.upper() == title.upper():
                     found.append(tlst)
             if len(found) == 0:
-                raise self._nexus_error("Character block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
+                raise self._nexus_error("Trees block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
             elif len(found) > 1:
-                raise self._nexus_error("Multiple character blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
+                raise self._nexus_error("Multiple trees blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
     ###########################################################################
@@ -853,7 +853,7 @@ class NexusReader(ioservice.DataReader):
                                 enable_lookup_by_taxon_number=True,
                                 case_sensitive=False)
                     if trees_block is None:
-                        trees_block = self._tree_list_factory(taxon_namespace=taxon_namespace, label=block_title)
+                        trees_block = self._new_tree_list(taxon_namespace=taxon_namespace, title=block_title)
                     while True:
                         ## After the following, the current token
                         ## will be the token immediately following
