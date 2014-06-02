@@ -21,12 +21,8 @@ Tests for general NEWICK reading.
 """
 
 import sys
-import os
 import unittest
 import dendropy
-import random
-import collections
-import json
 from dendropy.test.support import dendropytest
 from dendropy.test.support import standard_file_test_trees
 from dendropy.test.support import curated_test_tree
@@ -34,13 +30,13 @@ from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
-class NewickTreeListReaderStandardTestTreeTest(
-        standard_file_test_trees.TreeListReaderStandardTestTreeTest,
+class NewickStandardTreeListReaderTestCase(
+        standard_file_test_trees.StandardTreeListReaderTestCase,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def build(cls):
-        standard_file_test_trees.TreeListReaderStandardTestTreeTest.build(schema="newick")
+        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="newick")
 
     @classmethod
     def setUpClass(cls):

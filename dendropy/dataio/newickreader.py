@@ -465,14 +465,14 @@ class NewickReader(ioservice.DataReader):
             taxon_symbol_map_func,
             is_internal_node=None):
         """
-        Assuming that the iterator is currently sitting on a parenthesis
-        that opens a node with children or the label of a leaf node, this
-        will populate the node ``node`` appropriately (label, edge length,
-        comments, metadata etc.) and recursively parse and add the node's
+        Assuming that the iterator is currently sitting on a parenthesis that
+        opens a node with children or the label of a leaf node, this will
+        populate the node ``node`` appropriately (label, edge length, comments,
+        metadata etc.) and recursively parse and add the node's
         children. When complete, the token will be the token immediately
         following the end of the node or tree statement if this is the root
-        node, i.e. the token following the closing parenthesis of the node
-        semi-colon terminating a tree statement.
+        node, i.e. the token *following* the closing parenthesis of the node or
+        the semi-colon terminating a tree statement.
         """
         current_node_comments = nexus_tokenizer.pull_captured_comments()
         if nexus_tokenizer.current_token == "(":

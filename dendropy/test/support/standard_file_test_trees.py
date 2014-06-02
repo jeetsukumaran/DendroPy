@@ -221,7 +221,7 @@ class StandardTestTreeChecker(object):
                     metadata_extracted=metadata_extracted,
                     distinct_nodes_and_edges=distinct_nodes_and_edges)
 
-class TreeListReaderStandardTestTreeTest(
+class StandardTreeListReaderTestCase(
         StandardTestTreeChecker):
 
     @classmethod

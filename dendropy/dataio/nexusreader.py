@@ -197,7 +197,6 @@ class NexusReader(ioservice.DataReader):
         self._tree_list_factory = None
         self._char_matrix_factory = None
         self._global_annotations_target = None
-        self._tree_translate_dict = {}
         self._taxon_namespaces = []
         self._char_matrices = []
         self._tree_lists = []
@@ -492,9 +491,11 @@ class NexusReader(ioservice.DataReader):
             #     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
             # else:
             #     taxon_namespace.require_taxon(label=label)
-            if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
-                raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
-            taxon = taxon_namespace.require_taxon(label=label)
+            taxon = taxon_namespace.get_taxon(label=label)
+            if taxon is None:
+                if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
+                    raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
+                taxon = taxon_namespace.new_taxon(label=label)
             token = self._nexus_tokenizer.next_token()
             self._nexus_tokenizer.process_and_clear_comments_for_item(taxon,
                     self.extract_comment_metadata)
@@ -763,7 +764,7 @@ class NexusReader(ioservice.DataReader):
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
 
-    def _parse_tree_statement(self, taxon_namespace=None):
+    def _parse_tree_statement(self, tree_factory, taxon_symbol_mapper):
         """
         Processes a TREE command. Assumes that the file reader is
         positioned right after the "TREE" token in a TREE command.
@@ -774,44 +775,32 @@ class NexusReader(ioservice.DataReader):
             token = self._nexus_tokenizer.next_token()
         tree_name = token
         token = self._nexus_tokenizer.next_token()
-        if self.extract_comment_metadata:
-            pre_annotations = self._nexus_tokenizer.pull_comment_metadata()
+        pre_tree_comments = self._nexus_tokenizer.pull_captured_comments()
         if token != '=':
             raise self._nexus_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
-        tree_comments = self._nexus_tokenizer.comments
-        tree = nexustokenizer.tree_from_token_stream(stream_tokenizer=self._nexus_tokenizer,
-                taxon_namespace=taxon_namespace,
-                translate_dict=self._tree_translate_dict,
-                encode_splits=self.encode_splits,
-                rooting_interpreter=self.rooting_interpreter,
-                finish_node_func=self.finish_node_func,
-                extract_comment_metadata=self.extract_comment_metadata,
-                store_tree_weights=self.store_tree_weights,
-                preserve_underscores=self.preserve_underscores,
-                suppress_internal_node_taxa=self.suppress_internal_node_taxa,
-                edge_len_type=self.edge_len_type,
-                case_sensitive_taxon_labels=self.case_sensitive_taxon_labels)
+        tree_comments = self._nexus_tokenizer.pull_captured_comments()
+        # advance to '('; comments will be processed by newick reader
+        self._nexus_tokenizer.next_token()
+        tree = self.newick_reader._parse_tree_statement(
+                nexus_tokenizer=self._nexus_tokenizer,
+                tree_factory=tree_factory,
+                taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
         tree.label = tree_name
-        if self.extract_comment_metadata:
-            annotations = nexustokenizer.parse_comment_metadata(tree_comments)
-            for annote in annotations:
-                tree.annotations.add(annote)
-            if pre_annotations:
-                for annote in pre_annotations:
-                    tree.annotations.add(annote)
-        if tree_comments is not None and len(tree_comments) > 0:
-            tree.comments.extend(tree_comments)
-        if self._nexus_tokenizer.current_token != ';':
-            self._nexus_tokenizer.skip_to_semicolon()
+        nexusprocessing.process_comments_for_item(tree, pre_tree_comments, self.extract_comment_metadata)
+        nexusprocessing.process_comments_for_item(tree, tree_comments, self.extract_comment_metadata)
+        # if self.extract_comment_metadata:
+        #     annotations = nexustokenizer.parse_comment_metadata(tree_comments)
+        #     for annote in annotations:
+        #         tree.annotations.add(annote)
+        #     if pre_tree_metadata_comments:
+        #         pre_tree_annotations = nexustokenizer.parse_comment_metadata(pre_tree_metadata_comments)
+        #         for annote in pre_annotations:
+        #             tree.annotations.add(annote)
+        # if tree_comments is not None and len(tree_comments) > 0:
+        #     tree.comments.extend(tree_comments)
+        # if self._nexus_tokenizer.current_token != ';':
+        #     self._nexus_tokenizer.skip_to_semicolon()
         return tree
-
-    def _prepopulate_translate_dict(self, taxon_namespace):
-        """
-        Get default mapping of numbers to taxon labels (to be overwritten by
-        a translate dictionary, if found.
-        """
-        for i, t in enumerate(taxon_namespace):
-            self._tree_translate_dict[i+1] = t
 
     def _parse_translate_statement(self, taxon_namespace):
         """
@@ -819,15 +808,20 @@ class NexusReader(ioservice.DataReader):
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self._nexus_tokenizer.current_token
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
+                enable_lookup_by_taxon_number=True,
+                case_sensitive=False)
         while True:
             translation_token = self._nexus_tokenizer.next_token()
             translation_label = self._nexus_tokenizer.next_token()
-            self._tree_translate_dict[translation_token] = taxon_namespace.require_taxon(label=translation_label)
+            taxon = taxon_namespace.require_taxon(label=translation_label)
+            taxon_symbol_mapper.add_translate_token(translation_token, taxon)
             token = self._nexus_tokenizer.next_token() # ","
             if (not token) or (token == ';'):
                 break
             if token != ',':
                 raise self._nexus_error("Expecting ',' in TRANSLATE statement after definition for %s = '%s', but found '%s' instead." % (translation_token, translation_label, token))
+        return taxon_symbol_mapper
 
     def _parse_trees_block(self):
         token = 'TREES'
@@ -835,9 +829,9 @@ class NexusReader(ioservice.DataReader):
             self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
             link_title = None
             taxon_namespace = None
+            taxon_symbol_mapper = None
             trees_block = None
             block_title = None
-            self._tree_translate_dict.clear()
             while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self._nexus_tokenizer.is_eof() \
                     and not token==None:
@@ -848,21 +842,33 @@ class NexusReader(ioservice.DataReader):
                     token = self._nexus_tokenizer.next_token()
                     block_title = token
                 if token == 'TRANSLATE':
-                    if not taxon_namespace:
+                    if taxon_namespace is None:
                         taxon_namespace = self._get_taxon_namespace(link_title)
-                        self._prepopulate_translate_dict(taxon_namespace)
-                    self._parse_translate_statement(taxon_namespace)
+                    taxon_symbol_mapper = self._parse_translate_statement(taxon_namespace)
                 if token == 'TREE':
-                    if not taxon_namespace:
+                    if taxon_namespace is None:
                         taxon_namespace = self._get_taxon_namespace(link_title)
-                        self._prepopulate_translate_dict(taxon_namespace)
-                    if not trees_block:
-                        trees_block = self.dataset.new_tree_list(taxon_namespace=taxon_namespace, label=block_title)
-#                    if not prepared_to_parse_trees:
-#                        self._prepare_to_parse_trees(taxon_namespace)
-#                        prepared_to_parse_trees = True
-                    tree = self._parse_tree_statement(taxon_namespace)
-                    trees_block.append(tree, reindex_taxa=False)
+                    if taxon_symbol_mapper is None:
+                        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
+                                enable_lookup_by_taxon_number=True,
+                                case_sensitive=False)
+                    if trees_block is None:
+                        trees_block = self._tree_list_factory(taxon_namespace=taxon_namespace, label=block_title)
+                    while True:
+                        ## After the following, the current token
+                        ## will be the token immediately following
+                        ## the terminating semi-colon of a tree
+                        ## statement. Typically, this will be
+                        ## 'TREE' if there is another tree, or
+                        ## 'END'/'ENDBLOCK'.
+                        tree = self._parse_tree_statement(
+                                tree_factory=trees_block.new_tree,
+                                taxon_symbol_mapper=taxon_symbol_mapper)
+                        if self._nexus_tokenizer.is_eof() or not self._nexus_tokenizer.current_token:
+                            break
+                        if self._nexus_tokenizer.current_token.upper() != "TREE":
+                            break
+                    # trees_block.append(tree, reindex_taxa=False)
             self._nexus_tokenizer.skip_to_semicolon() # move past END command
         else:
             token = self._consume_to_end_of_block(token)
@@ -889,7 +895,6 @@ class NexusReader(ioservice.DataReader):
                 else:
                     positions = self._parse_positions(adjust_to_zero_based=True)
                 char_matrix.new_character_subset(charset_name, positions)
-                #self.dataset.define_charset(charset_name, positions)
 
     def _parse_positions(self, adjust_to_zero_based=True, verify=True):
         """
