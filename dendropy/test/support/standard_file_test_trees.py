@@ -190,7 +190,10 @@ class StandardTestTreeChecker(object):
         if taxa_on_tree_equal_taxa_in_taxon_namespace:
             self.assertEqual(len(seen_taxa), len(tree.taxon_namespace))
             self.assertEqual(set(seen_taxa), set(tree.taxon_namespace))
-        node_labels.extend([t.label for t in tree.taxon_namespace])
+            node_labels.extend([t.label for t in tree.taxon_namespace])
+        else:
+            # node labels may have been interpreted as taxa depending on read mode
+            node_labels.extend([t.label for t in tree.taxon_namespace if t.label not in node_labels])
         self.assertEqual(len(node_labels), len(check_tree["nodeset"]))
         self.assertEqual(set(node_labels), set(check_tree["nodeset"]))
 
