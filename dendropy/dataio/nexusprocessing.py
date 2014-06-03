@@ -97,6 +97,11 @@ class NexusTokenizer(Tokenizer):
             self.current_token = None
             return None
 
+    def cast_current_token_to_ucase(self):
+        if self.current_token:
+            self.current_token = self.current_token.upper()
+        return self.current_token
+
     def process_and_clear_comments_for_item(self,
             item,
             extract_comment_metadata):

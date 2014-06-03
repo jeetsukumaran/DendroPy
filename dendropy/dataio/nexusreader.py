@@ -866,7 +866,7 @@ class NexusReader(ioservice.DataReader):
                                 taxon_symbol_mapper=taxon_symbol_mapper)
                         if self._nexus_tokenizer.is_eof() or not self._nexus_tokenizer.current_token:
                             break
-                        if self._nexus_tokenizer.current_token.upper() != "TREE":
+                        if self._nexus_tokenizer.cast_current_token_to_ucase() != "TREE":
                             break
                     # trees_block.append(tree, reindex_taxa=False)
             self._nexus_tokenizer.skip_to_semicolon() # move past END command
