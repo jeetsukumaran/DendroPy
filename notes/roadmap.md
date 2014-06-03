@@ -1,6 +1,4 @@
 
--   NEXUS
-    -   Trees
 -   FASTA
     -   Protein
     -   RNA
@@ -17,6 +15,7 @@
     -  *Everything*!
 -   Splits
     -   To class or not to class
+-   Tree iterator(s)
 -   SumTrees
 -   Special service modules
 
