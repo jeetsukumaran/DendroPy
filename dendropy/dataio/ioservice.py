@@ -30,6 +30,11 @@ class IOService(object):
     def __init__(self, **kwargs):
         pass
 
+    def check_for_unused_keyword_arguments(self, kwargs_dict):
+        ignore_unrecognized_keyword_arguments = kwargs_dict.pop("ignore_unrecognized_keyword_arguments", False)
+        if kwargs_dict and not ignore_unrecognized_keyword_arguments:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs_dict))
+
 ###############################################################################
 ## DataReader
 

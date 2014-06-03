@@ -241,8 +241,7 @@ class NewickReader(ioservice.DataReader):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", False)
-        if kwargs:
-            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+        self.check_for_unused_keyword_arguments(kwargs)
 
         # per-tree book-keeping
         self._tree_statement_complete = None

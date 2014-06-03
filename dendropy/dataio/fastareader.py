@@ -28,8 +28,7 @@ class FastaReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
         self.data_type_name = kwargs.pop("data_type_name", None)
-        if kwargs:
-            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+        self.check_for_unused_keyword_arguments(kwargs)
 
     def _read(self,
             stream,

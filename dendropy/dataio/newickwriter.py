@@ -196,8 +196,7 @@ class NewickWriter(ioservice.DataWriter):
         self.edge_label_compose_func = kwargs.pop("edge_label_compose_func", None)
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
-        if kwargs:
-            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+        self.check_for_unused_keyword_arguments(kwargs)
 
     def _format_edge_length(self, edge):
         """
