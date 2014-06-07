@@ -222,3 +222,16 @@ NEWICK-format Writing
   ``suppress_annotations`` must be `True` for annotations to be written out,
   even if ``annotations_as_nhx`` is `True`.
 
+The :class:`DataSet` Class
+==========================
+
+* Constructor no longer supports they ``stream`` keyword argument to construct
+  the new :class:`DataSet` object from a data source. Use the factory class
+  method: :meth:`DataSet.get_from_stream()` instead.
+
+* Constructor only accepts one unnamed (positional) argument: either a
+  :class:`DataSet` instance to be cloned, or an iterable of
+  :class:`TaxonNamespace`, :class:`TreeList`, or
+  :class:`CharacterMatrix`-derived instances to be composed (added) into the
+  new :class:`DataSet` instance.
+

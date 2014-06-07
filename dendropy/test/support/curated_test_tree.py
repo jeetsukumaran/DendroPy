@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Test data generation and verification.
+Tree test data generation and verification.
 """
 
 import sys

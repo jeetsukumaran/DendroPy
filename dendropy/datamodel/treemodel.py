@@ -1668,36 +1668,16 @@ class Tree(
             :class:`Tree` will then be a structural clone of this argument.
 
         \*\*kwargs : keyword arguments, optional
-            Arguments to customize parsing and instantiation this :class:`Tree`
-            from the data source, including schema- or format-specific
-            handling. The following optional keyword arguments are recognized
+            The following optional keyword arguments are recognized
             and handled by this constructor:
 
-                `stream`
-                    The file or file-like object to parse.
-                `schema`
-                    The :term:`schema` or format of the data in `stream`.
                 `label`
                     The label or description of the new :class:`Tree` object.
                 `taxon_namespace`
                     Specifies the :class:`TaxonNamespace` object to be
-                    attached to the new :class:`Tree` object.
+                    that the new :class:`Tree` object will reference.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
-            Other keyword arguments may be available, depending on the implementation
-            of the reader specialized to handle `schema` formats.
-
-
-        If `stream` and `schema` keyword arguments are given, will
-        construct this :class:`Tree` object from `schema`-formatted source
-        given by file-like object `stream`. `schema` must be a
-        recognized and tree file schema, such as `nexus`, `newick`, etc,
-        for which a specialized tree list writer is available. If this
-        is not implemented for the schema specified, then a
-        :class:`UnsupportedSchemaError` is raised. Other keywords will be
-        passed to the underlying tree parser.
-
-        Tree objects can thus be instantiated in the following ways::
+        Tree objects can be instantiated in the following ways::
 
             # /usr/bin/env python
 

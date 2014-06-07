@@ -158,7 +158,11 @@ class NexusStandardCharacters01234TestCase(
 
     def test_basic_nexus(self):
         src_filenames = [
+                "standard-test-chars-generic.simple.nexus",
                 "standard-test-chars-generic.basic.nexus",
+                # "standard-test-chars-generic.interleaved.nexus",
+                # "standard-test-chars-generic.matchchar.nexus",
+                # "standard-test-chars-generic.multi.nexus",
                 ]
         for src_idx, src_filename in enumerate(src_filenames):
             # print(src_idx, src_filename)

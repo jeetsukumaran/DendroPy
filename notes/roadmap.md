@@ -1,7 +1,3 @@
-
--   FASTA
-    -   Protein
-    -   RNA
 -   DataSet
 -   NEXUS
     -   DataSet
