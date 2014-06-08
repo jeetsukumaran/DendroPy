@@ -234,7 +234,7 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):# {{{
                 states_lists=states_lists,
                 labels=labels)# }}}
 
-class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
+class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):# {{{
 
     @classmethod
     def build(cls, labels=None):
@@ -258,18 +258,28 @@ class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
         FixedStateAlphabetCharacterTestChecker.build(
                 state_alphabet=charstatemodel.DNA_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
-                labels=labels)
+                labels=labels)# }}}
 
 class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
     @classmethod
     def build(cls, labels=None):
         seq_symbols = (
-               "ACGU-NRYMWSKVHDB?ACGU-NRYMWSKVHDB?AXACGU-NRWSKVHDA",
-               "ACGU-NRYMWSKU-NVHDB?XXACRYMWSKGUVHAB?ACG-NRWSKVHDC",
-               "U-NRYMWSKVHDCGUXACGU-NRW-NRYMXWSB?AKVHDAKVHDB?ACGG",
-               "NKVHDB?ACGU-NXXACGU-NRYMACGU-NWSKVADB?DB?XNXACGU-U",
-               "RYMWSRYMWSKVHDB?ACGU-NRWSKVHDRYMWSAVHCGUA-RWSKVHD-",
+                "Dg-aRmgGyUAVdrahhAbXbUnmvURSUuwyDWUwRSWykcvcAMXnmMhhYcvKAGbuDvXRDwnYSVGUudSNnBsUNAVSXAGYNGDVvDhdSBMygCmgUv?cdB-DRwdbcwvKG?XvYAWBavVWSdcDuXmuuvyCWnBCAw-CcksNKHYHUaV-UXdbdcmbYXGGmnyNVXKvukvbRCuWvKCVdBwvHKaSSNcDwD?VbYWHbkCrSDhnAwVc-S-NGhurbhrsKusWWyMHYRuuYWRV",
+                "DB-nRnBGruAVnWMhaGbXhVumAMD-UXmXKXwDCuaysBsGAGnnduGhYcbbMHBuUcHcgCnhSVsNumWwSYADcwsShMrGDYDXwNAYNBrmg-vbbUNndu?yyXW-?ArKYDXcWAWByvK-Suy?cXWbHHCWgnMScVNsUwNNWmvUMaVNAXvCBaaXUGDannDNVYuC-MmMHSugRBwVdCBMswNXRKnGADhVXcWSbbhrghSnAnSuhSYNbngdbUH-VuuCWvSndM-uMWcM",
+                "MWCasmyngUBbyrWUCHbmUbnnyWWmUnbSDbYmUgWBkSRcVhXnBMGhshWRMRAmmuBkAUnHaVHMDnRaYWsUnRuaVAGYNgm?vNhdCs?VgkXgyVUCd?kDmRMV?Uvkw?rGdAWgUmgh-WgUgAmdyHGskBRCUCv-CrsSdvmYUw?GHvwYdwmhYDbsmDMrcKUsukvRuMVWXSCUUuwWkKvK?rcDXXMNdYXcBkCUSDVrYHhcscVNVhdrbXnRUkHWXhrVYRMbYWwX",
+                "dRswabUBmUnndsahDBunbhc-vhRSUSUHDXDSbaVykr-mVgcnBMChvcYBMmhunCDRgNGYCaHUgcmrBn-UDMUaXMgKBGDrvDWXSWmRsdNgwvrNdBBDWgSwwkDUsXCWCcWBABynSHbR-yRYmWmgwvaUdddncC?RygNnyyUkyDdbsyBAcUNubckHVAUNuMwayCuuRKbVdubvcVaDVXsDNr?KAUAabRCXknscAyVrsSNXY-YKbNYsUWUScbASrRcUYWa?",
+                "BRdGb-yvaanKbgbhdcCXbXnVYvRSUuMvcWRw?GWuWcD?AcXvGBhhUDvM?GbmDMXygYmmunWCsd?CyBskGCVHXYvCC?RAvYVsSAKDgywwkcacwBhDuGBkWwNkCnDBWbNA-bKWkWRDCHrKXVmCCwHcARNCsDAKVHuYgkV-sXdN-cmWkvXkuKBSb?mgCuXnSUCWNnCkrgw-vV?vANRnVdhkHrWBvUBwR-hn-wkUCGANGNRrCBrsuusbNWvXcDkudgRn",
+                "DgurCDgCyYgWGuDhhADXMUSmvCRGSuraDNnhwsCN?WvcdNWADBhW-bUgnSbXuRvkS?KhSYyMyKSNAhMsCAsggAVYNrrAYwhgAhMGwdmyUyRddSSUdVsHDSYKYKknSDGSMRdXNRdgKGmC?Ay-CgvBnXkMdauwKHY?waGYAXNDdkRMhXkcmWyryBsvnmrbdCURky-V?gBs-K?HHC?nG-yw-aKAACGvwGM-?wVkcDXg?dyDBCCbKNaGvyYUaCWYaaRc",
+                "RHdYR-gskuabW?GhHHXDhUKdrUgcUu?yD?gsuSayccvSWAVHCXAhgMh-VgRy-BnRd-XH-AGKudcCmnUDvKVVnAGSDHDSkbNwSSkSgbmUNHhad-GcRwVhywAKGwasWbyBycyWadcXNWvHsMyHVnBDsnbVVDGnhrBHDHA-nHdcrAHXWBGGKnkgdCKXYYYrgCSucKCXmmgBnBs-YNXVScdrbYWuWsMc?DhXnwVgaa-dCvb-bgdDmusWkWCUGRuuWSHH",
+                "DsYgDWKArwA-dAKgGAkHWyAsrkCRWaCWDgUwnUdDkMUcAyKysMhhYHAbAWsuwYSRXKUGmVvCDhGmvDVagAYSnGGYrwDWBr?ySBcyrCXWkDrXknDDbKNHKwbgN?svkAABrWrwSrURuXRWRvyCcCSCMGgKVGVNKmwdVasnrYdbnMmbYRGDYnc-KXHD-yW?SgXWkUbVKvwGduaMgvcDGM?VbdYgnGy?XsaKUYVmvA-dgMCANaXshusWBHYSunCuYvRr",
+                "rWagAhsnyhrVHrRRRmbbWBDhdURHdgnummUNHVNhHavcKSbKKguhkAYDAGbWVvdNDwrvhubhRKnNDaB-NmBHkDG-nUrgvDhDHCSvyAMvKnDSdMwcNgDRcs-kG?YWvyWryvmWcAcDWwyGuvR-dGdK-rDCuBWrNYgHMVWvc?mdbMmbhXGVny-NcCCkV?HbSWbWUYKMrBcmbcHSSVdDas?kSAWMbDvWCDnnAbNVYRADADNyrCyYHCBWAyDGcvVubKcw",
+                "vhDAwmY?knSgGNyarAAVHgsXVU?uRbyuwsUkD?AkkcvYBMsvmCb?VBkrAGv?HUXvWBWYaHGvvAuKnDsUXXVcMMHYbBDMMYXH-mMUXWMBaCHSYm-DRwBbUbVKkVsYVCmrkvVUMdHgUWhunmyMVVnC?BXmSXsAMHnngUV--XNns?vbg-XDnXCNMsBWGAgdVhrwsdNVNcbBCMarsRcsaVSVUYN-au-GW?dMgCvAkDKUSBVkWBhgvuSCyuvNYCsvCmkV",
+                "mmBybMhGmvGVGNVWhhnWNdUSsVvDcywyXyRXrNayGkGUAMBsKMCWM?AKbWnuarghDannUVSBurSdHBXsNCmRYNGdYwnhakXdSYMYyChgBs?mdb-ARX-USSDnRkaYwcWbaySUBdAhCs-huvgwWDBCVr-rckvmKMYnUdCkYghwrvyDMKdkrmrNSY?HDkGRHCVWXyCbrKG-cSmXXdANwnCrsuraRcGBSDMUWWKXAb?kCnnrbhmmKuKGhgMvGRVhYVDy",
+                "-baX-rKwGbAHVaaC?HKXbcSNHUBBKwwHDuUrCGWyvKgNVvabYMRA?GvVasKGDARdkwncSVbmAVyvnBHCkMWSXrVGYUCcvnDdYBsVwsYcCncchUYYWwuVcDRrS?sHBGwHBvhMAbdDuXucmXycubMCXgSkKg--BhRBUaUGMRNvaHNcVDyBbnkHVCKHXkNhGdAGvKCbYbsKVKMkXVmVuUVVbYaCWbnDhaRHhyrcaNVg-hcRh?rdKhsWWCUYXXcddCYV",
+                "?dSa-ugKUUHkAUAGbAnnbCnmc?GSscwVDWWBKs?HkcvaM-CmaKca-HvNdGbuHNsRGAdYSWBVacSRUS-NKrvSXNCYNGnYCShHca-ygYHSyAcHCw-mYVNKcHvcsuuvmUbBHUNrrRHDhXRKGA?duWKvWycCwaUMKvnhRah-UXamdYmGKYnGNnggVXDv?WCnCsbHvnhC-uwRHKDWNmKWKDrVmXSsbk?vasawUwgXr?bNGhcrchXUmKmwWKMaRRCSYNVs",
+                "WnkUsdhGyR?VHUyhD?SXbKUmRUrMvCwAdbUVDKnHdcVwHBXKKRWmvDmKkacSg?YHHsXwSbmXaGm?nhc?Nd?rX?GkmrvmNDCnNC?ygruCMvHUABSHRvYYc?bWARXRVBamAgVdMdUDuDW-aWCdXmkHd?KCcssu-ruDUGgw-XSCdawUW?yANdrRYHvcVCnVvSbgkwduKBwGHRKRXvDyMa?yUgWDBcCyvcRvVshU-S-GVHugbWbUrrYBnSBrURwu-s-r",
+                "DgkVwmrSdhABWvaMWbdXuCvHKRHXCuwXrW?mvWuuCAvgAMnwrSRhGdWkrbbHmhrw-wwdvBanuCSNMkuVsMU?BgrYnBhWvaumSYXydnmHGGNy?M?CHWdbb-vrBYSMHRWBavXXgBcua?mMhsysdngyBgVScwHAcHsDHCVHvBASYcHbRmXg-byRnRMhAmRwD?w?cKCwdVYhC-hgwghWND-nrgSsWBmUXsWbnWVVVYdyGYucYh?vUHrNW?YRUSrGyWun",
                 )
         FixedStateAlphabetCharacterTestChecker.build(
                 state_alphabet=charstatemodel.RNA_STATE_ALPHABET,
