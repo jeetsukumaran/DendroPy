@@ -3,7 +3,7 @@
 import collections
 from dendropy.datamodel import charstatemodel
 
-def general_verify_taxa(# {{{
+def general_verify_taxa(
         test_case,
         char_matrix,
         checker_reference_class,
@@ -190,9 +190,9 @@ class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
                 check_matrix_annotations=check_matrix_annotations,
                 check_sequence_annotations=check_sequence_annotations,
                 check_column_annotations=check_column_annotations,
-                check_cell_annotations=check_cell_annotations,)# }}}
+                check_cell_annotations=check_cell_annotations,)
 
-class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):# {{{
+class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):
 
     @classmethod
     def build(cls, labels=None):
@@ -216,9 +216,9 @@ class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):# {{{
         GenericDiscreteCharacterTestChecker.build(
                 state_alphabet_fundamental_symbols="01234-",
                 seq_symbols=seq_symbols,
-                labels=labels)# }}}
+                labels=labels)
 
-class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):# {{{
+class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
 
     @classmethod
     def build(cls,
@@ -232,9 +232,9 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):# {{{
             states_lists.append(seq_states)
         CharacterTestChecker.build(
                 states_lists=states_lists,
-                labels=labels)# }}}
+                labels=labels)
 
-class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):# {{{
+class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
     @classmethod
     def build(cls, labels=None):
@@ -258,9 +258,9 @@ class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):# {{{
         FixedStateAlphabetCharacterTestChecker.build(
                 state_alphabet=charstatemodel.DNA_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
-                labels=labels)# }}}
+                labels=labels)
 
-class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):# {{{
+class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
 
     @classmethod
     def build(cls, labels=None):
@@ -284,7 +284,7 @@ class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):# {{{
         FixedStateAlphabetCharacterTestChecker.build(
                 state_alphabet=charstatemodel.RNA_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
-                labels=labels)# }}}
+                labels=labels)
 
 class ProteinTestChecker(FixedStateAlphabetCharacterTestChecker):
 
