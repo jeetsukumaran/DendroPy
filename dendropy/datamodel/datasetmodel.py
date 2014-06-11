@@ -146,8 +146,44 @@ class DataSet(
     def __deepcopy__(self, memo=None):
         raise NotImplementedError
 
+    def add_taxon_namespace(self, taxon_namespace):
+        """
+        Adds a taxonomic unit concept namespace represented by a
+        :class:`TaxonNamespace` instance to this dataset if it is not already
+        there.
+
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace`
+            The :class:`TaxonNamespace` object to be added.
+        """
+        self.taxon_namespaces.add(taxon_namespace)
+
     def add_tree_list(self, tree_list):
+        """
+        Adds a :class:`TreeList` instance to this dataset if it is not already
+        there.
+
+        Parameters
+        ----------
+        tree_list : :class:`TreeList`
+            The :class:`TreeList` object to be added.
+        """
         if tree_list.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(tree_list.taxon_namespace)
         self.tree_lists.add(tree_list)
+
+    def add_char_matrix(self, char_matrix):
+        """
+        Adds a :class:`CharacterMatrix` or :class:`CharacterMatrix`-derived
+        instance to this dataset if it is not already there.
+
+        Parameters
+        ----------
+        char_matrix : :class:`CharacterMatrix`
+            The :class:`CharacterMatrix` object to be added.
+        """
+        if char_matrix.taxon_namespace not in self.taxon_namespaces:
+            self.taxon_namespaces.add(char_matrix.taxon_namespace)
+        self.char_matrices.add(char_matrix)
 

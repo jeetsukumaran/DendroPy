@@ -43,7 +43,8 @@ class DataSetBasicCrud(dendropytest.ExtendedTestCase):
         self.expected_taxon_namespaces = []
         self.standalone_taxon_namespaces = []
         self.standalone_taxon_namespaces.append(dendropy.TaxonNamespace(["t1", "t2", "t3"]))
-        self.expected_taxon_namespaces.append(self.standalone_taxon_namespaces[0])
+        self.standalone_taxon_namespaces.append(dendropy.TaxonNamespace(["s1", "s2", "s3"]))
+        self.expected_taxon_namespaces.extend(self.standalone_taxon_namespaces)
         self.expected_tree_lists = collections.OrderedDict()
         for i in range(2):
             pdo1 = curated_test_tree_list.get_tree_list(4)
@@ -63,6 +64,14 @@ class DataSetBasicCrud(dendropytest.ExtendedTestCase):
                 pdo2 = standard_file_test_chars.ProteinTestChecker.get_char_matrix(taxon_namespace=pdo1.taxon_namespace)
                 self.expected_char_matrices[pdo2] = pdo2.taxon_namespace
 
+    def test_basic_add_taxon_namespace(self):
+        ds = dendropy.DataSet()
+        for tns in self.expected_taxon_namespaces:
+            ds.add_taxon_namespace(tns)
+        self.assertEqual(len(ds.taxon_namespaces), len(self.expected_taxon_namespaces))
+        for x1, x2 in zip(ds.taxon_namespaces, self.expected_taxon_namespaces):
+            self.assertIs(x1, x2)
+
     def test_basic_add_tree_list(self):
         ds = dendropy.DataSet()
         expected_taxon_namespaces = collections.OrderedDict()
@@ -78,6 +87,20 @@ class DataSetBasicCrud(dendropytest.ExtendedTestCase):
             self.assertIs(x1.taxon_namespace, self.expected_tree_lists[x1])
             for t in x1:
                 self.assertIs(t.taxon_namespace, x1.taxon_namespace)
+
+    def test_basic_add_char_matrix(self):
+        ds = dendropy.DataSet()
+        expected_taxon_namespaces = collections.OrderedDict()
+        for char_matrix in self.expected_char_matrices:
+            ds.add_char_matrix(char_matrix)
+            expected_taxon_namespaces[self.expected_char_matrices[char_matrix]] = True
+        self.assertEqual(len(ds.taxon_namespaces), len(expected_taxon_namespaces))
+        for x1, x2 in zip(ds.taxon_namespaces, expected_taxon_namespaces):
+            self.assertIs(x1, x2)
+        self.assertEqual(len(ds.char_matrices), len(self.expected_char_matrices))
+        for x1, x2 in zip(ds.char_matrices, self.expected_char_matrices):
+            self.assertIs(x1, x2)
+            self.assertIs(x1.taxon_namespace, self.expected_char_matrices[x1])
 
         # ds = dendropy.DataSet(label="d1")
         # tree_list =
