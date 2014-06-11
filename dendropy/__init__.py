@@ -53,6 +53,7 @@ from dendropy.datamodel.charmatrixmodel import RestrictionSitesCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import InfiniteSitesCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
+from dendropy.datamodel.datasetmodel import DataSet
 
 ###############################################################################
 ## PACKAGE METADATA

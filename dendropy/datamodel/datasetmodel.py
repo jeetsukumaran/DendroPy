@@ -146,3 +146,8 @@ class DataSet(
     def __deepcopy__(self, memo=None):
         raise NotImplementedError
 
+    def add_tree_list(self, tree_list):
+        if tree_list.taxon_namespace not in self.taxon_namespaces:
+            self.taxon_namespaces.add(tree_list.taxon_namespace)
+        self.tree_lists.add(tree_list)
+

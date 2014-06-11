@@ -2,6 +2,7 @@
 
 import collections
 from dendropy.datamodel import charstatemodel
+from dendropy.datamodel import charmatrixmodel
 
 def general_verify_taxa(
         test_case,
@@ -84,7 +85,8 @@ def general_char_matrix_checker(
 class CharacterTestChecker(object):
 
     @classmethod
-    def build(cls, states_lists, labels=None):
+    def build(cls, matrix_type, states_lists, labels=None):
+        cls.matrix_type = matrix_type
         cls.build_labels(labels=labels)
         cls.build_label_sequence_map(states_lists=states_lists)
 
@@ -117,6 +119,12 @@ class CharacterTestChecker(object):
             )
         else:
             cls.labels = tuple(labels)
+
+    @classmethod
+    def get_char_matrix(cls, taxon_namespace=None):
+        c = cls.matrix_type.from_dict(source_dict=cls.label_sequence_map,
+                taxon_namespace=taxon_namespace)
+        return c
 
     def verify_char_matrix(self,
             char_matrix,
@@ -159,9 +167,11 @@ class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
 
     @classmethod
     def build(cls,
+            matrix_type,
             state_alphabet_fundamental_symbols,
             seq_symbols,
             labels=None):
+        cls.matrix_type = matrix_type
         cls.state_alphabet_fundamental_symbols = list(state_alphabet_fundamental_symbols)
         CharacterTestChecker.build_labels(labels=labels)
         cls.states_symbols_lists = []
@@ -214,6 +224,7 @@ class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):
                 "43202-14024240?3???13-4?210404?3-3-4-41-01-340?422333--32123?40?02034303?0?1123?01--?0?-03-42??42011042?333324?-31?1140323?2333?30??13302221",
                 )
         GenericDiscreteCharacterTestChecker.build(
+                matrix_type=charmatrixmodel.StandardCharacterMatrix,
                 state_alphabet_fundamental_symbols="01234-",
                 seq_symbols=seq_symbols,
                 labels=labels)
@@ -222,6 +233,7 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
 
     @classmethod
     def build(cls,
+            matrix_type,
             state_alphabet,
             seq_symbols,
             labels=None):
@@ -231,6 +243,7 @@ class FixedStateAlphabetCharacterTestChecker(CharacterTestChecker):
             seq_states = tuple(cls.state_alphabet.get_states_for_symbols(ss))
             states_lists.append(seq_states)
         CharacterTestChecker.build(
+                matrix_type=matrix_type,
                 states_lists=states_lists,
                 labels=labels)
 
@@ -256,6 +269,7 @@ class DnaTestChecker(FixedStateAlphabetCharacterTestChecker):
                 "hWYKRNdvRWHKHWwHywkdXXKYYmbByWbbmThTvcySRnrk-sDYGV?sMHMkwKYdtcDVdVrTtSnCRnHyR?YYbNGGNvWbvagvDHTgMS?cc-KYv-HTCbDyRCwVaHCTYKsarAvKcygycVyhNKDyraGgH?mNMTDbD?NTgYtbtckwSbWCaaWtYDNCKRTdwKKwSnhyBASHsWbWRKKrW-bBdbS-ahnkHmXvdAVnmwVgBTGR?VgXCAHVmYX-VcNhVhgHwrgBkwtd",
                 )
         FixedStateAlphabetCharacterTestChecker.build(
+                matrix_type=charmatrixmodel.DnaCharacterMatrix,
                 state_alphabet=charstatemodel.DNA_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
                 labels=labels)
@@ -282,6 +296,7 @@ class RnaTestChecker(FixedStateAlphabetCharacterTestChecker):
                 "DgkVwmrSdhABWvaMWbdXuCvHKRHXCuwXrW?mvWuuCAvgAMnwrSRhGdWkrbbHmhrw-wwdvBanuCSNMkuVsMU?BgrYnBhWvaumSYXydnmHGGNy?M?CHWdbb-vrBYSMHRWBavXXgBcua?mMhsysdngyBgVScwHAcHsDHCVHvBASYcHbRmXg-byRnRMhAmRwD?w?cKCwdVYhC-hgwghWND-nrgSsWBmUXsWbnWVVVYdyGYucYh?vUHrNW?YRUSrGyWun",
                 )
         FixedStateAlphabetCharacterTestChecker.build(
+                matrix_type=charmatrixmodel.RnaCharacterMatrix,
                 state_alphabet=charstatemodel.RNA_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
                 labels=labels)
@@ -308,6 +323,7 @@ class ProteinTestChecker(FixedStateAlphabetCharacterTestChecker):
                 "PkSKIPpeNRheawRmfkRtsBxXhkHXGKYdgFEtmkyX?GeXzzacbYaFytKwngtkvFymkwBpnRycWAtx-Iz?SNPfdwrDDiRDlCfXgmHyH-Y-tKZiTGKTzARlxdbH*XQ*P*fciQZM?mPKKNLLiBZHwKmQMBTIYvWmhIr-LZ?AaQAXMlgfPElDWizAfpypvakeQCbEtRgRcKMWNPqHNeTdTiwl?ZTwflCEFelxTVZLtZRxZF*bKXa?Ag?Zk-tATbyHFenAgwcN*wKbNniCP-n-StrFzgkmQhyPEhrFly-XQiCycZlPFilriILeISChLRHqHFiPx*hGqnAEHmKWMVRCMshQGaYwgnybeEC?embKD-sgXazxgyYpQzppQeKvFlrktW-vTwlNDrYSbpMydlDyp?AVYmPSzDtPigi*tFnfTmAQbI-kSty?MqmtBTeBADKPpkbNwdhyYTaHSHL-LiIScqAK*CmQctsnhyhcawfekvvElYBQ*ADLq?KCcXLglxckeQwl",
                 )
         FixedStateAlphabetCharacterTestChecker.build(
+                matrix_type=charmatrixmodel.ProteinCharacterMatrix,
                 state_alphabet=charstatemodel.PROTEIN_STATE_ALPHABET,
                 seq_symbols=seq_symbols,
                 labels=labels)
@@ -334,6 +350,7 @@ class ContinuousTestChecker(CharacterTestChecker):
                 (-708.9703 ,  +374.4682 ,  +688.2557 ,  -818.8122 ,  +111.4564 ,  -770.8261 ,  -838.9334 ,  -483.0598 ,  +335.7136 ,  +650.4290 ,  -957.3401 ,  -773.5307 ,  +539.6006 ,  +321.6839 ,  +366.9738),
                 )
         CharacterTestChecker.build(
+                matrix_type=charmatrixmodel.ContinuousCharacterMatrix,
                 states_lists=states_lists,
                 labels=labels)
 
