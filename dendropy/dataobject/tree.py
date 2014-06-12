@@ -1321,7 +1321,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Arbitrarily resolve polytomies using 0-length splits.
 
-        If `rng` is an object a sample() method then the polytomy will be
+        If `rng` is an object with a sample() method then the polytomy will be
             resolved by sequentially adding (generating all tree topologies
             equiprobably
             rng.sample() should behave like random.sample()
