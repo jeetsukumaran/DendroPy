@@ -1321,7 +1321,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Arbitrarily resolve polytomies using 0-length splits.
 
-        If `rng` is an object with sample() and shuffle() methods then the polytomy will be
+        If `rng` is an object a sample() method then the polytomy will be
             resolved by sequentially adding (generating all tree topologies
             equiprobably
             rng.sample() should behave like random.sample()
@@ -1337,7 +1337,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             nc = len(children)
             if nc > 2:
                 if rng:
-                    rng.shuffle(children)
+                    children = rng.sample(children, nc)
                     to_attach = children[2:]
                     for child in to_attach:
                         node.remove_child(child)
