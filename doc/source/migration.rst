@@ -235,3 +235,6 @@ The :class:`DataSet` Class
   :class:`CharacterMatrix`-derived instances to be composed (added) into the
   new :class:`DataSet` instance.
 
+* :class:`TaxonNamespace` no longer managed.
+
+

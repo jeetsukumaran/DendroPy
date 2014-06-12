@@ -65,6 +65,7 @@ class DataSetBasicCrud(dendropytest.ExtendedTestCase):
                 self.expected_char_matrices[pdo2] = pdo2.taxon_namespace
 
     def test_basic_add_taxon_namespace(self):
+        expected_fundamental_states = set()
         ds = dendropy.DataSet()
         for tns in self.expected_taxon_namespaces:
             ds.add_taxon_namespace(tns)
