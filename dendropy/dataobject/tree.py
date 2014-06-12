@@ -1337,7 +1337,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             nc = len(children)
             if nc > 2:
                 if rng:
-					rng.shuffle(children)
+                    rng.shuffle(children)
                     to_attach = children[2:]
                     for child in to_attach:
                         node.remove_child(child)
