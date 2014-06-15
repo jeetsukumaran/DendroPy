@@ -33,7 +33,7 @@ class EmptyDataSetWithLabelCreationTestCase(dendropytest.ExtendedTestCase):
         ds = dendropy.DataSet(label="d1")
         self.assertEqual(ds.label, "d1")
 
-class DataSetBasicCrud(dendropytest.ExtendedTestCase):
+class DataSetBasicCrudTestCase(dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -103,21 +103,21 @@ class DataSetBasicCrud(dendropytest.ExtendedTestCase):
             self.assertIs(x1, x2)
             self.assertIs(x1.taxon_namespace, self.expected_char_matrices[x1])
 
-        # ds = dendropy.DataSet(label="d1")
-        # tree_list =
-        # trees = [t for t in tree_list]
-        # taxon_namespace = tree_list.taxon_namespace
-        # self.assertEqual(len(ds.tree_lists), 0)
-        # self.assertEqual(len(ds.taxon_namespaces), 0)
-        # ds.add_tree_list(tree_list)
-        # self.assertEqual(len(ds.tree_lists), 1)
-        # self.assertIs(ds.tree_lists[0], tree_list)
-        # self.assertEqual(len(ds.taxon_namespaces), 1)
-        # self.assertIs(ds.taxon_namespaces[0], taxon_namespace)
-        # self.assertIs(ds.tree_lists[0], taxon_namespace)
-        # self.assertEqual(len(ds.tree_lists[0]), len(trees))
-        # for t1, t2 in zip(ds.tree_lists[0], trees):
-        #     self.assertIs(t1, t2)
+    def test_basic_add(self):
+        ds = dendropy.DataSet()
+        for tns in self.standalone_taxon_namespaces:
+            ds.add(tns)
+        for tree_list in self.expected_tree_lists:
+            ds.add(tree_list)
+        for char_matrix in self.expected_char_matrices:
+            ds.add(char_matrix)
+        self.assertEqual(len(ds.taxon_namespaces), len(self.expected_taxon_namespaces))
+        for x1, x2 in zip(ds.taxon_namespaces, self.expected_taxon_namespaces):
+            self.assertIs(x1, x2)
+        for x1, x2 in zip(ds.tree_lists, self.expected_tree_lists):
+            self.assertIs(x1, x2)
+        for x1, x2 in zip(ds.char_matrices, self.expected_char_matrices):
+            self.assertIs(x1, x2)
 
 if __name__ == "__main__":
     unittest.main()

@@ -123,7 +123,7 @@ class DataSet(
             self.tree_lists = container.OrderedSet()
             self.char_matrices = container.OrderedSet()
             self.attached_taxon_namespace = None
-            self.process_taxon_namespace_directives(kwargs)
+            self._process_taxon_namespace_directives(kwargs)
             self.comments = []
             if len(args) == 1 and not isinstance(args[0], DataSet):
                 for item in args[0]:
@@ -182,33 +182,33 @@ class DataSet(
         """
         self.taxon_namespaces.add(taxon_namespace)
 
-    # def new_taxon_namespace(self, *args, **kwargs):
-    #     """
-    #     Creates a new `TaxonNamespace` object, according to the arguments given
-    #     (passed to `TaxonNamespace()`), and adds it to this `DataSet`.
-    #     """
-    #     t = TaxonNamespace(*args, **kwargs)
-    #     self.add_taxon_namespace(t)
-    #     return t
+    def new_taxon_namespace(self, *args, **kwargs):
+        """
+        Creates a new `TaxonNamespace` object, according to the arguments given
+        (passed to `TaxonNamespace()`), and adds it to this `DataSet`.
+        """
+        t = TaxonNamespace(*args, **kwargs)
+        self.add_taxon_namespace(t)
+        return t
 
-    # def attach_taxon_namespace(self, taxon_namespace=None):
-    #     """
-    #     Forces all read() calls on this DataSet to use the same TaxonSet. If
-    #     `taxon_namespace` If `taxon_namespace` is None, then a new TaxonSet will be
-    #     created, added to self.taxa, and that is the TaxonSet that will be
-    #     attached.
-    #     """
-    #     if taxon_namespace is None:
-    #         taxon_namespace = self.new_taxon_namespace()
-    #     elif taxon_namespace not in self.taxon_namespaces:
-    #         self.add_taxon_namespace(taxon_namespace)
-    #     self.attached_taxon_namespace = taxon_namespace
-    #     return self.attached_taxon_namespace
+    def attach_taxon_namespace(self, taxon_namespace=None):
+        """
+        Forces all read() calls of this DataSet to use the same TaxonSet. If
+        `taxon_namespace` If `taxon_namespace` is None, then a new TaxonSet will be
+        created, added to self.taxa, and that is the TaxonSet that will be
+        attached.
+        """
+        if taxon_namespace is None:
+            taxon_namespace = self.new_taxon_namespace()
+        elif taxon_namespace not in self.taxon_namespaces:
+            self.add_taxon_namespace(taxon_namespace)
+        self.attached_taxon_namespace = taxon_namespace
+        return self.attached_taxon_namespace
 
-    # def detach_taxon_namespace(self):
-    #     self.attached_taxon_namespace = None
+    def detach_taxon_namespace(self):
+        self.attached_taxon_namespace = None
 
-    def process_taxon_namespace_directives(self, kwargs_dict):
+    def _process_taxon_namespace_directives(self, kwargs_dict):
         """
         The following idioms are supported:
 
@@ -227,14 +227,11 @@ class DataSet(
                 objects.
         """
         taxon_namespace = None
-
         attach_taxon_namespace = False
-
         if ( ("taxon_set" in kwargs_dict or "taxon_namespace" in kwargs_dict)
                 and ("attached_taxon_set" in kwargs_dict or "attached_taxon_namespace" in kwargs_dict)
                 ):
             raise TypeError("Cannot specify both 'taxon_namespace'/'taxon_set' and 'attached_taxon_namespace'/'attached_taxon_set' together")
-
         if "taxon_set" in kwargs_dict:
             if "taxon_namespace" in kwargs_dict:
                 raise TypeError("Both 'taxon_namespace' and 'taxon_set' cannot be specified simultaneously: use 'taxon_namespace' ('taxon_set' is only supported for legacy reasons)")
@@ -245,7 +242,6 @@ class DataSet(
                 raise TypeError("Both 'attached_taxon_namespace' and 'attached_taxon_set' cannot be specified simultaneously: use 'attached_taxon_namespace' ('attached_taxon_set' is only supported for legacy reasons)")
             kwargs_dict["attached_taxon_namespace"] = kwargs_dict["attached_taxon_set"]
             del kwargs_dict["attached_taxon_set"]
-
         if "taxon_namespace" in kwargs_dict:
             taxon_namespace = kwargs_dict.pop("taxon_namespace", None)
             attach_taxon_namespace = True
@@ -257,14 +253,38 @@ class DataSet(
         else:
             taxon_namespace = None
             attach_taxon_namespace = kwargs_dict.get("attach_taxon_namespace", False)
-
         kwargs_dict.pop("taxon_namespace", None)
         kwargs_dict.pop("attach_taxon_namespace", None)
         kwargs_dict.pop("attached_taxon_namespace", None)
-
         if attach_taxon_namespace or (taxon_namespace is not None):
             self.attach_taxon_namespace(taxon_namespace)
         return taxon_namespace, attach_taxon_namespace
+
+    ### **Legacy** ###
+
+    def add_taxon_set(self, taxon_set):
+        """
+        DEPRECATED: Use `add_taxon_namespace()` instead.
+        """
+        self.add_taxon_namespace(taxon_namespace=taxon_set)
+
+    def new_taxon_set(self, *args, **kwargs):
+        """
+        DEPRECATED: Use `new_taxon_namespace()` instead.
+        """
+        return self.new_taxon_namespace(*args, **kwargs)
+
+    def attach_taxon_set(self, taxon_set=None):
+        """
+        DEPRECATED: Use `attach_taxon_namespace()` instead.
+        """
+        return self.attach_taxon_namespace(taxon_namespace=taxon_set)
+
+    def detach_taxon_set(self):
+        """
+        DEPRECATED: Use `detach_taxon_namespace()` instead.
+        """
+        self.detach_taxon_namespace()
 
     ### TreeList ###
 
@@ -282,16 +302,30 @@ class DataSet(
             self.taxon_namespaces.add(tree_list.taxon_namespace)
         self.tree_lists.add(tree_list)
 
-    # def new_tree_list(self, *args, **kwargs):
-    #     "Creation and accession of new `TreeList` into `trees` of self."
-    #     if self.attached_taxon_namespace is not None:
-    #         if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
-    #             raise TypeError("DataSet object is attached to TaxonNamespace %s, but 'taxon_namespace' argument specifies different TaxonNamespace %s" % (
-    #                 repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
-    #         else:
-    #             kwargs["taxon_namespace"] = self.attached_taxon_namespace
-    #     tree_list = TreeList(*args, **kwargs)
-    #     return self.add_tree_list(tree_list)
+    def new_tree_list(self, *args, **kwargs):
+        """
+        Creates a new :class:`TreeList` instance, adds it to this DataSet.
+
+        Parameters
+        ----------
+        \*args : positional arguments
+            Passed directly to :class:`TreeList` constructor.
+        \*\*kwargs : keyword arguments, optional
+            Passed directly to :class:`TreeList` constructor.
+
+        Returns
+        -------
+        t : :class:`TreeList`
+            The new :class:`TreeList` instance created.
+        """
+        if self.attached_taxon_namespace is not None:
+            if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
+                raise TypeError("DataSet object is attached to TaxonNamespace {}, but 'taxon_namespace' argument specifies different TaxonNamespace {}" .format(
+                    repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
+            else:
+                kwargs["taxon_namespace"] = self.attached_taxon_namespace
+        tree_list = TreeList(*args, **kwargs)
+        return self.add_tree_list(tree_list)
 
     # def get_tree_list(self, **kwargs):
     #     """
