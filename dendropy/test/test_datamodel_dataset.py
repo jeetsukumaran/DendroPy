@@ -119,6 +119,65 @@ class DataSetBasicCrudTestCase(dendropytest.ExtendedTestCase):
         for x1, x2 in zip(ds.char_matrices, self.expected_char_matrices):
             self.assertIs(x1, x2)
 
+    def test_basic_new_taxon_namespace(self):
+        ds = dendropy.DataSet()
+        tax_labels = ["a", "b", "c", "d", "e"]
+        tns_labels = ["t1", "t2", "t3"]
+        tns_list = []
+        for tns_label in tns_labels:
+             tns = ds.new_taxon_namespace(tax_labels, label=tns_label)
+             self.assertTrue(isinstance(tns, dendropy.TaxonNamespace))
+             tns_list.append(tns)
+        self.assertEqual(len(tns_list), len(tns_labels))
+        for tns, tns_label in zip(tns_list, tns_labels):
+            self.assertEqual(tns.label, tns_label)
+            self.assertEqual(len(tns), len(tax_labels))
+            for taxon, taxon_label in zip(tns, tax_labels):
+                self.assertEqual(taxon.label, taxon_label)
+
+# class AttachedTaxonNamespaceDataSetBasicCrudTestCase(dendropytest.ExtendedTestCase):
+
+#     @classmethod
+#     def setUpClass(cls):
+#         standard_file_test_chars.DnaTestChecker.build()
+
+#     def setUp(self):
+#         self.expected_taxon_namespaces = []
+#         self.standalone_taxon_namespaces = []
+#         self.standalone_taxon_namespaces.append(dendropy.TaxonNamespace(["t1", "t2", "t3"]))
+#         self.standalone_taxon_namespaces.append(dendropy.TaxonNamespace(["s1", "s2", "s3"]))
+#         self.expected_taxon_namespaces.extend(self.standalone_taxon_namespaces)
+#         self.expected_tree_lists = collections.OrderedDict()
+#         for i in range(2):
+#             pdo1 = curated_test_tree_list.get_tree_list(4)
+#             self.expected_tree_lists[pdo1] = pdo1.taxon_namespace
+#             self.expected_taxon_namespaces.append(pdo1.taxon_namespace)
+#             for j in range(2):
+#                 pdo2 = curated_test_tree_list.get_tree_list(4,
+#                         taxon_namespace=pdo1.taxon_namespace)
+#                 self.expected_tree_lists[pdo2] = pdo2.taxon_namespace
+
+#         self.expected_char_matrices = collections.OrderedDict()
+#         for i in range(2):
+#             pdo1 = standard_file_test_chars.DnaTestChecker.get_char_matrix()
+#             self.expected_char_matrices[pdo1] = pdo1.taxon_namespace
+#             self.expected_taxon_namespaces.append(pdo1.taxon_namespace)
+#             for j in range(2):
+#                 pdo2 = standard_file_test_chars.ProteinTestChecker.get_char_matrix(taxon_namespace=pdo1.taxon_namespace)
+#                 self.expected_char_matrices[pdo2] = pdo2.taxon_namespace
+
+#     def test_attached_taxon_namespace(self):
+#         ds = dendropy.DataSet()
+#         tns = ds.attach_taxon_namespace()
+#         self.validate_attached_taxon_namespaces(ds, tns)
+
+#     def test_attached_taxon_namespace(self):
+#         ds = dendropy.DataSet()
+#         tns = dendropy.TaxonNamespace()
+#         ds.attached_taxon_namespace(tns)
+#         self.validate_attached_taxon_namespaces(ds, tns)
+
+
 if __name__ == "__main__":
     unittest.main()
 
