@@ -181,6 +181,7 @@ class DataSet(
             The :class:`TaxonNamespace` object to be added.
         """
         self.taxon_namespaces.add(taxon_namespace)
+        return taxon_namespace
 
     def new_taxon_namespace(self, *args, **kwargs):
         """
@@ -277,7 +278,7 @@ class DataSet(
         """
         DEPRECATED: Use `add_taxon_namespace()` instead.
         """
-        self.add_taxon_namespace(taxon_namespace=taxon_set)
+        return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
         """
@@ -312,6 +313,7 @@ class DataSet(
         if tree_list.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(tree_list.taxon_namespace)
         self.tree_lists.add(tree_list)
+        return tree_list
 
     def new_tree_list(self, *args, **kwargs):
         """
@@ -381,6 +383,7 @@ class DataSet(
         if char_matrix.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(char_matrix.taxon_namespace)
         self.char_matrices.add(char_matrix)
+        return char_matrix
 
     # def new_char_matrix(self, char_matrix_type, *args, **kwargs):
     #     """
