@@ -137,15 +137,46 @@ class DataSetBasicCrudTestCase(dendropytest.ExtendedTestCase):
 
     def test_basic_new_tree_list(self):
         ds = dendropy.DataSet()
-        tree_list_labels = ["a", "b", "c", "d", "e"]
-        tlists = []
-        for tl_idx, tl_label in enumerate(tree_list_labels):
-            tlist = ds.new_tree_list(label=tl_label)
-            tlists.append(tlist)
-        self.assertEqual(len(ds.tree_lists), len(tree_list_labels))
-        self.assertEqual(len(ds.tree_lists), len(tlists))
-        for t1, t2, label in zip(ds.tree_lists, tlists, tree_list_labels):
+        item_labels = ["a", "b", "c", "d", "e"]
+        item_list = []
+        for item_idx, item_label in enumerate(item_labels):
+            item = ds.new_tree_list(label=item_label)
+            item_list.append(item)
+        self.assertEqual(len(ds.tree_lists), len(item_labels))
+        self.assertEqual(len(ds.tree_lists), len(item_list))
+        for t1, t2, label in zip(ds.tree_lists, item_list, item_labels):
             self.assertTrue(isinstance(t1, dendropy.TreeList))
+            self.assertIs(t1, t2)
+            self.assertEqual(t1.label, label)
+
+    def test_basic_new_char_matrix(self):
+        ds = dendropy.DataSet()
+        item_labels = ["a", "b", "c", "d", "e", "f"]
+        cm_type = [
+                "dna",
+                "protein",
+                "standard",
+                dendropy.DnaCharacterMatrix,
+                dendropy.ProteinCharacterMatrix,
+                dendropy.StandardCharacterMatrix,
+                ]
+        expected_cm_types = [
+                dendropy.DnaCharacterMatrix,
+                dendropy.ProteinCharacterMatrix,
+                dendropy.StandardCharacterMatrix,
+                dendropy.DnaCharacterMatrix,
+                dendropy.ProteinCharacterMatrix,
+                dendropy.StandardCharacterMatrix,
+                ]
+        item_list = []
+        for item_label, cm_type in zip(item_labels, cm_type):
+            item = ds.new_char_matrix(label=item_label,
+                    char_matrix_type=cm_type)
+            item_list.append(item)
+        self.assertEqual(len(ds.char_matrices), len(item_labels))
+        self.assertEqual(len(ds.char_matrices), len(item_list))
+        for t1, t2, label, expected_cm_types in zip(ds.char_matrices, item_list, item_labels, expected_cm_types):
+            self.assertTrue(isinstance(t1, expected_cm_types))
             self.assertIs(t1, t2)
             self.assertEqual(t1.label, label)
 

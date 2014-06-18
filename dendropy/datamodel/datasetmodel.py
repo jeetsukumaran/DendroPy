@@ -32,9 +32,9 @@ import sys
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
-from dendropy.datamodel.taxonmodel import TaxonNamespace
-from dendropy.datamodel.treemodel import TreeList
-from dendropy.datamodel.charmatrixmodel import CharacterMatrix
+from dendropy.datamodel import taxonmodel
+from dendropy.datamodel import treemodel
+from dendropy.datamodel import charmatrixmodel
 from dendropy import dataio
 
 ###############################################################################
@@ -158,11 +158,11 @@ class DataSet(
         """
         Generic add for TaxonNamespace, TreeList or CharacterMatrix objects.
         """
-        if isinstance(data_object, TaxonNamespace):
+        if isinstance(data_object, taxonmodel.TaxonNamespace):
             self.add_taxon_set(data_object)
-        elif isinstance(data_object, TreeList):
+        elif isinstance(data_object, treemodel.TreeList):
             self.add_tree_list(data_object)
-        elif isinstance(data_object, CharacterMatrix):
+        elif isinstance(data_object, charmatrixmodel.CharacterMatrix):
             self.add_char_matrix(data_object)
         else:
             raise error.InvalidArgumentValueError("Cannot add object of type {} to DataSet" .format(type(data_object)))
@@ -188,7 +188,7 @@ class DataSet(
         Creates a new `TaxonNamespace` object, according to the arguments given
         (passed to `TaxonNamespace()`), and adds it to this `DataSet`.
         """
-        t = TaxonNamespace(*args, **kwargs)
+        t = taxonmodel.TaxonNamespace(*args, **kwargs)
         self.add_taxon_namespace(t)
         return t
 
@@ -337,7 +337,7 @@ class DataSet(
                     repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
             else:
                 kwargs["taxon_namespace"] = self.attached_taxon_namespace
-        tree_list = TreeList(*args, **kwargs)
+        tree_list = treemodel.TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
     # def get_tree_list(self, **kwargs):
@@ -385,16 +385,22 @@ class DataSet(
         self.char_matrices.add(char_matrix)
         return char_matrix
 
-    # def new_char_matrix(self, char_matrix_type, *args, **kwargs):
-    #     """
-    #     Creation and accession of new `CharacterMatrix` (of class
-    #     `char_matrix_type`) into `chars` of self."
-    #     """
-    #     if self.attached_taxon_namespace is not None:
-    #         if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
-    #             raise TypeError("DataSet object is attached to TaxonNamespace %s, but 'taxon_namespace' argument specifies different TaxonNamespace %s" % (
-    #                 repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
-    #         else:
-    #             kwargs["taxon_namespace"] = self.attached_taxon_namespace
-    #     char_matrix = char_matrix_type(*args, **kwargs)
-    #     return self.add_char_matrix(char_matrix)
+    def new_char_matrix(self, char_matrix_type, *args, **kwargs):
+        """
+        Creation and accession of new `CharacterMatrix` (of class
+        `char_matrix_type`) into `chars` of self."
+        """
+        if self.attached_taxon_namespace is not None:
+            if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
+                raise TypeError("DataSet object is attached to TaxonNamespace %s, but 'taxon_namespace' argument specifies different TaxonNamespace %s" % (
+                    repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
+            else:
+                kwargs["taxon_namespace"] = self.attached_taxon_namespace
+        if isinstance(char_matrix_type, str):
+            char_matrix = charmatrixmodel.new_char_matrix(
+                    data_type_name=char_matrix_type,
+                    *args,
+                    **kwargs)
+        else:
+            char_matrix = char_matrix_type(*args, **kwargs)
+        return self.add_char_matrix(char_matrix)
