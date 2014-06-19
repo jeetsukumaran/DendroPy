@@ -207,6 +207,9 @@ class DataSetAttachedTaxonNamespaceModeTestCase(dendropytest.ExtendedTestCase):
         self.assertIn(tns, ds.taxon_namespaces)
         self.assertIs(ds.taxon_namespaces[0], tns)
         self.assertIs(ds.attached_taxon_namespace, tns)
+        tns2 = ds.detach_taxon_namespace()
+        self.assertIs(ds.attached_taxon_namespace, None)
+        self.assertIs(tns2, tns)
 
     # def test_basic_new_taxon_namespace(self):
     #     ds = dendropy.DataSet()

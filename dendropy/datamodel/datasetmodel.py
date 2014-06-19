@@ -208,7 +208,9 @@ class DataSet(
         return self.attached_taxon_namespace
 
     def detach_taxon_namespace(self):
+        t = self.attached_taxon_namespace
         self.attached_taxon_namespace = None
+        return t
 
     def _process_taxon_namespace_directives(self, kwargs_dict):
         """
