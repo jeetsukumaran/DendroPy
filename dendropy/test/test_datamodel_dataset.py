@@ -211,67 +211,25 @@ class DataSetAttachedTaxonNamespaceModeTestCase(dendropytest.ExtendedTestCase):
         self.assertIs(ds.attached_taxon_namespace, None)
         self.assertIs(tns2, tns)
 
-    # def test_basic_new_taxon_namespace(self):
-    #     ds = dendropy.DataSet()
-    #     tax_labels = ["a", "b", "c", "d", "e"]
-    #     tns_labels = ["t1", "t2", "t3"]
-    #     tns_list = []
-    #     for tns_label in tns_labels:
-    #          tns = ds.new_taxon_namespace(tax_labels, label=tns_label)
-    #          self.assertTrue(isinstance(tns, dendropy.TaxonNamespace))
-    #          tns_list.append(tns)
-    #     self.assertEqual(len(tns_list), len(tns_labels))
-    #     for tns, tns_label in zip(tns_list, tns_labels):
-    #         self.assertEqual(tns.label, tns_label)
-    #         self.assertEqual(len(tns), len(tax_labels))
-    #         for taxon, taxon_label in zip(tns, tax_labels):
-    #             self.assertEqual(taxon.label, taxon_label)
+    def test_attached_taxon_namespace_new_tree_list(self):
+        ds = dendropy.DataSet()
+        tns = dendropy.TaxonNamespace()
+        ds.attach_taxon_namespace(tns)
+        tree_list = ds.new_tree_list(label="q")
+        self.assertEqual(tree_list.label, "q")
+        self.assertIn(tree_list, ds.tree_lists)
+        self.assertIs(tree_list.taxon_namespace, ds.attached_taxon_namespace)
+        self.assertEqual(len(ds.taxon_namespaces), 1)
 
-    # def test_basic_new_tree_list(self):
-    #     ds = dendropy.DataSet()
-    #     item_labels = ["a", "b", "c", "d", "e"]
-    #     item_list = []
-    #     for item_idx, item_label in enumerate(item_labels):
-    #         item = ds.new_tree_list(label=item_label)
-    #         item_list.append(item)
-    #     self.assertEqual(len(ds.tree_lists), len(item_labels))
-    #     self.assertEqual(len(ds.tree_lists), len(item_list))
-    #     for t1, t2, label in zip(ds.tree_lists, item_list, item_labels):
-    #         self.assertTrue(isinstance(t1, dendropy.TreeList))
-    #         self.assertIs(t1, t2)
-    #         self.assertEqual(t1.label, label)
-
-    # def test_basic_new_char_matrix(self):
-    #     ds = dendropy.DataSet()
-    #     item_labels = ["a", "b", "c", "d", "e", "f"]
-    #     cm_type = [
-    #             "dna",
-    #             "protein",
-    #             "standard",
-    #             dendropy.DnaCharacterMatrix,
-    #             dendropy.ProteinCharacterMatrix,
-    #             dendropy.StandardCharacterMatrix,
-    #             ]
-    #     expected_cm_types = [
-    #             dendropy.DnaCharacterMatrix,
-    #             dendropy.ProteinCharacterMatrix,
-    #             dendropy.StandardCharacterMatrix,
-    #             dendropy.DnaCharacterMatrix,
-    #             dendropy.ProteinCharacterMatrix,
-    #             dendropy.StandardCharacterMatrix,
-    #             ]
-    #     item_list = []
-    #     for item_label, cm_type in zip(item_labels, cm_type):
-    #         item = ds.new_char_matrix(label=item_label,
-    #                 char_matrix_type=cm_type)
-    #         item_list.append(item)
-    #     self.assertEqual(len(ds.char_matrices), len(item_labels))
-    #     self.assertEqual(len(ds.char_matrices), len(item_list))
-    #     for t1, t2, label, expected_cm_types in zip(ds.char_matrices, item_list, item_labels, expected_cm_types):
-    #         self.assertTrue(isinstance(t1, expected_cm_types))
-    #         self.assertIs(t1, t2)
-    #         self.assertEqual(t1.label, label)
-
+    def test_attached_taxon_namespace_new_char_matrix(self):
+        ds = dendropy.DataSet()
+        tns = dendropy.TaxonNamespace()
+        ds.attach_taxon_namespace(tns)
+        char_matrix = ds.new_char_matrix(label="q", char_matrix_type="dna")
+        self.assertEqual(char_matrix.label, "q")
+        self.assertIn(char_matrix, ds.char_matrices)
+        self.assertIs(char_matrix.taxon_namespace, ds.attached_taxon_namespace)
+        self.assertEqual(len(ds.taxon_namespaces), 1)
 
 if __name__ == "__main__":
     unittest.main()
