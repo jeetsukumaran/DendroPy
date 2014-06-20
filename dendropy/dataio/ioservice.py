@@ -192,9 +192,10 @@ class DataReader(IOService):
     def read_dataset(self,
             stream,
             dataset,
+            taxon_namespace=None,
             exclude_trees=False,
             exclude_chars=False,
-            global_annotations_target=None):
+            state_alphabet_factory=None):
         """
         Populates the given :class:`DataSet` object from external data source.
 
@@ -209,23 +210,30 @@ class DataReader(IOService):
             If set to `True`, tree data will not be read from the source.
         exclude_chars : boolean, default: False
             If set to `True`, character data will not be read from the source.
-        global_annotations_target : :class:`Annotable` object
-            Any object that will be the target (or subject, in the grammatical
-            sense) of general metadata or annotations in the data source. If
-            `None`, then such metadata or annotations will not be stored.
 
         """
-        raise NotImplementedError
-        taxon_namespace_factory = dataset.new_taxon_namespace
-        if exclude_chars:
-            char_matrix_factory = None
+        if taxon_namespace is not None:
+            taxon_namespace_factory = lambda label : taxon_namespace
+            # TODO: ensure that dataset.attached_taxon_namespace is None or is taxon_namespace
+        elif dataset.attached_taxon_namespace is not None:
+            taxon_namespace_factory = lambda label : dataset.attached_taxon_namespace
         else:
-            char_matrix_factory = dataset.new_char_matrix
+            taxon_namespace_factory = dataset.new_taxon_namespace
         if exclude_trees:
             tree_list_factory = None
         else:
             tree_list_factory = dataset.new_tree_list
-        global_annotations_target = dataset
+        if exclude_chars:
+            char_matrix_factory = None
+        else:
+            char_matrix_factory = dataset.new_char_matrix
+        product = self._read(stream=stream,
+                taxon_namespace_factory=taxon_namespace_factory,
+                tree_list_factory=tree_list_factory,
+                char_matrix_factory=char_matrix_factory,
+                state_alphabet_factory=state_alphabet_factory,
+                global_annotations_target=dataset)
+        return product
 
     def read_tree_lists(self,
             stream,

@@ -294,7 +294,7 @@ class NexusReader(ioservice.DataReader):
 
     def _new_char_matrix(self, data_type_name, taxon_namespace, title=None):
         char_matrix = self._char_matrix_factory(
-                data_type_name=data_type_name,
+                data_type_name,
                 taxon_namespace=taxon_namespace,
                 label=title)
         self._char_matrices.append(char_matrix)
@@ -663,7 +663,7 @@ class NexusReader(ioservice.DataReader):
             raise self._nexus_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         taxon_namespace = self._get_taxon_namespace(link_title)
         char_block = self._new_char_matrix(
-                data_type_name=self._data_type_name,
+                self._data_type_name,
                 taxon_namespace=taxon_namespace,
                 title=block_title)
         if self._data_type_name == "continuous":

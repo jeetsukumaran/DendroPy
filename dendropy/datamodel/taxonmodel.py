@@ -338,6 +338,7 @@ class TaxonNamespaceAssociated(object):
 
 ##############################################################################
 ## TaxonNamespace
+
 class TaxonNamespace(
         basemodel.DataObject,
         basemodel.Annotable):
@@ -1272,8 +1273,34 @@ class TaxonNamespace(
         """
         return text.split_as_newick_string(split, self, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores)
 
+    def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return ""
+        output_strio = StringIO()
+        if self.label is None:
+            label = str(self.label)
+        output_strio.write('%s%sTaxonNamespace object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            output_strio.write(': %d Taxa' % len(self))
+            if depth >= 2 and len(self) > 0:
+                for i, t in enumerate(self):
+                    output_strio.write('\n')
+                    t.description(depth=depth-1, indent=indent+4, itemize="[%d]" % (i), output=output_strio, **kwargs)
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
+
 ##############################################################################
 ## TaxonSet
+
 class TaxonSet(TaxonNamespace):
     """
     This class is present for (temporary!) legacy support of code written under
@@ -1290,6 +1317,7 @@ class TaxonSet(TaxonNamespace):
 
 ##############################################################################
 ## Taxon
+
 class Taxon(
         basemodel.DataObject,
         basemodel.Annotable):
@@ -1372,7 +1400,7 @@ class Taxon(
             label = "<Unnamed Taxon>"
         else:
             label = "'{}'".format(self._label)
-        output_strio.write('{}{} Taxon object at {}: {}' % (indent*' ', itemize, hex(id(self)), label))
+        output_strio.write('{}{} Taxon object at {}: {}'.format(indent*' ', itemize, hex(id(self)), label))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)

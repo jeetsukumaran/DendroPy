@@ -35,6 +35,7 @@ from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treemodel
 from dendropy.datamodel import charmatrixmodel
+from dendropy.datamodel import charstatemodel
 from dendropy import dataio
 
 ###############################################################################
@@ -92,6 +93,31 @@ class DataSet(
 
     """
 
+    def _parse_from_stream(cls,
+            stream,
+            schema,
+            **kwargs):
+        """
+        Constructs a new :class:`DataSet` object and populates it with data
+        from file-like object `stream`.
+        """
+        exclude_trees = kwargs.pop("exclude_trees", False)
+        exclude_chars = kwargs.pop("exclude_chars", False)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        label = kwargs.pop("label", None)
+        dataset = DataSet(label=label)
+        reader = dataio.get_reader(schema, **kwargs)
+        reader.read_dataset(
+                stream=stream,
+                dataset=dataaset,
+                taxon_namespace=taxon_namespace,
+                exclude_trees=exclude_trees,
+                exclude_chars=exclude_chars,
+                state_alphabet_factory=charstatemodel.StateAlphabet,
+                )
+        return dataset
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     ###########################################################################
     ### Lifecycle and Identity
 
@@ -148,6 +174,42 @@ class DataSet(
 
     def __deepcopy__(self, memo=None):
         raise NotImplementedError
+
+    ###########################################################################
+    ### Data I/O
+
+    def read(self,
+            stream,
+            schema,
+            **kwargs):
+        exclude_trees = kwargs.pop("exclude_trees", False)
+        exclude_chars = kwargs.pop("exclude_chars", False)
+        taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+        if (self.attached_taxon_namespace is not None
+                and taxon_namespace is not None
+                and self.attached_taxon_namespace is not taxon_namespace):
+            raise ValueError("DataSet has attached TaxonNamespace that is not the same as `taxon_namespace`")
+        if self.attached_taxon_namespace is not None and taxon_namespace is None:
+            taxon_namespace = self.attached_taxon_namespace
+        label = kwargs.pop("label", None)
+        reader = dataio.get_reader(schema, **kwargs)
+        n_tns = len(self.taxon_namespaces)
+        n_tree_lists = len(self.tree_lists)
+        n_char_matrices = len(self.char_matrices)
+        reader.read_dataset(
+                stream=stream,
+                dataset=self,
+                taxon_namespace=taxon_namespace,
+                exclude_trees=exclude_trees,
+                exclude_chars=exclude_chars,
+                state_alphabet_factory=charstatemodel.StateAlphabet,
+                )
+        n_tns2 = len(self.taxon_namespaces)
+        n_tree_lists2 = len(self.tree_lists)
+        n_char_matrices2 = len(self.char_matrices)
+        return (n_tns2-n_tns,
+                n_tree_lists2-n_tree_lists,
+                n_char_matrices2-n_char_matrices)
 
     ###########################################################################
     ### Domain Data Management
@@ -276,6 +338,36 @@ class DataSet(
         return taxon_namespace, attach_taxon_namespace
 
     ### **Legacy** ###
+
+    def _get_taxon_sets(self):
+        self.taxon_sets_deprecation_warning()
+        return self.taxon_namespaces
+    def _set_taxon_sets(self, v):
+        self.taxon_sets_deprecation_warning()
+        self.taxon_namespaces = v
+    def _del_taxon_sets(self):
+        self.taxon_sets_deprecation_warning()
+    taxon_sets = property(_get_taxon_sets, _set_taxon_sets, _del_taxon_sets)
+
+    def taxon_sets_deprecation_warning(self):
+        pass
+        # error.critical_deprecation_alert("`DataSet.taxon_sets` will no longer be supported in future releases; use `DataSet.taxon_namespaces` instead",
+        #         stacklevel=4)
+
+    def _get_attached_taxon_set(self):
+        self.attached_taxon_set_deprecation_warning()
+        return self.attached_taxon_namespace
+    def _set_attached_taxon_set(self, v):
+        self.attached_taxon_set_deprecation_warning()
+        self.attached_taxon_namespace = v
+    def _del_attached_taxon_set(self):
+        self.attached_taxon_set_deprecation_warning()
+    attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
+
+    def attached_taxon_set_deprecation_warning(self):
+        pass
+        # error.critical_deprecation_alert("`DataSet.attached_taxon_set` will no longer be supported in future releases; use `DataSet.attached_taxon_namespace` instead",
+        #         stacklevel=4)
 
     def add_taxon_set(self, taxon_set):
         """
