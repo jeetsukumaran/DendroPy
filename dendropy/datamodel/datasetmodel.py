@@ -302,7 +302,7 @@ class DataSet(
                 ]
         for kw in deprecated_kw:
             if kw in kwargs_dict:
-                raise TypeError("'{}' is no longer supported as a keyword argument to the constructor. Use 'DataSet.attach_taxon_namespace()' instead".format(kw))
+                raise TypeError("'{}' is no longer supported as a keyword argument to the constructor. Use the instance method 'attach_taxon_namespace()' instead".format(kw))
         taxon_namespace = None
         attach_taxon_namespace = False
         if ( ("taxon_set" in kwargs_dict or "taxon_namespace" in kwargs_dict)
