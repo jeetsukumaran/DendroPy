@@ -218,6 +218,7 @@ class Tokenizer(object):
             self.current_token = "".join(dest)
             return self.current_token
         else:
+            # unquoted
             self.token_line_num = self.current_line_num
             self.token_column_num = self.current_column_num
             dest = []

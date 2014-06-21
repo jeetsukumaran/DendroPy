@@ -47,11 +47,11 @@ class NexusTokenizer(Tokenizer):
         # self.preserve_unquoted_underscores = preserve_unquoted_underscores
 
     # def __next__(self):
-    #     Tokenizer.__next__(self)
-    #     if (self.preserve_unquoted_underscores
-    #             and not self.is_token_quoted):
-    #         self.current_token = self.current_token.replace("_", " ")
-    #     return self.current_token
+        # Tokenizer.__next__(self)
+        # if (not self.preserve_unquoted_underscores
+        #         and not self.is_token_quoted):
+        #     self.current_token = self.current_token.replace("_", " ")
+        # return self.current_token
 
     def set_capture_eol(self, capture_eol):
         if capture_eol:
