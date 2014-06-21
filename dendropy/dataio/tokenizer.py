@@ -76,6 +76,7 @@ class Tokenizer(object):
             comment_begin,              # string indicating beginning of comment
             comment_end,                # string indicating end of comment
             capture_comments,           # are comments to be stored?
+            # preserve_underscores,       # are unquoted underscores to be preserved
             ):
         # Tokenizer behavior customization
         self.uncaptured_delimiters = uncaptured_delimiters
@@ -86,6 +87,7 @@ class Tokenizer(object):
         self.comment_begin = comment_begin
         self.comment_end = comment_end
         self.capture_comments = capture_comments
+        # self.preserve_underscores = preserve_underscores
 
         # State (internals)
         self.src = src
@@ -232,6 +234,8 @@ class Tokenizer(object):
                         break
                 else:
                     # dest.write(self._cur_char)
+                    # if self._cur_char == "_" and not self.preserve_underscores:
+                    #     self._cur_char = " "
                     dest.append(self._cur_char)
                     self._get_next_char()
             # self.current_token = dest.getvalue()

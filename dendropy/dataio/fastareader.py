@@ -74,3 +74,33 @@ class FastaReader(ioservice.DataReader):
                 tree_lists=None,
                 char_matrices=[char_matrix])
         return product
+
+class DnaFastaReader(FastaReader):
+
+    def __init__(self, **kwargs):
+        FastaReader.__init__(self, **kwargs)
+        if self.data_type_name is not None:
+            if self.data_type_name.lower() != "dna":
+                raise TypeError("'data_type_name' must be equal to 'dna', but instead found: '{}'".format(self.data_type_name))
+        else:
+            self.data_type_name = "dna"
+
+class RnaFastaReader(FastaReader):
+
+    def __init__(self, **kwargs):
+        FastaReader.__init__(self, **kwargs)
+        if self.data_type_name is not None:
+            if self.data_type_name.lower() != "rna":
+                raise TypeError("'data_type_name' must be equal to 'rna', but instead found: '{}'".format(self.data_type_name))
+        else:
+            self.data_type_name = "rna"
+
+class ProteinFastaReader(FastaReader):
+
+    def __init__(self, **kwargs):
+        FastaReader.__init__(self, **kwargs)
+        if self.data_type_name is not None:
+            if self.data_type_name.lower() != "protein":
+                raise TypeError("'data_type_name' must be equal to 'protein', but instead found: '{}'".format(self.data_type_name))
+        else:
+            self.data_type_name = "protein"

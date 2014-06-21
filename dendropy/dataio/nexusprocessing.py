@@ -31,7 +31,8 @@ from dendropy.datamodel import basemodel
 
 class NexusTokenizer(Tokenizer):
 
-    def __init__(self, src):
+    def __init__(self, src,
+            preserve_unquoted_underscores=False):
         Tokenizer.__init__(self,
             src=src,
             uncaptured_delimiters=list(" \t\n\r"),
@@ -42,6 +43,14 @@ class NexusTokenizer(Tokenizer):
             comment_begin="[",
             comment_end="]",
             capture_comments=True)
+        self.preserve_unquoted_underscores = preserve_unquoted_underscores
+
+    def __next__(self):
+        Tokenizer.__next__(self)
+        if (self.preserve_unquoted_underscores
+                and not self.is_token_quoted):
+            self.current_token = self.current_token.replace("_", " ")
+        return self.current_token
 
     def set_capture_eol(self, capture_eol):
         if capture_eol:

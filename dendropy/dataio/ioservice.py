@@ -215,8 +215,10 @@ class DataReader(IOService):
         if taxon_namespace is not None:
             taxon_namespace_factory = lambda label : taxon_namespace
             # TODO: ensure that dataset.attached_taxon_namespace is None or is taxon_namespace
+            self.attached_taxon_namespace = taxon_namespace
         elif dataset.attached_taxon_namespace is not None:
             taxon_namespace_factory = lambda label : dataset.attached_taxon_namespace
+            self.attached_taxon_namespace = dataset.attached_taxon_namespace
         else:
             taxon_namespace_factory = dataset.new_taxon_namespace
         if exclude_trees:

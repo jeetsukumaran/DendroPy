@@ -216,7 +216,8 @@ class NexusReader(ioservice.DataReader):
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents given in the file-like object `stream`.
         """
-        self._nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
+        self._nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,
+                preserve_unquoted_underscores=self.preserve_underscores)
         self._taxon_namespace_factory = taxon_namespace_factory
         self._tree_list_factory = tree_list_factory
         self._char_matrix_factory = char_matrix_factory
