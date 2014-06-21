@@ -178,7 +178,7 @@ class NexusReader(ioservice.DataReader):
         # then forwarded on ...
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         kwargs["extract_comment_metadata"] = self.extract_comment_metadata
-        self.preserve_underscores = kwargs.get('preserve_underscores', True)
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
 
         # Create newick handler
