@@ -237,7 +237,7 @@ class NewickReader(ioservice.DataReader):
         self.encode_splits = kwargs.pop("encode_splits", False)
         self.finish_node_func = kwargs.pop("finish_node_func", None)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
-        self.preserve_underscores = kwargs.pop('preserve_underscores', False)
+        self.preserve_unquoted_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", False)
@@ -271,7 +271,8 @@ class NewickReader(ioservice.DataReader):
             An iterator yielding :class:`Tree` objects constructed based on
             data in `stream`.
         """
-        nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
+        nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,
+                preserve_unquoted_underscores=self.preserve_unquoted_underscores)
         while True:
             tree = self._parse_tree_statement(
                     nexus_tokenizer=nexus_tokenizer,
@@ -605,10 +606,7 @@ class NewickReader(ioservice.DataReader):
                             stream=nexus_tokenizer.src)
                 else:
                     # Label
-                    if not self.preserve_underscores and not nexus_tokenizer.is_token_quoted:
-                        label = nexus_tokenizer.current_token.replace("_", " ")
-                    else:
-                        label = nexus_tokenizer.current_token
+                    label = nexus_tokenizer.current_token
                     if ( (is_internal_node and self.suppress_internal_node_taxa)
                             or ((not is_internal_node) and self.suppress_leaf_node_taxa) ):
                         current_node.label = label

@@ -42,15 +42,16 @@ class NexusTokenizer(Tokenizer):
             escape_chars="",
             comment_begin="[",
             comment_end="]",
-            capture_comments=True)
-        self.preserve_unquoted_underscores = preserve_unquoted_underscores
+            capture_comments=True,
+            preserve_unquoted_underscores=preserve_unquoted_underscores)
+        # self.preserve_unquoted_underscores = preserve_unquoted_underscores
 
-    def __next__(self):
-        Tokenizer.__next__(self)
-        if (self.preserve_unquoted_underscores
-                and not self.is_token_quoted):
-            self.current_token = self.current_token.replace("_", " ")
-        return self.current_token
+    # def __next__(self):
+    #     Tokenizer.__next__(self)
+    #     if (self.preserve_unquoted_underscores
+    #             and not self.is_token_quoted):
+    #         self.current_token = self.current_token.replace("_", " ")
+    #     return self.current_token
 
     def set_capture_eol(self, capture_eol):
         if capture_eol:
