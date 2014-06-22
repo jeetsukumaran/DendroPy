@@ -106,10 +106,12 @@ class DataSet(
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
         dataset = DataSet(label=label)
+        if taxon_namespace is not None:
+            dataset.attached_taxon_namespace = taxon_namespace
         reader = dataio.get_reader(schema, **kwargs)
         reader.read_dataset(
                 stream=stream,
-                dataset=dataaset,
+                dataset=dataset,
                 taxon_namespace=taxon_namespace,
                 exclude_trees=exclude_trees,
                 exclude_chars=exclude_chars,

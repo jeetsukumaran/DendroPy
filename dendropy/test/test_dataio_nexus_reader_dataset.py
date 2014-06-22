@@ -69,8 +69,9 @@ class DataSetNexusTaxonManagement(dendropytest.ExtendedTestCase):
         d.attach_taxon_namespace(t)
         self.assertEqual(len(d.taxon_namespaces), 1)
         self.assertIs(d.taxon_namespaces[0], d.attached_taxon_namespace)
+        self.assertIs(d.attached_taxon_namespace, t)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
-        _LOG.info(d.taxon_namespaces[0].description(2))
+        self.assertEqual(len(d.taxon_namespaces), 1)
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         d.read_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
         self.assertEqual(len(d.taxon_namespaces), 1)
@@ -84,15 +85,15 @@ class DataSetNexusTaxonManagement(dendropytest.ExtendedTestCase):
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         self.assertEqual(len(d.taxon_namespaces[1]), 114)
 
-    def testBindToSpecifiedTaxonNamespace(self):
-        d = dendropy.DataSet()
+    def testAttachTaxonNamespaceOnGet(self):
         t = dendropy.TaxonNamespace()
-        d.attach_taxon_namespace(t)
+        d = dendropy.DataSet.get_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'),
+                "nexus",
+                taxon_namespace=t)
         self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertIsNot(d.attached_taxon_namespace, None)
         self.assertIs(d.taxon_namespaces[0], d.attached_taxon_namespace)
         self.assertIs(d.attached_taxon_namespace, t)
-        d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
-        self.assertEqual(len(d.taxon_namespaces), 1)
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         d.read_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
         self.assertEqual(len(d.taxon_namespaces), 1)

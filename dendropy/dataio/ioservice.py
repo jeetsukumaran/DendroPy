@@ -28,7 +28,7 @@ class IOService(object):
     """
 
     def __init__(self, **kwargs):
-        pass
+        self.attached_taxon_namespace = None
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):
         ignore_unrecognized_keyword_arguments = kwargs_dict.pop("ignore_unrecognized_keyword_arguments", False)
@@ -214,7 +214,9 @@ class DataReader(IOService):
         """
         if taxon_namespace is not None:
             taxon_namespace_factory = lambda label : taxon_namespace
-            # TODO: ensure that dataset.attached_taxon_namespace is None or is taxon_namespace
+            if (dataset.attached_taxon_namespace is not None
+                    and dataset.attached_taxon_namespace is not taxon_namespace):
+                raise ValueError("'taxon_namespace' (or 'taxon_set') keyword argument value must be the same as 'dataset.attached_taxon_namespace' if both are not 'None'")
             self.attached_taxon_namespace = taxon_namespace
         elif dataset.attached_taxon_namespace is not None:
             taxon_namespace_factory = lambda label : dataset.attached_taxon_namespace
