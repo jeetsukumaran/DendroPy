@@ -22,12 +22,49 @@ NEXUS data read/write parse/format tests.
 
 from dendropy.test.support import pathmap
 from dendropy.test.support import dendropytest
+from dendropy.test.support import standard_file_test_chars
 from dendropy.utility import messaging
 import unittest
 import dendropy
 _LOG = messaging.get_logger(__name__)
 
-class DataSetNexusTaxonManagement(dendropytest.ExtendedTestCase):
+class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.check_taxon_annotations = False
+        cls.check_matrix_annotations = False
+        cls.check_sequence_annotations = False
+        cls.check_column_annotations = False
+        cls.check_cell_annotations = False
+        standard_file_test_chars.DnaTestChecker.build()
+
+    def test_single_dna(self):
+        srcs = (
+                # "standard-test-chars-dna.simple.nexus",
+                # "standard-test-chars-dna.basic.nexus",
+                # "standard-test-chars-dna.interleaved.nexus",
+                # "standard-test-chars-dna.matchchar.nexus",
+                "standard-test-chars-dna.multi.nexus",
+                )
+        for src_idx, src_filename in enumerate(src_filenames):
+            src_path = pathmap.char_source_path(src_filename)
+            ds = dendropy.DataSet.get_from_path(src_path,
+                    "nexus")
+            self.assertEqual(len(ds.char_matrices), 1)
+            self.assertEqual(len(ds.taxon_namespaces), 1)
+            self.assertIs(ds.char_matrices[0].taxon_namespace,
+                    ds.taxon_namespaces[0])
+            standard_file_test_chars.general_char_matrix_checker(self,
+                    ds.char_matrices[0],
+                    standard_file_test_chars.DnaTestChecker,
+                    check_taxon_annotations=self.check_taxon_annotations,
+                    check_matrix_annotations=self.check_matrix_annotations,
+                    check_sequence_annotations=self.check_sequence_annotations,
+                    check_column_annotations=self.check_column_annotations,
+                    check_cell_annotations=self.check_cell_annotations,)
+
+class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
     def testMultiTaxonNamespace(self):
         d = dendropy.DataSet()

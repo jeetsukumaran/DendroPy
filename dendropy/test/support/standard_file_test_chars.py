@@ -72,7 +72,7 @@ def general_char_matrix_checker(
     for taxon, label in zip(char_matrix, checker_reference_class.labels):
         test_case.assertEqual(taxon.label, label)
         s1 = char_matrix[taxon]
-        s2 = test_case.label_sequence_map[label]
+        s2 = checker_reference_class.label_sequence_map[label]
         general_verify_sequences(
             test_case=test_case,
             char_matrix=char_matrix,
