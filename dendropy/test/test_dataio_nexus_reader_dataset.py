@@ -28,7 +28,7 @@ import unittest
 import dendropy
 _LOG = messaging.get_logger(__name__)
 
-class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
+class DataSetNexusSingleCharsTestCase(dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -41,35 +41,45 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
         standard_file_test_chars.RnaTestChecker.build()
         standard_file_test_chars.ProteinTestChecker.build()
         standard_file_test_chars.Standard01234TestChecker.build()
-
-    def test_single(self):
-        srcs = (
+        cls.srcs = (
                 ("standard-test-chars-dna.multi.nexus", standard_file_test_chars.DnaTestChecker),
                 ("standard-test-chars-rna.multi.nexus", standard_file_test_chars.RnaTestChecker),
                 ("standard-test-chars-protein.multi.nexus", standard_file_test_chars.ProteinTestChecker),
                 ("standard-test-chars-generic.interleaved.nexus", standard_file_test_chars.Standard01234TestChecker),
                 )
-        for src_filename, src_matrix_checker_type in srcs:
+
+    def verify_char_matrix(self, ds, src_matrix_checker_type):
+        self.assertEqual(len(ds.char_matrices), 1)
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        self.assertIs(ds.char_matrices[0].taxon_namespace,
+                ds.taxon_namespaces[0])
+        self.assertEqual(type(ds.char_matrices[0]), src_matrix_checker_type.matrix_type)
+        if src_matrix_checker_type.matrix_type is dendropy.StandardCharacterMatrix:
+            src_matrix_checker_type.create_class_data_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
+                    ds.char_matrices[0].default_state_alphabet)
+        standard_file_test_chars.general_char_matrix_checker(
+                self,
+                ds.char_matrices[0],
+                src_matrix_checker_type,
+                check_taxon_annotations=self.check_taxon_annotations,
+                check_matrix_annotations=self.check_matrix_annotations,
+                check_sequence_annotations=self.check_sequence_annotations,
+                check_column_annotations=self.check_column_annotations,
+                check_cell_annotations=self.check_cell_annotations,)
+
+    def test_get_single(self):
+        for src_filename, src_matrix_checker_type in self.__class__.srcs:
             src_path = pathmap.char_source_path(src_filename)
-            ds = dendropy.DataSet.get_from_path(src_path,
-                    "nexus")
-            self.assertEqual(len(ds.char_matrices), 1)
-            self.assertEqual(len(ds.taxon_namespaces), 1)
-            self.assertIs(ds.char_matrices[0].taxon_namespace,
-                    ds.taxon_namespaces[0])
-            self.assertEqual(type(ds.char_matrices[0]), src_matrix_checker_type.matrix_type)
-            if src_matrix_checker_type.matrix_type is dendropy.StandardCharacterMatrix:
-                src_matrix_checker_type.create_class_data_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
-                        ds.char_matrices[0].default_state_alphabet)
-            standard_file_test_chars.general_char_matrix_checker(
-                    self,
-                    ds.char_matrices[0],
-                    src_matrix_checker_type,
-                    check_taxon_annotations=self.check_taxon_annotations,
-                    check_matrix_annotations=self.check_matrix_annotations,
-                    check_sequence_annotations=self.check_sequence_annotations,
-                    check_column_annotations=self.check_column_annotations,
-                    check_cell_annotations=self.check_cell_annotations,)
+            ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+            self.verify_char_matrix(ds, src_matrix_checker_type)
+
+    def test_read_single(self):
+        for src_filename, src_matrix_checker_type in self.__class__.srcs:
+            src_path = pathmap.char_source_path(src_filename)
+            ds = dendropy.DataSet()
+            result = ds.read_from_path(src_path, "nexus")
+            self.verify_char_matrix(ds, src_matrix_checker_type)
+            self.assertEqual(result, (1,0,1))
 
 class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
