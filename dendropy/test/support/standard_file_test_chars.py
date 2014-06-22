@@ -120,8 +120,8 @@ class CharacterTestChecker(object):
         else:
             cls.labels = tuple(labels)
 
-    @staticmethod
-    def get_class_char_matrix(cls, taxon_namespace=None):
+    @classmethod
+    def get_char_matrix_from_class_data(cls, taxon_namespace=None):
         c = cls.matrix_type.from_dict(source_dict=cls.label_sequence_map,
                 taxon_namespace=taxon_namespace)
         return c
@@ -165,8 +165,8 @@ class CharacterTestChecker(object):
 
 class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
 
-    @classmethod
-    def build(cls,
+    @staticmethod
+    def create_class_data(cls,
             matrix_type,
             state_alphabet_fundamental_symbols,
             seq_symbols,

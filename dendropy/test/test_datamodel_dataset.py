@@ -38,6 +38,7 @@ class DataSetAddTestCase(dendropytest.ExtendedTestCase):
     @classmethod
     def setUpClass(cls):
         standard_file_test_chars.DnaTestChecker.build()
+        standard_file_test_chars.ProteinTestChecker.build()
 
     def setUp(self):
         self.expected_taxon_namespaces = []
@@ -57,11 +58,11 @@ class DataSetAddTestCase(dendropytest.ExtendedTestCase):
 
         self.expected_char_matrices = collections.OrderedDict()
         for i in range(2):
-            pdo1 = standard_file_test_chars.DnaTestChecker.get_char_matrix()
+            pdo1 = standard_file_test_chars.DnaTestChecker.get_char_matrix_from_class_data()
             self.expected_char_matrices[pdo1] = pdo1.taxon_namespace
             self.expected_taxon_namespaces.append(pdo1.taxon_namespace)
             for j in range(2):
-                pdo2 = standard_file_test_chars.ProteinTestChecker.get_char_matrix(taxon_namespace=pdo1.taxon_namespace)
+                pdo2 = standard_file_test_chars.ProteinTestChecker.get_char_matrix_from_class_data(taxon_namespace=pdo1.taxon_namespace)
                 self.expected_char_matrices[pdo2] = pdo2.taxon_namespace
 
     def test_basic_add_taxon_namespace(self):
