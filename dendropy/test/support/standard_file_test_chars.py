@@ -178,6 +178,13 @@ class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
         for ss in seq_symbols:
             cls.states_symbols_lists.append(list(ss))
 
+    @staticmethod
+    def create_class_data_label_sequence_map_based_on_state_alphabet(cls, state_alphabet):
+        states = []
+        for ss in cls.states_symbols_lists:
+            states.append(state_alphabet.get_states_for_symbols(ss))
+        CharacterTestChecker.create_class_data_label_sequence_map(cls, states_lists=states)
+
     def verify_char_matrix(self,
             char_matrix,
             check_taxon_annotations=True,
@@ -189,13 +196,7 @@ class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
                 self,
                 char_matrix.default_state_alphabet,
                 self.__class__)
-        states = []
-        for ss in self.__class__.states_symbols_lists:
-            states.append(char_matrix.default_state_alphabet.get_states_for_symbols(ss))
-
-        ## TODO: more robust
-        CharacterTestChecker.create_class_data_label_sequence_map(self.__class__, states_lists=states)
-
+        GenericDiscreteCharacterTestChecker.create_class_data_label_sequence_map_based_on_state_alphabet(self.__class__, char_matrix.default_state_alphabet)
         general_char_matrix_checker(self,
                 char_matrix,
                 self.__class__,

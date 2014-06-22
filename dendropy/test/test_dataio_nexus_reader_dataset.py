@@ -40,16 +40,16 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
         standard_file_test_chars.DnaTestChecker.build()
         standard_file_test_chars.RnaTestChecker.build()
         standard_file_test_chars.ProteinTestChecker.build()
+        standard_file_test_chars.Standard01234TestChecker.build()
 
-    def test_single_dna(self):
+    def test_single(self):
         srcs = (
-                # "standard-test-chars-dna.simple.nexus",
-                # "standard-test-chars-dna.basic.nexus",
-                # "standard-test-chars-dna.interleaved.nexus",
-                # "standard-test-chars-dna.matchchar.nexus",
-                "standard-test-chars-dna.multi.nexus",
+                ("standard-test-chars-dna.multi.nexus", standard_file_test_chars.DnaTestChecker),
+                ("standard-test-chars-rna.multi.nexus", standard_file_test_chars.RnaTestChecker),
+                ("standard-test-chars-protein.multi.nexus", standard_file_test_chars.ProteinTestChecker),
+                ("standard-test-chars-generic.interleaved.nexus", standard_file_test_chars.Standard01234TestChecker),
                 )
-        for src_idx, src_filename in enumerate(srcs):
+        for src_filename, src_matrix_checker_type in srcs:
             src_path = pathmap.char_source_path(src_filename)
             ds = dendropy.DataSet.get_from_path(src_path,
                     "nexus")
@@ -57,10 +57,14 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
             self.assertEqual(len(ds.taxon_namespaces), 1)
             self.assertIs(ds.char_matrices[0].taxon_namespace,
                     ds.taxon_namespaces[0])
+            self.assertEqual(type(ds.char_matrices[0]), src_matrix_checker_type.matrix_type)
+            if src_matrix_checker_type.matrix_type is dendropy.StandardCharacterMatrix:
+                src_matrix_checker_type.create_class_data_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
+                        ds.char_matrices[0].default_state_alphabet)
             standard_file_test_chars.general_char_matrix_checker(
                     self,
                     ds.char_matrices[0],
-                    standard_file_test_chars.DnaTestChecker,
+                    src_matrix_checker_type,
                     check_taxon_annotations=self.check_taxon_annotations,
                     check_matrix_annotations=self.check_matrix_annotations,
                     check_sequence_annotations=self.check_sequence_annotations,
