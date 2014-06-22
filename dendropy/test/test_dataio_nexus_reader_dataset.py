@@ -38,6 +38,8 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
         cls.check_column_annotations = False
         cls.check_cell_annotations = False
         standard_file_test_chars.DnaTestChecker.build()
+        standard_file_test_chars.RnaTestChecker.build()
+        standard_file_test_chars.ProteinTestChecker.build()
 
     def test_single_dna(self):
         srcs = (
@@ -47,7 +49,7 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
                 # "standard-test-chars-dna.matchchar.nexus",
                 "standard-test-chars-dna.multi.nexus",
                 )
-        for src_idx, src_filename in enumerate(src_filenames):
+        for src_idx, src_filename in enumerate(srcs):
             src_path = pathmap.char_source_path(src_filename)
             ds = dendropy.DataSet.get_from_path(src_path,
                     "nexus")
@@ -55,7 +57,8 @@ class DataSetNexusCharsGetFromTestCase(dendropytest.ExtendedTestCase):
             self.assertEqual(len(ds.taxon_namespaces), 1)
             self.assertIs(ds.char_matrices[0].taxon_namespace,
                     ds.taxon_namespaces[0])
-            standard_file_test_chars.general_char_matrix_checker(self,
+            standard_file_test_chars.general_char_matrix_checker(
+                    self,
                     ds.char_matrices[0],
                     standard_file_test_chars.DnaTestChecker,
                     check_taxon_annotations=self.check_taxon_annotations,
