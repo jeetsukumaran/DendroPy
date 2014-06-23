@@ -294,6 +294,8 @@ class NexusReader(ioservice.DataReader):
             return found[0]
 
     def _new_char_matrix(self, data_type_name, taxon_namespace, title=None):
+        # if data_type_name is None:
+        #     data_type_name = "standard"
         char_matrix = self._char_matrix_factory(
                 data_type_name,
                 taxon_namespace=taxon_namespace,
@@ -374,6 +376,7 @@ class NexusReader(ioservice.DataReader):
                         self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
                         link_title = None
                         block_title = None
+                        self._data_type_name = "standard" # set as default
                         while not (token == 'END' or token == 'ENDBLOCK') \
                                 and not self._nexus_tokenizer.is_eof() \
                                 and not token==None:
@@ -397,6 +400,7 @@ class NexusReader(ioservice.DataReader):
                         self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
                         block_title = None
                         link_title = None
+                        self._data_type_name = "standard" # set as default
                         while not (token == 'END' or token == 'ENDBLOCK') \
                                 and not self._nexus_tokenizer.is_eof() \
                                 and not token==None:

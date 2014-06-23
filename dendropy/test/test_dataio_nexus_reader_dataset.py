@@ -112,6 +112,30 @@ class DataSetNexusSingleCharsTestCase(dendropytest.ExtendedTestCase):
             self.assertIs(ds.taxon_namespaces[0], tns)
             self.verify_char_matrix(ds.char_matrices[src_idx], src_matrix_checker_type)
 
+class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.check_taxon_annotations = False
+        cls.check_matrix_annotations = False
+        cls.check_sequence_annotations = False
+        cls.check_column_annotations = False
+        cls.check_cell_annotations = False
+        standard_file_test_chars.DnaTestChecker.build()
+        standard_file_test_chars.RnaTestChecker.build()
+        standard_file_test_chars.ProteinTestChecker.build()
+        standard_file_test_chars.Standard01234TestChecker.build()
+
+    def verify_dataset(self, ds):
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        tns = ds.taxon_namespaces[0]
+
+    def test_basic_get(self):
+        src_filename = "standard-test-chars-multiple-char-blocks.1.basic.nexus"
+        src_path = pathmap.char_source_path(src_filename)
+        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        self.verify_dataset(ds)
+
 class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
     def testMultiTaxonNamespace(self):
