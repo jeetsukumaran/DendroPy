@@ -97,6 +97,21 @@ class DataSetNexusSingleCharsTestCase(dendropytest.ExtendedTestCase):
                     ds.taxon_namespaces[src_idx])
             self.verify_char_matrix(ds.char_matrices[src_idx], src_matrix_checker_type)
 
+    def test_read_successive_attached_taxon_namespace(self):
+        ds = dendropy.DataSet()
+        tns = dendropy.TaxonNamespace()
+        ds.attach_taxon_namespace(tns)
+        for src_idx, (src_filename, src_matrix_checker_type) in enumerate(self.__class__.srcs):
+            src_path = pathmap.char_source_path(src_filename)
+            result = ds.read_from_path(src_path, "nexus")
+            self.assertEqual(result, (0,0,1))
+            self.assertEqual(len(ds.char_matrices), src_idx+1)
+            self.assertEqual(len(ds.taxon_namespaces), 1)
+            self.assertIs(ds.char_matrices[src_idx].taxon_namespace,
+                    ds.taxon_namespaces[0])
+            self.assertIs(ds.taxon_namespaces[0], tns)
+            self.verify_char_matrix(ds.char_matrices[src_idx], src_matrix_checker_type)
+
 class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
     def testMultiTaxonNamespace(self):
