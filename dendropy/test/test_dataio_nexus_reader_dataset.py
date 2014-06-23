@@ -129,6 +129,27 @@ class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
     def verify_dataset(self, ds):
         self.assertEqual(len(ds.taxon_namespaces), 1)
         tns = ds.taxon_namespaces[0]
+        checkers = (
+                standard_file_test_chars.RnaTestChecker,
+                standard_file_test_chars.ProteinTestChecker,
+                standard_file_test_chars.Standard01234TestChecker,
+                standard_file_test_chars.DnaTestChecker,
+                )
+        self.assertEqual(len(ds.char_matrices), len(checkers))
+        for idx, (char_matrix, checker) in enumerate(zip(ds.char_matrices, checkers)):
+            self.assertIs(char_matrix.taxon_namespace, tns)
+            if checker.matrix_type is dendropy.StandardCharacterMatrix:
+                checker.create_class_data_label_sequence_map_based_on_state_alphabet(checker,
+                        char_matrix.default_state_alphabet)
+            standard_file_test_chars.general_char_matrix_checker(
+                    self,
+                    char_matrix,
+                    checker,
+                    check_taxon_annotations=self.check_taxon_annotations,
+                    check_matrix_annotations=self.check_matrix_annotations,
+                    check_sequence_annotations=self.check_sequence_annotations,
+                    check_column_annotations=self.check_column_annotations,
+                    check_cell_annotations=self.check_cell_annotations,)
 
     def test_basic_get(self):
         src_filename = "standard-test-chars-multiple-char-blocks.1.basic.nexus"
