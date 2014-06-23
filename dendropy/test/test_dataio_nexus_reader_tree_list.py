@@ -43,5 +43,7 @@ class NexusStandardTreeListReaderTestCase(
     def setUpClass(cls):
         cls.build()
 
+    ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+
 if __name__ == "__main__":
     unittest.main()
