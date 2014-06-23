@@ -157,6 +157,14 @@ class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
         ds = dendropy.DataSet.get_from_path(src_path, "nexus")
         self.verify_dataset(ds)
 
+    def test_basic_read(self):
+        src_filename = "standard-test-chars-multiple-char-blocks.1.basic.nexus"
+        src_path = pathmap.char_source_path(src_filename)
+        ds = dendropy.DataSet()
+        result = ds.read_from_path(src_path, "nexus")
+        self.assertEqual(result, (1, 0, 4))
+        self.verify_dataset(ds)
+
 class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
     def testMultiTaxonNamespace(self):
