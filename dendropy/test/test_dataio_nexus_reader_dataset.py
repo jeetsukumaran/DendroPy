@@ -259,7 +259,7 @@ class DataSetNexusMixedTestCase(
                 self.assertEqual(tree.label, expected_label)
                 self.verify_curated_tree(
                         tree=tree,
-                        suppress_internal_node_taxa=True,
+                        suppress_internal_node_taxa=False,
                         suppress_leaf_node_taxa=False,
                         suppress_edge_lengths=False,
                         node_taxon_label_map=None)
@@ -271,14 +271,21 @@ class DataSetNexusMixedTestCase(
     def test_basic_get(self):
         src_filename = "standard-test-mixed.1.basic.nexus"
         src_path = pathmap.mixed_source_path(src_filename)
-        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        ds = dendropy.DataSet.get_from_path(
+                src_path,
+                "nexus",
+                suppress_internal_node_taxa=False, # so internal labels get translated
+                )
         self.verify_dataset(ds)
 
     def test_basic_read(self):
         src_filename = "standard-test-mixed.1.basic.nexus"
         src_path = pathmap.mixed_source_path(src_filename)
         ds = dendropy.DataSet()
-        result = ds.read_from_path(src_path, "nexus")
+        result = ds.read_from_path(src_path,
+                "nexus",
+                suppress_internal_node_taxa=False, # so internal labels get translated
+                )
         self.assertEqual(result, (1, 7, 4))
         self.verify_dataset(ds)
 
