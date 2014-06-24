@@ -342,6 +342,7 @@ class TaxonNamespaceAssociated(object):
 class TaxonNamespace(
         basemodel.DataObject,
         basemodel.Annotable):
+
     """
     A collection of :class:`Taxon` objects representing a self-contained and complete
     domain of distinct operational taxonomic unit definitions.
@@ -607,7 +608,7 @@ class TaxonNamespace(
         if taxon in self._taxon_accession_index_map:
             return
         if not self.is_mutable:
-            raise TypeError("Taxon '{}' cannot be added to an immutable TaxonNamespace".format((taxon.label)))
+            raise error.ImmutableTaxonNamespaceError("Taxon '{}' cannot be added to an immutable TaxonNamespace".format((taxon.label)))
         self._current_accession_count += 1
         self._taxa.append(taxon)
         self._accession_index_taxon_map[self._current_accession_count] = taxon
@@ -655,7 +656,7 @@ class TaxonNamespace(
 
         """
         if not self.is_mutable:
-            raise TypeError("Taxon '{}' cannot be added to an immutable TaxonNamespace".format(label))
+            raise error.ImmutableTaxonNamespaceError("Taxon '{}' cannot be added to an immutable TaxonNamespace".format(label))
         taxon = Taxon(label=label)
         self.add_taxon(taxon)
         return taxon
@@ -684,7 +685,7 @@ class TaxonNamespace(
 
         """
         if not self.is_mutable:
-            raise TypeError("Taxon objects cannot be added to an immutable TaxonNamespace")
+            raise error.ImmutableTaxonNamespaceError("Taxon objects cannot be added to an immutable TaxonNamespace")
         taxa = []
         for label in labels:
             taxa.append(self.new_taxon(label=label))
@@ -1043,7 +1044,7 @@ class TaxonNamespace(
         if taxon is not None:
             return taxon
         if not self.is_mutable:
-            raise TypeError("Taxon '{}' not in TaxonNamespace, and cannot be created because TaxonNamespace is immutable".format(label))
+            raise error.ImmutableTaxonNamespaceError("Taxon '{}' not in TaxonNamespace, and cannot be created because TaxonNamespace is immutable".format(label))
         taxon = self.new_taxon(label=label)
         return taxon
 

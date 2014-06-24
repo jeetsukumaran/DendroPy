@@ -144,6 +144,23 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class UndefinedTaxonError(NexusReaderError):
+
+        def __init__(self,
+                taxon_namespace,
+                label,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            message = "Taxon '{}' is not in the set of defined taxa: {}".format(
+                            label,
+                            str(["{}".format(t.label) for t in taxon_namespace]))
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
     class TooManyCharactersError(NexusReaderError):
 
         def __init__(self,
@@ -247,6 +264,15 @@ class NexusReader(ioservice.DataReader):
         e = NexusReader.TooManyTaxaError(
                 taxon_namespace=taxon_namespace,
                 max_taxa=self._file_specified_ntax,
+                label=label,
+                line_num=self._nexus_tokenizer.token_line_num,
+                col_num=self._nexus_tokenizer.token_column_num,
+                stream=self._nexus_tokenizer.src)
+        return e
+
+    def _undefined_taxon_error(self, taxon_namespace, label):
+        e = NexusReader.UndefinedTaxonError(
+                taxon_namespace=taxon_namespace,
                 label=label,
                 line_num=self._nexus_tokenizer.token_line_num,
                 col_num=self._nexus_tokenizer.token_column_num,
@@ -813,13 +839,22 @@ class NexusReader(ioservice.DataReader):
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self._nexus_tokenizer.current_token
-        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
+                taxon_namespace=taxon_namespace,
                 enable_lookup_by_taxon_number=True,
                 case_sensitive=False)
         while True:
             translation_token = self._nexus_tokenizer.next_token()
+            if translation_token == ";" and not self._nexus_tokenizer.is_token_quoted:
+                raise self._nexus_error("Expecting translation token but found ';' instead")
             translation_label = self._nexus_tokenizer.next_token()
-            taxon = taxon_namespace.require_taxon(label=translation_label)
+            try:
+                taxon = taxon_namespace.require_taxon(label=translation_label)
+            except error.ImmutableTaxonNamespaceError:
+                exc = self._undefined_taxon_error(taxon_namespace=taxon_namespace, label=translation_label)
+                exc.__context__ = None # Python 3.0, 3.1, 3.2
+                exc.__cause__ = None # Python 3.3, 3.4
+                raise exc
             taxon_symbol_mapper.add_translate_token(translation_token, taxon)
             token = self._nexus_tokenizer.next_token() # ","
             if (not token) or (token == ';'):
@@ -829,54 +864,67 @@ class NexusReader(ioservice.DataReader):
         return taxon_symbol_mapper
 
     def _parse_trees_block(self):
-        token = 'TREES'
-        if not self.exclude_trees:
-            self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
-            link_title = None
-            taxon_namespace = None
-            taxon_symbol_mapper = None
-            trees_block = None
-            block_title = None
-            while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not self._nexus_tokenizer.is_eof() \
-                    and not token==None:
-                token = self._nexus_tokenizer.next_token_ucase()
-                if token == 'LINK':
-                    link_title = self._parse_link_statement().get("taxa")
-                if token == 'TITLE':
-                    token = self._nexus_tokenizer.next_token()
-                    block_title = token
-                if token == 'TRANSLATE':
-                    if taxon_namespace is None:
-                        taxon_namespace = self._get_taxon_namespace(link_title)
-                    taxon_symbol_mapper = self._parse_translate_statement(taxon_namespace)
-                if token == 'TREE':
-                    if taxon_namespace is None:
-                        taxon_namespace = self._get_taxon_namespace(link_title)
-                    if taxon_symbol_mapper is None:
-                        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
-                                enable_lookup_by_taxon_number=True,
-                                case_sensitive=False)
-                    if trees_block is None:
-                        trees_block = self._new_tree_list(taxon_namespace=taxon_namespace, title=block_title)
-                    while True:
-                        ## After the following, the current token
-                        ## will be the token immediately following
-                        ## the terminating semi-colon of a tree
-                        ## statement. Typically, this will be
-                        ## 'TREE' if there is another tree, or
-                        ## 'END'/'ENDBLOCK'.
-                        tree = self._parse_tree_statement(
-                                tree_factory=trees_block.new_tree,
-                                taxon_symbol_mapper=taxon_symbol_mapper)
-                        if self._nexus_tokenizer.is_eof() or not self._nexus_tokenizer.current_token:
-                            break
-                        if self._nexus_tokenizer.cast_current_token_to_ucase() != "TREE":
-                            break
-                    # trees_block.append(tree, reindex_taxa=False)
-            self._nexus_tokenizer.skip_to_semicolon() # move past END command
-        else:
-            token = self._consume_to_end_of_block(token)
+        """
+        Expectations:
+            - current token: "TREES" [part of "BEGIN TREES"]
+        """
+        token = self._nexus_tokenizer.cast_current_token_to_ucase()
+        if token != "TREES":
+            raise self._nexus_error("Expecting 'TREES' token, but instead found '{}'".format(token))
+        if self.exclude_trees:
+            self._consume_to_end_of_block(self._nexus_tokenizer.current_token)
+            return
+        self._nexus_tokenizer.skip_to_semicolon() # move past "BEGIN TREES" command
+        link_title = None
+        taxon_namespace = None
+        taxon_symbol_mapper = None
+        trees_block = None
+        block_title = None
+        # while ((not self._nexus_tokenizer.is_eof())
+        #         and self._nexus_tokenizer.current_token is not None
+        #         and self._nexus_tokenixer.current_token != 'END'
+        #         and self._nexus_tokenixer.current_token != 'ENDBLOCK'):
+        while ((not self._nexus_tokenizer.is_eof())
+                and token is not None
+                and token != 'END'
+                and token != 'ENDBLOCK'):
+            token = self._nexus_tokenizer.next_token_ucase()
+            if token == 'LINK':
+                link_title = self._parse_link_statement().get("taxa")
+            if token == 'TITLE':
+                token = self._nexus_tokenizer.next_token()
+                block_title = token
+                token = "" # clear; repopulate at start of loop
+            if token == 'TRANSLATE':
+                if taxon_namespace is None:
+                    taxon_namespace = self._get_taxon_namespace(link_title)
+                taxon_symbol_mapper = self._parse_translate_statement(taxon_namespace)
+                token = "" # clear; repopulate at start of loop
+            if token == 'TREE':
+                if taxon_namespace is None:
+                    taxon_namespace = self._get_taxon_namespace(link_title)
+                if taxon_symbol_mapper is None:
+                    taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
+                            enable_lookup_by_taxon_number=True,
+                            case_sensitive=False)
+                if trees_block is None:
+                    trees_block = self._new_tree_list(taxon_namespace=taxon_namespace, title=block_title)
+                while True:
+                    ## After the following, the current token
+                    ## will be the token immediately following
+                    ## the terminating semi-colon of a tree
+                    ## statement. Typically, this will be
+                    ## 'TREE' if there is another tree, or
+                    ## 'END'/'ENDBLOCK'.
+                    tree = self._parse_tree_statement(
+                            tree_factory=trees_block.new_tree,
+                            taxon_symbol_mapper=taxon_symbol_mapper)
+                    if self._nexus_tokenizer.is_eof() or not self._nexus_tokenizer.current_token:
+                        break
+                    if self._nexus_tokenizer.cast_current_token_to_ucase() != "TREE":
+                        token = self._nexus_tokenizer.current_token
+                        break
+        self._nexus_tokenizer.skip_to_semicolon() # move past END command
 
     def _parse_charset_statement(self, block_title=None, link_title=None):
         """
@@ -976,9 +1024,11 @@ class NexusReader(ioservice.DataReader):
             positions = [position - 1 for position in positions]
         return positions # make unique and return
 
-    def _consume_to_end_of_block(self, token):
+    def _consume_to_end_of_block(self, token=None):
         if token:
             token = token.upper()
+        else:
+            token = "DUMMY"
         while not (token == 'END' or token == 'ENDBLOCK') \
             and not self._nexus_tokenizer.is_eof() \
             and not token==None:

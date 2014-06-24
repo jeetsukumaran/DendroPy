@@ -165,6 +165,76 @@ class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(result, (1, 0, 4))
         self.verify_dataset(ds)
 
+class DataSetNexusTreesTestCase(dendropytest.ExtendedTestCase):
+
+    def test_multiple_trees(self):
+        src_filename = "multitreeblocks.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        self.assertEqual(len(ds.tree_lists), 3)
+
+class DataSetNexusMixedTestCase(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.check_taxon_annotations = False
+        cls.check_matrix_annotations = False
+        cls.check_sequence_annotations = False
+        cls.check_column_annotations = False
+        cls.check_cell_annotations = False
+        standard_file_test_chars.DnaTestChecker.build()
+        standard_file_test_chars.RnaTestChecker.build()
+        standard_file_test_chars.ProteinTestChecker.build()
+        standard_file_test_chars.Standard01234TestChecker.build()
+
+    def verify_chars(self, ds):
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        tns = ds.taxon_namespaces[0]
+        checkers = (
+                standard_file_test_chars.RnaTestChecker,
+                standard_file_test_chars.ProteinTestChecker,
+                standard_file_test_chars.Standard01234TestChecker,
+                standard_file_test_chars.DnaTestChecker,
+                )
+        self.assertEqual(len(ds.char_matrices), len(checkers))
+        for idx, (char_matrix, checker) in enumerate(zip(ds.char_matrices, checkers)):
+            self.assertIs(char_matrix.taxon_namespace, tns)
+            if checker.matrix_type is dendropy.StandardCharacterMatrix:
+                checker.create_class_data_label_sequence_map_based_on_state_alphabet(checker,
+                        char_matrix.default_state_alphabet)
+            standard_file_test_chars.general_char_matrix_checker(
+                    self,
+                    char_matrix,
+                    checker,
+                    check_taxon_annotations=self.check_taxon_annotations,
+                    check_matrix_annotations=self.check_matrix_annotations,
+                    check_sequence_annotations=self.check_sequence_annotations,
+                    check_column_annotations=self.check_column_annotations,
+                    check_cell_annotations=self.check_cell_annotations,)
+
+    def verify_trees(self, ds):
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        tns = ds.taxon_namespaces[0]
+
+    def verify_dataset(self, ds):
+        self.verify_chars(ds)
+        self.verify_trees(ds)
+
+    def test_basic_get(self):
+        src_filename = "standard-test-mixed.1.basic.nexus"
+        src_path = pathmap.mixed_source_path(src_filename)
+        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        self.verify_dataset(ds)
+
+    def test_basic_read(self):
+        src_filename = "standard-test-mixed.1.basic.nexus"
+        src_path = pathmap.mixed_source_path(src_filename)
+        ds = dendropy.DataSet()
+        result = ds.read_from_path(src_path, "nexus")
+        self.assertEqual(result, (1, 7, 4))
+        self.verify_dataset(ds)
+
 class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
 
     def testMultiTaxonNamespace(self):

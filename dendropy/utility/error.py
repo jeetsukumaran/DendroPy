@@ -57,6 +57,10 @@ def critical_deprecation_alert(message, stacklevel=4):
             lineno=inspect.getlineno(frame),
             )
 
+class ImmutableTaxonNamespaceError(TypeError):
+    def __init__(self, message):
+        TypeError.__init__(self, message)
+
 class DataError(Exception):
 
     def __init__(self,

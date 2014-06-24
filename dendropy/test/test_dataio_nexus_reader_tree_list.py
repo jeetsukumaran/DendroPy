@@ -45,5 +45,13 @@ class NexusStandardTreeListReaderTestCase(
 
     ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 
+class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
+
+    def test_multiple_trees(self):
+        src_filename = "multitreeblocks.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        trees = dendropy.TreeList.get_from_path(src_path, "nexus")
+        self.assertEqual(len(trees), 9)
+
 if __name__ == "__main__":
     unittest.main()
