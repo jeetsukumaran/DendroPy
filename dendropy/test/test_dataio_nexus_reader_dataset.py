@@ -166,7 +166,9 @@ class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(result, (1, 0, 4))
         self.verify_dataset(ds)
 
-class DataSetNexusTreesTestCase(dendropytest.ExtendedTestCase):
+class DataSetNexusTreesTestCase(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
 
     def test_multiple_trees(self):
         src_filename = "multitreeblocks.nex"
@@ -174,6 +176,30 @@ class DataSetNexusTreesTestCase(dendropytest.ExtendedTestCase):
         ds = dendropy.DataSet.get_from_path(src_path, "nexus")
         self.assertEqual(len(ds.taxon_namespaces), 1)
         self.assertEqual(len(ds.tree_lists), 3)
+
+    def test_with_translate(self):
+        srcs = (
+            ("curated-with-translate-block-and-internal-taxa.nex", False),
+            ("curated-with-translate-block-and-untranslated-internal-taxa.nex", True),
+            )
+        for src_filename, suppress_internal_taxa in srcs:
+            src_path = pathmap.tree_source_path(src_filename)
+            ds = dendropy.DataSet.get_from_path(
+                    src_path,
+                    "nexus",
+                    suppress_internal_node_taxa=suppress_internal_taxa)
+            self.assertEqual(len(ds.tree_lists), 1)
+            tree_list = ds.tree_lists[0]
+            tree_labels = ("1", "2", "3")
+            self.assertEqual(len(tree_list), len(tree_labels))
+            for tree_idx, (tree, label) in enumerate(zip(tree_list, tree_labels)):
+                self.assertEqual(tree.label, label)
+                self.verify_curated_tree(
+                        tree=tree,
+                        suppress_internal_node_taxa=suppress_internal_taxa,
+                        suppress_leaf_node_taxa=False,
+                        suppress_edge_lengths=False,
+                        node_taxon_label_map=None)
 
 class DataSetNexusMixedTestCase(
         curated_test_tree.CuratedTestTree,
@@ -220,7 +246,7 @@ class DataSetNexusMixedTestCase(
         self.assertEqual(len(ds.taxon_namespaces), 1)
         tns = ds.taxon_namespaces[0]
         self.assertEqual(len(ds.tree_lists), 7)
-        for tree_list in ds.tree_lists:
+        for tree_list_idx, tree_list in enumerate(ds.tree_lists):
             self.assertIs(tree_list.taxon_namespace, tns)
             expected_labels = (
                     'the first tree',
@@ -228,7 +254,8 @@ class DataSetNexusMixedTestCase(
                     'The Third Tree',
                     )
             self.assertEqual(len(tree_list), len(expected_labels))
-            for idx, (tree, expected_label) in enumerate(zip(tree_list, expected_labels)):
+            for tree_idx, (tree, expected_label) in enumerate(zip(tree_list, expected_labels)):
+                # print(tree_list_idx, tree_idx)
                 self.assertEqual(tree.label, expected_label)
                 self.verify_curated_tree(
                         tree=tree,
