@@ -23,6 +23,7 @@ NEXUS data read/write parse/format tests.
 from dendropy.test.support import pathmap
 from dendropy.test.support import dendropytest
 from dendropy.test.support import standard_file_test_chars
+from dendropy.test.support import curated_test_tree
 from dendropy.utility import messaging
 import unittest
 import dendropy
@@ -174,7 +175,9 @@ class DataSetNexusTreesTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(len(ds.taxon_namespaces), 1)
         self.assertEqual(len(ds.tree_lists), 3)
 
-class DataSetNexusMixedTestCase(dendropytest.ExtendedTestCase):
+class DataSetNexusMixedTestCase(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -216,6 +219,23 @@ class DataSetNexusMixedTestCase(dendropytest.ExtendedTestCase):
     def verify_trees(self, ds):
         self.assertEqual(len(ds.taxon_namespaces), 1)
         tns = ds.taxon_namespaces[0]
+        self.assertEqual(len(ds.tree_lists), 7)
+        for tree_list in ds.tree_lists:
+            self.assertIs(tree_list.taxon_namespace, tns)
+            expected_labels = (
+                    'the first tree',
+                    'the SECOND tree',
+                    'The Third Tree',
+                    )
+            self.assertEqual(len(tree_list), len(expected_labels))
+            for idx, (tree, expected_label) in enumerate(zip(tree_list, expected_labels)):
+                self.assertEqual(tree.label, expected_label)
+                self.verify_curated_tree(
+                        tree=tree,
+                        suppress_internal_node_taxa=True,
+                        suppress_leaf_node_taxa=False,
+                        suppress_edge_lengths=False,
+                        node_taxon_label_map=None)
 
     def verify_dataset(self, ds):
         self.verify_chars(ds)

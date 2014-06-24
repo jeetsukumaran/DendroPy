@@ -59,7 +59,7 @@ import dendropy
 class CuratedTestTree(object):
     dot_str = "a -> b -> i; b -> e -> j; e -> k; a -> c; c -> g; c -> f; g -> l; g -> m; f -> n; f -> h -> o; h -> p;"
     newick_unweighted_edges_str = "((i, (j, k)e)b, ((l, m)g, (n, (o, p)h)f)c)a;"
-    newick_weighted_edges_str = "((i:1, (j:2, k:3)e:4)b:5, ((l:6, m:7)g:8, (n:9, (o:10, p:11)h:12)f:13)c:14)a:15;"
+    newick_weighted_edges_str = "((i:17, (j:3, k:3)e:14)b:33, ((l:6, m:6)g:30, (n:23, (o:11, p:11)h:12)f:13)c:14)a:15;"
     preorder_sequence = ("a", "b", "i", "e", "j", "k", "c", "g", "l", "m", "f", "n", "h", "o", "p",)
     postorder_sequence = ("i", "j", "k", "e", "b", "l", "m", "g", "n", "o", "p", "h", "f", "c", "a",)
     leaf_sequence = ("i", "j", "k", "l", "m", "n", "o", "p",)

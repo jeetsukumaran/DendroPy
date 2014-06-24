@@ -193,10 +193,13 @@ class NexusReader(ioservice.DataReader):
         # The following are used by NewickReader in addition to NexusReader,
         # or have different defaults. So they are extracted/set here and
         # then forwarded on ...
-        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
-        kwargs["extract_comment_metadata"] = self.extract_comment_metadata
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
+
+        # As above, but the NEXUS format default is different from the NEWICK
+        # default, so this rather convoluted approach
+        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
+        kwargs["extract_comment_metadata"] = self.extract_comment_metadata
 
         # Create newick handler
         self.newick_reader = newickreader.NewickReader(**kwargs)
