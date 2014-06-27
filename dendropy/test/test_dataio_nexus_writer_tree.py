@@ -35,23 +35,20 @@ class NexusTreeWriterTests(
         unittest.TestCase):
 
     def test_simple(self):
-        for suppress_leaf_node_taxa in (True, False):
-            for suppress_internal_node_taxa in (True, False):
-                tree1, all_nodes, leaf_nodes, internal_nodes = self.get_tree(
-                            suppress_internal_node_taxa=suppress_internal_node_taxa,
-                            suppress_leaf_node_taxa=suppress_leaf_node_taxa
-                        )
-                kwargs = { }
-                s = self.write_out_validate_equal_and_return(
-                        tree1, "nexus", kwargs)
-                tree2 = dendropy.Tree.get_from_string(
-                        s, "nexus",
-                        suppress_internal_node_taxa=suppress_internal_node_taxa,
-                        suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                        )
-                self.verify_curated_tree(tree2,
-                        suppress_internal_node_taxa=suppress_internal_node_taxa,
-                        suppress_leaf_node_taxa=suppress_leaf_node_taxa,)
+        tree1, all_nodes, leaf_nodes, internal_nodes = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_leaf_node_taxa=False
+                )
+        kwargs = {
+                "suppress_leaf_node_labels": True,
+                "suppress_internal_node_labels": True
+                }
+        s = self.write_out_validate_equal_and_return(
+                tree1, "nexus", kwargs)
+        tree2 = dendropy.Tree.get_from_string(
+                s, "nexus",
+                )
+        self.verify_curated_tree(tree2)
 
 if __name__ == "__main__":
     unittest.main()
