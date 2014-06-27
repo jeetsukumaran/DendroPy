@@ -22,6 +22,7 @@ from dendropy.dataio import newickreader
 from dendropy.dataio import newickwriter
 from dendropy.dataio import fastareader
 from dendropy.dataio import nexusreader
+from dendropy.dataio import nexuswriter
 from dendropy.utility import container
 
 _IOServices = collections.namedtuple(
@@ -32,7 +33,7 @@ _IOServices = collections.namedtuple(
 _IO_SERVICE_REGISTRY = container.CaseInsensitiveDict()
 _IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, None)
 _IO_SERVICE_REGISTRY["fasta"] = _IOServices(fastareader.FastaReader, None, None)
-_IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, None, None)
+_IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, nexuswriter.NexusWriter, None)
 _IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, None, None)
 _IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, None, None)
 _IO_SERVICE_REGISTRY["proteinfasta"] = _IOServices(fastareader.ProteinFastaReader, None, None)

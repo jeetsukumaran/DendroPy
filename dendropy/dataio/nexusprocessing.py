@@ -377,7 +377,7 @@ def process_comments_for_item(item,
 ###############################################################################
 ## NEWICK/NEXUS formatting support.
 
-def format_annotation_as_comments(annotated, nhx=False):
+def format_item_annotations_as_comments(annotated, nhx=False):
     if not annotated.annotations:
         return ""
     parts = []

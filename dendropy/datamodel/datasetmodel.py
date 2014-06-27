@@ -223,7 +223,7 @@ class DataSet(
         Generic add for TaxonNamespace, TreeList or CharacterMatrix objects.
         """
         if isinstance(data_object, taxonmodel.TaxonNamespace):
-            self.add_taxon_set(data_object)
+            self.add_taxon_namespace(data_object)
         elif isinstance(data_object, treemodel.TreeList):
             self.add_tree_list(data_object)
         elif isinstance(data_object, charmatrixmodel.CharacterMatrix):
@@ -352,9 +352,8 @@ class DataSet(
     taxon_sets = property(_get_taxon_sets, _set_taxon_sets, _del_taxon_sets)
 
     def taxon_sets_deprecation_warning(self):
-        pass
-        # error.critical_deprecation_alert("`DataSet.taxon_sets` will no longer be supported in future releases; use `DataSet.taxon_namespaces` instead",
-        #         stacklevel=4)
+        error.critical_deprecation_alert("'taxon_sets' will no longer be supported in future releases; use 'taxon_namespaces' instead",
+                stacklevel=4)
 
     def _get_attached_taxon_set(self):
         self.attached_taxon_set_deprecation_warning()
@@ -367,32 +366,39 @@ class DataSet(
     attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
     def attached_taxon_set_deprecation_warning(self):
-        pass
-        # error.critical_deprecation_alert("`DataSet.attached_taxon_set` will no longer be supported in future releases; use `DataSet.attached_taxon_namespace` instead",
-        #         stacklevel=4)
+        error.critical_deprecation_alert("'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
+                stacklevel=4)
 
     def add_taxon_set(self, taxon_set):
         """
         DEPRECATED: Use `add_taxon_namespace()` instead.
         """
+        error.critical_deprecation_alert("'add_taxon_set' will no longer be supported in future releases; use 'add_taxon_namespace' instead",
+                stacklevel=4)
         return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
         """
         DEPRECATED: Use `new_taxon_namespace()` instead.
         """
+        error.critical_deprecation_alert("'new_taxon_set' will no longer be supported in future releases; use 'new_taxon_namespace' instead",
+                stacklevel=4)
         return self.new_taxon_namespace(*args, **kwargs)
 
     def attach_taxon_set(self, taxon_set=None):
         """
         DEPRECATED: Use `attach_taxon_namespace()` instead.
         """
+        error.critical_deprecation_alert("'attach_taxon_set' will no longer be supported in future releases; use 'attach_taxon_namespace' instead",
+                stacklevel=4)
         return self.attach_taxon_namespace(taxon_namespace=taxon_set)
 
     def detach_taxon_set(self):
         """
         DEPRECATED: Use `detach_taxon_namespace()` instead.
         """
+        error.critical_deprecation_alert("'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
+                stacklevel=4)
         self.detach_taxon_namespace()
 
     ### TreeList ###

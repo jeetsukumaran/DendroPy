@@ -27,8 +27,23 @@ class IOService(object):
     Base class for all readers/writers.
     """
 
-    def __init__(self, **kwargs):
+    @staticmethod
+    def attached_taxon_set_deprecation_warning():
+        error.critical_deprecation_alert("'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
+                stacklevel=4)
+
+    def __init__(self):
         self.attached_taxon_namespace = None
+
+    def _get_attached_taxon_set(self):
+        attached_taxon_set_deprecation_warning()
+        return self.taxon_namespace
+    def _set_attached_taxon_set(self, v):
+        attached_taxon_set_deprecation_warning()
+        self.taxon_namespace = v
+    def _del_attached_taxon_set(self):
+        attached_taxon_set_deprecation_warning()
+    attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):
         ignore_unrecognized_keyword_arguments = kwargs_dict.pop("ignore_unrecognized_keyword_arguments", False)
@@ -52,19 +67,8 @@ class DataReader(IOService):
             ["taxon_namespaces", "tree_lists", "char_matrices"]
             )
 
-    def __init__(self, **kwargs):
-        """
-        Constructs and configures a `DataReader` object by "harvesting" keyword
-        arguments and setting state accordingly. Keyword arguments recognized
-        and processed will be removed from the keyword argument dictionary.
-
-        Parameters
-        ----------
-
-        **kwargs : schema- and implementation-specific keyword arguments
-
-        """
-        IOService.__init__(self, **kwargs)
+    def __init__(self):
+        IOService.__init__(self)
 
     def _read(self,
             stream,
@@ -383,7 +387,7 @@ class DataWriter(IOService):
         **kwargs : schema- and implementation-specific keyword arguments
 
         """
-        IOService.__init__(self, **kwargs)
+        IOService.__init__(self)
 
     def _write(self,
             stream,
@@ -437,7 +441,7 @@ class DataWriter(IOService):
             `None`, then such metadata or annotations will not be stored.
         """
         tree_lists = dataset.tree_lists if not exclude_trees else None
-        char_matrices = dataset.char_matrices if not exclude_trees else None
+        char_matrices = dataset.char_matrices if not exclude_chars else None
         self.write(
                 stream=stream,
                 taxon_namespaces=dataset.taxon_namespaces,

@@ -182,6 +182,9 @@ class NexusReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
 
+        # base
+        ioservice.DataReader.__init__()
+
         # Following are NEXUS-parsing specific (i.e., not used by NEWICK
         # parsers), and need to be removed so as not to cause problems with our
         # keyword validation scheme

@@ -91,7 +91,7 @@ from dendropy.utility import error
 ## Helper functions
 
 def taxon_set_deprecation_warning():
-    error.critical_deprecation_alert("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
+    error.critical_deprecation_alert("'taxon_set' will no longer be supported in future releases; use 'taxon_namespace' instead",
             stacklevel=4)
 
 def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):

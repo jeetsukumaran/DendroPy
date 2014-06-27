@@ -211,21 +211,21 @@ class NewickWriter(ioservice.DataWriter):
             char_matrices=None,
             global_annotations_target=None):
         for tree_list in tree_lists:
-            self._write_tree_list(tree_list, stream)
+            self._write_tree_list(stream, tree_list)
 
-    def _write_tree_list(self, tree_list, stream):
+    def _write_tree_list(self, stream, tree_list):
         """
         Writes a `TreeList` in NEWICK schema to `stream`.
         """
         for tree in tree_list:
-            self._write_tree(tree, stream)
+            self._write_tree(stream, tree)
             stream.write("\n")
         # In NEWICK format, no clear way to distinguish between
         # annotations/comments associated with tree collection and
         # annotations/comments associated with first tree. So we place them at
         # *end* of document.
         if (not self.suppress_annotations) and (hasattr(tree_list, "_annotations")):
-            annotation_comments = nexusprocessing.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx)
+            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree_list, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
         treelist_comments = self._compose_comment_string(tree_list)
@@ -233,7 +233,7 @@ class NewickWriter(ioservice.DataWriter):
                 annotation_comments,
                 treelist_comments))
 
-    def _write_tree(self, tree, stream):
+    def _write_tree(self, stream, tree):
         """
         Composes and writes `tree` to `stream`.
         """
@@ -250,7 +250,7 @@ class NewickWriter(ioservice.DataWriter):
         else:
             weight = ""
         if not self.suppress_annotations:
-            annotation_comments = nexusprocessing.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
+            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
         tree_comments = self._compose_comment_string(tree)
@@ -340,8 +340,8 @@ class NewickWriter(ioservice.DataWriter):
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
         if not self.suppress_annotations:
-            node_annotation_comments = nexusprocessing.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
-            edge_annotation_comments = nexusprocessing.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
+            node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node, nhx=self.annotations_as_nhx)
+            edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge, nhx=self.annotations_as_nhx)
             statement = statement + node_annotation_comments + edge_annotation_comments
         edge_comment_str = self._compose_comment_string(node.edge)
         node_comment_str = self._compose_comment_string(node)
