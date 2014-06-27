@@ -28,63 +28,63 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import standard_file_test_trees
 from dendropy.test.support import compare_and_validate
 
+def newick_tree_writer_test_tree(
+        has_leaf_node_taxa=True,
+        has_leaf_node_labels=True,
+        has_internal_node_taxa=True,
+        has_internal_node_labels=True,
+        has_edge_lengths=True,
+        label_pool=None,
+        label_separator=' ',
+        ):
+    anodes = set()
+    tree = dendropy.Tree()
+    tns = tree.taxon_namespace
+    a = tree.seed_node.new_child()
+    b = tree.seed_node.new_child()
+    a1 = a.new_child()
+    a2 = a.new_child()
+    b1 = b.new_child()
+    b2 = b.new_child()
+    anodes.add(tree.seed_node)
+    anodes.add(a)
+    anodes.add(b)
+    anodes.add(a1)
+    anodes.add(a2)
+    anodes.add(b1)
+    anodes.add(b2)
+    if label_pool is None:
+        label_pool = [chr(i) for i in range(ord('a'), ord('z')+1)]
+    labeller = iter(label_pool)
+    for nd_idx, nd in enumerate(anodes):
+        expected_label_parts = collections.defaultdict(list)
+        is_leaf = nd.is_leaf()
+        if ( (is_leaf and has_leaf_node_taxa)
+                or ((not is_leaf) and has_internal_node_taxa) ):
+            label = next(labeller)
+            tx = tree.taxon_namespace.require_taxon(label=label)
+            nd.taxon = tx
+            expected_label_parts[ (False, True ) ].append(label)
+            expected_label_parts[ (False, False) ].append(label)
+        if ( (is_leaf and has_leaf_node_labels)
+                or ((not is_leaf) and has_internal_node_labels) ):
+            label = next(labeller)
+            nd.label = label
+            expected_label_parts[ (True,  False) ].append(label)
+            expected_label_parts[ (False, False) ].append(label)
+        nd.expected_label = collections.defaultdict(lambda: None)
+        for k in expected_label_parts:
+            nd.expected_label[k] = label_separator.join(expected_label_parts[k])
+        if has_edge_lengths:
+            nd.edge.length = nd_idx
+    return tree
+
 class NewickTreeWriterTests(
         standard_file_test_trees.StandardTestTreeChecker,
         compare_and_validate.ValidateWriteable,
         unittest.TestCase):
 
     schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
-
-    def get_simple_tree(self,
-            has_leaf_node_taxa=True,
-            has_leaf_node_labels=True,
-            has_internal_node_taxa=True,
-            has_internal_node_labels=True,
-            has_edge_lengths=True,
-            label_pool=None,
-            label_separator=' ',
-            ):
-        anodes = set()
-        tree = dendropy.Tree()
-        tns = tree.taxon_namespace
-        a = tree.seed_node.new_child()
-        b = tree.seed_node.new_child()
-        a1 = a.new_child()
-        a2 = a.new_child()
-        b1 = b.new_child()
-        b2 = b.new_child()
-        anodes.add(tree.seed_node)
-        anodes.add(a)
-        anodes.add(b)
-        anodes.add(a1)
-        anodes.add(a2)
-        anodes.add(b1)
-        anodes.add(b2)
-        if label_pool is None:
-            label_pool = [chr(i) for i in range(ord('a'), ord('z')+1)]
-        labeller = iter(label_pool)
-        for nd_idx, nd in enumerate(anodes):
-            expected_label_parts = collections.defaultdict(list)
-            is_leaf = nd.is_leaf()
-            if ( (is_leaf and has_leaf_node_taxa)
-                    or ((not is_leaf) and has_internal_node_taxa) ):
-                label = next(labeller)
-                tx = tree.taxon_namespace.require_taxon(label=label)
-                nd.taxon = tx
-                expected_label_parts[ (False, True ) ].append(label)
-                expected_label_parts[ (False, False) ].append(label)
-            if ( (is_leaf and has_leaf_node_labels)
-                    or ((not is_leaf) and has_internal_node_labels) ):
-                label = next(labeller)
-                nd.label = label
-                expected_label_parts[ (True,  False) ].append(label)
-                expected_label_parts[ (False, False) ].append(label)
-            nd.expected_label = collections.defaultdict(lambda: None)
-            for k in expected_label_parts:
-                nd.expected_label[k] = label_separator.join(expected_label_parts[k])
-            if has_edge_lengths:
-                nd.edge.length = nd_idx
-        return tree
 
     def test_roundtrip_full(self):
         tree_file_title = 'standard-test-trees-n33-annotated'
@@ -139,7 +139,7 @@ class NewickTreeWriterTests(
                 for has_internal_node_taxa in (True, False):
                     for has_internal_node_labels in (True, False):
                         for label_separator in (' ', '$$$'):
-                            tree = self.get_simple_tree(
+                            tree = newick_tree_writer_test_tree(
                                     has_leaf_node_taxa=has_leaf_node_taxa,
                                     has_leaf_node_labels=has_leaf_node_labels,
                                     has_internal_node_taxa=has_internal_node_taxa,
@@ -180,7 +180,7 @@ class NewickTreeWriterTests(
                                                     self.assertEqual(nd2.label,
                                                             nd1.expected_label[ (suppress_internal_taxon_labels, suppress_internal_node_labels) ])
     def test_rooting_token(self):
-        tree1 = self.get_simple_tree()
+        tree1 = newick_tree_writer_test_tree()
         for rooted_state in (None, True, False):
             tree1.is_rooted = rooted_state
             for suppress_rooting in (True, False):
@@ -213,7 +213,7 @@ class NewickTreeWriterTests(
                         self.assertTrue(tree2.is_rootedness_undefined)
 
     def test_edge_lengths(self):
-        tree1 = self.get_simple_tree()
+        tree1 = newick_tree_writer_test_tree()
         for suppress_edge_lengths in (True, False):
             kwargs = {
                     "suppress_edge_lengths": suppress_edge_lengths,
@@ -232,7 +232,7 @@ class NewickTreeWriterTests(
                     self.assertEqual(nd2.edge.length, nd1.edge.length)
 
     def test_unquoted_underscores(self):
-        tree1 = self.get_simple_tree(
+        tree1 = newick_tree_writer_test_tree(
                 has_leaf_node_labels=False,
                 has_internal_node_labels=False)
         for taxon in tree1.taxon_namespace:
@@ -264,7 +264,7 @@ class NewickTreeWriterTests(
                     self.assertEqual(nd2.taxon.label, expected_label)
 
     def test_preserve_spaces(self):
-        tree1 = self.get_simple_tree(
+        tree1 = newick_tree_writer_test_tree(
                 has_leaf_node_labels=False,
                 has_internal_node_labels=False)
         for taxon in tree1.taxon_namespace:
@@ -292,7 +292,7 @@ class NewickTreeWriterTests(
                 self.assertEqual(nd2.taxon.label, expected_label)
 
     def test_store_tree_weights(self):
-        tree1 = self.get_simple_tree(
+        tree1 = newick_tree_writer_test_tree(
                 has_leaf_node_labels=False,
                 has_internal_node_labels=False)
         for store_tree_weights in (True, False):
