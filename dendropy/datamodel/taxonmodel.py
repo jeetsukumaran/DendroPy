@@ -445,6 +445,7 @@ class TaxonNamespace(
         >>> tns2 = copy.deepcopy(tns1)
         """
         kwargs_set_label = kwargs.pop("label", None)
+        self.comments = []
         self.is_mutable = kwargs.pop('is_mutable', True)
         self._accession_index_taxon_map = {}
         self._taxa = []
@@ -1348,6 +1349,7 @@ class Taxon(
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
             basemodel.DataObject.__init__(self, label=label)
+        self.comments = []
 
     def __copy__(self):
         raise TypeError("Cannot shallow-copy Taxon")

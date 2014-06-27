@@ -134,8 +134,8 @@ class NexusWriter(ioservice.DataWriter):
         # and need to be removed so as not to cause problems with our keyword
         # validation scheme
         self.simple = kwargs.pop("simple", False)
-        self.suppress_taxa_block = kwargs.pop("suppress_taxa_block", False)
-        self.suppress_block_titles = kwargs.pop("suppress_block_titles", False)
+        self.suppress_taxa_blocks = kwargs.pop("suppress_taxa_block", None)
+        self.suppress_block_titles = kwargs.pop("suppress_block_titles", None)
         self.file_comments = kwargs.pop("file_comments", [])
         self.preamble_blocks = kwargs.pop("preamble_blocks", [])
         self.supplemental_blocks = kwargs.pop("supplemental_blocks", [])
@@ -159,6 +159,7 @@ class NexusWriter(ioservice.DataWriter):
         self._newick_writer = newickwriter.NewickWriter(**kwargs)
 
         # Book-keeping
+        self.taxon_namespaces_to_write = []
         self._block_title_map = {}
         self._title_block_map = {}
 
@@ -173,7 +174,7 @@ class NexusWriter(ioservice.DataWriter):
         stream.write('#NEXUS\n\n')
 
         # File/Document-level annotations and comments
-        if self.file_comments is not None:
+        if self.file_comments:
             self._write_comments(stream, self.file_comments)
         if global_annotations_target is not None:
             self._write_item_annotations(stream, global_annotations_target)
@@ -191,7 +192,7 @@ class NexusWriter(ioservice.DataWriter):
         if self.attached_taxon_namespace is not None:
             # should this be False?
             candidate_taxon_namespaces[self.attached_taxon_namespace] = True
-        else:
+        elif taxon_namespaces is not None:
             if self.suppress_unreferenced_taxon_namespaces:
                 # preload to preserve order
                 for tns in taxon_namespaces:
@@ -204,13 +205,13 @@ class NexusWriter(ioservice.DataWriter):
                 for i in data_collection:
                     if self.attached_taxon_namespace is None or i.taxon_namespace is self.attached_taxon_namespace:
                         candidate_taxon_namespaces[i.taxon_namespace] = True
-        taxon_namespaces_to_write = [tns for tns in candidate_taxon_namespaces if candidate_taxon_namespaces[tns]]
+        self.taxon_namespaces_to_write = [tns for tns in candidate_taxon_namespaces if candidate_taxon_namespaces[tns]]
 
         #  Write out taxon namespaces
-        if not self.simple and not self.suppress_taxa_block:
+        if not self.simple and not self.suppress_taxa_blocks:
             if self.suppress_block_titles and len(taxon_namespace_to_write) > 1:
                 warnings.warn("Multiple taxon namespaces will be written, but block titles are suppressed: data file may not be interpretable")
-            for tns in taxon_namespaces_to_write:
+            for tns in self.taxon_namespaces_to_write:
                 self._write_taxa_block(stream, tns)
 
         # Write out character matrices
@@ -251,7 +252,7 @@ class NexusWriter(ioservice.DataWriter):
         stream.write("END;\n\n")
 
     def _write_trees_block(self, stream, tree_list):
-        stream.write("BEGIN TREES;")
+        stream.write("BEGIN TREES;\n")
         self._write_block_title(stream, tree_list)
         self._write_item_annotations(stream, tree_list)
         self._write_item_comments(stream, tree_list)
@@ -260,15 +261,15 @@ class NexusWriter(ioservice.DataWriter):
             if tree.label:
                 tree_name = tree.label
             else:
-                tree_name = str(treeidx)
+                tree_name = str(tree_idx+1)
             tree_name = nexusprocessing.escape_nexus_token(
                     tree_name,
                     preserve_spaces=self.preserve_spaces,
                     quote_underscores=not self.unquoted_underscores)
-            newick_str = self._newick_writer._write_tree(stream, tree)
-            stream.write("    TREE {} = {}\n".format(tree_name, tree))
+            stream.write("    TREE {} = ".format(tree_name))
+            self._newick_writer._write_tree(stream, tree)
+            stream.write("\n")
         stream.write("END;\n\n")
-        stream.write("\n".join(block))
 
     def write_char_block(self, char_matrix, stream):
         return
@@ -461,11 +462,11 @@ class NexusWriter(ioservice.DataWriter):
         unless the 'block_titles' directive has been explicitly set to True
         by the user, block titles and links will not be written.
         """
-        if self.is_write_block_titles is None:
-            if self.attached_taxon_namespace is None and len(self.dataset.taxon_namespaces) > 1:
+        if self.suppress_block_titles is None:
+            if len(self.taxon_namespaces_to_write) > 1:
                 return True
             else:
                 return False
         else:
-            return self.is_write_block_titles
+            return self.suppress_block_titles
 
