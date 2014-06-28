@@ -42,18 +42,18 @@ class StandardTestTreeChecker(object):
     def compare_annotations_to_json_metadata_dict(self,
             item,
             expected_metadata,
-            force_metadata_values_to_string=False):
+            coerce_metadata_values_to_string=False):
         item_annotations_as_dict = item.annotations.values_as_dict()
-        if force_metadata_values_to_string:
-            d = {}
+        if coerce_metadata_values_to_string:
             for k in expected_metadata:
                 v = expected_metadata[k]
                 if isinstance(v, list):
                     v = [str(i) for i in v]
+                elif isinstance(v, tuple):
+                    v = (str(i) for i in v)
                 else:
                     v = str(v)
-                d[k] = v
-            expected_metadata = d
+                expected_metadata[k] = v
         # for annote in item.annotations:
         #     print("{}: {}".format(annote.name, annote.value))
         k1 = sorted(list(item_annotations_as_dict.keys()))
@@ -68,15 +68,31 @@ class StandardTestTreeChecker(object):
         self.assertEqual(set(k1), set(k2))
         for key in set(item_annotations_as_dict.keys()):
             if item_annotations_as_dict[key] != expected_metadata[key]:
-                print("**** {}:\t\t{}\t\t{}".format(
+                v = expected_metadata[key]
+                # if isinstance(v, list):
+                #     print("{}: {}".format(v, [type(i) for i in v]))
+                # elif isinstance(v, tuple):
+                #     print("{}: {}".format(v, (type(i) for i in v)))
+                # else:
+                #     print("{}: {}".format(v, type(v)))
+                print("**** {}:\t\t{} ({}) \t\t{} ({})".format(
                     key,
                     item_annotations_as_dict[key],
-                    expected_metadata[key]))
+                    type(item_annotations_as_dict[key]),
+                    expected_metadata[key],
+                    type(expected_metadata[key]),
+                    ))
         self.assertEqual(item_annotations_as_dict, expected_metadata)
 
-    def compare_metadata_annotations(self, item, check):
+    def compare_metadata_annotations(self,
+            item,
+            check,
+            coerce_metadata_values_to_string=False):
         expected_annotations = check["metadata"]
-        self.compare_annotations_to_json_metadata_dict(item, expected_annotations)
+        self.compare_annotations_to_json_metadata_dict(
+                item,
+                expected_annotations,
+                coerce_metadata_values_to_string=coerce_metadata_values_to_string)
 
     def compare_comments(self,
             item,
@@ -117,13 +133,17 @@ class StandardTestTreeChecker(object):
             suppress_internal_node_taxa=True,
             suppress_leaf_node_taxa=False,
             metadata_extracted=False,
+            coerce_metadata_values_to_string=False,
             distinct_nodes_and_edges=True,
             taxa_on_tree_equal_taxa_in_taxon_namespace=False):
         check_tree = tree_references[tree_file_title][str(check_tree_idx)]
         self.assertIs(tree.is_rooted, check_tree["is_rooted"])
         self.compare_comments(tree, check_tree, metadata_extracted)
         if metadata_extracted:
-            self.compare_metadata_annotations(tree, check_tree)
+            self.compare_metadata_annotations(
+                    item=tree,
+                    check=check_tree,
+                    coerce_metadata_values_to_string=coerce_metadata_values_to_string)
         seen_taxa = []
         node_labels = []
         edge_labels = []
@@ -245,6 +265,7 @@ class StandardTestTreeChecker(object):
             suppress_internal_node_taxa=True,
             suppress_leaf_node_taxa=False,
             metadata_extracted=False,
+            coerce_metadata_values_to_string=False,
             distinct_nodes_and_edges=True,
             taxa_on_tree_equal_taxa_in_taxon_namespace=False):
         tree_reference = tree_references[tree_file_title]
@@ -266,6 +287,7 @@ class StandardTestTreeChecker(object):
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
                     suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                     metadata_extracted=metadata_extracted,
+                    coerce_metadata_values_to_string=coerce_metadata_values_to_string,
                     distinct_nodes_and_edges=distinct_nodes_and_edges,
                     taxa_on_tree_equal_taxa_in_taxon_namespace=taxa_on_tree_equal_taxa_in_taxon_namespace)
 

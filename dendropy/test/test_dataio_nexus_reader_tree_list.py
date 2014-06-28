@@ -62,9 +62,10 @@ class NexusStandardTreeListReaderTestCase(
                 self.compare_annotations_to_json_metadata_dict(
                         tree_list,
                         expected_metadata,
-                        force_metadata_values_to_string=True)
+                        coerce_metadata_values_to_string=True)
             else:
-                expected_comments = expected_non_metadata_comments + expected_metadata_comments
+                expected_comments = ["&" + ",".join(s for s in expected_metadata_comments)] + expected_non_metadata_comments
+                # expected_comments = [expected_metadata_comments] + expected_non_metadata_comments
                 tree_list_metadata = tree_list.annotations.values_as_dict()
                 self.assertEqual(tree_list_metadata, {})
             self.assertEqual(len(tree_list.comments), len(expected_comments))
@@ -76,6 +77,7 @@ class NexusStandardTreeListReaderTestCase(
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=False,
                     metadata_extracted=extract_comment_metadata,
+                    coerce_metadata_values_to_string=True,
                     distinct_nodes_and_edges=False,
                     taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
