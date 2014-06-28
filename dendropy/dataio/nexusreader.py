@@ -915,6 +915,15 @@ class NexusReader(ioservice.DataReader):
                             case_sensitive=False)
                 if trees_block is None:
                     trees_block = self._new_tree_list(taxon_namespace=taxon_namespace, title=block_title)
+
+                # All comments leading up to the first 'TREE' statement assumed
+                # to belong to the TreeList corresponding to the TREES block
+                pre_tree_comments = self._nexus_tokenizer.pull_captured_comments()
+                nexusprocessing.process_comments_for_item(
+                        trees_block,
+                        pre_tree_comments,
+                        self.extract_comment_metadata)
+
                 while True:
                     ## After the following, the current token
                     ## will be the token immediately following
