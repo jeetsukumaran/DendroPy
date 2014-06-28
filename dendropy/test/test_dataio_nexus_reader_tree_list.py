@@ -43,6 +43,8 @@ class NexusStandardTreeListReaderTestCase(
     def setUpClass(cls):
         cls.build()
 
+    ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+
     def test_collection_comments_and_annotations(self):
         tree_file_title = 'standard-test-trees-n33-annotated'
         expected_non_metadata_comments = ["esquireship2232",
@@ -88,9 +90,15 @@ class NexusStandardTreeListReaderTestCase(
                 self.assertEqual(tree_list_metadata, {})
             self.assertEqual(len(tree_list.comments), len(expected_comments))
             self.assertEqual(set(tree_list.comments), set(expected_comments))
-
-
-    ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+            self.verify_standard_trees(
+                    tree_list=tree_list,
+                    tree_file_title=tree_file_title,
+                    tree_offset=0,
+                    suppress_internal_node_taxa=True,
+                    suppress_leaf_node_taxa=False,
+                    metadata_extracted=extract_comment_metadata,
+                    distinct_nodes_and_edges=False,
+                    taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
 class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
 
