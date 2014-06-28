@@ -43,6 +43,53 @@ class NexusStandardTreeListReaderTestCase(
     def setUpClass(cls):
         cls.build()
 
+    def test_collection_comments_and_annotations(self):
+        tree_file_title = 'standard-test-trees-n33-annotated'
+        expected_non_metadata_comments = ["esquireship2232",
+                "puborectalis8922 nullity2204 belligerence4219 curb6499 amphanthium2186 montilla265",
+                "grotesqueness1554 urd3366 stomachic6982 bibliology967 strippler64"]
+        expected_metadata_comments = [
+                '&!color="#0000ff",word1="saccharifier noninterpolation voiturette hypaton",word2="suspend physic tigerhearted",word3="reinstruct antitartaric dilli",word4="bartending discursativeness",a_95%_HPD={-79.7997141181,-44.405279378},a_mean=27.1368888529,b_95%_HPD={-27.033564206,-25.9638065766},b_mean=-58.0985938457'
+                ]
+        expected_metadata = {
+                '!color': '"#0000ff"',
+                'word1': '"saccharifier noninterpolation voiturette hypaton"',
+                'word2': '"suspend physic tigerhearted"',
+                'word3': '"reinstruct antitartaric dilli"',
+                'word4': '"bartending discursativeness"',
+                'a_95%_HPD': ["-79.7997141181","-44.405279378"],
+                'a_mean': "27.1368888529",
+                'b_95%_HPD': ["-27.033564206","-25.9638065766"],
+                'b_mean': "-58.0985938457"
+                }
+        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        for extract_comment_metadata in (True, False):
+            tree_list = dendropy.TreeList.get_from_path(
+                    tree_filepath,
+                    "nexus",
+                    extract_comment_metadata=extract_comment_metadata)
+            if extract_comment_metadata:
+                expected_comments = expected_non_metadata_comments
+                tree_list_metadata = tree_list.annotations.values_as_dict()
+                self.assertEqual(set(tree_list_metadata.keys()), set(expected_metadata.keys()))
+                # for annote in tree_list.annotations:
+                #     print("{}: {}".format(annote.name, annote.value))
+                # for key in set(tree_list_metadata.keys()):
+                #     if tree_list_metadata[key] != expected_metadata[key]:
+                #         print("**** {}:\t\t{}\t\t{}".format(
+                #             key,
+                #             tree_list_metadata[key],
+                #             expected_metadata[key]))
+                self.assertEqual(tree_list_metadata, expected_metadata)
+            else:
+                expected_comments = expected_non_metadata_comments + expected_metadata_comments
+                tree_list_metadata = tree_list.annotations.values_as_dict()
+                self.assertEqual(tree_list_metadata, {})
+            self.assertEqual(len(tree_list.comments), len(expected_comments))
+            self.assertEqual(set(tree_list.comments), set(expected_comments))
+
+
     ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 
 class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
