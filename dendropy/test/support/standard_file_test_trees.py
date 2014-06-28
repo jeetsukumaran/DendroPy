@@ -39,6 +39,45 @@ for tree_file_title in tree_file_titles:
 
 class StandardTestTreeChecker(object):
 
+    def compare_annotations_to_json_metadata_dict(self,
+            item,
+            expected_metadata,
+            force_metadata_values_to_string=False):
+        item_annotations_as_dict = item.annotations.values_as_dict()
+        if force_metadata_values_to_string:
+            d = {}
+            for k in expected_metadata:
+                v = expected_metadata[k]
+                if isinstance(v, list):
+                    v = [str(i) for i in v]
+                else:
+                    v = str(v)
+                d[k] = v
+            expected_metadata = d
+        # for annote in item.annotations:
+        #     print("{}: {}".format(annote.name, annote.value))
+        k1 = sorted(list(item_annotations_as_dict.keys()))
+        k2 = sorted(list(expected_metadata.keys()))
+        # print("--")
+        # for k in k1:
+        #     print("'{}':'{}'".format(k, item_annotations_as_dict[k]))
+        # print("--")
+        # for k in k2:
+        #     print("'{}':'{}'".format(k, expected_metadata[k]))
+        self.assertEqual(len(k1), len(k2))
+        self.assertEqual(set(k1), set(k2))
+        for key in set(item_annotations_as_dict.keys()):
+            if item_annotations_as_dict[key] != expected_metadata[key]:
+                print("**** {}:\t\t{}\t\t{}".format(
+                    key,
+                    item_annotations_as_dict[key],
+                    expected_metadata[key]))
+        self.assertEqual(item_annotations_as_dict, expected_metadata)
+
+    def compare_metadata_annotations(self, item, check):
+        expected_annotations = check["metadata"]
+        self.compare_annotations_to_json_metadata_dict(item, expected_annotations)
+
     def compare_comments(self,
             item,
             check,
@@ -83,6 +122,8 @@ class StandardTestTreeChecker(object):
         check_tree = tree_references[tree_file_title][str(check_tree_idx)]
         self.assertIs(tree.is_rooted, check_tree["is_rooted"])
         self.compare_comments(tree, check_tree, metadata_extracted)
+        if metadata_extracted:
+            self.compare_metadata_annotations(tree, check_tree)
         seen_taxa = []
         node_labels = []
         edge_labels = []
