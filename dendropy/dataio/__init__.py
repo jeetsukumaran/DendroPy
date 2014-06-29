@@ -16,7 +16,6 @@
 ##
 ##############################################################################
 
-
 import collections
 from dendropy.dataio import newickreader
 from dendropy.dataio import newickwriter

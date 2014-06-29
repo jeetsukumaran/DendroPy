@@ -142,16 +142,16 @@ class NexusWriter(ioservice.DataWriter):
         self.allow_multiline_comments = kwargs.pop("allow_multiline_comments", True)
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
 
-        # The following are used by NewickWriter in addition to NexusWriter,
-        # or have different defaults. So they are extracted/set here and
-        # then forwarded on ...
+        # The following are used by NewickWriter in addition to NexusWriter, so
+        # they are extracted/set here and then forwarded on ...
         self.unquoted_underscores = kwargs.get('unquoted_underscores', False)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
-        self.suppress_annotations = kwargs.get("suppress_annotations", False)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
 
         # As above, but the NEXUS format default is different from the NEWICK
         # default, so this rather convoluted approach
+        self.suppress_annotations = kwargs.pop("suppress_annotations", False)
+        kwargs["suppress_annotations"] = self.suppress_annotations
         self.suppress_item_comments = kwargs.pop("suppress_item_comments", False)
         kwargs["suppress_item_comments"] = self.suppress_item_comments
 
