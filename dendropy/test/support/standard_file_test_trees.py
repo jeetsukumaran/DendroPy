@@ -243,23 +243,30 @@ class StandardTestTreeChecker(object):
                         "metadata_comments": check_node["metadata_comments"] + check_edge["metadata_comments"],
                         }
                 self.compare_comments(node, d, metadata_extracted)
-                # if metadata_extracted:
-                    # Can this get *any* uglier and stupid?
-                    # TODO: smarter handling of this ...
-                    # d1 = check_node["metadata"]
-                    # d1.update(check_edge["metadata"])
-                    # d2 = check_edge["metadata"]
-                    # d2.update(check_node["metadata"])
-                    # try:
-                    #     self.compare_annotations_to_json_metadata_dict(
-                    #             item=node,
-                    #             expected_metadata=d1,
-                    #             coerce_metadata_values_to_string=coerce_metadata_values_to_string)
-                    # except AssertionError:
-                    #     self.compare_annotations_to_json_metadata_dict(
-                    #             item=node,
-                    #             expected_metadata=d2,
-                    #             coerce_metadata_values_to_string=coerce_metadata_values_to_string)
+                if metadata_extracted:
+                    obs_tuples = []
+                    for o in (node, edge):
+                        for a in o.annotations:
+                            # print("++ {}: {} = {} ({})".format(type(o), a.name, a.value, type(a.value)))
+                            v = a.value
+                            if isinstance(v, list):
+                                v = tuple(v)
+                            obs_tuples.append( (a.name, v) )
+                    exp_tuples = []
+                    for idx, o in enumerate((check_node["metadata"], check_edge["metadata"])):
+                        for k in o:
+                            v = o[k]
+                            # print("-- {}{}: {} = {}".format(type(o), idx+1, k, v))
+                            if isinstance(v, list):
+                                if coerce_metadata_values_to_string:
+                                    v = tuple(str(vx) for vx in v)
+                                else:
+                                    v = tuple(v)
+                            elif coerce_metadata_values_to_string:
+                                v = str(v)
+                            # print("-- {}{}: {} = {} ({})".format(type(o), idx+1, k, v, type(v)))
+                            exp_tuples.append( (k, v) )
+                    self.assertEqualUnorderedSequences(tuple(obs_tuples), tuple(exp_tuples))
             else:
                 self.compare_comments(node, check_node, metadata_extracted)
                 self.compare_comments(edge, check_edge, metadata_extracted)

@@ -55,7 +55,7 @@ class NexusTreeWriterTests(
 class NexusTreeWriterTests(
         standard_file_test_trees.StandardTestTreeChecker,
         compare_and_validate.ValidateWriteable,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["nexus"])
 

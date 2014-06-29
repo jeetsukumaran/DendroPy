@@ -90,3 +90,8 @@ class ExtendedTestCase(unittest.TestCase):
 
     def fail_incomplete_tests(self):
         return bool(strtobool(os.environ.get(metavar.FAIL_INCOMPLETE_TESTS_ENVAR, "0")))
+
+    def assertEqualUnorderedSequences(self, x1, x2):
+        c1 = collections.Counter(x1)
+        c2 = collections.Counter(x2)
+        return self.assertEqual(c1, c2)
