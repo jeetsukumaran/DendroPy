@@ -27,6 +27,7 @@ import re
 from dendropy.test.support import pathmap
 from dendropy.test.support import standard_file_test_trees
 from dendropy.test.support import compare_and_validate
+from dendropy.test.support import dendropytest
 
 def newick_tree_writer_test_tree(
         has_leaf_node_taxa=True,
@@ -82,7 +83,7 @@ def newick_tree_writer_test_tree(
 class NewickTreeWriterTests(
         standard_file_test_trees.StandardTestTreeChecker,
         compare_and_validate.ValidateWriteable,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
 
