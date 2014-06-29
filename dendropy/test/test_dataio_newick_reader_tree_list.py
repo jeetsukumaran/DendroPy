@@ -116,6 +116,7 @@ class NewickTreeListMetadataTest(
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
                             metadata_extracted=True,
+                            coerce_metadata_values_to_string=True,
                             distinct_nodes_and_edges=False)
 
     def test_correct_rooting_weighting_and_metadata_association(self):
