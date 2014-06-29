@@ -243,9 +243,35 @@ class StandardTestTreeChecker(object):
                         "metadata_comments": check_node["metadata_comments"] + check_edge["metadata_comments"],
                         }
                 self.compare_comments(node, d, metadata_extracted)
+                # if metadata_extracted:
+                    # Can this get *any* uglier and stupid?
+                    # TODO: smarter handling of this ...
+                    # d1 = check_node["metadata"]
+                    # d1.update(check_edge["metadata"])
+                    # d2 = check_edge["metadata"]
+                    # d2.update(check_node["metadata"])
+                    # try:
+                    #     self.compare_annotations_to_json_metadata_dict(
+                    #             item=node,
+                    #             expected_metadata=d1,
+                    #             coerce_metadata_values_to_string=coerce_metadata_values_to_string)
+                    # except AssertionError:
+                    #     self.compare_annotations_to_json_metadata_dict(
+                    #             item=node,
+                    #             expected_metadata=d2,
+                    #             coerce_metadata_values_to_string=coerce_metadata_values_to_string)
             else:
                 self.compare_comments(node, check_node, metadata_extracted)
-                self.compare_comments(edge, check_node, metadata_extracted)
+                self.compare_comments(edge, check_edge, metadata_extracted)
+                if metadata_extracted:
+                    self.compare_metadata_annotations(
+                            item=node,
+                            check=check_node,
+                            coerce_metadata_values_to_string=coerce_metadata_values_to_string)
+                    self.compare_metadata_annotations(
+                            item=edge,
+                            check=check_edge,
+                            coerce_metadata_values_to_string=coerce_metadata_values_to_string)
 
         self.assertEqual(num_visited_nodes, len(check_tree["nodeset"]))
         if taxa_on_tree_equal_taxa_in_taxon_namespace:
