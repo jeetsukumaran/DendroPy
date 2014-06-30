@@ -34,7 +34,6 @@ class ValidateWriteable(object):
         writeable.write_to_stream(sio, schema, **kwargs)
         s0 = sio.getvalue()
         s1 = writeable.as_string(schema, **kwargs)
-        print(s0)
         self.assertEqual(s0, s1)
         with pathmap.SandboxedFile() as tempf:
             writeable.write_to_path(tempf.name, schema, **kwargs)

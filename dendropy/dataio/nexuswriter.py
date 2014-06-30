@@ -328,7 +328,7 @@ class NexusWriter(ioservice.DataWriter):
             format.append("DATATYPE=STANDARD")
             fundamental_symbols = set()
             for state_alphabet in char_matrix.state_alphabets:
-                for s in state_alphabet.fundamental_states():
+                for s in state_alphabet.fundamental_state_iter():
                     if s.symbol is not None:
                         fundamental_symbols.add(s.symbol)
                     else:
@@ -336,7 +336,7 @@ class NexusWriter(ioservice.DataWriter):
             format.append('SYMBOLS="%s"' % "".join(fundamental_symbols))
             equates = set()
             for state_alphabet in char_matrix.state_alphabets:
-                for a in state_alphabet.ambiguous_states():
+                for a in state_alphabet.ambiguous_state_iter():
                     if a.symbol == "?":
                         format.append("MISSING=?")
                     elif a.symbol == "-":
@@ -345,7 +345,7 @@ class NexusWriter(ioservice.DataWriter):
                         if a.symbol is not None:
                             equates.add("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols)))
             for state_alphabet in char_matrix.state_alphabets:
-                for p in state_alphabet.polymorphic_states():
+                for p in state_alphabet.polymorphic_state_iter():
                     if p.symbol is not None:
                         equates.add("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols)))
             if equates:
