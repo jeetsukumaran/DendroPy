@@ -64,7 +64,7 @@ class NexusWriterCharactersTestCase(
                 check_column_annotations=self.check_column_annotations,
                 check_cell_annotations=self.check_cell_annotations,)
 
-    def test_basic_nexus_chars_dna(self):
+    def test_basic_nexus_chars(self):
         for src_filename, matrix_type, src_matrix_checker_type in self.__class__.srcs:
             src_path = pathmap.char_source_path(src_filename)
             d1 = matrix_type.get_from_path(src_path, "nexus")
