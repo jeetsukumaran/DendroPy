@@ -141,6 +141,8 @@ class NexusWriter(ioservice.DataWriter):
         self.supplemental_blocks = kwargs.pop("supplemental_blocks", [])
         self.allow_multiline_comments = kwargs.pop("allow_multiline_comments", True)
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
+        self.continuous_character_state_value_format_func = kwargs.pop("continuous_character_state_value_format_func", self._format_continuous_character_value)
+        self.discrete_character_state_value_format_func = kwargs.pop("discrete_character_state_value_format_func", self._format_discrete_character_value)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
         # they are extracted/set here and then forwarded on ...
@@ -271,92 +273,59 @@ class NexusWriter(ioservice.DataWriter):
             stream.write("\n")
         stream.write("END;\n\n")
 
-    def write_char_block(self, char_matrix, stream):
-        return
-        nexus = []
-        taxlabels = [nexusprocessing.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores) for taxon in char_matrix.taxon_namespace]
-        max_label_len = max([len(label) for label in taxlabels])
+    def _write_char_block(self, stream, char_matrix):
+        taxon_label_map = collections.OrderedDict()
+        for taxon in char_matrix:
+            taxon_label_map[taxon] = nexusprocessing.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores)
         nchar = max([len(seq) for seq in char_matrix.values()])
         if self.simple:
-            nexus.append('BEGIN DATA;')
-            ntaxstr = "NTAX=%d" % len(taxlabels)
+            stream.write("BEGIN DATA;\n")
+            # note that this will only list the number of taxa for
+            # which sequences are available
+            ntaxstr = "NTAX={}".format(len(taxon_label_map))
         else:
-            nexus.append('BEGIN CHARACTERS;')
+            stream.write("BEGIN CHARACTERS;\n")
             ntaxstr = ""
-        if self._link_blocks():
-            title = self._compose_block_title(char_matrix)
-            if title:
-                nexus.append('    %s;' % title)
-            if char_matrix.taxon_namespace.label:
-                nexus.append('    LINK TAXA = %s;' % nexusprocessing.escape_nexus_token(char_matrix.taxon_namespace.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
-        if not self.suppress_annotations:
-            nexus.append(nexusprocessing.format_item_annotations_as_comments(char_matrix, nhx=self.annotations_as_nhx))
-        if hasattr(char_matrix, "comments") and not self.suppress_item_comments:
-            nexus.extend(self._compose_item_comments_as_str(char_matrix, separator=None))
-        nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
-        nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
-        nexus.append('    MATRIX')
-        state_string_map = {}
-        if isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
-            for taxon in char_matrix.taxon_namespace:
-                seq = " ".join([str(v) for v in char_matrix[taxon]])
-                nexus.append('%s    %s' % (nexusprocessing.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq))
+        self._write_block_title(stream, char_matrix)
+        self._write_item_annotations(stream, char_matrix)
+        self._write_item_comments(stream, char_matrix)
+        self._write_link_to_taxa_block(stream, char_matrix.taxon_namespace)
+        stream.write("    DIMENSIONS{} NCHAR={};\n".format(ntaxstr, nchar))
+        stream.write("    FORMAT {};\n".format(self._compose_format_terms(char_matrix)))
+        stream.write("    MATRIX\n")
+        if char_matrix.data_type_name == "continuous":
+            state_value_writer = lambda x : stream.write("{} ".format(self.continuous_character_state_value_format_func(x)))
         else:
-            for taxon in char_matrix.taxon_namespace:
-                try:
-                    seq_vec = char_matrix[taxon]
-                except KeyError:
-                    continue
-                seq = StringIO()
-                for cell in seq_vec:
-                    state = cell.value
-                    assert state is not None, "Undefined state encountered in character sequence."
-                    try:
-                        seq.write(state_string_map[state])
-                    except:
-                        if state.symbol is not None:
-                            state_string_map[state] = state.symbol
-                        elif state.multistate == dataobject.StateAlphabetElement.AMBIGUOUS_STATE:
-                            state_string_map[state] = "{%s}" % ("".join(state.fundamental_symbols))
-                        elif state.multistate == dataobject.StateAlphabetElement.POLYMORPHIC_STATE:
-                            state_string_map[state] = "(%s)" % ("".join(state.fundamental_symbols))
-                        else:
-                            raise Exception("Could not match character state to symbol: '%s'." % state)
-                        seq.write(state_string_map[state])
-                nexus.append('%s    %s' % (nexusprocessing.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq.getvalue()))
-        nexus.append('    ;')
-        nexus.append('END;\n\n')
-        if hasattr(char_matrix, "character_subsets"):
-            nexus.append('BEGIN SETS;')
-            for label, char_set in char_matrix.character_subsets.items():
-                label = textutils.escape_nexus_token(char_set.label,
-                        preserve_spaces=self.preserve_spaces,
-                        quote_underscores=not self.unquoted_underscores)
-                ranges = textutils.group_ranges(char_set.character_indices)
-                pos = " ".join("-".join(str(c+1) for c in r) for r in ranges)
-                nexus.append('    charset %s = %s;\n' % (label, pos))
-            nexus.append('END;\n\n')
-        stream.write('\n'.join(nexus))
+            state_value_writer = lambda x : stream.write("{}".format(self.discrete_character_state_value_format_func(x)))
+        max_label_len = max(len(v) for v in taxon_label_map.values())
+        for taxon in char_matrix:
+            stream.write("        {taxon_label:{field_len}}    ".format(taxon_label=taxon_label_map[taxon],
+                field_len=max_label_len))
+            for state in char_matrix[taxon]:
+                state_value_writer(state)
+            stream.write("\n")
+        stream.write("    ;\n")
+        stream.write("END;\n\n\n")
+        self._write_character_subsets(stream, char_matrix)
 
-    def compose_format_terms(self, char_matrix):
+    def _compose_format_terms(self, char_matrix):
         format = []
-        if isinstance(char_matrix, dataobject.DnaCharacterMatrix):
+        if char_matrix.data_type_name == "dna":
             format.append("DATATYPE=DNA")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif isinstance(char_matrix, dataobject.RnaCharacterMatrix):
+        elif char_matrix.data_type_name == "rna":
             format.append("DATATYPE=RNA")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif isinstance(char_matrix, dataobject.NucleotideCharacterMatrix):
+        elif char_matrix.data_type_name == "nucleotide":
             format.append("DATATYPE=NUCLEOTIDE")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif isinstance(char_matrix, dataobject.ProteinCharacterMatrix):
+        elif char_matrix.data_type_name == "protein":
             format.append("DATATYPE=PROTEIN")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
+        elif char_matrix.data_type_name == "continuous":
             format.append("DATATYPE=CONTINUOUS ITEMS=(STATES)")
         else:
             format.append("DATATYPE=STANDARD")
-
             fundamental_symbols = set()
             for state_alphabet in char_matrix.state_alphabets:
                 for s in state_alphabet.fundamental_states():
@@ -365,7 +334,6 @@ class NexusWriter(ioservice.DataWriter):
                     else:
                         raise Exception("Could not match character state to symbol: '%s'." % s)
             format.append('SYMBOLS="%s"' % "".join(fundamental_symbols))
-
             equates = set()
             for state_alphabet in char_matrix.state_alphabets:
                 for a in state_alphabet.ambiguous_states():
@@ -376,15 +344,12 @@ class NexusWriter(ioservice.DataWriter):
                     else:
                         if a.symbol is not None:
                             equates.add("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols)))
-
             for state_alphabet in char_matrix.state_alphabets:
                 for p in state_alphabet.polymorphic_states():
                     if p.symbol is not None:
                         equates.add("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols)))
-
             if equates:
                 format.append('EQUATE="%s"' % equates)
-
         return ' '.join(format)
 
     def _write_comments(self, stream, comments):
@@ -470,3 +435,21 @@ class NexusWriter(ioservice.DataWriter):
         else:
             return self.suppress_block_titles
 
+    def _format_continuous_character_value(self, v):
+        return "{}".format(v)
+
+    def _format_discrete_character_value(self, v):
+        return str(v)
+
+    def _write_character_subsets(self, stream, char_matrix):
+        if not hasattr(char_matrix, "character_subsets") or not char_matrix.character_subsets:
+            return
+        stream.write("BEGIN SETS;\n")
+        for label, char_set in char_matrix.character_subsets.items():
+            label = textutils.escape_nexus_token(char_set.label,
+                    preserve_spaces=self.preserve_spaces,
+                    quote_underscores=not self.unquoted_underscores)
+            ranges = textutils.group_ranges(char_set.character_indices)
+            pos = " ".join("-".join(str(c+1) for c in r) for r in ranges)
+            stream.write("    charset {} = {};\n".format((label, pos)))
+        stream.write("END;\n\n\n")

@@ -482,6 +482,7 @@ class CharacterMatrix(
                     taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self._taxon_sequence_map = {}
             self.character_types = []
+            self.comments = []
             self.character_subsets = container.OrderedCaselessDict()
             self.markup_as_sequences = True
             if len(args) == 1:
@@ -559,13 +560,28 @@ class CharacterMatrix(
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out this object's data to a file-like object opened for writing
-        `stream`.
+        Writes out `self` in `schema` format to a destination given by
+        file-like object `stream`.
+
+        Parameters
+        ----------
+        stream : file or file-like object
+            Destination for data.
+        schema : string
+            Must be a recognized character file schema, such as "nexus",
+            "phylip", etc, for which a specialized tree list writer is
+            available. If this is not implemented for the schema specified, then
+            a UnsupportedSchemaError is raised.
+
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments will be passed directly to the writer for the
+            specified schema. See documentation for details on keyword
+            arguments supported by writers of various schemas.
+
         """
-        from dendropy.dataobject.dataset import DataSet
-        d = DataSet()
-        d.add(self)
-        d.write(stream=stream, schema=schema, **kwargs)
+        writer = dataio.get_writer(schema, **kwargs)
+        writer.write_char_matrices([self],
+                stream)
 
     ###########################################################################
     ### Taxon Management
