@@ -203,7 +203,7 @@ class DataSetNexusTreesTestCase(
                         suppress_edge_lengths=False,
                         node_taxon_label_map=None)
 
-class DataSetNexusMixedTestCase(
+class DataSetNexusReaderMixedTestCase(
         curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):
 

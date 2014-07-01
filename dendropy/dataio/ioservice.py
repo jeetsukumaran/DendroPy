@@ -442,7 +442,7 @@ class DataWriter(IOService):
         """
         tree_lists = dataset.tree_lists if not exclude_trees else None
         char_matrices = dataset.char_matrices if not exclude_chars else None
-        self.write(
+        self._write(
                 stream=stream,
                 taxon_namespaces=dataset.taxon_namespaces,
                 tree_lists=tree_lists,

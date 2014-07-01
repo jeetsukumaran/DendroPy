@@ -183,9 +183,11 @@ class DataSet(
     def read(self,
             stream,
             schema,
+            exclude_trees=False,
+            exclude_chars=False,
             **kwargs):
-        exclude_trees = kwargs.pop("exclude_trees", False)
-        exclude_chars = kwargs.pop("exclude_chars", False)
+        # exclude_trees = kwargs.pop("exclude_trees", False)
+        # exclude_chars = kwargs.pop("exclude_chars", False)
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if (self.attached_taxon_namespace is not None
                 and taxon_namespace is not None
@@ -212,6 +214,35 @@ class DataSet(
         return (n_tns2-n_tns,
                 n_tree_lists2-n_tree_lists,
                 n_char_matrices2-n_char_matrices)
+
+    def write(self,
+            stream,
+            schema,
+            exclude_trees=False,
+            exclude_chars=False,
+            **kwargs):
+        """
+        Writes out `self` in `schema` format to a destination given by
+        file-like object `stream`.
+
+        Parameters
+        ----------
+        stream : file or file-like object
+            Destination for data.
+        schema : string
+            Must be a recognized character file schema, such as "nexus",
+            "phylip", etc, for which a specialized tree list writer is
+            available. If this is not implemented for the schema specified, then
+            a UnsupportedSchemaError is raised.
+
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments will be passed directly to the writer for the
+            specified schema. See documentation for details on keyword
+            arguments supported by writers of various schemas.
+
+        """
+        writer = dataio.get_writer(schema, **kwargs)
+        writer.write_dataset(self, stream, exclude_trees, exclude_chars)
 
     ###########################################################################
     ### Domain Data Management

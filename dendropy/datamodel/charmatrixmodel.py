@@ -569,9 +569,9 @@ class CharacterMatrix(
             Destination for data.
         schema : string
             Must be a recognized character file schema, such as "nexus",
-            "phylip", etc, for which a specialized tree list writer is
-            available. If this is not implemented for the schema specified, then
-            a UnsupportedSchemaError is raised.
+            "phylip", etc, for which a specialized writer is available. If this
+            is not implemented for the schema specified, then a
+            UnsupportedSchemaError is raised.
 
         \*\*kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
