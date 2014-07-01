@@ -205,12 +205,12 @@ class DataSetNexusTreesTestCase(
                         node_taxon_label_map=None)
 
 class DataSetNexusReaderMixedTestCase(
-        standard_file_test_datasets.StandardDataSet,
+        standard_file_test_datasets.StandardSingleTaxonNamespaceDataSet,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_datasets.StandardDataSet.build(cls)
+        standard_file_test_datasets.StandardSingleTaxonNamespaceDataSet.build(cls)
         cls.check_taxon_annotations = False
         cls.check_matrix_annotations = False
         cls.check_sequence_annotations = False

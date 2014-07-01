@@ -20,7 +20,7 @@ import dendropy
 from dendropy.test.support import curated_test_tree
 from dendropy.test.support import standard_file_test_chars
 
-class StandardDataSet(curated_test_tree.CuratedTestTree):
+class StandardSingleTaxonNamespaceDataSet(curated_test_tree.CuratedTestTree):
 
     @staticmethod
     def build(cls):

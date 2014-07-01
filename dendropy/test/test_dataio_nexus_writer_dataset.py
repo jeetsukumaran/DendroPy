@@ -29,13 +29,13 @@ from dendropy.test.support import standard_file_test_datasets
 
 
 class DataSetNexusWriterMixedTestCase(
-        standard_file_test_datasets.StandardDataSet,
+        standard_file_test_datasets.StandardSingleTaxonNamespaceDataSet,
         compare_and_validate.ValidateWriteable,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_datasets.StandardDataSet.build(cls)
+        standard_file_test_datasets.StandardSingleTaxonNamespaceDataSet.build(cls)
         cls.check_taxon_annotations = False
         cls.check_matrix_annotations = False
         cls.check_sequence_annotations = False
