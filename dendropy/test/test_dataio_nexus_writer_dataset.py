@@ -97,26 +97,21 @@ class DataSetNexusWriterMixedTestCase(
         self.verify_chars(ds)
         self.verify_trees(ds)
 
-    def test_basic_get(self):
-        src_filename = "standard-test-mixed.1.basic.nexus"
-        src_path = pathmap.mixed_source_path(src_filename)
-        ds = dendropy.DataSet.get_from_path(
-                src_path,
-                "nexus",
-                suppress_internal_node_taxa=False, # so internal labels get translated
-                )
-        self.verify_dataset(ds)
-
     def setUp(self):
         self.src_filename = "standard-test-mixed.1.basic.nexus"
         self.src_path = pathmap.mixed_source_path(self.src_filename)
-        self.src_ds = dendropy.DataSet()
+        self.src_ds = dendropy.DataSet.get_from_path(self.src_path,
+                "nexus",
+                suppress_internal_node_taxa=False, # so internal labels get translated
+                )
 
     def test_basic(self):
         s = self.write_out_validate_equal_and_return(
                 self.src_ds, "nexus", {})
         ds = dendropy.DataSet.get_from_string(
-                s, "nexus")
+                s, "nexus",
+                suppress_internal_node_taxa=False, # so internal labels get translated
+                )
         self.verify_dataset(ds)
 
 if __name__ == "__main__":
