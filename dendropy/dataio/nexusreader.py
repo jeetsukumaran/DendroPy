@@ -305,8 +305,8 @@ class NexusReader(ioservice.DataReader):
         return taxon_namespace
 
     def _get_taxon_namespace(self, title=None):
-        # if self.attached_taxon_namespace is not None:
-        #     return self.attached_taxon_namespace
+        if self.attached_taxon_namespace is not None:
+            return self.attached_taxon_namespace
         if title is None:
             if len(self._taxon_namespaces) == 0:
                 return self._new_taxon_namespace(title=title)
@@ -317,7 +317,7 @@ class NexusReader(ioservice.DataReader):
         else:
             found = []
             for tns in self._taxon_namespaces:
-                if tns.label.upper() == title.upper():
+                if tns.label is not None and tns.label.upper() == title.upper():
                     found.append(tns)
             if len(found) == 0:
                 raise self._nexus_error("Taxa block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)

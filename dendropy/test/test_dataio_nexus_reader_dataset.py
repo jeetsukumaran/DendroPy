@@ -42,11 +42,13 @@ class DataSetNexusSingleCharsTestCase(dendropytest.ExtendedTestCase):
         standard_file_test_chars.RnaTestChecker.build()
         standard_file_test_chars.ProteinTestChecker.build()
         standard_file_test_chars.Standard01234TestChecker.build()
+        standard_file_test_chars.ContinuousTestChecker.build()
         cls.srcs = (
                 ("standard-test-chars-dna.multi.nexus", standard_file_test_chars.DnaTestChecker),
                 ("standard-test-chars-rna.multi.nexus", standard_file_test_chars.RnaTestChecker),
                 ("standard-test-chars-protein.multi.nexus", standard_file_test_chars.ProteinTestChecker),
                 ("standard-test-chars-generic.interleaved.nexus", standard_file_test_chars.Standard01234TestChecker),
+                ("standard-test-chars-continuous.mesquite.nexus", standard_file_test_chars.ContinuousTestChecker),
                 )
 
     def verify_char_matrix(self, char_matrix, src_matrix_checker_type):
