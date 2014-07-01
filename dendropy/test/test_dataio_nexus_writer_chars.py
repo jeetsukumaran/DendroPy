@@ -42,11 +42,13 @@ class NexusWriterCharactersTestCase(
         standard_file_test_chars.RnaTestChecker.build()
         standard_file_test_chars.ProteinTestChecker.build()
         standard_file_test_chars.Standard01234TestChecker.build()
+        standard_file_test_chars.ContinuousTestChecker.build()
         cls.srcs = (
                 ("standard-test-chars-dna.multi.nexus", dendropy.DnaCharacterMatrix, standard_file_test_chars.DnaTestChecker),
                 ("standard-test-chars-rna.multi.nexus", dendropy.RnaCharacterMatrix, standard_file_test_chars.RnaTestChecker),
                 ("standard-test-chars-protein.multi.nexus", dendropy.ProteinCharacterMatrix, standard_file_test_chars.ProteinTestChecker),
                 ("standard-test-chars-generic.interleaved.nexus", dendropy.StandardCharacterMatrix, standard_file_test_chars.Standard01234TestChecker),
+                ("standard-test-chars-continuous.mesquite.nexus", dendropy.ContinuousCharacterMatrix, standard_file_test_chars.ContinuousTestChecker),
                 )
 
     def verify_char_matrix(self, char_matrix, src_matrix_checker_type):
