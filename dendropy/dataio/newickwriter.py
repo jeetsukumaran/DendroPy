@@ -162,6 +162,7 @@ class NewickWriter(ioservice.DataWriter):
         labels or the node labels.
 
         """
+        ioservice.DataWriter.__init__(self)
         legacy = {
                 "internal_labels": "Use 'suppress_internal_taxon_labels' instead",
                 "write_rooting": "Use 'suppress_rooting' instead",
@@ -211,6 +212,9 @@ class NewickWriter(ioservice.DataWriter):
             char_matrices=None,
             global_annotations_target=None):
         for tree_list in tree_lists:
+            if (self.attached_taxon_namespace is not None
+                    and tree_list.taxon_namespace is not self.attached_taxon_namespace):
+                continue
             self._write_tree_list(stream, tree_list)
 
     def _write_tree_list(self, stream, tree_list):

@@ -18,6 +18,7 @@
 
 import collections
 import warnings
+from dendropy.utility import error
 
 ###############################################################################
 ## IOService
@@ -36,13 +37,13 @@ class IOService(object):
         self.attached_taxon_namespace = None
 
     def _get_attached_taxon_set(self):
-        attached_taxon_set_deprecation_warning()
-        return self.taxon_namespace
-    def _set_attached_taxon_set(self, v):
-        attached_taxon_set_deprecation_warning()
-        self.taxon_namespace = v
-    def _del_attached_taxon_set(self):
-        attached_taxon_set_deprecation_warning()
+        IOService.attached_taxon_set_deprecation_warning()
+        return self.attached_taxon_namespace
+    def _set_attached_taxon_set(IOService, v):
+        IOService.attached_taxon_set_deprecation_warning()
+        self.attached_taxon_namespace = v
+    def _del_attached_taxon_set(IOService):
+        IOService.attached_taxon_set_deprecation_warning()
     attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):
