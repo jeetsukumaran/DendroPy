@@ -41,7 +41,7 @@ END;
 
 BEGIN TREES;
 	TITLE x2.trees1;
-	LINK Taxa = X2;
+	LINK Taxa = x2;
 	TRANSLATE
 	    1 x2.1,
 	    2 x2.2,
@@ -63,6 +63,84 @@ BEGIN TREES;
 	    ;
     TREE 1 = (1,(2,(3,4)));
     TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN TREES;
+	TITLE x1.trees1;
+	LINK Taxa = x1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars1;
+	LINK TAXA = X1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
+END;
+
+BEGIN TREES;
+	TITLE x1.trees2;
+	LINK Taxa = x1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars2;
+	LINK TAXA = x1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
+END;
+
+BEGIN TREES;
+	TITLE x1.trees3;
+	LINK Taxa = X1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars2;
+	LINK TAXA = X1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
 END;
 
 

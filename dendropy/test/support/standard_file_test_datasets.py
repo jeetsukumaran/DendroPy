@@ -88,8 +88,10 @@ class MultipleTaxonNamespaceDataSet(object):
     expected_taxa["X2"] = ("x2.1", "x2.2", "x2.3", "x2.4", )
     expected_taxa["X3"] = ("x3.1", "x3.2", "x3.3", "x3.4", "x3.5", "x3.6", )
     expected_chars = collections.OrderedDict()
+    expected_chars["X1"] = ("x1.chars1", "x1.chars2", "x1.chars3", )
     expected_chars["X2"] = ("x2.chars1", "x2.chars2")
     expected_trees = collections.OrderedDict()
+    expected_trees["X1"] = ("x1.trees1", "x1.trees3", "x1.trees3",)
     expected_trees["X2"] = ("x2.trees1", "x2.trees2")
 
     def verify_attached_taxon_namespace_written(self, ds, taxon_namespace):
