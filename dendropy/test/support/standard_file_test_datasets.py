@@ -97,6 +97,16 @@ class MultipleTaxonNamespaceDataSet(object):
         self.assertIs(ds.taxon_namespaces[0], attached_taxon_namespace)
         self.assertEqual(len(ds.taxon_namespaces[0]),
                 sum(len(v) for v in MultipleTaxonNamespaceDataSet.expected_taxa.values()))
+        self.assertEqual(len(ds.char_matrices),
+                sum(len(v) for v in MultipleTaxonNamespaceDataSet.expected_chars.values()))
+        self.assertEqual(len(ds.tree_lists),
+                sum(len(v) for v in MultipleTaxonNamespaceDataSet.expected_trees.values()))
+        for block in (ds.tree_lists, ds.char_matrices):
+            for item in block:
+                self.assertIs(item.taxon_namespace, attached_taxon_namespace)
+                if hasattr(item[0], "taxon_namespace"):
+                    for subitem in item:
+                        self.assertIs(subitem.taxon_namespace, attached_taxon_namespace)
 
     def verify_unrestricted(self, ds):
         self.assertEqual(len(ds.taxon_namespaces), len(MultipleTaxonNamespaceDataSet.expected_taxa))
