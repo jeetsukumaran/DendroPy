@@ -177,6 +177,17 @@ class NexusReader(ioservice.DataReader):
                     col_num=col_num,
                     stream=stream)
 
+    class IncompleteBlockError(NexusReaderError):
+        def __init__(self, message,
+                line_num=None,
+                col_num=None,
+                stream=None):
+            NexusReader.NexusReaderError.__init__(self,
+                    message=message,
+                    line_num=line_num,
+                    col_num=col_num,
+                    stream=stream)
+
     ###########################################################################
     ## Life-cycle and Setup
 
@@ -549,9 +560,10 @@ class NexusReader(ioservice.DataReader):
         block_title = None
         link_title = None
         self._data_type_name = "standard" # set as default
-        while not (token == 'END' or token == 'ENDBLOCK') \
-                and not self._nexus_tokenizer.is_eof() \
-                and not token==None:
+        while (token != 'END'
+                and token != 'ENDBLOCK'
+                and not self._nexus_tokenizer.is_eof()
+                and not token==None):
             token = self._nexus_tokenizer.next_token_ucase()
             if token == 'TITLE':
                 token = self._nexus_tokenizer.next_token()
@@ -564,7 +576,10 @@ class NexusReader(ioservice.DataReader):
                 self._parse_format_statement()
             elif token == 'MATRIX':
                 self._parse_matrix_statement(block_title=block_title, link_title=link_title)
-            token = self._nexus_tokenizer.cast_current_token_to_ucase()
+            elif token == 'BEGIN':
+                raise self._nexus_error("'BEGIN' found without completion of previous block",
+                        NexusReader.IncompleteBlockError)
+            # token = self._nexus_tokenizer.cast_current_token_to_ucase()
         self._nexus_tokenizer.skip_to_semicolon() # move past END command
 
     def _build_state_alphabet(self, char_block, symbols):
@@ -656,6 +671,9 @@ class NexusReader(ioservice.DataReader):
                 else:
                     raise self._nexus_error("Expecting '=' after MISSING keyword")
                 token = self._nexus_tokenizer.require_next_token_ucase()
+            elif token == 'BEGIN':
+                raise self._nexus_error("'BEGIN' found without completion of previous block",
+                        NexusReader.IncompleteBlockError)
             else:
                 token = self._nexus_tokenizer.require_next_token_ucase()
 
@@ -686,6 +704,9 @@ class NexusReader(ioservice.DataReader):
                         raise self._nexus_error("Expecting numeric value for NCHAR")
                 else:
                     raise self._nexus_error("Expecting '=' after NCHAR keyword")
+            elif token == 'BEGIN':
+                raise self._nexus_error("'BEGIN' found without completion of previous block",
+                        NexusReader.IncompleteBlockError)
             token = self._nexus_tokenizer.require_next_token_ucase()
 
     def _parse_matrix_statement(self, block_title=None, link_title=None):
@@ -897,16 +918,16 @@ class NexusReader(ioservice.DataReader):
             token = self._nexus_tokenizer.next_token_ucase()
             if token == 'LINK':
                 link_title = self._parse_link_statement().get("taxa")
-            if token == 'TITLE':
+            elif token == 'TITLE':
                 token = self._nexus_tokenizer.next_token()
                 block_title = token
                 token = "" # clear; repopulate at start of loop
-            if token == 'TRANSLATE':
+            elif token == 'TRANSLATE':
                 if taxon_namespace is None:
                     taxon_namespace = self._get_taxon_namespace(link_title)
                 taxon_symbol_mapper = self._parse_translate_statement(taxon_namespace)
                 token = "" # clear; repopulate at start of loop
-            if token == 'TREE':
+            elif token == 'TREE':
                 if taxon_namespace is None:
                     taxon_namespace = self._get_taxon_namespace(link_title)
                 if taxon_symbol_mapper is None:
@@ -923,7 +944,6 @@ class NexusReader(ioservice.DataReader):
                         trees_block,
                         pre_tree_comments,
                         self.extract_comment_metadata)
-
                 while True:
                     ## After the following, the current token
                     ## will be the token immediately following
@@ -939,6 +959,9 @@ class NexusReader(ioservice.DataReader):
                     if self._nexus_tokenizer.cast_current_token_to_ucase() != "TREE":
                         token = self._nexus_tokenizer.current_token
                         break
+            elif token == 'BEGIN':
+                raise self._nexus_error("'BEGIN' found without completion of previous block",
+                        NexusReader.IncompleteBlockError)
         self._nexus_tokenizer.skip_to_semicolon() # move past END command
 
     def _parse_charset_statement(self, block_title=None, link_title=None):

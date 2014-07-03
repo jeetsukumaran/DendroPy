@@ -23,7 +23,8 @@ BEGIN CHARACTERS;
 	   x2.2 A
 	   x2.3 A
 	   x2.4 A
-;
+	   ;
+END;
 
 BEGIN CHARACTERS;
 	TITLE x2.chars2;
@@ -35,10 +36,11 @@ BEGIN CHARACTERS;
 	   x2.2 A
 	   x2.3 A
 	   x2.4 A
-;
+	   ;
+END;
 
 BEGIN TREES;
-	TITLE x2.trees1
+	TITLE x2.trees1;
 	LINK Taxa = X2;
 	TRANSLATE
 	    1 x2.1,
@@ -51,7 +53,7 @@ BEGIN TREES;
 END;
 
 BEGIN TREES;
-	TITLE x2.trees2
+	TITLE x2.trees2;
 	LINK Taxa = X2;
 	TRANSLATE
 	    1 x2.1,
