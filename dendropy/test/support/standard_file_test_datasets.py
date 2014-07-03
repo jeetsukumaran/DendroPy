@@ -95,7 +95,7 @@ class MultipleTaxonNamespaceDataSet(object):
     def verify_attached_taxon_namespace_written(self, ds, taxon_namespace):
         self.assertEqual(len(ds.taxon_namespaces), 1)
         expected_tns_label = taxon_namespace.label
-        # self.assertEqual(ds.taxon_namespaces[0].label, attached_tns_label)
+        # self.assertEqual(ds.taxon_namespaces[0].label, expected_tns_label)
         expected_tlsts = MultipleTaxonNamespaceDataSet.expected_trees.get(expected_tns_label, [])
         self.assertEqual(len(ds.char_matrices), len(expected_tlsts))
         expected_cms = MultipleTaxonNamespaceDataSet.expected_chars.get(expected_tns_label, [])

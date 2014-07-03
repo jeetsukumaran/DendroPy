@@ -420,44 +420,48 @@ class NexusReader(ioservice.DataReader):
         if token.upper() != "#NEXUS":
             raise self._nexus_error("Expecting '#NEXUS', but found '{}'".format(token),
                     NexusReader.NotNexusFileError)
-        else:
-            while not self._nexus_tokenizer.is_eof():
+        while not self._nexus_tokenizer.is_eof():
+            token = self._nexus_tokenizer.next_token_ucase()
+            while token != None and token != 'BEGIN' and not self._nexus_tokenizer.is_eof():
                 token = self._nexus_tokenizer.next_token_ucase()
-                while token != None and token != 'BEGIN' and not self._nexus_tokenizer.is_eof():
-                    token = self._nexus_tokenizer.next_token_ucase()
-                self._nexus_tokenizer.process_and_clear_comments_for_item(
-                        self._global_annotations_target,
-                        self.extract_comment_metadata)
-                token = self._nexus_tokenizer.next_token_ucase()
-                if token == 'TAXA':
-                    self._parse_taxa_block()
-                elif token == 'CHARACTERS' or token == 'DATA':
-                    self._parse_characters_data_block()
-                elif token == 'TREES':
-                    self._parse_trees_block()
-                elif token in ['SETS', 'ASSUMPTIONS', 'CODONS']:
-                    if not self.exclude_chars:
-                        self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
-                        link_title = None
-                        block_title = None
-                        while not (token == 'END' or token == 'ENDBLOCK') \
-                                and not self._nexus_tokenizer.is_eof() \
-                                and not token==None:
-                            token = self._nexus_tokenizer.next_token_ucase()
-                            if token == 'TITLE':
-                                token = self._nexus_tokenizer.next_token()
-                                block_title = token
-                            if token == "LINK":
-                                link_title = self._parse_link_statement().get('characters')
-                            if token == 'CHARSET':
-                                self._parse_charset_statement(block_title=block_title, link_title=link_title)
-                        self._nexus_tokenizer.skip_to_semicolon() # move past END command
-                else:
-                    # unknown block
-                    token = self._consume_to_end_of_block(token)
+            self._nexus_tokenizer.process_and_clear_comments_for_item(
+                    self._global_annotations_target,
+                    self.extract_comment_metadata)
+            token = self._nexus_tokenizer.next_token_ucase()
+            if token == 'TAXA':
+                self._parse_taxa_block()
+            elif token == 'CHARACTERS' or token == 'DATA':
+                self._parse_characters_data_block()
+            elif token == 'TREES':
+                self._parse_trees_block()
+            elif token in ['SETS', 'ASSUMPTIONS', 'CODONS']:
+                if not self.exclude_chars:
+                    self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
+                    link_title = None
+                    block_title = None
+                    while not (token == 'END' or token == 'ENDBLOCK') \
+                            and not self._nexus_tokenizer.is_eof() \
+                            and not token==None:
+                        token = self._nexus_tokenizer.next_token_ucase()
+                        if token == 'TITLE':
+                            block_title = self._parse_title_statement()
+                        elif token == "LINK":
+                            link_title = self._parse_link_statement().get('characters')
+                        elif token == 'CHARSET':
+                            self._parse_charset_statement(block_title=block_title, link_title=link_title)
+                        elif token == 'BEGIN':
+                            raise self._nexus_error("'BEGIN' found without completion of previous block",
+                                    NexusReader.IncompleteBlockError)
+                    self._nexus_tokenizer.skip_to_semicolon() # move past END command
+            elif token == 'BEGIN':
+                raise self._nexus_error("'BEGIN' found without completion of previous block",
+                        NexusReader.IncompleteBlockError)
+            else:
+                # unknown block
+                token = self._consume_to_end_of_block(token)
 
     ###########################################################################
-    ## TAXA BLOCK / LINK PARSERS
+    ## TAXA BLOCK
 
     def _parse_taxa_block(self):
         token = ''
@@ -471,7 +475,7 @@ class NexusReader(ioservice.DataReader):
         while not (token == 'END' or token == 'ENDBLOCK'):
             token = self._nexus_tokenizer.next_token_ucase()
             if token == "TITLE":
-                token = self._nexus_tokenizer.next_token()
+                token = self._parse_title_statement()
                 taxon_namespace = self._new_taxon_namespace(token)
             if token == 'DIMENSIONS':
                 self._parse_dimensions_statement()
@@ -518,6 +522,22 @@ class NexusReader(ioservice.DataReader):
             token = self._nexus_tokenizer.next_token()
             self._nexus_tokenizer.process_and_clear_comments_for_item(taxon,
                     self.extract_comment_metadata)
+
+    ###########################################################################
+    ## LINK/TITLE PARSERS (How Mesquite handles multiple TAXA blocks)
+
+    def _parse_title_statement(self):
+        """
+        Processes a MESQUITE 'TITLE' statement.
+        Assumes current token is 'TITLE'
+        """
+        if self._nexus_tokenizer.cast_current_token_to_ucase() != "TITLE":
+            raise self._nexus_error("Expecting 'TITLE' token, but instead found '{}'".format(token))
+        title = self._nexus_tokenizer.require_next_token()
+        sc = self._nexus_tokenizer.require_next_token()
+        if sc != ";":
+            raise self._nexus_error("Expecting ';' token, but instead found '{}'".format(sc))
+        return title
 
     def _parse_link_statement(self):
         """
@@ -566,8 +586,7 @@ class NexusReader(ioservice.DataReader):
                 and not token==None):
             token = self._nexus_tokenizer.next_token_ucase()
             if token == 'TITLE':
-                token = self._nexus_tokenizer.next_token()
-                block_title = token
+                block_title = self._parse_title_statement()
             elif token == "LINK":
                 link_title = self._parse_link_statement().get('taxa')
             elif token == 'DIMENSIONS':
@@ -919,8 +938,7 @@ class NexusReader(ioservice.DataReader):
             if token == 'LINK':
                 link_title = self._parse_link_statement().get("taxa")
             elif token == 'TITLE':
-                token = self._nexus_tokenizer.next_token()
-                block_title = token
+                block_title = self._parse_title_statement()
                 token = "" # clear; repopulate at start of loop
             elif token == 'TRANSLATE':
                 if taxon_namespace is None:
