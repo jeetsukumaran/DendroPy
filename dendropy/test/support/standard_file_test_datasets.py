@@ -99,10 +99,19 @@ class MultipleTaxonNamespaceDataSet(object):
                 sum(len(v) for v in MultipleTaxonNamespaceDataSet.expected_taxa.values()))
 
     def verify_unrestricted(self, ds):
-        self.assertEqual(len(ds.taxon_namespaces), MultipleTaxonNamespaceDataSet.expected_taxa)
-        for tns, tns_label in zip(ds.taxon_namespaces, MultipleTaxonNamespaceDataSet.expected_taxa):
-            self.assertEqual(tns.label, tns_label)
-
+        self.assertEqual(len(ds.taxon_namespaces), len(MultipleTaxonNamespaceDataSet.expected_taxa))
+        for tns, expected_tns_label in zip(ds.taxon_namespaces, MultipleTaxonNamespaceDataSet.expected_taxa):
+            self.assertEqual(tns.label, expected_tns_label)
+            expected_tns = MultipleTaxonNamespaceDataSet.expected_taxa[expected_tns_label]
+            self.assertEqual(len(tns), len(expected_tns))
+            for taxon, expected_label in zip(tns, expected_tns):
+                self.assertEqual(taxon.label, expected_label)
+            cms = [char_matrix for char_matrix in ds.char_matrices if char_matrix.taxon_namespace is tns]
+            expected_cms = MultipleTaxonNamespaceDataSet.expected_chars.get(expected_tns_label, [])
+            self.assertEqual(len(cms), len(expected_cms))
+            tlst = [tree_list for tree_list in ds.tree_lists if tree_list.taxon_namespace is tns]
+            expected_tlst = MultipleTaxonNamespaceDataSet.expected_trees.get(expected_tns_label, [])
+            self.assertEqual(len(tlst), len(expected_tlst))
 
 
 

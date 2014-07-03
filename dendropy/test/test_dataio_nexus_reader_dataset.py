@@ -318,6 +318,26 @@ class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         self.assertEqual(len(d.taxon_namespaces[1]), 114)
 
+class NexusDataSetMultiTreesBlockTestCase(dendropytest.ExtendedTestCase):
+
+    def test_multiple_trees1(self):
+        src_filename = "multitreeblocks.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        self.assertEqual(len(ds.tree_lists), 3)
+        for tt in ds.tree_lists:
+            self.assertEqual(len(tt), 3)
+
+    def test_multiple_trees2(self):
+        src_filename = "multitreeblocks2.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        ds = dendropy.DataSet.get_from_path(src_path, "nexus")
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        self.assertEqual(len(ds.tree_lists), 2)
+        for tt in ds.tree_lists:
+            self.assertEqual(len(tt), 2)
+            self.assertIs(tt.taxon_namespace, ds.taxon_namespaces[0])
+
 class DataSetNexusReaderMesquiteMultipleTaxonNamespacesTest(
         standard_file_test_datasets.MultipleTaxonNamespaceDataSet,
         dendropytest.ExtendedTestCase):

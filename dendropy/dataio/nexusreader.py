@@ -420,54 +420,8 @@ class NexusReader(ioservice.DataReader):
                 token = self._nexus_tokenizer.next_token_ucase()
                 if token == 'TAXA':
                     self._parse_taxa_block()
-                elif token == 'CHARACTERS':
-                    if not self.exclude_chars:
-                        self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
-                        link_title = None
-                        block_title = None
-                        self._data_type_name = "standard" # set as default
-                        while not (token == 'END' or token == 'ENDBLOCK') \
-                                and not self._nexus_tokenizer.is_eof() \
-                                and not token==None:
-                            token = self._nexus_tokenizer.next_token_ucase()
-                            if token == 'TITLE':
-                                token = self._nexus_tokenizer.next_token()
-                                block_title = token
-                            if token == "LINK":
-                                link_title = self._parse_link_statement().get('taxa')
-                            if token == 'DIMENSIONS':
-                                self._parse_dimensions_statement()
-                            if token == 'FORMAT':
-                                self._parse_format_statement()
-                            if token == 'MATRIX':
-                                self._parse_matrix_statement(block_title=block_title, link_title=link_title)
-                        self._nexus_tokenizer.skip_to_semicolon() # move past END command
-                    else:
-                        token = self._consume_to_end_of_block(token)
-                elif token == 'DATA':
-                    if not self.exclude_chars:
-                        self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
-                        block_title = None
-                        link_title = None
-                        self._data_type_name = "standard" # set as default
-                        while not (token == 'END' or token == 'ENDBLOCK') \
-                                and not self._nexus_tokenizer.is_eof() \
-                                and not token==None:
-                            token = self._nexus_tokenizer.next_token_ucase()
-                            if token == 'TITLE':
-                                token = self._nexus_tokenizer.next_token()
-                                block_title = token
-                            if token == "LINK":
-                                link_title = self._parse_link_statement().get('taxa')
-                            if token == 'DIMENSIONS':
-                                self._parse_dimensions_statement()
-                            if token == 'FORMAT':
-                                self._parse_format_statement()
-                            if token == 'MATRIX':
-                                self._parse_matrix_statement(block_title=block_title, link_title=link_title)
-                        self._nexus_tokenizer.skip_to_semicolon() # move past END command
-                    else:
-                        token = self._consume_to_end_of_block(token)
+                elif token == 'CHARACTERS' or token == 'DATA':
+                    self._parse_characters_data_block()
                 elif token == 'TREES':
                     self._parse_trees_block()
                 elif token in ['SETS', 'ASSUMPTIONS', 'CODONS']:
@@ -583,6 +537,35 @@ class NexusReader(ioservice.DataReader):
 
     ###########################################################################
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
+
+    def _parse_characters_data_block(self):
+        token = self._nexus_tokenizer.cast_current_token_to_ucase()
+        if token != "CHARACTERS" and token != "DATA":
+            raise self._nexus_error("Expecting 'CHARACTERS' or 'DATA' token, but instead found '{}'".format(token))
+        if self.exclude_chars:
+            self._consume_to_end_of_block(self._nexus_tokenizer.current_token)
+            return
+        self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
+        block_title = None
+        link_title = None
+        self._data_type_name = "standard" # set as default
+        while not (token == 'END' or token == 'ENDBLOCK') \
+                and not self._nexus_tokenizer.is_eof() \
+                and not token==None:
+            token = self._nexus_tokenizer.next_token_ucase()
+            if token == 'TITLE':
+                token = self._nexus_tokenizer.next_token()
+                block_title = token
+            elif token == "LINK":
+                link_title = self._parse_link_statement().get('taxa')
+            elif token == 'DIMENSIONS':
+                self._parse_dimensions_statement()
+            elif token == 'FORMAT':
+                self._parse_format_statement()
+            elif token == 'MATRIX':
+                self._parse_matrix_statement(block_title=block_title, link_title=link_title)
+            token = self._nexus_tokenizer.cast_current_token_to_ucase()
+        self._nexus_tokenizer.skip_to_semicolon() # move past END command
 
     def _build_state_alphabet(self, char_block, symbols):
         if self._gap_char and self._gap_char not in symbols:
