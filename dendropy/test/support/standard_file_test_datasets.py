@@ -92,6 +92,15 @@ class MultipleTaxonNamespaceDataSet(object):
     expected_trees = collections.OrderedDict()
     expected_trees["X2"] = ("x2.trees1", "x2.trees2")
 
+    def verify_attached_taxon_namespace_written(self, ds, taxon_namespace):
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        expected_tns_label = taxon_namespace.label
+        # self.assertEqual(ds.taxon_namespaces[0].label, attached_tns_label)
+        expected_tlsts = MultipleTaxonNamespaceDataSet.expected_trees.get(expected_tns_label, [])
+        self.assertEqual(len(ds.char_matrices), len(expected_tlsts))
+        expected_cms = MultipleTaxonNamespaceDataSet.expected_chars.get(expected_tns_label, [])
+        self.assertEqual(len(ds.tree_lists), len(expected_cms))
+
     def verify_attached_taxon_namespace(self, ds, attached_taxon_namespace):
         self.assertEqual(len(ds.taxon_namespaces), 1)
         self.assertIs(ds.taxon_namespaces[0], attached_taxon_namespace)
@@ -124,8 +133,8 @@ class MultipleTaxonNamespaceDataSet(object):
             expected_cms = MultipleTaxonNamespaceDataSet.expected_chars.get(expected_tns_label, [])
             self.assertEqual(len(cms), len(expected_cms))
             tlst = [tree_list for tree_list in ds.tree_lists if tree_list.taxon_namespace is tns]
-            expected_tlst = MultipleTaxonNamespaceDataSet.expected_trees.get(expected_tns_label, [])
-            self.assertEqual(len(tlst), len(expected_tlst))
+            expected_tlsts = MultipleTaxonNamespaceDataSet.expected_trees.get(expected_tns_label, [])
+            self.assertEqual(len(tlst), len(expected_tlsts))
 
 
 

@@ -379,7 +379,7 @@ class NexusWriter(ioservice.DataWriter):
     def _write_block_title(self, stream, block):
         if not self._link_blocks():
             return
-        title = self._get_block_title(taxon_namespace)
+        title = self._get_block_title(block)
         if not title:
             return
         stream.write("    TITLE {};\n".format(title))

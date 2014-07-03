@@ -27,7 +27,6 @@ from dendropy.test.support import dendropytest
 from dendropy.test.support import compare_and_validate
 from dendropy.test.support import standard_file_test_datasets
 
-
 class DataSetNexusWriterMixedTestCase(
         standard_file_test_datasets.StandardSingleTaxonNamespaceDataSet,
         compare_and_validate.ValidateWriteable,
@@ -60,6 +59,33 @@ class DataSetNexusWriterMixedTestCase(
                 suppress_internal_node_taxa=False, # so internal labels get translated
                 )
         self.verify_dataset(ds)
+
+class DataSetNexusWriterMesquiteMultipleTaxonNamespacesTest(
+        standard_file_test_datasets.MultipleTaxonNamespaceDataSet,
+        compare_and_validate.ValidateWriteable,
+        dendropytest.ExtendedTestCase):
+
+    def test_attached_taxon_namespace(self):
+        d0 = dendropy.DataSet.get_from_path(
+                pathmap.mixed_source_path('multitaxa_mesquite.nex'),
+                "nexus")
+        for tns in d0.taxon_namespaces:
+            d0.attach_taxon_namespace(tns)
+            s = self.write_out_validate_equal_and_return(
+                    d0, "nexus", {})
+            ds = dendropy.DataSet.get_from_string(s, "nexus",)
+            self.verify_attached_taxon_namespace_written(ds, tns)
+
+    def test_default(self):
+        d0 = dendropy.DataSet.get_from_path(
+                pathmap.mixed_source_path('multitaxa_mesquite.nex'),
+                "nexus")
+        s = self.write_out_validate_equal_and_return(
+                d0, "nexus", {})
+        ds = dendropy.DataSet.get_from_string(
+                s, "nexus",
+                )
+        self.verify_unrestricted(ds)
 
 if __name__ == "__main__":
     unittest.main()
