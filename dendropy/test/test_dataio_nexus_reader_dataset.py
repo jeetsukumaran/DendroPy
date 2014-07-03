@@ -318,5 +318,23 @@ class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         self.assertEqual(len(d.taxon_namespaces[1]), 114)
 
+class DataSetNexusReaderMesquiteMultipleTaxonNamespacesTest(
+        standard_file_test_datasets.MultipleTaxonNamespaceDataSet,
+        dendropytest.ExtendedTestCase):
+
+    def test_attached_taxon_namespace(self):
+        tns = dendropy.TaxonNamespace()
+        ds = dendropy.DataSet.get_from_path(
+                pathmap.mixed_source_path('multitaxa_mesquite.nex'),
+                "nexus",
+                taxon_namespace=tns)
+        self.verify_attached_taxon_namespace(ds, tns)
+
+    def test_default(self):
+        ds = dendropy.DataSet.get_from_path(
+                pathmap.mixed_source_path('multitaxa_mesquite.nex'),
+                "nexus")
+        self.verify_unrestricted(ds)
+
 if __name__ == "__main__":
     unittest.main()

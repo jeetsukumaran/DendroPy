@@ -83,11 +83,28 @@ class NexusStandardTreeListReaderTestCase(
 
 class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
 
-    def test_multiple_trees(self):
+    def test_multiple_trees1(self):
         src_filename = "multitreeblocks.nex"
         src_path = pathmap.tree_source_path(src_filename)
         trees = dendropy.TreeList.get_from_path(src_path, "nexus")
         self.assertEqual(len(trees), 9)
+
+    def test_multiple_trees2(self):
+        src_filename = "multitreeblocks2.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        trees = dendropy.TreeList.get_from_path(src_path, "nexus")
+        self.assertEqual(len(trees), 4)
+        labels = ["x2.1","x2.2","x2.3","x2.4"]
+        # self.assertEqual(len(trees.taxon_namespace), len(labels))
+        self.assertEqual([t.label for t in trees.taxon_namespace], labels)
+        for tree in trees:
+            self.assertIs(tree.taxon_namespace, trees.taxon_namespace)
+            seen_taxa = 0
+            for nd in tree:
+                if nd.taxon is not None:
+                    seen_taxa += 1
+                    self.assertIn(nd.taxon, tree.taxon_namespace)
+            self.assertEqual(seen_taxa, len(tree.taxon_namespace))
 
 if __name__ == "__main__":
     unittest.main()

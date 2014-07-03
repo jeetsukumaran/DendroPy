@@ -294,6 +294,23 @@ class NexusReader(ioservice.DataReader):
                 stream=self._nexus_tokenizer.src)
         return e
 
+    def _debug_print(self, message=None, out=None):
+        import sys
+        if out is None:
+            out = sys.stdout
+        if message is None:
+            message = ""
+        else:
+            message = " --- ({})".format(message)
+        out.write("--- Current Position: Line {}, Column {}; Current token [starting at line {} and column {}]: '{}'{}\n".format(
+            self._nexus_tokenizer.current_line_num,
+            self._nexus_tokenizer.current_column_num,
+            self._nexus_tokenizer.token_line_num,
+            self._nexus_tokenizer.token_column_num,
+            self._nexus_tokenizer.current_token,
+            message))
+
+
     ###########################################################################
     ## Data Management
 

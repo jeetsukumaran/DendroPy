@@ -17,6 +17,7 @@
 ##############################################################################
 
 import dendropy
+import collections
 from dendropy.test.support import curated_test_tree
 from dendropy.test.support import standard_file_test_chars
 
@@ -79,3 +80,29 @@ class StandardSingleTaxonNamespaceDataSet(curated_test_tree.CuratedTestTree):
     def verify_dataset(self, ds):
         self.verify_chars(ds)
         self.verify_trees(ds)
+
+class MultipleTaxonNamespaceDataSet(object):
+
+    expected_taxa = collections.OrderedDict()
+    expected_taxa["X1"] = ("x1.1", "x1.2", "x1.3", "x1.4", "x1.5", )
+    expected_taxa["X2"] = ("x2.1", "x2.2", "x2.3", "x2.4", )
+    expected_taxa["X3"] = ("x3.1", "x3.2", "x3.3", "x3.4", "x3.5", "x3.6", )
+    expected_chars = collections.OrderedDict()
+    expected_chars["X2"] = ("x2.chars1", "x2.chars2")
+    expected_trees = collections.OrderedDict()
+    expected_trees["X2"] = ("x2.trees1", "x2.trees2")
+
+    def verify_attached_taxon_namespace(self, ds, attached_taxon_namespace):
+        self.assertEqual(len(ds.taxon_namespaces), 1)
+        self.assertIs(ds.taxon_namespaces[0], attached_taxon_namespace)
+        self.assertEqual(len(ds.taxon_namespaces[0]),
+                sum(len(v) for v in MultipleTaxonNamespaceDataSet.expected_taxa.values()))
+
+    def verify_unrestricted(self, ds):
+        self.assertEqual(len(ds.taxon_namespaces), MultipleTaxonNamespaceDataSet.expected_taxa)
+        for tns, tns_label in zip(ds.taxon_namespaces, MultipleTaxonNamespaceDataSet.expected_taxa):
+            self.assertEqual(tns.label, tns_label)
+
+
+
+
