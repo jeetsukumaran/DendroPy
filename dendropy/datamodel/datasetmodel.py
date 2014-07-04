@@ -75,6 +75,17 @@ class DataSet(
     :class:`DataSet` to manage multiple types of data that all share and
     reference the same, single taxon namespace.
 
+    This convention can be enforced by setting the DataSet instance to
+    "attached taxon namespace" mode::
+
+        ds = dendropy.DataSet()
+        tns = dendropy.TaxonNamespace()
+        ds.attach_taxon_namespace(tns)
+
+    After setting this mode, all subsequent data read or created will be
+    coerced to use the same, common operational taxonomic unit concept
+    namespace.
+
     Note that unless there is a need to collect and serialize a collection of
     data to the same file or external source, it is probably better
     semantically to use more specific data structures (e.g., a
