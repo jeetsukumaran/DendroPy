@@ -184,11 +184,13 @@ class StandardTestTreeChecker(object):
                     self.assertIs(node.taxon, None)
                     node_labels.append(node.label)
                 else:
-                    self.assertIsNot(node.taxon, None)
-                    self.assertEqual(node.taxon.label, check_node_label)
                     if not self.__class__.distinct_taxa_and_labels_on_tree:
+                        self.assertIsNot(node.taxon, None)
+                        self.assertEqual(node.taxon.label, check_node_label)
                         self.assertIs(ch.label, None)
-                    seen_taxa.append(node.taxon)
+                        seen_taxa.append(node.taxon)
+                    else:
+                        seen_taxa.append(node.label)
             else:
                 self.assertFalse(node.is_internal())
                 self.assertTrue(node.is_leaf())
@@ -210,8 +212,11 @@ class StandardTestTreeChecker(object):
                         self.assertEqual(node.parent_node.label, check_node["parent"])
                         self.assertIs(node.parent_node.taxon, None)
                     else:
-                        self.assertEqual(node.parent_node.taxon.label, check_node["parent"])
-                        self.assertIs(node.parent_node.label, None)
+                        if not self.__class__.distinct_taxa_and_labels_on_tree:
+                            self.assertEqual(node.parent_node.taxon.label, check_node["parent"])
+                            self.assertIs(node.parent_node.label, None)
+                        else:
+                            self.assertEqual(node.parent_node.label, check_node["parent"])
                 else:
                     if suppress_leaf_node_taxa:
                         self.assertEqual(node.parent_node.label, check_node["parent"])
@@ -224,15 +229,34 @@ class StandardTestTreeChecker(object):
 
             child_labels = []
             for ch in node.child_node_iter():
+                # if ch.is_internal():
+                #     if suppress_internal_node_taxa:
+                #         self.assertIs(ch.taxon, None)
+                #         child_labels.append(ch.label)
+                #     else:
+                #         self.assertIsNot(ch.taxon, None)
+                #         child_labels.append(ch.taxon.label)
+                #         self.assertIs(ch.label, None)
+                # else:
+                #     if suppress_leaf_node_taxa:
+                #         self.assertIs(ch.taxon, None)
+                #         child_labels.append(ch.label)
+                #     else:
+                #         self.assertIsNot(ch.taxon, None)
+                #         child_labels.append(ch.taxon.label)
+                #         self.assertIs(ch.label, None)
                 if ch.is_internal():
                     if suppress_internal_node_taxa:
                         self.assertIs(ch.taxon, None)
                         child_labels.append(ch.label)
                     else:
-                        self.assertIsNot(ch.taxon, None)
-                        child_labels.append(ch.taxon.label)
                         if not self.__class__.distinct_taxa_and_labels_on_tree:
+                            self.assertIsNot(ch.taxon, None)
+                            child_labels.append(ch.taxon.label)
                             self.assertIs(ch.label, None)
+                        else:
+                            self.assertEqual(node.label, check_node_label)
+                            child_labels.append(ch.label)
                 else:
                     if suppress_leaf_node_taxa:
                         self.assertIs(ch.taxon, None)
