@@ -27,6 +27,7 @@ class FastaReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, **kwargs):
+        ioservice.DataReader.__init__(self)
         self.data_type_name = kwargs.pop("data_type_name", None)
         self.check_for_unused_keyword_arguments(kwargs)
 

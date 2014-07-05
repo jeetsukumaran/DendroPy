@@ -321,13 +321,12 @@ class NexusReader(ioservice.DataReader):
             self._nexus_tokenizer.current_token,
             message))
 
-
     ###########################################################################
     ## Data Management
 
     def _new_taxon_namespace(self, title=None):
-        # if self.attached_taxon_namespace is not None:
-        #     return self.attached_taxon_namespace
+        if self.attached_taxon_namespace is not None:
+            return self.attached_taxon_namespace
         taxon_namespace = self._taxon_namespace_factory(label=title)
         self._taxon_namespaces.append(taxon_namespace)
         return taxon_namespace

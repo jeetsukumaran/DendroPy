@@ -182,6 +182,9 @@ class NewickReader(ioservice.DataReader):
             labels will *not* be instantantiated as strings.
         """
 
+        # base
+        ioservice.DataReader.__init__(self)
+
         self._rooting = None
         ## (TEMPORARY and UGLY!!!!) Special handling for legacy signature
         if "as_unrooted" in kwargs or "as_rooted" in kwargs or "default_as_rooted" in kwargs or "default_as_unrooted" in kwargs:
@@ -240,7 +243,7 @@ class NewickReader(ioservice.DataReader):
         self.preserve_unquoted_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
-        self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", False)
+        self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", self.suppress_leaf_node_taxa)
         self.check_for_unused_keyword_arguments(kwargs)
 
         # per-tree book-keeping

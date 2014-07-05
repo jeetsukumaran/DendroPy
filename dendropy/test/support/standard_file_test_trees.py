@@ -37,6 +37,7 @@ tree_file_titles = [
 ]
 
 schema_extension_map = {
+    "nexml" : "nexml",
     "newick" : "newick",
     "nexus" : "nexus",
     "json" : "json",
