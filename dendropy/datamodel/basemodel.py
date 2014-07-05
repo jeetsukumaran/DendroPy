@@ -31,6 +31,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container
 from dendropy.utility import bibtex
+from dendropy.utility import text
 
 ##############################################################################
 ## DataObject
@@ -629,12 +630,6 @@ class Annotation(Annotable):
 
     """
 
-    def parse_prefixed_name(prefixed_name, sep=":"):
-        if sep not in prefixed_name:
-            raise ValueError("'{}' is not a valid CURIE-standard qualified name".format(prefixed_name))
-        return prefixed_name.split(":", 1)
-    parse_prefixed_name = staticmethod(parse_prefixed_name)
-
     def __init__(self,
             name,
             value,
@@ -770,7 +765,7 @@ class Annotation(Annotable):
     def _get_prefixed_name(self):
         return "{}:{}".format((self.name_prefix, self.name))
     def _set_prefixed_name(self, prefixed_name):
-        self._name_prefix, self.name = Annotation.parse_prefixed_name(prefixed_name)
+        self._name_prefix, self.name = text.parse_curie_standard_qualified_name(prefixed_name)
     prefixed_name = property(_get_prefixed_name, _set_prefixed_name)
 
 ##############################################################################

@@ -35,13 +35,11 @@ class NewickStandardTreeListReaderTestCase(
         dendropytest.ExtendedTestCase):
 
     @classmethod
-    def build(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="newick",
-                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
-
-    @classmethod
     def setUpClass(cls):
-        cls.build()
+        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
+                cls,
+                schema="newick",
+                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
     ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 

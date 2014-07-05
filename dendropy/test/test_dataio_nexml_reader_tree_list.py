@@ -35,13 +35,14 @@ class NexmlStandardTreeListReaderTestCase(
         dendropytest.ExtendedTestCase):
 
     @classmethod
-    def build(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="nexml",
-                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
-
-    @classmethod
     def setUpClass(cls):
-        cls.build()
+        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
+                cls,
+                schema="nexml",
+                distinct_nodes_and_edges=True,
+                distinct_taxa_and_labels_on_tree=True,
+                taxa_on_tree_equal_taxa_in_taxon_namespace=False,
+                )
 
     ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 
@@ -52,33 +53,26 @@ class NexmlStandardTreeListReaderTestCase(
         expected_metadata_comments = tree_reference["tree_list_metadata_comments"]
         expected_metadata = tree_reference["tree_list_metadata"]
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        for extract_comment_metadata in (True, False):
-            tree_list = dendropy.TreeList.get_from_path(
-                    tree_filepath,
-                    "nexml",
-                    extract_comment_metadata=extract_comment_metadata)
-            if extract_comment_metadata:
-                expected_comments = expected_non_metadata_comments
-                self.compare_annotations_to_json_metadata_dict(
-                        tree_list,
-                        expected_metadata,
-                        coerce_metadata_values_to_string=False)
-            else:
-                expected_comments = ["&" + ",".join(s for s in expected_metadata_comments)] + expected_non_metadata_comments
-                tree_list_metadata = tree_list.annotations.values_as_dict()
-                self.assertEqual(tree_list_metadata, {})
-            self.assertEqual(len(tree_list.comments), len(expected_comments))
-            self.assertEqual(set(tree_list.comments), set(expected_comments))
-            self.verify_standard_trees(
-                    tree_list=tree_list,
-                    tree_file_title=tree_file_title,
-                    tree_offset=0,
-                    suppress_internal_node_taxa=True,
-                    suppress_leaf_node_taxa=False,
-                    metadata_extracted=extract_comment_metadata,
-                    coerce_metadata_values_to_string=True,
-                    distinct_nodes_and_edges=False,
-                    taxa_on_tree_equal_taxa_in_taxon_namespace=True)
+        tree_list = dendropy.TreeList.get_from_path(
+                tree_filepath,
+                "nexml")
+        expected_comments = expected_non_metadata_comments
+        self.compare_annotations_to_json_metadata_dict(
+                tree_list,
+                expected_metadata,
+                coerce_metadata_values_to_string=True)
+        self.assertEqual(len(tree_list.comments), len(expected_comments))
+        self.assertEqual(set(tree_list.comments), set(expected_comments))
+        self.verify_standard_trees(
+                tree_list=tree_list,
+                tree_file_title=tree_file_title,
+                tree_offset=0,
+                suppress_internal_node_taxa=True,
+                suppress_leaf_node_taxa=False,
+                metadata_extracted=extract_comment_metadata,
+                coerce_metadata_values_to_string=True,
+                distinct_nodes_and_edges=False,
+                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
 if __name__ == "__main__":
     unittest.main()

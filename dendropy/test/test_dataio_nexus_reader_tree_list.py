@@ -35,13 +35,11 @@ class NexusStandardTreeListReaderTestCase(
         dendropytest.ExtendedTestCase):
 
     @classmethod
-    def build(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.build(schema="nexus",
-                taxa_on_tree_equal_taxa_in_taxon_namespace=False)
-
-    @classmethod
     def setUpClass(cls):
-        cls.build()
+        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
+                cls,
+                schema="nexus",
+                taxa_on_tree_equal_taxa_in_taxon_namespace=False)
 
     ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 

@@ -34,7 +34,15 @@ class RichString(str):
         return str.__new__(cls, *args)
 
 ###############################################################################
-## Various formatters and pretty-printer
+##
+
+def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
+    if sep not in prefixed_name:
+        raise ValueError("'{}' is not a valid CURIE-standard qualified name".format(prefixed_name))
+    return prefixed_name.split(":", 1)
+
+###############################################################################
+## Various formatters and pretty-printers
 
 def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=None):
     """

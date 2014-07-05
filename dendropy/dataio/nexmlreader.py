@@ -20,6 +20,7 @@ import re
 import collections
 from dendropy.dataio import ioservice
 from dendropy.utility import container
+from dendropy.utility import text
 from dendropy.dataio import xmlprocessing
 
 SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/2009')
@@ -53,7 +54,7 @@ class _AnnotationParser(object):
         datatype_hint = attrib.get("datatype", None)
         if key is None:
             raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
-        name_prefix, name = dendropy.Annotation.parse_prefixed_name(key)
+        name_prefix, name = text.parse_curie_standard_qualified_name(key)
         try:
             namespace = self._namespace_registry.prefix_namespace_map[name_prefix]
         except KeyError:

@@ -147,7 +147,7 @@ class StandardTestTreeChecker(object):
             tree,
             tree_file_title,
             check_tree_idx,
-            suppress_internal_node_taxa=True,
+            suppress_internal_node_taxa=False,
             suppress_leaf_node_taxa=False,
             metadata_extracted=False,
             coerce_metadata_values_to_string=False,
@@ -186,7 +186,8 @@ class StandardTestTreeChecker(object):
                 else:
                     self.assertIsNot(node.taxon, None)
                     self.assertEqual(node.taxon.label, check_node_label)
-                    self.assertIs(node.label, None)
+                    if not self.__class__.distinct_taxa_and_labels_on_tree:
+                        self.assertIs(ch.label, None)
                     seen_taxa.append(node.taxon)
             else:
                 self.assertFalse(node.is_internal())
@@ -199,7 +200,8 @@ class StandardTestTreeChecker(object):
                 else:
                     self.assertIsNot(node.taxon, None)
                     self.assertEqual(node.taxon.label, check_node_label)
-                    self.assertIs(node.label, None)
+                    if not self.__class__.distinct_taxa_and_labels_on_tree:
+                        self.assertIs(ch.label, None)
                     seen_taxa.append(node.taxon)
 
             if node.parent_node is not None:
@@ -229,7 +231,8 @@ class StandardTestTreeChecker(object):
                     else:
                         self.assertIsNot(ch.taxon, None)
                         child_labels.append(ch.taxon.label)
-                        self.assertIs(ch.label, None)
+                        if not self.__class__.distinct_taxa_and_labels_on_tree:
+                            self.assertIs(ch.label, None)
                 else:
                     if suppress_leaf_node_taxa:
                         self.assertIs(ch.taxon, None)
@@ -237,7 +240,8 @@ class StandardTestTreeChecker(object):
                     else:
                         self.assertIsNot(ch.taxon, None)
                         child_labels.append(ch.taxon.label)
-                        self.assertIs(ch.label, None)
+                        if not self.__class__.distinct_taxa_and_labels_on_tree:
+                            self.assertIs(ch.label, None)
             self.assertEqual(len(child_labels), len(check_node["children"]))
             self.assertEqual(set(child_labels), set(check_node["children"]))
 
@@ -248,7 +252,7 @@ class StandardTestTreeChecker(object):
             else:
                 self.assertEqual(edge.tail_node.canonical_label, check_edge["tail_node"])
             self.assertEqual(edge.head_node.canonical_label, check_edge["head_node"])
-            self.assertAlmostEqual(node.edge.length, float(check_edge["length"]))
+            self.assertAlmostEqual(node.edge.length, float(check_edge["length"]), 3)
 
             # This hackery because NEWICK/NEXUS cannot distinguish between
             # node and edge comments, and everything gets lumped in as a
@@ -312,7 +316,7 @@ class StandardTestTreeChecker(object):
             tree_list,
             tree_file_title,
             tree_offset=0,
-            suppress_internal_node_taxa=True,
+            suppress_internal_node_taxa=False,
             suppress_leaf_node_taxa=False,
             metadata_extracted=False,
             coerce_metadata_values_to_string=False,
@@ -344,13 +348,20 @@ class StandardTestTreeChecker(object):
 class StandardTreeListReaderTestCase(
         StandardTestTreeChecker):
 
-    @classmethod
-    def build(cls,
+    @staticmethod
+    def create_class_data(
+            cls,
             schema,
-            taxa_on_tree_equal_taxa_in_taxon_namespace):
+            distinct_nodes_and_edges,
+            distinct_taxa_and_labels_on_tree,
+            taxa_on_tree_equal_taxa_in_taxon_namespace,
+            ):
         cls.schema = schema
         cls.schema_tree_filepaths = dict(tree_filepaths[cls.schema])
+        cls.distinct_nodes_and_edges = distinct_nodes_and_edges
         cls.taxa_on_tree_equal_taxa_in_taxon_namespace = taxa_on_tree_equal_taxa_in_taxon_namespace
+        cls.distinct_taxa_and_labels_on_tree = distinct_taxa_and_labels_on_tree
+        cls.suppress_internal_node_taxa_by_default = True #suppress_internal_node_taxa_by_default
 
     def test_default_get(self):
         for tree_file_title in [
@@ -368,14 +379,16 @@ class StandardTreeListReaderTestCase(
                         )
                 for method, src in approaches:
                     tree_list = method(src, self.__class__.schema)
+                    # for taxon in tree_list.taxon_namespace:
+                    #     print(taxon)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
-                            distinct_nodes_and_edges=False,
-                            taxa_on_tree_equal_taxa_in_taxon_namespace=True)
+                            distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
+                            taxa_on_tree_equal_taxa_in_taxon_namespace=self.__class__.taxa_on_tree_equal_taxa_in_taxon_namespace)
 
     def test_default_read(self):
         preloaded_tree_file_title = "standard-test-trees-n33-x10a"
@@ -403,8 +416,8 @@ class StandardTreeListReaderTestCase(
                 self.verify_standard_trees(
                         tree_list,
                         preloaded_tree_file_title,
-                        distinct_nodes_and_edges=False,
-                        taxa_on_tree_equal_taxa_in_taxon_namespace=True)
+                        distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
+                        taxa_on_tree_equal_taxa_in_taxon_namespace=self.__class__.taxa_on_tree_equal_taxa_in_taxon_namespace)
 
                 # load
                 old_id = id(tree_list)
@@ -426,10 +439,10 @@ class StandardTreeListReaderTestCase(
                             tree=tree,
                             tree_file_title=tree_file_title,
                             check_tree_idx=tree_idx,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
-                            distinct_nodes_and_edges=False,
+                            distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                             taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
                 # make sure old ones still intact
@@ -438,14 +451,18 @@ class StandardTreeListReaderTestCase(
                             tree=tree,
                             tree_file_title=preloaded_tree_file_title,
                             check_tree_idx=tree_idx,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
                             metadata_extracted=False,
-                            distinct_nodes_and_edges=False,
+                            distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                             taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
     def test_selective_taxa_get(self):
-        # skip big files
+        if self.__class__.distinct_taxa_and_labels_on_tree:
+            # These tests are only for schemas that do not
+            # have the ability to explicitly designate taxa
+            # as opposed to labels on trees
+            return
         tree_file_title = "standard-test-trees-n12-x2"
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
@@ -470,11 +487,15 @@ class StandardTreeListReaderTestCase(
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
                                 suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                                 metadata_extracted=False,
-                                distinct_nodes_and_edges=False,
+                                distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                                 taxa_on_tree_equal_taxa_in_taxon_namespace=self.__class__.taxa_on_tree_equal_taxa_in_taxon_namespace)
 
     def test_selective_taxa_read(self):
-        # skip big files
+        if self.__class__.distinct_taxa_and_labels_on_tree:
+            # These tests are only for schemas that do not
+            # have the ability to explicitly designate taxa
+            # as opposed to labels on trees
+            return
         tree_file_title = "standard-test-trees-n12-x2"
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
@@ -503,7 +524,7 @@ class StandardTreeListReaderTestCase(
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
                                 suppress_leaf_node_taxa=suppress_leaf_node_taxa,
                                 metadata_extracted=False,
-                                distinct_nodes_and_edges=False,
+                                distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                                 taxa_on_tree_equal_taxa_in_taxon_namespace=self.__class__.taxa_on_tree_equal_taxa_in_taxon_namespace)
 
     def test_tree_offset_get(self):
@@ -531,15 +552,15 @@ class StandardTreeListReaderTestCase(
                             self.__class__.schema,
                             collection_offset=0,
                             tree_offset=tree_offset,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             tree_offset=tree_offset,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
-                            distinct_nodes_and_edges=False,
+                            distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                             taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
     def test_tree_offset_read(self):
@@ -568,15 +589,15 @@ class StandardTreeListReaderTestCase(
                             self.__class__.schema,
                             collection_offset=0,
                             tree_offset=tree_offset,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             tree_offset=tree_offset,
-                            suppress_internal_node_taxa=True,
+                            suppress_internal_node_taxa=self.__class__.suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
-                            distinct_nodes_and_edges=False,
+                            distinct_nodes_and_edges=self.__class__.distinct_nodes_and_edges,
                             taxa_on_tree_equal_taxa_in_taxon_namespace=True)
 
     def test_tree_offset_without_collection_offset_get(self):
