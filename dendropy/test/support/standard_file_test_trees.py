@@ -147,15 +147,25 @@ class StandardTestTreeChecker(object):
             tree,
             tree_file_title,
             check_tree_idx,
-            suppress_internal_node_taxa=False,
-            suppress_leaf_node_taxa=False,
-            metadata_extracted=False,
-            coerce_metadata_values_to_string=False,
-            distinct_nodes_and_edges=True,
-            taxa_on_tree_equal_taxa_in_taxon_namespace=False):
+            **kwargs):
         check_tree = tree_references[tree_file_title][str(check_tree_idx)]
         self.assertIs(tree.is_rooted, check_tree["is_rooted"])
-        self.compare_comments(tree, check_tree, metadata_extracted)
+        self.compare_comments(tree, check_tree, metadata_extracted=True)
+        self.compare_metadata_annotations(
+                item=tree,
+                check=check_tree,
+                coerce_metadata_values_to_string=False)
+        obs_taxa = []
+        obs_node_labels = []
+        obs_edge_labels = []
+        visited_nodes = []
+        for node_idx, node in enumerate(tree):
+            visited_nodes.append(node)
+            check_node = check_tree["nodes"][node.label]
+
+
+
+        return
         if metadata_extracted:
             self.compare_metadata_annotations(
                     item=tree,
@@ -168,17 +178,17 @@ class StandardTestTreeChecker(object):
         self.label_nodes(tree)
         for node_idx, node in enumerate(tree):
             num_visited_nodes += 1
-            check_node = check_tree["nodes"][node.canonical_label]
             check_node_label = check_node["label"]
             self.assertEqual(node.canonical_label, check_node_label)
             # node_labels.append(node.canonical_label)
-            _LOG.debug("{}: {}: {}".format(tree_file_title, check_tree_idx, node.canonical_label))
-
+            # _LOG.debug("{}: {}: {}".format(tree_file_title, check_tree_idx, node.canonical_label))
             check_node_children = check_node["children"]
             if check_node_children:
                 self.assertTrue(node.is_internal())
                 self.assertFalse(node.is_leaf())
                 self.assertEqual(len(node._child_nodes), len(check_node_children))
+
+
                 if suppress_internal_node_taxa:
                     self.assertEqual(node.label, check_node_label)
                     self.assertIs(node.taxon, None)
