@@ -128,7 +128,7 @@ class NexusWriter(ioservice.DataWriter):
             edge length in the tree statement.
         """
         # base
-        ioservice.DataReader.__init__(self)
+        ioservice.DataWriter.__init__(self)
 
         # Following are NEXUS specific (i.e., not used by NEWICK formatters),
         # and need to be removed so as not to cause problems with our keyword
