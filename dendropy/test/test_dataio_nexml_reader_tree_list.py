@@ -53,7 +53,7 @@ class NexmlStandardTreeListReaderTestCase(
                 "dendropy-test-trees-multifurcating-rooted-annotated",
                 "dendropy-test-trees-n33-unrooted-annotated-x10a",
                 ):
-            tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+            tree_reference = dict(standard_file_test_trees._TREE_REFERENCES[tree_file_title])
             expected_non_metadata_comments = tree_reference["tree_list_comments"]
             expected_metadata = tree_reference["tree_list_metadata"]
             tree_filepath = self.schema_tree_filepaths[tree_file_title]
