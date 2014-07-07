@@ -39,7 +39,7 @@ class NexusStandardTreeListReaderTestCase(
         standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
                 cls,
                 schema="nexus",
-                taxa_on_tree_equal_taxa_in_taxon_namespace=False)
+                is_taxa_managed_separately_from_tree=False)
 
     ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 
@@ -60,7 +60,7 @@ class NexusStandardTreeListReaderTestCase(
                 self.compare_annotations_to_json_metadata_dict(
                         tree_list,
                         expected_metadata,
-                        coerce_metadata_values_to_string=True)
+                        is_coerce_metadata_values_to_string=True)
             else:
                 expected_comments = ["&" + ",".join(s for s in expected_metadata_comments)] + expected_non_metadata_comments
                 # expected_comments = [expected_metadata_comments] + expected_non_metadata_comments
@@ -75,9 +75,9 @@ class NexusStandardTreeListReaderTestCase(
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=False,
                     metadata_extracted=extract_comment_metadata,
-                    coerce_metadata_values_to_string=True,
-                    distinct_nodes_and_edges=False,
-                    taxa_on_tree_equal_taxa_in_taxon_namespace=True)
+                    is_coerce_metadata_values_to_string=True,
+                    is_distinct_nodes_and_edges_representation=False,
+                    is_taxa_managed_separately_from_tree=True)
 
 class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
 

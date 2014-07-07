@@ -6,7 +6,7 @@
                 "comments": [],
                 "head_node": "i1",
                 "label": "i1",
-                "length": "1.02107E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "None"
@@ -15,7 +15,7 @@
                 "comments": [],
                 "head_node": "i10",
                 "label": "i10",
-                "length": "6.08138E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -24,7 +24,7 @@
                 "comments": [],
                 "head_node": "i2",
                 "label": "i2",
-                "length": "4.44388E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -33,7 +33,7 @@
                 "comments": [],
                 "head_node": "i3",
                 "label": "i3",
-                "length": "8.35149E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i2"
@@ -42,7 +42,7 @@
                 "comments": [],
                 "head_node": "i4",
                 "label": "i4",
-                "length": "9.12355E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i3"
@@ -51,7 +51,7 @@
                 "comments": [],
                 "head_node": "i5",
                 "label": "i5",
-                "length": "4.44336E+02",
+                "length": "4.44340E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i4"
@@ -60,7 +60,7 @@
                 "comments": [],
                 "head_node": "i6",
                 "label": "i6",
-                "length": "3.70253E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i3"
@@ -69,7 +69,7 @@
                 "comments": [],
                 "head_node": "i7",
                 "label": "i7",
-                "length": "8.95549E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i6"
@@ -78,7 +78,7 @@
                 "comments": [],
                 "head_node": "i8",
                 "label": "i8",
-                "length": "1.40955E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i6"
@@ -87,7 +87,7 @@
                 "comments": [],
                 "head_node": "i9",
                 "label": "i9",
-                "length": "5.31074E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i8"
@@ -96,7 +96,7 @@
                 "comments": [],
                 "head_node": "t1",
                 "label": "t1",
-                "length": "4.55964E+02",
+                "length": "4.55970E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -105,7 +105,7 @@
                 "comments": [],
                 "head_node": "t10",
                 "label": "t10",
-                "length": "6.38259E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i9"
@@ -114,7 +114,7 @@
                 "comments": [],
                 "head_node": "t11",
                 "label": "t11",
-                "length": "8.20827E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i4"
@@ -123,7 +123,7 @@
                 "comments": [],
                 "head_node": "t12",
                 "label": "t12",
-                "length": "1.52646E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i5"
@@ -132,7 +132,7 @@
                 "comments": [],
                 "head_node": "t2",
                 "label": "t2",
-                "length": "7.50802E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i2"
@@ -141,7 +141,7 @@
                 "comments": [],
                 "head_node": "t3",
                 "label": "t3",
-                "length": "5.48904E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i9"
@@ -150,7 +150,7 @@
                 "comments": [],
                 "head_node": "t4",
                 "label": "t4",
-                "length": "6.53566E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i7"
@@ -159,7 +159,7 @@
                 "comments": [],
                 "head_node": "t5",
                 "label": "t5",
-                "length": "5.79034E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i10"
@@ -168,7 +168,7 @@
                 "comments": [],
                 "head_node": "t6",
                 "label": "t6",
-                "length": "6.16332E+02",
+                "length": "6.16340E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i8"
@@ -177,7 +177,7 @@
                 "comments": [],
                 "head_node": "t7",
                 "label": "t7",
-                "length": "5.31935E+02",
+                "length": "5.31940E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i7"
@@ -186,7 +186,7 @@
                 "comments": [],
                 "head_node": "t8",
                 "label": "t8",
-                "length": "6.96403E+02",
+                "length": "6.96410E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i10"
@@ -195,7 +195,7 @@
                 "comments": [],
                 "head_node": "t9",
                 "label": "t9",
-                "length": "9.59701E+02",
+                "length": "9.59710E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i5"
@@ -227,7 +227,7 @@
         ],
         "is_rooted": false,
         "label": "Tree1",
-        "metadata": [],
+        "metadata": {},
         "metadata_comments": [],
         "nodes": {
             "i1": {
@@ -492,7 +492,7 @@
                 "comments": [],
                 "head_node": "i1",
                 "label": "i1",
-                "length": "4.52231E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "None"
@@ -510,7 +510,7 @@
                 "comments": [],
                 "head_node": "i2",
                 "label": "i2",
-                "length": "3.28929E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -519,7 +519,7 @@
                 "comments": [],
                 "head_node": "i3",
                 "label": "i3",
-                "length": "9.06536E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i2"
@@ -528,7 +528,7 @@
                 "comments": [],
                 "head_node": "i4",
                 "label": "i4",
-                "length": "6.36071E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i3"
@@ -537,7 +537,7 @@
                 "comments": [],
                 "head_node": "i5",
                 "label": "i5",
-                "length": "6.46150E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i4"
@@ -546,7 +546,7 @@
                 "comments": [],
                 "head_node": "i6",
                 "label": "i6",
-                "length": "8.48723E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i5"
@@ -555,7 +555,7 @@
                 "comments": [],
                 "head_node": "i7",
                 "label": "i7",
-                "length": "5.10219E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i2"
@@ -564,7 +564,7 @@
                 "comments": [],
                 "head_node": "i8",
                 "label": "i8",
-                "length": "8.13715E+02",
+                "length": "8.13720E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i7"
@@ -573,7 +573,7 @@
                 "comments": [],
                 "head_node": "i9",
                 "label": "i9",
-                "length": "7.80476E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i8"
@@ -582,7 +582,7 @@
                 "comments": [],
                 "head_node": "t1",
                 "label": "t1",
-                "length": "5.83773E+02",
+                "length": "5.83780E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -591,7 +591,7 @@
                 "comments": [],
                 "head_node": "t10",
                 "label": "t10",
-                "length": "2.02516E+02",
+                "length": "2.02520E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i4"
@@ -600,7 +600,7 @@
                 "comments": [],
                 "head_node": "t11",
                 "label": "t11",
-                "length": "6.76712E+02",
+                "length": "6.76720E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i3"
@@ -609,7 +609,7 @@
                 "comments": [],
                 "head_node": "t12",
                 "label": "t12",
-                "length": "4.90677E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i1"
@@ -618,7 +618,7 @@
                 "comments": [],
                 "head_node": "t2",
                 "label": "t2",
-                "length": "9.07766E+02",
+                "length": "9.07770E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i10"
@@ -627,7 +627,7 @@
                 "comments": [],
                 "head_node": "t3",
                 "label": "t3",
-                "length": "9.86097E+02",
+                "length": "9.86100E+02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i10"
@@ -636,7 +636,7 @@
                 "comments": [],
                 "head_node": "t4",
                 "label": "t4",
-                "length": "2.85358E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i9"
@@ -645,7 +645,7 @@
                 "comments": [],
                 "head_node": "t5",
                 "label": "t5",
-                "length": "7.59915E-04",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i8"
@@ -654,7 +654,7 @@
                 "comments": [],
                 "head_node": "t6",
                 "label": "t6",
-                "length": "9.68542E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i7"
@@ -663,7 +663,7 @@
                 "comments": [],
                 "head_node": "t7",
                 "label": "t7",
-                "length": "9.43042E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i6"
@@ -672,7 +672,7 @@
                 "comments": [],
                 "head_node": "t8",
                 "label": "t8",
-                "length": "8.33296E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i6"
@@ -681,7 +681,7 @@
                 "comments": [],
                 "head_node": "t9",
                 "label": "t9",
-                "length": "3.05749E-03",
+                "length": "1.00000E-02",
                 "metadata": {},
                 "metadata_comments": [],
                 "tail_node": "i5"
@@ -713,7 +713,7 @@
         ],
         "is_rooted": false,
         "label": "Tree2",
-        "metadata": [],
+        "metadata": {},
         "metadata_comments": [],
         "nodes": {
             "i1": {
@@ -971,5 +971,8 @@
             "t1"
         ]
     },
-    "num_trees": 2
+    "num_trees": 2,
+    "tree_list_comments": [],
+    "tree_list_metadata": {},
+    "tree_list_metadata_comments": []
 }

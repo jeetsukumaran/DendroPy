@@ -39,7 +39,7 @@ class NewickStandardTreeListReaderTestCase(
         standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
                 cls,
                 schema="newick",
-                taxa_on_tree_equal_taxa_in_taxon_namespace=True)
+                is_taxa_managed_separately_from_tree=True)
 
     ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 
@@ -114,8 +114,8 @@ class NewickTreeListMetadataTest(
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
                             metadata_extracted=True,
-                            coerce_metadata_values_to_string=True,
-                            distinct_nodes_and_edges=False)
+                            is_coerce_metadata_values_to_string=True,
+                            is_distinct_nodes_and_edges_representation=False)
 
     def test_correct_rooting_weighting_and_metadata_association(self):
         tree_str = """\

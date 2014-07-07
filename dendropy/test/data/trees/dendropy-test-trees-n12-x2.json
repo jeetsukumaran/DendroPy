@@ -1,0 +1,887 @@
+{
+    "0": {
+        "comments": [],
+        "edges": {
+            "i1": {
+                "comments": [],
+                "head_node": "i1",
+                "label": "i1",
+                "length": 0.0098,
+                "metadata": {},
+                "tail_node": "None"
+            },
+            "i10": {
+                "comments": [],
+                "head_node": "i10",
+                "label": "i10",
+                "length": 0.0007,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "i2": {
+                "comments": [],
+                "head_node": "i2",
+                "label": "i2",
+                "length": 23.3747,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "i3": {
+                "comments": [],
+                "head_node": "i3",
+                "label": "i3",
+                "length": 0.0057,
+                "metadata": {},
+                "tail_node": "i2"
+            },
+            "i4": {
+                "comments": [],
+                "head_node": "i4",
+                "label": "i4",
+                "length": 344.9032,
+                "metadata": {},
+                "tail_node": "i3"
+            },
+            "i5": {
+                "comments": [],
+                "head_node": "i5",
+                "label": "i5",
+                "length": 0.0017,
+                "metadata": {},
+                "tail_node": "i4"
+            },
+            "i6": {
+                "comments": [],
+                "head_node": "i6",
+                "label": "i6",
+                "length": 0.0031,
+                "metadata": {},
+                "tail_node": "i3"
+            },
+            "i7": {
+                "comments": [],
+                "head_node": "i7",
+                "label": "i7",
+                "length": 0.0078,
+                "metadata": {},
+                "tail_node": "i6"
+            },
+            "i8": {
+                "comments": [],
+                "head_node": "i8",
+                "label": "i8",
+                "length": 0.0001,
+                "metadata": {},
+                "tail_node": "i6"
+            },
+            "i9": {
+                "comments": [],
+                "head_node": "i9",
+                "label": "i9",
+                "length": 0.0003,
+                "metadata": {},
+                "tail_node": "i8"
+            },
+            "t1": {
+                "comments": [],
+                "head_node": "t1",
+                "label": "t1",
+                "length": 0.0051,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "t10": {
+                "comments": [],
+                "head_node": "t10",
+                "label": "t10",
+                "length": 0.0099,
+                "metadata": {},
+                "tail_node": "i9"
+            },
+            "t11": {
+                "comments": [],
+                "head_node": "t11",
+                "label": "t11",
+                "length": 0.0092,
+                "metadata": {},
+                "tail_node": "i4"
+            },
+            "t12": {
+                "comments": [],
+                "head_node": "t12",
+                "label": "t12",
+                "length": 0.0093,
+                "metadata": {},
+                "tail_node": "i5"
+            },
+            "t2": {
+                "comments": [],
+                "head_node": "t2",
+                "label": "t2",
+                "length": 0.0002,
+                "metadata": {},
+                "tail_node": "i2"
+            },
+            "t3": {
+                "comments": [],
+                "head_node": "t3",
+                "label": "t3",
+                "length": 0.0015,
+                "metadata": {},
+                "tail_node": "i9"
+            },
+            "t4": {
+                "comments": [],
+                "head_node": "t4",
+                "label": "t4",
+                "length": 353.4995,
+                "metadata": {},
+                "tail_node": "i7"
+            },
+            "t5": {
+                "comments": [],
+                "head_node": "t5",
+                "label": "t5",
+                "length": 0.0058,
+                "metadata": {},
+                "tail_node": "i10"
+            },
+            "t6": {
+                "comments": [],
+                "head_node": "t6",
+                "label": "t6",
+                "length": 0.0008,
+                "metadata": {},
+                "tail_node": "i8"
+            },
+            "t7": {
+                "comments": [],
+                "head_node": "t7",
+                "label": "t7",
+                "length": 777.3926,
+                "metadata": {},
+                "tail_node": "i7"
+            },
+            "t8": {
+                "comments": [],
+                "head_node": "t8",
+                "label": "t8",
+                "length": 0.0004,
+                "metadata": {},
+                "tail_node": "i10"
+            },
+            "t9": {
+                "comments": [],
+                "head_node": "t9",
+                "label": "t9",
+                "length": 0.0013,
+                "metadata": {},
+                "tail_node": "i5"
+            }
+        },
+        "edgeset": [
+            "i1",
+            "i2",
+            "i3",
+            "i4",
+            "i5",
+            "t9",
+            "t12",
+            "t11",
+            "i6",
+            "i7",
+            "t7",
+            "t4",
+            "i8",
+            "i9",
+            "t10",
+            "t3",
+            "t6",
+            "t2",
+            "i10",
+            "t8",
+            "t5",
+            "t1"
+        ],
+        "is_rooted": false,
+        "label": "Tree1",
+        "metadata": {},
+        "nodes": {
+            "i1": {
+                "children": [
+                    "i2",
+                    "i10",
+                    "t1"
+                ],
+                "comments": [],
+                "edge": "i1",
+                "label": "i1",
+                "metadata": {},
+                "parent": "None"
+            },
+            "i10": {
+                "children": [
+                    "t8",
+                    "t5"
+                ],
+                "comments": [],
+                "edge": "i10",
+                "label": "i10",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "i2": {
+                "children": [
+                    "i3",
+                    "t2"
+                ],
+                "comments": [],
+                "edge": "i2",
+                "label": "i2",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "i3": {
+                "children": [
+                    "i4",
+                    "i6"
+                ],
+                "comments": [],
+                "edge": "i3",
+                "label": "i3",
+                "metadata": {},
+                "parent": "i2"
+            },
+            "i4": {
+                "children": [
+                    "i5",
+                    "t11"
+                ],
+                "comments": [],
+                "edge": "i4",
+                "label": "i4",
+                "metadata": {},
+                "parent": "i3"
+            },
+            "i5": {
+                "children": [
+                    "t9",
+                    "t12"
+                ],
+                "comments": [],
+                "edge": "i5",
+                "label": "i5",
+                "metadata": {},
+                "parent": "i4"
+            },
+            "i6": {
+                "children": [
+                    "i7",
+                    "i8"
+                ],
+                "comments": [],
+                "edge": "i6",
+                "label": "i6",
+                "metadata": {},
+                "parent": "i3"
+            },
+            "i7": {
+                "children": [
+                    "t7",
+                    "t4"
+                ],
+                "comments": [],
+                "edge": "i7",
+                "label": "i7",
+                "metadata": {},
+                "parent": "i6"
+            },
+            "i8": {
+                "children": [
+                    "i9",
+                    "t6"
+                ],
+                "comments": [],
+                "edge": "i8",
+                "label": "i8",
+                "metadata": {},
+                "parent": "i6"
+            },
+            "i9": {
+                "children": [
+                    "t10",
+                    "t3"
+                ],
+                "comments": [],
+                "edge": "i9",
+                "label": "i9",
+                "metadata": {},
+                "parent": "i8"
+            },
+            "t1": {
+                "children": [],
+                "comments": [],
+                "edge": "t1",
+                "label": "t1",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "t10": {
+                "children": [],
+                "comments": [],
+                "edge": "t10",
+                "label": "t10",
+                "metadata": {},
+                "parent": "i9"
+            },
+            "t11": {
+                "children": [],
+                "comments": [],
+                "edge": "t11",
+                "label": "t11",
+                "metadata": {},
+                "parent": "i4"
+            },
+            "t12": {
+                "children": [],
+                "comments": [],
+                "edge": "t12",
+                "label": "t12",
+                "metadata": {},
+                "parent": "i5"
+            },
+            "t2": {
+                "children": [],
+                "comments": [],
+                "edge": "t2",
+                "label": "t2",
+                "metadata": {},
+                "parent": "i2"
+            },
+            "t3": {
+                "children": [],
+                "comments": [],
+                "edge": "t3",
+                "label": "t3",
+                "metadata": {},
+                "parent": "i9"
+            },
+            "t4": {
+                "children": [],
+                "comments": [],
+                "edge": "t4",
+                "label": "t4",
+                "metadata": {},
+                "parent": "i7"
+            },
+            "t5": {
+                "children": [],
+                "comments": [],
+                "edge": "t5",
+                "label": "t5",
+                "metadata": {},
+                "parent": "i10"
+            },
+            "t6": {
+                "children": [],
+                "comments": [],
+                "edge": "t6",
+                "label": "t6",
+                "metadata": {},
+                "parent": "i8"
+            },
+            "t7": {
+                "children": [],
+                "comments": [],
+                "edge": "t7",
+                "label": "t7",
+                "metadata": {},
+                "parent": "i7"
+            },
+            "t8": {
+                "children": [],
+                "comments": [],
+                "edge": "t8",
+                "label": "t8",
+                "metadata": {},
+                "parent": "i10"
+            },
+            "t9": {
+                "children": [],
+                "comments": [],
+                "edge": "t9",
+                "label": "t9",
+                "metadata": {},
+                "parent": "i5"
+            }
+        },
+        "nodeset": [
+            "i1",
+            "i2",
+            "i3",
+            "i4",
+            "i5",
+            "t9",
+            "t12",
+            "t11",
+            "i6",
+            "i7",
+            "t7",
+            "t4",
+            "i8",
+            "i9",
+            "t10",
+            "t3",
+            "t6",
+            "t2",
+            "i10",
+            "t8",
+            "t5",
+            "t1"
+        ]
+    },
+    "1": {
+        "comments": [],
+        "edges": {
+            "i1": {
+                "comments": [],
+                "head_node": "i1",
+                "label": "i1",
+                "length": 0.0072,
+                "metadata": {},
+                "tail_node": "None"
+            },
+            "i10": {
+                "comments": [],
+                "head_node": "i10",
+                "label": "i10",
+                "length": 0.007,
+                "metadata": {},
+                "tail_node": "i9"
+            },
+            "i2": {
+                "comments": [],
+                "head_node": "i2",
+                "label": "i2",
+                "length": 353.0451,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "i3": {
+                "comments": [],
+                "head_node": "i3",
+                "label": "i3",
+                "length": 0.0013,
+                "metadata": {},
+                "tail_node": "i2"
+            },
+            "i4": {
+                "comments": [],
+                "head_node": "i4",
+                "label": "i4",
+                "length": 0.0014,
+                "metadata": {},
+                "tail_node": "i3"
+            },
+            "i5": {
+                "comments": [],
+                "head_node": "i5",
+                "label": "i5",
+                "length": 0.0057,
+                "metadata": {},
+                "tail_node": "i4"
+            },
+            "i6": {
+                "comments": [],
+                "head_node": "i6",
+                "label": "i6",
+                "length": 0.0085,
+                "metadata": {},
+                "tail_node": "i5"
+            },
+            "i7": {
+                "comments": [],
+                "head_node": "i7",
+                "label": "i7",
+                "length": 0.0077,
+                "metadata": {},
+                "tail_node": "i2"
+            },
+            "i8": {
+                "comments": [],
+                "head_node": "i8",
+                "label": "i8",
+                "length": 229.2447,
+                "metadata": {},
+                "tail_node": "i7"
+            },
+            "i9": {
+                "comments": [],
+                "head_node": "i9",
+                "label": "i9",
+                "length": 0.0095,
+                "metadata": {},
+                "tail_node": "i8"
+            },
+            "t1": {
+                "comments": [],
+                "head_node": "t1",
+                "label": "t1",
+                "length": 0.0065,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "t10": {
+                "comments": [],
+                "head_node": "t10",
+                "label": "t10",
+                "length": 0.0012,
+                "metadata": {},
+                "tail_node": "i4"
+            },
+            "t11": {
+                "comments": [],
+                "head_node": "t11",
+                "label": "t11",
+                "length": 0.0081,
+                "metadata": {},
+                "tail_node": "i3"
+            },
+            "t12": {
+                "comments": [],
+                "head_node": "t12",
+                "label": "t12",
+                "length": 0.0087,
+                "metadata": {},
+                "tail_node": "i1"
+            },
+            "t2": {
+                "comments": [],
+                "head_node": "t2",
+                "label": "t2",
+                "length": 0.0075,
+                "metadata": {},
+                "tail_node": "i10"
+            },
+            "t3": {
+                "comments": [],
+                "head_node": "t3",
+                "label": "t3",
+                "length": 0.0025,
+                "metadata": {},
+                "tail_node": "i10"
+            },
+            "t4": {
+                "comments": [],
+                "head_node": "t4",
+                "label": "t4",
+                "length": 0.0027,
+                "metadata": {},
+                "tail_node": "i9"
+            },
+            "t5": {
+                "comments": [],
+                "head_node": "t5",
+                "label": "t5",
+                "length": 0.0072,
+                "metadata": {},
+                "tail_node": "i8"
+            },
+            "t6": {
+                "comments": [],
+                "head_node": "t6",
+                "label": "t6",
+                "length": 0.0044,
+                "metadata": {},
+                "tail_node": "i7"
+            },
+            "t7": {
+                "comments": [],
+                "head_node": "t7",
+                "label": "t7",
+                "length": 0.0059,
+                "metadata": {},
+                "tail_node": "i6"
+            },
+            "t8": {
+                "comments": [],
+                "head_node": "t8",
+                "label": "t8",
+                "length": 0.001,
+                "metadata": {},
+                "tail_node": "i6"
+            },
+            "t9": {
+                "comments": [],
+                "head_node": "t9",
+                "label": "t9",
+                "length": 69.9751,
+                "metadata": {},
+                "tail_node": "i5"
+            }
+        },
+        "edgeset": [
+            "i1",
+            "t12",
+            "i2",
+            "i3",
+            "t11",
+            "i4",
+            "i5",
+            "t9",
+            "i6",
+            "t8",
+            "t7",
+            "t10",
+            "i7",
+            "i8",
+            "t5",
+            "i9",
+            "i10",
+            "t2",
+            "t3",
+            "t4",
+            "t6",
+            "t1"
+        ],
+        "is_rooted": false,
+        "label": "Tree2",
+        "metadata": {},
+        "nodes": {
+            "i1": {
+                "children": [
+                    "t12",
+                    "i2",
+                    "t1"
+                ],
+                "comments": [],
+                "edge": "i1",
+                "label": "i1",
+                "metadata": {},
+                "parent": "None"
+            },
+            "i10": {
+                "children": [
+                    "t2",
+                    "t3"
+                ],
+                "comments": [],
+                "edge": "i10",
+                "label": "i10",
+                "metadata": {},
+                "parent": "i9"
+            },
+            "i2": {
+                "children": [
+                    "i3",
+                    "i7"
+                ],
+                "comments": [],
+                "edge": "i2",
+                "label": "i2",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "i3": {
+                "children": [
+                    "t11",
+                    "i4"
+                ],
+                "comments": [],
+                "edge": "i3",
+                "label": "i3",
+                "metadata": {},
+                "parent": "i2"
+            },
+            "i4": {
+                "children": [
+                    "i5",
+                    "t10"
+                ],
+                "comments": [],
+                "edge": "i4",
+                "label": "i4",
+                "metadata": {},
+                "parent": "i3"
+            },
+            "i5": {
+                "children": [
+                    "t9",
+                    "i6"
+                ],
+                "comments": [],
+                "edge": "i5",
+                "label": "i5",
+                "metadata": {},
+                "parent": "i4"
+            },
+            "i6": {
+                "children": [
+                    "t8",
+                    "t7"
+                ],
+                "comments": [],
+                "edge": "i6",
+                "label": "i6",
+                "metadata": {},
+                "parent": "i5"
+            },
+            "i7": {
+                "children": [
+                    "i8",
+                    "t6"
+                ],
+                "comments": [],
+                "edge": "i7",
+                "label": "i7",
+                "metadata": {},
+                "parent": "i2"
+            },
+            "i8": {
+                "children": [
+                    "t5",
+                    "i9"
+                ],
+                "comments": [],
+                "edge": "i8",
+                "label": "i8",
+                "metadata": {},
+                "parent": "i7"
+            },
+            "i9": {
+                "children": [
+                    "i10",
+                    "t4"
+                ],
+                "comments": [],
+                "edge": "i9",
+                "label": "i9",
+                "metadata": {},
+                "parent": "i8"
+            },
+            "t1": {
+                "children": [],
+                "comments": [],
+                "edge": "t1",
+                "label": "t1",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "t10": {
+                "children": [],
+                "comments": [],
+                "edge": "t10",
+                "label": "t10",
+                "metadata": {},
+                "parent": "i4"
+            },
+            "t11": {
+                "children": [],
+                "comments": [],
+                "edge": "t11",
+                "label": "t11",
+                "metadata": {},
+                "parent": "i3"
+            },
+            "t12": {
+                "children": [],
+                "comments": [],
+                "edge": "t12",
+                "label": "t12",
+                "metadata": {},
+                "parent": "i1"
+            },
+            "t2": {
+                "children": [],
+                "comments": [],
+                "edge": "t2",
+                "label": "t2",
+                "metadata": {},
+                "parent": "i10"
+            },
+            "t3": {
+                "children": [],
+                "comments": [],
+                "edge": "t3",
+                "label": "t3",
+                "metadata": {},
+                "parent": "i10"
+            },
+            "t4": {
+                "children": [],
+                "comments": [],
+                "edge": "t4",
+                "label": "t4",
+                "metadata": {},
+                "parent": "i9"
+            },
+            "t5": {
+                "children": [],
+                "comments": [],
+                "edge": "t5",
+                "label": "t5",
+                "metadata": {},
+                "parent": "i8"
+            },
+            "t6": {
+                "children": [],
+                "comments": [],
+                "edge": "t6",
+                "label": "t6",
+                "metadata": {},
+                "parent": "i7"
+            },
+            "t7": {
+                "children": [],
+                "comments": [],
+                "edge": "t7",
+                "label": "t7",
+                "metadata": {},
+                "parent": "i6"
+            },
+            "t8": {
+                "children": [],
+                "comments": [],
+                "edge": "t8",
+                "label": "t8",
+                "metadata": {},
+                "parent": "i6"
+            },
+            "t9": {
+                "children": [],
+                "comments": [],
+                "edge": "t9",
+                "label": "t9",
+                "metadata": {},
+                "parent": "i5"
+            }
+        },
+        "nodeset": [
+            "i1",
+            "t12",
+            "i2",
+            "i3",
+            "t11",
+            "i4",
+            "i5",
+            "t9",
+            "i6",
+            "t8",
+            "t7",
+            "t10",
+            "i7",
+            "i8",
+            "t5",
+            "i9",
+            "i10",
+            "t2",
+            "t3",
+            "t4",
+            "t6",
+            "t1"
+        ]
+    },
+    "num_trees": 2,
+    "tree_list_comments": [],
+    "tree_list_metadata": {}
+}

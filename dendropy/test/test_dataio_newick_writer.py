@@ -132,8 +132,8 @@ class NewickTreeWriterTests(
             suppress_internal_node_taxa=False,
             suppress_leaf_node_taxa=False,
             metadata_extracted=True,
-            coerce_metadata_values_to_string=True,
-            distinct_nodes_and_edges=False)
+            is_coerce_metadata_values_to_string=True,
+            is_distinct_nodes_and_edges_representation=False)
 
     def test_node_labeling(self):
         for has_leaf_node_taxa in (True, False):

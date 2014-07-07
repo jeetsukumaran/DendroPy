@@ -59,6 +59,17 @@ class _AnnotationParser(object):
             namespace = self._namespace_registry.prefix_namespace_map[name_prefix]
         except KeyError:
             raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self._namespace_registry))
+        if datatype_hint is not None:
+            dt_prefix, dt = text.parse_curie_standard_qualified_name(datatype_hint)
+            if dt_prefix is not None:
+                try:
+                    dt_namespace = self._namespace_registry.prefix_namespace_map[dt_prefix]
+                except KeyError:
+                    raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (dt_prefix, self._namespace_registry))
+                if dt_namespace.startswith("http://www.w3.org/2001/XMLSchema"):
+                    value = self._coerce_to_standard_xml_schema_type(value, dt)
+                if dt_namespace.startswith("http://dendropy.org") or dt_namespace.startswith("http://packages.python.org/DendroPy"):
+                    value = self._coerce_to_standard_dendropy_type(value, dt)
         a = annotated.annotations.add_new(
                 name=name,
                 value=value,
@@ -70,6 +81,37 @@ class _AnnotationParser(object):
         top_annotations = [i for i in nxelement.findall_annotations()]
         for annotation in top_annotations:
             self._parse_annotations(a, annotation)
+
+    def _coerce_to_standard_xml_schema_type(self, value, type_name):
+        if type_name in ("boolean"):
+            if value.lower() in ("1", "t", "true", "y", "yes",):
+                return True
+            else:
+                return False
+        elif type_name in ("decimal", "float", "double"):
+            coerce_type = float
+        elif type_name in ("byte", "int", "integer", "long", "negativeInteger", "nonNegativeInteger", "nonPositiveInteger", "short", "unsignedInt", "unsignedLong", "unsignedShort"):
+            coerce_type = int
+        else:
+            return value
+        return self._coerce_to_type(value, coerce_type)
+
+    def _coerce_to_standard_dendropy_type(self, value, type_name):
+        if type_name in ("decimalRange"):
+            # syntax: '[a, b]'
+            try:
+                value = [float(v) for v in value[1:-1].split(',')]
+            except KeyError:
+                pass
+        return value
+
+    def _coerce_to_type(self, value, to_type):
+        try:
+            value = to_type(value)
+        except ValueError:
+            pass
+        return value
+
 
 class NexmlElement(xmlprocessing.XmlElement):
 
@@ -348,7 +390,7 @@ class _NexmlTreeParser(object):
 
     EdgeInfo = collections.namedtuple(
             "EdgeInfo",
-            ["edge_id", "tail_node_id", "head_node_id", "length", "annotations"]
+            ["edge_id", "label", "tail_node_id", "head_node_id", "length", "annotations"]
             )
 
     def __init__(self,
@@ -469,6 +511,7 @@ class _NexmlTreeParser(object):
 
     def _parse_edge_info(self, nxedge, length_type):
         edge_id = nxedge.get('id', None)
+        edge_label = nxedge.get('label', None)
         tail_node_id = nxedge.get('source', None)
         # assert tail_node_id is not None
         head_node_id = nxedge.get('target', None)
@@ -484,6 +527,7 @@ class _NexmlTreeParser(object):
         annotations = [i for i in nxedge.findall_annotations()]
         e = _NexmlTreeParser.EdgeInfo(
                 edge_id=edge_id,
+                label=edge_label,
                 tail_node_id=tail_node_id,
                 head_node_id=head_node_id,
                 length=edge_length,
@@ -492,6 +536,7 @@ class _NexmlTreeParser(object):
 
     def _set_edge_details(self, edge, edge_info):
         edge.length = edge_info.length
+        edge.label = edge_info.label
         for annotation in edge_info.annotations:
             self._process_annotations(edge, annotation)
 

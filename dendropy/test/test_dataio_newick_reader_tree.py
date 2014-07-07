@@ -739,7 +739,7 @@ class NewickTreeReaderOffsetTreeTest(
                             check_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
-                            distinct_nodes_and_edges=False)
+                            is_distinct_nodes_and_edges_representation=False)
 
     def test_offset_get_with_redundant_semicolons(self):
         s = """\
@@ -811,7 +811,7 @@ class NewickTreeReaderOffsetTreeTest(
                             check_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
-                            distinct_nodes_and_edges=False)
+                            is_distinct_nodes_and_edges_representation=False)
 
     def test_tree_offset_without_collection_offset_newick_get(self):
         tree_file_title = 'standard-test-trees-n33-x10a'
