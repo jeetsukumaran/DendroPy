@@ -2,85 +2,85 @@
     "0": {
         "comments": [],
         "edges": {
-            "i1": {
+            "internal1": {
                 "comments": [],
-                "head_node": "i1",
-                "label": "i1",
+                "head_node": "internal1",
+                "label": "internal1",
                 "length": 0.0098,
                 "metadata": {},
-                "tail_node": "None"
+                "tail_node": null
             },
-            "i10": {
+            "internal10": {
                 "comments": [],
-                "head_node": "i10",
-                "label": "i10",
+                "head_node": "internal10",
+                "label": "internal10",
                 "length": 0.0007,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
-            "i2": {
+            "internal2": {
                 "comments": [],
-                "head_node": "i2",
-                "label": "i2",
+                "head_node": "internal2",
+                "label": "internal2",
                 "length": 23.3747,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
-            "i3": {
+            "internal3": {
                 "comments": [],
-                "head_node": "i3",
-                "label": "i3",
+                "head_node": "internal3",
+                "label": "internal3",
                 "length": 0.0057,
                 "metadata": {},
-                "tail_node": "i2"
+                "tail_node": "internal2"
             },
-            "i4": {
+            "internal4": {
                 "comments": [],
-                "head_node": "i4",
-                "label": "i4",
+                "head_node": "internal4",
+                "label": "internal4",
                 "length": 344.9032,
                 "metadata": {},
-                "tail_node": "i3"
+                "tail_node": "internal3"
             },
-            "i5": {
+            "internal5": {
                 "comments": [],
-                "head_node": "i5",
-                "label": "i5",
+                "head_node": "internal5",
+                "label": "internal5",
                 "length": 0.0017,
                 "metadata": {},
-                "tail_node": "i4"
+                "tail_node": "internal4"
             },
-            "i6": {
+            "internal6": {
                 "comments": [],
-                "head_node": "i6",
-                "label": "i6",
+                "head_node": "internal6",
+                "label": "internal6",
                 "length": 0.0031,
                 "metadata": {},
-                "tail_node": "i3"
+                "tail_node": "internal3"
             },
-            "i7": {
+            "internal7": {
                 "comments": [],
-                "head_node": "i7",
-                "label": "i7",
+                "head_node": "internal7",
+                "label": "internal7",
                 "length": 0.0078,
                 "metadata": {},
-                "tail_node": "i6"
+                "tail_node": "internal6"
             },
-            "i8": {
+            "internal8": {
                 "comments": [],
-                "head_node": "i8",
-                "label": "i8",
+                "head_node": "internal8",
+                "label": "internal8",
                 "length": 0.0001,
                 "metadata": {},
-                "tail_node": "i6"
+                "tail_node": "internal6"
             },
-            "i9": {
+            "internal9": {
                 "comments": [],
-                "head_node": "i9",
-                "label": "i9",
+                "head_node": "internal9",
+                "label": "internal9",
                 "length": 0.0003,
                 "metadata": {},
-                "tail_node": "i8"
+                "tail_node": "internal8"
             },
             "t1": {
                 "comments": [],
@@ -88,7 +88,7 @@
                 "label": "t1",
                 "length": 0.0051,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
             "t10": {
                 "comments": [],
@@ -96,7 +96,7 @@
                 "label": "t10",
                 "length": 0.0099,
                 "metadata": {},
-                "tail_node": "i9"
+                "tail_node": "internal9"
             },
             "t11": {
                 "comments": [],
@@ -104,7 +104,7 @@
                 "label": "t11",
                 "length": 0.0092,
                 "metadata": {},
-                "tail_node": "i4"
+                "tail_node": "internal4"
             },
             "t12": {
                 "comments": [],
@@ -112,7 +112,7 @@
                 "label": "t12",
                 "length": 0.0093,
                 "metadata": {},
-                "tail_node": "i5"
+                "tail_node": "internal5"
             },
             "t2": {
                 "comments": [],
@@ -120,7 +120,7 @@
                 "label": "t2",
                 "length": 0.0002,
                 "metadata": {},
-                "tail_node": "i2"
+                "tail_node": "internal2"
             },
             "t3": {
                 "comments": [],
@@ -128,7 +128,7 @@
                 "label": "t3",
                 "length": 0.0015,
                 "metadata": {},
-                "tail_node": "i9"
+                "tail_node": "internal9"
             },
             "t4": {
                 "comments": [],
@@ -136,7 +136,7 @@
                 "label": "t4",
                 "length": 353.4995,
                 "metadata": {},
-                "tail_node": "i7"
+                "tail_node": "internal7"
             },
             "t5": {
                 "comments": [],
@@ -144,7 +144,7 @@
                 "label": "t5",
                 "length": 0.0058,
                 "metadata": {},
-                "tail_node": "i10"
+                "tail_node": "internal10"
             },
             "t6": {
                 "comments": [],
@@ -152,7 +152,7 @@
                 "label": "t6",
                 "length": 0.0008,
                 "metadata": {},
-                "tail_node": "i8"
+                "tail_node": "internal8"
             },
             "t7": {
                 "comments": [],
@@ -160,7 +160,7 @@
                 "label": "t7",
                 "length": 777.3926,
                 "metadata": {},
-                "tail_node": "i7"
+                "tail_node": "internal7"
             },
             "t8": {
                 "comments": [],
@@ -168,7 +168,7 @@
                 "label": "t8",
                 "length": 0.0004,
                 "metadata": {},
-                "tail_node": "i10"
+                "tail_node": "internal10"
             },
             "t9": {
                 "comments": [],
@@ -176,29 +176,29 @@
                 "label": "t9",
                 "length": 0.0013,
                 "metadata": {},
-                "tail_node": "i5"
+                "tail_node": "internal5"
             }
         },
         "edgeset": [
-            "i1",
-            "i2",
-            "i3",
-            "i4",
-            "i5",
+            "internal1",
+            "internal2",
+            "internal3",
+            "internal4",
+            "internal5",
             "t9",
             "t12",
             "t11",
-            "i6",
-            "i7",
+            "internal6",
+            "internal7",
             "t7",
             "t4",
-            "i8",
-            "i9",
+            "internal8",
+            "internal9",
             "t10",
             "t3",
             "t6",
             "t2",
-            "i10",
+            "internal10",
             "t8",
             "t5",
             "t1"
@@ -207,116 +207,126 @@
         "label": "Tree1",
         "metadata": {},
         "nodes": {
-            "i1": {
+            "internal1": {
                 "children": [
-                    "i2",
-                    "i10",
+                    "internal2",
+                    "internal10",
                     "t1"
                 ],
                 "comments": [],
-                "edge": "i1",
-                "label": "i1",
+                "edge": "internal1",
+                "label": "internal1",
                 "metadata": {},
-                "parent": "None"
+                "parent": null,
+                "taxon_label": null
             },
-            "i10": {
+            "internal10": {
                 "children": [
                     "t8",
                     "t5"
                 ],
                 "comments": [],
-                "edge": "i10",
-                "label": "i10",
+                "edge": "internal10",
+                "label": "internal10",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": null
             },
-            "i2": {
+            "internal2": {
                 "children": [
-                    "i3",
+                    "internal3",
                     "t2"
                 ],
                 "comments": [],
-                "edge": "i2",
-                "label": "i2",
+                "edge": "internal2",
+                "label": "internal2",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": null
             },
-            "i3": {
+            "internal3": {
                 "children": [
-                    "i4",
-                    "i6"
+                    "internal4",
+                    "internal6"
                 ],
                 "comments": [],
-                "edge": "i3",
-                "label": "i3",
+                "edge": "internal3",
+                "label": "internal3",
                 "metadata": {},
-                "parent": "i2"
+                "parent": "internal2",
+                "taxon_label": null
             },
-            "i4": {
+            "internal4": {
                 "children": [
-                    "i5",
+                    "internal5",
                     "t11"
                 ],
                 "comments": [],
-                "edge": "i4",
-                "label": "i4",
+                "edge": "internal4",
+                "label": "internal4",
                 "metadata": {},
-                "parent": "i3"
+                "parent": "internal3",
+                "taxon_label": null
             },
-            "i5": {
+            "internal5": {
                 "children": [
                     "t9",
                     "t12"
                 ],
                 "comments": [],
-                "edge": "i5",
-                "label": "i5",
+                "edge": "internal5",
+                "label": "internal5",
                 "metadata": {},
-                "parent": "i4"
+                "parent": "internal4",
+                "taxon_label": null
             },
-            "i6": {
+            "internal6": {
                 "children": [
-                    "i7",
-                    "i8"
+                    "internal7",
+                    "internal8"
                 ],
                 "comments": [],
-                "edge": "i6",
-                "label": "i6",
+                "edge": "internal6",
+                "label": "internal6",
                 "metadata": {},
-                "parent": "i3"
+                "parent": "internal3",
+                "taxon_label": null
             },
-            "i7": {
+            "internal7": {
                 "children": [
                     "t7",
                     "t4"
                 ],
                 "comments": [],
-                "edge": "i7",
-                "label": "i7",
+                "edge": "internal7",
+                "label": "internal7",
                 "metadata": {},
-                "parent": "i6"
+                "parent": "internal6",
+                "taxon_label": null
             },
-            "i8": {
+            "internal8": {
                 "children": [
-                    "i9",
+                    "internal9",
                     "t6"
                 ],
                 "comments": [],
-                "edge": "i8",
-                "label": "i8",
+                "edge": "internal8",
+                "label": "internal8",
                 "metadata": {},
-                "parent": "i6"
+                "parent": "internal6",
+                "taxon_label": null
             },
-            "i9": {
+            "internal9": {
                 "children": [
                     "t10",
                     "t3"
                 ],
                 "comments": [],
-                "edge": "i9",
-                "label": "i9",
+                "edge": "internal9",
+                "label": "internal9",
                 "metadata": {},
-                "parent": "i8"
+                "parent": "internal8",
+                "taxon_label": null
             },
             "t1": {
                 "children": [],
@@ -324,7 +334,8 @@
                 "edge": "t1",
                 "label": "t1",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": "t1"
             },
             "t10": {
                 "children": [],
@@ -332,7 +343,8 @@
                 "edge": "t10",
                 "label": "t10",
                 "metadata": {},
-                "parent": "i9"
+                "parent": "internal9",
+                "taxon_label": "t10"
             },
             "t11": {
                 "children": [],
@@ -340,7 +352,8 @@
                 "edge": "t11",
                 "label": "t11",
                 "metadata": {},
-                "parent": "i4"
+                "parent": "internal4",
+                "taxon_label": "t11"
             },
             "t12": {
                 "children": [],
@@ -348,7 +361,8 @@
                 "edge": "t12",
                 "label": "t12",
                 "metadata": {},
-                "parent": "i5"
+                "parent": "internal5",
+                "taxon_label": "t12"
             },
             "t2": {
                 "children": [],
@@ -356,7 +370,8 @@
                 "edge": "t2",
                 "label": "t2",
                 "metadata": {},
-                "parent": "i2"
+                "parent": "internal2",
+                "taxon_label": "t2"
             },
             "t3": {
                 "children": [],
@@ -364,7 +379,8 @@
                 "edge": "t3",
                 "label": "t3",
                 "metadata": {},
-                "parent": "i9"
+                "parent": "internal9",
+                "taxon_label": "t3"
             },
             "t4": {
                 "children": [],
@@ -372,7 +388,8 @@
                 "edge": "t4",
                 "label": "t4",
                 "metadata": {},
-                "parent": "i7"
+                "parent": "internal7",
+                "taxon_label": "t4"
             },
             "t5": {
                 "children": [],
@@ -380,7 +397,8 @@
                 "edge": "t5",
                 "label": "t5",
                 "metadata": {},
-                "parent": "i10"
+                "parent": "internal10",
+                "taxon_label": "t5"
             },
             "t6": {
                 "children": [],
@@ -388,7 +406,8 @@
                 "edge": "t6",
                 "label": "t6",
                 "metadata": {},
-                "parent": "i8"
+                "parent": "internal8",
+                "taxon_label": "t6"
             },
             "t7": {
                 "children": [],
@@ -396,7 +415,8 @@
                 "edge": "t7",
                 "label": "t7",
                 "metadata": {},
-                "parent": "i7"
+                "parent": "internal7",
+                "taxon_label": "t7"
             },
             "t8": {
                 "children": [],
@@ -404,7 +424,8 @@
                 "edge": "t8",
                 "label": "t8",
                 "metadata": {},
-                "parent": "i10"
+                "parent": "internal10",
+                "taxon_label": "t8"
             },
             "t9": {
                 "children": [],
@@ -412,29 +433,30 @@
                 "edge": "t9",
                 "label": "t9",
                 "metadata": {},
-                "parent": "i5"
+                "parent": "internal5",
+                "taxon_label": "t9"
             }
         },
         "nodeset": [
-            "i1",
-            "i2",
-            "i3",
-            "i4",
-            "i5",
+            "internal1",
+            "internal2",
+            "internal3",
+            "internal4",
+            "internal5",
             "t9",
             "t12",
             "t11",
-            "i6",
-            "i7",
+            "internal6",
+            "internal7",
             "t7",
             "t4",
-            "i8",
-            "i9",
+            "internal8",
+            "internal9",
             "t10",
             "t3",
             "t6",
             "t2",
-            "i10",
+            "internal10",
             "t8",
             "t5",
             "t1"
@@ -443,85 +465,85 @@
     "1": {
         "comments": [],
         "edges": {
-            "i1": {
+            "internal1": {
                 "comments": [],
-                "head_node": "i1",
-                "label": "i1",
+                "head_node": "internal1",
+                "label": "internal1",
                 "length": 0.0072,
                 "metadata": {},
-                "tail_node": "None"
+                "tail_node": null
             },
-            "i10": {
+            "internal10": {
                 "comments": [],
-                "head_node": "i10",
-                "label": "i10",
+                "head_node": "internal10",
+                "label": "internal10",
                 "length": 0.007,
                 "metadata": {},
-                "tail_node": "i9"
+                "tail_node": "internal9"
             },
-            "i2": {
+            "internal2": {
                 "comments": [],
-                "head_node": "i2",
-                "label": "i2",
+                "head_node": "internal2",
+                "label": "internal2",
                 "length": 353.0451,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
-            "i3": {
+            "internal3": {
                 "comments": [],
-                "head_node": "i3",
-                "label": "i3",
+                "head_node": "internal3",
+                "label": "internal3",
                 "length": 0.0013,
                 "metadata": {},
-                "tail_node": "i2"
+                "tail_node": "internal2"
             },
-            "i4": {
+            "internal4": {
                 "comments": [],
-                "head_node": "i4",
-                "label": "i4",
+                "head_node": "internal4",
+                "label": "internal4",
                 "length": 0.0014,
                 "metadata": {},
-                "tail_node": "i3"
+                "tail_node": "internal3"
             },
-            "i5": {
+            "internal5": {
                 "comments": [],
-                "head_node": "i5",
-                "label": "i5",
+                "head_node": "internal5",
+                "label": "internal5",
                 "length": 0.0057,
                 "metadata": {},
-                "tail_node": "i4"
+                "tail_node": "internal4"
             },
-            "i6": {
+            "internal6": {
                 "comments": [],
-                "head_node": "i6",
-                "label": "i6",
+                "head_node": "internal6",
+                "label": "internal6",
                 "length": 0.0085,
                 "metadata": {},
-                "tail_node": "i5"
+                "tail_node": "internal5"
             },
-            "i7": {
+            "internal7": {
                 "comments": [],
-                "head_node": "i7",
-                "label": "i7",
+                "head_node": "internal7",
+                "label": "internal7",
                 "length": 0.0077,
                 "metadata": {},
-                "tail_node": "i2"
+                "tail_node": "internal2"
             },
-            "i8": {
+            "internal8": {
                 "comments": [],
-                "head_node": "i8",
-                "label": "i8",
+                "head_node": "internal8",
+                "label": "internal8",
                 "length": 229.2447,
                 "metadata": {},
-                "tail_node": "i7"
+                "tail_node": "internal7"
             },
-            "i9": {
+            "internal9": {
                 "comments": [],
-                "head_node": "i9",
-                "label": "i9",
+                "head_node": "internal9",
+                "label": "internal9",
                 "length": 0.0095,
                 "metadata": {},
-                "tail_node": "i8"
+                "tail_node": "internal8"
             },
             "t1": {
                 "comments": [],
@@ -529,7 +551,7 @@
                 "label": "t1",
                 "length": 0.0065,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
             "t10": {
                 "comments": [],
@@ -537,7 +559,7 @@
                 "label": "t10",
                 "length": 0.0012,
                 "metadata": {},
-                "tail_node": "i4"
+                "tail_node": "internal4"
             },
             "t11": {
                 "comments": [],
@@ -545,7 +567,7 @@
                 "label": "t11",
                 "length": 0.0081,
                 "metadata": {},
-                "tail_node": "i3"
+                "tail_node": "internal3"
             },
             "t12": {
                 "comments": [],
@@ -553,7 +575,7 @@
                 "label": "t12",
                 "length": 0.0087,
                 "metadata": {},
-                "tail_node": "i1"
+                "tail_node": "internal1"
             },
             "t2": {
                 "comments": [],
@@ -561,7 +583,7 @@
                 "label": "t2",
                 "length": 0.0075,
                 "metadata": {},
-                "tail_node": "i10"
+                "tail_node": "internal10"
             },
             "t3": {
                 "comments": [],
@@ -569,7 +591,7 @@
                 "label": "t3",
                 "length": 0.0025,
                 "metadata": {},
-                "tail_node": "i10"
+                "tail_node": "internal10"
             },
             "t4": {
                 "comments": [],
@@ -577,7 +599,7 @@
                 "label": "t4",
                 "length": 0.0027,
                 "metadata": {},
-                "tail_node": "i9"
+                "tail_node": "internal9"
             },
             "t5": {
                 "comments": [],
@@ -585,7 +607,7 @@
                 "label": "t5",
                 "length": 0.0072,
                 "metadata": {},
-                "tail_node": "i8"
+                "tail_node": "internal8"
             },
             "t6": {
                 "comments": [],
@@ -593,7 +615,7 @@
                 "label": "t6",
                 "length": 0.0044,
                 "metadata": {},
-                "tail_node": "i7"
+                "tail_node": "internal7"
             },
             "t7": {
                 "comments": [],
@@ -601,7 +623,7 @@
                 "label": "t7",
                 "length": 0.0059,
                 "metadata": {},
-                "tail_node": "i6"
+                "tail_node": "internal6"
             },
             "t8": {
                 "comments": [],
@@ -609,7 +631,7 @@
                 "label": "t8",
                 "length": 0.001,
                 "metadata": {},
-                "tail_node": "i6"
+                "tail_node": "internal6"
             },
             "t9": {
                 "comments": [],
@@ -617,27 +639,27 @@
                 "label": "t9",
                 "length": 69.9751,
                 "metadata": {},
-                "tail_node": "i5"
+                "tail_node": "internal5"
             }
         },
         "edgeset": [
-            "i1",
+            "internal1",
             "t12",
-            "i2",
-            "i3",
+            "internal2",
+            "internal3",
             "t11",
-            "i4",
-            "i5",
+            "internal4",
+            "internal5",
             "t9",
-            "i6",
+            "internal6",
             "t8",
             "t7",
             "t10",
-            "i7",
-            "i8",
+            "internal7",
+            "internal8",
             "t5",
-            "i9",
-            "i10",
+            "internal9",
+            "internal10",
             "t2",
             "t3",
             "t4",
@@ -648,116 +670,126 @@
         "label": "Tree2",
         "metadata": {},
         "nodes": {
-            "i1": {
+            "internal1": {
                 "children": [
                     "t12",
-                    "i2",
+                    "internal2",
                     "t1"
                 ],
                 "comments": [],
-                "edge": "i1",
-                "label": "i1",
+                "edge": "internal1",
+                "label": "internal1",
                 "metadata": {},
-                "parent": "None"
+                "parent": null,
+                "taxon_label": null
             },
-            "i10": {
+            "internal10": {
                 "children": [
                     "t2",
                     "t3"
                 ],
                 "comments": [],
-                "edge": "i10",
-                "label": "i10",
+                "edge": "internal10",
+                "label": "internal10",
                 "metadata": {},
-                "parent": "i9"
+                "parent": "internal9",
+                "taxon_label": null
             },
-            "i2": {
+            "internal2": {
                 "children": [
-                    "i3",
-                    "i7"
+                    "internal3",
+                    "internal7"
                 ],
                 "comments": [],
-                "edge": "i2",
-                "label": "i2",
+                "edge": "internal2",
+                "label": "internal2",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": null
             },
-            "i3": {
+            "internal3": {
                 "children": [
                     "t11",
-                    "i4"
+                    "internal4"
                 ],
                 "comments": [],
-                "edge": "i3",
-                "label": "i3",
+                "edge": "internal3",
+                "label": "internal3",
                 "metadata": {},
-                "parent": "i2"
+                "parent": "internal2",
+                "taxon_label": null
             },
-            "i4": {
+            "internal4": {
                 "children": [
-                    "i5",
+                    "internal5",
                     "t10"
                 ],
                 "comments": [],
-                "edge": "i4",
-                "label": "i4",
+                "edge": "internal4",
+                "label": "internal4",
                 "metadata": {},
-                "parent": "i3"
+                "parent": "internal3",
+                "taxon_label": null
             },
-            "i5": {
+            "internal5": {
                 "children": [
                     "t9",
-                    "i6"
+                    "internal6"
                 ],
                 "comments": [],
-                "edge": "i5",
-                "label": "i5",
+                "edge": "internal5",
+                "label": "internal5",
                 "metadata": {},
-                "parent": "i4"
+                "parent": "internal4",
+                "taxon_label": null
             },
-            "i6": {
+            "internal6": {
                 "children": [
                     "t8",
                     "t7"
                 ],
                 "comments": [],
-                "edge": "i6",
-                "label": "i6",
+                "edge": "internal6",
+                "label": "internal6",
                 "metadata": {},
-                "parent": "i5"
+                "parent": "internal5",
+                "taxon_label": null
             },
-            "i7": {
+            "internal7": {
                 "children": [
-                    "i8",
+                    "internal8",
                     "t6"
                 ],
                 "comments": [],
-                "edge": "i7",
-                "label": "i7",
+                "edge": "internal7",
+                "label": "internal7",
                 "metadata": {},
-                "parent": "i2"
+                "parent": "internal2",
+                "taxon_label": null
             },
-            "i8": {
+            "internal8": {
                 "children": [
                     "t5",
-                    "i9"
+                    "internal9"
                 ],
                 "comments": [],
-                "edge": "i8",
-                "label": "i8",
+                "edge": "internal8",
+                "label": "internal8",
                 "metadata": {},
-                "parent": "i7"
+                "parent": "internal7",
+                "taxon_label": null
             },
-            "i9": {
+            "internal9": {
                 "children": [
-                    "i10",
+                    "internal10",
                     "t4"
                 ],
                 "comments": [],
-                "edge": "i9",
-                "label": "i9",
+                "edge": "internal9",
+                "label": "internal9",
                 "metadata": {},
-                "parent": "i8"
+                "parent": "internal8",
+                "taxon_label": null
             },
             "t1": {
                 "children": [],
@@ -765,7 +797,8 @@
                 "edge": "t1",
                 "label": "t1",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": "t1"
             },
             "t10": {
                 "children": [],
@@ -773,7 +806,8 @@
                 "edge": "t10",
                 "label": "t10",
                 "metadata": {},
-                "parent": "i4"
+                "parent": "internal4",
+                "taxon_label": "t10"
             },
             "t11": {
                 "children": [],
@@ -781,7 +815,8 @@
                 "edge": "t11",
                 "label": "t11",
                 "metadata": {},
-                "parent": "i3"
+                "parent": "internal3",
+                "taxon_label": "t11"
             },
             "t12": {
                 "children": [],
@@ -789,7 +824,8 @@
                 "edge": "t12",
                 "label": "t12",
                 "metadata": {},
-                "parent": "i1"
+                "parent": "internal1",
+                "taxon_label": "t12"
             },
             "t2": {
                 "children": [],
@@ -797,7 +833,8 @@
                 "edge": "t2",
                 "label": "t2",
                 "metadata": {},
-                "parent": "i10"
+                "parent": "internal10",
+                "taxon_label": "t2"
             },
             "t3": {
                 "children": [],
@@ -805,7 +842,8 @@
                 "edge": "t3",
                 "label": "t3",
                 "metadata": {},
-                "parent": "i10"
+                "parent": "internal10",
+                "taxon_label": "t3"
             },
             "t4": {
                 "children": [],
@@ -813,7 +851,8 @@
                 "edge": "t4",
                 "label": "t4",
                 "metadata": {},
-                "parent": "i9"
+                "parent": "internal9",
+                "taxon_label": "t4"
             },
             "t5": {
                 "children": [],
@@ -821,7 +860,8 @@
                 "edge": "t5",
                 "label": "t5",
                 "metadata": {},
-                "parent": "i8"
+                "parent": "internal8",
+                "taxon_label": "t5"
             },
             "t6": {
                 "children": [],
@@ -829,7 +869,8 @@
                 "edge": "t6",
                 "label": "t6",
                 "metadata": {},
-                "parent": "i7"
+                "parent": "internal7",
+                "taxon_label": "t6"
             },
             "t7": {
                 "children": [],
@@ -837,7 +878,8 @@
                 "edge": "t7",
                 "label": "t7",
                 "metadata": {},
-                "parent": "i6"
+                "parent": "internal6",
+                "taxon_label": "t7"
             },
             "t8": {
                 "children": [],
@@ -845,7 +887,8 @@
                 "edge": "t8",
                 "label": "t8",
                 "metadata": {},
-                "parent": "i6"
+                "parent": "internal6",
+                "taxon_label": "t8"
             },
             "t9": {
                 "children": [],
@@ -853,27 +896,28 @@
                 "edge": "t9",
                 "label": "t9",
                 "metadata": {},
-                "parent": "i5"
+                "parent": "internal5",
+                "taxon_label": "t9"
             }
         },
         "nodeset": [
-            "i1",
+            "internal1",
             "t12",
-            "i2",
-            "i3",
+            "internal2",
+            "internal3",
             "t11",
-            "i4",
-            "i5",
+            "internal4",
+            "internal5",
             "t9",
-            "i6",
+            "internal6",
             "t8",
             "t7",
             "t10",
-            "i7",
-            "i8",
+            "internal7",
+            "internal8",
             "t5",
-            "i9",
-            "i10",
+            "internal9",
+            "internal10",
             "t2",
             "t3",
             "t4",

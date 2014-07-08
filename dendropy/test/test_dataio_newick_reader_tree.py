@@ -342,7 +342,7 @@ class NewickTreeUnsupportedKeywordArguments(
         dendropytest.ExtendedTestCase):
 
     def test_unsupported_keyword_arguments(self):
-        tree_filepath = pathmap.tree_source_path('standard-test-trees-n12-x2.newick')
+        tree_filepath = pathmap.tree_source_path('dendropy-test-trees-n12-x2.newick')
         tree_string = self.get_newick_string()
         reader_kwargs = {
                 "suppress_internal_taxa": True,  # should be suppress_internal_node_taxa
@@ -692,12 +692,12 @@ class NewickTreeLabelParsingTest(dendropytest.ExtendedTestCase):
             self.assertEqual(nd.edge.length, expected[nd.taxon.label])
 
 class NewickTreeReaderOffsetTreeTest(
-        standard_file_test_trees.StandardTestTreesChecker,
+        standard_file_test_trees.NewickTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_trees.create_newick_checker_class_fixtures(cls)
+        standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls)
 
     def test_tree_offset_newick_get(self):
         tree_file_title = "dendropy-test-trees-n33-unrooted-x100a"

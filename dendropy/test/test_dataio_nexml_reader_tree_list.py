@@ -31,20 +31,21 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NexmlStandardTreeListReaderTestCase(
-        standard_file_test_trees.StandardTreeListReaderTestCase,
+        standard_file_test_trees.NexmlTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_trees.create_nexml_checker_class_fixtures(
-                cls,
-                schema="nexml",
-                is_distinct_nodes_and_edges_representation=True,
-                is_distinct_taxa_and_labels_on_tree=True,
-                is_taxa_managed_separately_from_tree=False,
-                is_coerce_metadata_values_to_string=False,
-                is_check_comments=False,
-                )
+        standard_file_test_trees.NexmlTestTreesChecker.create_class_fixtures(cls)
+        # standard_file_test_trees.create_nexml_checker_class_fixtures(
+        #         cls,
+        #         schema="nexml",
+        #         is_distinct_nodes_and_edges_representation=True,
+        #         is_distinct_taxa_and_labels_on_tree=True,
+        #         is_taxa_managed_separately_from_tree=False,
+        #         is_coerce_metadata_values_to_string=False,
+        #         is_check_comments=False,
+        #         )
 
     ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
 

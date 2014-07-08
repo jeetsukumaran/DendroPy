@@ -68,6 +68,9 @@ setup_module()
 
 class StandardTestTreesChecker(object):
 
+    def preprocesss_tree_to_be_checked(self, tree):
+        pass
+
     def compare_annotations_to_json_metadata_dict(self,
             item,
             expected_metadata,
@@ -156,22 +159,20 @@ class StandardTestTreesChecker(object):
         obs_node_labels = []
         obs_edge_labels = []
         visited_nodes = []
+        self.preprocesss_tree_to_be_checked(tree)
         for node_idx, node in enumerate(tree):
             visited_nodes.append(node)
             ref_node = ref_tree["nodes"][node.label]
             ref_node_label = ref_node["label"]
-            ref_node_taxon_label = ref_node.get("taxon", ref_node_label)
+            ref_node_taxon_label = ref_node["taxon_label"]
             self.assertEqual(node.label, ref_node_label)
-            ref_edge = ref_tree["edges"][node.edge.label]
-            self.assertEqual(node.edge.label, ref_edge["label"])
             ref_node_children = ref_node["children"]
             self.assertEqual(len(node._child_nodes), len(ref_node_children))
             if node.taxon:
                 self.assertEqual(node.taxon.label, ref_node_taxon_label)
                 obs_taxon_labels.append(node.taxon.label)
             else:
-                self.assertEqual(ref_node_taxon_label, "None")
-                pass # self.assertEqual(ref_node_taxon_label, "None")
+                self.assertEqual(ref_node_taxon_label, None)
             obs_node_labels.append(node.label)
             if ref_node_children:
                 self.assertTrue(node.is_internal())
@@ -181,7 +182,7 @@ class StandardTestTreesChecker(object):
                 self.assertTrue(node.is_leaf())
 
             if node.parent_node is None:
-                self.assertEqual(ref_node["parent"], "None")
+                self.assertEqual(ref_node["parent"], None)
             else:
                 self.assertEqual(node.parent_node.label, ref_node["parent"])
                 if node.parent_node.taxon:
@@ -193,7 +194,7 @@ class StandardTestTreesChecker(object):
             edge = node.edge
             ref_edge = ref_tree["edges"][edge.label]
             if edge.tail_node is None:
-                self.assertEqual(ref_edge["tail_node"], "None")
+                self.assertEqual(ref_edge["tail_node"], None)
             else:
                 self.assertEqual(edge.tail_node.label, ref_edge["tail_node"])
             self.assertEqual(edge.head_node.label, ref_edge["head_node"])
@@ -822,30 +823,62 @@ class StandardTreeListReaderTestCase(
                       gobbledegook=False,
                     )
 
-def create_newick_checker_class_fixtures(cls,
-        suppress_internal_node_taxa=True,
-        suppress_leaf_node_taxa=False,
-        is_metadata_extracted=False,
-        is_coerce_metadata_values_to_string=True,
-        is_taxa_managed_separately_from_tree=False,
-        is_check_comments=True):
-    cls.schema = "newick"
-    cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
-    cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
-    for tree_file_title in cls.tree_references:
-        for reference_tree_idx in range(cls.tree_references[tree_file_title]["num_trees"]):
-            ref_tree = cls.tree_references[tree_file_title][str(reference_tree_idx)]
-            for ref_node_label in ref_tree["nodes"]:
-                ref_node = ref_tree["nodes"][ref_node_label]
-                ref_node_taxon_label = ref_node.get("taxon_label", ref_node_label)
-                # print(">>> {} <<<".format(ref_node_taxon_label))
-                if not suppress_internal_node_taxa and not ref_node["children"]:
-                    ref_node["label"] = ref_node_taxon_label
-                    ref_node["taxon_label"] = "None"
-                if not suppress_leaf_node_taxa and ref_node["children"]:
-                    ref_node["label"] = ref_node_taxon_label
-                    ref_node["taxon_label"] = "None"
-            for ref_edge_label in ref_tree["edges"]:
-                ref_edge = ref_tree["edges"][ref_edge_label]
-                ref_edge["label"] = "None"
+class NewickTestTreesChecker(StandardTestTreesChecker):
+
+    @staticmethod
+    def create_class_fixtures(cls,
+            suppress_internal_node_taxa=True,
+            suppress_leaf_node_taxa=False,
+            is_metadata_extracted=False,
+            is_coerce_metadata_values_to_string=True,
+            is_taxa_managed_separately_from_tree=False,
+            is_check_comments=True):
+        cls.schema = "newick"
+        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
+        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
+        for tree_file_title in cls.tree_references:
+            for reference_tree_idx in range(cls.tree_references[tree_file_title]["num_trees"]):
+                ref_tree = cls.tree_references[tree_file_title][str(reference_tree_idx)]
+                for ref_node_label in ref_tree["nodes"]:
+                    ref_node = ref_tree["nodes"][ref_node_label]
+                    ref_node_taxon_label = ref_node["taxon_label"]
+                    # print(">>> {} <<<".format(ref_node_taxon_label))
+                    # if ref_node["children"] and not suppress_internal_node_taxa:
+                    #     ref_node["label"] = ref_node_taxon_label
+                    #     ref_node["taxon_label"] = "None"
+                    # if not ref_node["children"] and not suppress_leaf_node_taxa:
+                    #     ref_node["label"] = ref_node_taxon_label
+                    #     ref_node["taxon_label"] = "None"
+                for ref_edge_label in ref_tree["edges"]:
+                    ref_edge = ref_tree["edges"][ref_edge_label]
+                    ref_edge["label"] = "None"
+        cls.suppress_internal_node_taxa = suppress_internal_node_taxa
+        cls.suppress_leaf_node_taxa = suppress_leaf_node_taxa
+        cls.is_metadata_extracted = is_metadata_extracted
+        cls.is_coerce_metadata_values_to_string = is_coerce_metadata_values_to_string
+        cls.is_taxa_managed_separately_from_tree = is_taxa_managed_separately_from_tree
+        cls.is_check_comments = is_check_comments
+
+    def preprocesss_tree_to_be_checked(self, tree):
+        for nd in tree:
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            nd.edge.label = nd.label
+
+class NexmlTestTreesChecker(StandardTestTreesChecker):
+
+    @staticmethod
+    def create_class_fixtures(cls):
+        cls.schema = "nexml"
+        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
+        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
+        cls.is_coerce_metadata_values_to_string = False
+        cls.is_taxa_managed_separately_from_tree = True
+        cls.is_check_comments = False
+
+    def preprocesss_tree_to_be_checked(self, tree):
+        for nd in tree:
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            nd.edge.label = nd.label
 
