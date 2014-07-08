@@ -37,15 +37,6 @@ class NexmlStandardTestTreesParsingTests(
     @classmethod
     def setUpClass(cls):
         standard_file_test_trees.NexmlTestTreesChecker.create_class_fixtures(cls)
-        # standard_file_test_trees.create_nexml_checker_class_fixtures(
-        #         cls,
-        #         schema="nexml",
-        #         is_distinct_nodes_and_edges_representation=True,
-        #         is_distinct_taxa_and_labels_on_tree=True,
-        #         is_taxa_managed_separately_from_tree=False,
-        #         is_coerce_metadata_values_to_string=False,
-        #         is_check_comments=False,
-        #         )
 
     ## NOTE: many tests are in standard_file_test_trees.StandardTestTreesParsingTests !! ##
 
@@ -64,22 +55,14 @@ class NexmlStandardTestTreesParsingTests(
             expected_comments = expected_non_metadata_comments
             self.compare_annotations_to_json_metadata_dict(
                     tree_list,
-                    expected_metadata,
-                    is_coerce_metadata_values_to_string=self.__class__.is_coerce_metadata_values_to_string)
+                    expected_metadata)
             if self.__class__.is_check_comments:
                 self.assertEqual(len(tree_list.comments), len(expected_comments))
                 self.assertEqual(set(tree_list.comments), set(expected_comments))
             self.verify_standard_trees(
                     tree_list=tree_list,
                     tree_file_title=tree_file_title,
-                    tree_offset=0,
-                    suppress_internal_node_taxa=True,
-                    suppress_leaf_node_taxa=False,
-                    is_metadata_extracted=True,
-                    is_coerce_metadata_values_to_string=True,
-                    is_distinct_nodes_and_edges_representation=False,
-                    is_taxa_managed_separately_from_tree=True,
-                    is_check_comments=self.__class__.is_check_comments)
+                    tree_offset=0)
 
 if __name__ == "__main__":
     unittest.main()
