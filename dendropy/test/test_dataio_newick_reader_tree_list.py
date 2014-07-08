@@ -1,9 +1,9 @@
-# !/usr/bin/env python
+#! /usr/bin/env python
 
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Tests for general NEWICK reading.
+Tests for general NEWICK tree list reading.
 """
 
 import sys
@@ -27,11 +27,14 @@ from dendropy.test.support import dendropytest
 from dendropy.test.support import standard_file_test_trees
 from dendropy.test.support import curated_test_tree
 from dendropy.test.support import pathmap
+from dendropy.test import base_newick_test_cases
+from dendropy.test import base_standard_trees_parsing_test_cases
+
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NewickTreeListReaderDefaultTestCase(
-        standard_file_test_trees.StandardTreeParsingTestCase,
+        base_standard_trees_parsing_test_cases.StandardTreesParsingTestCase,
         standard_file_test_trees.NewickTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
@@ -39,16 +42,19 @@ class NewickTreeListReaderDefaultTestCase(
     def setUpClass(cls):
         standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls)
 
-    ## NOTE: tests are in standard_file_test_trees.StandardTreeParsingTestCase !! ##
+    # ## NOTE: tests are in base_standard_trees_parsing_test_cases.StandardTreesParsingTestCase, !! ##
 
-# class NewickTreeListReaderDefaultTestCase(
-#         standard_file_test_trees.NewickTestTreesChecker,
-#         dendropytest.ExtendedTestCase):
+class NewickTreeListReaderSuppressedInternalSuppressedLeafTaxaTestCase(
+        base_newick_test_cases.NewickTreeListReaderTaxaManagementBaseTestCase,
+        standard_file_test_trees.NewickTestTreesChecker,
+        dendropytest.ExtendedTestCase):
 
-#     @classmethod
-#     def setUpClass(cls):
-#         standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls)
-
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls,
+                suppress_internal_node_taxa=True,
+                suppress_leaf_node_taxa=True,
+                )
 # class StandardNewickTestTreesParsingTests(standard_file_test_trees.StandardTreeParsingTestCase):
 
 #     def test_selective_taxa_get(self):
