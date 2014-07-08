@@ -68,15 +68,14 @@ setup_module()
 
 class StandardTestTreesChecker(object):
 
-    def preprocesss_tree_to_be_checked(self, tree):
+    def preprocess_tree_to_be_checked(self, tree):
         pass
 
     def compare_annotations_to_json_metadata_dict(self,
             item,
-            expected_metadata,
-            is_coerce_metadata_values_to_string=False):
+            expected_metadata):
         item_annotations_as_dict = item.annotations.values_as_dict()
-        if is_coerce_metadata_values_to_string:
+        if self.__class__.is_coerce_metadata_values_to_string:
             for k in expected_metadata:
                 v = expected_metadata[k]
                 if isinstance(v, list):
@@ -120,18 +119,11 @@ class StandardTestTreesChecker(object):
 
     def check_metadata_annotations(self,
             item,
-            reference,
-            is_coerce_metadata_values_to_string=False):
+            reference):
         expected_annotations = reference["metadata"]
-        self.compare_annotations_to_json_metadata_dict(
-                item,
-                expected_annotations,
-                is_coerce_metadata_values_to_string=is_coerce_metadata_values_to_string)
+        self.compare_annotations_to_json_metadata_dict(item, expected_annotations)
 
-    def check_comments(self,
-            item,
-            reference,
-            is_metadata_extracted=True):
+    def check_comments(self, item, reference):
         reference_comments = list(reference["comments"])
         item_comments = list(item.comments)
         self.assertEqualUnorderedSequences(item_comments, reference_comments)
@@ -139,27 +131,19 @@ class StandardTestTreesChecker(object):
     def compare_to_reference_tree(self,
             tree,
             tree_file_title,
-            reference_tree_idx,
-            suppress_internal_node_taxa,
-            suppress_leaf_node_taxa,
-            is_metadata_extracted,
-            is_coerce_metadata_values_to_string,
-            is_distinct_nodes_and_edges_representation,
-            is_taxa_managed_separately_from_tree,
-            is_check_comments):
+            reference_tree_idx):
         ref_tree = self.tree_references[tree_file_title][str(reference_tree_idx)]
         self.assertIs(tree.is_rooted, ref_tree["is_rooted"])
-        if is_check_comments:
+        if self.__class__.is_check_comments:
             self.check_comments(tree, ref_tree)
         self.check_metadata_annotations(
                 item=tree,
-                reference=ref_tree,
-                is_coerce_metadata_values_to_string=False)
+                reference=ref_tree)
         obs_taxon_labels = []
         obs_node_labels = []
         obs_edge_labels = []
         visited_nodes = []
-        self.preprocesss_tree_to_be_checked(tree)
+        self.preprocess_tree_to_be_checked(tree)
         for node_idx, node in enumerate(tree):
             visited_nodes.append(node)
             ref_node = ref_tree["nodes"][node.label]
@@ -357,10 +341,10 @@ class StandardTestTreesChecker(object):
                             exp_tuples.append( (k, v) )
                     self.assertEqualUnorderedSequences(tuple(obs_tuples), tuple(exp_tuples))
             else:
-                if is_check_comments:
+                if self.__class__.is_check_comments:
                     self.check_comments(node, ref_node, is_metadata_extracted)
                     self.check_comments(edge, ref_edge, is_metadata_extracted)
-                if is_metadata_extracted:
+                if self.__class__.is_metadata_extracted:
                     self.check_metadata_annotations(
                             item=node,
                             reference=ref_node,
@@ -370,7 +354,7 @@ class StandardTestTreesChecker(object):
                             reference=ref_edge,
                             is_coerce_metadata_values_to_string=is_coerce_metadata_values_to_string)
         self.assertEqual(len(visited_nodes), len(ref_tree["nodeset"]))
-        if is_taxa_managed_separately_from_tree:
+        if self.__class__.is_taxa_managed_separately_from_tree:
             self.assertEqual(len(obs_taxa), len(tree.taxon_namespace))
             self.assertEqual(set(obs_taxa), set(tree.taxon_namespace))
             obs_node_labels.extend([t.label for t in tree.taxon_namespace])
@@ -383,14 +367,7 @@ class StandardTestTreesChecker(object):
     def verify_standard_trees(self,
             tree_list,
             tree_file_title,
-            tree_offset=0,
-            suppress_internal_node_taxa=False,
-            suppress_leaf_node_taxa=False,
-            is_metadata_extracted=False,
-            is_coerce_metadata_values_to_string=False,
-            is_distinct_nodes_and_edges_representation=True,
-            is_taxa_managed_separately_from_tree=False,
-            is_check_comments=True):
+            tree_offset=0):
         tree_reference = self.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         if tree_offset < 0:
@@ -406,37 +383,72 @@ class StandardTestTreesChecker(object):
             self.compare_to_reference_tree(
                     tree=tree,
                     tree_file_title=tree_file_title,
-                    reference_tree_idx=tree_idx + tree_offset,
-                    suppress_internal_node_taxa=suppress_internal_node_taxa,
-                    suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                    is_metadata_extracted=is_metadata_extracted,
-                    is_coerce_metadata_values_to_string=is_coerce_metadata_values_to_string,
-                    is_distinct_nodes_and_edges_representation=is_distinct_nodes_and_edges_representation,
-                    is_taxa_managed_separately_from_tree=is_taxa_managed_separately_from_tree,
-                    is_check_comments=is_check_comments)
+                    reference_tree_idx=tree_idx + tree_offset)
 
-class StandardTreeListReaderTestCase(
-        StandardTestTreesChecker):
+class NewickTestTreesChecker(StandardTestTreesChecker):
 
     @staticmethod
-    def create_class_fixtures(
-            cls,
-            schema,
-            is_distinct_nodes_and_edges_representation,
-            is_distinct_taxa_and_labels_on_tree,
-            is_taxa_managed_separately_from_tree,
-            is_coerce_metadata_values_to_string,
-            is_check_comments,
-            ):
-        cls.schema = schema
-        cls.tree_filepaths = dict(_TREE_FILEPATHS[cls.schema])
-        cls.is_distinct_nodes_and_edges_representation = is_distinct_nodes_and_edges_representation
-        cls.is_taxa_managed_separately_from_tree = is_taxa_managed_separately_from_tree
-        cls.is_distinct_taxa_and_labels_on_tree = is_distinct_taxa_and_labels_on_tree
-        cls.is_suppress_internal_node_taxa_by_default = True #is_suppress_internal_node_taxa_by_default
+    def create_class_fixtures(cls,
+            suppress_internal_node_taxa=True,
+            suppress_leaf_node_taxa=False,
+            is_metadata_extracted=False,
+            is_coerce_metadata_values_to_string=True,
+            is_taxa_managed_separately_from_tree=False,
+            is_check_comments=True):
+        cls.schema = "newick"
+        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
+        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
+        for tree_file_title in cls.tree_references:
+            for reference_tree_idx in range(cls.tree_references[tree_file_title]["num_trees"]):
+                ref_tree = cls.tree_references[tree_file_title][str(reference_tree_idx)]
+                for ref_node_label in ref_tree["nodes"]:
+                    ref_node = ref_tree["nodes"][ref_node_label]
+                    ref_node_taxon_label = ref_node["taxon_label"]
+                    # print(">>> {} <<<".format(ref_node_taxon_label))
+                    # if ref_node["children"] and not suppress_internal_node_taxa:
+                    #     ref_node["label"] = ref_node_taxon_label
+                    #     ref_node["taxon_label"] = "None"
+                    # if not ref_node["children"] and not suppress_leaf_node_taxa:
+                    #     ref_node["label"] = ref_node_taxon_label
+                    #     ref_node["taxon_label"] = "None"
+                for ref_edge_label in ref_tree["edges"]:
+                    ref_edge = ref_tree["edges"][ref_edge_label]
+                    ref_edge["label"] = "None"
+        cls.suppress_internal_node_taxa = suppress_internal_node_taxa
+        cls.suppress_leaf_node_taxa = suppress_leaf_node_taxa
+        cls.is_metadata_extracted = is_metadata_extracted
         cls.is_coerce_metadata_values_to_string = is_coerce_metadata_values_to_string
+        cls.is_taxa_managed_separately_from_tree = is_taxa_managed_separately_from_tree
         cls.is_check_comments = is_check_comments
-        cls.tree_references = dict(_TREE_REFERENCES)
+
+    def preprocess_tree_to_be_checked(self, tree):
+        for nd in tree:
+            if nd.is_internal():
+                if self.__class__.suppress_internal_node_taxa:
+                    self.assertIs(nd.taxon, None)
+                else:
+                    self.assertIsNot(nd.taxon, None)
+            else:
+                if self.__class__.suppress_leaf_node_taxa:
+                    self.assertIs(nd.taxon, None)
+                else:
+                    self.assertIsNot(nd.taxon, None)
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            nd.edge.label = nd.label
+
+class NexmlTestTreesChecker(StandardTestTreesChecker):
+
+    @staticmethod
+    def create_class_fixtures(cls):
+        cls.schema = "nexml"
+        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
+        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
+        cls.is_coerce_metadata_values_to_string = False
+        cls.is_taxa_managed_separately_from_tree = True
+        cls.is_check_comments = False
+
+class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_default_get(self):
         for tree_file_title in [
@@ -458,14 +470,8 @@ class StandardTreeListReaderTestCase(
                     tree_list = method(src, self.__class__.schema)
                     # for taxon in tree_list.taxon_namespace:
                     #     print(taxon)
-                    self.verify_standard_trees(
-                            tree_list=tree_list,
-                            tree_file_title=tree_file_title,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False,
-                            is_metadata_extracted=False,
-                            is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                            is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree)
+                    self.verify_standard_trees(tree_list=tree_list,
+                            tree_file_title=tree_file_title)
 
     def test_default_read(self):
         preloaded_tree_file_title = "dendropy-test-trees-n33-unrooted-x10a"
@@ -490,15 +496,7 @@ class StandardTreeListReaderTestCase(
                 old_len = len(tree_list)
                 self.assertEqual(old_len, len(tree_list._trees))
                 self.assertEqual(old_len, preloaded_tree_reference["num_trees"])
-                self.verify_standard_trees(
-                        tree_list,
-                        preloaded_tree_file_title,
-                        suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                        suppress_leaf_node_taxa=False,
-                        is_metadata_extracted=False,
-                        is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                        is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                        is_check_comments=self.__class__.is_check_comments)
+                self.verify_standard_trees(tree_list, preloaded_tree_file_title)
 
                 # load
                 old_id = id(tree_list)
@@ -519,100 +517,14 @@ class StandardTreeListReaderTestCase(
                     self.compare_to_reference_tree(
                             tree=tree,
                             tree_file_title=tree_file_title,
-                            reference_tree_idx=tree_idx,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False,
-                            is_metadata_extracted=False,
-                            is_coerce_metadata_values_to_string=self.__class__.is_coerce_metadata_values_to_string,
-                            is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                            is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                            is_check_comments=self.__class__.is_check_comments)
+                            reference_tree_idx=tree_idx)
 
                 # make sure old ones still intact
                 for tree_idx, tree in enumerate(tree_list[:old_len]):
                     self.compare_to_reference_tree(
                             tree=tree,
                             tree_file_title=preloaded_tree_file_title,
-                            reference_tree_idx=tree_idx,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False,
-                            is_metadata_extracted=False,
-                            is_coerce_metadata_values_to_string=self.__class__.is_coerce_metadata_values_to_string,
-                            is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                            is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                            is_check_comments=self.__class__.is_check_comments)
-
-    def test_selective_taxa_get(self):
-        if self.__class__.is_distinct_taxa_and_labels_on_tree:
-            # These tests are only for schemas that do not
-            # have the ability to explicitly designate taxa
-            # as opposed to labels on trees
-            return
-        tree_file_title = "dendropy-test-trees-n12-x2"
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
-        with open(tree_filepath, "r") as src:
-            tree_string = src.read()
-        for suppress_internal_node_taxa in [True, False]:
-            for suppress_leaf_node_taxa in [True, False]:
-                kwargs = {
-                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
-                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
-                }
-                with open(tree_filepath, "r") as tree_stream:
-                    approaches = (
-                            (dendropy.TreeList.get_from_path, tree_filepath),
-                            (dendropy.TreeList.get_from_stream, tree_stream),
-                            (dendropy.TreeList.get_from_string, tree_string),
-                            )
-                    for method, src in approaches:
-                        tree_list = method(src, self.__class__.schema, **kwargs)
-                        self.verify_standard_trees(
-                                tree_list=tree_list,
-                                tree_file_title=tree_file_title,
-                                suppress_internal_node_taxa=suppress_internal_node_taxa,
-                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                                is_metadata_extracted=False,
-                                is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                                is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                                is_check_comments=self.__class__.is_check_comments)
-
-    def test_selective_taxa_read(self):
-        if self.__class__.is_distinct_taxa_and_labels_on_tree:
-            # These tests are only for schemas that do not
-            # have the ability to explicitly designate taxa
-            # as opposed to labels on trees
-            return
-        tree_file_title = "dendropy-test-trees-n12-x2"
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
-        with open(tree_filepath, "r") as src:
-            tree_string = src.read()
-        for suppress_internal_node_taxa in [True, False]:
-            for suppress_leaf_node_taxa in [True, False]:
-                kwargs = {
-                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
-                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
-                }
-                with open(tree_filepath, "r") as tree_stream:
-                    approaches = (
-                            ("read_from_path", tree_filepath),
-                            ("read_from_stream", tree_stream),
-                            ("read_from_string", tree_string),
-                            )
-                    for method, src in approaches:
-                        tree_list = dendropy.TreeList()
-                        old_id = id(tree_list)
-                        f = getattr(tree_list, method)
-                        f(src, self.__class__.schema, **kwargs)
-                        new_id = id(tree_list)
-                        self.verify_standard_trees(
-                                tree_list=tree_list,
-                                tree_file_title=tree_file_title,
-                                suppress_internal_node_taxa=suppress_internal_node_taxa,
-                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                                is_metadata_extracted=False,
-                                is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                                is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                                is_check_comments=self.__class__.is_check_comments)
+                            reference_tree_idx=tree_idx)
 
     def test_tree_offset_get(self):
         tree_file_title = "dendropy-test-trees-n33-unrooted-x100a"
@@ -822,63 +734,4 @@ class StandardTreeListReaderTestCase(
                       suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
                       gobbledegook=False,
                     )
-
-class NewickTestTreesChecker(StandardTestTreesChecker):
-
-    @staticmethod
-    def create_class_fixtures(cls,
-            suppress_internal_node_taxa=True,
-            suppress_leaf_node_taxa=False,
-            is_metadata_extracted=False,
-            is_coerce_metadata_values_to_string=True,
-            is_taxa_managed_separately_from_tree=False,
-            is_check_comments=True):
-        cls.schema = "newick"
-        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
-        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
-        for tree_file_title in cls.tree_references:
-            for reference_tree_idx in range(cls.tree_references[tree_file_title]["num_trees"]):
-                ref_tree = cls.tree_references[tree_file_title][str(reference_tree_idx)]
-                for ref_node_label in ref_tree["nodes"]:
-                    ref_node = ref_tree["nodes"][ref_node_label]
-                    ref_node_taxon_label = ref_node["taxon_label"]
-                    # print(">>> {} <<<".format(ref_node_taxon_label))
-                    # if ref_node["children"] and not suppress_internal_node_taxa:
-                    #     ref_node["label"] = ref_node_taxon_label
-                    #     ref_node["taxon_label"] = "None"
-                    # if not ref_node["children"] and not suppress_leaf_node_taxa:
-                    #     ref_node["label"] = ref_node_taxon_label
-                    #     ref_node["taxon_label"] = "None"
-                for ref_edge_label in ref_tree["edges"]:
-                    ref_edge = ref_tree["edges"][ref_edge_label]
-                    ref_edge["label"] = "None"
-        cls.suppress_internal_node_taxa = suppress_internal_node_taxa
-        cls.suppress_leaf_node_taxa = suppress_leaf_node_taxa
-        cls.is_metadata_extracted = is_metadata_extracted
-        cls.is_coerce_metadata_values_to_string = is_coerce_metadata_values_to_string
-        cls.is_taxa_managed_separately_from_tree = is_taxa_managed_separately_from_tree
-        cls.is_check_comments = is_check_comments
-
-    def preprocesss_tree_to_be_checked(self, tree):
-        for nd in tree:
-            if nd.taxon is not None:
-                nd.label = nd.taxon.label
-            nd.edge.label = nd.label
-
-class NexmlTestTreesChecker(StandardTestTreesChecker):
-
-    @staticmethod
-    def create_class_fixtures(cls):
-        cls.schema = "nexml"
-        cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
-        cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
-        cls.is_coerce_metadata_values_to_string = False
-        cls.is_taxa_managed_separately_from_tree = True
-        cls.is_check_comments = False
-
-    def preprocesss_tree_to_be_checked(self, tree):
-        for nd in tree:
-            if nd.taxon is not None:
-                nd.label = nd.taxon.label
-            nd.edge.label = nd.label
 

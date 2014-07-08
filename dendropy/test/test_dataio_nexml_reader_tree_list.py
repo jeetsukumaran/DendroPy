@@ -30,7 +30,7 @@ from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
-class NexmlStandardTreeListReaderTestCase(
+class NexmlStandardTestTreesParsingTests(
         standard_file_test_trees.NexmlTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
@@ -47,7 +47,7 @@ class NexmlStandardTreeListReaderTestCase(
         #         is_check_comments=False,
         #         )
 
-    ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+    ## NOTE: many tests are in standard_file_test_trees.StandardTestTreesParsingTests !! ##
 
     def test_collection_comments_and_annotations(self):
         for tree_file_title in (

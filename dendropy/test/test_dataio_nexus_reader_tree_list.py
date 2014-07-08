@@ -30,18 +30,18 @@ from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
-class NexusStandardTreeListReaderTestCase(
-        standard_file_test_trees.StandardTreeListReaderTestCase,
+class NexusStandardTestTreesParsingTests(
+        standard_file_test_trees.StandardTestTreesParsingTests,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_fixtures(
+        standard_file_test_trees.StandardTestTreesParsingTests.create_class_fixtures(
                 cls,
                 schema="nexus",
                 is_taxa_managed_separately_from_tree=False)
 
-    ## NOTE: many tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+    ## NOTE: many tests are in standard_file_test_trees.StandardTestTreesParsingTests !! ##
 
     def test_collection_comments_and_annotations(self):
         tree_file_title = 'standard-test-trees-n33-annotated'

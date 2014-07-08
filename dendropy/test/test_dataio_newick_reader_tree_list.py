@@ -30,18 +30,85 @@ from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
-class NewickStandardTreeListReaderTestCase(
-        standard_file_test_trees.StandardTreeListReaderTestCase,
+class StandardNewickTestTreesParsingTests(standard_file_test_trees.StandardTestTreesParsingTests):
+
+    def test_selective_taxa_get(self):
+        tree_file_title = "dendropy-test-trees-n12-x2"
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for suppress_internal_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
+                kwargs = {
+                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
+                }
+                with open(tree_filepath, "r") as tree_stream:
+                    approaches = (
+                            (dendropy.TreeList.get_from_path, tree_filepath),
+                            (dendropy.TreeList.get_from_stream, tree_stream),
+                            (dendropy.TreeList.get_from_string, tree_string),
+                            )
+                    for method, src in approaches:
+                        tree_list = method(src, self.__class__.schema, **kwargs)
+                        self.verify_standard_trees(
+                                tree_list=tree_list,
+                                tree_file_title=tree_file_title,
+                                suppress_internal_node_taxa=suppress_internal_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
+                                is_metadata_extracted=False,
+                                is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
+                                is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
+                                is_check_comments=self.__class__.is_check_comments)
+
+    def test_selective_taxa_read(self):
+        if self.__class__.is_distinct_taxa_and_labels_on_tree:
+            # These tests are only for schemas that do not
+            # have the ability to explicitly designate taxa
+            # as opposed to labels on trees
+            return
+        tree_file_title = "dendropy-test-trees-n12-x2"
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        for suppress_internal_node_taxa in [True, False]:
+            for suppress_leaf_node_taxa in [True, False]:
+                kwargs = {
+                        "suppress_internal_node_taxa": suppress_internal_node_taxa,
+                        "suppress_leaf_node_taxa": suppress_leaf_node_taxa,
+                }
+                with open(tree_filepath, "r") as tree_stream:
+                    approaches = (
+                            ("read_from_path", tree_filepath),
+                            ("read_from_stream", tree_stream),
+                            ("read_from_string", tree_string),
+                            )
+                    for method, src in approaches:
+                        tree_list = dendropy.TreeList()
+                        old_id = id(tree_list)
+                        f = getattr(tree_list, method)
+                        f(src, self.__class__.schema, **kwargs)
+                        new_id = id(tree_list)
+                        self.verify_standard_trees(
+                                tree_list=tree_list,
+                                tree_file_title=tree_file_title,
+                                suppress_internal_node_taxa=suppress_internal_node_taxa,
+                                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
+                                is_metadata_extracted=False,
+                                is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
+                                is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
+                                is_check_comments=self.__class__.is_check_comments)
+
+
+class NewickTreeListReaderTestCase(
+        StandardTestTreesParsingTests,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_fixtures(
-                cls,
-                schema="newick",
-                is_taxa_managed_separately_from_tree=True)
+        standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls)
 
-    ## NOTE: tests are in standard_file_test_trees.StandardTreeListReaderTestCase !! ##
+    ## NOTE: tests are in standard_file_test_trees.StandardTestTreesParsingTests !! ##
 
 class NewickTreeListReaderMultipleRedundantSemiColons(
         curated_test_tree.CuratedTestTree,
