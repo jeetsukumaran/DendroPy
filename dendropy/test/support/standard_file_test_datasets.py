@@ -43,7 +43,7 @@ class StandardSingleTaxonNamespaceDataSet(curated_test_tree.CuratedTestTree):
         for idx, (char_matrix, checker) in enumerate(zip(ds.char_matrices, checkers)):
             self.assertIs(char_matrix.taxon_namespace, tns)
             if checker.matrix_type is dendropy.StandardCharacterMatrix:
-                checker.create_class_data_label_sequence_map_based_on_state_alphabet(checker,
+                checker.create_class_fixtures_label_sequence_map_based_on_state_alphabet(checker,
                         char_matrix.default_state_alphabet)
             standard_file_test_chars.general_char_matrix_checker(
                     self,

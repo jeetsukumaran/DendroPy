@@ -20,6 +20,7 @@ import sys
 import json
 import random
 import dendropy
+import copy
 from dendropy.test.support import pathmap
 if sys.hexversion < 0x03040000:
     from dendropy.utility.filesys import pre_py34_open as open
@@ -47,22 +48,25 @@ schema_extension_map = {
     "nexus-metadata-comments" : "nexus-metadata-comments.json",
 }
 
-tree_filepaths = {}
-for schema in schema_extension_map:
-    tree_filepaths[schema] = {}
-    for tree_file_title in tree_file_titles:
-        tf = "{}.{}".format(tree_file_title, schema_extension_map[schema])
-        tree_filepaths[schema][tree_file_title] = pathmap.tree_source_path(tf)
+_TREE_FILEPATHS = {}
 _TREE_REFERENCES = {}
 _NEXUS_METADATA_COMMENTS = {}
-for tree_file_title in tree_file_titles:
-    with open(tree_filepaths["json"][tree_file_title]) as src:
-        _TREE_REFERENCES[tree_file_title] = json.load(src)
-    if "annotated" in tree_file_title:
-        with open(tree_filepaths["nexus-metadata-comments"][tree_file_title]) as src:
-            _NEXUS_METADATA_COMMENTS[tree_file_title] = json.load(src)
 
-class StandardTestTreeChecker(object):
+def setup_module():
+    for schema in schema_extension_map:
+        _TREE_FILEPATHS[schema] = {}
+        for tree_file_title in tree_file_titles:
+            tf = "{}.{}".format(tree_file_title, schema_extension_map[schema])
+            _TREE_FILEPATHS[schema][tree_file_title] = pathmap.tree_source_path(tf)
+    for tree_file_title in tree_file_titles:
+        with open(_TREE_FILEPATHS["json"][tree_file_title]) as src:
+            _TREE_REFERENCES[tree_file_title] = json.load(src)
+        if "annotated" in tree_file_title:
+            with open(_TREE_FILEPATHS["nexus-metadata-comments"][tree_file_title]) as src:
+                _NEXUS_METADATA_COMMENTS[tree_file_title] = json.load(src)
+setup_module()
+
+class StandardTestTreesChecker(object):
 
     def compare_annotations_to_json_metadata_dict(self,
             item,
@@ -124,7 +128,7 @@ class StandardTestTreeChecker(object):
     def check_comments(self,
             item,
             reference,
-            metadata_extracted=True):
+            is_metadata_extracted=True):
         reference_comments = list(reference["comments"])
         item_comments = list(item.comments)
         self.assertEqualUnorderedSequences(item_comments, reference_comments)
@@ -135,7 +139,7 @@ class StandardTestTreeChecker(object):
             reference_tree_idx,
             suppress_internal_node_taxa,
             suppress_leaf_node_taxa,
-            metadata_extracted,
+            is_metadata_extracted,
             is_coerce_metadata_values_to_string,
             is_distinct_nodes_and_edges_representation,
             is_taxa_managed_separately_from_tree,
@@ -152,17 +156,12 @@ class StandardTestTreeChecker(object):
         obs_node_labels = []
         obs_edge_labels = []
         visited_nodes = []
-        for node in tree:
-            if node.taxon is not None:
-                node.canonical_label = node.taxon.label
-            else:
-                node.canonical_label = node.label
         for node_idx, node in enumerate(tree):
             visited_nodes.append(node)
-            ref_node = ref_tree["nodes"][node.canonical_label]
+            ref_node = ref_tree["nodes"][node.label]
             ref_node_label = ref_node["label"]
             ref_node_taxon_label = ref_node.get("taxon", ref_node_label)
-            self.assertEqual(node.canonical_label, ref_node_label)
+            self.assertEqual(node.label, ref_node_label)
             ref_edge = ref_tree["edges"][node.edge.label]
             self.assertEqual(node.edge.label, ref_edge["label"])
             ref_node_children = ref_node["children"]
@@ -171,8 +170,9 @@ class StandardTestTreeChecker(object):
                 self.assertEqual(node.taxon.label, ref_node_taxon_label)
                 obs_taxon_labels.append(node.taxon.label)
             else:
+                self.assertEqual(ref_node_taxon_label, "None")
                 pass # self.assertEqual(ref_node_taxon_label, "None")
-            obs_node_labels.append(node.canonical_label)
+            obs_node_labels.append(node.label)
             if ref_node_children:
                 self.assertTrue(node.is_internal())
                 self.assertFalse(node.is_leaf())
@@ -183,7 +183,7 @@ class StandardTestTreeChecker(object):
             if node.parent_node is None:
                 self.assertEqual(ref_node["parent"], "None")
             else:
-                self.assertEqual(node.parent_node.canonical_label, ref_node["parent"])
+                self.assertEqual(node.parent_node.label, ref_node["parent"])
                 if node.parent_node.taxon:
                     self.assertEqual(node.parent_node.taxon.label, ref_node["parent"])
             child_labels = [ch.label for ch in node.child_node_iter()]
@@ -191,14 +191,13 @@ class StandardTestTreeChecker(object):
             self.assertEqual(set(child_labels), set(ref_node["children"]))
 
             edge = node.edge
-            ref_edge = ref_tree["edges"][node.canonical_label]
+            ref_edge = ref_tree["edges"][edge.label]
             if edge.tail_node is None:
                 self.assertEqual(ref_edge["tail_node"], "None")
             else:
-                self.assertEqual(edge.tail_node.canonical_label, ref_edge["tail_node"])
-            self.assertEqual(edge.head_node.canonical_label, ref_edge["head_node"])
+                self.assertEqual(edge.tail_node.label, ref_edge["tail_node"])
+            self.assertEqual(edge.head_node.label, ref_edge["head_node"])
             self.assertAlmostEqual(node.edge.length, float(ref_edge["length"]), 3)
-
 
     def compare_to_reference_tree2(self,
             tree,
@@ -206,7 +205,7 @@ class StandardTestTreeChecker(object):
             reference_tree_idx,
             suppress_internal_node_taxa,
             suppress_leaf_node_taxa,
-            metadata_extracted,
+            is_metadata_extracted,
             is_coerce_metadata_values_to_string,
             is_distinct_nodes_and_edges_representation,
             is_taxa_managed_separately_from_tree):
@@ -331,8 +330,8 @@ class StandardTestTreeChecker(object):
                         "comments": ref_node["comments"] + ref_edge["comments"],
                         "metadata_comments": ref_node["metadata_comments"] + ref_edge["metadata_comments"],
                         }
-                self.check_comments(node, d, metadata_extracted)
-                if metadata_extracted:
+                self.check_comments(node, d, is_metadata_extracted)
+                if is_metadata_extracted:
                     obs_tuples = []
                     for o in (node, edge):
                         for a in o.annotations:
@@ -358,9 +357,9 @@ class StandardTestTreeChecker(object):
                     self.assertEqualUnorderedSequences(tuple(obs_tuples), tuple(exp_tuples))
             else:
                 if is_check_comments:
-                    self.check_comments(node, ref_node, metadata_extracted)
-                    self.check_comments(edge, ref_edge, metadata_extracted)
-                if metadata_extracted:
+                    self.check_comments(node, ref_node, is_metadata_extracted)
+                    self.check_comments(edge, ref_edge, is_metadata_extracted)
+                if is_metadata_extracted:
                     self.check_metadata_annotations(
                             item=node,
                             reference=ref_node,
@@ -386,7 +385,7 @@ class StandardTestTreeChecker(object):
             tree_offset=0,
             suppress_internal_node_taxa=False,
             suppress_leaf_node_taxa=False,
-            metadata_extracted=False,
+            is_metadata_extracted=False,
             is_coerce_metadata_values_to_string=False,
             is_distinct_nodes_and_edges_representation=True,
             is_taxa_managed_separately_from_tree=False,
@@ -409,17 +408,17 @@ class StandardTestTreeChecker(object):
                     reference_tree_idx=tree_idx + tree_offset,
                     suppress_internal_node_taxa=suppress_internal_node_taxa,
                     suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                    metadata_extracted=metadata_extracted,
+                    is_metadata_extracted=is_metadata_extracted,
                     is_coerce_metadata_values_to_string=is_coerce_metadata_values_to_string,
                     is_distinct_nodes_and_edges_representation=is_distinct_nodes_and_edges_representation,
                     is_taxa_managed_separately_from_tree=is_taxa_managed_separately_from_tree,
                     is_check_comments=is_check_comments)
 
 class StandardTreeListReaderTestCase(
-        StandardTestTreeChecker):
+        StandardTestTreesChecker):
 
     @staticmethod
-    def create_class_data(
+    def create_class_fixtures(
             cls,
             schema,
             is_distinct_nodes_and_edges_representation,
@@ -429,7 +428,7 @@ class StandardTreeListReaderTestCase(
             is_check_comments,
             ):
         cls.schema = schema
-        cls.schema_tree_filepaths = dict(tree_filepaths[cls.schema])
+        cls.tree_filepaths = dict(_TREE_FILEPATHS[cls.schema])
         cls.is_distinct_nodes_and_edges_representation = is_distinct_nodes_and_edges_representation
         cls.is_taxa_managed_separately_from_tree = is_taxa_managed_separately_from_tree
         cls.is_distinct_taxa_and_labels_on_tree = is_distinct_taxa_and_labels_on_tree
@@ -445,7 +444,7 @@ class StandardTreeListReaderTestCase(
             "dendropy-test-trees-n10-rooted-treeshapes",
             "dendropy-test-trees-n14-unrooted-treeshapes",
                 ]:
-            tree_filepath = self.schema_tree_filepaths[tree_file_title]
+            tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
             with open(tree_filepath, "r") as src:
                 tree_string = src.read()
             with open(tree_filepath, "r") as tree_stream:
@@ -463,7 +462,7 @@ class StandardTreeListReaderTestCase(
                             tree_file_title=tree_file_title,
                             suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
-                            metadata_extracted=False,
+                            is_metadata_extracted=False,
                             is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                             is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree)
 
@@ -472,7 +471,7 @@ class StandardTreeListReaderTestCase(
         preloaded_tree_reference = self.tree_references[preloaded_tree_file_title]
         tree_file_title = "dendropy-test-trees-n33-unrooted-x10a"
         tree_reference = self.tree_references[tree_file_title]
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -484,7 +483,7 @@ class StandardTreeListReaderTestCase(
             for method, src in approaches:
                 # prepopulate
                 tree_list = dendropy.TreeList.get_from_path(
-                        self.schema_tree_filepaths[preloaded_tree_file_title],
+                        self.schema__TREE_FILEPATHS[preloaded_tree_file_title],
                         self.__class__.schema)
                 # check to make sure trees were loaded
                 old_len = len(tree_list)
@@ -495,7 +494,7 @@ class StandardTreeListReaderTestCase(
                         preloaded_tree_file_title,
                         suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
                         suppress_leaf_node_taxa=False,
-                        metadata_extracted=False,
+                        is_metadata_extracted=False,
                         is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                         is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
                         is_check_comments=self.__class__.is_check_comments)
@@ -522,7 +521,7 @@ class StandardTreeListReaderTestCase(
                             reference_tree_idx=tree_idx,
                             suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
-                            metadata_extracted=False,
+                            is_metadata_extracted=False,
                             is_coerce_metadata_values_to_string=self.__class__.is_coerce_metadata_values_to_string,
                             is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                             is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
@@ -536,7 +535,7 @@ class StandardTreeListReaderTestCase(
                             reference_tree_idx=tree_idx,
                             suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
                             suppress_leaf_node_taxa=False,
-                            metadata_extracted=False,
+                            is_metadata_extracted=False,
                             is_coerce_metadata_values_to_string=self.__class__.is_coerce_metadata_values_to_string,
                             is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                             is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
@@ -549,7 +548,7 @@ class StandardTreeListReaderTestCase(
             # as opposed to labels on trees
             return
         tree_file_title = "dendropy-test-trees-n12-x2"
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for suppress_internal_node_taxa in [True, False]:
@@ -571,7 +570,7 @@ class StandardTreeListReaderTestCase(
                                 tree_file_title=tree_file_title,
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
                                 suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                                metadata_extracted=False,
+                                is_metadata_extracted=False,
                                 is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                                 is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
                                 is_check_comments=self.__class__.is_check_comments)
@@ -583,7 +582,7 @@ class StandardTreeListReaderTestCase(
             # as opposed to labels on trees
             return
         tree_file_title = "dendropy-test-trees-n12-x2"
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for suppress_internal_node_taxa in [True, False]:
@@ -609,7 +608,7 @@ class StandardTreeListReaderTestCase(
                                 tree_file_title=tree_file_title,
                                 suppress_internal_node_taxa=suppress_internal_node_taxa,
                                 suppress_leaf_node_taxa=suppress_leaf_node_taxa,
-                                metadata_extracted=False,
+                                is_metadata_extracted=False,
                                 is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
                                 is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
                                 is_check_comments=self.__class__.is_check_comments)
@@ -623,7 +622,7 @@ class StandardTreeListReaderTestCase(
             tree_offsets.add(random.randint(1, expected_number_of_trees-2))
         while len(tree_offsets) < 12:
             tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
@@ -660,7 +659,7 @@ class StandardTreeListReaderTestCase(
             tree_offsets.add(random.randint(1, expected_number_of_trees-2))
         while len(tree_offsets) < 12:
             tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
@@ -691,7 +690,7 @@ class StandardTreeListReaderTestCase(
 
     def test_tree_offset_without_collection_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         approaches = (
                 dendropy.TreeList.get_from_path,
                 dendropy.TreeList.get_from_stream,
@@ -703,7 +702,7 @@ class StandardTreeListReaderTestCase(
 
     def test_tree_offset_without_collection_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         approaches = (
                 "read_from_path",
                 "read_from_stream",
@@ -717,7 +716,7 @@ class StandardTreeListReaderTestCase(
 
     def test_out_of_range_tree_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         tree_reference = self.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
@@ -734,7 +733,7 @@ class StandardTreeListReaderTestCase(
 
     def test_out_of_range_tree_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         tree_reference = self.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
@@ -753,7 +752,7 @@ class StandardTreeListReaderTestCase(
 
     def test_out_of_range_collection_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -768,7 +767,7 @@ class StandardTreeListReaderTestCase(
 
     def test_out_of_range_collection_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -785,7 +784,7 @@ class StandardTreeListReaderTestCase(
 
     def test_unsupported_keyword_arguments_get(self):
         tree_file_title = 'dendropy-test-trees-n12-x2'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -804,7 +803,7 @@ class StandardTreeListReaderTestCase(
 
     def test_unsupported_keyword_arguments_read(self):
         tree_file_title = 'dendropy-test-trees-n12-x2'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -822,3 +821,31 @@ class StandardTreeListReaderTestCase(
                       suppress_internal_taxa=True,  # should be suppress_internal_node_taxa
                       gobbledegook=False,
                     )
+
+def create_newick_checker_class_fixtures(cls,
+        suppress_internal_node_taxa=True,
+        suppress_leaf_node_taxa=False,
+        is_metadata_extracted=False,
+        is_coerce_metadata_values_to_string=True,
+        is_taxa_managed_separately_from_tree=False,
+        is_check_comments=True):
+    cls.schema = "newick"
+    cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
+    cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
+    for tree_file_title in cls.tree_references:
+        for reference_tree_idx in range(cls.tree_references[tree_file_title]["num_trees"]):
+            ref_tree = cls.tree_references[tree_file_title][str(reference_tree_idx)]
+            for ref_node_label in ref_tree["nodes"]:
+                ref_node = ref_tree["nodes"][ref_node_label]
+                ref_node_taxon_label = ref_node.get("taxon_label", ref_node_label)
+                # print(">>> {} <<<".format(ref_node_taxon_label))
+                if not suppress_internal_node_taxa and not ref_node["children"]:
+                    ref_node["label"] = ref_node_taxon_label
+                    ref_node["taxon_label"] = "None"
+                if not suppress_leaf_node_taxa and ref_node["children"]:
+                    ref_node["label"] = ref_node_taxon_label
+                    ref_node["taxon_label"] = "None"
+            for ref_edge_label in ref_tree["edges"]:
+                ref_edge = ref_tree["edges"][ref_edge_label]
+                ref_edge["label"] = "None"
+

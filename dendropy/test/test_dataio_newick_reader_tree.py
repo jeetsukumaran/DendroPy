@@ -692,14 +692,16 @@ class NewickTreeLabelParsingTest(dendropytest.ExtendedTestCase):
             self.assertEqual(nd.edge.length, expected[nd.taxon.label])
 
 class NewickTreeReaderOffsetTreeTest(
-        standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
-    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.create_newick_checker_class_fixtures(cls)
 
     def test_tree_offset_newick_get(self):
-        tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_file_title = "dendropy-test-trees-n33-unrooted-x100a"
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -710,7 +712,7 @@ class NewickTreeReaderOffsetTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
-            tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+            tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
             expected_number_of_trees = tree_reference["num_trees"]
             if tree_offset < 0:
                 if abs(tree_offset) > expected_number_of_trees:
@@ -732,14 +734,18 @@ class NewickTreeReaderOffsetTreeTest(
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
                             rooting="default-unrooted")
-                    check_tree_idx = tree_offset
-                    self.compare_to_check_tree(
+                    reference_tree_idx = tree_offset
+                    self.compare_to_reference_tree(
                             tree=tree,
                             tree_file_title=tree_file_title,
-                            check_tree_idx=tree_offset,
+                            reference_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
-                            is_distinct_nodes_and_edges_representation=False)
+                            is_metadata_extracted=False,
+                            is_coerce_metadata_values_to_string=True,
+                            is_distinct_nodes_and_edges_representation=True,
+                            is_taxa_managed_separately_from_tree=False,
+                            is_check_comments=True)
 
     def test_offset_get_with_redundant_semicolons(self):
         s = """\
@@ -767,8 +773,8 @@ class NewickTreeReaderOffsetTreeTest(
             self.assertCountEqual(leaves, expected_leaves[idx])
 
     def test_tree_offset_newick_read(self):
-        tree_file_title = "standard-test-trees-n33-x100a"
-        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_file_title = "dendropy-test-trees-n33-unrooted-x100a"
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         tree_offsets = set([0, expected_number_of_trees-1, -1, -expected_number_of_trees])
         while len(tree_offsets) < 8:
@@ -779,7 +785,7 @@ class NewickTreeReaderOffsetTreeTest(
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
-            tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+            tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
             expected_number_of_trees = tree_reference["num_trees"]
             if tree_offset < 0:
                 if abs(tree_offset) > expected_number_of_trees:
@@ -804,17 +810,17 @@ class NewickTreeReaderOffsetTreeTest(
                             suppress_leaf_node_taxa=False,
                             rooting="default-unrooted")
                     self.assertIs(tree.taxon_namespace, tns0)
-                    check_tree_idx = tree_offset
-                    self.compare_to_check_tree(
+                    reference_tree_idx = tree_offset
+                    self.compare_to_reference_tree(
                             tree=tree,
                             tree_file_title=tree_file_title,
-                            check_tree_idx=tree_offset,
+                            reference_tree_idx=tree_offset,
                             suppress_internal_node_taxa=True,
                             suppress_leaf_node_taxa=False,
                             is_distinct_nodes_and_edges_representation=False)
 
     def test_tree_offset_without_collection_offset_newick_get(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         approaches = (
                 dendropy.Tree.get_from_path,
@@ -826,7 +832,7 @@ class NewickTreeReaderOffsetTreeTest(
                 approach(tree_filepath, "newick", collection_offset=None, tree_offset=0)
 
     def test_tree_offset_without_collection_offset_newick_read(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         approaches = (
                 "read_from_path",
@@ -840,9 +846,9 @@ class NewickTreeReaderOffsetTreeTest(
                 f(tree_filepath, "newick", collection_offset=None, tree_offset=0)
 
     def test_out_of_range_tree_offset_newick_get(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -857,9 +863,9 @@ class NewickTreeReaderOffsetTreeTest(
                     method(src, "newick", collection_offset=0, tree_offset=expected_number_of_trees)
 
     def test_out_of_range_tree_offset_newick_read(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -876,7 +882,7 @@ class NewickTreeReaderOffsetTreeTest(
                     f(src, "newick", collection_offset=0, tree_offset=expected_number_of_trees)
 
     def test_out_of_range_collection_offset_newick_get(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
@@ -891,7 +897,7 @@ class NewickTreeReaderOffsetTreeTest(
                     method(src, "newick", collection_offset=1, tree_offset=0)
 
     def test_out_of_range_collection_offset_newick_read(self):
-        tree_file_title = 'standard-test-trees-n33-x10a'
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()

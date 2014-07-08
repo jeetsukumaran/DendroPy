@@ -81,7 +81,7 @@ def newick_tree_writer_test_tree(
     return tree
 
 class NewickTreeWriterTests(
-        standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreesChecker,
         compare_and_validate.ValidateWriteable,
         dendropytest.ExtendedTestCase):
 
@@ -131,7 +131,7 @@ class NewickTreeWriterTests(
             check_tree_idx=0,
             suppress_internal_node_taxa=False,
             suppress_leaf_node_taxa=False,
-            metadata_extracted=True,
+            is_metadata_extracted=True,
             is_coerce_metadata_values_to_string=True,
             is_distinct_nodes_and_edges_representation=False)
 

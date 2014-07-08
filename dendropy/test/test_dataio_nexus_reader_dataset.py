@@ -55,7 +55,7 @@ class DataSetNexusSingleCharsTestCase(dendropytest.ExtendedTestCase):
     def verify_char_matrix(self, char_matrix, src_matrix_checker_type):
         self.assertEqual(type(char_matrix), src_matrix_checker_type.matrix_type)
         if src_matrix_checker_type.matrix_type is dendropy.StandardCharacterMatrix:
-            src_matrix_checker_type.create_class_data_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
+            src_matrix_checker_type.create_class_fixtures_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
                     char_matrix.default_state_alphabet)
         standard_file_test_chars.general_char_matrix_checker(
                 self,
@@ -143,7 +143,7 @@ class DataSetNexusMultipleCharBlocksTestCase(dendropytest.ExtendedTestCase):
         for idx, (char_matrix, checker) in enumerate(zip(ds.char_matrices, checkers)):
             self.assertIs(char_matrix.taxon_namespace, tns)
             if checker.matrix_type is dendropy.StandardCharacterMatrix:
-                checker.create_class_data_label_sequence_map_based_on_state_alphabet(checker,
+                checker.create_class_fixtures_label_sequence_map_based_on_state_alphabet(checker,
                         char_matrix.default_state_alphabet)
             standard_file_test_chars.general_char_matrix_checker(
                     self,

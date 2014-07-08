@@ -28,7 +28,7 @@ from dendropy.test.support import compare_and_validate
 
 class NexusStandardTreeListWriterTestCase(
         compare_and_validate.ValidateWriteable,
-        standard_file_test_trees.StandardTestTreeChecker,
+        standard_file_test_trees.StandardTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
@@ -59,7 +59,7 @@ class NexusStandardTreeListWriterTestCase(
                 tree_offset=0,
                 suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=False,
-                metadata_extracted=True,
+                is_metadata_extracted=True,
                 is_coerce_metadata_values_to_string=True,
                 is_distinct_nodes_and_edges_representation=False,
                 is_taxa_managed_separately_from_tree=True)

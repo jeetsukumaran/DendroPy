@@ -36,7 +36,7 @@ class NexmlStandardTreeListReaderTestCase(
 
     @classmethod
     def setUpClass(cls):
-        standard_file_test_trees.StandardTreeListReaderTestCase.create_class_data(
+        standard_file_test_trees.create_nexml_checker_class_fixtures(
                 cls,
                 schema="nexml",
                 is_distinct_nodes_and_edges_representation=True,
@@ -74,7 +74,7 @@ class NexmlStandardTreeListReaderTestCase(
                     tree_offset=0,
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=False,
-                    metadata_extracted=True,
+                    is_metadata_extracted=True,
                     is_coerce_metadata_values_to_string=True,
                     is_distinct_nodes_and_edges_representation=False,
                     is_taxa_managed_separately_from_tree=True,

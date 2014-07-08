@@ -52,7 +52,7 @@ class FastaWriterCharactersTestCase(
     def verify_char_matrix(self, char_matrix, src_matrix_checker_type):
         self.assertEqual(type(char_matrix), src_matrix_checker_type.matrix_type)
         if src_matrix_checker_type.matrix_type is dendropy.StandardCharacterMatrix:
-            src_matrix_checker_type.create_class_data_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
+            src_matrix_checker_type.create_class_fixtures_label_sequence_map_based_on_state_alphabet(src_matrix_checker_type,
                     char_matrix.default_state_alphabet)
         standard_file_test_chars.general_char_matrix_checker(
                 self,
