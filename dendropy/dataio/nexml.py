@@ -103,6 +103,8 @@ def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples
     parts = ["%s<meta" % (indent * indent_level)]
     value = annote.value
     if value is not None:
+        if isinstance(value, list) or isinstance(value, tuple):
+            value = " ".join(str(v) for v in value)
         value = _protect_attr(value)
     else:
         value = None
@@ -1242,9 +1244,17 @@ class NexmlWriter(iosys.DataWriter):
         self.write_comments(tree, dest, indent_level=indent_level+1, newline=True)
 
         for node in tree.preorder_node_iter():
-            self.write_node(node=node, dest=dest, indent_level=indent_level+1)
+            self.write_node(
+                    node=node,
+                    dest=dest,
+                    is_root=tree.is_rooted and node is tree.seed_node,
+                    indent_level=indent_level+1)
         for edge in tree.preorder_edge_iter():
-            self.write_edge(edge=edge, dest=dest, indent_level=indent_level+1)
+            self.write_edge(
+                    edge=edge,
+                    dest=dest,
+                    is_root=tree.is_rooted and node is tree.seed_node,
+                    indent_level=indent_level+1)
         dest.write('%s</tree>\n' % (self.indent * indent_level))
 
     def write_to_nexml_open(self, dest, indent_level=0):
@@ -1298,7 +1308,7 @@ class NexmlWriter(iosys.DataWriter):
         "Closing tag for a nexml element."
         dest.write('%s</nex:nexml>\n' % (self.indent*indent_level))
 
-    def write_node(self, node, dest, indent_level=0):
+    def write_node(self, node, dest, is_root, indent_level=0):
         "Writes out a NEXML node element."
         parts = []
         parts.append('<node')
@@ -1307,6 +1317,8 @@ class NexmlWriter(iosys.DataWriter):
             parts.append('label=%s' % _protect_attr(node.label))
         if hasattr(node, 'taxon') and node.taxon:
             parts.append('otu="%s"' % node.taxon.default_oid)
+        if is_root:
+            parts.append('root="true"')
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if len(node.annotations) > 0:
@@ -1318,7 +1330,7 @@ class NexmlWriter(iosys.DataWriter):
         else:
             dest.write(' />\n')
 
-    def write_edge(self, edge, dest, indent_level=0):
+    def write_edge(self, edge, dest, is_root, indent_level=0):
         "Writes out a NEXML edge element."
         if edge and edge.head_node:
             parts = []
