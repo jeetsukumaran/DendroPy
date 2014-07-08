@@ -85,35 +85,44 @@ class StandardTestTreesChecker(object):
                 else:
                     v = str(v)
                 expected_metadata[k] = v
+            for k in item_annotations_as_dict:
+                v = item_annotations_as_dict[k]
+                if isinstance(v, list):
+                    v = [str(i) for i in v]
+                elif isinstance(v, tuple):
+                    v = (str(i) for i in v)
+                else:
+                    v = str(v)
+                item_annotations_as_dict[k] = v
 
-        # for annote in item.annotations:
-        #     print("{}: {}".format(annote.name, annote.value))
-        # k1 = sorted(list(item_annotations_as_dict.keys()))
-        # k2 = sorted(list(expected_metadata.keys()))
-        # print("--")
-        # for k in k1:
-        #     print("'{}':'{}'".format(k, item_annotations_as_dict[k]))
-        # print("--")
-        # for k in k2:
-        #     print("'{}':'{}'".format(k, expected_metadata[k]))
-        # self.assertEqual(len(k1), len(k2))
-        # self.assertEqual(set(k1), set(k2))
-        # for key in set(item_annotations_as_dict.keys()):
-        #     if item_annotations_as_dict[key] != expected_metadata[key]:
-        #         v = expected_metadata[key]
-        #         # if isinstance(v, list):
-        #         #     print("{}: {}".format(v, [type(i) for i in v]))
-        #         # elif isinstance(v, tuple):
-        #         #     print("{}: {}".format(v, (type(i) for i in v)))
-        #         # else:
-        #         #     print("{}: {}".format(v, type(v)))
-        #         print("**** {}:\t\t{} ({}) \t\t{} ({})".format(
-        #             key,
-        #             item_annotations_as_dict[key],
-        #             type(item_annotations_as_dict[key]),
-        #             expected_metadata[key],
-        #             type(expected_metadata[key]),
-        #             ))
+        # # for annote in item.annotations:
+        # #     print("{}: {}".format(annote.name, annote.value))
+        # # k1 = sorted(list(item_annotations_as_dict.keys()))
+        # # k2 = sorted(list(expected_metadata.keys()))
+        # # print("--")
+        # # for k in k1:
+        # #     print("'{}':'{}'".format(k, item_annotations_as_dict[k]))
+        # # print("--")
+        # # for k in k2:
+        # #     print("'{}':'{}'".format(k, expected_metadata[k]))
+        # # self.assertEqual(len(k1), len(k2))
+        # # self.assertEqual(set(k1), set(k2))
+        for key in set(item_annotations_as_dict.keys()):
+            if item_annotations_as_dict[key] != expected_metadata[key]:
+                v = expected_metadata[key]
+                # if isinstance(v, list):
+                #     print("{}: {}".format(v, [type(i) for i in v]))
+                # elif isinstance(v, tuple):
+                #     print("{}: {}".format(v, (type(i) for i in v)))
+                # else:
+                #     print("{}: {}".format(v, type(v)))
+                print("**** {}:\t\t{} ({}) \t\t{} ({})".format(
+                    key,
+                    item_annotations_as_dict[key],
+                    type(item_annotations_as_dict[key]),
+                    expected_metadata[key],
+                    type(expected_metadata[key]),
+                    ))
 
         self.assertEqual(item_annotations_as_dict, expected_metadata)
 

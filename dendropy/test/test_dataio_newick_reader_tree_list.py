@@ -80,7 +80,6 @@ class NewickTreeListReaderSuppressedInternalUnsuppressedLeafTaxaTestCase(
                 suppress_leaf_node_taxa=False,
                 )
 
-
 class NewickTreeListReaderUnsuppressedInternalUnsuppressedLeafTaxaTestCase(
         base_newick_test_cases.NewickTreeListReaderTaxaManagementBaseTestCase,
         standard_file_test_trees.NewickTestTreesChecker,
@@ -94,63 +93,70 @@ class NewickTreeListReaderUnsuppressedInternalUnsuppressedLeafTaxaTestCase(
                 )
 
 
-# class NewickTreeListMetadataTest(
-#         standard_file_test_trees.StandardTestTreesChecker,
-#         dendropytest.ExtendedTestCase):
+class NewickTreeListMetadataTest(
+        base_newick_test_cases.NewickTreeListReaderTaxaManagementBaseTestCase,
+        standard_file_test_trees.NewickTestTreesChecker,
+        dendropytest.ExtendedTestCase):
 
-#     def test_read_metadata(self):
-#         tree_file_titles = [
-#                 'standard-test-trees-n33-annotated',
-#         ]
-#         for tree_file_title in tree_file_titles:
-#             tree_filepath = standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
-#             with open(tree_filepath, "r") as src:
-#                 tree_string = src.read()
-#             with open(tree_filepath, "r") as tree_stream:
-#                 approaches = (
-#                         (dendropy.TreeList.get_from_path, tree_filepath),
-#                         (dendropy.TreeList.get_from_stream, tree_stream),
-#                         (dendropy.TreeList.get_from_string, tree_string),
-#                         )
-#                 for method, src in approaches:
-#                     tree_list = method(src,
-#                             "newick",
-#                             extract_comment_metadata=True)
-#                     self.verify_standard_trees(
-#                             tree_list=tree_list,
-#                             tree_file_title=tree_file_title,
-#                             suppress_internal_node_taxa=True,
-#                             suppress_leaf_node_taxa=False,
-#                             is_metadata_extracted=True,
-#                             is_coerce_metadata_values_to_string=True,
-#                             is_distinct_nodes_and_edges_representation=False)
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls,
+                is_metadata_extracted=True,
+                )
 
-#     def test_correct_rooting_weighting_and_metadata_association(self):
-#         tree_str = """\
-#                 ;;;;
-#                 [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
-#                 [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
-#                 [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
-#                 [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
-#                 (a,(b,(c,d)));;;
-#         """
-#         trees = dendropy.TreeList.get_from_string(tree_str,
-#                 "newick",
-#                 extract_comment_metadata=True,
-#                 store_tree_weights=True)
-#         self.assertEqual(len(trees.taxon_namespace), 4)
-#         tax_labels = [t.label for t in trees.taxon_namespace]
-#         self.assertSequenceEqual(set(tax_labels), set(["a", "b", "c", "d"]))
-#         self.assertEqual(len(trees), 3)
-#         for tree_idx, tree in enumerate(trees):
-#             if tree_idx < 2:
-#                 self.assertIs(tree.is_rooted, True)
-#                 self.assertEqual(tree.weight, 0.25)
-#                 self.assertEqual(tree.annotations.get_value("color", None), "red")
-#             else:
-#                 self.assertIs(tree.is_rooted, None)
-#                 self.assertEqual(tree.weight, 1.0)
-#                 self.assertFalse(tree.has_annotations)
+    def test_read_metadata(self):
+        tree_file_titles = [
+            "dendropy-test-trees-multifurcating-rooted-annotated",
+            "dendropy-test-trees-n33-unrooted-annotated-x10a",
+        ]
+        for tree_file_title in tree_file_titles:
+            tree_filepath = standard_file_test_trees._TREE_FILEPATHS["newick"][tree_file_title]
+            with open(tree_filepath, "r") as src:
+                tree_string = src.read()
+            with open(tree_filepath, "r") as tree_stream:
+                approaches = (
+                        (dendropy.TreeList.get_from_path, tree_filepath),
+                        (dendropy.TreeList.get_from_stream, tree_stream),
+                        (dendropy.TreeList.get_from_string, tree_string),
+                        )
+                for method, src in approaches:
+                    tree_list = method(src,
+                            "newick",
+                            extract_comment_metadata=True)
+                    self.verify_standard_trees(
+                            tree_list=tree_list,
+                            tree_file_title=tree_file_title)
+
+class NewickTreeListRootingAndMetadataTest(
+        standard_file_test_trees.StandardTestTreesChecker,
+        dendropytest.ExtendedTestCase):
+
+    def test_correct_rooting_weighting_and_metadata_association(self):
+        tree_str = """\
+                ;;;;
+                [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
+                [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
+                [&color=red][&W 0.25][&R](a,(b,(c,d)))[&W 0.1][&color=wrong1];
+                [&W 0.1][&color=wrong1][&U];[&W 0.1][&color=wrong1];[&W 0.1][&color=wrong1];
+                (a,(b,(c,d)));;;
+        """
+        trees = dendropy.TreeList.get_from_string(tree_str,
+                "newick",
+                extract_comment_metadata=True,
+                store_tree_weights=True)
+        self.assertEqual(len(trees.taxon_namespace), 4)
+        tax_labels = [t.label for t in trees.taxon_namespace]
+        self.assertSequenceEqual(set(tax_labels), set(["a", "b", "c", "d"]))
+        self.assertEqual(len(trees), 3)
+        for tree_idx, tree in enumerate(trees):
+            if tree_idx < 2:
+                self.assertIs(tree.is_rooted, True)
+                self.assertEqual(tree.weight, 0.25)
+                self.assertEqual(tree.annotations.get_value("color", None), "red")
+            else:
+                self.assertIs(tree.is_rooted, None)
+                self.assertEqual(tree.weight, 1.0)
+                self.assertFalse(tree.has_annotations)
 
 class NewickTreeListReaderMultipleRedundantSemiColons(
         curated_test_tree.CuratedTestTree,

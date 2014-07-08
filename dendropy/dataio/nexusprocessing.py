@@ -340,6 +340,12 @@ def parse_comment_metadata_to_annotations(
                 val = [value_type(v) for v in val[1:-1].split(',')]
             else:
                 val = val[1:-1].split(',')
+        elif val.startswith('"') and val.endswith('"'):
+            val = val[1:-1]
+        elif val.lower() == "false":
+            val = False
+        elif val.lower() == "true":
+            val = True
         else:
             if value_type is not None:
                 val = value_type(val)
