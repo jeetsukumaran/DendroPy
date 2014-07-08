@@ -67,9 +67,11 @@ class _AnnotationParser(object):
                 except KeyError:
                     raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (dt_prefix, self._namespace_registry))
                 if dt_namespace.startswith("http://www.w3.org/2001/XMLSchema"):
-                    value = self._coerce_to_standard_xml_schema_type(value, dt)
-                if dt_namespace.startswith("http://dendropy.org") or dt_namespace.startswith("http://packages.python.org/DendroPy"):
-                    value = self._coerce_to_standard_dendropy_type(value, dt)
+                    value = self._coerce_to_xml_schema_type(value, dt)
+                elif dt_namespace.startswith("http://www.nexml.org/1.0") or dt_namespace.startswith("http://www.nexml.org/2009"):
+                    value = self._coerce_to_nexml_type(value, dt)
+                elif dt_namespace.startswith("http://dendropy.org") or dt_namespace.startswith("http://packages.python.org/DendroPy"):
+                    value = self._coerce_to_dendropy_type(value, dt)
         a = annotated.annotations.add_new(
                 name=name,
                 value=value,
@@ -82,7 +84,7 @@ class _AnnotationParser(object):
         for annotation in top_annotations:
             self._parse_annotations(a, annotation)
 
-    def _coerce_to_standard_xml_schema_type(self, value, type_name):
+    def _coerce_to_xml_schema_type(self, value, type_name):
         if type_name in ("boolean"):
             if value.lower() in ("1", "t", "true", "y", "yes",):
                 return True
@@ -94,18 +96,25 @@ class _AnnotationParser(object):
             coerce_type = int
         else:
             return value
-        return self._coerce_to_type(value, coerce_type)
+        return self._coerce_type(value, coerce_type)
 
-    def _coerce_to_standard_dendropy_type(self, value, type_name):
+    def _coerce_to_dendropy_type(self, value, type_name):
         if type_name in ("decimalRange"):
-            # syntax: '[a, b]'
             try:
-                value = [float(v) for v in value[1:-1].split(',')]
+                value = [float(v) for v in value.split()]
             except KeyError:
                 pass
         return value
 
-    def _coerce_to_type(self, value, to_type):
+    def _coerce_to_nexml_type(self, value, type_name):
+        if type_name in ("ContinuousSeq"):
+            try:
+                value = [float(v) for v in value.split()]
+            except KeyError:
+                pass
+        return value
+
+    def _coerce_type(self, value, to_type):
         try:
             value = to_type(value)
         except ValueError:
