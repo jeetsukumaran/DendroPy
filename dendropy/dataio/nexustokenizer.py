@@ -54,7 +54,12 @@ def format_annotation_as_comments(annotated, nhx=False):
             ### TODO ###
             raise NotImplementedError("Dictionary annotations cannot be rendered in NEXUS/NEWICK format in this version of DendroPy")
         elif isinstance(value, str):
-            parts.append("%s=%s" % (key, json.dumps(value)))
+            parts.append('%s="%s"' % (key, value))
+        elif isinstance(value, bool):
+            if value:
+                parts.append('%s=true' % key)
+            else:
+                parts.append('%s=false' % key)
         else:
             parts.append("%s=%s" % (key, value))
     if nhx:
