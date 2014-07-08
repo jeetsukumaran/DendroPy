@@ -448,7 +448,7 @@ class NexmlTestTreesChecker(StandardTestTreesChecker):
         cls.is_taxa_managed_separately_from_tree = True
         cls.is_check_comments = False
 
-class StandardTestTreesParsingTests(StandardTestTreesChecker):
+class StandardTreeParsingTestCase(StandardTestTreesChecker):
 
     def test_default_get(self):
         for tree_file_title in [
@@ -457,7 +457,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
             "dendropy-test-trees-n10-rooted-treeshapes",
             "dendropy-test-trees-n14-unrooted-treeshapes",
                 ]:
-            tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+            tree_filepath = self.schema_tree_filepaths[tree_file_title]
             with open(tree_filepath, "r") as src:
                 tree_string = src.read()
             with open(tree_filepath, "r") as tree_stream:
@@ -478,7 +478,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
         preloaded_tree_reference = self.tree_references[preloaded_tree_file_title]
         tree_file_title = "dendropy-test-trees-n33-unrooted-x10a"
         tree_reference = self.tree_references[tree_file_title]
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -490,7 +490,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
             for method, src in approaches:
                 # prepopulate
                 tree_list = dendropy.TreeList.get_from_path(
-                        self.schema__TREE_FILEPATHS[preloaded_tree_file_title],
+                        self.schema_tree_filepaths[preloaded_tree_file_title],
                         self.__class__.schema)
                 # check to make sure trees were loaded
                 old_len = len(tree_list)
@@ -535,7 +535,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
             tree_offsets.add(random.randint(1, expected_number_of_trees-2))
         while len(tree_offsets) < 12:
             tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
@@ -550,18 +550,11 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
                             src,
                             self.__class__.schema,
                             collection_offset=0,
-                            tree_offset=tree_offset,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False)
+                            tree_offset=tree_offset)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
-                            tree_offset=tree_offset,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False,
-                            is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                            is_taxa_managed_separately_from_tree=True,
-                            is_check_comments=self.__class__.is_check_comments)
+                            tree_offset=tree_offset)
 
     def test_tree_offset_read(self):
         tree_file_title = "dendropy-test-trees-n33-unrooted-x100a"
@@ -572,7 +565,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
             tree_offsets.add(random.randint(1, expected_number_of_trees-2))
         while len(tree_offsets) < 12:
             tree_offsets.add(random.randint(-expected_number_of_trees-2, -2))
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         for tree_offset in tree_offsets:
@@ -588,22 +581,15 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
                     trees_read = f(src,
                             self.__class__.schema,
                             collection_offset=0,
-                            tree_offset=tree_offset,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False)
+                            tree_offset=tree_offset)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
-                            tree_offset=tree_offset,
-                            suppress_internal_node_taxa=self.__class__.is_suppress_internal_node_taxa_by_default,
-                            suppress_leaf_node_taxa=False,
-                            is_distinct_nodes_and_edges_representation=self.__class__.is_distinct_nodes_and_edges_representation,
-                            is_taxa_managed_separately_from_tree=self.__class__.is_taxa_managed_separately_from_tree,
-                            is_check_comments=self.__class__.is_check_comments)
+                            tree_offset=tree_offset)
 
     def test_tree_offset_without_collection_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         approaches = (
                 dendropy.TreeList.get_from_path,
                 dendropy.TreeList.get_from_stream,
@@ -615,7 +601,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_tree_offset_without_collection_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         approaches = (
                 "read_from_path",
                 "read_from_stream",
@@ -629,7 +615,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_out_of_range_tree_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         tree_reference = self.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
@@ -646,7 +632,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_out_of_range_tree_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         tree_reference = self.tree_references[tree_file_title]
         expected_number_of_trees = tree_reference["num_trees"]
         with open(tree_filepath, "r") as src:
@@ -665,7 +651,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_out_of_range_collection_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -680,7 +666,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_out_of_range_collection_offset_read(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -697,7 +683,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_unsupported_keyword_arguments_get(self):
         tree_file_title = 'dendropy-test-trees-n12-x2'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
@@ -716,7 +702,7 @@ class StandardTestTreesParsingTests(StandardTestTreesChecker):
 
     def test_unsupported_keyword_arguments_read(self):
         tree_file_title = 'dendropy-test-trees-n12-x2'
-        tree_filepath = self.schema__TREE_FILEPATHS[tree_file_title]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
         with open(tree_filepath, "r") as src:
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
