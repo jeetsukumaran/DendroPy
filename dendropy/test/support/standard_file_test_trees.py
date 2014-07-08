@@ -404,13 +404,17 @@ class NewickTestTreesChecker(StandardTestTreesChecker):
                 for ref_node_label in ref_tree["nodes"]:
                     ref_node = ref_tree["nodes"][ref_node_label]
                     ref_node_taxon_label = ref_node["taxon_label"]
-                    # print(">>> {} <<<".format(ref_node_taxon_label))
-                    # if ref_node["children"] and not suppress_internal_node_taxa:
-                    #     ref_node["label"] = ref_node_taxon_label
-                    #     ref_node["taxon_label"] = "None"
-                    # if not ref_node["children"] and not suppress_leaf_node_taxa:
-                    #     ref_node["label"] = ref_node_taxon_label
-                    #     ref_node["taxon_label"] = "None"
+                    if ref_node["children"]:
+                        if suppress_internal_node_taxa and ref_node["taxon_label"]:
+                            ref_node["taxon_label"] = None
+                        elif not suppress_internal_node_taxa and ref_node["taxon_label"] is None:
+                            ref_node["taxon_label"] = ref_node["label"]
+                    if not ref_node["children"]:
+                        ref_node["taxon_label"] = None
+                        if suppress_leaf_node_taxa and ref_node["taxon_label"]:
+                            ref_node["taxon_label"] = None
+                        elif not suppress_leaf_node_taxa and ref_node["taxon_label"] is None:
+                            ref_node["taxon_label"] = ref_node["label"]
                 for ref_edge_label in ref_tree["edges"]:
                     ref_edge = ref_tree["edges"][ref_edge_label]
                     ref_edge["label"] = "None"
