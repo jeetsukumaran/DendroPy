@@ -107,22 +107,22 @@ class StandardTestTreesChecker(object):
         # #     print("'{}':'{}'".format(k, expected_metadata[k]))
         # # self.assertEqual(len(k1), len(k2))
         # # self.assertEqual(set(k1), set(k2))
-        for key in set(item_annotations_as_dict.keys()):
-            if item_annotations_as_dict[key] != expected_metadata[key]:
-                v = expected_metadata[key]
-                # if isinstance(v, list):
-                #     print("{}: {}".format(v, [type(i) for i in v]))
-                # elif isinstance(v, tuple):
-                #     print("{}: {}".format(v, (type(i) for i in v)))
-                # else:
-                #     print("{}: {}".format(v, type(v)))
-                print("**** {}:\t\t{} ({}) \t\t{} ({})".format(
-                    key,
-                    item_annotations_as_dict[key],
-                    type(item_annotations_as_dict[key]),
-                    expected_metadata[key],
-                    type(expected_metadata[key]),
-                    ))
+        # for key in set(item_annotations_as_dict.keys()):
+        #     if item_annotations_as_dict[key] != expected_metadata[key]:
+        #         v = expected_metadata[key]
+        #         # if isinstance(v, list):
+        #         #     print("{}: {}".format(v, [type(i) for i in v]))
+        #         # elif isinstance(v, tuple):
+        #         #     print("{}: {}".format(v, (type(i) for i in v)))
+        #         # else:
+        #         #     print("{}: {}".format(v, type(v)))
+        #         print("**** {}:\t\t{} ({}) \t\t{} ({})".format(
+        #             key,
+        #             item_annotations_as_dict[key],
+        #             type(item_annotations_as_dict[key]),
+        #             expected_metadata[key],
+        #             type(expected_metadata[key]),
+        #             ))
 
         self.assertEqual(item_annotations_as_dict, expected_metadata)
 
