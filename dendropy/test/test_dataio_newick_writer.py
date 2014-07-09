@@ -80,16 +80,20 @@ def newick_tree_writer_test_tree(
             nd.edge.length = nd_idx
     return tree
 
-class NewickTreeWriterTests(
-        standard_file_test_trees.StandardTestTreesChecker,
+class NewickTreeWriterDefaultTest(
+        standard_file_test_trees.NewickTestTreesChecker,
         compare_and_validate.ValidateWriteable,
         dendropytest.ExtendedTestCase):
 
-    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["newick"])
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.NewickTestTreesChecker.create_class_fixtures(cls,
+                is_metadata_extracted=True,
+                )
 
     def test_roundtrip_full(self):
-        tree_file_title = 'standard-test-trees-n33-annotated'
-        tree_filepath = standard_file_test_trees.tree_filepaths["newick"][tree_file_title]
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-annotated-x10a'
+        tree_filepath = standard_file_test_trees._TREE_FILEPATHS["newick"][tree_file_title]
         tree1 = dendropy.Tree.get_from_path(
                 tree_filepath,
                 "newick",
@@ -122,18 +126,22 @@ class NewickTreeWriterTests(
                 "newick",
                 extract_comment_metadata=True,
                 store_tree_weights=True,
-                suppress_internal_node_taxa=False,
+                suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=False,
         )
-        self.compare_to_check_tree(
+        self.compare_to_reference_tree(
             tree=tree2,
             tree_file_title=tree_file_title,
-            check_tree_idx=0,
-            suppress_internal_node_taxa=False,
-            suppress_leaf_node_taxa=False,
-            is_metadata_extracted=True,
-            is_coerce_metadata_values_to_string=True,
-            is_distinct_nodes_and_edges_representation=False)
+            reference_tree_idx=0)
+            # suppress_internal_node_taxa=False,
+            # suppress_leaf_node_taxa=False,
+            # is_metadata_extracted=True,
+            # is_coerce_metadata_values_to_string=True,
+            # is_distinct_nodes_and_edges_representation=False)
+
+class NewickTreeWriterGeneralOptionsTests(
+        compare_and_validate.ValidateWriteable,
+        dendropytest.ExtendedTestCase):
 
     def test_node_labeling(self):
         for has_leaf_node_taxa in (True, False):
@@ -181,6 +189,7 @@ class NewickTreeWriterTests(
                                                 else:
                                                     self.assertEqual(nd2.label,
                                                             nd1.expected_label[ (suppress_internal_taxon_labels, suppress_internal_node_labels) ])
+
     def test_rooting_token(self):
         tree1 = newick_tree_writer_test_tree()
         for rooted_state in (None, True, False):
