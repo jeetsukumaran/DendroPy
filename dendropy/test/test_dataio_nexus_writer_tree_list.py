@@ -28,20 +28,18 @@ from dendropy.test.support import compare_and_validate
 
 class NexusStandardTreeListWriterTestCase(
         compare_and_validate.ValidateWriteable,
-        standard_file_test_trees.StandardTestTreesChecker,
+        standard_file_test_trees.NexusTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.schema = "nexus"
-        cls.schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths[cls.schema])
-        cls.is_taxa_managed_separately_from_tree = True
+        standard_file_test_trees.NexusTestTreesChecker.create_class_fixtures(cls)
 
     def test_annotated_tree_list_writing(self):
-        tree_file_title = 'standard-test-trees-n33-annotated'
-        tree_reference = standard_file_test_trees.tree_references[tree_file_title]
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-annotated-x10a'
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
         expected_non_metadata_comments = tree_reference["tree_list_comments"]
-        expected_metadata_comments = tree_reference["tree_list_metadata_comments"]
+        expected_metadata_comments = tree_reference["tree_list_metadata"]
         expected_metadata = tree_reference["tree_list_metadata"]
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         tree_list1 = dendropy.TreeList.get_from_path(
@@ -56,13 +54,7 @@ class NexusStandardTreeListWriterTestCase(
         self.verify_standard_trees(
                 tree_list=tree_list2,
                 tree_file_title=tree_file_title,
-                tree_offset=0,
-                suppress_internal_node_taxa=True,
-                suppress_leaf_node_taxa=False,
-                is_metadata_extracted=True,
-                is_coerce_metadata_values_to_string=True,
-                is_distinct_nodes_and_edges_representation=False,
-                is_taxa_managed_separately_from_tree=True)
+                tree_offset=0)
 
 if __name__ == "__main__":
     unittest.main()
