@@ -398,13 +398,14 @@ class NewickTestTreesChecker(StandardTestTreesChecker):
 
     @staticmethod
     def create_class_fixtures(cls,
+            schema="newick",
             suppress_internal_node_taxa=True,
             suppress_leaf_node_taxa=False,
             is_metadata_extracted=False,
             is_coerce_metadata_values_to_string=True,
             is_taxa_managed_separately_from_tree=False,
             is_check_comments=True):
-        cls.schema = "newick"
+        cls.schema = "nexus"
         cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
         cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
         for tree_file_title in cls.tree_references:
@@ -449,6 +450,26 @@ class NewickTestTreesChecker(StandardTestTreesChecker):
             if nd.taxon is not None:
                 nd.label = nd.taxon.label
             nd.edge.label = nd.label
+
+class NexusTestTreesChecker(NewickTestTreesChecker):
+
+    @staticmethod
+    def create_class_fixtures(cls,
+            schema="nexus",
+            suppress_internal_node_taxa=True,
+            suppress_leaf_node_taxa=False,
+            is_metadata_extracted=True,
+            is_coerce_metadata_values_to_string=True,
+            is_taxa_managed_separately_from_tree=True,
+            is_check_comments=True):
+        NewickTestTreesChecker.create_class_fixtures(cls,
+                schema=schema,
+                suppress_internal_node_taxa=suppress_internal_node_taxa,
+                suppress_leaf_node_taxa=suppress_leaf_node_taxa,
+                is_metadata_extracted=is_metadata_extracted,
+                is_coerce_metadata_values_to_string=is_coerce_metadata_values_to_string,
+                is_taxa_managed_separately_from_tree=is_taxa_managed_separately_from_tree,
+                is_check_comments=is_check_comments)
 
 class NexmlTestTreesChecker(StandardTestTreesChecker):
 
