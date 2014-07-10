@@ -25,12 +25,14 @@ import unittest
 import dendropy
 from dendropy.test.support import dendropytest
 from dendropy.test.support import standard_file_test_trees
+from dendropy.test import base_standard_trees_parsing_test_cases
 from dendropy.test.support import curated_test_tree
 from dendropy.test.support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
 class NexmlStandardTreeParsingTestCase(
+        base_standard_trees_parsing_test_cases.StandardTreesParsingTestCase,
         standard_file_test_trees.NexmlTestTreesChecker,
         dendropytest.ExtendedTestCase):
 
