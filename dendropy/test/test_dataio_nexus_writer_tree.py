@@ -52,16 +52,20 @@ class NexusTreeWriterTests(
                 )
         self.verify_curated_tree(tree2)
 
-class NexusTreeWriterTests(
-        standard_file_test_trees.StandardTestTreesChecker,
+class NexusTreeWriterDefaultTest(
+        standard_file_test_trees.NexusTestTreesChecker,
         compare_and_validate.ValidateWriteable,
         dendropytest.ExtendedTestCase):
 
-    schema_tree_filepaths = dict(standard_file_test_trees.tree_filepaths["nexus"])
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.NexusTestTreesChecker.create_class_fixtures(cls,
+                is_metadata_extracted=True,
+                )
 
     def test_roundtrip_full(self):
-        tree_file_title = 'standard-test-trees-n33-annotated'
-        tree_filepath = standard_file_test_trees.tree_filepaths["nexus"][tree_file_title]
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-annotated-x10a'
+        tree_filepath = standard_file_test_trees._TREE_FILEPATHS["nexus"][tree_file_title]
         tree1 = dendropy.Tree.get_from_path(
                 tree_filepath,
                 "nexus",
@@ -94,18 +98,22 @@ class NexusTreeWriterTests(
                 "nexus",
                 extract_comment_metadata=True,
                 store_tree_weights=True,
-                suppress_internal_node_taxa=False,
+                suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=False,
         )
-        self.compare_to_check_tree(
+        self.compare_to_reference_tree(
             tree=tree2,
             tree_file_title=tree_file_title,
-            check_tree_idx=0,
-            suppress_internal_node_taxa=False,
-            suppress_leaf_node_taxa=False,
-            is_metadata_extracted=True,
-            is_coerce_metadata_values_to_string=True,
-            is_distinct_nodes_and_edges_representation=False)
+            reference_tree_idx=0)
+            # suppress_internal_node_taxa=False,
+            # suppress_leaf_node_taxa=False,
+            # is_metadata_extracted=True,
+            # is_coerce_metadata_values_to_string=True,
+            # is_distinct_nodes_and_edges_representation=False)
+
+class NexusTreeWriterGeneralOptionsTests(
+        compare_and_validate.ValidateWriteable,
+        dendropytest.ExtendedTestCase):
 
     def test_node_labeling(self):
         for has_leaf_node_taxa in (True, False):
@@ -153,6 +161,7 @@ class NexusTreeWriterTests(
                                                 else:
                                                     self.assertEqual(nd2.label,
                                                             nd1.expected_label[ (suppress_internal_taxon_labels, suppress_internal_node_labels) ])
+
     def test_rooting_token(self):
         tree1 = newick_tree_writer_test_tree()
         for rooted_state in (None, True, False):
