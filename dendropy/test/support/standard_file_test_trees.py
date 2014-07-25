@@ -405,7 +405,7 @@ class NewickTestTreesChecker(StandardTestTreesChecker):
             is_coerce_metadata_values_to_string=True,
             is_taxa_managed_separately_from_tree=False,
             is_check_comments=True):
-        cls.schema = "nexus"
+        cls.schema = schema
         cls.schema_tree_filepaths = copy.deepcopy(_TREE_FILEPATHS[cls.schema])
         cls.tree_references = copy.deepcopy(_TREE_REFERENCES)
         for tree_file_title in cls.tree_references:
