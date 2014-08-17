@@ -1120,7 +1120,8 @@ class NexusReader(ioservice.DataReader):
         """
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(True)
-        while len(character_data_vector) < self._file_specified_nchar:
+        states_to_add = []
+        while len(character_data_vector) + len(states_to_add) < self._file_specified_nchar:
             token = self._nexus_tokenizer.require_next_token()
             if token == "{" or token == "(":
                 if token == "{":
@@ -1139,9 +1140,9 @@ class NexusReader(ioservice.DataReader):
                     multistate_tokens.append(token)
                 c = "".join(multistate_tokens)
                 state = self._get_state_for_multistate_tokens(c, multistate_type, state_alphabet)
-                if len(character_data_vector) == self._file_specified_nchar:
+                if len(character_data_vector) + len(states_to_add) == self._file_specified_nchar:
                     raise self._too_many_characters_error(c)
-                character_data_vector.append(state)
+                states_to_add.append(state)
             elif token == "\r" or token == "\n":
                 if self._interleave:
                     break
@@ -1151,7 +1152,7 @@ class NexusReader(ioservice.DataReader):
                 for c in token:
                     if c in self._match_char:
                         try:
-                            state = first_sequence_defined[len(character_data_vector)]
+                            state = first_sequence_defined[len(character_data_vector) + len(states_to_add)]
                         except TypeError:
                             exc = self._nexus_error("Cannot dereference MATCHCHAR '{}' on first sequence".format(c), NexusReader.NexusReaderError)
                             exc.__context__ = None # Python 3.0, 3.1, 3.2
@@ -1159,7 +1160,7 @@ class NexusReader(ioservice.DataReader):
                             raise exc
                         except IndexError:
                             exc = self._nexus_error("Cannot dereference MATCHCHAR '{}': current position ({}) exceeds length of first sequence ({})".format(c,
-                                    len(character_data_vector)+1,
+                                    len(character_data_vector) + len(states_to_add) + 1,
                                     len(first_sequence_defined),
                                     NexusReader.NexusReaderError))
                             exc.__context__ = None # Python 3.0, 3.1, 3.2
@@ -1177,11 +1178,12 @@ class NexusReader(ioservice.DataReader):
                             exc.__context__ = None # Python 3.0, 3.1, 3.2
                             exc.__cause__ = None # Python 3.3, 3.4
                             raise exc
-                    if len(character_data_vector) == self._file_specified_nchar:
+                    if len(character_data_vector) + len(states_to_add) == self._file_specified_nchar:
                         raise self._too_many_characters_error(c)
-                    character_data_vector.append(state)
+                    states_to_add.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
+        character_data_vector.extend(states_to_add)
         return character_data_vector
 
     def _read_continuous_character_values(self,
