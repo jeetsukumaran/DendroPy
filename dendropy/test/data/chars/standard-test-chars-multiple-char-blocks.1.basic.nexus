@@ -246,7 +246,7 @@ End;
 
 begin characters;
     dimensions nchar=140;
-    format symbols="01234" missing=? gap=- interleave=yes;
+    format datatype=standard symbols="01234" missing=? gap=- interleave=yes;
     matrix
 
 a    43?2423132-330-0??21334

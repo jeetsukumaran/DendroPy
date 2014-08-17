@@ -293,7 +293,7 @@ class NexusWriter(ioservice.DataWriter):
         stream.write("    DIMENSIONS{} NCHAR={};\n".format(ntaxstr, nchar))
         stream.write("    FORMAT {};\n".format(self._compose_format_terms(char_matrix)))
         stream.write("    MATRIX\n")
-        if char_matrix.data_type_name == "continuous":
+        if char_matrix.datatype_name == "continuous":
             state_value_writer = lambda x : stream.write("{} ".format(self.continuous_character_state_value_format_func(x)))
         else:
             state_value_writer = lambda x : stream.write("{}".format(self.discrete_character_state_value_format_func(x)))
@@ -310,19 +310,19 @@ class NexusWriter(ioservice.DataWriter):
 
     def _compose_format_terms(self, char_matrix):
         format = []
-        if char_matrix.data_type_name == "dna":
+        if char_matrix.datatype_name == "dna":
             format.append("DATATYPE=DNA")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif char_matrix.data_type_name == "rna":
+        elif char_matrix.datatype_name == "rna":
             format.append("DATATYPE=RNA")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif char_matrix.data_type_name == "nucleotide":
+        elif char_matrix.datatype_name == "nucleotide":
             format.append("DATATYPE=NUCLEOTIDE")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif char_matrix.data_type_name == "protein":
+        elif char_matrix.datatype_name == "protein":
             format.append("DATATYPE=PROTEIN")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
-        elif char_matrix.data_type_name == "continuous":
+        elif char_matrix.datatype_name == "continuous":
             format.append("DATATYPE=CONTINUOUS ITEMS=(STATES)")
         else:
             format.append("DATATYPE=STANDARD")

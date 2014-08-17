@@ -91,30 +91,41 @@ class CharacterType(
         return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
 ###############################################################################
-## CharacterSequence
+## CharacterDataVector
 
-class CharacterSequence(
+class CharacterDataVector(
         basemodel.Annotable,
-        list
         ):
     """
-    A sequence of character states or values for a particular taxon or entry in
+    A sequence of character values or values for a particular taxon or entry in
     a data matrix. Extends list by supporting metadata annotation, and richer
     suite of representing data in self (e.g., as list or string of symbols
     instead of just the raw data values).
     """
 
-    def __init__(self, values=None):
+    ###############################################################################
+    ## Life-cycle
+
+    def __init__(self,
+            character_values=None,
+            character_types=None,
+            character_annotations=None):
         """
         Parameters
         ----------
-        values : iterable of states
+        character_values : iterable of values
             A set of values for this sequence.
         """
-        if values:
-            super(CharacterSequence, self).__init__(values)
-        else:
-            super(CharacterSequence, self).__init__()
+        self._character_values = []
+        self._character_types = []
+        self._character_annotations = []
+        # self._character_types = collections.defaultdict(lambda: None)
+        # self._character_annotations = collections.defaultdict(basemodel.Annotable)
+        if character_values:
+            self.extend(
+                    character_values=character_values,
+                    character_types=character_types,
+                    character_annotations=character_annotations)
 
 #     def __copy__(self, memo=None):
 #         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
@@ -122,36 +133,8 @@ class CharacterSequence(
 #     def taxon_namespace_scoped_copy(self, memo=None):
 #         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
 
-    def __deepcopy__(self, memo=None):
-        other = basemodel.Annotable.__deepcopy__(self, memo=memo)
-        for v0 in self:
-            v1 = copy.deepcopy(v0)
-            memo[id(v0)] = v1
-            other.append(v1)
-        # # ensure clone map
-        # if memo is None:
-        #     memo = {}
-        # # get or create clone of self
-        # try:
-        #     other = memo[id(self)]
-        # except KeyError:
-        #     # create object without initialization
-        #     # other = type(self).__new__(self.__class__)
-        #     other = self.__class__.__new__(self.__class__)
-        #     # store
-        #     memo[id(self)] = other
-        # # copy other attributes first, skipping annotations
-        # for k in self.__dict__:
-        #     if k == "_annotations":
-        #         continue
-        #     if k in other.__dict__:
-        #         continue
-        #     other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        #     memo[id(self.__dict__[k])] = other.__dict__[k]
-        #     # assert id(self.__dict__[k]) in memo
-        # # create annotations
-        # other.deep_copy_annotations_from(self, memo)
-        return other
+    ###############################################################################
+    ## Life-cycle
 
     def values(self):
         """
@@ -162,7 +145,10 @@ class CharacterSequence(
         v : list
             List of values making up this vector.
         """
-        return list(self)
+        return list(self._character_values)
+
+    def values(self):
+        return self._character_values()
 
     def symbols_as_list(self):
         """
@@ -173,7 +159,7 @@ class CharacterSequence(
         v : list
             List of string representation of values making up this vector.
         """
-        return [str(v) for v in self]
+        return list(str(cs) for cs in self._character_values)
 
     def symbols_as_string(self, sep=""):
         """
@@ -184,10 +170,73 @@ class CharacterSequence(
         s : string
             String representation of values making up this vector.
         """
-        return sep.join(self.symbols_as_list())
+        return sep.join(str(cs) for cs in self._character_values)
 
     def __str__(self):
         return self.symbols_as_string()
+
+    def append(self, character_value, character_type=None, character_annotations=None):
+        self._character_values.append(character_value)
+        self._character_types.append(character_type)
+        self._character_annotations.append(character_annotations)
+
+    def extend(self, character_values, character_types=None, character_annotations=None):
+        self._character_values.extend(character_values)
+        if character_types is None:
+            self._character_types.extend( [None] * len(character_values) )
+        else:
+            assert len(character_types) == len(character_values)
+            self._character_types.extend(character_types)
+        if character_annotations is None:
+            self._character_annotations.extend( [None] * len(character_values) )
+        else:
+            assert len(character_annotations) == len(character_values)
+            self._character_annotations.extend(character_annotations)
+
+    def __len__(self):
+        return len(self._character_values)
+
+    def __getitem__(self, idx):
+        return self._character_values[idx]
+
+    def __setitem__(self, idx, value):
+        self._character_values[idx] = value
+
+    def __delitem__(self, idx):
+        del self._character_values[idx]
+        del self._character_types[idx]
+        del self._character_annotations[idx]
+
+    def insert(self, idx, character_value, character_type=None, character_annotations=None):
+        self._character_values.insert(idx, character_value)
+        self._character_types.insert(idx, character_type)
+        self._character_annotations.insert(idx, character_annotations)
+
+    def value_at(self, idx):
+        return self._character_values[idx]
+
+    def value_at(self, idx):
+        return self.value_at(idx)
+
+    def character_type_at(self, idx):
+        return self._character_types[idx]
+
+    def annotations_at(self, idx):
+        if self._character_annotations[idx] is None:
+            self._character_annotations[idx] = basemodel.AnnotationSet()
+        return self._character_annotations[idx]
+
+    def set_value_at(self, idx, value):
+        self._character_values[idx] = value
+
+    def set_value_at(self, idx, value):
+        self.set_value_at(value)
+
+    def set_character_type_at(self, idx, character_type):
+        self._character_types[idx] = character_type
+
+    def set_annotations_at(self, idx, annotations):
+        self._character_annotations[idx] = annotations
 
 ###############################################################################
 ## Subset of Character (Columns)
@@ -243,8 +292,8 @@ class CharacterMatrix(
     ###########################################################################
     ### Class Variables
 
-    data_type_name = None
-    character_sequence_type = CharacterSequence
+    datatype_name = None
+    character_sequence_type = CharacterDataVector
 
     ###########################################################################
     ### Factory (Class) Methods
@@ -262,7 +311,7 @@ class CharacterMatrix(
                 taxon_namespace.label = label
             return taxon_namespace
         label = kwargs.pop("label", None)
-        kwargs["data_type_name"] = cls.data_type_name
+        kwargs["datatype_name"] = cls.datatype_name
         reader = dataio.get_reader(schema, **kwargs)
         char_matrices = reader.read_char_matrices(
                 stream=stream,
@@ -273,13 +322,13 @@ class CharacterMatrix(
         if len(char_matrices) == 0:
             raise ValueError("No character data in data source")
         char_matrix = char_matrices[matrix_offset]
-        if char_matrix.data_type_name != cls.data_type_name:
+        if char_matrix.datatype_name != cls.datatype_name:
             raise ValueError(
                 "Data source (at offset {}) is of type '{}', "
                 "but current CharacterMatrix is of type '{}'.".format(
                     matrix_offset,
-                    char_matrix.data_type_name,
-                    cls.data_type_name))
+                    char_matrix.datatype_name,
+                    cls.datatype_name))
         return char_matrix
     _parse_from_stream = classmethod(_parse_from_stream)
 
@@ -377,8 +426,8 @@ class CharacterMatrix(
         current taxon namespace, it will be added.
 
         Values are the sequences (more generally, iterable of values).  If
-        values are of type :class:`CharacterSequence`, then they are added
-        as-is.  Otherwise :class:`CharacterSequence` instances are
+        values are of type :class:`CharacterDataVector`, then they are added
+        as-is.  Otherwise :class:`CharacterDataVector` instances are
         created for them. Values may be coerced into types compatible with
         particular matrices. The classmethod `cls.coerce_values()` will be
         called for this.
@@ -398,7 +447,7 @@ class CharacterMatrix(
 
         Three :class:`Taxon` objects will be created, corresponding to the
         labels 's1', 's2', 's3'. Each associated string sequence will be
-        converted to a :class:`CharacterSequence`, with each symbol ("A", "C",
+        converted to a :class:`CharacterDataVector`, with each symbol ("A", "C",
         etc.) being replaced by the DNA state represented by the symbol.
 
         Parameters
@@ -659,7 +708,7 @@ class CharacterMatrix(
 
     def new_sequence(self, taxon, values=None):
         """
-        Creates a new :class:`CharacterSequence` associated with :class:`Taxon`
+        Creates a new :class:`CharacterDataVector` associated with :class:`Taxon`
         `taxon`, and populates it with values in `values`.
 
         Parameters
@@ -672,8 +721,8 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : :class:`CharacterSequence`
-            A new :class:`CharacterSequence` associated with :class:`Taxon`
+        s : :class:`CharacterDataVector`
+            A new :class:`CharacterDataVector` associated with :class:`Taxon`
             `taxon`.
         """
         if taxon in self._taxon_sequence_map:
@@ -707,7 +756,7 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : :class:`CharacterSequence`
+        s : :class:`CharacterDataVector`
             A sequence associated with the :class:`Taxon` instance referenced
             by `key`.
         """
@@ -801,7 +850,7 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : list of :class:`CharacterSequence` objects in self
+        s : list of :class:`CharacterDataVector` objects in self
 
         """
         s = [self[taxon] for taxon in self]
@@ -941,7 +990,7 @@ class CharacterMatrix(
         """
         for taxon in self.taxon_namespace:
             if taxon not in self:
-                self[taxon] = CharacterSequence()
+                self[taxon] = CharacterDataVector()
 
     def pack(self, value=None, size=None, append=True):
         """
@@ -1181,6 +1230,12 @@ class CharacterMatrix(
         return self.add_character_subset(cs)
 
     ###########################################################################
+    ### CharacterType Management
+
+    def new_character_type(self, *args, **kwargs):
+        return CharacterType(*args, **kwargs)
+
+    ###########################################################################
     ### Export
 
     def export_character_subset(self, character_subset):
@@ -1269,19 +1324,13 @@ class CharacterMatrix(
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
-    class ContinuousCharacterSequence(CharacterSequence):
+    class ContinuousCharacterDataVector(CharacterDataVector):
         """
         A sequence of continuous character values for a particular taxon or entry
-        in a data matrix. Specializes :class:`CharacterSequence` by assuming all
+        in a data matrix. Specializes :class:`CharacterDataVector` by assuming all
         values are primitive numerics (i.e., either floats or integers) when
         copying or representing self.
         """
-
-        def __deepcopy__(self, memo=None):
-            other = basemodel.Annotable.__deepcopy__(self, memo=memo)
-            for v0 in self:
-                other.append(v0)
-            return other
 
         def symbols_as_list(self):
             """
@@ -1296,10 +1345,10 @@ class ContinuousCharacterMatrix(CharacterMatrix):
 
         def symbols_as_string(self, sep=" "):
             # different default
-            return CharacterSequence.symbols_as_string(self, sep=sep)
+            return CharacterDataVector.symbols_as_string(self, sep=sep)
 
-    character_sequence_type = ContinuousCharacterSequence
-    data_type_name = "continuous"
+    character_sequence_type = ContinuousCharacterDataVector
+    datatype_name = "continuous"
 
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
@@ -1312,11 +1361,11 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     and self.default_state_alphabet
     """
 
-    class DiscreteCharacterSequence(CharacterSequence):
+    class DiscreteCharacterDataVector(CharacterDataVector):
         pass
-    character_sequence_type = DiscreteCharacterSequence
+    character_sequence_type = DiscreteCharacterDataVector
 
-    data_type_name = "discrete"
+    datatype_name = "discrete"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1345,7 +1394,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
     def append_taxon_sequence(self, taxon, state_symbols):
         if taxon not in self:
-            self[taxon] = CharacterSequence()
+            self[taxon] = CharacterDataVector()
         for value in state_symbols:
             if isinstance(value, str):
                 symbol = value
@@ -1389,11 +1438,11 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    class FixedAlphabetCharacterSequence(CharacterSequence):
+    class FixedAlphabetCharacterDataVector(CharacterDataVector):
         pass
-    character_sequence_type = FixedAlphabetCharacterSequence
-    data_type_name = "fixed"
-    data_type_alphabet = None
+    character_sequence_type = FixedAlphabetCharacterDataVector
+    datatype_name = "fixed"
+    datatype_alphabet = None
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1401,71 +1450,71 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
         Unnamed args are passed to clone_from.
         """
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
-        self.state_alphabets.append(self.__class__.data_type_alphabet)
-        self._default_state_alphabet = self.__class__.data_type_alphabet
+        self.state_alphabets.append(self.__class__.datatype_alphabet)
+        self._default_state_alphabet = self.__class__.datatype_alphabet
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
-    class DnaCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class DnaCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = DnaCharacterSequence
-    data_type_name = "dna"
-    data_type_alphabet = DNA_STATE_ALPHABET
+    character_sequence_type = DnaCharacterDataVector
+    datatype_name = "dna"
+    datatype_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
-    class RnaCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class RnaCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = RnaCharacterSequence
-    data_type_name = "rna"
-    data_type_alphabet = RNA_STATE_ALPHABET
+    character_sequence_type = RnaCharacterDataVector
+    datatype_name = "rna"
+    datatype_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
-    class NucleotideCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class NucleotideCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = NucleotideCharacterSequence
-    data_type_name = "nucleotide"
-    data_type_alphabet = NUCLEOTIDE_STATE_ALPHABET
+    character_sequence_type = NucleotideCharacterDataVector
+    datatype_name = "nucleotide"
+    datatype_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
-    class ProteinCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class ProteinCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = ProteinCharacterSequence
-    data_type_name = "protein"
-    data_type_alphabet = PROTEIN_STATE_ALPHABET
+    character_sequence_type = ProteinCharacterDataVector
+    datatype_name = "protein"
+    datatype_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
-    class RestrictionSitesCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class RestrictionSitesCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = RestrictionSitesCharacterSequence
-    data_type_name = "restriction"
-    data_type_alphabet = RESTRICTION_SITES_STATE_ALPHABET
+    character_sequence_type = RestrictionSitesCharacterDataVector
+    datatype_name = "restriction"
+    datatype_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
-    class InfiniteSitesCharacterSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterSequence):
+    class InfiniteSitesCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
         pass
-    character_sequence_type = InfiniteSitesCharacterSequence
-    data_type_name = "infinite"
-    data_type_alphabet = INFINITE_SITES_STATE_ALPHABET
+    character_sequence_type = InfiniteSitesCharacterDataVector
+    datatype_name = "infinite"
+    datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
-    class StandardCharacterSequence(DiscreteCharacterMatrix.DiscreteCharacterSequence):
+    class StandardCharacterDataVector(DiscreteCharacterMatrix.DiscreteCharacterDataVector):
         pass
-    character_sequence_type = StandardCharacterSequence
+    character_sequence_type = StandardCharacterDataVector
 
-    data_type_name = "standard"
+    datatype_name = "standard"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1477,7 +1526,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 ###############################################################################
 ## Main Character Matrix Factory Function
 
-data_type_name_matrix_map = {
+datatype_name_matrix_map = {
     'continuous' : ContinuousCharacterMatrix,
     'dna' : DnaCharacterMatrix,
     'rna' : RnaCharacterMatrix,
@@ -1487,16 +1536,16 @@ data_type_name_matrix_map = {
     'infinite' : InfiniteSitesCharacterMatrix,
 }
 
-def get_char_matrix_type(data_type_name):
-    if data_type_name is None:
-        raise TypeError("'data_type_name' must be specified")
-    matrix_type = data_type_name_matrix_map.get(data_type_name, None)
+def get_char_matrix_type(datatype_name):
+    if datatype_name is None:
+        raise TypeError("'datatype_name' must be specified")
+    matrix_type = datatype_name_matrix_map.get(datatype_name, None)
     if matrix_type is None:
-        raise KeyError("Unrecognized data type specification: '{}'".format(data_type_name,
-            sorted(data_type_name_matrix_map.keys())))
+        raise KeyError("Unrecognized data type specification: '{}'".format(datatype_name,
+            sorted(datatype_name_matrix_map.keys())))
     return matrix_type
 
-def new_char_matrix(data_type_name, **kwargs):
-    matrix_type = get_char_matrix_type(data_type_name=data_type_name)
+def new_char_matrix(datatype_name, **kwargs):
+    matrix_type = get_char_matrix_type(datatype_name=datatype_name)
     m = matrix_type(**kwargs)
     return m

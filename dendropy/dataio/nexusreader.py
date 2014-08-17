@@ -201,7 +201,7 @@ class NexusReader(ioservice.DataReader):
         # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
-        self._data_type_name = kwargs.pop("data_type_name", "standard")
+        self._datatype_name = kwargs.pop("datatype_name", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
         # The following are used by NewickReader in addition to NexusReader,
@@ -352,11 +352,11 @@ class NexusReader(ioservice.DataReader):
                 raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
-    def _new_char_matrix(self, data_type_name, taxon_namespace, title=None):
-        # if data_type_name is None:
-        #     data_type_name = "standard"
+    def _new_char_matrix(self, datatype_name, taxon_namespace, title=None):
+        # if datatype_name is None:
+        #     datatype_name = "standard"
         char_matrix = self._char_matrix_factory(
-                data_type_name,
+                datatype_name,
                 taxon_namespace=taxon_namespace,
                 label=title)
         self._char_matrices.append(char_matrix)
@@ -578,7 +578,7 @@ class NexusReader(ioservice.DataReader):
         self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
         block_title = None
         link_title = None
-        self._data_type_name = "standard" # set as default
+        self._datatype_name = "standard" # set as default
         while (token != 'END'
                 and token != 'ENDBLOCK'
                 and not self._nexus_tokenizer.is_eof()
@@ -622,18 +622,18 @@ class NexusReader(ioservice.DataReader):
                 if token == '=':
                     token = self._nexus_tokenizer.require_next_token_ucase()
                     if token == "DNA" or token == "NUCLEOTIDES":
-                        self._data_type_name = "dna"
+                        self._datatype_name = "dna"
                     elif token == "RNA":
-                        self._data_type_name = "rna"
+                        self._datatype_name = "rna"
                     elif token == "NUCLEOTIDE":
-                        self._data_type_name = "nucleotide"
+                        self._datatype_name = "nucleotide"
                     elif token == "PROTEIN":
-                        self._data_type_name = "protein"
+                        self._datatype_name = "protein"
                     elif token == "CONTINUOUS":
-                        self._data_type_name = "continuous"
+                        self._datatype_name = "continuous"
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
-                        self._data_type_name = "standard"
+                        self._datatype_name = "standard"
                         self._symbols = "01"
                 else:
                     raise self._nexus_error("Expecting '=' after DATATYPE keyword")
@@ -739,10 +739,10 @@ class NexusReader(ioservice.DataReader):
             raise self._nexus_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         taxon_namespace = self._get_taxon_namespace(link_title)
         char_block = self._new_char_matrix(
-                self._data_type_name,
+                self._datatype_name,
                 taxon_namespace=taxon_namespace,
                 title=block_title)
-        if self._data_type_name == "continuous":
+        if self._datatype_name == "continuous":
             self._process_continuous_matrix_data(char_block)
         else:
             self._process_discrete_matrix_data(char_block)
@@ -786,7 +786,7 @@ class NexusReader(ioservice.DataReader):
         #     token = self._nexus_tokenizer.next_token()
 
     def _process_discrete_matrix_data(self, char_block):
-        if self._data_type_name == "standard":
+        if self._datatype_name == "standard":
             self._build_state_alphabet(char_block, self._symbols)
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
@@ -1120,7 +1120,8 @@ class NexusReader(ioservice.DataReader):
         """
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(True)
-        while len(character_data_vector) < self._file_specified_nchar:
+        states_to_add = []
+        while len(character_data_vector) + len(states_to_add) < self._file_specified_nchar:
             token = self._nexus_tokenizer.require_next_token()
             if token == "{" or token == "(":
                 if token == "{":
@@ -1141,7 +1142,7 @@ class NexusReader(ioservice.DataReader):
                 state = self._get_state_for_multistate_tokens(c, multistate_type, state_alphabet)
                 if len(character_data_vector) == self._file_specified_nchar:
                     raise self._too_many_characters_error(c)
-                character_data_vector.append(state)
+                states_to_add.append(state)
             elif token == "\r" or token == "\n":
                 if self._interleave:
                     break
@@ -1179,14 +1180,15 @@ class NexusReader(ioservice.DataReader):
                             raise exc
                     if len(character_data_vector) == self._file_specified_nchar:
                         raise self._too_many_characters_error(c)
-                    character_data_vector.append(state)
+                    states_to_add.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
+        character_data_vector.extend(states_to_add)
         return character_data_vector
 
     def _read_continuous_character_values(self,
             character_data_vector,
-            data_type=float,
+            datatype=float,
             ):
         """
         Reads character sequence data substatement until the number of
@@ -1208,7 +1210,7 @@ class NexusReader(ioservice.DataReader):
                 try:
                     state = float(token)
                 except ValueError:
-                    exc = self._nexus_error("Invalid value for continuous character type: '{invalid_value}'".format(data_type=data_type, invalid_value=token),
+                    exc = self._nexus_error("Invalid value for continuous character type: '{invalid_value}'".format(datatype=datatype, invalid_value=token),
                                 NexusReader.InvalidContinuousCharacterValueError)
                     exc.__context__ = None # Python 3.0, 3.1, 3.2
                     exc.__cause__ = None # Python 3.3, 3.4

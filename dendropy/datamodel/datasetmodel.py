@@ -543,7 +543,7 @@ class DataSet(
                 kwargs["taxon_namespace"] = self.attached_taxon_namespace
         if isinstance(char_matrix_type, str):
             char_matrix = charmatrixmodel.new_char_matrix(
-                    data_type_name=char_matrix_type,
+                    datatype_name=char_matrix_type,
                     *args,
                     **kwargs)
         else:

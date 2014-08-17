@@ -67,6 +67,7 @@ class FastaWriterCharactersTestCase(
     def test_basic_fasta_chars(self):
         for src_filename, matrix_type, src_matrix_checker_type in self.__class__.srcs:
             src_path = pathmap.char_source_path(src_filename)
+            print(src_path)
             d1 = matrix_type.get_from_path(src_path, "fasta")
             for wrap in (True, False):
                 s = self.write_out_validate_equal_and_return(

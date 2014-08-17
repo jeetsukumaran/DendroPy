@@ -28,7 +28,7 @@ class FastaReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
         ioservice.DataReader.__init__(self)
-        self.data_type_name = kwargs.pop("data_type_name", None)
+        self.datatype_name = kwargs.pop("datatype_name", None)
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _read(self,
@@ -39,8 +39,10 @@ class FastaReader(ioservice.DataReader):
             state_alphabet_factory=None,
             global_annotations_target=None):
         taxon_namespace = taxon_namespace_factory(label=None)
+        if self.datatype_name is None:
+            raise TypeError("Data type must be specified for this schema")
         char_matrix = char_matrix_factory(
-                self.data_type_name,
+                self.datatype_name,
                 label=None,
                 taxon_namespace=taxon_namespace)
         symbol_state_map = char_matrix.default_state_alphabet.full_symbol_state_map
@@ -61,6 +63,7 @@ class FastaReader(ioservice.DataReader):
             elif curr_vec is None:
                 raise DataParseError(message="FASTA error: Expecting a lines starting with > before sequences", line_num=line_index + 1, stream=stream)
             else:
+                states = []
                 for col_ind, c in enumerate(s):
                     c = c.strip()
                     if not c:
@@ -69,7 +72,8 @@ class FastaReader(ioservice.DataReader):
                         state = symbol_state_map[c]
                     except KeyError:
                         raise DataParseError(message="Unrecognized sequence symbol '{}'".format(c), line_num=line_index + 1, col_num=col_ind + 1, stream=stream)
-                    curr_vec.append(state)
+                    states.append(state)
+                curr_vec.extend(states)
         product = self.Product(
                 taxon_namespaces=None,
                 tree_lists=None,
@@ -80,28 +84,28 @@ class DnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         FastaReader.__init__(self, **kwargs)
-        if self.data_type_name is not None:
-            if self.data_type_name.lower() != "dna":
-                raise TypeError("'data_type_name' must be equal to 'dna', but instead found: '{}'".format(self.data_type_name))
+        if self.datatype_name is not None:
+            if self.datatype_name.lower() != "dna":
+                raise TypeError("'datatype_name' must be equal to 'dna', but instead found: '{}'".format(self.datatype_name))
         else:
-            self.data_type_name = "dna"
+            self.datatype_name = "dna"
 
 class RnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         FastaReader.__init__(self, **kwargs)
-        if self.data_type_name is not None:
-            if self.data_type_name.lower() != "rna":
-                raise TypeError("'data_type_name' must be equal to 'rna', but instead found: '{}'".format(self.data_type_name))
+        if self.datatype_name is not None:
+            if self.datatype_name.lower() != "rna":
+                raise TypeError("'datatype_name' must be equal to 'rna', but instead found: '{}'".format(self.datatype_name))
         else:
-            self.data_type_name = "rna"
+            self.datatype_name = "rna"
 
 class ProteinFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         FastaReader.__init__(self, **kwargs)
-        if self.data_type_name is not None:
-            if self.data_type_name.lower() != "protein":
-                raise TypeError("'data_type_name' must be equal to 'protein', but instead found: '{}'".format(self.data_type_name))
+        if self.datatype_name is not None:
+            if self.datatype_name.lower() != "protein":
+                raise TypeError("'datatype_name' must be equal to 'protein', but instead found: '{}'".format(self.datatype_name))
         else:
-            self.data_type_name = "protein"
+            self.datatype_name = "protein"
