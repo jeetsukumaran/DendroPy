@@ -1120,8 +1120,7 @@ class NexusReader(ioservice.DataReader):
         """
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(True)
-        states_to_add = []
-        while len(character_data_vector) + len(states_to_add) < self._file_specified_nchar:
+        while len(character_data_vector) < self._file_specified_nchar:
             token = self._nexus_tokenizer.require_next_token()
             if token == "{" or token == "(":
                 if token == "{":
@@ -1142,7 +1141,7 @@ class NexusReader(ioservice.DataReader):
                 state = self._get_state_for_multistate_tokens(c, multistate_type, state_alphabet)
                 if len(character_data_vector) == self._file_specified_nchar:
                     raise self._too_many_characters_error(c)
-                states_to_add.append(state)
+                character_data_vector.append(state)
             elif token == "\r" or token == "\n":
                 if self._interleave:
                     break
@@ -1180,10 +1179,9 @@ class NexusReader(ioservice.DataReader):
                             raise exc
                     if len(character_data_vector) == self._file_specified_nchar:
                         raise self._too_many_characters_error(c)
-                    states_to_add.append(state)
+                    character_data_vector.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
-        character_data_vector.extend(states_to_add)
         return character_data_vector
 
     def _read_continuous_character_values(self,

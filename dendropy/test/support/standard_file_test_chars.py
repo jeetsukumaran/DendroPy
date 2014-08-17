@@ -44,7 +44,9 @@ def general_verify_sequences(
         check_sequence_annotations=True,
         check_cell_annotations=True):
     test_case.assertEqual(len(s1), len(s2))
+    idx = 0
     for c1, c2 in zip(s1, s2):
+        idx += 1
         general_verify_character_cell_states(
                 test_case=test_case,
                 char_matrix=char_matrix,
