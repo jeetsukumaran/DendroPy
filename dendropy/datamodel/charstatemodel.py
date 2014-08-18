@@ -285,9 +285,7 @@ class StateAlphabet(
             self.compile_symbol_lookup_mappings()
         return new_state
 
-    def new_ambiguous_state(self,
-            symbol,
-            member_state_symbols):
+    def new_ambiguous_state(self, symbol, **kwargs):
         """
         Adds a new ambiguous state to the collection
         of states in this alphabet.
@@ -301,38 +299,30 @@ class StateAlphabet(
             by case-variants if the state alphabet is not case-sensitive). Can
             be blank ("") or `None` if there.
 
-        member_states : iterable of strings
-            List of symbols representing states to which this state maps. Symbols
-            representing multistates will taken to refer to the set of
-            fundamental states to which they, in turn, map.
+        \*\*kwargs : keyword arguments, mandatory
+            Exactly one of the following must be specified:
+
+                member_state_symbols : iterable of strings
+                    List of symbols representing states to which this state maps. Symbols
+                    representing multistates will taken to refer to the set of
+                    fundamental states to which they, in turn, map.
+
+                member_states : iterable of :class:`StateIdentity` objects
+                    List of :class:`StateIdentity` representing states to which this state maps.
 
         Returns
         -------
         s : :class:`StateIdentity`
             The new state created and added.
         """
-        if symbol is not None and symbol != "":
-            symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_states_for_symbols(member_state_symbols)
-        new_state = StateIdentity(
+        return self.new_multistate(
                 symbol=symbol,
-                index=None,
                 state_denomination=StateAlphabet.AMBIGUOUS_STATE,
-                member_states=member_states)
-        self._ambiguous_states.append(new_state)
-        if symbol and not self._is_case_sensitive:
-            for s in (symbol.upper(), symbol.lower()):
-                if s != symbol:
-                    self.new_symbol_synonym(s, symbol)
-        if self.autocompile_lookup_tables:
-            if symbol:
-                self.compile_symbol_lookup_mappings()
-            self.compile_member_states_lookup_mappings()
-        return new_state
+                **kwargs)
 
     def new_polymorphic_state(self,
             symbol,
-            member_state_symbols):
+            **kwargs):
         """
         Adds a new polymorphic state to the collection
         of states in this alphabet.
@@ -346,10 +336,57 @@ class StateAlphabet(
             by case-variants if the state alphabet is not case-sensitive). Can
             be blank ("") or `None` if there.
 
-        member_states : iterable of strings
-            List of symbols representing states to which this state maps. Symbols
-            representing multistates will taken to refer to the set of
-            fundamental states to which they, in turn, map.
+        \*\*kwargs : keyword arguments, mandatory
+            Exactly one of the following must be specified:
+
+                member_state_symbols : iterable of strings
+                    List of symbols representing states to which this state maps. Symbols
+                    representing multistates will taken to refer to the set of
+                    fundamental states to which they, in turn, map.
+
+                member_states : iterable of :class:`StateIdentity` objects
+                    List of :class:`StateIdentity` representing states to which this state maps.
+
+        Returns
+        -------
+        s : :class:`StateIdentity`
+            The new state created and added.
+        """
+        return self.new_multistate(
+                symbol=symbol,
+                state_denomination=StateAlphabet.POLYMORPHIC_STATE,
+                **kwargs)
+
+    def new_multistate(self,
+            symbol,
+            state_denomination,
+            **kwargs):
+        """
+        Adds a new polymorphic or ambiguous state to the collection
+        of states in this alphabet.
+
+        Parameters
+        ----------
+        symbol : string or None
+            The symbol used to represent this state. Cannot have previously
+            been used to refer to any other state, fundamental or otherwise, as
+            a primary or synonymous symbol (including implicit synonyms given
+            by case-variants if the state alphabet is not case-sensitive). Can
+            be blank ("") or `None` if there.
+
+        state_denomination : enum
+            StateAlphabet.POLYMORPHIC_STATE or StateAlphabet.AMBIGUOUS_STATE
+
+        \*\*kwargs : keyword arguments, mandatory
+            Exactly one of the following must be specified:
+
+                member_state_symbols : iterable of strings
+                    List of symbols representing states to which this state maps. Symbols
+                    representing multistates will taken to refer to the set of
+                    fundamental states to which they, in turn, map.
+
+                member_states : iterable of :class:`StateIdentity` objects
+                    List of :class:`StateIdentity` representing states to which this state maps.
 
         Returns
         -------
@@ -358,13 +395,25 @@ class StateAlphabet(
         """
         if symbol is not None and symbol != "":
             symbol = self._validate_new_symbol(symbol)
-        member_states = self._direct_get_fundamental_states_for_symbols(member_state_symbols)
+        if len(kwargs) != 1:
+            raise TypeError("Exactly one of 'member_state_symbols' or 'member_states' is required")
+        if "member_state_symbols" in kwargs:
+            member_states = self._direct_get_fundamental_states_for_symbols(kwargs["member_state_symbols"])
+        elif "member_states" in kwargs:
+            member_states = kwargs["member_states"]
+        else:
+            raise ValueError("Exactly one of 'member_state_symbols' or 'member_states' is required")
         new_state = StateIdentity(
                 symbol=symbol,
                 index=None,
-                state_denomination=StateAlphabet.POLYMORPHIC_STATE,
+                state_denomination=state_denomination,
                 member_states=member_states)
-        self._polymorphic_states.append(new_state)
+        if state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+            self._polymorphic_states.append(new_state)
+        elif state_denomination == StateAlphabet.AMBIGUOUS_STATE:
+            self._ambiguous_states.append(new_state)
+        else:
+            raise ValueError(state_denomination)
         if symbol and not self._is_case_sensitive:
             for s in (symbol.upper(), symbol.lower()):
                 if s != symbol:
@@ -432,16 +481,19 @@ class StateAlphabet(
             if state.state_denomination == StateAlphabet.AMBIGUOUS_STATE:
                 member_states = frozenset(state.member_states)
                 if member_states in temp_fundamental_states_to_ambiguous_state_map:
-                    raise ValueError("Multiple definitions of ambiguous state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))
-                assert member_states not in temp_fundamental_states_to_ambiguous_state_map
-                temp_fundamental_states_to_ambiguous_state_map[member_states] = state
+                    pass
+                    # raise ValueError("Multiple definitions of ambiguous state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
+                    #     state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))
+                else:
+                    temp_fundamental_states_to_ambiguous_state_map[member_states] = state
             elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
                 member_states = frozenset(state.member_states)
                 if member_states in temp_fundamental_states_to_polymorphic_state_map:
-                    raise ValueError("Multiple definitions of polymorphic state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
-                        state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))
-                temp_fundamental_states_to_polymorphic_state_map[member_states] = state
+                    pass
+                    # raise ValueError("Multiple definitions of polymorphic state with member states of '{}': {}, {}. Define a symbol synonym instead.".format(
+                    #     state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))
+                else:
+                    temp_fundamental_states_to_polymorphic_state_map[member_states] = state
         self._fundamental_states_to_ambiguous_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_ambiguous_state_map)
         self._fundamental_states_to_polymorphic_state_map = container.FrozenOrderedDict(temp_fundamental_states_to_polymorphic_state_map)
 

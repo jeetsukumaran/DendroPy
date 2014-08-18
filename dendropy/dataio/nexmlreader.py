@@ -727,42 +727,52 @@ class _NexmlCharBlockParser(_AnnotationParser):
         # if fixed_state_alphabet:
         #     char_matrix.remap_to_default_state_alphabet_by_symbol(purge_other_state_alphabets=True)
 
-    def parse_ambiguous_state(self, nxambiguous, state_alphabet):
+    def parse_ambiguous_state(self, nxstate, state_alphabet):
         """
         Parses an XmlElement represent an ambiguous discrete character state,
         ("uncertain_state_set")
         and returns a corresponding StateAlphabetElement object.
         """
-        state = dendropy.StateAlphabetElement(oid=nxambiguous.get('id', None),
-                                                label=nxambiguous.get('label', None),
-                                                symbol=nxambiguous.get('symbol', None),
-                                                token=nxambiguous.get('token', None))
-        state.member_states = []
-        for nxmember in nxambiguous.findall_multistate_member():
+        state_oid = nxstate.get('id', None)
+        state_symbol = nxstate.get('symbol', None)
+        token = nxstate.get('token', None)
+        member_states = []
+        for nxmember in nxstate.findall_multistate_member():
             member_state_id = nxmember.get('state', None)
-            member_state = state_alphabet.get_state('oid', member_state_id)
-            state.member_states.append(member_state)
-        state.multistate = dendropy.StateAlphabetElement.AMBIGUOUS_STATE
+            member_state = self._id_state_map[ (state_alphabet, member_state_id) ]
+            member_states.append(member_state)
+        state = state_alphabet.new_multistate(symbol=state_symbol,
+                state_denomination=state_alphabet.AMBIGUOUS_STATE,
+                member_states=member_states)
+        assert (state_alphabet, state_oid) not in self._id_state_map
+        self._id_state_map[ (state_alphabet, state_oid) ] = state
+        if token is not None:
+            state_alphabet.new_symbol_synonym(token, state_symbol)
         return state
 
-    def parse_polymorphic_state(self, nxpolymorphic, state_alphabet):
+    def parse_polymorphic_state(self, nxstate, state_alphabet):
         """
         Parses an XmlElement represent a polymorphic discrete character state,
         ("polymorphic_state_set")
         and returns a corresponding StateAlphabetElement object.
         """
-        state = dendropy.StateAlphabetElement(oid=nxpolymorphic.get('id', None),
-                                                label=nxpolymorphic.get('label', None),
-                                                symbol=nxpolymorphic.get('symbol', None),
-                                                token=nxpolymorphic.get('token', None))
-        state.member_states = []
-        for nxmember in nxpolymorphic.findall_multistate_member():
+        state_oid = nxstate.get('id', None)
+        state_symbol = nxstate.get('symbol', None)
+        token = nxstate.get('token', None)
+        member_states = []
+        for nxmember in nxstate.findall_multistate_member():
             member_state_id = nxmember.get('state', None)
-            member_state = state_alphabet.get_state('oid', member_state_id)
-            state.member_states.append(member_state)
-        for nxambiguous in nxpolymorphic.findall_uncertain_state_set():
-            state.member_states.append(self.parse_ambiguous_state(nxambiguous, state_alphabet))
-        state.multistate = dendropy.StateAlphabetElement.POLYMORPHIC_STATE
+            member_state = self._id_state_map[ (state_alphabet, member_state_id) ]
+            member_states.append(member_state)
+        for nxambiguous in nxstate.findall_uncertain_state_set():
+            member_states.append(self.parse_ambiguous_state(nxstate, state_alphabet))
+        state = state_alphabet.new_multistate(symbol=state_symbol,
+                state_denomination=state_alphabet.POLYMORPHIC_STATE,
+                member_states=member_states)
+        assert (state_alphabet, state_oid) not in self._id_state_map
+        self._id_state_map[ (state_alphabet, state_oid) ] = state
+        if token is not None:
+            state_alphabet.new_symbol_synonym(token, state_symbol)
         return state
 
     def parse_state_alphabet(self, nxstates):
@@ -770,20 +780,25 @@ class _NexmlCharBlockParser(_AnnotationParser):
         Given an XmlElement representing a nexml definition of (discrete or standard) states
         ("states"), this returns a corresponding StateAlphabet object.
         """
-        state_alphabet  = self._state_alphabet_factory(
-                fundamental_states=symbols,
-                no_data_symbol=self._missing_char,
-                case_sensitive=False)
+        state_alphabet_oid = nxstates.get("id", None)
+        state_alphabet = self._state_alphabet_factory()
+        state_alphabet.autocompile_lookup_tables = False
+        self._id_state_alphabet_map[state_alphabet_oid] = state_alphabet
         for nxstate in nxstates.findall_char_state():
-            state = dendropy.StateAlphabetElement(oid=nxstate.get('id', None),
-                                                    label=nxstate.get('label', None),
-                                                    symbol=nxstate.get('symbol', None),
-                                                    token=nxstate.get('token', None))
-            state_alphabet.append(state)
+            state_oid = nxstate.get('id', None)
+            state_symbol = nxstate.get('symbol', None)
+            state = state_alphabet.new_fundamental_state(symbol=state_symbol)
+            token = nxstate.get('token', None)
+            assert (state_alphabet, state_oid) not in self._id_state_map
+            self._id_state_map[ (state_alphabet, state_oid) ] = state
+            if token is not None:
+                state_alphabet.new_symbol_synonym(token, state_symbol)
         for nxstate in nxstates.findall_uncertain_state_set():
-            state_alphabet.append(self.parse_ambiguous_state(nxstate, state_alphabet))
+            self.parse_ambiguous_state(nxstate, state_alphabet)
         for nxstate in nxstates.findall_polymorphic_state_set():
-            state_alphabet.append(self.parse_polymorphic_state(nxstate, state_alphabet))
+            self.parse_polymorphic_state(nxstate, state_alphabet)
+        state_alphabet.autocompile_lookup_tables = True
+        state_alphabet.compile_lookup_mappings()
         return state_alphabet
 
     def parse_characters_format(self, nxformat, datatype_name, char_matrix):

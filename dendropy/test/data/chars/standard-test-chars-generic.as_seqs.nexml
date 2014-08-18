@@ -33,13 +33,7 @@
                 <state id="d4324969040" symbol="2" />
                 <state id="d4324969104" symbol="3" />
                 <state id="d4324969168" symbol="4" />
-                <uncertain_state_set id="d4324968848" symbol="-">
-                    <member state="d4324968912"/>
-                    <member state="d4324968976"/>
-                    <member state="d4324969040"/>
-                    <member state="d4324969104"/>
-                    <member state="d4324969168"/>
-                </uncertain_state_set>
+                <state id="d4324968848" symbol="-" />
                 <uncertain_state_set id="d4324969232" symbol="?">
                     <member state="d4324968912"/>
                     <member state="d4324968976"/>
