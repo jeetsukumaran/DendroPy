@@ -663,8 +663,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
                                 if len(self._char_types) <= col_idx:
                                     raise error.DataParseError(message="Character column/type ('<char>') not defined for character in position"\
                                         + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
-                                cell = dendropy.CharacterDataCell(value=float(char), character_type=self._char_types[col_idx])
-                                character_vector.append(cell)
+                                character_vector.append(character_value=float(char), character_type=self._char_types[col_idx])
                 else:
                     for nxcell in nxrow.findall_char_cell():
                         chartype_id = nxcell.get('char', None)
@@ -678,11 +677,11 @@ class _NexmlCharBlockParser(_AnnotationParser):
                         pos_idx = self._char_types.index(chartype)
 #                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
-                        cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=chartype)
-                        annotations = [i for i in nxcell.findall_annotations]
-                        for annotation in annotations:
-                            self._parse_annotations(cell, annotation)
-                        character_vector.set_cell_by_index(pos_idx, cell)
+                        # annotations = [i for i in nxcell.findall_annotations]
+                        # for annotation in annotations:
+                        #     self._parse_annotations(cell, annotation)
+                        character_vector.append(character_value=float(nxcell.get('state')),
+                                character_type=chartype)
             else:
                 if nxchartype.endswith('Seqs'):
                     seq = nxrow.find_char_seq()

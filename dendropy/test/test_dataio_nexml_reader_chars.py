@@ -123,7 +123,7 @@ class NexmlCharactersContinuousTestCase(
     def test_basic_nexml(self):
         src_filenames = [
                 "standard-test-chars-continuous.as_cells.nexml",
-                "standard-test-chars-continuous.as_seqs.interleaved.nexml",
+                "standard-test-chars-continuous.as_seqs.nexml",
                 ]
         for src_idx, src_filename in enumerate(src_filenames):
             # print(src_idx, src_filename)
