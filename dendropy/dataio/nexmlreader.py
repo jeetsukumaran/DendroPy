@@ -366,7 +366,7 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
         nxc = _NexmlCharBlockParser(self._namespace_registry,
                 self._id_taxon_namespace_map,
                 self._id_taxon_map,
-                self._char_matrix_factory,
+                self._new_char_matrix,
                 self._state_alphabet_factory)
         for char_matrix_element in xml_root.iter_characters():
             nxc.parse_char_matrix(char_matrix_element)
@@ -567,10 +567,12 @@ class _NexmlCharBlockParser(_AnnotationParser):
         self._id_taxon_map = id_taxon_map
         self._char_matrix_factory = char_matrix_factory
         self._state_alphabet_factory = state_alphabet_factory
+
         self._id_state_alphabet_map = {}
         self._id_state_map = {}
         self._id_chartype_map = {}
         self._char_types = []
+        self._chartype_id_to_pos_map = {}
 
     def parse_char_matrix(self, nxchars):
         """
@@ -583,6 +585,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
         self._id_state_map = {}
         self._id_chartype_map = {}
         self._char_types = []
+        self._chartype_id_to_pos_map = {}
 
         # initiaiize
         label = nxchars.get('label', None)
@@ -682,26 +685,25 @@ class _NexmlCharBlockParser(_AnnotationParser):
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
                 if nxchartype.endswith('Seqs'):
-#                     symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
                     seq = nxrow.find_char_seq()
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
                         col_idx = -1
                         for char in seq:
                             col_idx += 1
-                            symbol_state_map = char_matrix.character_types[col_idx].state_alphabet.symbol_state_map()
-                            if char in symbol_state_map:
-                                if len(self._char_types) <= col_idx:
-                                    raise error.DataParseError(message="Character column/type ('<char>') not defined for character in position"\
-                                        + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
-                                state = symbol_state_map[char]
-                                character_type = self._char_types[col_idx]
-                                character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
-                            else:
-                                raise error.DataParseError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
-                                        % (char_matrix.oid, row_id, col_idx, char, seq))
+                            state_alphabet = char_matrix.character_types[col_idx].state_alphabet
+                            try:
+                                state = state_alphabet[char]
+                            except KeyError:
+                                raise error.DataParseError(message="Character Block row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
+                                        % (row_id, col_idx, char, seq))
+                            if len(self._char_types) <= col_idx:
+                                raise error.DataParseError(message="Character column/type ('<char>') not defined for character in position"\
+                                    + " %d (row='%s', taxon='%s')" % (col_idx+1, row_id, taxon.label))
+                            character_type = self._char_types[col_idx]
+                            character_vector.append(character_value=state,
+                                    character_type=character_type)
                 else:
-                    id_state_maps = {}
                     for nxcell in nxrow.findall_char_cell():
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
@@ -711,17 +713,20 @@ class _NexmlCharBlockParser(_AnnotationParser):
                             raise error.DataParseError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
                                         + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix_oid, row_id, taxon.label))
                         chartype = self._id_chartype_map[chartype_id]
-                        pos_idx = self._char_types.index(chartype)
-                        if chartype_id not in id_state_maps:
-                            id_state_maps[chartype_id] = chartype.state_alphabet.id_state_map()
-                        state = id_state_maps[chartype_id][nxcell.get('state')]
-                        cell = dendropy.CharacterDataCell(value=state, character_type=chartype)
-                        character_vector.set_cell_by_index(pos_idx, cell)
+                        state_alphabet = self._id_chartype_map[chartype_id].state_alphabet
+                        pos_idx = self._chartype_id_to_pos_map[chartype_id]
+                        state = self._id_state_map[ (state_alphabet, nxcell.get('state', None)) ]
+                        character_vector.set_at(pos_idx,
+                                character_value=state,
+                                character_type=chartype)
+                        # self._id_state_alphabet_map = {}
+                        # self._id_state_map = {}
+                        # self._id_chartype_map = {}
 
             char_matrix[taxon] = character_vector
 
-        if fixed_state_alphabet:
-            char_matrix.remap_to_default_state_alphabet_by_symbol(purge_other_state_alphabets=True)
+        # if fixed_state_alphabet:
+        #     char_matrix.remap_to_default_state_alphabet_by_symbol(purge_other_state_alphabets=True)
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):
         """
@@ -804,8 +809,30 @@ class _NexmlCharBlockParser(_AnnotationParser):
                     label = nxstate.get('label', None)
                     symbol = nxstate.get('symbol', None)
                     token = nxstate.get('token', None)
-                    state = char_matrix.default_state_alphabet[symbol]
-                    self._id_state_map[ (state_alphabet_oid, state_oid) ] = state
+                    try:
+                        state = char_matrix.default_state_alphabet[symbol]
+                    except KeyError:
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                    assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
+                    self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
+                for nxstate in nxstates.findall_polymorphic_state_set():
+                    state_oid = nxstate.get('id', None)
+                    symbol = nxstate.get('symbol', None)
+                    try:
+                        state = char_matrix.default_state_alphabet[symbol]
+                    except KeyError:
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                    assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
+                    self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
+                for nxstate in nxstates.findall_uncertain_state_set():
+                    state_oid = nxstate.get('id', None)
+                    symbol = nxstate.get('symbol', None)
+                    try:
+                        state = char_matrix.default_state_alphabet[symbol]
+                    except KeyError:
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                    assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
+                    self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
         else:
             for nxstates in nxformat.findall_char_states():
                 char_matrix.state_alphabets.append(self.parse_state_alphabet(nxstates))
@@ -821,7 +848,9 @@ class _NexmlCharBlockParser(_AnnotationParser):
                 and char_matrix.default_state_alphabet is not None:
                 col.state_alphabet = char_matrix.default_state_alphabet
             char_matrix.character_types.append(col)
-            self._id_chartype_map[nxchars.get('id')] = col
+            chartype_id = nxchars.get('id')
+            self._chartype_id_to_pos_map[chartype_id] = len(self._chartype_id_to_pos_map)
+            self._id_chartype_map[chartype_id] = col
             self._char_types.append(col)
 
     def create_standard_character_alphabet(self, char_matrix, symbol_list=None):

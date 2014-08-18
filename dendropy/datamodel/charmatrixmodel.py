@@ -207,6 +207,15 @@ class CharacterDataVector(
         del self._character_types[idx]
         del self._character_annotations[idx]
 
+    def set_at(self, idx, character_value, character_type=None, character_annotations=None):
+        to_add = (idx+1) - len(self._character_values)
+        while to_add > 0:
+            self.append(None)
+            to_add -= 1
+        self._character_values[idx] = character_value
+        self._character_types[idx] = character_type
+        self._character_annotations[idx] = character_annotations
+
     def insert(self, idx, character_value, character_type=None, character_annotations=None):
         self._character_values.insert(idx, character_value)
         self._character_types.insert(idx, character_type)

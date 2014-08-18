@@ -112,32 +112,32 @@ class NexmlCharactersReaderProteinTestCase(
                     check_column_annotations=False,
                     check_cell_annotations=False)
 
-# class NexmlCharactersContinuousTestCase(
-#         standard_file_test_chars.ContinuousTestChecker,
-#         dendropytest.ExtendedTestCase):
+class NexmlCharactersContinuousTestCase(
+        standard_file_test_chars.ContinuousTestChecker,
+        dendropytest.ExtendedTestCase):
 
-#     @classmethod
-#     def setUpClass(cls):
-#         cls.build()
+    @classmethod
+    def setUpClass(cls):
+        cls.build()
 
-#     def test_basic_nexml(self):
-#         src_filenames = [
-#                 "standard-test-chars-continuous.mesquite.nexml",
-#                 "standard-test-chars-continuous.mesquite.interleaved.nexml",
-#                 ]
-#         for src_idx, src_filename in enumerate(src_filenames):
-#             # print(src_idx, src_filename)
-#             src_path = pathmap.char_source_path(src_filename)
-#             self.verify_get_from(
-#                     matrix_type=dendropy.ContinuousCharacterMatrix,
-#                     src_filepath=src_path,
-#                     schema="nexml",
-#                     factory_kwargs={},
-#                     check_taxon_annotations=False,
-#                     check_matrix_annotations=False,
-#                     check_sequence_annotations=False,
-#                     check_column_annotations=False,
-#                     check_cell_annotations=False)
+    def test_basic_nexml(self):
+        src_filenames = [
+                "standard-test-chars-continuous.as_cells.nexml",
+                "standard-test-chars-continuous.as_seqs.interleaved.nexml",
+                ]
+        for src_idx, src_filename in enumerate(src_filenames):
+            # print(src_idx, src_filename)
+            src_path = pathmap.char_source_path(src_filename)
+            self.verify_get_from(
+                    matrix_type=dendropy.ContinuousCharacterMatrix,
+                    src_filepath=src_path,
+                    schema="nexml",
+                    factory_kwargs={},
+                    check_taxon_annotations=False,
+                    check_matrix_annotations=False,
+                    check_sequence_annotations=False,
+                    check_column_annotations=False,
+                    check_cell_annotations=False)
 
 class NexmlStandardCharacters01234TestCase(
         standard_file_test_chars.Standard01234TestChecker,
