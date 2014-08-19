@@ -16,6 +16,10 @@
 ##
 ##############################################################################
 
+"""
+Deserialization of NeXML-formatted data.
+"""
+
 import re
 import collections
 from dendropy.dataio import ioservice

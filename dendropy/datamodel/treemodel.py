@@ -1618,10 +1618,10 @@ class Tree(
                     tree_list_factory=TreeList,
                     global_annotations_target=None)
         if not tree_lists:
-            return None
+            raise ValueError("No trees in data source")
         tree_list = tree_lists[collection_offset]
         if not tree_list:
-            return None
+            raise ValueError("No trees available at requested location in data source")
         tree = tree_list[tree_offset]
         tree.label = label
         return tree_list[tree_offset]

@@ -763,7 +763,7 @@ class Annotation(Annotable):
     namespace = property(_get_namespace, _set_namespace)
 
     def _get_prefixed_name(self):
-        return "{}:{}".format((self.name_prefix, self.name))
+        return "{}:{}".format(self.name_prefix, self.name)
     def _set_prefixed_name(self, prefixed_name):
         self._name_prefix, self.name = text.parse_curie_standard_qualified_name(prefixed_name)
     prefixed_name = property(_get_prefixed_name, _set_prefixed_name)
