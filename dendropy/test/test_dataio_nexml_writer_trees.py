@@ -72,5 +72,33 @@ class NexmlTreeWriterDefaultTest(
             tree_file_title=tree_file_title,
             reference_tree_idx=0)
 
+class NexmlStandardTreeListWriterTestCase(
+        compare_and_validate.ValidateWriteable,
+        standard_file_test_trees.NexmlTestTreesChecker,
+        dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        standard_file_test_trees.NexmlTestTreesChecker.create_class_fixtures(cls)
+
+    def test_annotated_tree_list_writing(self):
+        tree_file_title = 'dendropy-test-trees-n33-unrooted-annotated-x10a'
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
+        expected_non_metadata_comments = tree_reference["tree_list_comments"]
+        expected_metadata_comments = tree_reference["tree_list_metadata"]
+        expected_metadata = tree_reference["tree_list_metadata"]
+        tree_filepath = self.schema_tree_filepaths[tree_file_title]
+        tree_list1 = dendropy.TreeList.get_from_path(
+                tree_filepath,
+                "nexml")
+        s = self.write_out_validate_equal_and_return(
+                tree_list1, "nexml", {})
+        tree_list2 = dendropy.TreeList.get_from_string(s,
+                "nexml")
+        self.verify_standard_trees(
+                tree_list=tree_list2,
+                tree_file_title=tree_file_title,
+                tree_offset=0)
+
 if __name__ == "__main__":
     unittest.main()
