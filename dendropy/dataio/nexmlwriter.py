@@ -32,7 +32,7 @@ except ImportError:
 ############################################################################
 ## Local Module Methods
 
-def _get_id(obj):
+def _get_nexml_id(obj):
     return "d{}".format(id(obj))
 
 def _safe_unicode(obj, *args):
@@ -114,7 +114,7 @@ def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples
             parts.append('content=""')
     if annote.datatype_hint:
         parts.append('datatype="%s"'% annote.datatype_hint)
-    parts.append('id="%s"' % _get_id(annote))
+    parts.append('id="%s"' % _get_nexml_id(annote))
     if prefix_uri_tuples is not None:
         prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
     if len(annote.annotations) > 0:
@@ -157,6 +157,7 @@ class NexmlWriter(ioservice.DataWriter):
         self._taxon_namespaces_to_write = []
         self._taxon_namespace_id_map = {}
         self._taxon_id_map = {}
+        self._node_id_map = {}
 
     def _write(self,
             stream,
@@ -164,24 +165,21 @@ class NexmlWriter(ioservice.DataWriter):
             tree_lists=None,
             char_matrices=None,
             global_annotations_target=None):
-        """
-        Writes a list of DendroPy Tree objects to a full NEXML
-        document.
-        """
 
         # reset book-keeping
         self._taxon_namespaces_to_write = []
         self._taxon_namespace_id_map = {}
         self._taxon_id_map = {}
+        self._node_id_map = {}
 
         # Destination:
         # Writing to buffer instead of directly to output
         # stream so that all namespaces referenced in metadata
         # can be written
-        dest = StringIO()
+        body = StringIO()
 
         # comments and metadata
-        self._write_annotations_and_comments(global_annotations_target, dest, 1)
+        self._write_annotations_and_comments(global_annotations_target, body, 1)
 
         # Taxon namespace discovery
         candidate_taxon_namespaces = collections.OrderedDict()
@@ -203,17 +201,19 @@ class NexmlWriter(ioservice.DataWriter):
         self._taxon_namespaces_to_write = [tns for tns in candidate_taxon_namespaces if candidate_taxon_namespaces[tns]]
 
         for tns in self._taxon_namespaces_to_write:
-            self._write_taxon_namespace(tns, dest)
+            self._write_taxon_namespace(tns, body)
 
         # self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=body)
-        # self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=body)
+        if tree_lists:
+            for tree_list in tree_lists:
+                self._write_tree_list(tree_list=tree_list, dest=body)
 
         self.write_to_nexml_open(stream, indent_level=0)
-        stream.write(dest.getvalue())
+        stream.write(body.getvalue())
         self.write_to_nexml_close(stream, indent_level=0)
 
     def _write_taxon_namespace(self, taxon_namespace, dest, indent_level=1):
-        self._taxon_namespace_id_map[taxon_namespace] = _get_id(taxon_namespace)
+        self._taxon_namespace_id_map[taxon_namespace] = _get_nexml_id(taxon_namespace)
         dest.write(self.indent * indent_level)
         parts = []
         parts.append('otus')
@@ -226,11 +226,11 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write(self.indent * (indent_level+1))
             parts = []
             parts.append('otu')
-            self._taxon_id_map[ (taxon_namespace, taxon) ] = _get_id(taxon)
-            parts.append('id="%s"' % self._taxon_id_map[(taxon_namespace, taxon)])
+            self._taxon_id_map[taxon] = _get_nexml_id(taxon)
+            parts.append('id="%s"' % self._taxon_id_map[taxon])
             if taxon.label:
                 parts.append('label=%s' % _protect_attr(taxon.label))
-            if taxon.has_annotations > 0:
+            if taxon.has_annotations:
                 dest.write("<%s>\n" % ' '.join(parts))
                 # self.write_extensions(taxon, dest, indent_level=indent_level+2)
                 self._write_annotations_and_comments(taxon, dest, indent_level=indent_level+2)
@@ -241,27 +241,22 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write(self.indent * indent_level)
         dest.write('</otus>\n')
 
-    def write_tree_lists(self, tree_lists, dest, indent_level=1):
-        "Writes out TreeLists."
-        for idx, tree_list in enumerate(tree_lists):
-            dest.write(self.indent * indent_level)
-            parts = []
-            parts.append('trees')
-            parts.append('id="%s"' % tree_list.default_oid)
-            if tree_list.label:
-                parts.append('label=%s' % _protect_attr(tree_list.label))
-            parts.append('otus="%s"' % tree_list.taxon_namespace.default_oid)
-            dest.write("<%s>\n" % ' '.join(parts))
-
-            # annotate
-#             self.write_extensions(tree_list, dest, indent_level=indent_level+1)
-            self.write_annotations(tree_list, dest, indent_level=indent_level+1)
-            self.write_comments(tree_list, dest, indent_level=indent_level+1, newline=True)
-
-            for tree in tree_list:
-                self.write_tree(tree=tree, dest=dest, indent_level=2)
-            dest.write(self.indent * indent_level)
-            dest.write('</trees>\n')
+    def _write_tree_list(self, tree_list, dest, indent_level=1):
+        dest.write(self.indent * indent_level)
+        parts = []
+        parts.append('trees')
+        parts.append('id="%s"' % _get_nexml_id(tree_list))
+        if tree_list.label:
+            parts.append('label=%s' % _protect_attr(tree_list.label))
+        parts.append('otus="%s"' % self._taxon_namespace_id_map[tree_list.taxon_namespace])
+        dest.write("<%s>\n" % ' '.join(parts))
+        if tree_list.has_annotations:
+            self._write_annotations_and_comments(tree_list, dest,
+                    indent_level=indent_level+1)
+        for tree in tree_list:
+            self._write_tree(tree=tree, dest=dest, indent_level=2)
+        dest.write(self.indent * indent_level)
+        dest.write('</trees>\n')
 
     def compose_state_definition(self, state, indent_level, member_state=False):
         "Writes out state definition."
@@ -471,17 +466,14 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write(self.indent * indent_level)
             dest.write('</characters>\n')
 
-    def write_tree(self, tree, dest, indent_level=0):
+    def _write_tree(self, tree, dest, indent_level=0):
         """
         Writes a single DendroPy Tree object as a NEXML nex:tree
         element.
         """
         parts = []
         parts.append('tree')
-        if hasattr(tree, 'oid') and tree.default_oid is not None:
-            parts.append('id="%s"' % tree.default_oid)
-        else:
-            parts.append('id="%s"' % ("Tree" + str(id(tree))))
+        parts.append('id="%s"' % _get_nexml_id(tree))
         if hasattr(tree, 'label') and tree.label:
             parts.append('label=%s' % _protect_attr(tree.label))
         if hasattr(tree, 'length_type') and tree.length_type:
@@ -491,19 +483,17 @@ class NexmlWriter(ioservice.DataWriter):
         parts = ' '.join(parts)
         dest.write('%s<%s>\n'
                    % (self.indent * indent_level, parts))
-        # annotate
-#         self.write_extensions(tree, dest, indent_level=indent_level+1)
-        self.write_annotations(tree, dest, indent_level=indent_level+1)
-        self.write_comments(tree, dest, indent_level=indent_level+1, newline=True)
-
+        if tree.has_annotations:
+            self._write_annotations_and_comments(tree, dest,
+                    indent_level=indent_level+1)
         for node in tree.preorder_node_iter():
-            self.write_node(
+            self._write_node(
                     node=node,
                     dest=dest,
                     is_root=tree.is_rooted and node is tree.seed_node,
                     indent_level=indent_level+1)
         for edge in tree.preorder_edge_iter():
-            self.write_edge(
+            self._write_edge(
                     edge=edge,
                     dest=dest,
                     is_root=tree.is_rooted and node is tree.seed_node,
@@ -561,29 +551,28 @@ class NexmlWriter(ioservice.DataWriter):
         "Closing tag for a nexml element."
         dest.write('%s</nex:nexml>\n' % (self.indent*indent_level))
 
-    def write_node(self, node, dest, is_root, indent_level=0):
+    def _write_node(self, node, dest, is_root, indent_level=0):
         "Writes out a NEXML node element."
         parts = []
         parts.append('<node')
-        parts.append('id="%s"' % node.default_oid)
+        self._node_id_map[node] = _get_nexml_id(node)
+        parts.append('id="%s"' % self._node_id_map[node])
         if hasattr(node, 'label') and node.label:
             parts.append('label=%s' % _protect_attr(node.label))
         if hasattr(node, 'taxon') and node.taxon:
-            parts.append('otu="%s"' % node.taxon.default_oid)
+            parts.append('otu="%s"' % self._taxon_id_map[node.taxon])
         if is_root:
             parts.append('root="true"')
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
-        if len(node.annotations) > 0:
+        if node.has_annotations:
             dest.write('>\n')
-#             self.write_extensions(node, dest, indent_level=indent_level+1)
-            self.write_annotations(node, dest, indent_level=indent_level+1)
-            self.write_comments(node, dest, indent_level=indent_level+1, newline=True)
+            self._write_annotations_and_comments(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
             dest.write(' />\n')
 
-    def write_edge(self, edge, dest, is_root, indent_level=0):
+    def _write_edge(self, edge, dest, is_root, indent_level=0):
         "Writes out a NEXML edge element."
         if edge and edge.head_node:
             parts = []
@@ -594,14 +583,13 @@ class NexmlWriter(ioservice.DataWriter):
                 # EDGE-ON-ROOT:
                 tag = "rootedge"
                 parts.append('<%s' % tag)
-            if hasattr(edge, 'oid') and edge.default_oid:
-                parts.append('id="%s"' % edge.default_oid)
+            parts.append('id="%s"' % _get_nexml_id(edge))
             # programmatically more efficent to do this in above
             # block, but want to maintain this tag order ...
             if edge.tail_node is not None:
-                parts.append('source="%s"' % edge.tail_node.default_oid)
+                parts.append('source="%s"' % self._node_id_map[edge.tail_node])
             if edge.head_node is not None:
-                parts.append('target="%s"' % edge.head_node.default_oid)
+                parts.append('target="%s"' % self._node_id_map[edge.head_node])
             if hasattr(edge, 'length') and edge.length is not None:
                 parts.append('length="%s"' % edge.length)
             if hasattr(edge, 'label') and edge.label:
@@ -611,13 +599,9 @@ class NexmlWriter(ioservice.DataWriter):
             if len(parts) > 2:
                 parts = ' '.join(parts)
                 dest.write('%s%s' % ((self.indent * indent_level), parts))
-                if len(edge.annotations) > 0:
+                if edge.has_annotations:
                     dest.write('>\n')
-                    # self.write_extensions(edge, dest, indent_level=indent_level+1)
-                    self.write_annotations(edge, dest,
-                                           indent_level=indent_level+1)
-                    self.write_comments(edge, dest,
-                                           indent_level=indent_level+1, newline=True)
+                    self._write_annotations_and_comments(edge, dest, indent_level=indent_level+1)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
                 else:
                     dest.write(' />\n')

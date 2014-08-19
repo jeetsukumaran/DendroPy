@@ -30,6 +30,7 @@ class ValidateWriteable(object):
             writeable,
             schema,
             kwargs):
+        self.maxDiff = None
         sio = StringIO()
         writeable.write_to_stream(sio, schema, **kwargs)
         s0 = sio.getvalue()

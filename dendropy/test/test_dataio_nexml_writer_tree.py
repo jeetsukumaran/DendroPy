@@ -40,10 +40,7 @@ class NexmlTreeWriterTests(
                     suppress_internal_node_taxa=False,
                     suppress_leaf_node_taxa=False
                 )
-        kwargs = {
-                }
-        s = self.write_out_validate_equal_and_return(
-                tree1, "nexml", kwargs)
+        s = tree1.as_string("nexml")
         tree2 = dendropy.Tree.get_from_string(
                 s, "nexml",
                 )
@@ -65,10 +62,7 @@ class NexmlTreeWriterDefaultTest(
                 tree_filepath,
                 "nexml",
         )
-        kwargs = {
-        }
-        s = self.write_out_validate_equal_and_return(
-                tree1, "nexml", kwargs)
+        s = tree1.as_string("nexml")
         tree2 = dendropy.Tree.get_from_string(
                 s,
                 "nexml",
