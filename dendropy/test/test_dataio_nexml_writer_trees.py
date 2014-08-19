@@ -83,10 +83,6 @@ class NexmlStandardTreeListWriterTestCase(
 
     def test_annotated_tree_list_writing(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-annotated-x10a'
-        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
-        expected_non_metadata_comments = tree_reference["tree_list_comments"]
-        expected_metadata_comments = tree_reference["tree_list_metadata"]
-        expected_metadata = tree_reference["tree_list_metadata"]
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
         tree_list1 = dendropy.TreeList.get_from_path(
                 tree_filepath,
