@@ -203,6 +203,7 @@ class NexusReader(ioservice.DataReader):
         self.exclude_trees = kwargs.pop("exclude_trees", False)
         self._datatype_name = kwargs.pop("datatype_name", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
+        self.unconstrained_taxa_accumulation_mode = kwargs.pop("unconstrained_taxa_accumulation_mode", False)
 
         # The following are used by NewickReader in addition to NexusReader,
         # or have different defaults. So they are extracted/set here and
@@ -515,7 +516,7 @@ class NexusReader(ioservice.DataReader):
             #     taxon_namespace.require_taxon(label=label)
             taxon = taxon_namespace.get_taxon(label=label)
             if taxon is None:
-                if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
+                if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace and not self.unconstrained_taxa_accumulation_mode:
                     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
                 taxon = taxon_namespace.new_taxon(label=label)
             token = self._nexus_tokenizer.next_token()
@@ -888,6 +889,11 @@ class NexusReader(ioservice.DataReader):
                 taxon_namespace=taxon_namespace,
                 enable_lookup_by_taxon_number=True,
                 case_sensitive=False)
+        if self._file_specified_ntax is None:
+            # Not yet parsed TAXA block: NEXUS file without TAXA block
+            # Badly-formed NEXUS file, yet widely-found in the wild
+            # Override namespace modification lock
+            taxon_namespace.is_mutable = True
         while True:
             translation_token = self._nexus_tokenizer.next_token()
             if translation_token == ";" and not self._nexus_tokenizer.is_token_quoted:
