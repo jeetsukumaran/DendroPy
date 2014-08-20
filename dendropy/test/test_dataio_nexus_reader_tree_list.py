@@ -91,5 +91,19 @@ class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
                     self.assertIn(nd.taxon, tree.taxon_namespace)
             self.assertEqual(seen_taxa, len(tree.taxon_namespace))
 
+class NexusStandardTreesWithTranslateBlockButNoTaxaBlockTestCase(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
+
+    def test_with_translate_but_no_taxa_block(self):
+        src_filename = "curated-with-translate-block-and-no-taxa-block-and-untranslated-internal-taxa.nex"
+        src_path = pathmap.tree_source_path(src_filename)
+        tree_list = dendropy.TreeList.get_from_path(src_path, "nexus")
+        tree_labels = ("1", "2", "3")
+        self.assertEqual(len(tree_list), len(tree_labels))
+        for tree_idx, (tree, label) in enumerate(zip(tree_list, tree_labels)):
+            self.assertEqual(tree.label, label)
+            self.verify_curated_tree(tree=tree)
+
 if __name__ == "__main__":
     unittest.main()
