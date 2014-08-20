@@ -85,45 +85,6 @@ def _to_nexml_tree_length_type(length_type):
     else:
         raise Exception('Unrecognized value class %s' % length_type)
 
-def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples=None):
-    parts = ["%s<meta" % (indent * indent_level)]
-    value = annote.value
-    # if value is not None:
-    #     value = _protect_attr(value)
-    # else:
-    #     value = None
-    if isinstance(value, list) or isinstance(value, tuple):
-        value = _protect_attr(" ".join(str(v) for v in value))
-    elif value is not None:
-        value = _protect_attr(value)
-    key = annote.prefixed_name
-    # assert ":" in key
-    if annote.annotate_as_reference:
-        parts.append('xsi:type="nex:ResourceMeta"')
-        parts.append('rel="%s"' % key)
-        if value is not None:
-            parts.append('href=%s' % value)
-    else:
-        parts.append('xsi:type="nex:LiteralMeta"')
-        parts.append('property="%s"' % key)
-        if value is not None:
-            parts.append('content=%s' % value)
-        else:
-            parts.append('content=""')
-    if annote.datatype_hint:
-        parts.append('datatype="%s"'% annote.datatype_hint)
-    parts.append('id="%s"' % self._get_nexml_id(annote))
-    if prefix_uri_tuples is not None:
-        prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
-    if len(annote.annotations) > 0:
-        parts.append(">")
-        for a in annote.annotations:
-            parts.append("\n" + _compose_annotation_xml(a, indent=indent, indent_level=indent_level+1, prefix_uri_tuples=prefix_uri_tuples))
-        parts.append("\n%s</meta>" % (indent * indent_level))
-    else:
-        parts.append("/>")
-    return " ".join(parts)
-
 ############################################################################
 ## NexmlWriter
 
@@ -552,7 +513,7 @@ class NexmlWriter(ioservice.DataWriter):
         for annote in annotation_set:
             if annote.is_hidden:
                 continue
-            dest.write(_compose_annotation_xml(annote,
+            dest.write(self._compose_annotation_xml(annote,
                     indent=self.indent,
                     indent_level=indent_level,
                     prefix_uri_tuples=self._prefix_uri_tuples))
@@ -637,3 +598,47 @@ class NexmlWriter(ioservice.DataWriter):
             oid = "d{}".format(len(self._object_xml_id))
             self._object_xml_id[o] = oid
             return oid
+
+    def _compose_annotation_xml(self,
+            annote,
+            indent="",
+            indent_level=0,
+            prefix_uri_tuples=None):
+        parts = ["%s<meta" % (indent * indent_level)]
+        value = annote.value
+        # if value is not None:
+        #     value = _protect_attr(value)
+        # else:
+        #     value = None
+        if isinstance(value, list) or isinstance(value, tuple):
+            value = _protect_attr(" ".join(str(v) for v in value))
+        elif value is not None:
+            value = _protect_attr(value)
+        key = annote.prefixed_name
+        # assert ":" in key
+        if annote.annotate_as_reference:
+            parts.append('xsi:type="nex:ResourceMeta"')
+            parts.append('rel="%s"' % key)
+            if value is not None:
+                parts.append('href=%s' % value)
+        else:
+            parts.append('xsi:type="nex:LiteralMeta"')
+            parts.append('property="%s"' % key)
+            if value is not None:
+                parts.append('content=%s' % value)
+            else:
+                parts.append('content=""')
+        if annote.datatype_hint:
+            parts.append('datatype="%s"'% annote.datatype_hint)
+        parts.append('id="%s"' % self._get_nexml_id(annote))
+        if prefix_uri_tuples is not None:
+            prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
+        if len(annote.annotations) > 0:
+            parts.append(">")
+            for a in annote.annotations:
+                parts.append("\n" + self._compose_annotation_xml(a, indent=indent, indent_level=indent_level+1, prefix_uri_tuples=prefix_uri_tuples))
+            parts.append("\n%s</meta>" % (indent * indent_level))
+        else:
+            parts.append("/>")
+        return " ".join(parts)
+
