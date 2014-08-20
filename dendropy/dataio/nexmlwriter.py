@@ -33,9 +33,6 @@ except ImportError:
 ############################################################################
 ## Local Module Methods
 
-def _get_nexml_id(obj):
-    return "d{}".format(id(obj))
-
 def _safe_unicode(obj, *args):
     """ return the unicode representation of obj """
     try:
@@ -115,7 +112,7 @@ def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples
             parts.append('content=""')
     if annote.datatype_hint:
         parts.append('datatype="%s"'% annote.datatype_hint)
-    parts.append('id="%s"' % _get_nexml_id(annote))
+    parts.append('id="%s"' % self._get_nexml_id(annote))
     if prefix_uri_tuples is not None:
         prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
     if len(annote.annotations) > 0:
@@ -157,6 +154,7 @@ class NexmlWriter(ioservice.DataWriter):
         self._prefix_uri_tuples = set()
         self._taxon_namespaces_to_write = []
         self._taxon_namespace_id_map = {}
+        self._object_xml_id = {}
         self._taxon_id_map = {}
         self._node_id_map = {}
         self._state_alphabet_id_map = {}
@@ -221,7 +219,7 @@ class NexmlWriter(ioservice.DataWriter):
         self._write_to_nexml_close(stream, indent_level=0)
 
     def _write_taxon_namespace(self, taxon_namespace, dest, indent_level=1):
-        self._taxon_namespace_id_map[taxon_namespace] = _get_nexml_id(taxon_namespace)
+        self._taxon_namespace_id_map[taxon_namespace] = self._get_nexml_id(taxon_namespace)
         dest.write(self.indent * indent_level)
         parts = []
         parts.append('otus')
@@ -234,7 +232,7 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write(self.indent * (indent_level+1))
             parts = []
             parts.append('otu')
-            self._taxon_id_map[taxon] = _get_nexml_id(taxon)
+            self._taxon_id_map[taxon] = self._get_nexml_id(taxon)
             parts.append('id="%s"' % self._taxon_id_map[taxon])
             if taxon.label:
                 parts.append('label=%s' % _protect_attr(taxon.label))
@@ -253,7 +251,7 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write(self.indent * indent_level)
         parts = []
         parts.append('trees')
-        parts.append('id="%s"' % _get_nexml_id(tree_list))
+        parts.append('id="%s"' % self._get_nexml_id(tree_list))
         if tree_list.label:
             parts.append('label=%s' % _protect_attr(tree_list.label))
         parts.append('otus="%s"' % self._taxon_namespace_id_map[tree_list.taxon_namespace])
@@ -270,7 +268,7 @@ class NexmlWriter(ioservice.DataWriter):
         "Writes out state definition."
         parts = []
         if state not in self._state_id_map:
-            self._state_id_map[state] = _get_nexml_id(state)
+            self._state_id_map[state] = self._get_nexml_id(state)
         if member_state:
             parts.append('%s<member state="%s"/>'
                                 % (self.indent * indent_level, self._state_id_map[state]))
@@ -294,7 +292,7 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write(self.indent * indent_level)
         parts = []
         parts.append('characters')
-        parts.append('id="%s"' % _get_nexml_id(char_matrix))
+        parts.append('id="%s"' % self._get_nexml_id(char_matrix))
         if char_matrix.label:
             parts.append('label=%s' % _protect_attr(char_matrix.label))
         parts.append('otus="%s"' % self._taxon_namespace_id_map[char_matrix.taxon_namespace])
@@ -337,7 +335,7 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write(self.indent*(indent_level+2))
             parts = []
             parts.append('row')
-            parts.append('id="%s"' % _get_nexml_id(char_vector))
+            parts.append('id="%s"' % self._get_nexml_id(char_vector))
             if taxon is not None:
                 parts.append('otu="%s"' % self._taxon_id_map[taxon])
             dest.write("<%s>\n" % ' '.join(parts))
@@ -366,39 +364,20 @@ class NexmlWriter(ioservice.DataWriter):
                     else:
                         print_count += 1
                 dest.write("\n{}</seq>\n".format(self.indent * (indent_level+3)))
-
-                # if char_matrix.datatype_name == "continuous":
-                #     seq_symbols = [str(c) for c in char_vector]
-                # else:
-                #     seq_symbols = []
-                #     for cidx, c in enumerate(char_vector):
-                #         s = str(c)
-                #         seq_symbols.append(s)
-                # # seqlines = separator.join(seq_symbols)
-                # seqlines = textwrap.fill(separator.join(seq_symbols),
-                #                         width=70,
-                #                         initial_indent=self.indent*(indent_level+3) + "<seq>",
-                #                         subsequent_indent=self.indent*(indent_level+4),
-                #                         break_long_words=break_long_words)
-                # seqlines += "</seq>\n"
-                # dest.write(seqlines)
             else:
-                raise NotImplementedError
                 for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
                     parts = []
                     parts.append('%s<cell' % (self.indent*(indent_level+3)))
-                    parts.append('char="%s"' % column_char_type_map[col_idx].default_oid)
-                    if hasattr(cell, "value") and hasattr(cell.value, "oid"):
-                        v = cell.value.default_oid
+                    parts.append('char="%s"' % cell_char_type_id_map[ (taxon, col_idx) ])
+                    if char_matrix.datatype_name == "continuous":
+                        v = str(char_value)
                     else:
-                        v = str(cell.value)
+                        v = self._state_id_map[char_value]
                     parts.append('state="%s"' % v)
                     dest.write(' '.join(parts))
-                    if isinstance(cell, dendropy.AnnotatedDataObject) and len(cell.annotations) > 0:
+                    if cell_annotations is not None:
                         dest.write('>\n')
-                        # self.write_extensions(cell, dest, indent_level=indent_level+4)
-                        self.write_annotations(cell, dest, indent_level=indent_level+4)
-                        self.write_comments(cell, dest, indent_level=indent_level+4, newline=True)
+                        self._write_annotation_set(cell_annotations, dest, indent_level=indent_level+4)
                         dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                     else:
                         dest.write('/>\n')
@@ -415,7 +394,7 @@ class NexmlWriter(ioservice.DataWriter):
         """
         parts = []
         parts.append('tree')
-        parts.append('id="%s"' % _get_nexml_id(tree))
+        parts.append('id="%s"' % self._get_nexml_id(tree))
         if hasattr(tree, 'label') and tree.label:
             parts.append('label=%s' % _protect_attr(tree.label))
         if hasattr(tree, 'length_type') and tree.length_type:
@@ -497,7 +476,7 @@ class NexmlWriter(ioservice.DataWriter):
         "Writes out a NEXML node element."
         parts = []
         parts.append('<node')
-        self._node_id_map[node] = _get_nexml_id(node)
+        self._node_id_map[node] = self._get_nexml_id(node)
         parts.append('id="%s"' % self._node_id_map[node])
         if hasattr(node, 'label') and node.label:
             parts.append('label=%s' % _protect_attr(node.label))
@@ -525,7 +504,7 @@ class NexmlWriter(ioservice.DataWriter):
                 # EDGE-ON-ROOT:
                 tag = "rootedge"
                 parts.append('<%s' % tag)
-            parts.append('id="%s"' % _get_nexml_id(edge))
+            parts.append('id="%s"' % self._get_nexml_id(edge))
             # programmatically more efficent to do this in above
             # block, but want to maintain this tag order ...
             if edge.tail_node is not None:
@@ -567,13 +546,17 @@ class NexmlWriter(ioservice.DataWriter):
         "Writes out annotations for an Annotable object."
         # import sys
         if hasattr(annotated, "annotations"):
-            for annote in annotated.annotations:
-                # sys.stderr.write("{}\t\t{}\n".format(annote.name_prefix, annote.namespace))
-                if annote.is_hidden:
-                    continue
-                # self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
-                dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level, prefix_uri_tuples=self._prefix_uri_tuples))
-                dest.write("\n")
+            self._write_annotation_set(annotated.annotations, dest, indent_level)
+
+    def _write_annotation_set(self, annotation_set, dest, indent_level=0):
+        for annote in annotation_set:
+            if annote.is_hidden:
+                continue
+            dest.write(_compose_annotation_xml(annote,
+                    indent=self.indent,
+                    indent_level=indent_level,
+                    prefix_uri_tuples=self._prefix_uri_tuples))
+            dest.write("\n")
 
     def _compose_char_type_xml_for_state_alphabet(self, state_alphabet, indent_level, char_type_id=None):
         if state_alphabet:
@@ -581,7 +564,7 @@ class NexmlWriter(ioservice.DataWriter):
         else:
             char_type_state = ' '
         if char_type_id is None:
-            char_type_id = _get_nexml_id(object())
+            char_type_id = self._get_nexml_id(object())
         s = ('%s<char id="%s"%s/>'
             % ((self.indent*(indent_level)), char_type_id, char_type_state))
         return char_type_id, s
@@ -591,13 +574,29 @@ class NexmlWriter(ioservice.DataWriter):
         return self._compose_char_type_xml_for_state_alphabet(
                 state_alphabet,
                 indent_level=indent_level,
-                char_type_id=_get_nexml_id(character_type))
+                char_type_id=self._get_nexml_id(character_type))
+
+    def _get_state_alphabet_for_char_matrix(self, char_matrix):
+        sa = None
+        if char_matrix.default_state_alphabet is not None:
+            sa = char_matrix.default_state_alphabet
+        elif len(char_matrix.state_alphabets) == 1:
+            sa = char_matrix.state_alphabets[0]
+        elif len(char_matrix.state_alphabets) > 1:
+            raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
+                    + " 'character_type' property, and multiple state alphabets are defined for the containing" \
+                    + " character matrix with no default specified")
+        elif len(char_matrix.state_alphabets) == 0:
+            raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
+                    + " 'character_type' property, and no state alphabets are defined for the containing" \
+                    + " character matrix")
+        return sa
 
     def _write_format_section(self, char_matrix, dest, indent_level):
         format_section_parts = []
         if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
             for state_alphabet in char_matrix.state_alphabets:
-                self._state_alphabet_id_map[state_alphabet] = _get_nexml_id(state_alphabet)
+                self._state_alphabet_id_map[state_alphabet] = self._get_nexml_id(state_alphabet)
                 format_section_parts.append('%s<states id="%s">'
                     % (self.indent * (indent_level+1), self._state_alphabet_id_map[state_alphabet]))
                 for state in state_alphabet:
@@ -611,37 +610,30 @@ class NexmlWriter(ioservice.DataWriter):
                         format_section_parts.extend(self._compose_state_definition(state, state_alphabet, indent_level+3))
                 format_section_parts.append('%s</states>' % (self.indent * (indent_level+1)))
         cell_char_type_id_map = {}
-        auto_created_char_types = {}
+        char_type_ids_written = set()
         for taxon in char_matrix:
             char_vector = char_matrix[taxon]
             for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
                 if cell_char_type is None:
-                    sa = None
-                    if char_matrix.default_state_alphabet is not None:
-                        sa = char_matrix.default_state_alphabet
-                    elif len(char_matrix.state_alphabets) == 1:
-                        sa = char_matrix.state_alphabets[0]
-                    elif len(char_matrix.state_alphabets) > 1:
-                        raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
-                                + " 'character_type' property, and multiple state alphabets are defined for the containing" \
-                                + " character matrix with no default specified")
-                    elif len(char_matrix.state_alphabets) == 0:
-                        raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
-                                + " 'character_type' property, and no state alphabets are defined for the containing" \
-                                + " character matrix")
+                    sa = self._get_state_alphabet_for_char_matrix(char_matrix)
                     assert sa is not None
-                    # try:
-                    #     char_type_id, char_type_xml = auto_created_char_types[sa]
-                    # except KeyError:
-                    #     char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa)
-                    #     auto_created_char_types[sa] = char_type_id, char_type_xml
                     char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa, indent_level=indent_level+1)
                 else:
                     char_type_id, char_type_xml = self._compose_char_type_xml_for_character_type(cell_char_type, indent_level=indent_level+1)
-                format_section_parts.append(char_type_xml)
+                if char_type_id not in char_type_ids_written:
+                    format_section_parts.append(char_type_xml)
+                    char_type_ids_written.add(char_type_id)
                 cell_char_type_id_map[ (taxon, col_idx) ] = char_type_id
         if format_section_parts:
             dest.write("%s<format>\n" % (self.indent*(indent_level)))
             dest.write(('\n'.join(format_section_parts)) + '\n')
             dest.write("%s</format>\n" % (self.indent*(indent_level)))
         return cell_char_type_id_map
+
+    def _get_nexml_id(self, o):
+        try:
+            return self._object_xml_id[o]
+        except KeyError:
+            oid = "d{}".format(len(self._object_xml_id))
+            self._object_xml_id[o] = oid
+            return oid

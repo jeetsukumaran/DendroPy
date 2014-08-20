@@ -70,10 +70,12 @@ class NexmlWriterCharactersTestCase(
         for src_filename, matrix_type, src_matrix_checker_type in self.__class__.srcs:
             src_path = pathmap.char_source_path(src_filename)
             d1 = matrix_type.get_from_path(src_path, "nexml")
-            for markup_as_sequences in (True, False):
+            # for markup_as_sequences in (True, False):
+            for markup_as_sequences in (False,):
                 s = self.write_out_validate_equal_and_return(
                         d1, "nexml", {"markup_as_sequences": markup_as_sequences})
-                print(s)
+                # if not markup_as_sequences:
+                #     print(s)
                 d2 = matrix_type.get_from_string(s, "nexml")
                 self.verify_char_matrix(d2, src_matrix_checker_type)
 

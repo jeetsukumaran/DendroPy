@@ -43,6 +43,9 @@ def general_verify_sequences(
         s1, s2,
         check_sequence_annotations=True,
         check_cell_annotations=True):
+    # x1 = "".join(str(c) for c in s1)
+    # x2 = "".join(str(c) for c in s2)
+    # print("{}\n{}".format(x1, x2))
     test_case.assertEqual(len(s1), len(s2))
     idx = 0
     for c1, c2 in zip(s1, s2):
