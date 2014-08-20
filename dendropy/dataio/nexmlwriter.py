@@ -346,29 +346,42 @@ class NexmlWriter(ioservice.DataWriter):
             if self.markup_as_sequences:
                 if char_matrix.datatype_name in ("dna", "rna", "protein", "restriction", "aa", "amino-acid"):
                     separator = ''
-                    break_long_words = True
                 else:
                     # standard or continuous
                     separator = ' '
-                    break_long_words = False
-                if char_matrix.datatype_name == "continuous":
-                    seq_symbols = [str(c) for c in char_vector]
-                else:
-                    seq_symbols = []
-                    for cidx, c in enumerate(char_vector):
-                        s = str(c)
-                        if not s:
-                            raise TypeError("Character %d in char_vector '%s' does not have a symbol defined for its character state:" % (cidx, char_vector.default_oid) \
-                                        + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
-                        seq_symbols.append(s)
-                # seqlines = separator.join(seq_symbols)
-                seqlines = textwrap.fill(separator.join(seq_symbols),
-                                        width=70,
-                                        initial_indent=self.indent*(indent_level+3) + "<seq>",
-                                        subsequent_indent=self.indent*(indent_level+4),
-                                        break_long_words=break_long_words)
-                seqlines += "</seq>\n"
-                dest.write(seqlines)
+                print_count = 1
+                dest.write("{}<seq>".format(self.indent * (indent_level+3)))
+                for cidx, c in enumerate(char_vector):
+                    s = str(c)
+                    if not s:
+                        raise TypeError("Character %d in char_vector '%s' does not have a symbol defined for its character state:" % (cidx, char_vector.default_oid) \
+                                    + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
+                    if print_count == 1:
+                        dest.write("\n{}".format(self.indent * (indent_level+4)))
+                    else:
+                        dest.write(separator)
+                    dest.write(s)
+                    if print_count == 58:
+                        print_count = 1
+                    else:
+                        print_count += 1
+                dest.write("\n{}</seq>\n".format(self.indent * (indent_level+3)))
+
+                # if char_matrix.datatype_name == "continuous":
+                #     seq_symbols = [str(c) for c in char_vector]
+                # else:
+                #     seq_symbols = []
+                #     for cidx, c in enumerate(char_vector):
+                #         s = str(c)
+                #         seq_symbols.append(s)
+                # # seqlines = separator.join(seq_symbols)
+                # seqlines = textwrap.fill(separator.join(seq_symbols),
+                #                         width=70,
+                #                         initial_indent=self.indent*(indent_level+3) + "<seq>",
+                #                         subsequent_indent=self.indent*(indent_level+4),
+                #                         break_long_words=break_long_words)
+                # seqlines += "</seq>\n"
+                # dest.write(seqlines)
             else:
                 raise NotImplementedError
                 for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
