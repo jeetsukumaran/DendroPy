@@ -202,6 +202,19 @@ class CharacterDataVector(
     def __setitem__(self, idx, value):
         self._character_values[idx] = value
 
+    def __iter__(self):
+        return self.__next__()
+
+    def __next__(self):
+        for v in self._character_values:
+            yield v
+
+    next = __next__ # Python 2 legacy support
+
+    def iter_cells(self):
+        for v, t, a in zip(self._character_values, self._character_types, self._character_annotations):
+            yield v, t, a
+
     def __delitem__(self, idx):
         del self._character_values[idx]
         del self._character_types[idx]
@@ -234,6 +247,9 @@ class CharacterDataVector(
         if self._character_annotations[idx] is None:
             self._character_annotations[idx] = basemodel.AnnotationSet()
         return self._character_annotations[idx]
+
+    def has_annotations_at(self, idx):
+        return not self._character_annotations[idx] is None
 
     def set_value_at(self, idx, value):
         self._character_values[idx] = value
@@ -542,7 +558,6 @@ class CharacterMatrix(
             self.character_types = []
             self.comments = []
             self.character_subsets = container.OrderedCaselessDict()
-            self.markup_as_sequences = True
             if len(args) == 1:
                 # takes care of all possible initializations, including. e.g.,
                 # tuples and so on

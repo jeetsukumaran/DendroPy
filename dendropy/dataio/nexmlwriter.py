@@ -21,6 +21,7 @@ Serialization of NeXML-formatted data.
 """
 
 import json
+import textwrap
 import collections
 from dendropy.dataio import ioservice
 
@@ -158,6 +159,8 @@ class NexmlWriter(ioservice.DataWriter):
         self._taxon_namespace_id_map = {}
         self._taxon_id_map = {}
         self._node_id_map = {}
+        self._state_alphabet_id_map = {}
+        self._state_id_map = {}
 
     def _write(self,
             stream,
@@ -171,6 +174,8 @@ class NexmlWriter(ioservice.DataWriter):
         self._taxon_namespace_id_map = {}
         self._taxon_id_map = {}
         self._node_id_map = {}
+        self._state_alphabet_id_map = {}
+        self._state_id_map = {}
 
         # Destination:
         # Writing to buffer instead of directly to output
@@ -203,14 +208,17 @@ class NexmlWriter(ioservice.DataWriter):
         for tns in self._taxon_namespaces_to_write:
             self._write_taxon_namespace(tns, body)
 
-        # self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=body)
+        if char_matrices:
+            for char_matrix in char_matrices:
+                self._write_char_matrix(char_matrix=char_matrix, dest=body)
+
         if tree_lists:
             for tree_list in tree_lists:
                 self._write_tree_list(tree_list=tree_list, dest=body)
 
-        self.write_to_nexml_open(stream, indent_level=0)
+        self._write_to_nexml_open(stream, indent_level=0)
         stream.write(body.getvalue())
-        self.write_to_nexml_close(stream, indent_level=0)
+        self._write_to_nexml_close(stream, indent_level=0)
 
     def _write_taxon_namespace(self, taxon_namespace, dest, indent_level=1):
         self._taxon_namespace_id_map[taxon_namespace] = _get_nexml_id(taxon_namespace)
@@ -258,213 +266,134 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write(self.indent * indent_level)
         dest.write('</trees>\n')
 
-    def compose_state_definition(self, state, indent_level, member_state=False):
+    def _compose_state_definition(self, state, state_alphabet, indent_level, member_state=False):
         "Writes out state definition."
         parts = []
+        if state not in self._state_id_map:
+            self._state_id_map[state] = _get_nexml_id(state)
         if member_state:
             parts.append('%s<member state="%s"/>'
-                                % (self.indent * indent_level, state.default_oid))
-        elif state.multistate == dendropy.StateAlphabetElement.SINGLE_STATE:
+                                % (self.indent * indent_level, self._state_id_map[state]))
+        elif state.state_denomination == state_alphabet.FUNDAMENTAL_STATE:
             parts.append('%s<state id="%s" symbol="%s" />'
-                                % (self.indent * indent_level, state.default_oid, state.symbol))
+                                % (self.indent * indent_level, self._state_id_map[state], state.symbol))
         else:
-            if state.multistate == dendropy.StateAlphabetElement.AMBIGUOUS_STATE:
+            if state.state_denomination == state_alphabet.AMBIGUOUS_STATE:
                 tag = "uncertain_state_set"
             else:
                 tag = "polymorphic_state_set"
 
             parts.append('%s<%s id="%s" symbol="%s">'
-                            % (self.indent * indent_level, tag, state.default_oid, state.symbol))
+                            % (self.indent * indent_level, tag, self._state_id_map[state], state.symbol))
             for member in state.member_states:
-                parts.extend(self.compose_state_definition(member, indent_level+1, member_state=True))
+                parts.extend(self._compose_state_definition(member, state_alphabet, indent_level+1, member_state=True))
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
         return parts
 
-    def write_char_matrices(self, char_matrices, dest, indent_level=1):
-        "Writes out character matrices."
-        for idx, char_matrix in enumerate(char_matrices):
-            dest.write(self.indent * indent_level)
+    def _write_char_matrix(self, char_matrix, dest, indent_level=1):
+        dest.write(self.indent * indent_level)
+        parts = []
+        parts.append('characters')
+        parts.append('id="%s"' % _get_nexml_id(char_matrix))
+        if char_matrix.label:
+            parts.append('label=%s' % _protect_attr(char_matrix.label))
+        parts.append('otus="%s"' % self._taxon_namespace_id_map[char_matrix.taxon_namespace])
+        if char_matrix.datatype_name == "dna":
+            xsi_datatype = 'nex:Dna'
+        elif char_matrix.datatype_name == "rna":
+            xsi_datatype = 'nex:Rna'
+        elif char_matrix.datatype_name == "protein":
+            xsi_datatype = 'nex:Protein'
+        elif char_matrix.datatype_name == "restriction":
+            xsi_datatype = 'nex:Restriction'
+        elif char_matrix.datatype_name == "standard":
+            xsi_datatype = 'nex:Standard'
+        elif char_matrix.datatype_name == "continuous":
+            xsi_datatype = 'nex:Continuous'
+        else:
+            raise Exception("Unrecognized character block data type.")
+        if self.markup_as_sequences:
+            xsi_markup = 'Seqs'
+        else:
+            xsi_markup = 'Cells'
+        xsi_type = xsi_datatype + xsi_markup
+        parts.append('xsi:type="%s"' % xsi_type)
+        dest.write("<%s>\n" % ' '.join(parts))
+
+        if char_matrix.has_annotations:
+            self._write_annotations_and_comments(char_matrix, dest, indent_level=indent_level+1)
+
+        cell_char_type_id_map = self._write_format_section(char_matrix, dest, indent_level=indent_level+1)
+
+        dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
+
+        # with new data model,  char_matrix == taxon_seq_map!
+        # if char_matrix.taxon_seq_map.has_annotations:
+        #     self._write_annotations_and_comments(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
+
+        for taxon in char_matrix:
+            char_vector = char_matrix[taxon]
+            # for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector):
+            dest.write(self.indent*(indent_level+2))
             parts = []
-            parts.append('characters')
-            parts.append('id="%s"' % char_matrix.default_oid)
-            if char_matrix.label:
-                parts.append('label=%s' % _protect_attr(char_matrix.label))
-            parts.append('otus="%s"' % char_matrix.taxon_namespace.default_oid)
-            if isinstance(char_matrix, dendropy.DnaCharacterMatrix):
-                xsi_datatype = 'nex:Dna'
-            elif isinstance(char_matrix, dendropy.RnaCharacterMatrix):
-                xsi_datatype = 'nex:Rna'
-            elif isinstance(char_matrix, dendropy.ProteinCharacterMatrix):
-                xsi_datatype = 'nex:Protein'
-            elif isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
-                xsi_datatype = 'nex:Restriction'
-            elif isinstance(char_matrix, dendropy.StandardCharacterMatrix):
-                xsi_datatype = 'nex:Standard'
-            elif isinstance(char_matrix, dendropy.ContinuousCharacterMatrix):
-                xsi_datatype = 'nex:Continuous'
-            else:
-                raise Exception("Unrecognized character block data type.")
-            if char_matrix.markup_as_sequences:
-                xsi_markup = 'Seqs'
-            else:
-                xsi_markup = 'Cells'
-            xsi_type = xsi_datatype + xsi_markup
-            parts.append('xsi:type="%s"' % xsi_type)
+            parts.append('row')
+            parts.append('id="%s"' % _get_nexml_id(char_vector))
+            if taxon is not None:
+                parts.append('otu="%s"' % self._taxon_id_map[taxon])
             dest.write("<%s>\n" % ' '.join(parts))
-
-            # annotate
-#             self.write_extensions(char_matrix, dest, indent_level=indent_level+1)
-            self.write_annotations(char_matrix, dest, indent_level=indent_level+1)
-            self.write_comments(char_matrix, dest, indent_level=indent_level+1, newline=True)
-            state_alphabet_parts = []
-            if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
-                for state_alphabet in char_matrix.state_alphabets:
-                    state_alphabet_parts.append('%s<states id="%s">'
-                        % (self.indent * (indent_level+2), state_alphabet.default_oid))
-                    for state in state_alphabet:
-                        if state.multistate == dendropy.StateAlphabetElement.SINGLE_STATE:
-                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
-                    for state in state_alphabet:
-                        if state.multistate == dendropy.StateAlphabetElement.POLYMORPHIC_STATE:
-                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
-                    for state in state_alphabet:
-                        if state.multistate == dendropy.StateAlphabetElement.AMBIGUOUS_STATE:
-                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
-                    state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
-
-            chartypes_to_add = []
-            column_chartype_map = {}
-            cell_chartype_map = {}
-            for taxon, row in char_matrix.taxon_seq_map.items():
-                for col_idx, cell in enumerate(row):
-                    chartype = None
-
-                    if hasattr(char_matrix, "state_alphabets"):
-                        if col_idx in column_chartype_map:
-                            chartype = column_chartype_map[col_idx]
-                        elif not hasattr(cell, 'character_type') or cell.character_type is None:
-                            chartype_oid = "c%d" % col_idx
-                            if char_matrix.default_state_alphabet is not None:
-                                chartype = dendropy.CharacterType(state_alphabet=char_matrix.default_state_alphabet, oid=chartype_oid)
-                            elif len(char_matrix.state_alphabets) == 1:
-                                chartype = dendropy.CharacterType(state_alphabet=char_matrix.state_alphabets[0], oid=chartype_oid)
-                            elif len(char_matrix.state_alphabets) > 1:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.default_oid, taxon.label)\
-                                        + " 'character_type' property, and multiple state alphabets are defined for the containing" \
-                                        + " character matrix ('%s') with no default specified" % char_matrix.default_oid)
-                            elif len(char_matrix.state_alphabets) == 0:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.default_oid, taxon.label)\
-                                        + " 'character_type' property, and no state alphabets are defined for the containing" \
-                                        + " character matrix" % char_matrix.default_oid)
-                        else:
-                            chartype = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid="c%d" % col_idx)
-                    else:
-                        if col_idx not in column_chartype_map:
-                            chartype = dendropy.CharacterType(oid="c%d" % col_idx)
-                        else:
-                            chartype = column_chartype_map[col_idx]
-
-                    if chartype is not None:
-                        if chartype not in chartypes_to_add:
-                            chartypes_to_add.append(chartype)
-                        cell_chartype_map[cell] = chartype
-                        column_chartype_map[col_idx] = chartype
-                    else:
-                        raise TypeError("Cannot create character type mapping: character cell %d for taxon %s ('%s') in character matrix '%s'" %  (col_idx, taxon.default_oid, taxon.label, char_matrix))
-
-            character_types_parts = []
-            for column in chartypes_to_add:
-                if column.state_alphabet:
-                    chartype_state = ' states="%s" ' % column.state_alphabet.default_oid
+            if char_vector.has_annotations:
+                self._write_annotations_and_comments(char_vector, dest, indent_level=indent_level+3)
+            if self.markup_as_sequences:
+                if char_matrix.datatype_name in ("dna", "rna", "protein", "restriction", "aa", "amino-acid"):
+                    separator = ''
+                    break_long_words = True
                 else:
-                    chartype_state = ' '
-                character_types_parts.append('%s<char id="%s"%s/>'
-                    % ((self.indent*(indent_level+1)), column.default_oid, chartype_state))
-
-            if state_alphabet_parts or character_types_parts:
-                dest.write("%s<format>\n" % (self.indent*(indent_level+1)))
-                if state_alphabet_parts:
-                    dest.write(('\n'.join(state_alphabet_parts)) + '\n')
-                if character_types_parts:
-                    dest.write(('\n'.join(character_types_parts)) + '\n')
-                    pass
-                dest.write("%s</format>\n" % (self.indent*(indent_level+1)))
-
-
-            dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
-
-#             self.write_extensions(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
-            self.write_annotations(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
-            self.write_comments(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1, newline=True)
-
-            for taxon, row in char_matrix.taxon_seq_map.items():
-                dest.write(self.indent*(indent_level+2))
-                parts = []
-                parts.append('row')
-                parts.append('id="%s"' % row.default_oid)
-                if taxon:
-                    parts.append('otu="%s"' % taxon.default_oid)
-                dest.write("<%s>\n" % ' '.join(parts))
-
-#                 self.write_extensions(row, dest, indent_level=indent_level+3)
-                self.write_annotations(row, dest, indent_level=indent_level+3)
-                self.write_comments(row, dest, indent_level=indent_level+3, newline=True)
-
-                if ( (self.markup_as_sequences is not None and self.markup_as_sequences is False)
-                        or (hasattr(char_matrix, 'markup_as_sequences') and not char_matrix.markup_as_sequences)
-                        ):
-                    for idx, cell in enumerate(row):
-                        parts = []
-                        parts.append('%s<cell' % (self.indent*(indent_level+3)))
-                        parts.append('char="%s"' % cell_chartype_map[cell].default_oid)
-                        if hasattr(cell, "value") and hasattr(cell.value, "oid"):
-                            v = cell.value.default_oid
-                        else:
-                            v = str(cell.value)
-                        parts.append('state="%s"' % v)
-                        dest.write(' '.join(parts))
-                        if isinstance(cell, dendropy.AnnotatedDataObject) and len(cell.annotations) > 0:
-                            dest.write('>\n')
-                            # self.write_extensions(cell, dest, indent_level=indent_level+4)
-                            self.write_annotations(cell, dest, indent_level=indent_level+4)
-                            self.write_comments(cell, dest, indent_level=indent_level+4, newline=True)
-                            dest.write('%s</cell>' % (self.indent*(indent_level+3)))
-                        else:
-                            dest.write('/>\n')
+                    # standard or continuous
+                    separator = ' '
+                    break_long_words = False
+                if char_matrix.datatype_name == "continuous":
+                    seq_symbols = [str(c) for c in char_vector]
                 else:
-                    ### actual sequences get written here ###
-                    if isinstance(char_matrix, dendropy.DnaCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.RnaCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.ProteinCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
-                        separator = ''
-                        break_long_words = True
+                    seq_symbols = []
+                    for cidx, c in enumerate(char_vector):
+                        s = str(c)
+                        if not s:
+                            raise TypeError("Character %d in char_vector '%s' does not have a symbol defined for its character state:" % (cidx, char_vector.default_oid) \
+                                        + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
+                        seq_symbols.append(s)
+                # seqlines = separator.join(seq_symbols)
+                seqlines = textwrap.fill(separator.join(seq_symbols),
+                                        width=70,
+                                        initial_indent=self.indent*(indent_level+3) + "<seq>",
+                                        subsequent_indent=self.indent*(indent_level+4),
+                                        break_long_words=break_long_words)
+                seqlines += "</seq>\n"
+                dest.write(seqlines)
+            else:
+                raise NotImplementedError
+                for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
+                    parts = []
+                    parts.append('%s<cell' % (self.indent*(indent_level+3)))
+                    parts.append('char="%s"' % column_char_type_map[col_idx].default_oid)
+                    if hasattr(cell, "value") and hasattr(cell.value, "oid"):
+                        v = cell.value.default_oid
                     else:
-                        # Standard or Continuous
-                        separator = ' '
-                        break_long_words = False
-
-                    if isinstance(char_matrix, dendropy.DiscreteCharacterMatrix):
-                        seq_symbols = []
-                        for cidx, c in enumerate(row):
-                            if c.value.symbol is None:
-                                raise TypeError("Character %d in row '%s' does not have a symbol defined for its character state:" % (cidx, row.default_oid) \
-                                            + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
-                            seq_symbols.append(c.value.symbol)
+                        v = str(cell.value)
+                    parts.append('state="%s"' % v)
+                    dest.write(' '.join(parts))
+                    if isinstance(cell, dendropy.AnnotatedDataObject) and len(cell.annotations) > 0:
+                        dest.write('>\n')
+                        # self.write_extensions(cell, dest, indent_level=indent_level+4)
+                        self.write_annotations(cell, dest, indent_level=indent_level+4)
+                        self.write_comments(cell, dest, indent_level=indent_level+4, newline=True)
+                        dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                     else:
-                        seq_symbols = [str(c) for c in row]
-                    seqlines = textwrap.fill(separator.join(seq_symbols),
-                                           width=70,
-                                           initial_indent=self.indent*(indent_level+3) + "<seq>",
-                                           subsequent_indent=self.indent*(indent_level+4),
-                                           break_long_words=break_long_words)
-                    seqlines = seqlines + "</seq>\n"
-                    dest.write(seqlines)
-                dest.write(self.indent * (indent_level+2))
-                dest.write('</row>\n')
-            dest.write("%s</matrix>\n" % (self.indent * (indent_level+1)))
-            dest.write(self.indent * indent_level)
-            dest.write('</characters>\n')
+                        dest.write('/>\n')
+            dest.write(self.indent * (indent_level+2))
+            dest.write('</row>\n')
+        dest.write("%s</matrix>\n" % (self.indent * (indent_level+1)))
+        dest.write(self.indent * indent_level)
+        dest.write('</characters>\n')
 
     def _write_tree(self, tree, dest, indent_level=0):
         """
@@ -500,7 +429,7 @@ class NexmlWriter(ioservice.DataWriter):
                     indent_level=indent_level+1)
         dest.write('%s</tree>\n' % (self.indent * indent_level))
 
-    def write_to_nexml_open(self, dest, indent_level=0):
+    def _write_to_nexml_open(self, dest, indent_level=0):
         "Writes the opening tag for a nexml element."
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
@@ -547,7 +476,7 @@ class NexmlWriter(ioservice.DataWriter):
         parts.append('>\n')
         dest.write('\n'.join(parts))
 
-    def write_to_nexml_close(self, dest, indent_level=0):
+    def _write_to_nexml_close(self, dest, indent_level=0):
         "Closing tag for a nexml element."
         dest.write('%s</nex:nexml>\n' % (self.indent*indent_level))
 
@@ -632,3 +561,74 @@ class NexmlWriter(ioservice.DataWriter):
                 # self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
                 dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level, prefix_uri_tuples=self._prefix_uri_tuples))
                 dest.write("\n")
+
+    def _compose_char_type_xml_for_state_alphabet(self, state_alphabet, indent_level, char_type_id=None):
+        if state_alphabet:
+            char_type_state = ' states="%s" ' % self._state_alphabet_id_map[state_alphabet]
+        else:
+            char_type_state = ' '
+        if char_type_id is None:
+            char_type_id = _get_nexml_id(object())
+        s = ('%s<char id="%s"%s/>'
+            % ((self.indent*(indent_level)), char_type_id, char_type_state))
+        return char_type_id, s
+
+    def _compose_char_type_xml_for_character_type(self, character_type, indent_level):
+        state_alphabet = character_type.state_alphabet
+        return self._compose_char_type_xml_for_state_alphabet(
+                state_alphabet,
+                indent_level=indent_level,
+                char_type_id=_get_nexml_id(character_type))
+
+    def _write_format_section(self, char_matrix, dest, indent_level):
+        format_section_parts = []
+        if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
+            for state_alphabet in char_matrix.state_alphabets:
+                self._state_alphabet_id_map[state_alphabet] = _get_nexml_id(state_alphabet)
+                format_section_parts.append('%s<states id="%s">'
+                    % (self.indent * (indent_level+1), self._state_alphabet_id_map[state_alphabet]))
+                for state in state_alphabet:
+                    if state.state_denomination == state_alphabet.FUNDAMENTAL_STATE:
+                        format_section_parts.extend(self._compose_state_definition(state, state_alphabet, indent_level+3))
+                for state in state_alphabet:
+                    if state.state_denomination == state_alphabet.POLYMORPHIC_STATE:
+                        format_section_parts.extend(self._compose_state_definition(state, state_alphabet, indent_level+3))
+                for state in state_alphabet:
+                    if state.state_denomination == state_alphabet.AMBIGUOUS_STATE:
+                        format_section_parts.extend(self._compose_state_definition(state, state_alphabet, indent_level+3))
+                format_section_parts.append('%s</states>' % (self.indent * (indent_level+1)))
+        cell_char_type_id_map = {}
+        auto_created_char_types = {}
+        for taxon in char_matrix:
+            char_vector = char_matrix[taxon]
+            for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
+                if cell_char_type is None:
+                    sa = None
+                    if char_matrix.default_state_alphabet is not None:
+                        sa = char_matrix.default_state_alphabet
+                    elif len(char_matrix.state_alphabets) == 1:
+                        sa = char_matrix.state_alphabets[0]
+                    elif len(char_matrix.state_alphabets) > 1:
+                        raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
+                                + " 'character_type' property, and multiple state alphabets are defined for the containing" \
+                                + " character matrix with no default specified")
+                    elif len(char_matrix.state_alphabets) == 0:
+                        raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
+                                + " 'character_type' property, and no state alphabets are defined for the containing" \
+                                + " character matrix")
+                    assert sa is not None
+                    # try:
+                    #     char_type_id, char_type_xml = auto_created_char_types[sa]
+                    # except KeyError:
+                    #     char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa)
+                    #     auto_created_char_types[sa] = char_type_id, char_type_xml
+                    char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa, indent_level=indent_level+1)
+                else:
+                    char_type_id, char_type_xml = self._compose_char_type_xml_for_character_type(cell_char_type, indent_level=indent_level+1)
+                format_section_parts.append(char_type_xml)
+                cell_char_type_id_map[ (taxon, col_idx) ] = char_type_id
+        if format_section_parts:
+            dest.write("%s<format>\n" % (self.indent*(indent_level)))
+            dest.write(('\n'.join(format_section_parts)) + '\n')
+            dest.write("%s</format>\n" % (self.indent*(indent_level)))
+        return cell_char_type_id_map
