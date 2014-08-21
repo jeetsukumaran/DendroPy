@@ -21,6 +21,7 @@ Path mapping for various test resources.
 """
 
 import os
+import sys
 import tempfile
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -44,7 +45,10 @@ TESTS_COVERAGE_REPORT_DIR = os.path.join(TESTS_COVERAGE_DIR, "report")
 TESTS_COVERAGE_SOURCE_DIR = os.path.join(TESTS_COVERAGE_DIR, "source")
 
 def tree_source_stream(filename):
-    return open(tree_source_path(filename), "rU")
+    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+        return open(tree_source_path(filename), "rU")
+    else:
+        return open(tree_source_path(filename), "r")
 
 def tree_source_path(filename=None):
     if filename is None:
