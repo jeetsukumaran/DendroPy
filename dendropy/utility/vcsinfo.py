@@ -28,6 +28,7 @@ except ImportError:
     from io import StringIO # Python 3
 import subprocess
 import datetime
+from dendropy.utility import session
 
 class Revision(object):
     """
@@ -153,7 +154,7 @@ class Revision(object):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
+            stdout, stderr = session.communicate(p)
             retcode = p.returncode
         except OSError as e:
             return -999, "", str(e)

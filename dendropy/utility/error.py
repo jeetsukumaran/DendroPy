@@ -47,8 +47,26 @@ def dump_stack(out=None):
 class CriticalDeprecationWarning(DeprecationWarning):
     pass
 
-def critical_deprecation_alert(message, stacklevel=4):
-    frame, filename, line_num, func, source_code, source_index = inspect.stack()[-1]
+def critical_deprecation_alert(message, stacklevel=4, very_verbose=True):
+    stack = inspect.stack()
+    if very_verbose:
+        try:
+            for frame, filename, line_num, func, source_code, source_index in stack[2:][-1::-1]:
+            # for frame, filename, line_num, func, source_code, source_index in stack[2:]:
+                if source_code and len(source_code) >= 1:
+                    source_line = source_code[0].replace("\n","").strip()
+                else:
+                    source_line = ""
+                sys.stderr.write('\nFile "{}", line {} in {}\n     {}'.format(
+                        inspect.getfile(frame),
+                        inspect.getlineno(frame),
+                        func,
+                        source_line,
+                        ))
+            sys.stderr.write("\n")
+        except:
+            pass
+    frame, filename, line_num, func, source_code, source_index = stack[stacklevel]
     warnings.simplefilter('once')
     warnings.warn_explicit(
             message=message,

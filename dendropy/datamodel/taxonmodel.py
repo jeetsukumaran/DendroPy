@@ -1313,7 +1313,7 @@ class TaxonSet(TaxonNamespace):
     def __new__(cls):
         # error.dump_stack()
         error.critical_deprecation_alert(":class:`TaxonSet` will no longer be supported in future releases; use :class:`TaxonNamespace` instead",
-                stacklevel=3)
+                stacklevel=2)
         o = super(TaxonSet, cls).__new__(cls)
         return o
 
