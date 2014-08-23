@@ -4139,7 +4139,7 @@ class Tree(
         self._write_indented_form(out, **kwargs)
         return out.getvalue()
 
-    def write_indented_form(self, out, **kwargs):
+    def _write_indented_form(self, out, **kwargs):
         if kwargs.get("splits"):
             if not kwargs.get("taxon_namespace"):
                 kwargs["taxon_namespace"] = self.taxon_namespace
@@ -5274,15 +5274,11 @@ def _format_node(nd, **kwargs):
     nf = kwargs.get('node_formatter', None)
     if nf:
         return nf(nd)
-    if nd.is_leaf():
-        t = nd.taxon
-        if t:
-            label = t.label
-        else:
-            label = "anonymous leaf"
-    else:
-        label = "* %s" % str(nd.oid)
-    return label
+    if nd.taxon is not None:
+        return str(nd.taxon)
+    if nd.label is not None:
+        return nd.label
+    return ""
 
 def _format_edge(e, **kwargs):
     ef = kwargs.get('edge_formatter', None)

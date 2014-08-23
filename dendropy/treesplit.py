@@ -368,7 +368,7 @@ __n_bits_set = (0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4)
 def count_bits(a):
     '''Returns the number of bits set to one.'''
     global __n_bits_set
-    c = long(a)
+    c = int(a)
     if c != a:
         raise ValueError('non-integer argument')
     if c < 1:
