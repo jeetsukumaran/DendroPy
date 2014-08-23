@@ -148,7 +148,7 @@ class Edge(
         pos = p.child_nodes().index(to_del)
         p.remove_child(to_del)
         for child in children:
-            p.add_child(child, pos=pos)
+            p.insert_child(pos, child)
             pos += 1
 
     def invert(self):
@@ -868,7 +868,7 @@ class Node(
                     if len(children) == 1:
                         child = children[0]
                         pos = self._parent_node._child_nodes.index(self)
-                        self._parent_node.add_child(child, pos=pos)
+                        self._parent_node.insert_child(pos, child)
                         self._parent_node.remove_child(self, suppress_deg_two=False)
                         try:
                             child.edge.length += self.edge.length
@@ -894,7 +894,7 @@ class Node(
                         tr_children = to_remove._child_nodes
                         tr_children.reverse()
                         for c in tr_children:
-                            self.add_child(c, pos=pos)
+                            self.insert_child(pos, c)
                         to_remove._child_nodes = []
         else:
             raise ValueError("Tried to remove a node that is not listed as a child")
@@ -930,7 +930,7 @@ class Node(
                 if len(children) == 1:
                     child = children[0]
                     pos = p._child_nodes.index(self)
-                    p.add_child(child, pos=pos)
+                    p.insert_child(pos, child)
                     self._child_nodes = []
                     p.remove_child(self, suppress_deg_two=False)
                     e = child.edge
@@ -961,7 +961,7 @@ class Node(
                     to_remove._child_nodes = []
                     for n, c in enumerate(tr_children):
                         new_pos = pos + n
-                        self.add_child(c, pos=new_pos)
+                        self.insert_child(pos, c)
                     t = (to_remove, self, pos, tr_children, e)
                     removed.append(t)
 
@@ -993,7 +993,7 @@ class Node(
                 if cp:
                     cp.remove_child(c)
                 n.add_child(c)
-            p.add_child(n, pos=pos)
+            p.insert_child(pos, n)
             if e is not None:
                 e.length -= n.edge.length
 
@@ -3014,7 +3014,8 @@ class Tree(
                     assert new_seed_node.edge.split_bitmask == taxa_mask
                 if to_edge_dict:
                     del to_edge_dict[edge_to_del.split_bitmask]
-                new_seed_node.add_child(sister, edge_length=sister.edge.length)
+                # new_seed_node.add_child(sister, edge_length=sister.edge.length)
+                new_seed_node.add_child(sister)
                 self.seed_node = new_seed_node
                 return
         else:
@@ -3030,8 +3031,8 @@ class Tree(
             if to_edge_dict:
                 to_edge_dict[e.split_bitmask] = e
             assert new_seed_node.edge.split_bitmask == taxa_mask
-        old_par.remove_child(new_seed_node)
-        new_seed_node.add_child(old_par, edge_length=e.length)
+        new_seed_node.add_child(old_par)
+        old_par.edge.length = e.length
         self.seed_node = new_seed_node
         if full_encode:
             treesplit.encode_splits(self, delete_outdegree_one=delete_outdegree_one)
@@ -3053,7 +3054,9 @@ class Tree(
         assert p is not None
         self.reseed_at(p, update_splits=update_splits, delete_outdegree_one=delete_outdegree_one)
         p.remove_child(outgroup_node)
-        p.add_child(outgroup_node, edge_length=outgroup_node.edge.length, pos=0)
+        _ognlen = outgroup_node.edge.length
+        p.insert_child(0, outgroup_node)
+        assert outgroup_node.edge.length == _ognlen
         return self.seed_node
 
     def reroot_at_node(self, new_root_node, update_splits=False, delete_outdegree_one=True):
@@ -3101,7 +3104,9 @@ class Tree(
         old_head = edge.head_node
         new_seed_node = old_tail.new_child(edge_length=length1)
         old_tail.remove_child(old_head)
-        new_seed_node.add_child(old_head, edge_length=length2)
+        # new_seed_node.add_child(old_head, edge_length=length2)
+        new_seed_node.add_child(old_head)
+        old.head.edge.length = length2
         self.reroot_at_node(new_seed_node,
                 update_splits=update_splits,
                 delete_outdegree_one=delete_outdegree_one)
@@ -3156,8 +3161,12 @@ class Tree(
             old_tail_node = target_edge.tail_node
             old_tail_node.remove_child(old_head_node)
             new_seed_node = Node()
-            new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
-            old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
+            # new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
+            new_seed_node.add_child(old_head_node)
+            old_head_node.edge.length = head_node_edge_len
+            # old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
+            old_tail_node.add_child(new_seed_node)
+            new_seed_node.edge.length = tail_node_edge_len
             self.reseed_at(new_seed_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
         self.is_rooted = True
         if update_splits:

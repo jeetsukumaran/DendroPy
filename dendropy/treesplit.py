@@ -594,7 +594,8 @@ class SplitDistribution(object):
         else:
             weight_to_use = float(tree.weight)
         self.sum_of_tree_weights += weight_to_use
-        for split, edge in tree.split_edges.iteritems():
+        for split in tree.split_edges:
+            edge = tree.split_edges[split]
             if self.is_rooted:
                 split = edge.split_bitmask
             try:

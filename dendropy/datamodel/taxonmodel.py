@@ -1168,6 +1168,8 @@ class TaxonNamespace(
             return self._taxon_bitmask_map[taxon]
         except KeyError:
             i = self._taxon_accession_index_map[taxon]
+            # i = self._taxa.index(taxon)
+            i = self._taxa.index(taxon)
             m = 1 << i
             self._taxon_bitmask_map[taxon] = m
             self._bitmask_taxon_map[m] = taxon
