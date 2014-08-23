@@ -1164,11 +1164,13 @@ class TaxonNamespace(
         h : integer
             Split hash bitmask value for node associated with :class:`Taxon` object `taxon`.
         """
+        i = self._taxa.index(taxon)
+        m = 1 << i
+        return m
         try:
             return self._taxon_bitmask_map[taxon]
         except KeyError:
-            i = self._taxon_accession_index_map[taxon]
-            # i = self._taxa.index(taxon)
+            # i = self._taxon_accession_index_map[taxon]
             i = self._taxa.index(taxon)
             m = 1 << i
             self._taxon_bitmask_map[taxon] = m

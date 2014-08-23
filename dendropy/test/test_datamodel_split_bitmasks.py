@@ -122,8 +122,8 @@ class CladeMaskTest(unittest.TestCase):
             i._debug_check_tree(splits=True, logger_obj=_LOG)
         root1 = tree_list[0].seed_node
         root1e = root1.edge
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask), range(6))
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, one_based=True), range(1,7))
+        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask), list(range(6)))
+        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, one_based=True), list(range(1,7)))
         self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, mask=21, one_based=True), [1, 3, 5])
         self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, mask=21), [0, 2, 4])
         self.assertEqual(treesplit.count_bits(root1e.split_bitmask), 6)
