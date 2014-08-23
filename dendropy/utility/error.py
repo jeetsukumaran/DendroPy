@@ -47,7 +47,7 @@ def dump_stack(out=None):
 class CriticalDeprecationWarning(DeprecationWarning):
     pass
 
-def critical_deprecation_alert(message, stacklevel=4, very_verbose=True):
+def critical_deprecation_alert(message, stacklevel=4, very_verbose=False):
     stack = inspect.stack()
     if very_verbose:
         try:

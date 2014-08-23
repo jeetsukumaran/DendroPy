@@ -316,7 +316,7 @@ class TaxonNamespaceAssociated(object):
         on `self.reindex_member_taxa()` to synchronize taxa.
         """
         # error.dump_stack()
-        error.critical_deprecation_alert("`reindex_taxa()` will no longer be supported in future releases; use `{}.migrate_taxon_namespace()` instead".format(self.__class__.__name__),
+        error.critical_deprecation_alert("'reindex_taxa()' will no longer be supported in future releases; use '{}.migrate_taxon_namespace()' instead".format(self.__class__.__name__),
                 stacklevel=4)
         if taxon_namespace is not None:
             self.taxon_namespace = taxon_namespace
@@ -1314,7 +1314,7 @@ class TaxonSet(TaxonNamespace):
     """
     def __new__(cls):
         # error.dump_stack()
-        error.critical_deprecation_alert(":class:`TaxonSet` will no longer be supported in future releases; use :class:`TaxonNamespace` instead",
+        error.critical_deprecation_alert("'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
                 stacklevel=2)
         o = super(TaxonSet, cls).__new__(cls)
         return o
