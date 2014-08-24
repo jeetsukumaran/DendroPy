@@ -610,10 +610,10 @@ class TaxonNamespace(
             return
         if not self.is_mutable:
             raise error.ImmutableTaxonNamespaceError("Taxon '{}' cannot be added to an immutable TaxonNamespace".format((taxon.label)))
-        self._current_accession_count += 1
         self._taxa.append(taxon)
         self._accession_index_taxon_map[self._current_accession_count] = taxon
         self._taxon_accession_index_map[taxon] = self._current_accession_count
+        self._current_accession_count += 1
 
     def add_taxa(self, taxa):
         """
@@ -1164,14 +1164,14 @@ class TaxonNamespace(
         h : integer
             Split hash bitmask value for node associated with :class:`Taxon` object `taxon`.
         """
-        i = self._taxa.index(taxon)
-        m = 1 << i
-        return m
+        # i = self._taxa.index(taxon)
+        # m = 1 << i
+        # return m
         try:
             return self._taxon_bitmask_map[taxon]
         except KeyError:
-            # i = self._taxon_accession_index_map[taxon]
-            i = self._taxa.index(taxon)
+            i = self._taxon_accession_index_map[taxon]
+            # i = self._taxa.index(taxon)
             m = 1 << i
             self._taxon_bitmask_map[taxon] = m
             self._bitmask_taxon_map[m] = taxon
