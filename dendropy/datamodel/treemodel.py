@@ -2277,7 +2277,7 @@ class Tree(
                     raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
             if taxa is None:
                 raise ValueError("No taxa matching criteria found")
-            split_bitmask = self.taxon_namespace.get_taxa_bitmask(taxa=taxa)
+            split_bitmask = self.taxon_namespace.taxa_bitmask(taxa=taxa)
 
         if split_bitmask is None or split_bitmask == 0:
             raise ValueError("Null split bitmask (0)")
@@ -2307,7 +2307,7 @@ class Tree(
                         # we have reached a child that has some, but not all of the
                         #   required taxa as descendants, so we return the last_match
                         return last_match
-                curr_node = nd_source.next()
+                curr_node = next(nd_source)
         except StopIteration:
             # we shouldn't reach this if all of the descendants are properly
             #   decorated with split_bitmask attributes, but there may be some hacky

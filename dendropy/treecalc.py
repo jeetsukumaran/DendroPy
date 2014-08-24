@@ -216,7 +216,8 @@ def get_length_diffs(tree1,
         treesplit.encode_splits(tree2)
     split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
     split_edges1_ref = tree1.split_edges
-    for split, edge in split_edges1_ref.iteritems(): # O n : 2*bind
+    for split in split_edges1_ref: # O n : 2*bind
+        edge = split_edges1_ref[split]
         elen1 = getattr(edge, edge_length_attr) # attr + bind
         if elen1 is None:
             elen1 = 0 # worst-case: bind
@@ -236,7 +237,8 @@ def get_length_diffs(tree1,
         length_diffs.append((value1,value2)) # ctor + listappend
         split_length_diffs[split] = length_diffs[-1]
 
-    for split, edge in split_edges2_copy.iteritems(): # best-case not executed, worst case O(n) : 2*bind
+    for split in split_edges2_copy: # best-case not executed, worst case O(n) : 2*bind
+        edge = split_edges2_copy[split]
         elen2 = getattr(edge, edge_length_attr) # attr +  bind
         if elen2 is None:
             elen2 = 0
