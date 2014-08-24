@@ -30,8 +30,10 @@ class IOService(object):
 
     @staticmethod
     def attached_taxon_set_deprecation_warning():
-        error.critical_deprecation_alert("'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
-                stacklevel=4)
+        error.dendropy_migration_warning(
+                "attached_taxon_set",
+                "attached_taxon_namespace",
+                "attached_taxon_set")
 
     def __init__(self):
         self.attached_taxon_namespace = None
@@ -48,6 +50,9 @@ class IOService(object):
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):
         ignore_unrecognized_keyword_arguments = kwargs_dict.pop("ignore_unrecognized_keyword_arguments", False)
+        attach_taxon_namespace, taxon_namespace = error.process_attached_taxon_namespace_directives(kwargs_dict)
+        if attach_taxon_namespace or (taxon_namespace is not None):
+            self.attached_taxon_namespace = taxon_namespace
         if kwargs_dict and not ignore_unrecognized_keyword_arguments:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs_dict))
 

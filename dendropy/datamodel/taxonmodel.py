@@ -91,8 +91,10 @@ from dendropy.utility import error
 ## Helper functions
 
 def taxon_set_deprecation_warning():
-    error.critical_deprecation_alert("'taxon_set' will no longer be supported in future releases; use 'taxon_namespace' instead",
-            stacklevel=4)
+    error.dendropy_migration_warning(
+            "taxon_set",
+            "taxon_namespace",
+            "taxon_set")
 
 def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):
     if "taxon_set" in kwargs_dict:
@@ -306,7 +308,6 @@ class TaxonNamespaceAssociated(object):
         will be created.
         """
         raise NotImplementedError()
-
 
     def reindex_taxa(self, taxon_namespace=None, clear=False):
         """

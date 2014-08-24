@@ -336,50 +336,10 @@ class DataSet(
                 (single, unified) taxonomic namespace reference for all
                 objects.
         """
-        deprecated_kw = [
-                "taxon_namespace",
-                "attach_taxon_namespace",
-                "attached_taxon_namespace",
-                "taxon_set",
-                "attach_taxon_set",
-                "attached_taxon_set",
-                ]
-        for kw in deprecated_kw:
-            if kw in kwargs_dict:
-                raise TypeError("'{}' is no longer supported as a keyword argument to the constructor. Use the instance method 'attach_taxon_namespace()' instead".format(kw))
-        taxon_namespace = None
-        attach_taxon_namespace = False
-        if ( ("taxon_set" in kwargs_dict or "taxon_namespace" in kwargs_dict)
-                and ("attached_taxon_set" in kwargs_dict or "attached_taxon_namespace" in kwargs_dict)
-                ):
-            raise TypeError("Cannot specify both 'taxon_namespace'/'taxon_set' and 'attached_taxon_namespace'/'attached_taxon_set' together")
-        if "taxon_set" in kwargs_dict:
-            if "taxon_namespace" in kwargs_dict:
-                raise TypeError("Both 'taxon_namespace' and 'taxon_set' cannot be specified simultaneously: use 'taxon_namespace' ('taxon_set' is only supported for legacy reasons)")
-            kwargs_dict["taxon_namespace"] = kwargs_dict["taxon_set"]
-            del kwargs_dict["taxon_set"]
-        if "attached_taxon_set" in kwargs_dict:
-            if "attached_taxon_namespace" in kwargs_dict:
-                raise TypeError("Both 'attached_taxon_namespace' and 'attached_taxon_set' cannot be specified simultaneously: use 'attached_taxon_namespace' ('attached_taxon_set' is only supported for legacy reasons)")
-            kwargs_dict["attached_taxon_namespace"] = kwargs_dict["attached_taxon_set"]
-            del kwargs_dict["attached_taxon_set"]
-        if "taxon_namespace" in kwargs_dict:
-            taxon_namespace = kwargs_dict.pop("taxon_namespace", None)
-            attach_taxon_namespace = True
-        elif "attached_taxon_namespace" in kwargs_dict:
-            taxon_namespace = kwargs_dict["attached_taxon_namespace"]
-            if not isinstance(taxon_namespace, TaxonNamespace):
-                raise TypeError("'attached_taxon_namespace' argument must be an instance of TaxonNamespace")
-            attach_taxon_namespace = True
-        else:
-            taxon_namespace = None
-            attach_taxon_namespace = kwargs_dict.get("attach_taxon_namespace", False)
-        kwargs_dict.pop("taxon_namespace", None)
-        kwargs_dict.pop("attach_taxon_namespace", None)
-        kwargs_dict.pop("attached_taxon_namespace", None)
+        attach_taxon_namespace, taxon_namespace = error.process_attached_taxon_namespace_directives(kwargs_dict)
         if attach_taxon_namespace or (taxon_namespace is not None):
             self.attach_taxon_namespace(taxon_namespace)
-        return taxon_namespace, attach_taxon_namespace
+        return attach_taxon_namespace, taxon_namespace
 
     ### **Legacy** ###
 
@@ -394,8 +354,11 @@ class DataSet(
     taxon_sets = property(_get_taxon_sets, _set_taxon_sets, _del_taxon_sets)
 
     def taxon_sets_deprecation_warning(self):
-        error.critical_deprecation_alert("'taxon_sets' will no longer be supported in future releases; use 'taxon_namespaces' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "taxon_sets",
+                "taxon_namespaces",
+                "taxon_sets",
+                start_offset=4)
 
     def _get_attached_taxon_set(self):
         self.attached_taxon_set_deprecation_warning()
@@ -408,39 +371,54 @@ class DataSet(
     attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
     def attached_taxon_set_deprecation_warning(self):
-        error.critical_deprecation_alert("'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "attached_taxon_set",
+                "attached_taxon_namespace",
+                "attached_taxon_set",
+                start_offset=4)
 
     def add_taxon_set(self, taxon_set):
         """
         DEPRECATED: Use `add_taxon_namespace()` instead.
         """
-        error.critical_deprecation_alert("'add_taxon_set' will no longer be supported in future releases; use 'add_taxon_namespace' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "add_taxon_set",
+                "add_taxon_namespace",
+                "add_taxon_set",
+                start_offset=4)
         return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
         """
         DEPRECATED: Use `new_taxon_namespace()` instead.
         """
-        error.critical_deprecation_alert("'new_taxon_set' will no longer be supported in future releases; use 'new_taxon_namespace' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "new_taxon_set",
+                "new_taxon_namespaces",
+                "new_taxon_set",
+                start_offset=4)
         return self.new_taxon_namespace(*args, **kwargs)
 
     def attach_taxon_set(self, taxon_set=None):
         """
         DEPRECATED: Use `attach_taxon_namespace()` instead.
         """
-        error.critical_deprecation_alert("'attach_taxon_set' will no longer be supported in future releases; use 'attach_taxon_namespace' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "attach_taxon_set",
+                "attach_taxon_namespace",
+                "attach_taxon_set",
+                start_offset=4)
         return self.attach_taxon_namespace(taxon_namespace=taxon_set)
 
     def detach_taxon_set(self):
         """
         DEPRECATED: Use `detach_taxon_namespace()` instead.
         """
-        error.critical_deprecation_alert("'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
-                stacklevel=3)
+        error.dendropy_migration_warning(
+                "detach_taxon_set",
+                "detach_taxon_namespace",
+                "detach_taxon_set",
+                start_offset=4)
         self.detach_taxon_namespace()
 
     ### TreeList ###
