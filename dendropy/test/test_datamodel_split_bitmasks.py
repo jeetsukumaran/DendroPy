@@ -160,6 +160,50 @@ class IsTrivialTest(unittest.TestCase):
         for i, r in enumerate([y, y, y, n, y, n, n, y, y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, y, n, n, y, n, y, y, y, ]):
             self.assertEqual(r, treesplit.is_trivial_split(i, 0x17))
 
+class IncompleteLeafSetSplitTest(unittest.TestCase):
+
+    def check(self, title, src_prefix):
+        tns = dendropy.TaxonNamespace()
+        input_ds = dendropy.DataSet.get_from_path(
+                src=pathmap.tree_source_path(src_prefix + ".dendropy-pruned.nex"),
+                schema='nexus',
+                attached_taxon_namespace=tns)
+        input_taxa = input_ds.taxon_namespaces[0]
+        output_ds = dendropy.DataSet.get_from_path(
+                src=pathmap.tree_source_path(src_prefix + ".paup-pruned.nex"),
+                schema='nexus',
+                taxon_namespace=input_taxa)
+        for set_idx, src_trees in enumerate(input_ds.tree_lists):
+            src_trees = input_ds.tree_lists[set_idx]
+            ref_trees = output_ds.tree_lists[set_idx]
+            for tree_idx, src_tree in enumerate(src_trees):
+                _LOG.debug("%s Set %d/%d, Tree %d/%d" % (title, set_idx+1, len(input_ds.tree_lists), tree_idx+1, len(src_trees)))
+                ref_tree = ref_trees[tree_idx]
+                # tree_dist = paup.symmetric_difference(src_tree, ref_tree)
+                # d = src_tree.symmetric_difference(ref_tree)
+                # if d > 0:
+                #     print d
+                self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
+
+    def testUnrooted(self):
+        self.check("Unrooted", "incomplete_leaves_unrooted")
+
+    def testRooted(self):
+        self.check("Rooted", "incomplete_leaves_rooted")
+
+    def testPrunedThenEncoding(self):
+        inp = StringIO('''(a,b,c,(d,e));
+        (b,d,(c,e));''')
+        first, second = dendropy.TreeList.get_from_stream(inp, schema='newick')
+        # prune tree 1 to have the same leaf set as tree 2.
+        #   this removes the first taxon in the taxon list "A"
+        retain_list = set([node.taxon for node in second.leaf_nodes()])
+        exclude_list = [node for node in first.leaf_nodes() if node.taxon not in retain_list]
+        for nd in exclude_list:
+            first.prune_subtree(nd)
+        # the trees are now (b,c,(d,e)) and (b,d,(c,e)) so the symmetric diff is 2
+        self.assertEqual(2, first.symmetric_difference(second))
+
 if __name__ == "__main__":
     if paup.DENDROPY_PAUP_INTEROPERABILITY:
         unittest.main()

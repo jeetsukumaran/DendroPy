@@ -395,7 +395,7 @@ class DataSet(
 
     def taxon_sets_deprecation_warning(self):
         error.critical_deprecation_alert("'taxon_sets' will no longer be supported in future releases; use 'taxon_namespaces' instead",
-                stacklevel=4)
+                stacklevel=3)
 
     def _get_attached_taxon_set(self):
         self.attached_taxon_set_deprecation_warning()
@@ -409,14 +409,14 @@ class DataSet(
 
     def attached_taxon_set_deprecation_warning(self):
         error.critical_deprecation_alert("'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
-                stacklevel=4)
+                stacklevel=3)
 
     def add_taxon_set(self, taxon_set):
         """
         DEPRECATED: Use `add_taxon_namespace()` instead.
         """
         error.critical_deprecation_alert("'add_taxon_set' will no longer be supported in future releases; use 'add_taxon_namespace' instead",
-                stacklevel=4)
+                stacklevel=3)
         return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
@@ -424,7 +424,7 @@ class DataSet(
         DEPRECATED: Use `new_taxon_namespace()` instead.
         """
         error.critical_deprecation_alert("'new_taxon_set' will no longer be supported in future releases; use 'new_taxon_namespace' instead",
-                stacklevel=4)
+                stacklevel=3)
         return self.new_taxon_namespace(*args, **kwargs)
 
     def attach_taxon_set(self, taxon_set=None):
@@ -432,7 +432,7 @@ class DataSet(
         DEPRECATED: Use `attach_taxon_namespace()` instead.
         """
         error.critical_deprecation_alert("'attach_taxon_set' will no longer be supported in future releases; use 'attach_taxon_namespace' instead",
-                stacklevel=4)
+                stacklevel=3)
         return self.attach_taxon_namespace(taxon_namespace=taxon_set)
 
     def detach_taxon_set(self):
@@ -440,7 +440,7 @@ class DataSet(
         DEPRECATED: Use `detach_taxon_namespace()` instead.
         """
         error.critical_deprecation_alert("'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
-                stacklevel=4)
+                stacklevel=3)
         self.detach_taxon_namespace()
 
     ### TreeList ###
