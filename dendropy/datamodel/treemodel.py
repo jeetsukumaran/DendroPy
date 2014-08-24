@@ -2989,15 +2989,15 @@ class Tree(
             return
         full_encode = False
         if update_splits:
-            try:
+            if self.seed_node.edge.split_bitmask is not None:
                 taxa_mask = self.seed_node.edge.split_bitmask
-            except:
+                assert taxa_mask is not None
+            else:
                 full_encode = True
                 update_splits = False
         to_edge_dict = None
         if update_splits:
             to_edge_dict = getattr(self, "split_edges", None)
-
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
             if len(root_children) == 2 and delete_outdegree_one:
