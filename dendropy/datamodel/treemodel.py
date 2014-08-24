@@ -33,6 +33,7 @@ from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
+from dendropy import treesplit
 
 ##############################################################################
 ### Edge
@@ -749,6 +750,8 @@ class Node(
         node : :class:`Node`
             The node that was added.
         """
+        assert node is not self, "Cannot add node as child of itself"
+        assert self._parent_node is not node, "Cannot add a node's parent as its child: remove the node from its parent's child set first"
         node._parent_node = self
         if node not in self._child_nodes:
             self._child_nodes.append(node)
@@ -3031,7 +3034,16 @@ class Tree(
             if to_edge_dict:
                 to_edge_dict[e.split_bitmask] = e
             assert new_seed_node.edge.split_bitmask == taxa_mask
+        if new_seed_node in old_par._child_nodes:
+            old_par.remove_child(new_seed_node)
         new_seed_node.add_child(old_par)
+        # assert old_par.parent_node is new_seed_node
+        # assert new_seed_node not in old_par._child_nodes
+        # assert new_seed_node.parent_node is None
+        # for x in (new_seed_node, old_par):
+        #     print("---")
+        #     print("{}: {}".format(x, ",".join(str(ch) for ch in x._child_nodes)))
+        # assert False
         old_par.edge.length = e.length
         self.seed_node = new_seed_node
         if full_encode:
