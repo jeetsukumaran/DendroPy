@@ -308,6 +308,8 @@ class DataSet(
         if taxon_namespace is None:
             raise TypeError("Automatic creation of a new TaxonNamespace is no longer supported: `taxon_namespace` argument required to be passed a valid 'TaxonNamespace' instance")
             taxon_namespace = self.new_taxon_namespace()
+        if type(taxon_namespace) == type(True):
+            raise ValueError("attach_taxon_namespace() no longer accepts a bool argument: a valid 'TaxonNamespace' instance is required")
         if taxon_namespace not in self.taxon_namespaces:
             self.add_taxon_namespace(taxon_namespace)
         self.attached_taxon_namespace = taxon_namespace

@@ -1315,12 +1315,17 @@ class TaxonSet(TaxonNamespace):
     be written using :class:`TaxonNamespace`. Old code needs to be updated to use
     :class:`TaxonNamespace`.
     """
-    def __new__(cls):
-        # error.dump_stack()
+    # def __new__(cls):
+    #     # error.dump_stack()
+    #     error.critical_deprecation_alert("'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
+    #             stacklevel=2)
+    #     o = super(TaxonSet, cls).__new__(cls)
+    #     return o
+
+    def __init__(self, *args, **kwargs):
         error.critical_deprecation_alert("'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
                 stacklevel=2)
-        o = super(TaxonSet, cls).__new__(cls)
-        return o
+        TaxonNamespace.__init__(self, *args, **kwargs)
 
 ##############################################################################
 ## Taxon

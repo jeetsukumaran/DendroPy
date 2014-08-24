@@ -3293,7 +3293,7 @@ class Tree(
         Removes all terminal nodes that have their ``taxon`` attribute set to
         ``None``.
         """
-        for nd in self.leaf_iter():
+        for nd in self.leaf_node_iter():
             if nd.taxon is None:
                 nd.edge.tail_node.remove_child(nd)
         if delete_outdegree_one:
@@ -3750,7 +3750,7 @@ class Tree(
         """
         leaf_count = 0
         nbar = 0
-        for leaf_node in self.leaf_iter():
+        for leaf_node in self.leaf_node_iter():
             leaf_count += 1
             for parent in leaf_node.ancestor_iter(inclusive=False):
                 nbar += 1
@@ -3776,7 +3776,7 @@ class Tree(
         """
         leaf_count = 0
         num_anc = 0
-        for leaf_node in self.leaf_iter():
+        for leaf_node in self.leaf_node_iter():
             leaf_count += 1
             for parent in leaf_node.ancestor_iter(inclusive=False):
                 num_anc += 1
