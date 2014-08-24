@@ -203,7 +203,11 @@ class NexusReader(ioservice.DataReader):
         self.exclude_trees = kwargs.pop("exclude_trees", False)
         self._datatype_name = kwargs.pop("datatype_name", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
+
+        # Following are undocumented for a GOOD reason! They are experimental and subject to change!
         self.unconstrained_taxa_accumulation_mode = kwargs.pop("unconstrained_taxa_accumulation_mode", False)
+        self.automatically_create_missing_taxa_blocks = kwargs.pop("automatically_create_missing_taxa_blocks", False)
+        self.automatically_substitute_missing_taxa_blocks = kwargs.pop("automatically_substitute_missing_taxa_blocks", False)
 
         # The following are used by NewickReader in addition to NexusReader,
         # or have different defaults. So they are extracted/set here and
@@ -348,6 +352,13 @@ class NexusReader(ioservice.DataReader):
                 if tns.label is not None and tns.label.upper() == title.upper():
                     found.append(tns)
             if len(found) == 0:
+                if self.automatically_substitute_missing_taxa_blocks:
+                    if len(self._taxon_namespaces) == 1:
+                        return self._taxon_namespaces[0]
+                    elif not self.automatically_create_missing_taxa_blocks:
+                        raise self._nexus_error("Taxa block with title '{}' not found, and multiple taxa blocks are defined for this file: unable to automatically substitute".format(title), NexusReader.UndefinedBlockError)
+                if self.automatically_create_missing_taxa_blocks:
+                    return self._new_taxon_namespace(title=title)
                 raise self._nexus_error("Taxa block with title '{}' not found".format(title), NexusReader.UndefinedBlockError)
             elif len(found) > 1:
                 raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)

@@ -28,12 +28,16 @@ except ImportError:
     from io import StringIO # Python 3
 import copy
 import sys
+import math
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
 from dendropy import treesplit
+
+## probably should be moved elsewhere?
+EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
 ##############################################################################
 ### Edge
@@ -1949,7 +1953,7 @@ class Tree(
             If no valid trees matching criteria found in source.
 
         """
-        if "taxon_set" in kwargs or "taxon_namespace" in kwargs:
+        if "taxon_namespace" in kwargs or "taxon_namespace" in kwargs:
             raise TypeError("Cannot change `taxon_namespace` when reading an existing Tree")
         kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree._parse_from_stream(stream, schema, **kwargs)
@@ -3732,7 +3736,7 @@ class Tree(
         assert(len(g) == (n - 1))
         T = 0.0
         accum = 0.0
-        for i in xrange(2, n):
+        for i in range(2, n):
             list_index = i - 2
             T += i * float(g[list_index])
             accum += T
@@ -3870,7 +3874,7 @@ class Tree(
 
     def _check_children_for_split_compatibility(self, nd_list, split):
         for nd in nd_list:
-            if treesplit.is_compatible(nd.edge.split_bitmask, split, self.taxon_set.all_taxa_bitmask()):
+            if treesplit.is_compatible(nd.edge.split_bitmask, split, self.taxon_namespace.all_taxa_bitmask()):
                 # see if nd has all of the leaves that are flagged as 1 in the split of interest
                 if (nd.edge.split_bitmask & split) == split:
                     return nd
@@ -4720,7 +4724,7 @@ class TreeList(
             The number of :class:`Tree` objects read.
 
         """
-        if "taxon_set" in kwargs or "taxon_namespace" in kwargs:
+        if "taxon_namespace" in kwargs or "taxon_namespace" in kwargs:
             raise TypeError("Cannot change `taxon_namespace` when reading into an existing TreeList")
         kwargs["taxon_namespace"] = self.taxon_namespace
         kwargs["tree_list"] = self
@@ -5057,6 +5061,54 @@ class TreeList(
 
     def reindex_subcomponent_taxa():
         raise NotImplementedError()
+
+   ##############################################################################
+   ## Special Calculations and Operations on Entire Collection
+
+    def consensus(self, min_freq=0.5, trees_splits_encoded=False, **kwargs):
+        """
+        Returns a consensus tree of all trees in self, with minumum frequency
+        of split to be added to the consensus tree given by `min_freq`.
+        """
+        from dendropy import treesum
+        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+        tsum = treesum.TreeSummarizer(**kwargs)
+        tsum.count_splits_on_trees(self,
+                split_distribution=self.split_distribution,
+                trees_splits_encoded=trees_splits_encoded)
+        tree = tsum.tree_from_splits(self.split_distribution, min_freq=min_freq)
+        return tree
+
+    def frequency_of_split(self, **kwargs):
+        """
+        Given a split or bipartition specified as:
+
+            - a split bitmask given the keyword 'split_bitmask'
+            - a list of `Taxon` objects given with the keyword `taxa`
+            - a list of taxon labels given with the keyword `labels`
+            - a list of oids given with the keyword `oids`
+
+        this function returns the proportion of trees in self
+        in which the split is found.
+        """
+        if "split_bitmask" in kwargs:
+            split = kwargs["split_bitmask"]
+        else:
+            split = self.taxon_namespace.taxa_bitmask(**kwargs)
+            k = list(kwargs.values())[0]
+            if treesplit.count_bits(split) != len(k):
+                raise IndexError('Not all taxa could be mapped to split (%s): %s' \
+                    % (self.taxon_namespace.split_bitmask_string(split), k))
+        found = 0
+        total = 0
+        for tree in self:
+            if not hasattr(tree, "split_edges"):
+                treesplit.encode_splits(tree)
+            total += 1
+            if split in tree.split_edges:
+                found += 1
+        return float(found)/total
+
 
 ###############################################################################
 ### AsciiTreePlot
