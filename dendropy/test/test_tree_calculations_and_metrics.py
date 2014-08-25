@@ -34,13 +34,6 @@ import dendropy
 from dendropy.treesplit import encode_splits
 from dendropy import treecalc
 
-# def _get_reference_tree_list(taxon_namespace=None):
-#     trees = dendropy.TreeList.get_from_path(
-#             pathmap.tree_source_path("pythonidae.reference-trees.nexus"),
-#             "nexus",
-#             taxon_namespace=taxon_namespace)
-#     return trees
-
 def _get_reference_tree_list(taxon_namespace=None):
     tree_list = dendropy.TreeList(label=None)
     tax_4313741136 = tree_list.taxon_namespace.require_taxon(label="Antaresia childreni")
