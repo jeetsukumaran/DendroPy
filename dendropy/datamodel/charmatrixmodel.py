@@ -1460,6 +1460,30 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 state_alphabet=self.default_state_alphabet,
                 purge_other_state_alphabets=purge_other_state_alphabets)
 
+    def taxon_to_state_set_map(self, char_indices=None, gaps_as_missing=True):
+        """
+        Returns a dictionary that maps taxon objects to lists of sets of state
+        indices.
+        if `char_indices` is not None it should be a iterable collection of
+        character indices to include.
+        """
+        taxon_to_state_indices = {}
+        for t in self:
+            cdv = self[t]
+            if char_indices is None:
+                ci = range(len(cdv))
+            else:
+                ci = char_indices
+            v = []
+            for char_index in ci:
+                state = cdv[char_index]
+                if gaps_as_missing:
+                    v.append(set(state.fundamental_indexes_with_gaps_as_missing))
+                else:
+                    v.append(set(state.fundamental_indexes))
+            taxon_to_state_indices[t] = v
+        return taxon_to_state_indices
+
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
     class FixedAlphabetCharacterDataVector(CharacterDataVector):

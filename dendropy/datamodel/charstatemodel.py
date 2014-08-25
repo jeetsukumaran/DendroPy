@@ -151,6 +151,7 @@ class StateAlphabet(
             polymorphic_states=None,
             symbol_synonyms=None,
             no_data_symbol=None,
+            gap_symbol=None,
             label=None,
             case_sensitive=True):
 
@@ -176,6 +177,7 @@ class StateAlphabet(
 
         # Set up 'no data'
         self.no_data_symbol = no_data_symbol
+        self.gap_symbol = gap_symbol
         self.no_data_state = None # will be created when compiled
 
         # Populate core collection
@@ -535,6 +537,9 @@ class StateAlphabet(
             else:
                 assert state.state_denomination != StateAlphabet.FUNDAMENTAL_STATE
             state._index = idx
+            if self.gap_symbol is not None and state.symbol == self.gap_symbol:
+                state.is_gap_state = True
+                state.gap_state_as_no_data_state = self.no_data_state
             temp_index_state_map[idx] = state
         self._state_identities = tuple(temp_states)
         self._canonical_state_symbols = tuple(temp_symbols)
@@ -886,6 +891,7 @@ class StateIdentity(
         self._fundamental_states = None
         self._fundamental_symbols = None
         self._fundamental_indexes = None
+        self._fundamental_indexes_with_gaps_as_missing = None
         self._partials_vector = None
         if member_states is not None:
             self._member_states = tuple(member_states)
@@ -895,6 +901,10 @@ class StateIdentity(
         self._repr = None
         self._member_states_str = None
         self._symbol_synonyms = []
+
+        # special handling for treating gap states as missing/no-data states
+        self.is_gap_state = None
+        self.gap_state_as_no_data_state = None
 
     def __hash__(self):
         return id(self)
@@ -910,6 +920,10 @@ class StateIdentity(
 
     def __deepcopy__(self, memo=None):
         return self
+
+    def _get_index(self):
+        return self._index
+    index = property(_get_index)
 
     def __str__(self):
         if self._str is None:
@@ -993,6 +1007,7 @@ class StateIdentity(
         self._fundamental_states = None
         self._fundamental_symbols = None
         self._fundamental_indexes = None
+        self._fundamental_indexes_with_gaps_as_missing = None
         self._partials_vector = None
         self._str = None
         self._repr = None
@@ -1033,9 +1048,27 @@ class StateIdentity(
         values of single states) to which this state maps.
         """
         if self._fundamental_indexes is None:
-            self._fundamental_indexes = tuple([state.index for state in self.fundamental_states])
+            self._fundamental_indexes = tuple([state._index for state in self.fundamental_states])
         return self._fundamental_indexes
     fundamental_indexes = property(_get_fundamental_indexes)
+
+    def _get_fundamental_indexes_with_gaps_as_missing(self):
+        """
+        Returns a tuple of fundamental state indexes (i.e., tuple of index
+        values of single states) to which this state maps, with gaps being
+        substituted with missing (no-data) states.
+        """
+        if self._fundamental_indexes_with_gaps_as_missing is None:
+            if self.is_gap_state:
+                if self.gap_state_as_no_data_state is not None:
+                    self._fundamental_indexes_with_gaps_as_missing = tuple(self.gap_state_as_no_data_state.fundamental_indexes_with_gaps_as_missing)
+                else:
+                    raise ValueError("No data state not specified")
+            else:
+                fstates = [s for s in self.fundamental_states if not s.is_gap_state]
+                self._fundamental_indexes_with_gaps_as_missing = tuple([s._index for s in fstates])
+        return self._fundamental_indexes_with_gaps_as_missing
+    fundamental_indexes_with_gaps_as_missing = property(_get_fundamental_indexes_with_gaps_as_missing)
 
     def _get_symbol_synonyms(self):
         """
@@ -1116,6 +1149,7 @@ class DnaStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 no_data_symbol="?",
+                gap_symbol="-",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1155,6 +1189,7 @@ class RnaStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 no_data_symbol="?",
+                gap_symbol="-",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1194,6 +1229,7 @@ class NucleotideStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 no_data_symbol="?",
+                gap_symbol="-",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1225,6 +1261,7 @@ class ProteinStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 no_data_symbol="?",
+                gap_symbol="-",
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,
@@ -1250,6 +1287,9 @@ class BinaryStateAlphabet(StateAlphabet):
         fundamental_states = "10"
         if allow_gaps:
             fundamental_states += "-"
+            gap_symbol = "-"
+        else:
+            gap_symbol = None
         polymorphic_states = None
         ambiguous_states = []
         if allow_missing:
@@ -1260,6 +1300,7 @@ class BinaryStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self,
                 fundamental_states=fundamental_states,
                 no_data_symbol=no_data_symbol,
+                gap_symbol=gap_symbol,
                 polymorphic_states=polymorphic_states,
                 ambiguous_states=ambiguous_states,
                 symbol_synonyms=symbol_synonyms,

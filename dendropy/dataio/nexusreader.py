@@ -618,6 +618,7 @@ class NexusReader(ioservice.DataReader):
         sa = self._new_state_alphabet(
                 fundamental_states=symbols,
                 no_data_symbol=self._missing_char,
+                gap_symbol=self._gap_char,
                 case_sensitive=False)
         char_block.state_alphabets = [sa]
         char_block.default_state_alphabet = char_block.state_alphabets[0]
