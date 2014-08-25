@@ -78,9 +78,12 @@ def median(pool):
     copy = sorted(pool)
     size = len(copy)
     if size % 2 == 1:
-        return copy[(size - 1) / 2]
+        idx = int((size - 1) / 2)
+        return copy[idx]
     else:
-        return (copy[size/2 - 1] + copy[size/2]) / 2
+        idx1 = int(size/2) - 1
+        idx2 = int(size/2)
+        return (copy[idx1] + copy[idx2]) / 2
 
 def empirical_hpd(values, conf=0.05):
     """
