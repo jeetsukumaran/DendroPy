@@ -29,7 +29,7 @@ def factorial(num):
     factorial(n) with n<0 is -factorial(abs(n))
     """
     result = 1
-    for i in xrange(1, abs(num)+1):
+    for i in range(1, abs(num)+1):
         result *= i
     return result
 
@@ -42,7 +42,7 @@ def binomial_coefficient(population, sample):
         return 1
     numerator = 1
     denominator = 1
-    for i in xrange(s+1, population + 1):
+    for i in range(s+1, population + 1):
         numerator *= i
         denominator *= (i - s)
     return numerator/denominator
