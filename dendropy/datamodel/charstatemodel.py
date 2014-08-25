@@ -177,8 +177,16 @@ class StateAlphabet(
 
         # Set up 'no data'
         self.no_data_symbol = no_data_symbol
-        self.gap_symbol = gap_symbol
         self.no_data_state = None # will be created when compiled
+
+        # This identifie the gap state when compiling the state alphabet. The
+        # principle purpose behind this is to be able to tell the gap state
+        # that it is, indeed, a gap state. And the purpose of this, in turn,
+        # is so that the when the gap state is asked for its fundamental
+        # indexes, it will return the fundamental indexes of the missing data
+        # state in its place if it is *NOT* to be treated as a fifth
+        # fundamental state.
+        self.gap_symbol = gap_symbol
 
         # Populate core collection
         if fundamental_states:
