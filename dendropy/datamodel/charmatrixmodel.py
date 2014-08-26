@@ -1460,12 +1460,64 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 state_alphabet=self.default_state_alphabet,
                 purge_other_state_alphabets=purge_other_state_alphabets)
 
-    def taxon_to_state_set_map(self, char_indices=None, gaps_as_missing=True):
+    def taxon_to_state_set_map(self,
+            char_indices=None,
+            gaps_as_missing=True,
+            gap_state=None,
+            no_data_state=None):
         """
-        Returns a dictionary that maps taxon objects to lists of sets of state
-        indices.
-        if `char_indices` is not None it should be a iterable collection of
-        character indices to include.
+        Returns a dictionary that maps taxon objects to lists of sets of
+        fundamental state indices.
+
+        Parameters
+        ----------
+
+        char_indices : iterable of ints
+            An iterable of indexes of characters to include (by column). If not
+            given or `None` [default], then all characters are included.
+
+        gaps_as_missing : boolean
+            If `True` [default] then gap characters will be treated as missing
+            data values. If `False`, then they will be treated as an additional
+            (fundamental) state.`
+
+        Returns
+        -------
+        d : dict
+            A dictionary with class:`Taxon` objects as keys and a list of sets
+            of fundamental state indexes as values.
+
+            E.g., Given the following matrix of DNA characters:
+
+                T1 AGN
+                T2 C-T
+                T3 GC?
+
+            Return with `gaps_as_missing==True`:
+
+                {
+                    <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
+                    <T2> : [ set([1]), set([0,1,2,3]),  set([3]) ],
+                    <T3> : [ set([2]), set([1]),        set([0,1,2,3]) ],
+                }
+
+            Return with `gaps_as_missing==False`:
+
+                {
+                    <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
+                    <T2> : [ set([1]), set([4]),        set([3]) ],
+                    <T3> : [ set([2]), set([1]),        set([0,1,2,3,4]) ],
+                }
+
+            Note that when gaps are treated as a fundamental state, not only
+            does '-' map to a distinct and unique state (4), but '?' (missing
+            data) maps to set consisting of all bases *and* the gap
+            state, whereas 'N' maps to a set of all bases but not including the
+            gap state.
+
+            When gaps are treated as missing, on the other hand, then '?' and
+            'N' and '-' all map to the same set, i.e. of all the bases.
+
         """
         taxon_to_state_indices = {}
         for t in self:
