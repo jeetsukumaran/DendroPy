@@ -158,12 +158,6 @@ class Revision(object):
             retcode = p.returncode
         except OSError as e:
             return -999, "", str(e)
-        try:
-            stdout = str(stdout, encoding="utf8")
-            stderr = str(stderr, encoding="utf8")
-        except TypeError:
-            stdout = str(stdout).encode("utf-8")
-            stderr = str(stderr).encode("utf-8")
         return retcode, stdout, stderr
 
     def _vcs_available(self):
