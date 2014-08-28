@@ -1611,6 +1611,7 @@ class Tree(
                 taxon_namespace.label = label
             return taxon_namespace
 
+        tree_list_factory = lambda label, taxon_namespace: TreeList(label=label, taxon_namespace=taxon_namespace, tree_type=cls)
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
         if collection_offset is None and tree_offset is not None:
@@ -1622,7 +1623,7 @@ class Tree(
         tree_lists = reader.read_tree_lists(
                     stream=stream,
                     taxon_namespace_factory=tns_factory,
-                    tree_list_factory=TreeList,
+                    tree_list_factory=tree_list_factory,
                     global_annotations_target=None)
         if not tree_lists:
             raise ValueError("No trees in data source")
@@ -4435,6 +4436,11 @@ class TreeList(
         Creates and returns a :class:`Tree` of a type that this list undestands how to
         manage.
 
+        Deriving classes can override this to provide for custom Tree-type
+        object lists. If you want to have a TreeList *instance* that generates
+        custom trees (i.e., as opposed to a TreeList-ish *class* of instances),
+        set the `tree_type` attribute of the TreeList instance.
+
         Parameters
         ----------
         \*args : positional arguments
@@ -4560,6 +4566,7 @@ class TreeList(
                     if not isinstance(a, Tree):
                         raise ValueError("Cannot add object not of 'Tree' type to 'TreeList'")
                     self.append(a)
+        self.tree_type = kwargs.pop("tree_type", None)
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -5033,7 +5040,10 @@ class TreeList(
         if tns is not self.taxon_namespace:
             raise TypeError("Cannot create new Tree with different TaxonNamespace")
         kwargs["taxon_namespace"] = self.taxon_namespace
-        tree = self.tree_factory(*args, **kwargs)
+        if self.tree_type is not None:
+            tree = self.tree_type(*args, **kwargs)
+        else:
+            tree = self.tree_factory(*args, **kwargs)
         self._trees.append(tree)
         return tree
 

@@ -73,3 +73,18 @@ def get_writer(
     except KeyError:
         raise NotImplementedError("'{}' is not a supported data writing schema".format(schema))
 
+def register_service(schema, reader=None, writer=None, tree_iterator=None):
+    global _IO_SERVICE_REGISTRY
+    _IO_SERVICE_REGISTRY[schema] = _IOServices(reader, writer, tree_iterator)
+
+def register_reader(schema, reader):
+    global _IO_SERVICE_REGISTRY
+    try:
+        current = _IO_SERVICE_REGISTRY[schema]
+        register_service(schema=schema,
+                reader=reader,
+                writer=current.writer,
+                tree_iterator=current.tree_iterator)
+    except KeyError:
+        register_service(schema=schema, reader=reader)
+

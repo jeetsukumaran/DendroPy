@@ -353,6 +353,7 @@ class DataReader(IOService):
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=tree_list_factory,
                 char_matrix_factory=None,
+                state_alphabet_factory=None,
                 global_annotations_target=global_annotations_target)
         return product.tree_lists
 
