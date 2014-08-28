@@ -3553,11 +3553,8 @@ class Tree(
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
-        try:
-            ages = [n.age for n in self.internal_nodes()]
-        except AttributeError:
-            self.calc_node_ages(check_prec=check_prec)
-            ages = [n.age for n in self.internal_nodes()]
+        self.calc_node_ages(check_prec=check_prec)
+        ages = [n.age for n in self.internal_nodes()]
         ages.sort()
         return ages
 
