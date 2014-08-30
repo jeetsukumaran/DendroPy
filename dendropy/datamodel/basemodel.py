@@ -803,6 +803,25 @@ class AnnotationSet(container.OrderedSet):
             o.add(x)
         return o
 
+    def __getitem__(self, name):
+        """
+        Experimental! Inefficient! Volatile! Subject to change!
+        """
+        for a in self:
+            if a.name == name:
+                return a.value
+        return self.add_new(name, "")
+
+    def __setitem__(self, name, value):
+        """
+        Experimental! Inefficient! Volatile! Subject to change!
+        """
+        for a in self:
+            if a.name == name:
+                a.value = value
+                return
+        self.add_new(name=name, value=value)
+
     def add_new(self,
             name,
             value,
