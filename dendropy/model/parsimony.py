@@ -177,7 +177,7 @@ def fitch_down_pass(
             result = []
             for n, ssp in enumerate(zip(left_ssl, right_ssl)):
                 left_ss, right_ss = ssp
-                inter = set.intersection(left_ss, right_ss)
+                inter = left_ss.intersection(right_ss)
                 if inter:
                     result.append(inter)
                 else:
@@ -186,7 +186,7 @@ def fitch_down_pass(
                     else:
                         wt = weights[n]
                     score += wt
-                    result.append(set.union(left_ss, right_ss))
+                    result.append(left_ss.union(left_ss, right_ss))
             if remaining:
                 right_c = remaining.pop(0)
                 left_ssl = result
@@ -270,17 +270,17 @@ def fitch_up_pass(
         for n, ssp in enumerate(zip(par_ssl, curr_ssl, left_ssl, right_ssl)):
             par_ss, curr_ss, left_ss, right_ss = ssp
 
-            down_parup_inter = set.intersection(par_ss, curr_ss)
+            down_parup_inter = par_ss.intersection(curr_ss)
             if down_parup_inter == par_ss:
                 final_ss = down_parup_inter
             else:
-                rl_inter = set.intersection(left_ss, right_ss)
+                rl_inter = left_ss.intersection(right_ss)
                 if not rl_inter:
-                    final_ss = set.union(par_ss, curr_ss)
+                    final_ss = par_ss.union(curr_ss)
                 else:
-                    in_par_and_left = set.intersection(par_ss, left_ss)
-                    in_par_and_right = set.intersection(par_ss, right_ss)
-                    final_ss = set.union(in_par_and_left, in_par_and_right, curr_ss)
+                    in_par_and_left = par_ss.intersection(left_ss)
+                    in_par_and_right = par_ss.intersection(right_ss)
+                    final_ss = in_par_and_left.union(in_par_and_right, curr_ss)
             #_LOG.debug("downpass = %s, par = %s, left = %s, right = %s, final_ss= %s" %
             #                    (str(curr_ss), str(par_ss), str(left_ss), str(right_ss), str(final_ss)))
             result.append(final_ss)

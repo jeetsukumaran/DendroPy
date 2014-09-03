@@ -465,33 +465,14 @@ class DataSet(
         tree_list = treemodel.TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
-    # def get_tree_list(self, **kwargs):
-    #     """
-    #     Returns a TreeList object specified by one (and exactly one) of the
-    #     following keyword arguments:
-
-    #         - ``label``
-    #         - ``oid``
-
-    #     Raises ``KeyError`` if no matching ``TreeList`` is found, unless
-    #     ``ignore_error`` is set to ``True``.
-    #     """
-    #     if "label" in kwargs and "oid" in kwargs:
-    #         raise TypeError("Cannot specify both 'label' and 'oid'")
-    #     elif "label" in kwargs:
-    #         for t in self.tree_lists:
-    #             if t.label == kwargs['label']:
-    #                 return t
-    #         if not kwargs.get("ignore_error", False):
-    #             raise KeyError(kwargs['label'])
-    #     elif "oid" in kwargs:
-    #         for t in self.tree_lists:
-    #             if t.oid == kwargs['oid']:
-    #                 return t
-    #         if not kwargs.get("ignore_error", False):
-    #             raise KeyError(kwargs['oid'])
-    #     else:
-    #         raise TypeError("Must specify one of: 'label' or 'oid'")
+    def get_tree_list(self, label):
+        """
+        Returns a TreeList object specified by label.
+        """
+        for t in self.tree_lists:
+            if t.label == label:
+                return t
+        return None
 
     ### CharacterMatrix ###
 

@@ -30,7 +30,9 @@ import os
 
 from dendropy.datamodel.taxonmodel import Taxon
 from dendropy.datamodel.taxonmodel import TaxonNamespace
-from dendropy.datamodel.taxonmodel import TaxonSet
+from dendropy.datamodel.taxonmodel import TaxonNamespacePartition
+from dendropy.datamodel.taxonmodel import TaxonNamespaceMapping
+from dendropy.datamodel.taxonmodel import TaxonSet # Legacy
 from dendropy.datamodel.treemodel import Edge
 from dendropy.datamodel.treemodel import Node
 from dendropy.datamodel.treemodel import Tree
