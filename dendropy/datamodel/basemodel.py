@@ -807,6 +807,8 @@ class AnnotationSet(container.OrderedSet):
         """
         Experimental! Inefficient! Volatile! Subject to change!
         """
+        if isinstance(name, int):
+            return container.OrderedSet.__getitem__(self, name)
         for a in self:
             if a.name == name:
                 return a.value
@@ -816,6 +818,8 @@ class AnnotationSet(container.OrderedSet):
         """
         Experimental! Inefficient! Volatile! Subject to change!
         """
+        if isinstance(name, int):
+            container.OrderedSet.__setitem__(self, name, value)
         for a in self:
             if a.name == name:
                 a.value = value

@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -16,11 +16,3 @@
 ##
 ##############################################################################
 
-"""
-Split calculation and management.
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesum` instead.
-"""
-
-from dendropy.calculate.treesum import *
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.treesum", "dendropy.calculate.treesum")

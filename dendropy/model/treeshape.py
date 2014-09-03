@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -17,10 +17,15 @@
 ##############################################################################
 
 """
-Split calculation and management.
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesum` instead.
+Models of canonical tree shapes.
 """
 
-from dendropy.calculate.treesum import *
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.treesum", "dendropy.calculate.treesum")
+import dendropy
+
+def star_tree(taxon_namespace):
+    "Builds and returns a star tree from the given taxa block."
+    star_tree = dendropy.Tree(taxon_namespace=taxon_namespace)
+    for taxon in taxon_namespace:
+        star_tree.seed_node.new_child(taxon=taxon)
+    return star_tree
+

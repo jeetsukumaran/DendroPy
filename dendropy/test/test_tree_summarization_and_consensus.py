@@ -22,9 +22,9 @@ Tests of summarization.
 
 import unittest
 import dendropy
-from dendropy import treecalc
-from dendropy import treesum
-from dendropy import treesplit
+from dendropy.calculate import treesum
+from dendropy.calculate import treesplit
+from dendropy.calculate import treecompare
 from dendropy.test.support import pathmap
 from dendropy.mathlib import statistics
 from dendropy.test.support import dendropytest
@@ -48,9 +48,8 @@ class TestConsensusTree(unittest.TestCase):
     def testConsensus(self):
         con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
         con_tree.update_splits()
-        self.assertEqual(treecalc.symmetric_difference(self.mb_con_tree, con_tree), 0)
+        self.assertEqual(treecompare.symmetric_difference(self.mb_con_tree, con_tree), 0)
         self.assertEqual(len(con_tree.split_edges), len(self.mb_con_tree.split_edges))
-        sd = self.tree_list.split_distribution
         for split in self.mb_con_tree.split_edges:
             edge1 = self.mb_con_tree.split_edges[split]
             edge2 = con_tree.split_edges[split]
@@ -129,7 +128,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
             expected_tree.update_splits()
             expected_freq = expected_freq_values[idx]
             expected_count = weights[idx]
-            self.assertEqual(result_tree.symmetric_difference(expected_tree), 0,
+            self.assertEqual(treecompare.symmetric_difference(result_tree, expected_tree), 0,
                     "%s != %s" % (result_tree.as_string('newick'), expected_tree.as_string('newick')))
             self.assertAlmostEqual(result_freq[0], expected_count)
             self.assertAlmostEqual(result_freq[1], expected_freq)

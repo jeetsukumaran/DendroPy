@@ -31,7 +31,8 @@ from dendropy.test.support import pathmap
 from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
 from dendropy.interop import paup
-from dendropy import treesplit
+from dendropy.calculate import treesplit
+from dendropy.calculate import treecompare
 import dendropy
 
 _LOG = messaging.get_logger(__name__)
@@ -183,7 +184,7 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
                 # d = src_tree.symmetric_difference(ref_tree)
                 # if d > 0:
                 #     print d
-                self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
+                self.assertEqual(treecompare.symmetric_difference(src_tree, ref_tree), 0)
 
     def testUnrooted(self):
         self.check("Unrooted", "incomplete_leaves_unrooted")
@@ -202,7 +203,7 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
         for nd in exclude_list:
             first.prune_subtree(nd)
         # the trees are now (b,c,(d,e)) and (b,d,(c,e)) so the symmetric diff is 2
-        self.assertEqual(2, first.symmetric_difference(second))
+        self.assertEqual(2, treecompare.symmetric_difference(first, second))
 
 if __name__ == "__main__":
     if paup.DENDROPY_PAUP_INTEROPERABILITY:

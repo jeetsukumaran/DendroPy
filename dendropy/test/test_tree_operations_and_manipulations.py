@@ -33,9 +33,8 @@ from dendropy.utility import messaging
 from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.test.support.mockrandom import MockRandom
 import dendropy
-from dendropy import treesplit
-from dendropy import treemanip
-from dendropy import treecalc
+from dendropy.calculate import treesplit
+from dendropy.calculate import treecompare
 import re
 
 _LOG = messaging.get_logger(__name__)
@@ -53,7 +52,7 @@ class ScaleTest(unittest.TestCase):
                         StringIO("""%s""" % "\n".join(newick_list)),
                         schema="newick")
         for n, tree in enumerate(tree_list):
-            treemanip.scale_edges(tree, 2.0)
+            tree.scale_edges(2.0)
             self.assertEqual(newick_list[n], "%s;" % tree._as_newick_string())
     def testScaleEdgesRealTest(self):
         newick_list = ['(5:3,((4:1,3:1):1.5,2:3),1:0);',
@@ -66,10 +65,10 @@ class ScaleTest(unittest.TestCase):
                         StringIO("""%s""" % "\n".join(newick_list)),
                         schema="newick")
         for n, tree in enumerate(tree_list):
-            treemanip.scale_edges(tree, 2)
+            tree.scale_edges(2)
             self.assertEqual(doubled[n], "%s;" % tree._as_newick_string())
         for n, tree in enumerate(tree_list):
-            treemanip.scale_edges(tree, .5)
+            tree.scale_edges(.5)
             self.assertEqual(as_f[n], "%s;" % tree._as_newick_string())
 
 class RandomlyRotateTest(unittest.TestCase):
@@ -84,11 +83,11 @@ class RandomlyRotateTest(unittest.TestCase):
         treesplit.encode_splits(changing)
         orig_root = changing.seed_node
         for i in range(50):
-            treemanip.randomly_rotate(changing, rng=rng)
+            changing.randomly_rotate(rng=rng)
             self.assertNotEqual(str(changing), n)
             self.assertEqual(orig_root, changing.seed_node)
             changing._debug_check_tree(logger_obj=_LOG, splits=True)
-            if treecalc.symmetric_difference(ref, changing) != 0:
+            if treecompare.symmetric_difference(ref, changing) != 0:
                 self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
 
 class RandomlyReorientTest(unittest.TestCase):
@@ -101,10 +100,10 @@ class RandomlyReorientTest(unittest.TestCase):
         changing = trees[1]
         rng = MockRandom()
         for i in range(50):
-            treemanip.randomly_reorient_tree(changing, rng=rng, splits=True)
+            changing.randomly_reorient(rng=rng, update_splits=True)
             self.assertNotEqual(str(changing), n)
             changing._debug_check_tree(logger_obj=_LOG, splits=True)
-            if treecalc.symmetric_difference(ref, changing) != 0:
+            if treecompare.symmetric_difference(ref, changing) != 0:
                 self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
 
 class CollapseConflictingTest(unittest.TestCase):
@@ -128,30 +127,30 @@ class CollapseConflictingTest(unittest.TestCase):
         treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0xA
-        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        tree.seed_node.collapse_conflicting(split_to_target, all_cm)
         treesplit.encode_splits(tree)
         treesplit.encode_splits(expected_tree)
-        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+        self.assertEqual(treecompare.symmetric_difference(tree, expected_tree), 0)
 
         tree = tree_list[2]
         expected_tree = tree_list[3]
         treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x3
-        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        tree.seed_node.collapse_conflicting(split_to_target, all_cm)
         treesplit.encode_splits(tree)
         treesplit.encode_splits(expected_tree)
-        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+        self.assertEqual(treecompare.symmetric_difference(tree, expected_tree), 0)
 
         tree = tree_list[4]
         expected_tree = tree_list[5]
         treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x5
-        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        tree.seed_node.collapse_conflicting(split_to_target, all_cm)
         treesplit.encode_splits(tree)
         treesplit.encode_splits(expected_tree)
-        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+        self.assertEqual(treecompare.symmetric_difference(tree, expected_tree), 0)
 
 class PruneTest(unittest.TestCase):
 
@@ -190,7 +189,7 @@ class PruneTest(unittest.TestCase):
                 else:
                     src_tree.prune_taxa(sub_taxa)
                 # tree_dist = paup.symmetric_difference(src_tree, ref_tree)
-                self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
+                self.assertEqual(treecompare.symmetric_difference(src_tree, ref_tree), 0)
         taxf.close()
 
     def testPruneTaxaUnrooted(self):
@@ -269,7 +268,7 @@ class TreeMidpointRootingTest(ExtendedTestCase):
         for idx, test_tree in enumerate(test_trees):
             expected_tree = expected_trees[idx]
             test_tree.reroot_at_midpoint(update_splits=True)
-            self.assertEqual(test_tree.symmetric_difference(expected_tree), 0)
+            self.assertEqual(treecompare.symmetric_difference(test_tree, expected_tree), 0)
             for split in test_tree.split_edges:
                 if test_tree.split_edges[split].head_node is test_tree.seed_node:
                     continue

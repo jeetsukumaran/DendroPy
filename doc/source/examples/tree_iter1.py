@@ -2,7 +2,7 @@
 
 import dendropy
 from dendropy import tree_source_iter
-from dendropy import treecalc
+from dendropy import treecompare
 
 distances = []
 taxa = dendropy.TaxonNamespace()
@@ -12,6 +12,6 @@ for mcmc_tree in tree_source_iter(
         schema='nexus',
         taxon_namespace=taxa,
         tree_offset=200):
-    distances.append(treecalc.symmetric_difference(mle_tree, mcmc_tree))
+    distances.append(treecompare.symmetric_difference(mle_tree, mcmc_tree))
 print("Mean symmetric distance between MLE and MCMC trees: %d"
         % float(sum(distances)/len(distances)))

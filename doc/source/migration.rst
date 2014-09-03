@@ -24,15 +24,39 @@ Python Version Compatibility
 Library-Wide Changes
 ====================
 
+Public Module Reorganization
+----------------------------
+
+A number of modules have been renamed, moved, or split into multiple modules.
+Calls to the old module should continue to work, albeit with warnings exhorting
+that you update to the latest configuration.
+
+    * `dendropy.treecalc` has been split into three submodules depending on whether the statistic or value being calculated is on a single tree, a single tree and a dataset, or two trees:
+        *   `dendropy.calculate.treemeasure`
+            For calculation of statistics, metrics, and values on a single tree.
+        *   `dendropy.calculate.treescore`
+            For calculation of statistics, metrics, and values of a tree with
+            reference to a dataset under some criterion.
+        *   `dendropy.calculate.treecompare`
+            For calculation of statistics, metrics, and values of two trees
+            (e.g., Robinson-Fould's distances).
+    * `dendropy.treesplit` has been moved to `dendropy.calculate.treesplit`.
+    * `dendropy.treesum` has been moved to `dendropy.calculate.treesum`.
+    * `dendropy.reconcile` has been moved to `dendropy.calculate.reconcile`.
+    * `dendropy.coalescent` has been moved to `dendropy.calculate.coalescent`.
+    * `dendropy.popgenstat` has been moved to `dendropy.calculate.popgenstat`.
+    * `dendropy.treesim` has been moved to `dendropy.simulate.treesim`.
+    * `dendropy.popgensim` has been moved to `dendropy.simulate.popgensim`.
+
 Behind-the-Scenes Module Reorganization
 ---------------------------------------
 
-* A number of modules have been renamed, moved, or split into multiple modules.
-  However, all these changes *should* be opaque to most normal usage and
-  client code. Most of the names (classes/methods/variables) in these modules were
-  imported into the '`dendropy`' namespace, and this is how all public code
-  should be accessing them, *or* they were never exposed (or meant to be
-  exposed) for public usage in the first place. A list of module changes:
+* In constrast to the above, the following changes *should* be opaque to most
+  normal usage and client code. Most of the names (classes/methods/variables)
+  in these modules were imported into the '`dendropy`' namespace, and this is
+  how all public code should be accessing them, *or* they were never exposed
+  (or meant to be exposed) for public usage in the first place. A list of
+  module changes:
 
         +------------------+---------------------------+
         | DendroPy 3       | DendroPy 4                |

@@ -17,105 +17,55 @@
 ##############################################################################
 
 """
-Functions and classes for manipulating or changing tree
-structural relations.
+All of these functions are now native methods of the Tree class. They are
+maintained here only for background compatibility.
 """
 
-import sys
-import copy
-import math
-
-from dendropy.utility import GLOBAL_RNG
-from dendropy import treesplit
+from dendropy.utility import error
 
 def collapse_edge(edge):
-    """
-    Inserts all children of the head_node of edge as children of the
-    tail_node of edge in the same place in the child_node list that head_node
-    had occupied. The edge length and head_node will no longer be
-    part of the tree.
-    """
+    error.dendropy_construct_migration_warning("treemanip.collapse_edge(edge)", "edge.collapse()")
     edge.collapse()
 
 def collapse_clade(node):
-    """Collapses all internal edges that are descendants of node."""
+    error.dendropy_construct_migration_warning("treemanip.collapse_clade(node)", "node.collapse_clade()")
     node.collapse_clade()
 
 def prune_subtree(tree, node, delete_outdegree_one=True):
+    error.dendropy_construct_migration_warning("treemanip.prune_subtree(tree, node)", "tree.prune_subtree(node)")
     tree.prune_subtree(node=node,
             delete_outdegree_one=delete_outdegree_one)
     return tree
 
 def prune_leaves_without_taxa(tree, delete_outdegree_one=True):
-    """
-    Removes all terminal nodes that have their ``taxon`` attribute set to
-    ``None``.
-    """
+    error.dendropy_construct_migration_warning("treemanip.prune_leaves_without_taxa(tree)", "tree.prune_leaves_without_taxa()")
     tree.prune_leaves_without_taxa(delete_outdegree_one=delete_outdegree_one)
     return tree
 
 def prune_taxa(tree, taxa, delete_outdegree_one=True):
-    """
-    Removes terminal nodes associated with Taxon objects given by the container
-    `taxa` (which can be any iterable, including a TaxonSet object) from `tree`.
-    """
+    error.dendropy_construct_migration_warning("treemanip.prune_taxa(tree, taxa)", "tree.prune_taxa(taxa)")
     tree.prune_taxa(taxa=taxa,
             delete_outdegree_one=delete_outdegree_one)
     return tree
 
 def retain_taxa(tree, taxa, delete_outdegree_one=True):
-    """
-    Removes terminal nodes that are not associated with any
-    of the Taxon objects given by ``taxa`` (which can be any iterable, including a
-    TaxonSet object) from the ``tree``.
-    """
+    error.dendropy_construct_migration_warning("treemanip.retain_taxa(tree, taxa)", "tree.retain_taxa(taxa)")
     tree.retain_taxa(taxa=taxa,
             delete_outdegree_one=delete_outdegree_one)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
-    """
-    Randomly picks a new rooting position and rotates the branches around all
-    internal nodes in the `tree`. If `splits` is True, the the `split_bitmask`
-    and `split_edges` attributes kept valid.
-    """
-    tree.randomly_reorient_tree(rng=rng, update_splits=splits)
+    error.dendropy_construct_migration_warning("randomly_reorient_tree(tree)", "tree.randomly_reorient()")
+    tree.randomly_reorient(rng=rng, update_splits=splits)
 
 def randomly_rotate(tree, rng=None):
-    "Randomly rotates the branches around all internal nodes in the `tree`"
+    error.dendropy_construct_migration_warning("treemanip.randomly_rotate(tree)", "tree.randomly_rotate()")
     tree.randomly_rotate(rng=rng)
 
 def collapse_conflicting(subtree_root, split, split_bitmask):
-    """
-    Takes a node that is the root of a subtree.  Collapses every edge in the
-    subtree that conflicts with split.  This can include the edge subtending
-    subtree_root.
-    """
-    # we flip splits so that both the split and each edges split  have the
-    # lowest bit of the clade mask set to one
-    lb = treesplit.lowest_bit_only(split_bitmask)
-
-    if lb & split:
-        cropped_split = split & split_bitmask
-    else:
-        cropped_split = (~split) & split_bitmask
-
-    to_collapse_head_nodes = []
-    for nd in subtree_root.postorder_iter():
-        if not nd.is_leaf():
-            ncm = nd.edge.split_bitmask
-            if lb & ncm:
-                nd_split = ncm & split_bitmask
-            else:
-                nd_split = (~ncm) & split_bitmask
-
-            cm_union = nd_split | cropped_split
-            if (cm_union != nd_split) and (cm_union != cropped_split):
-                to_collapse_head_nodes.append(nd)
-
-    for nd in to_collapse_head_nodes:
-        e = nd.edge
-        e.collapse()
+    error.dendropy_construct_migration_warning("treemanip.collapse_conflicting(node)", "node.collapse_conflicting()")
+    subtree_root.collapse_conflicting(split, split_bitmask)
 
 def scale_edges(tree, edge_len_multiplier):
+    error.dendropy_construct_migration_warning("treemanip.scale_edges(tree)", "tree.scale_edges()")
     tree.scale_edges(edge_len_multiplier=edge_len_multiplier)
 

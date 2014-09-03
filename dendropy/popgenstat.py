@@ -17,10 +17,11 @@
 ##############################################################################
 
 """
-Split calculation and management.
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesum` instead.
+DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.popgenstat` instead.
 """
 
-from dendropy.calculate.treesum import *
 from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.treesum", "dendropy.calculate.treesum")
+error.dendropy_module_migration_warning("dendropy.popgenstat", "dendropy.calculate.popgenstat")
+
+# legacy
+from dendropy.calculate.popgenstat import *

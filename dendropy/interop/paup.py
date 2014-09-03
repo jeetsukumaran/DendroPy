@@ -36,7 +36,7 @@ from dendropy.utility import session
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
-from dendropy import treesplit
+from dendropy.calculate import treesplit
 
 DENDROPY_PAUP_INTEROPERABILITY = False
 if "PAUP_PATH" in os.environ:

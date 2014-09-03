@@ -175,10 +175,6 @@ class StateAlphabet(
         # Suppress for initialization
         self.autocompile_lookup_tables = False
 
-        # Set up 'no data'
-        self.no_data_symbol = no_data_symbol
-        self.no_data_state = None # will be created when compiled
-
         # This identifies the gap state when compiling the state alphabet. The
         # principle purpose behind this is to be able to tell the gap state
         # that it is, indeed, a gap state. And the purpose of this, in turn,
@@ -186,15 +182,23 @@ class StateAlphabet(
         # indexes, it will return the fundamental indexes of the missing data
         # state in its place if it is *NOT* to be treated as a fifth
         # fundamental state.
-        self.gap_symbol = gap_symbol
+        self.gap_state = None
+        self._gap_symbol = None
+        self.no_data_state = None
+        self._no_data_symbol = None
 
         # Populate core collection
         if fundamental_states:
             for symbol in fundamental_states:
                 self.new_fundamental_state(symbol)
-            if self.no_data_symbol:
-                self.no_data_state = self.new_ambiguous_state(symbol=self.no_data_symbol,
-                        member_state_symbols=fundamental_states)
+            if gap_symbol:
+                self.gap_state = self.new_fundamental_state(gap_symbol)
+                self._gap_symbol = gap_symbol
+            if no_data_symbol:
+                self.no_data_state = self.new_ambiguous_state(
+                        symbol=no_data_symbol,
+                        member_states=self._fundamental_states)
+                self._no_data_symbol = no_data_symbol
             if ambiguous_states:
                 for ss in ambiguous_states:
                     self.new_ambiguous_state(symbol=ss[0], member_state_symbols=ss[1])
@@ -523,8 +527,11 @@ class StateAlphabet(
         temp_canonical_symbol_state_map = collections.OrderedDict()
         temp_full_symbol_state_map = collections.OrderedDict()
         temp_index_state_map = collections.OrderedDict()
+        # if self._gap_symbol is not None and self.no_data_state is None:
+        #     self.no_data_state = self.new_ambiguous_state(symbol=None,
+        #                 member_states=self._fundamental_states)
         if self.no_data_state is not None:
-            assert self.no_data_symbol == self.no_data_state.symbol
+            assert self.no_data_symbol == self.no_data_state.symbol, "{} != {}".format(self.no_data_symbol, self.no_data_state.symbol)
             temp_full_symbol_state_map[None] = self.no_data_state
         for idx, state in enumerate(self.state_iter()):
             temp_states.append(state)
@@ -545,9 +552,12 @@ class StateAlphabet(
             else:
                 assert state.state_denomination != StateAlphabet.FUNDAMENTAL_STATE
             state._index = idx
-            if self.gap_symbol is not None and state.symbol == self.gap_symbol:
+            if self.gap_state is not None and state is self.gap_state and self.no_data_state is not None:
                 state.is_gap_state = True
                 state.gap_state_as_no_data_state = self.no_data_state
+            else:
+                state.is_gap_state = False
+                state.gap_state_as_no_data_state = None
             temp_index_state_map[idx] = state
         self._state_identities = tuple(temp_states)
         self._canonical_state_symbols = tuple(temp_symbols)
@@ -578,6 +588,44 @@ class StateAlphabet(
         if attr_name is None:
             raise TypeError("Cannot set attribute: non-None symbol needed for state or non-None attribute name needs to be provided")
         setattr(self, attr_name, state)
+
+    ###########################################################################
+    ### Special handling to designate gap
+
+    def _get_gap_symbol(self):
+        return self._gap_symbol
+
+    def _set_gap_symbol(self, gap_symbol):
+        """
+        For state alphabets with no explicitly-defined gap and no data (missing) symbols,
+        this method will allow creation of mapping of gaps to no data states,
+        so that tree/data scoring methods that require gaps to be treated as
+        missing data can be used. Note that the gap state needs to be already
+        defined in the state alphabet and already associated with the
+        designated symbol.
+        """
+        if gap_symbol is not None:
+            self.gap_state = self[gap_symbol]
+            self._gap_symbol = gap_symbol
+        else:
+            self.gap_state = None
+            self._gap_symbol = None
+
+    gap_symbol = property(_get_gap_symbol, _set_gap_symbol)
+
+    def _get_no_data_symbol(self):
+        return self._no_data_symbol
+
+    def _set_no_data_symbol(self, no_data_symbol):
+        if no_data_symbol is not None:
+            self.no_data_state = self[no_data_symbol]
+            self._no_data_symbol = no_data_symbol
+        else:
+            self.no_data_state = None
+            self._no_data_symbol = None
+
+    no_data_symbol = property(_get_no_data_symbol, _set_no_data_symbol)
+
 
     ###########################################################################
     ### Symbol Access
@@ -1138,7 +1186,7 @@ class StateIdentity(
 class DnaStateAlphabet(StateAlphabet):
 
     def __init__(self):
-        fundamental_states = "ACGT-"
+        fundamental_states = "ACGT"
         polymorphic_states = None
         ambiguous_states = (
                 ("N", "ACGT"),
@@ -1178,7 +1226,7 @@ class DnaStateAlphabet(StateAlphabet):
 class RnaStateAlphabet(StateAlphabet):
 
     def __init__(self):
-        fundamental_states = "ACGU-"
+        fundamental_states = "ACGU"
         polymorphic_states = None
         ambiguous_states = (
                 ("N", "ACGU"),
@@ -1218,7 +1266,7 @@ class RnaStateAlphabet(StateAlphabet):
 class NucleotideStateAlphabet(StateAlphabet):
 
     def __init__(self):
-        fundamental_states = "ACGTU-"
+        fundamental_states = "ACGTU"
         polymorphic_states = None
         ambiguous_states = (
                 ("N", "ACGTU"),
@@ -1258,7 +1306,7 @@ class NucleotideStateAlphabet(StateAlphabet):
 class ProteinStateAlphabet(StateAlphabet):
 
     def __init__(self):
-        fundamental_states = "ACDEFGHIKLMNPQRSTVWY*-"
+        fundamental_states = "ACDEFGHIKLMNPQRSTVWY*"
         polymorphic_states = None
         ambiguous_states = (
                 ("B", "DN"),
@@ -1294,7 +1342,6 @@ class BinaryStateAlphabet(StateAlphabet):
     def __init__(self, allow_gaps=False, allow_missing=False):
         fundamental_states = "10"
         if allow_gaps:
-            fundamental_states += "-"
             gap_symbol = "-"
         else:
             gap_symbol = None

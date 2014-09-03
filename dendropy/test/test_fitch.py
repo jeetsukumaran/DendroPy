@@ -33,10 +33,8 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
 import dendropy
-from dendropy.treecalc import fitch_down_pass
+from dendropy.calculate.treescore import fitch_down_pass
 from dendropy.test.support import pathmap
-
-from dendropy import treecalc
 
 class FitchTest(unittest.TestCase):
 

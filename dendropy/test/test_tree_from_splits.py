@@ -23,7 +23,8 @@ NEXUS data read/write parse/format tests.
 import unittest
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
-from dendropy import treesplit
+from dendropy.calculate import treesplit
+from dendropy.calculate import treecompare
 import dendropy
 
 _LOG = get_logger(__name__)
@@ -48,7 +49,7 @@ class TreeFromSplitsTest(unittest.TestCase):
                     taxon_namespace=ref_tree.taxon_namespace,
                     is_rooted=ref_tree.is_rooted)
             treesplit.encode_splits(t_tree)
-            self.assertEqual(ref_tree.symmetric_difference(t_tree), 0)
+            self.assertEqual(treecompare.symmetric_difference(ref_tree, t_tree), 0)
 
 if __name__ == "__main__":
     unittest.main()

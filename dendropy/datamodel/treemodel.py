@@ -28,16 +28,12 @@ except ImportError:
     from io import StringIO # Python 3
 import copy
 import sys
-import math
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
-from dendropy import treesplit
-
-## probably should be moved elsewhere?
-EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
+from dendropy.calculate import treesplit
 
 ##############################################################################
 ### Edge
@@ -1024,6 +1020,38 @@ class Node(
             return
         leaves = [i for i in self.leaf_iter()]
         self.set_child_nodes(leaves)
+
+    def collapse_conflicting(self, split, split_bitmask):
+        """
+        Collapses every edge in the
+        subtree that conflicts with split.  This can include the edge subtending
+        subtree_root.
+        """
+        # we flip splits so that both the split and each edges split  have the
+        # lowest bit of the clade mask set to one
+        lb = treesplit.lowest_bit_only(split_bitmask)
+
+        if lb & split:
+            cropped_split = split & split_bitmask
+        else:
+            cropped_split = (~split) & split_bitmask
+
+        to_collapse_head_nodes = []
+        for nd in self.postorder_iter():
+            if not nd.is_leaf():
+                ncm = nd.edge.split_bitmask
+                if lb & ncm:
+                    nd_split = ncm & split_bitmask
+                else:
+                    nd_split = (~ncm) & split_bitmask
+
+                cm_union = nd_split | cropped_split
+                if (cm_union != nd_split) and (cm_union != cropped_split):
+                    to_collapse_head_nodes.append(nd)
+
+        for nd in to_collapse_head_nodes:
+            e = nd.edge
+            e.collapse()
 
     ###########################################################################
     ### Edge Access and Manipulation
@@ -3141,8 +3169,8 @@ class Tree(
         `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
-        from dendropy import treecalc
-        pdm = treecalc.PatristicDistanceMatrix(self)
+        from dendropy.calculate import treestat
+        pdm = treestat.PatristicDistanceMatrix(self)
         n1, n2 = pdm.max_dist_nodes
         plen = float(pdm.max_dist) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)
@@ -3403,7 +3431,7 @@ class Tree(
                 update_splits=update_splits,
                 delete_outdegree_one=delete_outdegree_one)
 
-    def randomly_reorient_tree(self, rng=None, update_splits=False):
+    def randomly_reorient(self, rng=None, update_splits=False):
         """
         Randomly picks a new rooting position and rotates the branches around all
         internal nodes in the `self`. If `update_splits` is True, the the `split_bitmask`
@@ -3620,255 +3648,43 @@ class Tree(
     ### Metrics -- Unary
 
     def B1(self):
-        """
-        Returns the B1 statistic: the reciprocal of the sum of the maximum
-        number of nodes between each interior node and tip over all internal
-        nodes excluding root.
-        """
-        b1 = 0.0
-        nd_mi = {}
-        for nd in self.postorder_node_iter():
-            if nd._parent_node is None:
-                continue
-            child_nodes = nd._child_nodes
-            if len(child_nodes) == 0:
-                nd_mi[nd] = 0.0
-                continue
-            mi = max(nd_mi[ch] for ch in child_nodes)
-            mi += 1
-            nd_mi[nd] = mi
-            b1 += 1.0/mi
-        return b1
+        """DEPRECATED: Use 'dendropy.calculate.treestat.B1()'."""
+        error.dendropy_construct_migration_warning("tree.B1()", "dendropy.calculate.treestat.B1(tree)")
+        from dendropy.calculate import treestat
+        return treestat.B1(self)
 
     def colless_tree_imbalance(self, normalize="max"):
-        """
-        Returns Colless' tree imbalance or I statistic: the sum of differences
-        of numbers of children in left and right subtrees over all internal
-        nodes. ``normalize`` specifies the normalization:
-
-            * "max" or True [DEFAULT]
-                normalized to maximum value for tree of
-                this size
-            * "yule"
-                normalized to the Yule model
-            * "pda"
-                normalized to the PDA (Proportional to Distinguishable
-                Arrangements) model
-            * None or False
-                no normalization
-
-        """
-        colless = 0.0
-        num_leaves = 0
-        subtree_leaves = {}
-        for nd in self.postorder_node_iter():
-            if nd.is_leaf():
-                subtree_leaves[nd] = 1
-                num_leaves += 1
-            else:
-                total_leaves = 0
-                if len(nd._child_nodes) > 2:
-                    raise TypeError("Colless' tree imbalance statistic requires strictly bifurcating trees")
-                left = subtree_leaves[nd._child_nodes[0]]
-                right = subtree_leaves[nd._child_nodes[1]]
-                colless += abs(right-left)
-                subtree_leaves[nd] = right + left
-        if normalize == "yule":
-            colless = float(colless - (num_leaves * math.log(num_leaves)) - (num_leaves * (EULERS_CONSTANT - 1.0 - math.log(2))))/num_leaves
-        elif normalize == "pda":
-            colless = colless / pow(num_leaves, 3.0/2)
-        elif normalize is True or normalize == "max":
-            ## note that Mooers 1995 (Evolution 49(2):379-384)
-            ## remarks that the correct normalization factor is
-            ## 2/((num_leaves - 1) * (num_leaves -2))
-            colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
-        elif normalize is not None and normalize is not False:
-            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
-        return colless
+        """DEPRECATED: Use 'dendropy.calculate.treestat.colless_tree_imbalance()'."""
+        error.dendropy_construct_migration_warning("tree.colless_tree_imbalance()", "dendropy.calculate.treestat.colless_tree_imbalance(tree)")
+        from dendropy.calculate import treestat
+        return treestat.colless_tree_imbalance(self, normalize)
 
     def pybus_harvey_gamma(self, prec=0.00001):
-        """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
-        is used to test for constancy of birth and death rates over the course of
-        a phylogeny.  Under the pure-birth process, the statistic should follow
-        a standard Normal distibution: a Normal(mean=0, variance=1).
-
-        If the lengths of different paths to the node differ by more than `prec`,
-            then a ValueError exception will be raised indicating deviation from
-            ultrametricty.
-        Raises a Value Error if the tree is not ultrametric, is non-binary, or has
-            only 2 leaves.
-
-        As a side effect a `age` attribute is added to the nodes of the self.
-
-        Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
-        molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
-        (267). 2267-2272
-        """
-        # the equation is given by:
-        #   T = \sum_{j=2}^n (jg_j)
-        #   C = T \sqrt{\frac{1}{12(n-2)}}
-        #   C gamma = \frac{1}{n-2}\sum_{i=2}^{n-1} (\sum_{k=2}^i kg_k) - \frac{T}{2}
-        # where n is the number of taxa, and g_2 ... g_n is the vector of waiting
-        #   times between consecutive (in time, not along a branch) speciation times.
-        node = None
-        speciation_ages = []
-        n = 0
-        if self.seed_node.age is None:
-            self.calc_node_ages(check_prec=prec)
-        for node in self.postorder_node_iter():
-            if len(node.child_nodes()) == 2:
-                speciation_ages.append(node.age)
-            else:
-                n += 1
-        if node is None:
-            raise ValueError("Empty tree encountered")
-        speciation_ages.sort(reverse=True)
-        g = []
-        older = speciation_ages[0]
-        for age in speciation_ages[1:]:
-            g.append(older - age)
-            older = age
-        g.append(older)
-        if not g:
-            raise ValueError("No internal nodes found (other than the root)")
-        assert(len(g) == (n - 1))
-        T = 0.0
-        accum = 0.0
-        for i in range(2, n):
-            list_index = i - 2
-            T += i * float(g[list_index])
-            accum += T
-        list_index = n - 2
-        T += (n) * g[list_index]
-        nmt = n - 2.0
-        numerator = accum/nmt - T/2.0
-        C = T*pow(1/(12*nmt), 0.5)
-        return numerator/C
+        """DEPRECATED: Use 'dendropy.calculate.treestat.pybus_harvey_gamma()'."""
+        error.dendropy_construct_migration_warning("tree.pybus_harvey_gamma()", "dendropy.calculate.treestat.pybus_harvey_gamma(tree)")
+        from dendropy.calculate import treestat
+        return treestat.pybus_harvey_gamma(self, prec)
 
     def N_bar(self):
-        """
-        Returns the $\bar{N}$ statistic: the average number of nodes above a
-        terminal node.
-        """
-        leaf_count = 0
-        nbar = 0
-        for leaf_node in self.leaf_node_iter():
-            leaf_count += 1
-            for parent in leaf_node.ancestor_iter(inclusive=False):
-                nbar += 1
-        return float(nbar) / leaf_count
+        """DEPRECATED: Use 'dendropy.calculate.treestat.N_bar()'."""
+        error.dendropy_construct_migration_warning("tree.N_bar()", "dendropy.calculate.treestat.N_bar(tree)")
+        from dendropy.calculate import treestat
+        return treestat.N_bar(self)
 
     def sackin_index(self, normalize=True):
-        """
-        Returns the Sackin's index: the sum of the number of ancestors for each
-        tip of the tree. The larger the Sackin's index, the less balanced the
-        tree. ``normalize`` specifies the normalization:
-
-            * True [DEFAULT]
-                normalized to number of leaves; this results in a value
-                equivalent to that given by Tree.N_bar()
-            * "yule"
-                normalized to the Yule model
-            * "pda"
-                normalized to the PDA (Proportional to Distinguishable
-                Arrangements) model
-            * None or False
-                no normalization
-
-        """
-        leaf_count = 0
-        num_anc = 0
-        for leaf_node in self.leaf_node_iter():
-            leaf_count += 1
-            for parent in leaf_node.ancestor_iter(inclusive=False):
-                num_anc += 1
-        if normalize == "yule":
-            x = sum(1.0/j for j in range(2, leaf_count+1))
-            s = float(num_anc - (2 * leaf_count * x))/leaf_count
-        elif normalize == "pda":
-            s = float(num_anc)/(pow(leaf_count, 3.0/2))
-        elif normalize is True:
-            s = float(num_anc)/leaf_count
-        elif normalize is None or normalize is False:
-            s = float(num_anc)
-        elif normalize is not None and normalize is not False:
-            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
-        return s
+        """DEPRECATED: Use 'dendropy.calculate.treestat.sackin_index()'."""
+        error.dendropy_construct_migration_warning("tree.sackin_index()", "dendropy.calculate.treestat.sackin_index(tree)")
+        from dendropy.calculate import treestat
+        return treestat.sackin_index(self, normalize)
 
     def treeness(self):
-        """
-        Returns the proportion of total tree length that is taken up by
-        internal branches.
-        """
-        internal = 0.0
-        external = 0.0
-        for nd in self.postorder_node_iter():
-            if not nd._parent_node:
-                continue
-            if nd.is_leaf():
-                external += nd.edge.length
-            else:
-                internal += nd.edge.length
-        return internal/(external + internal)
+        """DEPRECATED: Use 'dendropy.calculate.treestat.treeness()'."""
+        error.dendropy_construct_migration_warning("tree.treeness()", "dendropy.calculate.treestat.treeness(tree)")
+        from dendropy.calculate import treestat
+        return treestat.treeness(self)
 
     ###########################################################################
-    ### Metrics -- Comparative
-
-    def find_missing_splits(self, other_tree):
-        """
-        Returns a list of splits that are in self,  but
-        not in `other_tree`.
-        """
-        missing = []
-        if self.taxon_namespace is not other_tree.taxon_namespace:
-            raise TypeError("Trees have different TaxonNamespace objects: %s vs. %s" \
-                    % (hex(id(self.taxon_namespace)), hex(id(other_tree.taxon_namespace))))
-        if not hasattr(self, "split_edges"):
-            self.encode_splits()
-        if not hasattr(other_tree, "split_edges"):
-            other_tree.encode_splits()
-        for split in self.split_edges:
-            if split in other_tree.split_edges:
-                pass
-            else:
-                missing.append(split)
-        return missing
-
-    def symmetric_difference(self, other_tree):
-        """
-        Returns the symmetric_distance between this tree and the tree given by
-        `other`, i.e. the sum of splits found in one but not in both trees.
-        """
-        t = self.false_positives_and_negatives(other_tree)
-        return t[0] + t[1]
-
-    def false_positives_and_negatives(self, other_tree):
-        """
-        Returns a tuple pair: all splits found in `other` but in self, and all
-        splits in self not found in other.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_namespace is not self.taxon_namespace:
-            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
-        return treecalc.false_positives_and_negatives(self, other_tree)
-
-    def robinson_foulds_distance(self, other_tree):
-        """
-        Returns Robinson-Foulds distance between this tree and `other_tree`.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_namespace is not self.taxon_namespace:
-            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
-        return treecalc.robinson_foulds_distance(self, other_tree)
-
-    def euclidean_distance(self, other_tree):
-        """
-        Returns Euclidean_distance distance between this tree and `other_tree`.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_namespace is not self.taxon_namespace:
-            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
-        return treecalc.euclidean_distance(self, other_tree)
+    ### Comparisons with Another Tree
 
     def _check_children_for_split_compatibility(self, nd_list, split):
         for nd in nd_list:
@@ -3890,7 +3706,47 @@ class Tree(
                 return False
 
     def is_compatible_with_tree(self, other):
-        pass
+        raise NotImplementedError
+
+    def find_missing_splits(self, other_tree):
+        """DEPRECATED: Use 'dendropy.treecompare.find_missing_splits()'."""
+        error.dendropy_construct_migration_warning("tree1.find_missing_splits(tree2)", "dendropy.calculate.treecompare.find_missing_splits(tree1, tree2)")
+        from dendropy.calculate import treecompare
+        return treecompare.find_missing_splits(self, other_tree)
+
+    def symmetric_difference(self, other_tree):
+        """
+        Returns the symmetric_distance between this tree and the tree given by
+        `other`, i.e. the sum of splits found in one but not in both trees.
+        """
+        error.dendropy_construct_migration_warning("tree1.symmetric_difference(tree2)", "dendropy.calculate.treecompare.symmetric_difference(tree1, tree2)")
+        from dendropy.calculate import treecompare
+        return treecompare.symmetric_difference(self, other_tree)
+
+    def false_positives_and_negatives(self, other_tree):
+        """
+        Returns a tuple pair: all splits found in `other` but in self, and all
+        splits in self not found in other.
+        """
+        error.dendropy_construct_migration_warning("tree1.false_positives_and_negatives(tree2)", "dendropy.calculate.treecompare.false_positives_and_negatives(tree1, tree2)")
+        from dendropy.calculate import treecompare
+        return treecompare.false_positives_and_negatives(self, other_tree)
+
+    def robinson_foulds_distance(self, other_tree):
+        """
+        Returns Robinson-Foulds distance between this tree and `other_tree`.
+        """
+        error.dendropy_construct_migration_warning("tree1.robinson_foulds_distance(tree2)", "dendropy.calculate.treecompare.weighted_robinson_foulds_distance(tree1, tree2)")
+        from dendropy.calculate import treecompare
+        return treecompare.weighted_robinson_foulds_distance(self, other_tree)
+
+    def euclidean_distance(self, other_tree):
+        """
+        Returns Euclidean_distance distance between this tree and `other_tree`.
+        """
+        error.dendropy_construct_migration_warning("tree1.euclidean_distance(tree2)", "dendropy.calculate.treecompare.euclidean_distance(tree1, tree2)")
+        from dendropy.calculate import treecompare
+        return treecompare.euclidean_distance(self, other_tree)
 
     ###########################################################################
     ### Metadata
@@ -5077,14 +4933,12 @@ class TreeList(
         Returns a consensus tree of all trees in self, with minumum frequency
         of split to be added to the consensus tree given by `min_freq`.
         """
-        from dendropy import treesum
-        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
-        tsum = treesum.TreeSummarizer(**kwargs)
-        tsum.count_splits_on_trees(self,
-                split_distribution=self.split_distribution,
-                trees_splits_encoded=trees_splits_encoded)
-        tree = tsum.tree_from_splits(self.split_distribution, min_freq=min_freq)
-        return tree
+        from dendropy.calculate import treesum
+        return treesum.consensus_tree(
+                self,
+                min_freq=min_freq,
+                trees_splits_encoded=trees_splits_encoded,
+                **kwargs)
 
     def frequency_of_split(self, **kwargs):
         """
@@ -5358,10 +5212,9 @@ def _format_edge(e, **kwargs):
     return str(e)
 
 def _format_split(split, width=None, **kwargs):
-    from dendropy.treesplit import split_as_string
     if width is None:
         width = len(kwargs.get("taxon_namespace"))
-    s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
+    s = treesplit.split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
     return s
 
 def _convert_node_to_root_polytomy(nd):

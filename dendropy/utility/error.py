@@ -49,7 +49,12 @@ class CriticalDeprecationWarning(DeprecationWarning):
 
 def critical_deprecation_alert(message, stacklevel=4):
     stack = inspect.stack()
-    frame, filename, line_num, func, source_code, source_index = stack[stacklevel]
+    frame = None
+    while frame is None and stacklevel > 0:
+        try:
+            frame, filename, line_num, func, source_code, source_index = stack[stacklevel]
+        except IndexError:
+            stacklevel -= 1
     warnings.simplefilter('once')
     warnings.warn_explicit(
             message=message,
@@ -57,6 +62,34 @@ def critical_deprecation_alert(message, stacklevel=4):
             filename=inspect.getfile(frame),
             lineno=inspect.getlineno(frame),
             )
+
+def dendropy_construct_migration_warning(
+        old_construct,
+        new_construct,
+        stacklevel=5):
+    message = (
+        """Instead of:\n"""
+        """    {}\n"""
+        """Use:\n"""
+        """    {}\n""").format(
+                old_construct, new_construct)
+    critical_deprecation_alert(message, stacklevel)
+
+def dendropy_module_migration_warning(
+        old_module_path,
+        new_module_path,
+        stacklevel=5):
+    x1, x2 = old_module_path.rsplit(".", 1)
+    y1, y2 = new_module_path.rsplit(".", 1)
+    message = (
+        """\nThis module has been moved to:\n"""
+        """    {}\n"""
+        """Instead of e.g.:\n"""
+        """    from {} import {}\n"""
+        """Use:\n"""
+        """    from {} import {}\n""").format(
+                new_module_path, x1, x2, y1, y2)
+    critical_deprecation_alert(message, stacklevel)
 
 def dendropy_migration_warning(
         old_api_construct,
