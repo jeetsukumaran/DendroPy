@@ -79,12 +79,12 @@ class FitchTest(unittest.TestCase):
         #     print("{}: {}".format(x, x.is_gap_state))
         # for x in sa:
         #     print("{}\t{}\t{}\t\t\t\t{}".format(x, x._index, x.fundamental_indexes, x.fundamental_indexes_with_gaps_as_missing))
-        taxa_to_state_set_map = char_mat.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
+        taxon_state_sets_map = char_mat.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
         tree_list = dataset.tree_lists[0]
         self.assertEqual(len(expected_scores), len(tree_list))
         for n, tree in enumerate(tree_list):
             node_list = tree.postorder_node_iter()
-            pscore = fitch_down_pass(node_list, taxa_to_state_set_map=taxa_to_state_set_map)
+            pscore = fitch_down_pass(node_list, taxon_state_sets_map=taxon_state_sets_map)
             # print("{} vs. {}".format(expected_scores[n], pscore))
             self.assertEqual(expected_scores[n], pscore)
 
