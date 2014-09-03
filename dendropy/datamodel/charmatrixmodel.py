@@ -1460,7 +1460,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 state_alphabet=self.default_state_alphabet,
                 purge_other_state_alphabets=purge_other_state_alphabets)
 
-    def taxon_to_state_set_map(self,
+    def taxon_state_sets_map(self,
             char_indices=None,
             gaps_as_missing=True,
             gap_state=None,
