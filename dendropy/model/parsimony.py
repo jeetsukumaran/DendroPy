@@ -239,7 +239,7 @@ def fitch_up_pass(
         score = fitch_down_pass(tree.postorder_node_iter(),
                 taxon_state_sets_map=taxon_state_sets_map)
         print(score)
-        fitch_down_pass(tree.preorder_node_iter())
+        fitch_up_pass(tree.preorder_node_iter())
         for nd in tree:
             print(nd.state_sets)
 
