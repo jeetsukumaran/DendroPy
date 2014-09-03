@@ -613,8 +613,8 @@ class NexusReader(ioservice.DataReader):
         self._nexus_tokenizer.skip_to_semicolon() # move past END command
 
     def _build_state_alphabet(self, char_block, symbols):
-        if self._gap_char and self._gap_char not in symbols:
-            symbols = symbols + self._gap_char
+        if self._gap_char and self._gap_char in symbols:
+            symbols = [s for s in symbols if s != self._gap_char]
         sa = self._new_state_alphabet(
                 fundamental_states=symbols,
                 no_data_symbol=self._missing_char,
