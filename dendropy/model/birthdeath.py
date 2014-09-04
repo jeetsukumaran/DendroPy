@@ -20,9 +20,10 @@
 Models, modeling and model-fitting of birth-death processes.
 """
 
+import math
 from dendropy.mathlib import probability
 from dendropy.utility import GLOBAL_RNG
-from dendropy.error import TreeSimTotalExtinctionException
+from dendropy.utility.error import TreeSimTotalExtinctionException
 
 import dendropy
 
@@ -457,3 +458,79 @@ def uniform_pure_birth_tree(taxon_namespace, birth_rate=1.0, rng=None):
     tree.is_rooted = True
     return tree
 
+def fit_pure_birth_model(internal_node_ages):
+    """
+    Calculates the maximum-likelihood estimate of the birth rate of a set of
+    *internal* node ages under a Yule (pure-birth) model.
+
+    Parameters
+    ----------
+    internal_node_ages : iterable (of numerical values)
+        Iterable of node ages of the internal nodes of a tree, i.e., the
+        list of sum of the edge lengths between each internal node and
+        the tips of the tree.
+
+    Returns
+    -------
+    m : dictionary
+        A dictionary with keys being parameter names and values being
+        estimates:
+            "birth_rate"
+                The birth rate.
+            "log_likelihood"
+                The log-likelihood of the model and given birth rate.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.model import birthdeath
+        trees = dendropy.TreeList.get_from_path(
+                "pythonidae.nex", "nexus")
+        for idx, tree in enumerate(trees):
+            m = birthdeath.fit_pure_birth_model(tree.internal_node_ages())
+            print("Tree {}: birth rate = {} (logL = {})".format(
+                idx+1, m["birth_rate"], m["log_likelihood"]))
+
+    Notes
+    -----
+    Adapted from the laser package for R:
+
+        Dan Rabosky and Klaus Schliep (2013). laser: Likelihood Analysis of
+        Speciation/Extinction Rates from Phylogenies. R package version
+        2.4-1. http://CRAN.R-project.org/package=laser
+
+    See also:
+
+        Nee, S.  2001.  Inferring speciation rates from phylogenies.
+        _Evolution_ 55:661-668.
+
+        Yule, G. U. 1924. A mathematical theory of evolution based on the
+        conclusions of Dr.  J. C. Willis. _Phil. Trans. R. Soc. Lond. B_
+        213:21-87.
+    """
+    x = sorted(internal_node_ages, reverse=True)
+    st1 = x[0]
+    st2 = 0
+    nvec = range(2, len(x)+2)
+    nv = [i for i in x if (i < st1) and (i >= st2)]
+    lo = max(nvec[idx] for idx, i in enumerate(x) if i >= st1)
+    up = max(nvec[idx] for idx, i in enumerate(x) if i >= st2)
+    if st1 <= x[0]:
+        nv.insert(0, st1)
+        nv = [i - st2 for i in nv]
+    else:
+        nv = [i - st2 for i in nv]
+    t1 = (up-lo)
+    t2 = (lo*nv[0])
+    t3 = sum( nv[1:(up-lo+1)] )
+    smax = t1/(t2 + t3)
+    s1 = sum(map(math.log, range(lo,up)))
+    s2 = (up-lo) * math.log(smax)
+    s3 = lo - up
+    lh = s1 + s2 + s3
+    result = {
+        "birth_rate" : smax,
+        "log_likelihood" : lh,
+    }
+    return result

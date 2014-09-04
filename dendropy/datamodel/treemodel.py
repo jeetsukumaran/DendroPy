@@ -3583,7 +3583,7 @@ class Tree(
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
-        self.calc_node_ages(check_prec=check_prec, internal_only=True)
+        ages = self.calc_node_ages(check_prec=check_prec, internal_only=True)
         ages.sort()
         return ages
 
@@ -3594,7 +3594,7 @@ class Tree(
         *ALL* nodes. To get only internal node ages, use
         `Tree.internal_node_ages`.
         """
-        self.calc_node_ages(check_prec=check_prec, internal_only=internal_only)
+        ages = self.calc_node_ages(check_prec=check_prec, internal_only=internal_only)
         ages.sort()
         return ages
 
