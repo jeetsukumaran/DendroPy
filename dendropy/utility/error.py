@@ -243,6 +243,11 @@ class TaxonNamespaceReconstructionError(ValueError):
     def __init__(self, message=None):
         ValueError.__init__(self, message)
 
+class TreeSimTotalExtinctionException(Exception):
+    """Exception to be raised when branching process results in all lineages going extinct."""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
 def process_attached_taxon_namespace_directives(kwargs_dict):
     """
     The following idioms are supported:
@@ -303,3 +308,4 @@ def process_attached_taxon_namespace_directives(kwargs_dict):
     kwargs_dict.pop("attach_taxon_namespace", None)
     kwargs_dict.pop("attached_taxon_namespace", None)
     return (attach_taxon_namespace, taxon_namespace)
+

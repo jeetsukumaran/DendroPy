@@ -22,12 +22,9 @@ Models, modeling and model-fitting of birth-death processes.
 
 from dendropy.mathlib import probability
 from dendropy.utility import GLOBAL_RNG
-import dendropy
+from dendropy.error import TreeSimTotalExtinctionException
 
-class TreeSimTotalExtinctionException(Exception):
-    """Exception to be raised when branching process results in all lineages going extinct."""
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
+import dendropy
 
 def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
     """
