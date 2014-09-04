@@ -214,7 +214,7 @@ class GenericDiscreteCharacterTestChecker(CharacterTestChecker):
 class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):
 
     @classmethod
-    def build(cls, labels=None):
+    def build(cls, labels=None, state_alphabet_fundamental_symbols="01234-"):
         seq_symbols = (
                 "43?2423132-330-0??21334--33?330?32--??-40?2442343??20--???0314020222401?-04?14-4434--20--3343142240124243-3300?-43-1?203-130414232?3143-1143",
                 "03334?3?102220-44?300??0304-3?-04?-0?1-43?22424433?002-0??33-4024--010010402-2?4441-?22203-?4300?1013--33--303342?3040213-?101043313-42011-3",
@@ -235,7 +235,7 @@ class Standard01234TestChecker(GenericDiscreteCharacterTestChecker):
         GenericDiscreteCharacterTestChecker.create_class_fixtures(
                 cls,
                 matrix_type=charmatrixmodel.StandardCharacterMatrix,
-                state_alphabet_fundamental_symbols="01234-",
+                state_alphabet_fundamental_symbols=state_alphabet_fundamental_symbols,
                 seq_symbols=seq_symbols,
                 labels=labels)
 
