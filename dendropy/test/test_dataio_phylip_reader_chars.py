@@ -251,5 +251,60 @@ AAACCATTGC CGGTACGCTT AA
             self.assertEqual(taxon.label, expected_taxon)
             self.assertEqual(char_matrix[taxon].symbols_as_string(), self.expected_seqs[expected_taxon])
 
+class PhylipContinuousVariantsTestCases(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.expected_seqs = collections.OrderedDict()
+        cls.expected_seqs["Turkey"]     = [-231.6391 ,  972.4189  ,  626.6717  ,  -328.6811 ,  -213.5738 ,  464.3897  ,  -91.3483  ,  349.8176  ,  333.4800  ,  521.4970  ]
+        cls.expected_seqs["Salmo gair"] = [ 104.4199 ,  669.7402  ,  -68.6082  ,  975.4302  ,  -874.4510 ,  -191.3305 ,  -179.8437 ,  655.5611  ,  -657.4532 ,  -563.7863 ]
+        cls.expected_seqs["H. Sapiens"] = [-613.2947 ,  -600.7053 ,  -700.5140 ,  438.6092  ,  615.5268  ,  640.7933  ,  503.8948  ,  -159.7922 ,  866.8036  ,  274.0275  ]
+        cls.expected_seqs["Chimp"]      = [-654.7695 ,  103.3806  ,  -971.8866 ,  853.9164  ,  653.5797  ,  823.6672  ,  -476.6859 ,  325.9331  ,  456.0902  ,  -399.7095 ]
+        cls.expected_seqs["Gorilla"]    = [-762.4904 ,  808.3665  ,  522.5775  ,  250.6523  ,  -287.9786 ,  -995.4612 ,  571.9263  ,  -793.3975 ,  -42.7027  ,  186.8869  ]
+
+    def test_strict_sequential(self):
+        s = """\
+  5    10
+Turkey    -231.6391 972.4189  626.6717  -328.6811 -213.5738 464.3897  -91.3483  349.8176  333.4800  521.4970
+Salmo gair 104.4199 669.7402  -68.6082  975.4302  -874.4510 -191.3305 -179.8437 655.5611  -657.4532 -563.7863
+H. Sapiens-613.2947 -600.7053 -700.5140 438.6092  615.5268  640.7933  503.8948  -159.7922 866.8036  274.0275
+Chimp     -654.7695 103.3806  -971.8866 853.9164  653.5797  823.6672  -476.6859 325.9331  456.0902  -399.7095
+Gorilla   -762.4904 808.3665  522.5775  250.6523  -287.9786 -995.4612 571.9263  -793.3975 -42.7027  186.8869
+        """
+        char_matrix = dendropy.ContinuousCharacterMatrix.get_from_string(
+                s,
+                "phylip",
+                strict=True)
+        self.assertEqual(len(char_matrix), len(self.expected_seqs))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
+        for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
+            self.assertEqual(taxon.label, expected_taxon)
+            self.assertEqual(char_matrix[taxon].values(), self.expected_seqs[expected_taxon])
+
+    def test_strict_interleaved(self):
+        s = """\
+  5    10
+Turkey    -231.6391 972.4189  626.6717  -328.6811
+Salmo gair 104.4199 669.7402  -68.6082  975.4302
+H. Sapiens-613.2947 -600.7053 -700.5140 438.6092
+Chimp     -654.7695 103.3806  -971.8866 853.9164
+Gorilla   -762.4904 808.3665  522.5775  250.6523
+ -213.5738 464.3897  -91.3483  349.8176  333.4800  521.4970
+ -874.4510 -191.3305 -179.8437 655.5611  -657.4532 -563.7863
+ 615.5268  640.7933  503.8948  -159.7922 866.8036  274.0275
+ 653.5797  823.6672  -476.6859 325.9331  456.0902  -399.7095
+ -287.9786 -995.4612 571.9263  -793.3975 -42.7027  186.8869
+        """
+        char_matrix = dendropy.ContinuousCharacterMatrix.get_from_string(
+                s,
+                "phylip",
+                interleaved=True,
+                strict=True)
+        self.assertEqual(len(char_matrix), len(self.expected_seqs))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
+        for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
+            self.assertEqual(taxon.label, expected_taxon)
+            self.assertEqual(char_matrix[taxon].values(), self.expected_seqs[expected_taxon])
+
 if __name__ == "__main__":
     unittest.main()

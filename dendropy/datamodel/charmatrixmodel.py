@@ -148,7 +148,7 @@ class CharacterDataVector(
         return list(self._character_values)
 
     def values(self):
-        return self._character_values()
+        return self._character_values
 
     def symbols_as_list(self):
         """
