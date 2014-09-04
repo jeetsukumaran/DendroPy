@@ -3534,7 +3534,7 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def calc_node_ages(self, check_prec=0.0000001):
+    def calc_node_ages(self, check_prec=0.0000001, internal_only=False):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips. If the lengths of
@@ -3548,6 +3548,8 @@ class Tree(
             ch = node.child_nodes()
             if len(ch) == 0:
                node.age = 0.0
+               if not internal_only:
+                   ages.append(node.age)
             else:
                 first_child = ch[0]
                 node.age = first_child.age + first_child.edge.length
@@ -3557,7 +3559,7 @@ class Tree(
                         if abs(node.age - ocnd) > check_prec:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
                             raise ValueError("Tree is not ultrametric")
-            ages.append(node.age)
+                ages.append(node.age)
         return ages
 
     def calc_node_root_distances(self, return_leaf_distances_only=True):
@@ -3577,12 +3579,22 @@ class Tree(
                 dists.append(node.root_distance)
         return dists
 
-    def node_ages(self, check_prec=0.0000001):
+    def internal_node_ages(self, check_prec=0.0000001):
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
-        self.calc_node_ages(check_prec=check_prec)
-        ages = [n.age for n in self.internal_nodes()]
+        self.calc_node_ages(check_prec=check_prec, internal_only=True)
+        ages.sort()
+        return ages
+
+    def node_ages(self, check_prec=0.0000001, internal_only=False):
+        """
+        Returns list of ages of all nodes on tree.
+        NOTE: Changed from DendroPy3: this function now returns the ages of
+        *ALL* nodes. To get only internal node ages, use
+        `Tree.internal_node_ages`.
+        """
+        self.calc_node_ages(check_prec=check_prec, internal_only=internal_only)
         ages.sort()
         return ages
 
