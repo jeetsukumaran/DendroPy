@@ -458,17 +458,49 @@ def uniform_pure_birth_tree(taxon_namespace, birth_rate=1.0, rng=None):
     tree.is_rooted = True
     return tree
 
-def fit_pure_birth_model(internal_node_ages):
+def fit_pure_birth_model(**kwargs):
     """
     Calculates the maximum-likelihood estimate of the birth rate of a set of
     *internal* node ages under a Yule (pure-birth) model.
 
+    Requires either a :class:`Tree` object or an interable of *internal* node
+    ages to be passed in via keyword arguments `tree` or `internal_node_ages`,
+    respectively. The former is more convenient when doing one-off
+    calculations, while the latter is more efficient if the list of internal
+    node ages needs to be used in other places and you already have it
+    calculated and want to avoid re-calculating it here.
+
     Parameters
     ----------
-    internal_node_ages : iterable (of numerical values)
-        Iterable of node ages of the internal nodes of a tree, i.e., the
-        list of sum of the edge lengths between each internal node and
-        the tips of the tree.
+    \*\*kwargs : keyword arguments, mandatory
+
+        Exactly *one* of the following *must* be specified:
+
+            tree : a :class:`Tree` object.
+                A :class:`Tree` object. The tree needs to be ultrametric for the
+                internal node ages (time from each internal node to the tips)
+                to make sense. The precision by which the ultrametricity is
+                checked can be specified using the `check_prec` keyword
+                argument (see below). If `tree` is given, then
+                `internal_node_ages` cannot be given, and vice versa. If `tree`
+                is not given, then `internal_node_ages` must be given.
+            internal_node_ages : iterable (of numerical values)
+                Iterable of node ages of the internal nodes of a tree, i.e., the
+                list of sum of the edge lengths between each internal node and
+                the tips of the tree. If `internal_node_ages` is given, then
+                `tree` cannot be given, and vice versa. If `internal_node_ages`
+                is not given, then `tree` must be given.
+
+        While the following is optional, and is only used if internal node ages
+        need to be calculated (i.e., 'tree' is passed in).
+
+            check_prec : float
+                When calculating the node ages, an error will be raised if the tree in
+                o ultrametric. This error may be due to floating-point or numerical
+                imprecision. You can set the precision of the ultrametricity validation
+                by setting the `check_prec` parameter. E.g., use `check_prec=0.01` for
+                a more relaxed precision, down to 2 decimal places. Use
+                `check_prec=False` to disable checking of ultrametricity precision.
 
     Returns
     -------
@@ -483,12 +515,25 @@ def fit_pure_birth_model(internal_node_ages):
     Examples
     --------
 
+    Given trees such as::
+
         import dendropy
         from dendropy.model import birthdeath
         trees = dendropy.TreeList.get_from_path(
                 "pythonidae.nex", "nexus")
+
+    Birth rates can be estimated by passing in trees directly::
+
         for idx, tree in enumerate(trees):
-            m = birthdeath.fit_pure_birth_model(tree.internal_node_ages())
+            m = birthdeath.fit_pure_birth_model(tree=tree)
+            print("Tree {}: birth rate = {} (logL = {})".format(
+                idx+1, m["birth_rate"], m["log_likelihood"]))
+
+    Or by pre-calculating and passing in a list of node ages::
+
+        for idx, tree in enumerate(trees):
+            m = birthdeath.fit_pure_birth_model(
+                    internal_node_ages=tree.internal_node_ages())
             print("Tree {}: birth rate = {} (logL = {})".format(
                 idx+1, m["birth_rate"], m["log_likelihood"]))
 
@@ -509,6 +554,14 @@ def fit_pure_birth_model(internal_node_ages):
         conclusions of Dr.  J. C. Willis. _Phil. Trans. R. Soc. Lond. B_
         213:21-87.
     """
+    tree = kwargs.get("tree", None)
+    if tree is not None:
+        internal_node_ages = tree.internal_node_ages(check_prec=kwargs.get("check_prec", 0.0000001))
+    else:
+        try:
+            internal_node_ages = kwargs["internal_node_ages"]
+        except KeyError:
+            raise TypeError("Need to specify 'tree' or 'internal_node_ages'")
     x = sorted(internal_node_ages, reverse=True)
     st1 = x[0]
     st2 = 0
@@ -544,13 +597,6 @@ def fit_pure_birth_model_to_tree(tree, check_prec=0.0000001):
     ----------
     tree : :class:`Tree` object
         A tree to be fitted.
-    check_prec : float
-        When calculating the node ages, an error will be raised if the tree in
-        o ultrametric. This error may be due to floating-point or numerical
-        imprecision. You can set the precision of the ultrametricity validation
-        by setting the `check_prec` parameter. E.g., use `check_prec=0.01` for
-        a more relaxed precision, down to 2 decimal places. Use
-        `check_prec=False` to disable checking of ultrametricity precision.
 
     Returns
     -------
@@ -575,5 +621,5 @@ def fit_pure_birth_model_to_tree(tree, check_prec=0.0000001):
                 idx+1, m["birth_rate"], m["log_likelihood"]))
 
     """
-    return fit_pure_birth_model(tree.internal_node_ages(check_prec=check_prec))
+    return fit_pure_birth_model(tree=tree, check_prec=check_prec)
 

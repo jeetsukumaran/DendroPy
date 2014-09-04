@@ -47,8 +47,8 @@ class PureBirthModelEstimationTestCase(unittest.TestCase):
                 pathmap.tree_source_path("pythonidae.reference-trees.newick"), "newick")
         self.assertEqual(len(trees), len(expected_results))
         for tree, expected_result in zip(trees, expected_results):
-            obs_result1 = birthdeath.fit_pure_birth_model_to_tree(tree, check_prec=1e-5)
-            obs_result2 = birthdeath.fit_pure_birth_model(tree.internal_node_ages(check_prec=1e-5))
+            obs_result1 = birthdeath.fit_pure_birth_model(tree=tree, check_prec=1e-5)
+            obs_result2 = birthdeath.fit_pure_birth_model(internal_node_ages=tree.internal_node_ages(check_prec=1e-5))
             for obs_result in (obs_result1, obs_result2):
                 self.assertAlmostEqual(obs_result["birth_rate"], expected_result[0], 5)
                 self.assertAlmostEqual(obs_result["log_likelihood"], expected_result[1], 5)
