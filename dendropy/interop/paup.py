@@ -733,6 +733,7 @@ def estimate_model(char_matrix,
     for value_name in results:
         if value_name == 'likelihood':
             results[value_name] = -1 * float(results[value_name])
+            results["log_likelihood"] = results[value_name]
         elif results[value_name] is not None:
             try:
                 results[value_name] = float(results[value_name])
