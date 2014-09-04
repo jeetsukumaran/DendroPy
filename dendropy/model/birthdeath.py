@@ -578,10 +578,15 @@ def fit_pure_birth_model(**kwargs):
     t2 = (lo*nv[0])
     t3 = sum( nv[1:(up-lo+1)] )
     smax = t1/(t2 + t3)
-    s1 = sum(map(math.log, range(lo,up)))
-    s2 = (up-lo) * math.log(smax)
-    s3 = lo - up
-    lh = s1 + s2 + s3
+
+    try:
+        s1 = sum(map(math.log, range(lo,up)))
+        s2 = (up-lo) * math.log(smax)
+        s3 = lo - up
+        lh = s1 + s2 + s3
+    except ValueError:
+        lh = float("-inf")
+
     result = {
         "birth_rate" : smax,
         "log_likelihood" : lh,
