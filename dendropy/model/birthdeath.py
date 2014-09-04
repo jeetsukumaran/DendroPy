@@ -534,3 +534,46 @@ def fit_pure_birth_model(internal_node_ages):
         "log_likelihood" : lh,
     }
     return result
+
+def fit_pure_birth_model_to_tree(tree, check_prec=0.0000001):
+    """
+    Calculates the maximum-likelihood estimate of the birth rate a tree under a
+    Yule (pure-birth) model.
+
+    Parameters
+    ----------
+    tree : :class:`Tree` object
+        A tree to be fitted.
+    check_prec : float
+        When calculating the node ages, an error will be raised if the tree in
+        o ultrametric. This error may be due to floating-point or numerical
+        imprecision. You can set the precision of the ultrametricity validation
+        by setting the `check_prec` parameter. E.g., use `check_prec=0.01` for
+        a more relaxed precision, down to 2 decimal places. Use
+        `check_prec=False` to disable checking of ultrametricity precision.
+
+    Returns
+    -------
+    m : dictionary
+        A dictionary with keys being parameter names and values being
+        estimates:
+            "birth_rate"
+                The birth rate.
+            "log_likelihood"
+                The log-likelihood of the model and given birth rate.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.model import birthdeath
+        trees = dendropy.TreeList.get_from_path(
+                "pythonidae.nex", "nexus")
+        for idx, tree in enumerate(trees):
+            m = birthdeath.fit_pure_birth_model_to_tree(tree)
+            print("Tree {}: birth rate = {} (logL = {})".format(
+                idx+1, m["birth_rate"], m["log_likelihood"]))
+
+    """
+    return fit_pure_birth_model(tree.internal_node_ages(check_prec=check_prec))
+
