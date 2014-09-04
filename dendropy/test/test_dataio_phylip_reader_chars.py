@@ -146,16 +146,17 @@ class PhylipCharactersContinuousTestCase(
 
     def test_basic_nexus(self):
         src_filenames = [
-                "standard-test-chars-continuous.relaxed.phylip",
+                ("standard-test-chars-continuous.relaxed.phylip", {}),
+                ("standard-test-chars-continuous.interleaved.phylip", {"interleaved": True}),
                 ]
-        for src_idx, src_filename in enumerate(src_filenames):
+        for src_idx, (src_filename, kwargs) in enumerate(src_filenames):
             # print(src_idx, src_filename)
             src_path = pathmap.char_source_path(src_filename)
             self.verify_get_from(
                     matrix_type=dendropy.ContinuousCharacterMatrix,
                     src_filepath=src_path,
                     schema="phylip",
-                    factory_kwargs={},
+                    factory_kwargs=kwargs,
                     check_taxon_annotations=False,
                     check_matrix_annotations=False,
                     check_sequence_annotations=False,
