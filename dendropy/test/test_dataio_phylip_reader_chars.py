@@ -22,6 +22,7 @@ Tests for general PHYLIP character matrix reading.
 
 import unittest
 import dendropy
+import collections
 from dendropy.utility import error
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
@@ -134,6 +135,43 @@ class PhylipStandardCharacters01234TestCase(
                     check_sequence_annotations=False,
                     check_column_annotations=False,
                     check_cell_annotations=False)
+
+class PhylipVariantsTestCases(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.expected_seqs = collections.OrderedDict()
+        cls.expected_seqs["Turkey"]     = "AAGCTNGGGCATTTCAGGGTGAGCCCGGGCAATACAGGGTAT"
+        cls.expected_seqs["Salmo gair"] = "AAGCCTTGGCAGTGCAGGGTGAGCCGTGGCCGGGCACGGTAT"
+        cls.expected_seqs["H. Sapiens"] = "ACCGGTTGGCCGTTCAGGGTACAGGTTGGCCGTTCAGGGTAA"
+        cls.expected_seqs["Chimp"]      = "AAACCCTTGCCGTTACGCTTAAACCGAGGCCGGGACACTCAT"
+        cls.expected_seqs["Gorilla"]    = "AAACCCTTGCCGGTACGCTTAAACCATTGCCGGTACGCTTAA"
+
+    def test_strict_interleaved(self):
+        s = """\
+5    42
+Turkey    AAGCTNGGGC ATTTCAGGGT
+Salmo gairAAGCCTTGGC AGTGCAGGGT
+H. SapiensACCGGTTGGC CGTTCAGGGT
+Chimp     AAACCCTTGC CGTTACGCTT
+Gorilla   AAACCCTTGC CGGTACGCTT
+
+GAGCCCGGGC AATACAGGGT AT
+GAGCCGTGGC CGGGCACGGT AT
+ACAGGTTGGC CGTTCAGGGT AA
+AAACCGAGGC CGGGACACTC AT
+AAACCATTGC CGGTACGCTT AA
+        """
+        char_matrix = dendropy.DnaCharacterMatrix.get_from_string(
+                s,
+                "phylip",
+                interleaved=True,
+                strict=True)
+        self.assertEqual(len(char_matrix), len(self.expected_seqs))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
+        for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
+            self.assertEqual(taxon.label, expected_taxon)
+            self.assertEqual(char_matrix[taxon].symbols_as_string(), self.expected_seqs[expected_taxon])
 
 if __name__ == "__main__":
     unittest.main()

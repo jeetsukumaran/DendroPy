@@ -99,6 +99,7 @@ class PhylipReader(ioservice.DataReader):
         self.nchar = None
         self.char_matrix = None
         self.taxon_namespace = None
+        self.stream = None
 
     def _read(self,
             stream,
@@ -108,6 +109,7 @@ class PhylipReader(ioservice.DataReader):
             state_alphabet_factory=None,
             global_annotations_target=None):
         self.reset()
+        self.stream = stream
         self.taxon_namespace = taxon_namespace_factory(label=None)
         if self.datatype_name is None:
             raise TypeError("Data type must be specified for this schema")
@@ -239,5 +241,5 @@ class PhylipReader(ioservice.DataReader):
             error_type = PhylipReader.PhylipRelaxedInterleavedError
         else:
             error_type = PhylipReader.PhylipStrictSequentialError
-        return error_type(message, row=row, stream=self.stream)
+        return error_type(message, line_num=row, stream=self.stream)
 
