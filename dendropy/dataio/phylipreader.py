@@ -177,17 +177,30 @@ class PhylipReader(ioservice.DataReader):
         return current_taxon, line
 
     def _parse_sequence_from_line(self, current_taxon, line, line_index):
-        for c in line:
-            if c in [' ', '\t']:
-                continue
-            try:
-                state = self.char_matrix.default_state_alphabet[c]
-            except KeyError:
-                if not self.ignore_invalid_chars:
-                    raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
-                            line_index=line_index)
-            else:
-                self.char_matrix[current_taxon].append(state)
+        if self.datatype_name == "continuous":
+            for c in line.split():
+                if not c:
+                    continue
+                try:
+                    state = float(c)
+                except ValueError:
+                    if not self.ignore_invalid_chars:
+                        raise self._data_parse_error("Invalid state for taxon '%s': '%s'" % (current_taxon.label, c),
+                                line_index=line_index)
+                else:
+                    self.char_matrix[current_taxon].append(state)
+        else:
+            for c in line:
+                if c in [' ', '\t']:
+                    continue
+                try:
+                    state = self.char_matrix.default_state_alphabet[c]
+                except KeyError:
+                    if not self.ignore_invalid_chars:
+                        raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
+                                line_index=line_index)
+                else:
+                    self.char_matrix[current_taxon].append(state)
 
     def _parse_sequential(self, lines, line_num_start=1):
         seq_labels = []
