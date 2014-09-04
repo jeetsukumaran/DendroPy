@@ -147,6 +147,30 @@ class PhylipVariantsTestCases(dendropytest.ExtendedTestCase):
         cls.expected_seqs["Chimp"]      = "AAACCCTTGCCGTTACGCTTAAACCGAGGCCGGGACACTCAT"
         cls.expected_seqs["Gorilla"]    = "AAACCCTTGCCGGTACGCTTAAACCATTGCCGGTACGCTTAA"
 
+    def test_strict_sequential(self):
+        s = """\
+  5    42
+Turkey    AAGCTNGGGC ATTTCAGGGT
+GAGCCCGGGC AATACAGGGT AT
+Salmo gairAAGCCTTGGC AGTGCAGGGT
+GAGCCGTGGC CGGGCACGGT AT
+H. SapiensACCGGTTGGC CGTTCAGGGT
+ACAGGTTGGC CGTTCAGGGT AA
+Chimp     AAACCCTTGC CGTTACGCTT
+AAACCGAGGC CGGGACACTC AT
+Gorilla   AAACCCTTGC CGGTACGCTT
+AAACCATTGC CGGTACGCTT AA
+        """
+        char_matrix = dendropy.DnaCharacterMatrix.get_from_string(
+                s,
+                "phylip",
+                strict=True)
+        self.assertEqual(len(char_matrix), len(self.expected_seqs))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
+        for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
+            self.assertEqual(taxon.label, expected_taxon)
+            self.assertEqual(char_matrix[taxon].symbols_as_string(), self.expected_seqs[expected_taxon])
+
     def test_strict_interleaved(self):
         s = """\
 5    42
@@ -167,6 +191,33 @@ AAACCATTGC CGGTACGCTT AA
                 "phylip",
                 interleaved=True,
                 strict=True)
+        self.assertEqual(len(char_matrix), len(self.expected_seqs))
+        self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
+        for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
+            self.assertEqual(taxon.label, expected_taxon)
+            self.assertEqual(char_matrix[taxon].symbols_as_string(), self.expected_seqs[expected_taxon])
+
+    def test_strict_interleaved_with_bad_chars(self):
+        s = """\
+5    42
+Turkey    AAGCTNGGGC ATTTCA3828GGGT
+Salmo gairAAGCCTTGGC AGTGCA3828GGGT
+H. SapiensACCGGTTGGC CGTTCA3828GGGT
+Chimp     AAACCCTTGC CGTTAC3828GCTT
+Gorilla   AAACCCTTGC CGGTAC3828GCTT
+
+GAGCCCGGGC AATACAGGGT AT
+GAGCCGTGGC CGGGCACGGT AT
+ACAGGTTGGC CGTTCAGGGT AA
+AAACCGAGGC CGGGACACTC AT
+AAACCATTGC CGGTACGCTT AA
+        """
+        char_matrix = dendropy.DnaCharacterMatrix.get_from_string(
+                s,
+                "phylip",
+                interleaved=True,
+                strict=True,
+                ignore_invalid_chars=True)
         self.assertEqual(len(char_matrix), len(self.expected_seqs))
         self.assertEqual(len(char_matrix.taxon_namespace), len(self.expected_seqs))
         for taxon, expected_taxon in zip(char_matrix, self.expected_seqs):
