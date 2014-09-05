@@ -41,9 +41,10 @@ class PhylipWriter(ioservice.DataWriter):
             - `force_unique_taxon_labels` (boolean)
         """
         ioservice.DataWriter.__init__(self, **kwargs)
-        self.strict = kwargs.get("strict", False)
-        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
-        self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", False)
+        self.strict = kwargs.pop("strict", False)
+        self.spaces_to_underscores = kwargs.pop("spaces_to_underscores", False)
+        self.force_unique_taxon_labels = kwargs.pop("force_unique_taxon_labels", False)
+        self.check_for_unused_keyword_arguments(kwargs)
 
     def _write(self,
             stream,
@@ -99,7 +100,7 @@ class PhylipWriter(ioservice.DataWriter):
             if self.strict:
                 label = label[:max_label_len]
             taxon_label_map[taxon] = label
-        taxon_label_map = text.unique_taxon_label_map(taxon_namespace, taxon_label_map, max_label_len, _LOG)
+        taxon_label_map = text.unique_taxon_label_map(taxon_namespace, taxon_label_map, max_label_len)
         if self.strict:
             for t in taxon_label_map:
                 label = taxon_label_map[t]

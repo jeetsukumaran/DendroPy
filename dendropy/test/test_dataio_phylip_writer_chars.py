@@ -70,10 +70,44 @@ class PhylipWriterCharactersTestCase(
         for src_filename, matrix_type, src_matrix_checker_type in self.__class__.srcs:
             src_path = pathmap.char_source_path(src_filename)
             d1 = matrix_type.get_from_path(src_path, "phylip")
-            s = self.write_out_validate_equal_and_return(
-                    d1, "phylip", {})
-            d2 = matrix_type.get_from_string(s, "phylip")
-            self.verify_char_matrix(d2, src_matrix_checker_type)
+            for strict in (True, False):
+                for spaces_to_underscores in (True, False):
+                    for force_unique_taxon_labels in (True, False):
+                        s = self.write_out_validate_equal_and_return(
+                                d1, "phylip", {
+                                    "strict": strict,
+                                    "spaces_to_underscores" : spaces_to_underscores,
+                                    "force_unique_taxon_labels" : force_unique_taxon_labels,
+                                    })
+                        d2 = matrix_type.get_from_string(s, "phylip")
+                        self.verify_char_matrix(d2, src_matrix_checker_type)
+
+class PhylipWriterCharactersVariantsTestCase(dendropytest.ExtendedTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        d = dendropy.DnaCharacterMatrix()
+        cls.original_labels = [
+                "a0_123456789_1",
+                "a0_123456789_2",
+                "a0_123456789_3",
+                "a0_123456789_4",
+                "a0_123456789_5",
+                "b0_123456789_1",
+                "b0_123456789_2",
+                "b0_123456789_3",
+                "b0_123456789_4",
+                ]
+        for label in cls.original_labels:
+            t = d.taxon_namespace.require_taxon(label=label)
+            d[t] = d.default_state_alphabet.get_states_for_symbols("AACGT")
+        cls.data = d
+
+    def test_strict_write(self):
+        s0 = self.data.as_string("phylip", strict=True)
+        d2 = dendropy.DnaCharacterMatrix.get_from_string(s0, "phylip", strict=True)
+        obs_labels = set([t.label for t in d2])
+        self.assertEqual(len(obs_labels), len(self.original_labels))
 
 if __name__ == "__main__":
     unittest.main()
