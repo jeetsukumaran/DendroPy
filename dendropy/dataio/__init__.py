@@ -26,6 +26,7 @@ from dendropy.dataio import nexuswriter
 from dendropy.dataio import nexmlreader
 from dendropy.dataio import nexmlwriter
 from dendropy.dataio import phylipreader
+from dendropy.dataio import phylipwriter
 from dendropy.utility import container
 
 _IOServices = collections.namedtuple(
@@ -41,8 +42,7 @@ _IO_SERVICE_REGISTRY["fasta"] = _IOServices(fastareader.FastaReader, fastawriter
 _IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["proteinfasta"] = _IOServices(fastareader.ProteinFastaReader, fastawriter.FastaWriter, None)
-_IO_SERVICE_REGISTRY["phylip"] = _IOServices(phylipreader.PhylipReader, None, None)
-# ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
+_IO_SERVICE_REGISTRY["phylip"] = _IOServices(phylipreader.PhylipReader, phylipwriter.PhylipWriter, None)
 # ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
 # ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 # ioclient.register("nexus/newick", None, None, nexustreeiter.generalized_tree_source_iter)

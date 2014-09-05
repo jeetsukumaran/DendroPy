@@ -24,8 +24,8 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
-from dendropy.utility import textutils
-
+from dendropy.dataio import ioservice
+from dendropy.utility import text
 
 STRICT_MODE_MAX_LABEL_LENGTH = 10
 
@@ -45,20 +45,61 @@ class PhylipWriter(ioservice.DataWriter):
         self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
         self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", False)
 
-    def get_taxon_label_map(self, taxon_set):
+    def _write(self,
+            stream,
+            taxon_namespaces=None,
+            tree_lists=None,
+            char_matrices=None,
+            global_annotations_target=None):
+        for char_matrix in char_matrices:
+            if (self.attached_taxon_namespace is not None
+                    and char_matrix.taxon_namespace is not self.attached_taxon_namespace):
+                continue
+            self._write_char_matrix(stream, char_matrix)
+
+    def _write_char_matrix(self, stream, char_matrix):
+        "Writes dataset to a full PHYLIP document."
+
+        if self.strict or self.force_unique_taxon_labels:
+            taxon_label_map = self.get_taxon_label_map(char_matrix.taxon_namespace)
+            if not self.strict:
+                spacer = "  "
+            else:
+                spacer = ""
+        else:
+            taxon_label_map = {}
+            for taxon in char_matrix.taxon_namespace:
+                label = taxon.label
+                if self.spaces_to_underscores:
+                    label = label.replace(' ', '_')
+                taxon_label_map[taxon] = label
+            spacer = "  "
+        maxlen = max([len(str(label)) for label in taxon_label_map.values()])
+        n_seqs = len(char_matrix)
+        n_sites = len(char_matrix.values()[0])
+        stream.write("%d %d\n" % (n_seqs, n_sites))
+        for taxon in char_matrix.taxon_namespace:
+            label = taxon_label_map[taxon]
+            try:
+                seq_vec = char_matrix[taxon]
+            except KeyError:
+                continue
+            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec.symbols_as_string())))
+
+    def get_taxon_label_map(self, taxon_namespace):
         taxon_label_map = {}
         if self.strict:
             max_label_len = STRICT_MODE_MAX_LABEL_LENGTH
         else:
             max_label_len = 0
-        for taxon in taxon_set:
+        for taxon in taxon_namespace:
             label = taxon.label
             if self.spaces_to_underscores:
                 label = label.replace(' ', '_')
             if self.strict:
                 label = label[:max_label_len]
             taxon_label_map[taxon] = label
-        taxon_label_map = textutils.unique_taxon_label_map(taxon_set, taxon_label_map, max_label_len, _LOG)
+        taxon_label_map = text.unique_taxon_label_map(taxon_namespace, taxon_label_map, max_label_len, _LOG)
         if self.strict:
             for t in taxon_label_map:
                 label = taxon_label_map[t]
@@ -66,57 +107,3 @@ class PhylipWriter(ioservice.DataWriter):
                     taxon_label_map[t] = label.ljust(STRICT_MODE_MAX_LABEL_LENGTH)
         return taxon_label_map
 
-    def write(self, stream):
-        "Writes dataset to a full PHYLIP document."
-
-        if self.exclude_chars:
-            return self.dataset
-
-        assert self.dataset is not None, \
-            "PhylipWriter instance is not attached to a DataSet: no source of data"
-
-        char_matrix = None
-        if len(self.dataset.char_matrices) == 0:
-            raise ValueError("No character data in DataSet")
-        if self.attached_taxon_set is not None:
-            taxon_set_matrices = [cmat for cmat in self.dataset.char_matrices if cmat.taxon_set is self.attached_taxon_set]
-            if len(taxon_set_matrices) == 0:
-                raise ValueError("No character matrix associated with attached TaxonSet '%s'" % (repr(self.attached_taxon_set)))
-            if len(taxon_set_matrices) > 1:
-                raise ValueError("Multiple character matrices associated with attached TaxonSet '%s'" % (repr(self.attached_taxon_set)))
-            char_matrix = taxon_set_matrices_map[self.attached_taxon_set]
-        else:
-            if len(self.dataset.char_matrices) > 1:
-                raise ValueError("Multiple character matrices found")
-            char_matrix = self.dataset.char_matrices[0]
-
-        assert char_matrix is not None, \
-            "Failed to identify suitable CharacterMatrix"
-
-        if self.strict or self.force_unique_taxon_labels:
-            taxon_label_map = self.get_taxon_label_map(char_matrix.taxon_set)
-            if not self.strict:
-                spacer = "  "
-            else:
-                spacer = ""
-        else:
-            taxon_label_map = {}
-            for taxon in char_matrix.taxon_set:
-                label = taxon.label
-                if self.spaces_to_underscores:
-                    label = label.replace(' ', '_')
-                taxon_label_map[taxon] = label
-            spacer = "  "
-        maxlen = max([len(str(label)) for label in taxon_label_map.values()])
-
-        n_seqs = len(char_matrix)
-        n_sites = len(char_matrix.values()[0])
-        stream.write("%d %d\n" % (n_seqs, n_sites))
-
-        for taxon in char_matrix.taxon_set:
-            label = taxon_label_map[taxon]
-            try:
-                seq_vec = char_matrix[taxon]
-            except KeyError:
-                continue
-            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec.symbols_as_string()).replace(' ', '')))
