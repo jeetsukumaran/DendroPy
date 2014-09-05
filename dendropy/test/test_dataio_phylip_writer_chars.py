@@ -108,6 +108,8 @@ class PhylipWriterCharactersVariantsTestCase(dendropytest.ExtendedTestCase):
         d2 = dendropy.DnaCharacterMatrix.get_from_string(s0, "phylip", strict=True)
         obs_labels = set([t.label for t in d2])
         self.assertEqual(len(obs_labels), len(self.original_labels))
+        for x in obs_labels:
+            self.assertEqual(len(x), 10)
 
 if __name__ == "__main__":
     unittest.main()
