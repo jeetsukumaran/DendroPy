@@ -3169,8 +3169,8 @@ class Tree(
         `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
-        from dendropy.calculate import treestat
-        pdm = treestat.PatristicDistanceMatrix(self)
+        from dendropy.calculate import treemeasure
+        pdm = treemeasure.PatristicDistanceMatrix(self)
         n1, n2 = pdm.max_dist_nodes
         plen = float(pdm.max_dist) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)
@@ -3660,40 +3660,40 @@ class Tree(
     ### Metrics -- Unary
 
     def B1(self):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.B1()'."""
-        error.dendropy_construct_migration_warning("tree.B1()", "dendropy.calculate.treestat.B1(tree)")
-        from dendropy.calculate import treestat
-        return treestat.B1(self)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.B1()'."""
+        error.dendropy_construct_migration_warning("tree.B1()", "dendropy.calculate.treemeasure.B1(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.B1(self)
 
     def colless_tree_imbalance(self, normalize="max"):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.colless_tree_imbalance()'."""
-        error.dendropy_construct_migration_warning("tree.colless_tree_imbalance()", "dendropy.calculate.treestat.colless_tree_imbalance(tree)")
-        from dendropy.calculate import treestat
-        return treestat.colless_tree_imbalance(self, normalize)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.colless_tree_imbalance()'."""
+        error.dendropy_construct_migration_warning("tree.colless_tree_imbalance()", "dendropy.calculate.treemeasure.colless_tree_imbalance(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.colless_tree_imbalance(self, normalize)
 
     def pybus_harvey_gamma(self, prec=0.00001):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.pybus_harvey_gamma()'."""
-        error.dendropy_construct_migration_warning("tree.pybus_harvey_gamma()", "dendropy.calculate.treestat.pybus_harvey_gamma(tree)")
-        from dendropy.calculate import treestat
-        return treestat.pybus_harvey_gamma(self, prec)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.pybus_harvey_gamma()'."""
+        error.dendropy_construct_migration_warning("tree.pybus_harvey_gamma()", "dendropy.calculate.treemeasure.pybus_harvey_gamma(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.pybus_harvey_gamma(self, prec)
 
     def N_bar(self):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.N_bar()'."""
-        error.dendropy_construct_migration_warning("tree.N_bar()", "dendropy.calculate.treestat.N_bar(tree)")
-        from dendropy.calculate import treestat
-        return treestat.N_bar(self)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.N_bar()'."""
+        error.dendropy_construct_migration_warning("tree.N_bar()", "dendropy.calculate.treemeasure.N_bar(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.N_bar(self)
 
     def sackin_index(self, normalize=True):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.sackin_index()'."""
-        error.dendropy_construct_migration_warning("tree.sackin_index()", "dendropy.calculate.treestat.sackin_index(tree)")
-        from dendropy.calculate import treestat
-        return treestat.sackin_index(self, normalize)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.sackin_index()'."""
+        error.dendropy_construct_migration_warning("tree.sackin_index()", "dendropy.calculate.treemeasure.sackin_index(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.sackin_index(self, normalize)
 
     def treeness(self):
-        """DEPRECATED: Use 'dendropy.calculate.treestat.treeness()'."""
-        error.dendropy_construct_migration_warning("tree.treeness()", "dendropy.calculate.treestat.treeness(tree)")
-        from dendropy.calculate import treestat
-        return treestat.treeness(self)
+        """DEPRECATED: Use 'dendropy.calculate.treemeasure.treeness()'."""
+        error.dendropy_construct_migration_warning("tree.treeness()", "dendropy.calculate.treemeasure.treeness(tree)")
+        from dendropy.calculate import treemeasure
+        return treemeasure.treeness(self)
 
     ###########################################################################
     ### Comparisons with Another Tree

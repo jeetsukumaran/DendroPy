@@ -32,7 +32,7 @@ from dendropy.test.support import pathmap
 
 import dendropy
 from dendropy.calculate.treesplit import encode_splits
-from dendropy.calculate import treestat
+from dendropy.calculate import treemeasure
 from dendropy.calculate import treecompare
 
 def _get_reference_tree_list(taxon_namespace=None):
@@ -840,7 +840,7 @@ class TreePatristicDistTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def testPatDistMatrix(self):
-        pdm = treestat.PatristicDistanceMatrix(self.tree)
+        pdm = treemeasure.PatristicDistanceMatrix(self.tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.require_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.require_taxon(label=t2)
@@ -858,7 +858,7 @@ class TreePatristicDistTest(unittest.TestCase):
         def _chk_distance(t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.get_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.get_taxon(label=t2)
-            pd = treestat.patristic_distance(self.tree, tax1, tax2)
+            pd = treemeasure.patristic_distance(self.tree, tax1, tax2)
             self.assertEqual(pd, exp_distance)
         _chk_distance("a", "b", 2)
         _chk_distance("a", "c", 4)
@@ -888,7 +888,7 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             8.575757575757576,
             ]
         for idx, tree in enumerate(trees):
-            observed = treestat.N_bar(tree)
+            observed = treemeasure.N_bar(tree)
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
@@ -910,7 +910,7 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             0.3407258064516129,
             ]
         for idx, tree in enumerate(trees):
-            observed = treestat.colless_tree_imbalance(tree, normalize="max")
+            observed = treemeasure.colless_tree_imbalance(tree, normalize="max")
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
@@ -926,9 +926,9 @@ class TreeUnaryMetricsTest(unittest.TestCase):
         tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("hiv1.nexus"),
                 schema='nexus')
-        self.assertAlmostEqual(treestat.colless_tree_imbalance(tree, normalize=None), 992)
-        self.assertAlmostEqual(treestat.colless_tree_imbalance(tree, normalize="pda"), 0.3699778366542512686443)
-        self.assertAlmostEqual(treestat.colless_tree_imbalance(tree, normalize="yule"), 0.9931377047120540924041)
+        self.assertAlmostEqual(treemeasure.colless_tree_imbalance(tree, normalize=None), 992)
+        self.assertAlmostEqual(treemeasure.colless_tree_imbalance(tree, normalize="pda"), 0.3699778366542512686443)
+        self.assertAlmostEqual(treemeasure.colless_tree_imbalance(tree, normalize="yule"), 0.9931377047120540924041)
 
     def test_sackin_index(self):
         # library(apTreeshape)
@@ -942,9 +942,9 @@ class TreeUnaryMetricsTest(unittest.TestCase):
         tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("hiv1.nexus"),
                 schema='nexus')
-        self.assertAlmostEqual(treestat.sackin_index(tree, normalize=None), 2028)
-        self.assertAlmostEqual(treestat.sackin_index(tree, normalize="pda"), 0.756365980579457)
-        self.assertAlmostEqual(treestat.sackin_index(tree, normalize="yule"), 0.822783440343329)
+        self.assertAlmostEqual(treemeasure.sackin_index(tree, normalize=None), 2028)
+        self.assertAlmostEqual(treemeasure.sackin_index(tree, normalize="pda"), 0.756365980579457)
+        self.assertAlmostEqual(treemeasure.sackin_index(tree, normalize="yule"), 0.822783440343329)
 
     def test_b1(self):
         trees = _get_reference_tree_list()
@@ -964,7 +964,7 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             16.10321067821068,
             ]
         for idx, tree in enumerate(trees):
-            observed = treestat.B1(tree)
+            observed = treemeasure.B1(tree)
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
@@ -986,7 +986,7 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             0.28304948441090816,
             ]
         for idx, tree in enumerate(trees):
-            observed = treestat.treeness(tree)
+            observed = treemeasure.treeness(tree)
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
@@ -1008,14 +1008,14 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             0.08314644690264045,
             ]
         for idx, tree in enumerate(trees):
-            observed = treestat.pybus_harvey_gamma(tree)
+            observed = treemeasure.pybus_harvey_gamma(tree)
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
     def testPHGamma(self):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
         tree = dendropy.Tree.get_from_stream(StringIO(newick_str), schema="newick")
-        g = treestat.pybus_harvey_gamma(tree)
+        g = treemeasure.pybus_harvey_gamma(tree)
         self.assertAlmostEqual(g, 0.546276, 4)
 
 class TreeCompareTests(dendropytest.ExtendedTestCase):
