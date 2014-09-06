@@ -226,7 +226,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                     leaf_nodes = [tree.seed_node]
                     curr_num_leaves = 1
                     for nd in tree.seed_node.child_nodes():
-                        treemanip.prune_subtree(tree, nd, delete_outdegree_one=False)
+                        tree.prune_subtree(nd, delete_outdegree_one=False)
                     extinct_tips = []
                     total_time = 0
             assert(curr_num_leaves == len(leaf_nodes))
@@ -251,7 +251,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         for e, prev_length in edges_at_slice:
             daughter_nd = e.head_node
             for nd in daughter_nd.child_nodes():
-                treemanip.prune_subtree(tree, nd, delete_outdegree_one=False)
+                tree.prune_subtree(nd, delete_outdegree_one=False)
                 #_LOG.debug("After pruning %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
                 try:
                     extinct_tips.remove(nd)
@@ -272,15 +272,13 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     for nd in extinct_tips:
         bef = len(tree.leaf_nodes())
         while (nd.parent_node is not None) and (len(nd.parent_node.child_nodes()) == 1):
-            _LOG.debug("Will be pruning %d rather than its only child (%d)" % (id(nd.parent_node), id(nd)))
             nd = nd.parent_node
 #         _LOG.debug("Deleting " + str(nd.__dict__) + '\n' + str(nd.edge.__dict__))
 #         for n, pnd in enumerate(tree.postorder_node_iter()):
 #             _LOG.debug("%d %s" % (n, repr(pnd)))
 #        _LOG.debug("Before prune of %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
         if nd.parent_node:
-            treemanip.prune_subtree(tree, nd, delete_outdegree_one=False)
-        _LOG.debug("After prune (went from %d to %d leaves):\n%s" % (bef, len(tree.leaf_nodes()), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+            tree.prune_subtree(nd, delete_outdegree_one=False)
 #         _LOG.debug("Deleted " + str(nd.__dict__))
 #         for n, pnd in enumerate(tree.postorder_node_iter()):
 #             _LOG.debug("%d %s" % (n, repr(pnd)))
@@ -402,7 +400,7 @@ def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_r
                 c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
             elif u > nd.birth_rate and u < (nd.birth_rate + nd.death_rate):
                 if nd is not tree.seed_node:
-                    treemanip.prune_subtree(tree, nd)
+                    tree.prune_subtree(nd)
                 elif not repeat_until_success:
                     # all lineages are extinct: raise exception
                     raise TreeSimTotalExtinctionException()
