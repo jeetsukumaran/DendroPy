@@ -34,12 +34,12 @@ that you update to the latest configuration.
     * `dendropy.treecalc` has been split into three submodules depending on whether the statistic or value being calculated is on a single tree, a single tree and a dataset, or two trees:
         *   `dendropy.calculate.treemeasure`
             For calculation of statistics, metrics, and values on a single tree.
-        *   `dendropy.calculate.treescore`
-            For calculation of statistics, metrics, and values of a tree with
-            reference to a dataset under some criterion.
         *   `dendropy.calculate.treecompare`
             For calculation of statistics, metrics, and values of two trees
             (e.g., Robinson-Fould's distances).
+        *   `dendropy.calculate.treescore`
+            For calculation of statistics, metrics, and values of a tree with
+            reference to a dataset under some criterion.
     * `dendropy.treesplit` has been moved to `dendropy.calculate.treesplit`.
     * `dendropy.treesum` has been moved to `dendropy.calculate.treesum`.
     * `dendropy.reconcile` has been moved to `dendropy.calculate.reconcile`.
