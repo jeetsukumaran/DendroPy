@@ -272,8 +272,8 @@ class GenBankResourceStore(object):
             - ``gb_to_taxon_func``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
             - ``add_full_annotation_to_taxa``: If True, add link to record as metadata annotation to Taxon objects.
             - ``add_ref_annotation_to_taxa``: If True, add full GenBank record as metadata annotations to Taxon objects.
-            - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataVector) objects.
-            - ``add_ref_annotation_to_seqs``: If True, add full GenBank record as metadata annotations to sequence (CharacterDataVector) objects.
+            - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataSequence) objects.
+            - ``add_ref_annotation_to_seqs``: If True, add full GenBank record as metadata annotations to sequence (CharacterDataSequence) objects.
             - ``set_taxon_attr``: Name of attribute (string) to create on Taxon objects pointing to GenBank record object (GenBankAccessionRecord).
             - ``set_seq_attr``: Name of attribute (string) to create on sequence objects pointing to GenBank record object (GenBankAccessionRecord).
             - ``matrix_label``: Label of character matrix.
@@ -308,7 +308,7 @@ class GenBankResourceStore(object):
                 taxon.annotations.add(gb_rec.as_annotation())
             if set_taxon_attr is not None:
                 setattr(taxon, set_taxon_attr, gb_rec)
-            curr_vec = dendropy.CharacterDataVector(taxon=taxon)
+            curr_vec = dendropy.CharacterDataSequence(taxon=taxon)
             char_matrix[taxon] = curr_vec
             if add_ref_annotation_to_seqs:
                 curr_vec.annotations.add(gb_rec.as_reference_annotation())

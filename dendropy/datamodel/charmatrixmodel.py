@@ -28,6 +28,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.utility import error
+from dendropy.utility import deprecate
 from dendropy.utility import container
 from dendropy.datamodel import charstatemodel
 from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
@@ -91,9 +92,9 @@ class CharacterType(
         return basemodel.Annotable.__deepcopy__(self, memo=memo)
 
 ###############################################################################
-## CharacterDataVector
+## CharacterDataSequence
 
-class CharacterDataVector(
+class CharacterDataSequence(
         basemodel.Annotable,
         ):
     """
@@ -318,7 +319,7 @@ class CharacterMatrix(
     ### Class Variables
 
     datatype_name = None
-    character_sequence_type = CharacterDataVector
+    character_sequence_type = CharacterDataSequence
 
     ###########################################################################
     ### Factory (Class) Methods
@@ -451,8 +452,8 @@ class CharacterMatrix(
         current taxon namespace, it will be added.
 
         Values are the sequences (more generally, iterable of values).  If
-        values are of type :class:`CharacterDataVector`, then they are added
-        as-is.  Otherwise :class:`CharacterDataVector` instances are
+        values are of type :class:`CharacterDataSequence`, then they are added
+        as-is.  Otherwise :class:`CharacterDataSequence` instances are
         created for them. Values may be coerced into types compatible with
         particular matrices. The classmethod `cls.coerce_values()` will be
         called for this.
@@ -472,7 +473,7 @@ class CharacterMatrix(
 
         Three :class:`Taxon` objects will be created, corresponding to the
         labels 's1', 's2', 's3'. Each associated string sequence will be
-        converted to a :class:`CharacterDataVector`, with each symbol ("A", "C",
+        converted to a :class:`CharacterDataSequence`, with each symbol ("A", "C",
         etc.) being replaced by the DNA state represented by the symbol.
 
         Parameters
@@ -732,7 +733,7 @@ class CharacterMatrix(
 
     def new_sequence(self, taxon, values=None):
         """
-        Creates a new :class:`CharacterDataVector` associated with :class:`Taxon`
+        Creates a new :class:`CharacterDataSequence` associated with :class:`Taxon`
         `taxon`, and populates it with values in `values`.
 
         Parameters
@@ -745,8 +746,8 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : :class:`CharacterDataVector`
-            A new :class:`CharacterDataVector` associated with :class:`Taxon`
+        s : :class:`CharacterDataSequence`
+            A new :class:`CharacterDataSequence` associated with :class:`Taxon`
             `taxon`.
         """
         if taxon in self._taxon_sequence_map:
@@ -780,7 +781,7 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : :class:`CharacterDataVector`
+        s : :class:`CharacterDataSequence`
             A sequence associated with the :class:`Taxon` instance referenced
             by `key`.
         """
@@ -874,11 +875,16 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : list of :class:`CharacterDataVector` objects in self
+        s : list of :class:`CharacterDataSequence` objects in self
 
         """
         s = [self[taxon] for taxon in self]
         return s
+
+    def vectors(self):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'vectors()' will no longer be supported in future releases; use 'sequences()' instead")
+        return self.sequences()
 
     ###########################################################################
     ### Sequence Access Iteration
@@ -1014,7 +1020,7 @@ class CharacterMatrix(
         """
         for taxon in self.taxon_namespace:
             if taxon not in self:
-                self[taxon] = CharacterDataVector()
+                self[taxon] = CharacterDataSequence()
 
     def pack(self, value=None, size=None, append=True):
         """
@@ -1347,10 +1353,10 @@ class CharacterMatrix(
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
-    class ContinuousCharacterDataVector(CharacterDataVector):
+    class ContinuousCharacterDataSequence(CharacterDataSequence):
         """
         A sequence of continuous character values for a particular taxon or entry
-        in a data matrix. Specializes :class:`CharacterDataVector` by assuming all
+        in a data matrix. Specializes :class:`CharacterDataSequence` by assuming all
         values are primitive numerics (i.e., either floats or integers) when
         copying or representing self.
         """
@@ -1368,9 +1374,9 @@ class ContinuousCharacterMatrix(CharacterMatrix):
 
         def symbols_as_string(self, sep=" "):
             # different default
-            return CharacterDataVector.symbols_as_string(self, sep=sep)
+            return CharacterDataSequence.symbols_as_string(self, sep=sep)
 
-    character_sequence_type = ContinuousCharacterDataVector
+    character_sequence_type = ContinuousCharacterDataSequence
     datatype_name = "continuous"
 
     def __init__(self, *args, **kwargs):
@@ -1384,9 +1390,9 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     and self.default_state_alphabet
     """
 
-    class DiscreteCharacterDataVector(CharacterDataVector):
+    class DiscreteCharacterDataSequence(CharacterDataSequence):
         pass
-    character_sequence_type = DiscreteCharacterDataVector
+    character_sequence_type = DiscreteCharacterDataSequence
 
     datatype_name = "discrete"
 
@@ -1417,7 +1423,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
     def append_taxon_sequence(self, taxon, state_symbols):
         if taxon not in self:
-            self[taxon] = CharacterDataVector()
+            self[taxon] = CharacterDataSequence()
         for value in state_symbols:
             if isinstance(value, str):
                 symbol = value
@@ -1537,9 +1543,9 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    class FixedAlphabetCharacterDataVector(CharacterDataVector):
+    class FixedAlphabetCharacterDataSequence(CharacterDataSequence):
         pass
-    character_sequence_type = FixedAlphabetCharacterDataVector
+    character_sequence_type = FixedAlphabetCharacterDataSequence
     datatype_name = "fixed"
     datatype_alphabet = None
 
@@ -1555,63 +1561,63 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
-    class DnaCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class DnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = DnaCharacterDataVector
+    character_sequence_type = DnaCharacterDataSequence
     datatype_name = "dna"
     datatype_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
-    class RnaCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class RnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = RnaCharacterDataVector
+    character_sequence_type = RnaCharacterDataSequence
     datatype_name = "rna"
     datatype_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
-    class NucleotideCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class NucleotideCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = NucleotideCharacterDataVector
+    character_sequence_type = NucleotideCharacterDataSequence
     datatype_name = "nucleotide"
     datatype_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
-    class ProteinCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class ProteinCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = ProteinCharacterDataVector
+    character_sequence_type = ProteinCharacterDataSequence
     datatype_name = "protein"
     datatype_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
-    class RestrictionSitesCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class RestrictionSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = RestrictionSitesCharacterDataVector
+    character_sequence_type = RestrictionSitesCharacterDataSequence
     datatype_name = "restriction"
     datatype_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
-    class InfiniteSitesCharacterDataVector(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataVector):
+    class InfiniteSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
-    character_sequence_type = InfiniteSitesCharacterDataVector
+    character_sequence_type = InfiniteSitesCharacterDataSequence
     datatype_name = "infinite"
     datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
-    class StandardCharacterDataVector(DiscreteCharacterMatrix.DiscreteCharacterDataVector):
+    class StandardCharacterDataSequence(DiscreteCharacterMatrix.DiscreteCharacterDataSequence):
         pass
-    character_sequence_type = StandardCharacterDataVector
+    character_sequence_type = StandardCharacterDataSequence
 
     datatype_name = "standard"
 

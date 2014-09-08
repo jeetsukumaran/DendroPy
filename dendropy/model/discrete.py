@@ -154,7 +154,7 @@ class DiscreteCharacterEvolver(object):
         """
         char_map = dendropy.CharacterDataMap()
         for leaf in tree.leaf_nodes():
-            cvec = dendropy.CharacterDataVector(taxon=leaf.taxon)
+            cvec = dendropy.CharacterDataSequence(taxon=leaf.taxon)
             seq_list = getattr(leaf, self.seq_attr)
             for seq_idx, seq in enumerate(seq_list):
                 if ((include is None) or (seq_idx in include))  \

@@ -20,8 +20,70 @@
 DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.popgenstat` instead.
 """
 
-# from dendropy.utility import error
-# error.dendropy_module_migration_warning("dendropy.popgenstat", "dendropy.calculate.popgenstat")
+from dendropy.utility import deprecate
+from dendropy.calculate import popgenstat
 
-# # legacy
-# from dendropy.calculate.popgenstat import *
+def num_segregating_sites(char_matrix, ignore_uncertain=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.num_segregating_sites(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.num_segregating_sites(...)",
+            )
+    return popgenstat.num_segregating_sites(char_matrix, ignore_uncertain)
+
+def average_number_of_pairwise_differences(char_matrix, ignore_uncertain=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.average_number_of_pairwise_differences(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.average_number_of_pairwise_differences(...)",
+            )
+    return popgenstat.average_number_of_pairwise_differences(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
+
+def nucleotide_diversity(char_matrix, ignore_uncertain=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.nucleotide_diversity(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.nucleotide_diversity(...)",
+            )
+    return popgenstat.nucleotide_diversity(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
+
+def tajimas_d(char_matrix, ignore_uncertain=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.tajimas_d(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.tajimas_d(...)",
+            )
+    return popgenstat.tajimas_d(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
+
+def wattersons_theta(char_matrix, ignore_uncertain=True):
+    return popgenstat.wattersons_theta(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
+
+def derived_state_matrix(char_vectors, ancestral_seq=None):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.derived_state_matrix(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.derived_state_matrix(...)",
+            )
+    return popgenstat.derived_state_matrix(
+            char_vectors=char_vectors,
+            ancestral_seq=ancestral_seq)
+
+def unfolded_site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.unfolded_site_frequency_spectrum(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.unfolded_site_frequency_spectrum(...)",
+            )
+    return popgenstat.unfolded_site_frequency_spectrum(
+            char_vectors=char_vectors,
+            ancestral_seq=ancestral_seq,
+            pad=pad)
+
+class PopulationPairSummaryStatistics(popgenstat.PopulationPairSummaryStatistics):
+    def __init__(self, *args, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+                old_construct="from dendropy import popgenstat\npopgenstat.PopulationPairSummaryStatistics(...)",
+                new_construct="from dendropy.calculate import popgenstat\npopgenstat.PopulationPairSummaryStatistics(...)",
+                )
+        popgenstat.PopulationPairSummaryStatistics.__init__(self, *args, **kwargs)

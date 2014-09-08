@@ -38,6 +38,12 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     sq_diff = 0.0
     total_counted = 0
     comps = 0
+    if ignore_uncertain:
+        attr = "fundamental_indexes_with_gaps_as_missing"
+        ignore_states = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+    else:
+        attr = "fundamental_indexes"
+        ignore_states = set()
     for vidx, i in enumerate(char_vectors[:-1]):
         for j in char_vectors[vidx+1:]:
             if len(i) != len(j):
@@ -48,15 +54,14 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
             for cidx, c in enumerate(i):
                 c1 = c
                 c2 = j[cidx]
-                if (not ignore_uncertain) \
-                    or (c1.value is not state_alphabet.gap \
-                        and c2.value is not state_alphabet.gap \
-                        and len(c1.value.fundamental_ids) == 1 \
-                        and len(c2.value.fundamental_ids) == 1):
-                    counted += 1
-                    total_counted += 1
-                    if c1.value is not c2.value:
-                        diff += 1
+                if c1 in ignore_states or c2 in ignore_states:
+                    continue
+                counted += 1
+                total_counted += 1
+                f1 = getattr(c1, attr)
+                f2 = getattr(c2, attr)
+                if f1 != f2:
+                    diff += 1
             sum_diff += float(diff)
             mean_diff += float(diff) / counted
             sq_diff += (diff ** 2)
@@ -87,15 +92,20 @@ def _num_segregating_sites(char_vectors, state_alphabet, ignore_uncertain=True):
     Returns the raw number of segregating sites (polymorphic sites).
     """
     s = 0
+    if ignore_uncertain:
+        attr = "fundamental_indexes_with_gaps_as_missing"
+        ignore_states = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+    else:
+        attr = "fundamental_indexes"
+        ignore_states = set()
     for i, c1 in enumerate(char_vectors[0]):
         for v in char_vectors[1:]:
             c2 = v[i]
-            if c1 != c2 \
-                and ((not ignore_uncertain) \
-                    or (c1.value is not state_alphabet.gap \
-                        and c2.value is not state_alphabet.gap \
-                        and len(c1.value.fundamental_ids) == 1 \
-                        and len(c2.value.fundamental_ids) == 1)):
+            if c1 in ignore_states or c2 in ignore_states:
+                continue
+            f1 = getattr(c1, attr)
+            f2 = getattr(c2, attr)
+            if f1 != f2:
                 s += 1
                 break
     return s
@@ -140,36 +150,45 @@ def num_segregating_sites(char_matrix, ignore_uncertain=True):
     """
     Returns the raw number of segregating sites (polymorphic sites).
     """
-    return _num_segregating_sites(char_matrix.vectors(), char_matrix.default_state_alphabet, ignore_uncertain)
+    return _num_segregating_sites(
+            char_matrix.sequences(),
+            char_matrix.default_state_alphabet,
+            ignore_uncertain)
 
 def average_number_of_pairwise_differences(char_matrix, ignore_uncertain=True):
     """
     Returns $k$, calculated for a character block.
     """
-    return _average_number_of_pairwise_differences(char_matrix.vectors(), char_matrix.default_state_alphabet, ignore_uncertain)
+    return _average_number_of_pairwise_differences(char_matrix.sequences(), char_matrix.default_state_alphabet, ignore_uncertain)
 
 def nucleotide_diversity(char_matrix, ignore_uncertain=True):
     """
     Returns $\pi$, calculated for a character block.
     """
-    return _nucleotide_diversity(char_matrix.vectors(), char_matrix.default_state_alphabet, ignore_uncertain)
+    return _nucleotide_diversity(char_matrix.sequences(), char_matrix.default_state_alphabet, ignore_uncertain)
 
 def tajimas_d(char_matrix, ignore_uncertain=True):
     """
     Returns Tajima's D.
     """
-    vectors = char_matrix.vectors()
+    vectors = char_matrix.sequences()
     num_sequences = len(vectors)
     avg_num_pairwise_differences = _average_number_of_pairwise_differences(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
-    num_segregating_sites = _num_segregating_sites(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    num_segregating_sites = _num_segregating_sites(
+            vectors,
+            char_matrix.default_state_alphabet,
+            ignore_uncertain=ignore_uncertain)
     return _tajimas_d(num_sequences, avg_num_pairwise_differences, num_segregating_sites)
 
 def wattersons_theta(char_matrix, ignore_uncertain=True):
     """
     Returns Watterson's Theta (per sequence)
     """
-    vectors = char_matrix.vectors()
-    num_segregating_sites = _num_segregating_sites(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    vectors = char_matrix.sequences()
+    num_segregating_sites = _num_segregating_sites(
+            vectors,
+            char_matrix.default_state_alphabet,
+            ignore_uncertain=ignore_uncertain)
     a1 = sum([1.0/i for i in range(1, len(vectors))])
     return float(num_segregating_sites) / a1
 
@@ -231,7 +250,10 @@ class PopulationPairSummaryStatistics(object):
         self.average_number_of_pairwise_differences_net = d_xy - (d_x + d_y)
 
         # Hickerson 2006: S #
-        self.num_segregating_sites = _num_segregating_sites(self.combined_seqs, self.state_alphabet, self.ignore_uncertain)
+        self.num_segregating_sites = _num_segregating_sites(
+                self.combined_seqs,
+                self.state_alphabet,
+                self.ignore_uncertain)
 
         # Hickerson 2006: theta #
         a1 = sum([1.0/i for i in range(1, n)])
