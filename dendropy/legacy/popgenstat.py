@@ -56,6 +56,11 @@ def tajimas_d(char_matrix, ignore_uncertain=True):
     return popgenstat.tajimas_d(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
 
 def wattersons_theta(char_matrix, ignore_uncertain=True):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
+            old_construct="from dendropy import popgenstat\npopgenstat.watterson_theta(...)",
+            new_construct="from dendropy.calculate import popgenstat\npopgenstat.watterson_theta(...)",
+            )
     return popgenstat.wattersons_theta(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
 
 def derived_state_matrix(char_vectors, ancestral_seq=None):
