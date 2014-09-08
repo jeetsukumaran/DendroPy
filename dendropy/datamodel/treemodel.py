@@ -1613,13 +1613,14 @@ class Tree(
 
                 `label`
                     The label or description of the new :class:`Tree` object.
-                * `taxon_namespace` specifies the :class:`TaxonNamespace`
-                   object to be attached to the new :class:`TreeList` object.
-                   Note that *all* operational taxonomic unit concepts in the
-                   data source will be accessioned into the specified
-                   :class:`TaxonNamespace` instance. This includes the
-                   operation taxonomic unit definitions associated with all
-                   tree collections and character matrices in the data source.
+                `taxon_namespace`
+                   Specifies the :class:`TaxonNamespace` object to be attached
+                   to the new :class:`TreeList` object. Note that *all*
+                   operational taxonomic unit concepts in the data source will
+                   be accessioned into the specified :class:`TaxonNamespace`
+                   instance. This includes the operation taxonomic unit
+                   definitions associated with all tree collections and
+                   character matrices in the data source.
 
             Other keyword arguments may be available, depending on the
             implementation of the reader specialized to handle `schema`
@@ -1715,95 +1716,97 @@ class Tree(
                 `taxon_namespace`
                     Specifies the :class:`TaxonNamespace` object to be
                     that the new :class:`Tree` object will reference.
+        Examples
+        --------
 
         Tree objects can be instantiated in the following ways::
 
-            # /usr/bin/env python
+                # /usr/bin/env python
 
-            try:
-                from StringIO import StringIO
-            except ImportError:
-                from io import StringIO
-            from dendropy import Tree, TaxonNamespace
+                try:
+                    from StringIO import StringIO
+                except ImportError:
+                    from io import StringIO
+                from dendropy import Tree, TaxonNamespace
 
-            # empty tree
-            t1 = Tree()
+                # empty tree
+                t1 = Tree()
 
-            # the canonical way to instantiate a Tree from a data source
-            # is the use the `get_from_*` family of static factory methods
-            t2 = Tree.get_from_stream(open('treefile.tre', 'rU'), "newick", tree_offset=0)
-            t3 = Tree.get_from_path('sometrees.nexus',
-                    "nexus",
-                    collection_offset=2,
-                    tree_offset=1)
-            s = "((A,B),(C,D));((A,C),(B,D));"
-            t4 = Tree.get_from_string(s, "newick") # tree will be '((A,B),(C,D))'
-            t5 = Tree.get_from_string(s, "newick", tree_offset=1) # tree will be '((A,C),(B,D))'
+                # the canonical way to instantiate a Tree from a data source
+                # is the use the `get_from_*` family of static factory methods
+                t2 = Tree.get_from_stream(open('treefile.tre', 'rU'), "newick", tree_offset=0)
+                t3 = Tree.get_from_path('sometrees.nexus',
+                        "nexus",
+                        collection_offset=2,
+                        tree_offset=1)
+                s = "((A,B),(C,D));((A,C),(B,D));"
+                t4 = Tree.get_from_string(s, "newick") # tree will be '((A,B),(C,D))'
+                t5 = Tree.get_from_string(s, "newick", tree_offset=1) # tree will be '((A,C),(B,D))'
 
-            # passing keywords to underlying tree parser
-            t7 = dendropy.Tree.get_from_string(
-                      "((A,B),(C,D));",
-                      schema="newick",
-                      taxon_namespace=t3.taxon_namespace,
-                      suppress_internal_node_taxa=False,
-                      preserve_underscores=True)
+                # passing keywords to underlying tree parser
+                t7 = dendropy.Tree.get_from_string(
+                        "((A,B),(C,D));",
+                        schema="newick",
+                        taxon_namespace=t3.taxon_namespace,
+                        suppress_internal_node_taxa=False,
+                        preserve_underscores=True)
 
-            # tree structure deep-copied from another tree
-            t8 = dendropy.Tree(t7)
-            assert t8 is not t7                             # Trees are distinct
-            assert t8.symmetric_difference(t7) == 0         # and structure is identical
-            assert t8.taxon_namespace is t7.taxon_namespace             # BUT taxa are not cloned.
-            nds3 = [nd for nd in t7.postorder_node_iter()]  # Nodes in the two trees
-            nds4 = [nd for nd in t8.postorder_node_iter()]  # are distinct objects,
-            for i, n in enumerate(nds3):                    # and can be manipulated
-                assert nds3[i] is not nds4[i]               # independentally.
-            egs3 = [eg for eg in t7.postorder_edge_iter()]  # Edges in the two trees
-            egs4 = [eg for eg in t8.postorder_edge_iter()]  # are also distinct objects,
-            for i, e in enumerate(egs3):                    # and can also be manipulated
-                assert egs3[i] is not egs4[i]               # independentally.
-            lves7 = t7.leaf_nodes()                         # Leaf nodes in the two trees
-            lves8 = t8.leaf_nodes()                         # are also distinct objects,
-            for i, lf in enumerate(lves3):                  # but order is the same,
-                assert lves7[i] is not lves8[i]             # and associated Taxon objects
-                assert lves7[i].taxon is lves8[i].taxon     # are the same.
+                # tree structure deep-copied from another tree
+                t8 = dendropy.Tree(t7)
+                assert t8 is not t7                             # Trees are distinct
+                assert t8.symmetric_difference(t7) == 0         # and structure is identical
+                assert t8.taxon_namespace is t7.taxon_namespace             # BUT taxa are not cloned.
+                nds3 = [nd for nd in t7.postorder_node_iter()]  # Nodes in the two trees
+                nds4 = [nd for nd in t8.postorder_node_iter()]  # are distinct objects,
+                for i, n in enumerate(nds3):                    # and can be manipulated
+                    assert nds3[i] is not nds4[i]               # independentally.
+                egs3 = [eg for eg in t7.postorder_edge_iter()]  # Edges in the two trees
+                egs4 = [eg for eg in t8.postorder_edge_iter()]  # are also distinct objects,
+                for i, e in enumerate(egs3):                    # and can also be manipulated
+                    assert egs3[i] is not egs4[i]               # independentally.
+                lves7 = t7.leaf_nodes()                         # Leaf nodes in the two trees
+                lves8 = t8.leaf_nodes()                         # are also distinct objects,
+                for i, lf in enumerate(lves3):                  # but order is the same,
+                    assert lves7[i] is not lves8[i]             # and associated Taxon objects
+                    assert lves7[i].taxon is lves8[i].taxon     # are the same.
 
-            # To create deep copy of a tree with a different taxon namespace,
-            # Use 'copy.deepcopy()'
-            t9 = copy.deepcopy(t7)
+                # To create deep copy of a tree with a different taxon namespace,
+                # Use 'copy.deepcopy()'
+                t9 = copy.deepcopy(t7)
 
-            # Or explicitly pass in a new TaxonNamespace instance
-            taxa = TaxonNamespace()
-            t9 = dendropy.Tree(t7, taxon_namespace=taxa)
-            assert t9 is not t7                             # As above, the trees are distinct
-            assert t9.symmetric_difference(t7) == 0         # and the structures are identical,
-            assert t9.taxon_namespace is not t7.taxon_namespace         # but this time, the taxa *are* different
-            assert t9.taxon_namespace is taxa                     # as the given TaxonNamespace is used instead.
-            lves3 = t7.leaf_nodes()                         # Leaf nodes (and, for that matter other nodes
-            lves5 = t9.leaf_nodes()                         # as well as edges) are also distinct objects
-            for i, lf in enumerate(lves3):                  # and the order is the same, as above,
-                assert lves7[i] is not lves9[i]             # but this time the associated Taxon
-                assert lves7[i].taxon is not lves9[i].taxon # objects are distinct though the taxon
-                assert lves7[i].taxon.label == lves9[i].taxon.label # labels are the same.
+                # Or explicitly pass in a new TaxonNamespace instance
+                taxa = TaxonNamespace()
+                t9 = dendropy.Tree(t7, taxon_namespace=taxa)
+                assert t9 is not t7                             # As above, the trees are distinct
+                assert t9.symmetric_difference(t7) == 0         # and the structures are identical,
+                assert t9.taxon_namespace is not t7.taxon_namespace         # but this time, the taxa *are* different
+                assert t9.taxon_namespace is taxa                     # as the given TaxonNamespace is used instead.
+                lves3 = t7.leaf_nodes()                         # Leaf nodes (and, for that matter other nodes
+                lves5 = t9.leaf_nodes()                         # as well as edges) are also distinct objects
+                for i, lf in enumerate(lves3):                  # and the order is the same, as above,
+                    assert lves7[i] is not lves9[i]             # but this time the associated Taxon
+                    assert lves7[i].taxon is not lves9[i].taxon # objects are distinct though the taxon
+                    assert lves7[i].taxon.label == lves9[i].taxon.label # labels are the same.
 
-            # can also call `read()` on a Tree object; each read adds the
-            # *replaces* the current tree with the definition specified in the
-            # data source
-            t10 = Tree()
-            t10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
-            t10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick", tree_offset=0)
-            t10.read_from_path("mle.tre", "newick")
+                # can also call `read()` on a Tree object; each read adds the
+                # *replaces* the current tree with the definition specified in the
+                # data source
+                t10 = Tree()
+                t10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
+                t10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick", tree_offset=0)
+                t10.read_from_path("mle.tre", "newick")
 
-            # to 'switch out' the TaxonNamespace of a tree, replace the reference and
-            # reindex the taxa:
-            t11 = Tree.get_from_string('((A,B),(C,D));', 'newick')
-            taxa = TaxonNamespace()
-            t11.taxon_namespace = taxa
-            t11.reindex_subcomponent_taxa()
+                # to 'switch out' the TaxonNamespace of a tree, replace the reference and
+                # reindex the taxa:
+                t11 = Tree.get_from_string('((A,B),(C,D));', 'newick')
+                taxa = TaxonNamespace()
+                t11.taxon_namespace = taxa
+                t11.reindex_subcomponent_taxa()
 
-            # You can also explicitly pass in a seed node:
-            seed = Node(label="root")
-            t12 = Tree(seed_node=seed)
-            assert t12.seed_node is seed
+                # You can also explicitly pass in a seed node:
+                seed = Node(label="root")
+                t12 = Tree(seed_node=seed)
+                assert t12.seed_node is seed
 
         """
         if len(args) > 1:
@@ -3680,7 +3683,7 @@ class Tree(
     ### Metrics -- Unary
 
     def B1(self):
-        """DEPRECATED: Use 'dendropy.calculate.treemeasure.B1()'."""
+        """DEPRECATED: Use :func:`dendropy.calculate.treemeasure.B1()`."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
                 old_construct="tree.B1()",
@@ -3768,22 +3771,16 @@ class Tree(
         return treecompare.find_missing_splits(self, other_tree)
 
     def symmetric_difference(self, other_tree):
-        """
-        Returns the symmetric_distance between this tree and the tree given by
-        `other`, i.e. the sum of splits found in one but not in both trees.
-        """
+        """DEPRECATED: Use 'dendropy.treecompare.symmetric_difference()'."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
-                old_construct="tree1.find_missing_splits(tree2)",
-                new_construct="from dendropy.calculate import treecompare\ntreecompare.find_missing_splits(tree1, tree2)")
+                old_construct="tree1.symmetric_difference(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.symmetric_difference(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.symmetric_difference(self, other_tree)
 
     def false_positives_and_negatives(self, other_tree):
-        """
-        Returns a tuple pair: all splits found in `other` but in self, and all
-        splits in self not found in other.
-        """
+        """DEPRECATED: Use 'dendropy.treecompare.false_positives_and_negatives()'."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
                 old_construct="tree1.false_positives_and_negatives(tree2)",
@@ -3792,9 +3789,7 @@ class Tree(
         return treecompare.false_positives_and_negatives(self, other_tree)
 
     def robinson_foulds_distance(self, other_tree):
-        """
-        Returns Robinson-Foulds distance between this tree and `other_tree`.
-        """
+        """DEPRECATED: Use 'dendropy.treecompare.weighted_robinson_foulds_distance()'."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module, and this method's functionality is available through the 'weighted_robinson_foulds_distance()' function. For the *unweighted* RF distance, see 'dendropy.calculate.treecompare.symmetric_difference()'.",
                 old_construct="tree1.robinson_foulds_distance(tree2)",
@@ -3803,9 +3798,7 @@ class Tree(
         return treecompare.weighted_robinson_foulds_distance(self, other_tree)
 
     def euclidean_distance(self, other_tree):
-        """
-        Returns Euclidean_distance distance between this tree and `other_tree`.
-        """
+        """DEPRECATED: Use 'dendropy.treecompare.euclidean_distance()'."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
                 old_construct="tree1.euclidean_distance(tree2)",
