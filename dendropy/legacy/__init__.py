@@ -16,10 +16,4 @@
 ##
 ##############################################################################
 
-"""
-DEPRECATED IN DENDROPY 4: USE `dendropy.simulate.popgensim` instead.
-"""
 
-from dendropy.simulate.popgensim import *
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.popgensim", "dendropy.simulate.popgensim")

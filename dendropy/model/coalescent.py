@@ -17,56 +17,68 @@
 ##############################################################################
 
 """
-Methods for working with Kingman's n-coalescent framework.
+Functions, classes, and methods for working with Kingman's n-coalescent
+framework.
 """
 
 import math
 from dendropy.utility import GLOBAL_RNG
 from dendropy.mathlib import probability
 
-
 ###############################################################################
 ## Calculations and statistics
 
 def discrete_time_to_coalescence(n_genes,
                                  pop_size=None,
+                                 n_to_coalesce=2,
                                  rng=None):
     """
-    A random draw from the "Kingman distribution" (discrete time version):
-    Time to go from n genes to n-1 genes; i.e. waiting time until two
-    lineages coalesce.
-    `pop_size` is the effective *haploid* population size; i.e., number of
-    genes in the population: 2 * N in a diploid population of N individuals, or
-    N in a haploid population of N individuals.
-    If `pop_size` is 1 or 0 or None, then time is in haploid population units;
-    i.e. where 1 unit of time equals 2N generations for a diploid population of
-    size N, or N generations for a haploid population of size N. Otherwise time
-    is in generations.
+    A random draw from the "Kingman distribution" (discrete time version): Time
+    to go from `n_genes` genes to `n_genes-1` genes in a discrete-time
+    Wright-Fisher population of `pop_size` genes; i.e. waiting time until
+    `n-genes` lineages coalesce in a population of `pop_size` genes.
 
+    Parameters
+    ----------
+    n_genes : integer
+        The number of genes in the sample.
+    pop_size : integer
+        The effective *haploid* population size; i.e., number of genes in the
+        population: 2 * N in a diploid population of N individuals, or N in a
+        haploid population of N individuals.
+    n_to_coalesce : integer
+        The waiting time that will be returned will be the waiting time for
+        this number of genes in the sample to coalesce.
+    rng : :class:`Random`
+        The random number generator instance.
 
+    Returns
+    -------
+    k : integer
+        A randomly-generated waiting time (in discrete generations) for
+        `n_to_coalesce` genes to coalesce out of a sample of `n_genes` in a
+        population of `pop_size` genes.
     """
     if not pop_size:
-        time_units = 1
+        time_units = 1.0
     else:
-        if haploid:
-            time_units = pop_size
-        else:
-            time_units = pop_size * 2
+        time_units = pop_size
     if rng is None:
         rng = GLOBAL_RNG
-    p = float(probability.binomial_coefficient(n_genes, 2)) / time_units
+    p = pop_size / probability.binomial_coefficient(n_genes, n_to_coalesce)
     tmrca = probability.geometric_rv(p)
     return tmrca * time_units
 
 def time_to_coalescence(n_genes,
         pop_size=None,
-        haploid=True,
         n_to_coalesce=2,
         rng=None):
     """
-    A random draw from the "Kingman distribution" (continuous time version):
-    Time to go from n genes to n-1 genes; i.e. waiting time until two
-    lineages coalesce.
+    A random draw from the "Kingman distribution" (discrete time version): Time
+    to go from `n_genes` genes to `n_genes-1` genes in a continuous-time
+    Wright-Fisher population of `pop_size` genes; i.e. waiting time until
+    `n-genes` lineages coalesce in a population of `pop_size` genes.
+
     Given the number of gene lineages in a sample, ``n_genes``, and a
     population size, ``pop_size``, this function returns a random number from
     an exponential distribution with rate $\choose(``pop_size``, 2)$.
@@ -76,7 +88,7 @@ def time_to_coalescence(n_genes,
     None, then time is in haploid population units; i.e. where 1 unit of time
     equals 2N generations for a diploid population of size N, or N generations
     for a haploid population of size N. Otherwise time is in generations.
-    Notes:
+
     The coalescence time, or the waiting time for the coalescence, of two
     gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $N$ an
@@ -85,31 +97,64 @@ def time_to_coalescence(n_genes,
     $n$ gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $\choose{N, 2}$ and
     an expectation of $\frac{1}{\choose{N, 2}}$.
+
+    Parameters
+    ----------
+    n_genes : integer
+        The number of genes in the sample.
+    pop_size : integer
+        The effective *haploid* population size; i.e., number of genes in the
+        population: 2 * N in a diploid population of N individuals, or N in a
+        haploid population of N individuals.
+    n_to_coalesce : integer
+        The waiting time that will be returned will be the waiting time for
+        this number of genes in the sample to coalesce.
+    rng : :class:`Random`
+        The random number generator instance to use.
+
+    Returns
+    -------
+    k : float
+        A randomly-generated waiting time (in continuous time) for
+        `n_to_coalesce` genes to coalesce out of a sample of `n_genes` in a
+        population of `pop_size` genes.
     """
     if rng is None:
         rng = GLOBAL_RNG
     if not pop_size:
-        time_units = 1
+        time_units = 1.0
     else:
-        if haploid:
-            time_units = pop_size
-        else:
-            time_units = pop_size * 2
+        time_units = pop_size
     rate = probability.binomial_coefficient(n_genes, n_to_coalesce)
     tmrca = rng.expovariate(rate)
     return tmrca * time_units
 
 def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     """
-    Expected (mean) value for the Time to the Most Recent Common Ancestor.
-    `n_genes` is the number of genes in the sample.
-    `pop_size` is the effective *haploid* population size; i.e., number of gene
-    in the population: 2 * N in a diploid population of N individuals,
-    or N in a haploid population of N individuals.
-    If `pop_size` is 1 or 0 or None, then time is in haploid population units;
-    i.e. where 1 unit of time equals 2N generations for a diploid population of
-    size N, or N generations for a haploid population of size N. Otherwise time
-    is in generations.
+    Expected (mean) value for the Time to the Most Recent Common Ancestor of
+    `n_to_coalesce` genes in a sample of `n_genes` drawn from a population of
+    `pop_size` genes.
+
+    Parameters
+    ----------
+    n_genes : integer
+        The number of genes in the sample.
+    pop_size : integer
+        The effective *haploid* population size; i.e., number of genes in the
+        population: 2 * N in a diploid population of N individuals, or N in a
+        haploid population of N individuals.
+    n_to_coalesce : integer
+        The waiting time that will be returned will be the waiting time for
+        this number of genes in the sample to coalesce.
+    rng : :class:`Random`
+        The random number generator instance.
+
+    Returns
+    -------
+    k : float
+        The expected waiting time (in continuous time) for `n_to_coalesce`
+        genes to coalesce out of a sample of `n_genes` in a population of
+        `pop_size` genes.
 
     """
     nc2 = probability.binomial_coefficient(n_genes, n_to_coalesce)
@@ -128,31 +173,15 @@ def coalesce_nodes(nodes,
     Returns a list of nodes that have not yet coalesced once `period` is
     exhausted.
 
-    `nodes` is a list of DendroPy Nodes representing a sample of
-    neutral genes (some, all, or none of these nodes may have
-    descendent nodes).
-
-    `pop_size` is the effective *haploid* population size; i.e., number of gene
-    in the population: 2 * N in a diploid population of N individuals,
-    or N in a haploid population of N individuals.
-
-    `period` is the time that the genes have to coalesce.  If `pop_size` is 1
-    or 0 or None, then time is in haploid population units; i.e. where 1 unit
-    of time equals 2N generations for a diploid population of size N, or N
-    generations for a haploid population of size N. Otherwise time is in
-    generations.
-
-    This function will a draw a coalescence time, `t`, from
-    an exponential distribution with a rate of `choose(k, 2)`, where `k` is the
-    number of nodes. If `period` is given and if this time is less
-    than `period`, or if `period` is not given, then two nodes are
-    selected at random from `nodes`, and coalesced: a new node is
-    created, and the two nodes are added as child_nodes to this node with
-    an edge length such the the total length from tip to the ancestral
-    node is equal to the depth of the deepest child + `t`. The two
-    nodes are removed from the list of nodes, and the new node is
-    added to it. `t` is then deducted from `period`, and the process
-    repeats.
+    This function will a draw a coalescence time, `t`, from an exponential
+    distribution with a rate of `choose(k, 2)`, where `k` is the number of
+    nodes. If `period` is given and if this time is less than `period`, or if
+    `period` is not given, then two nodes are selected at random from `nodes`,
+    and coalesced: a new node is created, and the two nodes are added as
+    child_nodes to this node with an edge length such the the total length from
+    tip to the ancestral node is equal to the depth of the deepest child + `t`.
+    The two nodes are removed from the list of nodes, and the new node is added
+    to it. `t` is then deducted from `period`, and the process repeats.
 
     The function ends and returns the list of nodes once `period` is
     exhausted or if any draw of `t` exceeds `period`, if `period` is
@@ -167,6 +196,35 @@ def coalesce_nodes(nodes,
     'grow' the edges, until all the the nodes coalesce. The edge
     lengths of the nodes passed to this method thus should not be
     modified or reset until the process is complete.
+
+    Parameters
+    ----------
+    nodes : iterable[:class:`Node`]
+        An interable of :class:`Node` objects representing a sample of neutral
+        genes (some, all, or none of these nodes may have descendent nodes).
+    pop_size : integer
+        The effective *haploid* population size; i.e., number of genes in the
+        population: 2 * N in a diploid population of N individuals, or N in a
+        haploid population of N individuals.
+    period : numeric
+        The time that the genes have to coalesce. If `pop_size` is 1 or 0 or
+        None, then time is in haploid population units; i.e. where 1 unit of
+        time equals 2N generations for a diploid population of size N, or N
+        generations for a haploid population of size N. Otherwise time is in
+        generations.
+    rng : :class:`Random`
+        The random number generator instance to use. If not specified, the
+        default RNG will be used.
+    use_expected_tmrca : bool
+        If `True`, then instead of random times, the *expected* times will be
+        used.
+
+    Returns
+    -------
+    nodes : iterable[:class:`Node`]
+        A list of nodes once `period` is exhausted or if any draw of `t`
+        exceeds `period`, if `period` is given or when there is only one node
+        left.
     """
 
     # idiot-check, because I can be an idiot
@@ -253,10 +311,34 @@ def coalesce_nodes(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def node_waiting_time_pairs(tree, check_ultrametricity_prec=0.0000001):
-    """Returns list of tuples of (node, coalescent interval [= time between
-    last coalescent event and current node age])"""
-    tree.calc_node_ages(check_prec=check_ultrametricity_prec)
+def node_waiting_time_pairs(tree, ultrametricity_check_prec=0.0000001):
+    """
+    Returns a list of tuples of (nodes, coalescent interval time) on the tree.
+    That is, each element in the list is tuple pair consisting of where: the
+    first element of the pair is an internal node representing a coalescent
+    event on the tree, and the second element of the pair is the time between
+    this coalescence event and the earlier (more recent) one.
+
+    Parameters
+    ----------
+    tree : :class:`Tree`
+        A tree instance.
+    ultrametricity_check_prec : float
+        When calculating the node ages, an error will be raised if the tree is
+        not ultrametric. This error may be due to floating-point or numerical
+        imprecision. You can set the precision of the ultrametricity validation
+        by setting the `ultrametricity_check_prec` parameter. E.g., use
+        `ultrametricity_check_prec=0.01` for a more relaxed precision, down to
+        2 decimal places. Use `ultrametricity_check_prec=False` to disable
+        checking of ultrametricity.
+
+    Returns
+    -------
+    x : list of tuples (node, coalescent interval)
+        Returns list of tuples of (node, coalescent interval [= time between
+        last coalescent event and current node age])
+    """
+    tree.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec)
     ages = [(n, n.age) for n in tree.internal_nodes()]
     ages.sort(key=lambda x: x[1])
     intervals = []
@@ -267,10 +349,34 @@ def node_waiting_time_pairs(tree, check_ultrametricity_prec=0.0000001):
         intervals.append( (nd, nd.age - prev_nd.age) )
     return intervals
 
-def extract_coalescent_frames(tree, check_ultrametricity_prec=0.0000001):
-    """Returns dictionary, with key = number of alleles, and values = waiting time for
-    coalescent for the given tree"""
-    nwti = node_waiting_time_pairs(tree, check_ultrametricity_prec=check_ultrametricity_prec)
+def extract_coalescent_frames(tree, ultrametricity_check_prec=0.0000001):
+    """
+    Returns a list of tuples describing the coalescent frames on the tree. That
+    is, each element in the list is tuple pair consisting of where: the first
+    element of the pair is the number of separate lineages remaining on the
+    tree at coalescence event, and the second element of the pair is the time
+    between this coalescence event and the earlier (more recent) one.
+
+    Parameters
+    ----------
+    tree : :class:`Tree`
+        A tree instance.
+    ultrametricity_check_prec : float
+        When calculating the node ages, an error will be raised if the tree is
+        not ultrametric. This error may be due to floating-point or numerical
+        imprecision. You can set the precision of the ultrametricity validation
+        by setting the `ultrametricity_check_prec` parameter. E.g., use
+        `ultrametricity_check_prec=0.01` for a more relaxed precision, down to
+        2 decimal places. Use `ultrametricity_check_prec=False` to disable
+        checking of ultrametricity.
+
+    Returns
+    -------
+    x : list of tuples (node, coalescent interval)
+        Returns dictionary, with key = number of alleles, and values = waiting
+        time for coalescent for the given tree
+    """
+    nwti = node_waiting_time_pairs(tree, ultrametricity_check_prec=ultrametricity_check_prec)
 #     num_genes = len(tree.taxon_namespace)
     num_genes = len(tree.leaf_nodes())
     num_genes_wt = {}
@@ -303,7 +409,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
         lp =  lp + math.log(k2N) - (k2N * t)
     return lp
 
-def log_probability_of_coalescent_tree(tree, haploid_pop_size, check_ultrametricity_prec=0.0000001):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_check_prec=0.0000001):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """

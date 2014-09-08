@@ -21,6 +21,14 @@ Environmental variables controlling DendroPy behavior (mostly for
 development/testing usage).
 """
 
-FAIL_INCOMPLETE_TESTS_ENVAR  =  "DENDROPY_FAIL_INCOMPLETE_TESTS"
-LOGGING_LEVEL_ENVAR          =  "DENDROPY_LOGGING_LEVEL"
-LOGGING_FORMAT_ENVAR         =  "DENDROPY_LOGGING_FORMAT"
+FAIL_INCOMPLETE_TESTS_ENVAR        = "DENDROPY_FAIL_INCOMPLETE_TESTS"
+LOGGING_LEVEL_ENVAR                = "DENDROPY_LOGGING_LEVEL"
+LOGGING_FORMAT_ENVAR               = "DENDROPY_LOGGING_FORMAT"
+
+# error: Turn the warning into an exception.
+# ignore: Discard the warning.
+# always: Always emit a warning.
+# default: Print the warning the first time it is generated from each location.
+# module: Print the warning the first time it is generated from each module.
+# once: Print the warning the first time it is generated.
+DEPRECATION_WARNING_FILTER         = "DENDROPY_DEPRECATION_WARNINGS"

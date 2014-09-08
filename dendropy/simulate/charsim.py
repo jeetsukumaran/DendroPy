@@ -22,9 +22,9 @@ implements functions and classes that simulate character data under various
 models.
 """
 
-# from dendropy.model.continuous import evolve_continuous_char
-# from dendropy.model.discrete import DiscreteCharacterEvolutionModel
-# from dendropy.model.discrete import DiscreteCharacterEvolver
+from dendropy.model.continuous import evolve_continuous_char
+from dendropy.model.discrete import DiscreteCharacterEvolutionModel
+from dendropy.model.discrete import DiscreteCharacterEvolver
 from dendropy.model.discrete import simulate_discrete_char_dataset
 from dendropy.model.discrete import simulate_discrete_char_matrix
 from dendropy.model.nucleotide import Hky85CharacterEvolutionModel

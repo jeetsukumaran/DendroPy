@@ -168,7 +168,8 @@ class TreeSummarizer(object):
 
     def annotate_nodes_and_edges(self,
             tree,
-            split_distribution):
+            split_distribution,
+            recalculate_splits=False):
         """
         Summarizes edge length and age information in `split_distribution` for
         each node on target tree `tree`.
@@ -187,8 +188,8 @@ class TreeSummarizer(object):
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        if not hasattr(tree, "split_edges"):
-            tree.update_splits()
+        if recalculate_splits or tree.splti_edges is None:
+            tree.encode_splits()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
         fields = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
@@ -219,7 +220,8 @@ class TreeSummarizer(object):
             set_edge_lengths=True,
             collapse_negative_edges=False,
             allow_negative_edges=False,
-            summarization_func=None):
+            summarization_func=None,
+            recalculate_splits=False):
         """
         Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
         result of `summarization_func` applied to the vector of ages of the
@@ -234,8 +236,8 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if not hasattr(tree, "split_edges"):
-            tree.update_splits()
+        if recalculate_splits or tree.split_edges is None:
+            tree.encode_splits()
         #'height',
         #'height_median',
         #'height_95hpd',
@@ -266,7 +268,8 @@ class TreeSummarizer(object):
     def summarize_edge_lengths_on_tree(self,
             tree,
             split_distribution,
-            summarization_func=None):
+            summarization_func=None,
+            recalculate_splits=False):
         """
         Sets the lengths of edges on `tree` (a `Tree` object) to the mean
         lengths of the corresponding edges on the input trees (in
@@ -277,8 +280,8 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if not hasattr(tree, "split_edges"):
-            tree.update_splits()
+        if recalculate_splits or tree.split_edges is None:
+            tree.encode_splits()
         for split, edge in tree.split_edges.items():
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):

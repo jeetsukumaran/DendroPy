@@ -86,15 +86,15 @@ from dendropy.datamodel import basemodel
 from dendropy.utility import text
 from dendropy.utility import container
 from dendropy.utility import error
+from dendropy.utility import deprecate
 
 ##############################################################################
 ## Helper functions
 
-def taxon_set_deprecation_warning():
-    error.dendropy_migration_warning(
-            "taxon_set",
-            "taxon_namespace",
-            "taxon_set")
+def taxon_set_deprecation_warning(stacklevel=6):
+    deprecate.dendropy_deprecation_warning(
+            message="Deprecated since DendroPy 4: 'taxon_set' will no longer be supported in future releases; use 'taxon_namespace' instead",
+            stacklevel=stacklevel)
 
 def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):
     if "taxon_set" in kwargs_dict:
@@ -105,6 +105,67 @@ def process_kwargs_dict_for_taxon_namespace(kwargs_dict, default=None):
             return kwargs_dict.pop("taxon_set", default)
     else:
         return kwargs_dict.pop("taxon_namespace", default)
+
+def process_attached_taxon_namespace_directives(kwargs_dict):
+    """
+    The following idioms are supported:
+
+        `taxon_namespace=tns`
+            Attach `tns` as the bound (single, unified) taxonomic namespace
+            reference for all objects.
+        `attached_taxon_namespace=tns`
+            Attach `tns` as the bound (single, unified) taxonomic namespace
+            reference for all objects.
+        `attach_taxon_namespace=True, attached_taxon_namespace=tns`
+            Attach `tns` as the bound (single, unified) taxonomic namespace
+            reference for all objects.
+        `attach_taxon_namespace=True`
+            Create a *new* :class:`TaxonNamespace` and set it as the bound
+            (single, unified) taxonomic namespace reference for all
+            objects.
+    """
+    deprecated_kw = [
+            "taxon_namespace",
+            "attach_taxon_namespace",
+            "attached_taxon_namespace",
+            "taxon_set",
+            "attach_taxon_set",
+            "attached_taxon_set",
+            ]
+    for kw in deprecated_kw:
+        if kw in kwargs_dict:
+            raise TypeError("'{}' is no longer supported as a keyword argument. Use the instance method 'attach_taxon_namespace()' of the data object instead".format(kw))
+    taxon_namespace = None
+    attach_taxon_namespace = False
+    if ( ("taxon_set" in kwargs_dict or "taxon_namespace" in kwargs_dict)
+            and ("attached_taxon_set" in kwargs_dict or "attached_taxon_namespace" in kwargs_dict)
+            ):
+        raise TypeError("Cannot specify both 'taxon_namespace'/'taxon_set' and 'attached_taxon_namespace'/'attached_taxon_set' together")
+    if "taxon_set" in kwargs_dict:
+        if "taxon_namespace" in kwargs_dict:
+            raise TypeError("Both 'taxon_namespace' and 'taxon_set' cannot be specified simultaneously: use 'taxon_namespace' ('taxon_set' is only supported for legacy reasons)")
+        kwargs_dict["taxon_namespace"] = kwargs_dict["taxon_set"]
+        del kwargs_dict["taxon_set"]
+    if "attached_taxon_set" in kwargs_dict:
+        if "attached_taxon_namespace" in kwargs_dict:
+            raise TypeError("Both 'attached_taxon_namespace' and 'attached_taxon_set' cannot be specified simultaneously: use 'attached_taxon_namespace' ('attached_taxon_set' is only supported for legacy reasons)")
+        kwargs_dict["attached_taxon_namespace"] = kwargs_dict["attached_taxon_set"]
+        del kwargs_dict["attached_taxon_set"]
+    if "taxon_namespace" in kwargs_dict:
+        taxon_namespace = kwargs_dict.pop("taxon_namespace", None)
+        attach_taxon_namespace = True
+    elif "attached_taxon_namespace" in kwargs_dict:
+        taxon_namespace = kwargs_dict["attached_taxon_namespace"]
+        if not isinstance(taxon_namespace, TaxonNamespace):
+            raise TypeError("'attached_taxon_namespace' argument must be an instance of TaxonNamespace")
+        attach_taxon_namespace = True
+    else:
+        taxon_namespace = None
+        attach_taxon_namespace = kwargs_dict.get("attach_taxon_namespace", False)
+    kwargs_dict.pop("taxon_namespace", None)
+    kwargs_dict.pop("attach_taxon_namespace", None)
+    kwargs_dict.pop("attached_taxon_namespace", None)
+    return (attach_taxon_namespace, taxon_namespace)
 
 ##############################################################################
 ## TaxonNamespaceAssociated
@@ -299,7 +360,6 @@ class TaxonNamespaceAssociated(object):
         """
         raise NotImplementedError()
 
-
     def update_taxon_namespace(self):
         """
         All :class:`Taxon` objects associated with `self` or members of `self`
@@ -316,9 +376,9 @@ class TaxonNamespaceAssociated(object):
         given :class:`TaxonNamespace` object `taxon_namespace` based on label values. Calls
         on `self.reindex_member_taxa()` to synchronize taxa.
         """
-        # error.dump_stack()
-        error.critical_deprecation_alert("'reindex_taxa()' will no longer be supported in future releases; use '{}.migrate_taxon_namespace()' instead".format(self.__class__.__name__),
-                stacklevel=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: '{class_name}.reindex_taxa()' will no longer be supported in future releases; use '{class_name}.migrate_taxon_namespace()' instead".format(class_name=self.__class__.__name__),
+                stacklevel=3)
         if taxon_namespace is not None:
             self.taxon_namespace = taxon_namespace
         if clear:
@@ -1321,16 +1381,11 @@ class TaxonSet(TaxonNamespace):
     be written using :class:`TaxonNamespace`. Old code needs to be updated to use
     :class:`TaxonNamespace`.
     """
-    # def __new__(cls):
-    #     # error.dump_stack()
-    #     error.critical_deprecation_alert("'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
-    #             stacklevel=2)
-    #     o = super(TaxonSet, cls).__new__(cls)
-    #     return o
 
     def __init__(self, *args, **kwargs):
-        error.critical_deprecation_alert("'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'TaxonSet' will no longer be supported in future releases; use 'TaxonNamespace' instead",
+                stacklevel=3)
         TaxonNamespace.__init__(self, *args, **kwargs)
 
 ##############################################################################

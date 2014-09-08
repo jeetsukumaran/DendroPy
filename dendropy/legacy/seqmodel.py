@@ -21,16 +21,16 @@ DEPRECATED IN DENDROPY 4: USE `dendropy.model.discrete` or
 `dendropy.model.nucleotide` instead.
 """
 
-## legacy support
-from dendropy.model.discrete import DiscreteCharacterEvolutionModel as SeqModel
-from dendropy.model.discrete import DiscreteCharacterEvolver as SeqEvolver
-from dendropy.model.discrete import simulate_discrete_char_dataset as generate_dataset
-from dendropy.model.discrete import simulate_discrete_char_matrix as generate_char_matrix
-from dendropy.model.nucleotide import Hky85CharacterEvolutionModel as Hky85SeqModel
-from dendropy.model.nucleotide import Jc69CharacterEvolutionModel as Jc69CharacterEvolutionModel
+# ## legacy support
+# from dendropy.model.discrete import DiscreteCharacterEvolutionModel as SeqModel
+# from dendropy.model.discrete import DiscreteCharacterEvolver as SeqEvolver
+# from dendropy.model.discrete import simulate_discrete_char_dataset as generate_dataset
+# from dendropy.model.discrete import simulate_discrete_char_matrix as generate_char_matrix
+# from dendropy.model.nucleotide import Hky85CharacterEvolutionModel as Hky85SeqModel
+# from dendropy.model.nucleotide import Jc69CharacterEvolutionModel as Jc69CharacterEvolutionModel
 
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.seqmodel", "dendropy.model.discrete")
+# from dendropy.utility import error
+# error.dendropy_module_migration_warning("dendropy.seqmodel", "dendropy.model.discrete")
 
 
 

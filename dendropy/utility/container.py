@@ -289,6 +289,10 @@ class OrderedSet(object):
         self.discard(key)
         return key
 
+    def clear(self):
+        self._item_set = set()
+        self._item_list = []
+
 ###############################################################################
 ## NormalizedBitmaskDict
 

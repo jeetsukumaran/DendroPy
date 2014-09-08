@@ -27,6 +27,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.utility import error
+from dendropy.utility import deprecate
 from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -218,8 +219,13 @@ class NewickReader(ioservice.DataReader):
                 else:
                     corrected = "default-unrooted"
             msg = StringIO()
-            error.critical_deprecation_alert("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
-                    stacklevel=4)
+            # error.critical_deprecation_alert("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
+            #         stacklevel=4)
+            deprecate.dendropy_deprecation_warning(
+                    preamble="Deprecated since DendroPy 4:",
+                    old_construct="{}={}".format(kw, kwargs[kw]),
+                    new_construct="rooting='{}'".format(corrected),
+                    stacklevel=7)
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
         if "allow_duplicate_taxon_labels" in kwargs:

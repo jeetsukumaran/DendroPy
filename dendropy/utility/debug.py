@@ -17,11 +17,21 @@
 ##############################################################################
 
 """
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.popgenstat` instead.
+Various data structures.
 """
 
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.popgenstat", "dendropy.calculate.popgenstat")
+def get_calling_code_info(stack_level):
+    frame = inspect.stack()[stacklevel]
+    filename = inspect.getfile(frame[0])
+    lineno = inspect.getlineno(frame[0])
+    return filename, lineno
 
-# legacy
-from dendropy.calculate.popgenstat import *
+def dump_stack(out=None):
+    if out is None:
+        out = sys.stderr
+    for frame, filename, line_num, func, source_code, source_index in inspect.stack()[2:]:
+        if source_code is None:
+            out.write("{}: {}\n".format(filename, line_num))
+        else:
+            out.write("{}: {}: {}\n".format(filename, line_num, source_code[source_index].strip()))
+

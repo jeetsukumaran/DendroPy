@@ -24,6 +24,7 @@ import math
 from functools import reduce
 import operator
 import dendropy
+from dendropy.utility import GLOBAL_RNG
 
 class PhylogeneticIndependentConstrasts(object):
     """
@@ -254,7 +255,7 @@ class PhylogeneticIndependentConstrasts(object):
                 nd.label = str(nd_results['pic_state_value'])
         return tree
 
-def evolve_continuous_char(node, rng, **kwargs):
+def evolve_continuous_char(node, rng=None, **kwargs):
     """
     Takes a node and a random number generator object, `rng` This function
     "evolves" a set of rates on the subtree descending from the  `node`.
@@ -311,6 +312,8 @@ def evolve_continuous_char(node, rng, **kwargs):
     at the endpoints.
 
     """
+    if rng is None:
+        rng = GLOBAL_RNG
     nd_iter = node.preorder_iter()
     # skip the first node -- it should already have a rate
     next(nd_iter)

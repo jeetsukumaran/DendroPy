@@ -30,6 +30,7 @@ import copy
 import sys
 from dendropy.utility import terminal
 from dendropy.utility import error
+from dendropy.utility import deprecate
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
@@ -481,8 +482,9 @@ class Node(
         """
         DEPRECATED: Use :meth:`Node.levelorder_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'levelorder_iter()' instead of 'level_order_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'level_order_iter()' will no longer be supported in future releases; use 'levelorder_iter()' instead",
+                stacklevel=3)
         return self.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_iter(self, filter_fn=None):
@@ -699,8 +701,9 @@ class Node(
         """
         Deprecated: use :meth:`Node.ageorder_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'ageorder_iter()' instead of 'age_order_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'age_order_iter()' will no longer be supported in future releases; use 'ageorder_iter()' instead",
+                stacklevel=3)
         return self.ageorder_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
@@ -1826,6 +1829,7 @@ class Tree(
             self.weight = None
             self.length_type = None
             self.seed_node = None
+            self.split_edges = None
             seed_node = kwargs.pop("seed_node", None)
             if seed_node is None:
                 self.seed_node = self.node_factory()
@@ -2507,8 +2511,9 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.levelorder_node_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'level_order_node_iter()' will no longer be supported in future releases; use 'levelorder_node_iter()' instead",
+                stacklevel=3)
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_node_iter(self, filter_fn=None):
@@ -2562,8 +2567,9 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.leaf_node_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'leaf_node_iter()' instead of 'leaf_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'leaf_iter()' will no longer be supported in future releases; use 'leaf_node_iter()' instead",
+                stacklevel=3)
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
     def ageorder_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
@@ -2609,8 +2615,9 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.ageorder_node_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'ageorder_node_iter()' instead of 'age_order_node_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'age_order_node_iter()' will no longer be supported in future releases; use 'ageorder_node_iter()' instead",
+                stacklevel=3)
         return self.ageorder_node_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
@@ -2780,8 +2787,9 @@ class Tree(
         """
         Deprecated: use :meth:`Tree.levelorder_edge_iter()` instead.
         """
-        error.critical_deprecation_alert("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
-                stacklevel=2)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'level_order_edge_iter()' will no longer be supported in future releases; use 'levelorder_edge_iter()' instead",
+                stacklevel=3)
         return self.levelorder_edge_iter(filter_fn=filter_fn)
 
     def inorder_edge_iter(self, filter_fn=None):
@@ -2887,9 +2895,9 @@ class Tree(
         Creates (and returns) a new TaxonNamespace object for `self` populated
         with taxa from this tree.
         """
-        # error.dump_stack()
-        error.critical_deprecation_alert("`Tree.infer_taxa()` will no longer be supported in future releases; use `Tree.update_taxon_namespace` instead",
-                stacklevel=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'infer_taxa()' will no longer be supported in future releases; use 'update_taxon_namespace()' instead",
+                stacklevel=3)
         taxon_namespace = taxonmodel.TaxonNamespace()
         for node in self.postorder_node_iter():
             if node.taxon is not None:
@@ -2901,9 +2909,9 @@ class Tree(
         """
         Remaps node taxon objects
         """
-        # error.dump_stack()
-        error.critical_deprecation_alert("`reindex_subcomponent_taxa()` will no longer be supported in future releases; use `{}.reconstruct_taxon_namespace()` instead".format(self.__class__.__name__),
-                stacklevel=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'reindex_subcomponent_taxa()' will no longer be supported in future releases; use 'reconstruct_taxon_namespace()' instead",
+                stacklevel=3)
         for node in self.postorder_node_iter():
             t = node.taxon
             if t:
@@ -3500,6 +3508,18 @@ class Tree(
         """
         treesplit.encode_splits(self, **kwargs)
 
+    def encode_splits(self, **kwargs):
+        """
+        Recalculates split hashes for tree.
+        """
+        treesplit.encode_splits(self, **kwargs)
+
+    def update_splits_encoding(self, **kwargs):
+        """
+        Recalculates split hashes for tree.
+        """
+        treesplit.encode_splits(self, **kwargs)
+
     ###########################################################################
     ### Ages, depths, branch lengths etc. (mutation)
 
@@ -3534,13 +3554,13 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def calc_node_ages(self, check_prec=0.0000001, internal_only=False):
+    def calc_node_ages(self, ultrametricity_check_prec=0.0000001, internal_only=False):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips. If the lengths of
-        different paths to the node differ by more than `check_prec`, then a
+        different paths to the node differ by more than `ultrametricity_check_prec`, then a
         ValueError exception will be raised indicating deviation from
-        ultrametricity. If `check_prec` is negative or False, then this check
+        ultrametricity. If `ultrametricity_check_prec` is negative or False, then this check
         will be skipped.
         """
         ages = []
@@ -3553,12 +3573,12 @@ class Tree(
             else:
                 first_child = ch[0]
                 node.age = first_child.age + first_child.edge.length
-                if not (check_prec is None or check_prec is False or check_prec < 0):
+                if not (ultrametricity_check_prec is None or ultrametricity_check_prec is False or ultrametricity_check_prec < 0):
                     for nnd in ch[1:]:
                         ocnd = nnd.age + nnd.edge.length
-                        if abs(node.age - ocnd) > check_prec:
+                        if abs(node.age - ocnd) > ultrametricity_check_prec:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
-                            raise ValueError("Tree is not ultrametric")
+                            raise error.UltrametricityError("Tree is not ultrametric")
                 ages.append(node.age)
         return ages
 
@@ -3579,22 +3599,22 @@ class Tree(
                 dists.append(node.root_distance)
         return dists
 
-    def internal_node_ages(self, check_prec=0.0000001):
+    def internal_node_ages(self, ultrametricity_check_prec=0.0000001):
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
-        ages = self.calc_node_ages(check_prec=check_prec, internal_only=True)
+        ages = self.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec, internal_only=True)
         ages.sort()
         return ages
 
-    def node_ages(self, check_prec=0.0000001, internal_only=False):
+    def node_ages(self, ultrametricity_check_prec=0.0000001, internal_only=False):
         """
         Returns list of ages of all nodes on tree.
         NOTE: Changed from DendroPy3: this function now returns the ages of
         *ALL* nodes. To get only internal node ages, use
         `Tree.internal_node_ages`.
         """
-        ages = self.calc_node_ages(check_prec=check_prec, internal_only=internal_only)
+        ages = self.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec, internal_only=internal_only)
         ages.sort()
         return ages
 
@@ -3661,37 +3681,55 @@ class Tree(
 
     def B1(self):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.B1()'."""
-        error.dendropy_construct_migration_warning("tree.B1()", "dendropy.calculate.treemeasure.B1(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.B1()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.B1(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.B1(self)
 
     def colless_tree_imbalance(self, normalize="max"):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.colless_tree_imbalance()'."""
-        error.dendropy_construct_migration_warning("tree.colless_tree_imbalance()", "dendropy.calculate.treemeasure.colless_tree_imbalance(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.colless_tree_imbalance()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.colless_tree_imbalance(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.colless_tree_imbalance(self, normalize)
 
     def pybus_harvey_gamma(self, prec=0.00001):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.pybus_harvey_gamma()'."""
-        error.dendropy_construct_migration_warning("tree.pybus_harvey_gamma()", "dendropy.calculate.treemeasure.pybus_harvey_gamma(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.pybus_harvey_gamma()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.pybus_harvey_gamma(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.pybus_harvey_gamma(self, prec)
 
     def N_bar(self):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.N_bar()'."""
-        error.dendropy_construct_migration_warning("tree.N_bar()", "dendropy.calculate.treemeasure.N_bar(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.N_bar()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.N_bar(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.N_bar(self)
 
     def sackin_index(self, normalize=True):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.sackin_index()'."""
-        error.dendropy_construct_migration_warning("tree.sackin_index()", "dendropy.calculate.treemeasure.sackin_index(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.sackin_index()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.sackin_index(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.sackin_index(self, normalize)
 
     def treeness(self):
         """DEPRECATED: Use 'dendropy.calculate.treemeasure.treeness()'."""
-        error.dendropy_construct_migration_warning("tree.treeness()", "dendropy.calculate.treemeasure.treeness(tree)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Unary statistics on trees are now implemented in the 'dendropy.calculate.treemeasure' module.",
+                old_construct="tree.treeness()",
+                new_construct="from dendropy.calculate import treemeasure\ntreemeasure.treeness(tree)")
         from dendropy.calculate import treemeasure
         return treemeasure.treeness(self)
 
@@ -3722,7 +3760,10 @@ class Tree(
 
     def find_missing_splits(self, other_tree):
         """DEPRECATED: Use 'dendropy.treecompare.find_missing_splits()'."""
-        error.dendropy_construct_migration_warning("tree1.find_missing_splits(tree2)", "dendropy.calculate.treecompare.find_missing_splits(tree1, tree2)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
+                old_construct="tree1.find_missing_splits(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.find_missing_splits(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.find_missing_splits(self, other_tree)
 
@@ -3731,7 +3772,10 @@ class Tree(
         Returns the symmetric_distance between this tree and the tree given by
         `other`, i.e. the sum of splits found in one but not in both trees.
         """
-        error.dendropy_construct_migration_warning("tree1.symmetric_difference(tree2)", "dendropy.calculate.treecompare.symmetric_difference(tree1, tree2)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
+                old_construct="tree1.find_missing_splits(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.find_missing_splits(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.symmetric_difference(self, other_tree)
 
@@ -3740,7 +3784,10 @@ class Tree(
         Returns a tuple pair: all splits found in `other` but in self, and all
         splits in self not found in other.
         """
-        error.dendropy_construct_migration_warning("tree1.false_positives_and_negatives(tree2)", "dendropy.calculate.treecompare.false_positives_and_negatives(tree1, tree2)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
+                old_construct="tree1.false_positives_and_negatives(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.false_positives_and_negatives(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.false_positives_and_negatives(self, other_tree)
 
@@ -3748,7 +3795,10 @@ class Tree(
         """
         Returns Robinson-Foulds distance between this tree and `other_tree`.
         """
-        error.dendropy_construct_migration_warning("tree1.robinson_foulds_distance(tree2)", "dendropy.calculate.treecompare.weighted_robinson_foulds_distance(tree1, tree2)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module, and this method's functionality is available through the 'weighted_robinson_foulds_distance()' function. For the *unweighted* RF distance, see 'dendropy.calculate.treecompare.symmetric_difference()'.",
+                old_construct="tree1.robinson_foulds_distance(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.weighted_robinson_foulds_distance(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.weighted_robinson_foulds_distance(self, other_tree)
 
@@ -3756,7 +3806,10 @@ class Tree(
         """
         Returns Euclidean_distance distance between this tree and `other_tree`.
         """
-        error.dendropy_construct_migration_warning("tree1.euclidean_distance(tree2)", "dendropy.calculate.treecompare.euclidean_distance(tree1, tree2)")
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
+                old_construct="tree1.euclidean_distance(tree2)",
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.euclidean_distance(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.euclidean_distance(self, other_tree)
 
@@ -4974,14 +5027,14 @@ class TreeList(
                     % (self.taxon_namespace.split_bitmask_string(split), k))
         found = 0
         total = 0
+        recalculate_splits = kwargs.get("recalculate_splits", False)
         for tree in self:
-            if not hasattr(tree, "split_edges"):
-                treesplit.encode_splits(tree)
+            if recalculate_splits or tree.split_edges is None:
+                tree.encode_splits()
             total += 1
             if split in tree.split_edges:
                 found += 1
         return float(found)/total
-
 
 ###############################################################################
 ### AsciiTreePlot

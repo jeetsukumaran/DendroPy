@@ -1061,7 +1061,7 @@ class CharacterMatrix(
 
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
-            raise error.TaxonNamespaceError()
+            raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
             if taxon not in self._taxon_sequence_map:
                 self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
@@ -1086,7 +1086,7 @@ class CharacterMatrix(
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
-            raise error.TaxonNamespaceError()
+            raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
             if taxon in self._taxon_sequence_map:
                 self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
@@ -1113,7 +1113,7 @@ class CharacterMatrix(
                shallow-copy of the corresponding sequence from `other_matrix`.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
-            raise error.TaxonNamespaceError()
+            raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
             self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
@@ -1138,7 +1138,7 @@ class CharacterMatrix(
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
-            raise error.TaxonNamespaceError()
+            raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
             if taxon in self._taxon_sequence_map:
                 self._taxon_sequence_map[taxon].extend(other_matrix._taxon_sequence_map[taxon])
@@ -1168,7 +1168,7 @@ class CharacterMatrix(
                currently associated with that :class:`Taxon` reference in `self`.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
-            raise error.TaxonNamespaceError()
+            raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
             if taxon in self._taxon_sequence_map:
                 self._taxon_sequence_map[taxon].extend(other_matrix._taxon_sequence_map[taxon])
@@ -1336,7 +1336,6 @@ class CharacterMatrix(
     ### Legacy
 
     def _get_taxon_seq_map(self):
-        # error.dump_stack(msg)
         warnings.warn("All methods and features of 'CharacterMatrix.taxon_seq_map' have been integrated directly into 'CharacterMatrix', or otherwise replaced entirely",
                 stacklevel=2)
         return self

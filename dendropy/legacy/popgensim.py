@@ -17,10 +17,9 @@
 ##############################################################################
 
 """
-Split calculation and management.
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesum` instead.
+DEPRECATED IN DENDROPY 4: USE `dendropy.simulate.popgensim` instead.
 """
 
-from dendropy.calculate.treesum import *
-from dendropy.utility import error
-error.dendropy_module_migration_warning("dendropy.treesum", "dendropy.calculate.treesum")
+# from dendropy.simulate.popgensim import *
+# from dendropy.utility import error
+# error.dendropy_module_migration_warning("dendropy.popgensim", "dendropy.simulate.popgensim")

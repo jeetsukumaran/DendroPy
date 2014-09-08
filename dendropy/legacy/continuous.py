@@ -20,11 +20,13 @@
 DEPRECATED IN DENDROPY 4: USE `dendropy.model.continuous` instead.
 """
 
-from dendropy.utility import error
 from dendropy.model import continuous
+from dendropy.utility import deprecate
 
-def simulate_continuous(node, rng, **kwargs):
-    error.dendropy_construct_migration_warning(
-            "dendropy.continuous.simulate_continuous",
-            "dendropy.model.continuous.evolve_continuous_char")
+def simulate_continuous(node, rng=None, **kwargs):
+    deprecate.dendropy_deprecation_warning(
+            preamble="The 'dendropy.continuous' module has moved to 'dendropy.model.continuous', and this function has been renamed 'evolve_continuous_char()'.",
+            old_construct="from dendropy import continuous\ncontinuous.simulate_continuous(...)",
+            new_construct="from dendropy.model import continuous\ncontinuous.evolve_continuous_char(...)",
+            epilog="Note that this function is also available through 'dendropy.simulate.charsim.evolve_continuous_char(...)'.")
     return continuous.evolve_continuous_char(node, rng, **kwargs)

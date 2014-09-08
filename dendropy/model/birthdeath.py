@@ -478,7 +478,7 @@ def fit_pure_birth_model(**kwargs):
                 A :class:`Tree` object. The tree needs to be ultrametric for the
                 internal node ages (time from each internal node to the tips)
                 to make sense. The precision by which the ultrametricity is
-                checked can be specified using the `check_prec` keyword
+                checked can be specified using the `ultrametricity_check_prec` keyword
                 argument (see below). If `tree` is given, then
                 `internal_node_ages` cannot be given, and vice versa. If `tree`
                 is not given, then `internal_node_ages` must be given.
@@ -492,13 +492,13 @@ def fit_pure_birth_model(**kwargs):
         While the following is optional, and is only used if internal node ages
         need to be calculated (i.e., 'tree' is passed in).
 
-            check_prec : float
+            ultrametricity_check_prec : float
                 When calculating the node ages, an error will be raised if the tree in
                 o ultrametric. This error may be due to floating-point or numerical
                 imprecision. You can set the precision of the ultrametricity validation
-                by setting the `check_prec` parameter. E.g., use `check_prec=0.01` for
+                by setting the `ultrametricity_check_prec` parameter. E.g., use `ultrametricity_check_prec=0.01` for
                 a more relaxed precision, down to 2 decimal places. Use
-                `check_prec=False` to disable checking of ultrametricity precision.
+                `ultrametricity_check_prec=False` to disable checking of ultrametricity precision.
 
     Returns
     -------
@@ -554,7 +554,7 @@ def fit_pure_birth_model(**kwargs):
     """
     tree = kwargs.get("tree", None)
     if tree is not None:
-        internal_node_ages = tree.internal_node_ages(check_prec=kwargs.get("check_prec", 0.0000001))
+        internal_node_ages = tree.internal_node_ages(ultrametricity_check_prec=kwargs.get("ultrametricity_check_prec", 0.0000001))
     else:
         try:
             internal_node_ages = kwargs["internal_node_ages"]
@@ -591,7 +591,7 @@ def fit_pure_birth_model(**kwargs):
     }
     return result
 
-def fit_pure_birth_model_to_tree(tree, check_prec=0.0000001):
+def fit_pure_birth_model_to_tree(tree, ultrametricity_check_prec=0.0000001):
     """
     Calculates the maximum-likelihood estimate of the birth rate a tree under a
     Yule (pure-birth) model.
@@ -624,5 +624,5 @@ def fit_pure_birth_model_to_tree(tree, check_prec=0.0000001):
                 idx+1, m["birth_rate"], m["log_likelihood"]))
 
     """
-    return fit_pure_birth_model(tree=tree, check_prec=check_prec)
+    return fit_pure_birth_model(tree=tree, ultrametricity_check_prec=ultrametricity_check_prec)
 

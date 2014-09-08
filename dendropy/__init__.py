@@ -58,6 +58,23 @@ from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
 from dendropy.datamodel.datasetmodel import DataSet
 
 ###############################################################################
+## Legacy Support
+
+from dendropy.legacy import coalescent
+from dendropy.legacy import continuous
+from dendropy.legacy import treecalc
+from dendropy.legacy import popgensim
+from dendropy.legacy import popgenstat
+from dendropy.legacy import reconcile
+from dendropy.legacy import seqmodel
+from dendropy.legacy import seqsim
+from dendropy.legacy import treecalc
+from dendropy.legacy import treemanip
+from dendropy.legacy import treesim
+from dendropy.legacy import treesplit
+from dendropy.legacy import treesum
+
+###############################################################################
 ## PACKAGE METADATA
 
 __project__ = "DendroPy"

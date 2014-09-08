@@ -18,7 +18,8 @@
 
 import collections
 import warnings
-from dendropy.utility import error
+from dendropy.datamodel import taxonmodel
+from dendropy.utility import deprecate
 
 ###############################################################################
 ## IOService
@@ -30,10 +31,10 @@ class IOService(object):
 
     @staticmethod
     def attached_taxon_set_deprecation_warning():
-        error.dendropy_migration_warning(
-                "attached_taxon_set",
-                "attached_taxon_namespace",
-                "attached_taxon_set")
+        deprecate.dendropy_deprecation_warning(
+                old_construct="attached_taxon_set",
+                new_construct="attached_taxon_namespace",
+                stacklevel=5)
 
     def __init__(self):
         self.attached_taxon_namespace = None
@@ -50,7 +51,7 @@ class IOService(object):
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):
         ignore_unrecognized_keyword_arguments = kwargs_dict.pop("ignore_unrecognized_keyword_arguments", False)
-        attach_taxon_namespace, taxon_namespace = error.process_attached_taxon_namespace_directives(kwargs_dict)
+        attach_taxon_namespace, taxon_namespace = taxonmodel.process_attached_taxon_namespace_directives(kwargs_dict)
         if attach_taxon_namespace or (taxon_namespace is not None):
             self.attached_taxon_namespace = taxon_namespace
         if kwargs_dict and not ignore_unrecognized_keyword_arguments:

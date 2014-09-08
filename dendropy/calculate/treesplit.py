@@ -588,7 +588,7 @@ class SplitDistribution(object):
             assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
-            tree.calc_node_ages(check_prec=self.ultrametricity_precision)
+            tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)
         if tree.weight is None:
             weight_to_use = 1.0
         else:

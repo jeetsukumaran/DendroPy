@@ -350,7 +350,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_add_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
-        with self.assertRaises(error.TaxonNamespaceError):
+        with self.assertRaises(error.TaxonNamespaceIdentityError):
             c1.add_sequences(c2)
 
     def test_add_sequences(self):
@@ -368,7 +368,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_replace_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
-        with self.assertRaises(error.TaxonNamespaceError):
+        with self.assertRaises(error.TaxonNamespaceIdentityError):
             c1.replace_sequences(c2)
 
     def test_replace_sequences(self):
@@ -385,7 +385,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_update_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
-        with self.assertRaises(error.TaxonNamespaceError):
+        with self.assertRaises(error.TaxonNamespaceIdentityError):
             c1.update_sequences(c2)
 
     def test_update_sequences(self):
@@ -403,7 +403,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_extend_sequences_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
-        with self.assertRaises(error.TaxonNamespaceError):
+        with self.assertRaises(error.TaxonNamespaceIdentityError):
             c1.extend_sequences(c2)
 
     def test_extend_sequences(self):
@@ -420,7 +420,7 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
     def test_extend_matrix_fail(self):
         c1 = charmatrixmodel.CharacterMatrix()
         c2 = charmatrixmodel.CharacterMatrix()
-        with self.assertRaises(error.TaxonNamespaceError):
+        with self.assertRaises(error.TaxonNamespaceIdentityError):
             c1.extend_matrix(c2)
 
     def test_extend_matrix(self):

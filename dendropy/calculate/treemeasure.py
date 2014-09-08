@@ -80,7 +80,7 @@ class PatristicDistanceMatrix(object):
         except KeyError:
             return self._path_steps[taxon2][taxon1]
 
-    def calc(self, tree=None, create_midpoints=None):
+    def calc(self, tree=None, create_midpoints=None, recalculate_splits=False):
         """
         Calculates the distances. Note that the path length (in number of
         steps) between taxa that span the root will be off by one if
@@ -89,8 +89,8 @@ class PatristicDistanceMatrix(object):
         if tree is not None:
             self.tree = tree
         assert self.tree is not None
-        if not hasattr(self.tree, "split_edges"):
-            treesplit.encode_splits(self.tree)
+        if recalculate_splits or self.tree.split_edges is None:
+            self.tree.encode_splits()
         self.taxon_namespace = self.tree.taxon_namespace
         self._pat_dists = {}
         self._path_steps = {}
@@ -145,14 +145,14 @@ class PatristicDistanceMatrix(object):
         """
         return sum(self.distances())
 
-def patristic_distance(tree, taxon1, taxon2):
+def patristic_distance(tree, taxon1, taxon2, recalculate_splits=False):
     """
     Given a tree with splits encoded, and two taxa on that tree, returns the
     patristic distance between the two. Much more inefficient than constructing
     a PatristicDistanceMatrix object.
     """
-    if not hasattr(tree, "split_edges"):
-        treesplit.encode_splits(tree)
+    if recalculate_splits or tree.split_edges is None:
+        tree.encode_splits()
     mrca = tree.mrca(taxa=[taxon1, taxon2])
     dist = 0
     n = tree.find_node(lambda x: x.taxon == taxon1)
@@ -265,7 +265,7 @@ def pybus_harvey_gamma(tree, prec=0.00001):
     speciation_ages = []
     n = 0
     if tree.seed_node.age is None:
-        tree.calc_node_ages(check_prec=prec)
+        tree.calc_node_ages(ultrametricity_check_prec=prec)
     for node in tree.postorder_node_iter():
         if len(node.child_nodes()) == 2:
             speciation_ages.append(node.age)

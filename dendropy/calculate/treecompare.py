@@ -22,123 +22,205 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 
 from math import sqrt
 from dendropy.calculate import treesplit
+from dendropy.utility import error
 
 ###############################################################################
 ## Public Functions
 
-def symmetric_difference(tree1, tree2):
+def symmetric_difference(tree1, tree2, recalculate_splits=False):
     """
     Returns *unweighted* Robinson-Foulds distance between two trees.
 
-    Trees need to share the same :class:`TaxonNamespace` reference have been
-    decorated with the `encode_splits` method of the splits module.
+    Trees need to share the same :class:`TaxonNamespace` reference. The splits
+    hash bitmasks of the trees must be correct for the current tree structures
+    (by calling :meth:`Tree.encode_splits()` method) or the
+    `recalculate_splits` argument must be `True` to force recalculation of
+    splits.
 
     Parameters
     ----------
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
-    tree2 : Tree instance
+        bitmasks encoded.
+    tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
+        bitmasks encoded.
+    recalculate_splits : bool
+        If `True`, then the split hash bitmasks on *both* trees will be updated
+        before comparison. If `False` (default) then the split hash bitmasks
+        will only be calculate for a :class:`Tree` object if they have not been
+        calculated before, either explicitly or implicitly.
 
     Returns
     -------
     d : int
-        The unweighted Robinson-Foulds distance between `tree1` and `tree2`.
+        The symmetric difference (a.k.a. the unweighted Robinson-Foulds
+        distance) between `tree1` and `tree2`.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.calculate import treecompare
+        tns = dendropy.TaxonNamespace()
+        tree1 = tree.get_from_path(
+                "t1.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree2 = tree.get_from_path(
+                "t2.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree1.encode_splits()
+        tree2.encode_splits()
+        print(treecompare.symmetric_difference(tree1, tree2))
+
     """
-    t = false_positives_and_negatives(tree1, tree2)
+    t = false_positives_and_negatives(
+            tree1,
+            tree2,
+            recalculate_splits=recalculate_splits)
     return t[0] + t[1]
 
-def unweighted_robinson_foulds_distance(tree1, tree2):
+def unweighted_robinson_foulds_distance(tree1, tree2, recalculate_splits=False):
     """
     Alias for :func:`symmetric_difference()`.
     """
-    return symmetric_difference(tree1, tree2)
+    return symmetric_difference(tree1, tree2, recalculate_splits)
 
 def weighted_robinson_foulds_distance(
         tree1,
         tree2,
-        edge_weight_attr="length"):
+        edge_weight_attr="length",
+        recalculate_splits=False):
     """
     Returns *weighted* Robinson-Foulds distance between two trees based on
     `edge_weight_attr`.
 
-    Trees need to share the same :class:`TaxonNamespace` reference have been
-    decorated with the `encode_splits` method of the splits module.
+    Trees need to share the same :class:`TaxonNamespace` reference. The splits
+    hash bitmasks of the trees must be correct for the current tree structures
+    (by calling :meth:`Tree.encode_splits()` method) or the
+    `recalculate_splits` argument must be `True` to force recalculation of
+    splits.
 
     Parameters
     ----------
-
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
-    tree2 : Tree instance
+        bitmasks encoded.
+    tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
+        bitmasks encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
+    recalculate_splits : bool
+        If `True`, then the split hash bitmasks on *both* trees will be updated
+        before comparison. If `False` (default) then the split hash bitmasks
+        will only be calculate for a :class:`Tree` object if they have not been
+        calculated before, either explicitly or implicitly.
 
     Returns
     -------
     d : float
         The edge-weighted Robinson-Foulds distance between `tree1` and `tree2`.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.calculate import treecompare
+        tns = dendropy.TaxonNamespace()
+        tree1 = tree.get_from_path(
+                "t1.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree2 = tree.get_from_path(
+                "t2.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree1.encode_splits()
+        tree2.encode_splits()
+        print(treecompare.weighted_robinson_foulds_distance(tree1, tree2))
+
     """
     df = lambda length_diffs: sum([abs(i[0] - i[1]) for i in length_diffs])
     return _splits_distance(tree1,
                            tree2,
                            dist_func=df,
                            edge_weight_attr=edge_weight_attr,
-                           value_type=float)
+                           value_type=float,
+                           recalculate_splits=recalculate_splits)
 
-def false_positives_and_negatives(reference_tree, test_tree):
+def false_positives_and_negatives(reference_tree, test_tree, recalculate_splits=False):
     """
     Counts and returns number of false positive splits (splits found in
     `test_tree` but not in `reference_tree`) and false negative splits (splits
     found in `reference_tree` but not in `test_tree`).
 
-    Trees need to share the same :class:`TaxonNamespace` reference have been
-    decorated with the `encode_splits` method of the splits module.
+    Trees need to share the same :class:`TaxonNamespace` reference. The splits
+    hash bitmasks of the trees must be correct for the current tree structures
+    (by calling :meth:`Tree.encode_splits()` method) or the
+    `recalculate_splits` argument must be `True` to force recalculation of
+    splits.
 
     Parameters
     ----------
-
-    tree1 : :class:`dendropy.datamodel.Tree` object
+    reference_tree : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
-    tree2 : Tree instance
+        same :class:`TaxonNamespace` reference as `test_tree` and must have split
+        bitmasks encoded.
+    test_tree : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
+        same :class:`TaxonNamespace` reference as `reference_tree` and must have split
+        bitmasks encoded.
+    recalculate_splits : bool
+        If `True`, then the split hash bitmasks on *both* trees will be updated
+        before comparison. If `False` (default) then the split hash bitmasks
+        will only be calculate for a :class:`Tree` object if they have not been
+        calculated before, either explicitly or implicitly.
 
     Returns
     -------
     t : tuple(int)
         A pair of integers, with first integer being the number of false
         positives and the second being the number of false negatives.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.calculate import treecompare
+        tns = dendropy.TaxonNamespace()
+        tree1 = tree.get_from_path(
+                "t1.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree2 = tree.get_from_path(
+                "t2.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree1.encode_splits()
+        tree2.encode_splits()
+        print(treecompare.false_positives_and_negatives(tree1, tree2))
+
     """
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
-
     if reference_tree.taxon_namespace is not test_tree.taxon_namespace:
-        raise TypeError("Trees have different TaxonNamespace objects: %s vs. %s" \
-                % (hex(id(reference_tree.taxon_namespace)), hex(id(test_tree.taxon_namespace))))
-    if not hasattr(reference_tree, "split_edges"):
+        raise error.TaxonNamespaceIdentityError(reference_tree, test_tree)
+    if recalculate_splits:
         treesplit.encode_splits(reference_tree)
-    if not hasattr(test_tree, "split_edges"):
         treesplit.encode_splits(test_tree)
+    else:
+        if reference_tree.split_edges is None:
+            reference_tree.encode_splits()
+        if test_tree.split_edges is None:
+            test_tree.encode_splits()
     for split in reference_tree.split_edges:
         if split in test_tree.split_edges:
             pass
@@ -159,56 +241,114 @@ def euclidean_distance(
         tree1,
         tree2,
         edge_weight_attr="length",
-        value_type=float):
+        value_type=float,
+        recalculate_splits=False):
     """
     Returns the Euclidean distance (a.k.a. Felsenstein's 2004 "branch length
     distance") between two trees based on `edge_weight_attr`.
 
-    Trees need to share the same :class:`TaxonNamespace` reference have been
-    decorated with the `encode_splits` method of the splits module.
+    Trees need to share the same :class:`TaxonNamespace` reference. The splits
+    hash bitmasks of the trees must be correct for the current tree structures
+    (by calling :meth:`Tree.encode_splits()` method) or the
+    `recalculate_splits` argument must be `True` to force recalculation of
+    splits.
 
     Parameters
     ----------
-
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
-    tree2 : Tree instance
+        bitmasks encoded.
+    tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded using
-        :func:`dendropy.calculate.treesplit.encode_splits()`.
+        bitmasks encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
+    recalculate_splits : bool
+        If `True`, then the split hash bitmasks on *both* trees will be updated
+        before comparison. If `False` (default) then the split hash bitmasks
+        will only be calculate for a :class:`Tree` object if they have not been
+        calculated before, either explicitly or implicitly.
+
     Returns
     -------
     d : int
         The Euclidean distance between `tree1` and `tree2`.
+
+    Examples
+    --------
+
+        import dendropy
+        from dendropy.calculate import treecompare
+        tns = dendropy.TaxonNamespace()
+        tree1 = tree.get_from_path(
+                "t1.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree2 = tree.get_from_path(
+                "t2.nex",
+                "nexus",
+                taxon_namespace=tns)
+        tree1.encode_splits()
+        tree2.encode_splits()
+        print(treecompare.euclidean_distance(tree1, tree2))
+
     """
     df = lambda length_diffs: sqrt(sum([pow(i[0] - i[1], 2) for i in length_diffs]))
     return _splits_distance(tree1,
                            tree2,
                            dist_func=df,
                            edge_weight_attr=edge_weight_attr,
-                           value_type=value_type)
+                           value_type=value_type,
+                           recalculate_splits=recalculate_splits)
 
-def find_missing_splits(first_tree, other_tree):
+def find_missing_splits(reference_tree, test_tree, recalculate_splits=False):
     """
-    Returns a list of splits that are in first_tree,  but
-    not in `other_tree`.
+    Returns a list of splits that are in `reference_tree`, but
+    not in `test_tree`.
+
+    Trees need to share the same :class:`TaxonNamespace` reference. The splits
+    hash bitmasks of the trees must be correct for the current tree structures
+    (by calling :meth:`Tree.encode_splits()` method) or the
+    `recalculate_splits` argument must be `True` to force recalculation of
+    splits.
+
+    Parameters
+    ----------
+    reference_tree : :class:`dendropy.datamodel.Tree` object
+        The first tree of the two trees being compared. This must share the
+        same :class:`TaxonNamespace` reference as `test_tree` and must have split
+        bitmasks encoded.
+    test_tree : :class:`dendropy.datamodel.Tree` object
+        The second tree of the two trees being compared. This must share the
+        same :class:`TaxonNamespace` reference as `reference_tree` and must have split
+        bitmasks encoded.
+    recalculate_splits : bool
+        If `True`, then the split hash bitmasks on *both* trees will be updated
+        before comparison. If `False` (default) then the split hash bitmasks
+        will only be calculate for a :class:`Tree` object if they have not been
+        calculated before, either explicitly or implicitly.
+
+    Returns
+    -------
+    s : list[splits]
+        A list of splits that are in the first tree but not in the second.
+
     """
     missing = []
-    if first_tree.taxon_namespace is not other_tree.taxon_namespace:
-        raise TypeError("Trees have different TaxonNamespace objects: %s vs. %s" \
-                % (hex(id(first_tree.taxon_namespace)), hex(id(other_tree.taxon_namespace))))
-    if not hasattr(first_tree, "split_edges"):
-        first_tree.encode_splits()
-    if not hasattr(other_tree, "split_edges"):
-        other_tree.encode_splits()
-    for split in first_tree.split_edges:
-        if split in other_tree.split_edges:
+    if reference_tree.taxon_namespace is not test_tree.taxon_namespace:
+        raise error.TaxonNamespaceIdentityError(reference_tree, test_tree)
+    if recalculate_splits:
+        treesplit.encode_splits(reference_tree)
+        treesplit.encode_splits(test_tree)
+    else:
+        if reference_tree.split_edges is None:
+            reference_tree.encode_splits()
+        if test_tree.split_edges is None:
+            test_tree.encode_splits()
+    for split in reference_tree.split_edges:
+        if split in test_tree.split_edges:
             pass
         else:
             missing.append(split)
@@ -225,29 +365,35 @@ def robinson_foulds_distance(tree1, tree2, edge_weight_attr="length"):
     """
     return weighted_robinson_foulds_distance(tree1, tree2, edge_weight_attr)
 
-def mason_gamer_kellogg_score(tree1, tree2):
+def mason_gamer_kellogg_score(tree1, tree2, recalculate_splits=False):
     """
     Mason-Gamer and Kellogg. Testing for phylogenetic conflict among molecular
     data sets in the tribe Triticeae (Gramineae). Systematic Biology (1996)
     vol. 45 (4) pp. 524
     """
     if tree1.taxon_namespace is not tree2.taxon_namespace:
-        raise Exception("Input tres have different TaxonNamespace object references")
-    if not hasattr(tree1, "split_edges"):
-        tree1.update_splits()
+        raise error.TaxonNamespaceIdentityError(tree1, tree2)
+    if recalculate_splits:
+        tree1.encode_splits()
+        tree2.encode_splits()
+    else:
+        if tree1.split_edges is None:
+            tree1.encode_splits()
+        if tree2.split_edges is None:
+            tree2.encode_splits()
     se1 = tree1.split_edges
-    if not hasattr(tree2, "split_edges"):
-        tree2.update_splits()
     se2 = tree2.split_edges
     splits = sorted(list(set(se1.keys() + se2.keys())))
 
 ###############################################################################
 ## Supporting
 
-def _get_length_diffs(tree1,
+def _get_length_diffs(
+        tree1,
         tree2,
         edge_weight_attr="length",
         value_type=float,
+        recalculate_splits=False,
         split_length_diff_map=False):
     """
     Returns a list of tuples, with the first element of each tuple representing
@@ -259,12 +405,15 @@ def _get_length_diffs(tree1,
     length_diffs = []
     split_length_diffs = {}
     if tree1.taxon_namespace is not tree2.taxon_namespace:
-        raise TypeError("Trees have different TaxonNamespace objects: %s vs. %s" \
-                % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
-    if not hasattr(tree1, "split_edges"):
+        raise error.TaxonNamespaceIdentityError(tree1, tree2)
+    if recalculate_splits:
         treesplit.encode_splits(tree1)
-    if not hasattr(tree2, "split_edges"):
         treesplit.encode_splits(tree2)
+    else:
+        if tree1.split_edges is None:
+            tree1.encode_splits()
+        if tree2.split_edges is None:
+            tree2.encode_splits()
     split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
     split_edges1_ref = tree1.split_edges
     for split in split_edges1_ref: # O n : 2*bind
@@ -329,11 +478,13 @@ def _get_length_diffs(tree1,
     else:
         return length_diffs
 
-def _splits_distance(tree1,
-                    tree2,
-                    dist_func,
-                    edge_weight_attr="length",
-                    value_type=float):
+def _splits_distance(
+        tree1,
+        tree2,
+        dist_func,
+        edge_weight_attr="length",
+        value_type=float,
+        recalculate_splits=False):
     """
     Returns distance between two trees, each represented by a dictionary of
     splits (as split_mask strings) to edges, using `dist_func` to calculate the
@@ -341,6 +492,11 @@ def _splits_distance(tree1,
     that takes a list of pairs of values, where the values correspond to the edge
     lengths of a given split on tree1 and tree2 respectively.
     """
-    length_diffs = _get_length_diffs(tree1, tree2, edge_weight_attr=edge_weight_attr, value_type=value_type)
+    length_diffs = _get_length_diffs(
+            tree1,
+            tree2,
+            edge_weight_attr=edge_weight_attr,
+            value_type=value_type,
+            recalculate_splits=recalculate_splits)
     return dist_func(length_diffs)
 

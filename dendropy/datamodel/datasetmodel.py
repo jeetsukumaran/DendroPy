@@ -31,6 +31,7 @@ import copy
 import sys
 from dendropy.utility import container
 from dendropy.utility import error
+from dendropy.utility import deprecate
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treemodel
@@ -338,10 +339,43 @@ class DataSet(
                 (single, unified) taxonomic namespace reference for all
                 objects.
         """
-        attach_taxon_namespace, taxon_namespace = error.process_attached_taxon_namespace_directives(kwargs_dict)
+        attach_taxon_namespace, taxon_namespace = taxonmodel.process_attached_taxon_namespace_directives(kwargs_dict)
         if attach_taxon_namespace or (taxon_namespace is not None):
             self.attach_taxon_namespace(taxon_namespace)
         return attach_taxon_namespace, taxon_namespace
+
+    def unify_taxon_namespaces(self,
+            taxon_namespace=None,
+            case_sensitive_label_mapping=True,
+            attach_taxon_namespace=True):
+        """
+        Reindices taxa across all subcomponents, mapping to single taxon set.
+        """
+        if len(self.taxon_namespaces) or len(self.tree_lists) or len(self.char_matrices):
+            self.taxon_namespaces.clear()
+            if taxon_namespace is None:
+                taxon_namespace = self.new_taxon_namespace()
+            taxon_mapping_memo = {}
+            for tree_list in self.tree_lists:
+                tree_list.migrate_taxon_namespace(
+                        taxon_namespace=taxon_namespace,
+                        unify_taxa_by_label=True,
+                        case_sensitive_label_mapping=case_sensitive_label_mapping,
+                        taxon_mapping_memo=taxon_mapping_memo)
+            for char_matrix in self.char_matrices:
+                char_matrix.migrate_taxon_namespace(
+                        taxon_namespace=taxon_namespace,
+                        unify_taxa_by_label=True,
+                        case_sensitive_label_mapping=case_sensitive_label_mapping,
+                        taxon_mapping_memo=taxon_mapping_memo)
+        if attach_taxon_namespace:
+            self.attach_taxon_namespace(taxon_namespace)
+
+    def unify_taxa(self, taxon_set=None, bind=None):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: '{class_name}.unify_taxa()' will no longer be supported in future releases; use '{class_name}.unify_taxon_namespace()' instead".format(class_name=self.__class__.__name__))
+        self.unify_taxon_namespaces(taxon_namespace=taxon_set,
+                attach_taxon_namespace=bind)
 
     ### **Legacy** ###
 
@@ -355,12 +389,10 @@ class DataSet(
         self.taxon_sets_deprecation_warning()
     taxon_sets = property(_get_taxon_sets, _set_taxon_sets, _del_taxon_sets)
 
-    def taxon_sets_deprecation_warning(self):
-        error.dendropy_migration_warning(
-                "taxon_sets",
-                "taxon_namespaces",
-                "taxon_sets",
-                start_offset=4)
+    def taxon_sets_deprecation_warning(self, stacklevel=4):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'taxon_sets' will no longer be supported in future releases; use 'taxon_namespaces' instead",
+                stacklevel=stacklevel)
 
     def _get_attached_taxon_set(self):
         self.attached_taxon_set_deprecation_warning()
@@ -372,55 +404,45 @@ class DataSet(
         self.attached_taxon_set_deprecation_warning()
     attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
-    def attached_taxon_set_deprecation_warning(self):
-        error.dendropy_migration_warning(
-                "attached_taxon_set",
-                "attached_taxon_namespace",
-                "attached_taxon_set",
-                start_offset=4)
+    def attached_taxon_set_deprecation_warning(self, stacklevel=4):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
+                stacklevel=stacklevel)
 
     def add_taxon_set(self, taxon_set):
         """
         DEPRECATED: Use `add_taxon_namespace()` instead.
         """
-        error.dendropy_migration_warning(
-                "add_taxon_set",
-                "add_taxon_namespace",
-                "add_taxon_set",
-                start_offset=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'add_taxon_set' will no longer be supported in future releases; use 'add_taxon_namespace' instead",
+                stacklevel=stacklevel)
         return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
         """
         DEPRECATED: Use `new_taxon_namespace()` instead.
         """
-        error.dendropy_migration_warning(
-                "new_taxon_set",
-                "new_taxon_namespaces",
-                "new_taxon_set",
-                start_offset=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'new_taxon_set' will no longer be supported in future releases; use 'new_taxon_namespace' instead",
+                stacklevel=stacklevel)
         return self.new_taxon_namespace(*args, **kwargs)
 
     def attach_taxon_set(self, taxon_set=None):
         """
         DEPRECATED: Use `attach_taxon_namespace()` instead.
         """
-        error.dendropy_migration_warning(
-                "attach_taxon_set",
-                "attach_taxon_namespace",
-                "attach_taxon_set",
-                start_offset=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'attach_taxon_set' will no longer be supported in future releases; use 'attach_taxon_namespace' instead",
+                stacklevel=stacklevel)
         return self.attach_taxon_namespace(taxon_namespace=taxon_set)
 
     def detach_taxon_set(self):
         """
         DEPRECATED: Use `detach_taxon_namespace()` instead.
         """
-        error.dendropy_migration_warning(
-                "detach_taxon_set",
-                "detach_taxon_namespace",
-                "detach_taxon_set",
-                start_offset=4)
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
+                stacklevel=stacklevel)
         self.detach_taxon_namespace()
 
     ### TreeList ###
