@@ -44,27 +44,24 @@ class PhylogeneticIndependentConstrasts(object):
             char_matrix,
             polytomy_strategy=None):
         """
-        Arguments:
 
-            `tree`
-                Tree to use
+        Parameters
+        ----------
+        tree : :class:`Tree` object
+            Tree to use.
+        char_matrix : :class:`ContinuousCharacterMatrix`
+            ContinuousCharacterMatrix that is the source of the data
+        polytomy_strategy
+            One of: 'error', 'ignore', 'resolve':
 
-            `char_matrix`
-                ContinuousCharacterMatrix that is the source of the data
+                'error'
+                    throws an error if tree has polytomies
+                'ignore'
+                    no error, but raw contrasts will not be calculated for
+                    polytomies
+                'resolve'
 
-            `polytomy_strategy`
-                One of: 'error', 'ignore', 'resolve':
-
-                    'error'
-                        throws an error if tree has polytomies
-                    'ignore'
-                        no error, but raw contrasts will not be calculated for
-                        polytomies
-                    'resolve'
-                        will be arbitarily-resolved with 0-length branches
-
-                Defaults to 'error' if not specified or set to None.
-
+            Defaults to 'error' if not specified or set to None.
         """
         self._tree = None
         self._char_matrix = None

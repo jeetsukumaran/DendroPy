@@ -20,6 +20,15 @@
 DEPRECATED IN DENDROPY 4: USE `dendropy.simulate.popgensim` instead.
 """
 
-# from dendropy.simulate.popgensim import *
-# from dendropy.utility import error
-# error.dendropy_module_migration_warning("dendropy.popgensim", "dendropy.simulate.popgensim")
+from dendropy.utility import deprecate
+from dendropy.simulate import popgensim
+
+class FragmentedPopulations(popgensim.FragmentedPopulations):
+
+    def __init__(self, *args, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="The 'dendropy.popgensim' module has moved to 'dendropy.simulate.popgensim'.",
+                old_construct="from dendropy import popgensim\npopgensim.FragmentedPopulations(...)",
+                new_construct="from dendropy.simulate import popgensim\npopgensim.FragmentedPopulations(...)",
+                )
+        popgensim.FragmentedPopulations.__init__(self, *args, **kwargs)
