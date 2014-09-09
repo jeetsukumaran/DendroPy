@@ -40,10 +40,10 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     comps = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        ignore_states = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        states_to_ignores = set([state_alphabet.gap_state, state_alphabet.no_data_state])
     else:
         attr = "fundamental_indexes"
-        ignore_states = set()
+        states_to_ignores = set()
     for vidx, i in enumerate(char_vectors[:-1]):
         for j in char_vectors[vidx+1:]:
             if len(i) != len(j):
@@ -54,7 +54,7 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
             for cidx, c in enumerate(i):
                 c1 = c
                 c2 = j[cidx]
-                if c1 in ignore_states or c2 in ignore_states:
+                if c1 in states_to_ignores or c2 in states_to_ignores:
                     continue
                 counted += 1
                 total_counted += 1
@@ -94,14 +94,14 @@ def _num_segregating_sites(char_vectors, state_alphabet, ignore_uncertain=True):
     s = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        ignore_states = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        states_to_ignores = set([state_alphabet.gap_state, state_alphabet.no_data_state])
     else:
         attr = "fundamental_indexes"
-        ignore_states = set()
+        states_to_ignores = set()
     for i, c1 in enumerate(char_vectors[0]):
         for v in char_vectors[1:]:
             c2 = v[i]
-            if c1 in ignore_states or c2 in ignore_states:
+            if c1 in states_to_ignores or c2 in states_to_ignores:
                 continue
             f1 = getattr(c1, attr)
             f2 = getattr(c2, attr)
@@ -213,6 +213,12 @@ class PopulationPairSummaryStatistics(object):
         self.wattersons_theta = 0.0
         self.wakeleys_psi = 0.0
         self.tajimas_d = 0.0
+        if self.ignore_uncertain:
+            self.state_attr = "fundamental_indexes_with_gaps_as_missing"
+            self.states_to_ignores = set([self.state_alphabet.gap_state, self.state_alphabet.no_data_state])
+        else:
+            self.state_attr = "fundamental_indexes"
+            self.states_to_ignores = set()
         self.calc()
 
     def calc(self):
@@ -279,13 +285,12 @@ class PopulationPairSummaryStatistics(object):
                 for cidx, c in enumerate(sx):
                     c1 = c
                     c2 = sy[cidx]
-                    if (not self.ignore_uncertain) \
-                        or (c1.value is not self.state_alphabet.gap \
-                            and c2.value is not self.state_alphabet.gap \
-                            and len(c1.value.fundamental_ids) == 1 \
-                            and len(c2.value.fundamental_ids) == 1):
-                        if c1.value is not c2.value:
-                            diffs += 1
+                    if c1 in self.states_to_ignores or c2 in self.states_to_ignores:
+                        continue
+                    f1 = getattr(c1, self.state_attr)
+                    f2 = getattr(c2, self.state_attr)
+                    if f1 != f2:
+                        diffs += 1
         dxy = float(1)/(len(self.pop1_seqs) * len(self.pop2_seqs)) * float(diffs)
         return dxy
 
@@ -304,13 +309,12 @@ class PopulationPairSummaryStatistics(object):
                 for cidx, c in enumerate(sx):
                     c1 = c
                     c2 = sy[cidx]
-                    if (not self.ignore_uncertain) \
-                        or (c1.value is not self.state_alphabet.gap \
-                            and c2.value is not self.state_alphabet.gap \
-                            and len(c1.value.fundamental_ids) == 1 \
-                            and len(c2.value.fundamental_ids) == 1):
-                        if c1.value is not c2.value:
-                            diffs += 1
+                    if c1 in self.states_to_ignores or c2 in self.states_to_ignores:
+                        continue
+                    f1 = getattr(c1, self.state_attr)
+                    f2 = getattr(c2, self.state_attr)
+                    if f1 != f2:
+                        diffs += 1
                 ss_diffs += (float(diffs - mean_diff) ** 2)
         return float(ss_diffs)/(len(self.pop1_seqs)*len(self.pop2_seqs))
 
