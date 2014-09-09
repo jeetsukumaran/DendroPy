@@ -25,10 +25,10 @@ import dendropy
 from dendropy.mathlib import probability
 
 ###############################################################################
-## internal functions: generally taking lower-level data, such as vectors etc.
+## internal functions: generally taking lower-level data, such as sequences etc.
 ###############################################################################
 
-def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
+def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
     """
     Returns pair of values: total number of pairwise differences observed between
     all sequences, and mean number of pairwise differences pair base.
@@ -40,12 +40,12 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     comps = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignores = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
     else:
         attr = "fundamental_indexes"
-        states_to_ignores = set()
-    for vidx, i in enumerate(char_vectors[:-1]):
-        for j in char_vectors[vidx+1:]:
+        states_to_ignore = set()
+    for vidx, i in enumerate(char_sequences[:-1]):
+        for j in char_sequences[vidx+1:]:
             if len(i) != len(j):
                 raise Exception("sequences of unequal length")
             diff = 0
@@ -54,7 +54,7 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
             for cidx, c in enumerate(i):
                 c1 = c
                 c2 = j[cidx]
-                if c1 in states_to_ignores or c2 in states_to_ignores:
+                if c1 in states_to_ignore or c2 in states_to_ignore:
                     continue
                 counted += 1
                 total_counted += 1
@@ -67,14 +67,14 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
             sq_diff += (diff ** 2)
     return sum_diff, mean_diff / comps, sq_diff
 
-def _nucleotide_diversity(char_vectors, state_alphabet, ignore_uncertain=True):
+def _nucleotide_diversity(char_sequences, state_alphabet, ignore_uncertain=True):
     """
     Returns $\pi$, the proportional nucleotide diversity, calculated for a
-    list of character vectors.
+    list of character sequences.
     """
-    return _count_differences(char_vectors, state_alphabet, ignore_uncertain)[1]
+    return _count_differences(char_sequences, state_alphabet, ignore_uncertain)[1]
 
-def _average_number_of_pairwise_differences(char_vectors, state_alphabet, ignore_uncertain=True):
+def _average_number_of_pairwise_differences(char_sequences, state_alphabet, ignore_uncertain=True):
     """
     Returns $k$ (Tajima 1983; Wakely 1996), calculated for a set of sequences:
 
@@ -84,24 +84,24 @@ def _average_number_of_pairwise_differences(char_vectors, state_alphabet, ignore
     $i$th and $j$th sequence, and $n$ is the number of DNA sequences
     sampled.
     """
-    sum_diff, mean_diff, sq_diff = _count_differences(char_vectors, state_alphabet, ignore_uncertain)
-    return sum_diff / probability.binomial_coefficient(len(char_vectors), 2)
+    sum_diff, mean_diff, sq_diff = _count_differences(char_sequences, state_alphabet, ignore_uncertain)
+    return sum_diff / probability.binomial_coefficient(len(char_sequences), 2)
 
-def _num_segregating_sites(char_vectors, state_alphabet, ignore_uncertain=True):
+def _num_segregating_sites(char_sequences, state_alphabet, ignore_uncertain=True):
     """
     Returns the raw number of segregating sites (polymorphic sites).
     """
     s = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignores = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
     else:
         attr = "fundamental_indexes"
-        states_to_ignores = set()
-    for i, c1 in enumerate(char_vectors[0]):
-        for v in char_vectors[1:]:
+        states_to_ignore = set()
+    for i, c1 in enumerate(char_sequences[0]):
+        for v in char_sequences[1:]:
             c2 = v[i]
-            if c1 in states_to_ignores or c2 in states_to_ignores:
+            if c1 in states_to_ignore or c2 in states_to_ignore:
                 continue
             f1 = getattr(c1, attr)
             f2 = getattr(c2, attr)
@@ -171,11 +171,11 @@ def tajimas_d(char_matrix, ignore_uncertain=True):
     """
     Returns Tajima's D.
     """
-    vectors = char_matrix.sequences()
-    num_sequences = len(vectors)
-    avg_num_pairwise_differences = _average_number_of_pairwise_differences(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    sequences = char_matrix.sequences()
+    num_sequences = len(sequences)
+    avg_num_pairwise_differences = _average_number_of_pairwise_differences(sequences, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
     num_segregating_sites = _num_segregating_sites(
-            vectors,
+            sequences,
             char_matrix.default_state_alphabet,
             ignore_uncertain=ignore_uncertain)
     return _tajimas_d(num_sequences, avg_num_pairwise_differences, num_segregating_sites)
@@ -184,12 +184,12 @@ def wattersons_theta(char_matrix, ignore_uncertain=True):
     """
     Returns Watterson's Theta (per sequence)
     """
-    vectors = char_matrix.sequences()
+    sequences = char_matrix.sequences()
     num_segregating_sites = _num_segregating_sites(
-            vectors,
+            sequences,
             char_matrix.default_state_alphabet,
             ignore_uncertain=ignore_uncertain)
-    a1 = sum([1.0/i for i in range(1, len(vectors))])
+    a1 = sum([1.0/i for i in range(1, len(sequences))])
     return float(num_segregating_sites) / a1
 
 ###############################################################################
@@ -215,10 +215,10 @@ class PopulationPairSummaryStatistics(object):
         self.tajimas_d = 0.0
         if self.ignore_uncertain:
             self.state_attr = "fundamental_indexes_with_gaps_as_missing"
-            self.states_to_ignores = set([self.state_alphabet.gap_state, self.state_alphabet.no_data_state])
+            self.states_to_ignore = set([self.state_alphabet.gap_state, self.state_alphabet.no_data_state])
         else:
             self.state_attr = "fundamental_indexes"
-            self.states_to_ignores = set()
+            self.states_to_ignore = set()
         self.calc()
 
     def calc(self):
@@ -285,7 +285,7 @@ class PopulationPairSummaryStatistics(object):
                 for cidx, c in enumerate(sx):
                     c1 = c
                     c2 = sy[cidx]
-                    if c1 in self.states_to_ignores or c2 in self.states_to_ignores:
+                    if c1 in self.states_to_ignore or c2 in self.states_to_ignore:
                         continue
                     f1 = getattr(c1, self.state_attr)
                     f2 = getattr(c2, self.state_attr)
@@ -309,7 +309,7 @@ class PopulationPairSummaryStatistics(object):
                 for cidx, c in enumerate(sx):
                     c1 = c
                     c2 = sy[cidx]
-                    if c1 in self.states_to_ignores or c2 in self.states_to_ignores:
+                    if c1 in self.states_to_ignore or c2 in self.states_to_ignore:
                         continue
                     f1 = getattr(c1, self.state_attr)
                     f2 = getattr(c2, self.state_attr)
@@ -318,10 +318,15 @@ class PopulationPairSummaryStatistics(object):
                 ss_diffs += (float(diffs - mean_diff) ** 2)
         return float(ss_diffs)/(len(self.pop1_seqs)*len(self.pop2_seqs))
 
-def derived_state_matrix(char_vectors, ancestral_seq=None):
+def derived_state_matrix(
+        char_matrix,
+        ancestral_sequence=None,
+        derived_state_alphabet=None,
+        ignore_uncertain=False,
+        ):
     """
-    Given a list of CharVector objects, and a reference ancestral sequence,
-    this returns a list of strings corresponding to the list of CharVector
+    Given a list of CharDataSequence objects, and a reference ancestral sequence,
+    this returns a list of strings corresponding to the list of CharDataSequence
     objects, where a '0' indicates the ancestral state and '1' a derived state.
 
     e.g.
@@ -339,30 +344,57 @@ def derived_state_matrix(char_vectors, ancestral_seq=None):
                 0000110000
                 0001110011
     """
-    m = []
-    for cv in char_vectors:
-        m.append([])
-        for i, s in enumerate(cv):
-            if cv[i].value is ancestral_seq[i].value:
-                m[-1].append(0)
+    if derived_state_alphabet is None:
+        derived_state_alphabet = dendropy.StateAlphabet(
+                fundamental_states="01",
+                polymorphic_states=None,
+                ambiguous_states=None,
+                no_data_symbol="?",
+                gap_symbol="-")
+    derived_matrix = dendropy.StandardCharacterMatrix(
+            taxon_namespace=char_matrix.taxon_namespace,
+            default_state_alphabet=derived_state_alphabet)
+    if ignore_uncertain:
+        attr = "fundamental_indexes_with_gaps_as_missing"
+        states_to_ignore = set([char_matrix.default_state_alphabet.gap_state, char_matrix.default_state_alphabet.no_data_state])
+    else:
+        attr = "fundamental_indexes"
+        states_to_ignore = set()
+    if ancestral_sequence is None:
+        ancestral_sequence = char_matrix[0]
+    ancestral_fundamental_ids = []
+    for idx, c1 in enumerate(ancestral_sequence):
+        if c1 in states_to_ignore:
+            ancestral_fundamental_ids.append(None)
+        else:
+            ancestral_fundamental_ids.append(getattr(c1, attr))
+    for taxon in char_matrix:
+        s1 =  char_matrix[taxon]
+        for idx, c2 in enumerate(s1):
+            if ancestral_fundamental_ids[idx] is None or c2 in states_to_ignore:
+                derived_matrix[taxon].append(derived_matrix.default_state_alphabet["?"])
+                continue
+            f2 = getattr(c2, attr)
+            if f2 == ancestral_fundamental_ids[idx]:
+                derived_matrix[taxon].append(derived_matrix.default_state_alphabet["0"])
             else:
-                m[-1].append(1)
-    return m
+                derived_matrix[taxon].append(derived_matrix.default_state_alphabet["1"])
+    return derived_matrix
 
-def unfolded_site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
+def unfolded_site_frequency_spectrum(char_sequences, ancestral_seq=None, pad=True):
     """
-    Returns the site frequency spectrum of list of CharVector objects given by char_vectors,
+    Returns the site frequency spectrum of list of CharDataSequence objects given by char_sequences,
     with reference to the ancestral sequence given by ancestral_seq. If ancestral_seq
-    is None, then the first sequence in char_vectors is taken to be the ancestral
+    is None, then the first sequence in char_sequences is taken to be the ancestral
     sequence.
     """
     if ancestral_seq is None:
-        ancestral_seq = char_vectors[0]
-    dsm = derived_state_matrix(char_vectors, ancestral_seq)
+        ancestral_seq = char_sequences[0]
+    dsm = derived_state_matrix(char_sequences, ancestral_seq)
     sites = zip(*dsm) # transpose
     freqs = {}
     if pad:
-        for i in range(len(char_vectors)+1):
+        for i in range(len(char_sequences)+1):
             freqs[i] = 0
     for s in sites:
         p = sum(s)

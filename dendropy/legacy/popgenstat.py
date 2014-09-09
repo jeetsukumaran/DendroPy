@@ -63,15 +63,15 @@ def wattersons_theta(char_matrix, ignore_uncertain=True):
             )
     return popgenstat.wattersons_theta(char_matrix=char_matrix, ignore_uncertain=ignore_uncertain)
 
-def derived_state_matrix(char_vectors, ancestral_seq=None):
+def derived_state_matrix(char_matrix, ancestral_seq=None):
     deprecate.dendropy_deprecation_warning(
             preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
             old_construct="from dendropy import popgenstat\npopgenstat.derived_state_matrix(...)",
             new_construct="from dendropy.calculate import popgenstat\npopgenstat.derived_state_matrix(...)",
             )
     return popgenstat.derived_state_matrix(
-            char_vectors=char_vectors,
-            ancestral_seq=ancestral_seq)
+            char_matrix=char_matrix,
+            ancestral_sequence=ancestral_seq)
 
 def unfolded_site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
     deprecate.dendropy_deprecation_warning(

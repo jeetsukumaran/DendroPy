@@ -1626,7 +1626,10 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
         Unnamed args are passed to clone_from.
         """
+        default_state_alphabet = kwargs.pop("default_state_alphabet", None)
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
+        if default_state_alphabet is not None:
+            self.default_state_alphabet = default_state_alphabet
 
 ###############################################################################
 ## Main Character Matrix Factory Function
