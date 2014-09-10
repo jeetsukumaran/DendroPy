@@ -1565,6 +1565,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         treesplit.encode_splits(self, **kwargs)
 
+    def encode_splits(self, **kwargs):
+        """
+        Recalculates split hashes for tree.
+        """
+        treesplit.encode_splits(self, **kwargs)
+
     ###########################################################################
     ## Ages, depths, branch lengths etc. (mutation)
 
@@ -1945,6 +1951,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy import treecalc
         if other_tree.taxon_set is not self.taxon_set:
             other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+            other_tree.encode_splits()
         return treecalc.false_positives_and_negatives(self, other_tree)
 
     def robinson_foulds_distance(self, other_tree):
@@ -1954,6 +1961,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy import treecalc
         if other_tree.taxon_set is not self.taxon_set:
             other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+            other_tree.encode_splits()
         return treecalc.robinson_foulds_distance(self, other_tree)
 
     def euclidean_distance(self, other_tree):
@@ -1963,6 +1971,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy import treecalc
         if other_tree.taxon_set is not self.taxon_set:
             other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+            other_tree.encode_splits()
         return treecalc.euclidean_distance(self, other_tree)
 
     def _check_children_for_split_compatibility(self, nd_list, split):
