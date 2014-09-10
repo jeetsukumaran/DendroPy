@@ -73,15 +73,15 @@ def derived_state_matrix(char_matrix, ancestral_seq=None):
             char_matrix=char_matrix,
             ancestral_sequence=ancestral_seq)
 
-def unfolded_site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
+def unfolded_site_frequency_spectrum(char_matrix, ancestral_seq=None, pad=True):
     deprecate.dendropy_deprecation_warning(
             preamble="The 'dendropy.popgenstat' module has moved to 'dendropy.calculate.popgenstat'.",
             old_construct="from dendropy import popgenstat\npopgenstat.unfolded_site_frequency_spectrum(...)",
             new_construct="from dendropy.calculate import popgenstat\npopgenstat.unfolded_site_frequency_spectrum(...)",
             )
     return popgenstat.unfolded_site_frequency_spectrum(
-            char_vectors=char_vectors,
-            ancestral_seq=ancestral_seq,
+            char_matrix=char_matrix,
+            ancestral_sequence=ancestral_seq,
             pad=pad)
 
 class PopulationPairSummaryStatistics(popgenstat.PopulationPairSummaryStatistics):

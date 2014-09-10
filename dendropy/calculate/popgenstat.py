@@ -322,7 +322,7 @@ def derived_state_matrix(
         char_matrix,
         ancestral_sequence=None,
         derived_state_alphabet=None,
-        ignore_uncertain=False,
+        ignore_uncertain=True,
         ):
     """
     Given a list of CharDataSequence objects, and a reference ancestral sequence,
@@ -381,23 +381,30 @@ def derived_state_matrix(
                 derived_matrix[taxon].append(derived_matrix.default_state_alphabet["1"])
     return derived_matrix
 
-def unfolded_site_frequency_spectrum(char_sequences, ancestral_seq=None, pad=True):
+def unfolded_site_frequency_spectrum(
+        char_matrix,
+        ancestral_sequence=None,
+        ignore_uncertain=False,
+        pad=True):
     """
     Returns the site frequency spectrum of list of CharDataSequence objects given by char_sequences,
     with reference to the ancestral sequence given by ancestral_seq. If ancestral_seq
     is None, then the first sequence in char_sequences is taken to be the ancestral
     sequence.
     """
-    if ancestral_seq is None:
-        ancestral_seq = char_sequences[0]
-    dsm = derived_state_matrix(char_sequences, ancestral_seq)
-    sites = zip(*dsm) # transpose
+    dsm = derived_state_matrix(
+            char_matrix=char_matrix,
+            ancestral_sequence=ancestral_sequence,
+            derived_state_alphabet=None,
+            ignore_uncertain=ignore_uncertain,
+            )
+    sites = zip(*dsm.sequences()) # transpose
     freqs = {}
     if pad:
-        for i in range(len(char_sequences)+1):
+        for i in range(len(char_matrix)+1):
             freqs[i] = 0
     for s in sites:
-        p = sum(s)
+        p = sum(1 for i in s if i.symbol == "1")
         if p not in freqs:
             freqs[p] = 1
         else:
