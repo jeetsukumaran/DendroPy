@@ -178,14 +178,14 @@ class SeqGen(object):
         # silent running
         args.append("-q")
         # we explicitly pass a random number seed on each call
-        args.append("-z%s" % self.rng.randint(0, sys.maxint))
+        args.append("-z%s" % self.rng.randint(0, sys.maxsize))
         # force nexus
         args.append("-on")
         # force one dataset at a time
         args.append("-n1")
         return args
 
-    def generate(self, trees, dataset=None, taxon_set=None, **kwargs):
+    def generate(self, trees, dataset=None, taxon_namespace=None, **kwargs):
         args=self._compose_arguments()
         tree_inputf = self.get_tempfile()
         trees.write_to_path(tree_inputf.name,
@@ -199,10 +199,12 @@ class SeqGen(object):
         stdout, stderr = session.communicate(run)
         if stderr or run.returncode != 0:
             raise RuntimeError("Seq-gen error: %s" % stderr)
-        if taxon_set is None:
-            taxon_set = trees.taxon_set
+        if taxon_namespace is None:
+            taxon_namespace = trees.taxon_namespace
         if dataset is None:
-            dataset = dendropy.DataSet(taxon_set=taxon_set, **kwargs)
+            dataset = dendropy.DataSet(**kwargs)
+            if taxon_namespace is not None:
+                dataset.attach_taxon_namespace(taxon_namespace)
         results = StringIO(stdout)
         #_LOG.debug('stderr = ' + stderr)
         #_LOG.debug('stdout = ' + stdout)
