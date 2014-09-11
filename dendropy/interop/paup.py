@@ -468,7 +468,6 @@ def pscore_trees(
         pset = ""
 
     scorefile = tempfile.NamedTemporaryFile("w+", delete=True)
-    scorefile = open("zzzzz.txt", "w+")
     pscore_command = "pscore / scorefile={}".format(scorefile.name)
     if pscore_option_list is not None:
         pscore_command = pscore_command + " ".join(pscore_option_list)
