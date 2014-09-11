@@ -1670,7 +1670,7 @@ class Tree(
     def yield_from_files(cls,
             files,
             schema,
-            taxon_namespace,
+            taxon_namespace=None,
             **kwargs):
         if taxon_namespace is None:
             taxon_namespace = taxonmodel.TaxonNamespace()
