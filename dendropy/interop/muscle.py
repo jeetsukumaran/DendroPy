@@ -37,7 +37,7 @@ def muscle_align(char_matrix, muscle_args=None, muscle_path='muscle'):
         raise Exception(stderr)
     d = char_matrix.__class__.get_from_string(stdout,
             "fasta",
-            taxon_set=char_matrix.taxon_set)
+            taxon_namespace=char_matrix.taxon_namespace)
     return d
 
 
