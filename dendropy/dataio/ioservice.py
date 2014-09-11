@@ -373,7 +373,7 @@ class DataReader(IOService):
         return product.char_matrices
 
 ###############################################################################
-## DataReader
+## DataWriter
 
 class DataWriter(IOService):
     """
@@ -489,4 +489,73 @@ class DataWriter(IOService):
                 tree_lists=None,
                 char_matrices=[char_matrix],
                 global_annotations_target=None)
+
+###############################################################################
+## DataYielder
+
+class DataYielder(IOService):
+
+    def __init__(self, files=None):
+        IOService.__init__(self)
+        self.files = files
+        self._current_file_index = None
+        self._current_file = None
+        self._current_file_name = None
+
+    def reset(self):
+        self.current_file_index = None
+        self.current_file = None
+        self.current_file_name = None
+
+    def _get_current_file_index(self):
+        return self._current_file_index
+    current_file_index = property(_get_current_file_index)
+
+    def _get_current_file(self):
+        return self._current_file
+    current_file = property(_get_current_file)
+
+    def _get_current_file_name(self):
+        return self._current_file_name
+    current_file_name = property(_get_current_file_name)
+
+    def __iter__(self):
+        for current_file_index, current_file in enumerate(self.files):
+            self._current_file_index = current_file_index
+            for item in self.iterate_over_file(current_file):
+                yield item
+
+    def iterate_over_file(self, current_file):
+        if isinstance(current_file, str):
+            self._current_file = open(current_file, "r")
+            self._current_file_name = current_file
+        else:
+            self._current_file = current_file
+            try:
+                self._current_file_name = self.current_file.name
+            except AttributeError:
+                self._current_file_name = None
+        with self._current_file:
+            for item in self._yield_items_from_stream(stream=self._current_file):
+                yield item
+        self._current_file = None
+
+###############################################################################
+## DataYielder
+
+class TreeDataYielder(DataYielder):
+
+    def __init__(self,
+            files=None,
+            taxon_namespace=None,
+            tree_type=None):
+        DataYielder.__init__(self, files=files)
+        self.taxon_namespace = taxon_namespace
+        assert self.taxon_namespace is not None
+        self.attached_taxon_namespace = self.taxon_namespace
+        self.tree_type = tree_type
+
+    def tree_factory(self):
+        return self.tree_type(taxon_namespace=self.taxon_namespace)
+
 

@@ -137,11 +137,14 @@ class StandardTestTreesChecker(object):
         item_comments = list(item.comments)
         self.assertEqualUnorderedSequences(item_comments, reference_comments)
 
-    def compare_to_reference_tree(self,
+    def compare_to_reference_by_title_and_index(self,
             tree,
             tree_file_title,
             reference_tree_idx):
         ref_tree = self.tree_references[tree_file_title][str(reference_tree_idx)]
+        self.compare_to_reference_tree(tree, ref_tree)
+
+    def compare_to_reference_tree(self, tree, ref_tree):
         self.assertIs(tree.is_rooted, ref_tree["is_rooted"])
         if self.__class__.is_check_comments:
             self.check_comments(tree, ref_tree)
@@ -193,7 +196,7 @@ class StandardTestTreesChecker(object):
             self.assertEqual(edge.head_node.label, ref_edge["head_node"])
             self.assertAlmostEqual(node.edge.length, float(ref_edge["length"]), 3)
 
-    def compare_to_reference_tree2(self,
+    def compare_to_reference_by_title_and_index2(self,
             tree,
             tree_file_title,
             reference_tree_idx,
@@ -389,7 +392,7 @@ class StandardTestTreesChecker(object):
         for tree_idx, tree in enumerate(tree_list):
             _LOG.debug("{}: {}".format(tree_file_title, tree_idx))
             self.assertIs(tree.taxon_namespace, tree_list.taxon_namespace)
-            self.compare_to_reference_tree(
+            self.compare_to_reference_by_title_and_index(
                     tree=tree,
                     tree_file_title=tree_file_title,
                     reference_tree_idx=tree_idx + tree_offset)

@@ -101,7 +101,7 @@ class NexusTreeWriterDefaultTest(
                 suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=False,
         )
-        self.compare_to_reference_tree(
+        self.compare_to_reference_by_title_and_index(
             tree=tree2,
             tree_file_title=tree_file_title,
             reference_tree_idx=0)

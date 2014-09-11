@@ -146,15 +146,15 @@ class NewickReader(ioservice.DataReader):
         suppress_edge_lengths : boolean, default: `False`
             If `True`, edge length values will not be processed. If `False`,
             edge length values will be processed.
-        extract_comment_metadata : boolean, default: `False`
-            If `True`, any comments that begin with '&' or '&&' will be parsed
-            and stored as part of the annotation set of the corresponding
-            object (accessible through the `annotations` attribute of the
-            object). This requires that the comment contents conform to
-            a particular format (NHX or BEAST: 'field = value'). If `False`,
-            then the comments will not be parsed, but will be instead stored
-            directly as elements of the `comments` list attribute of the
-            associated object.
+        extract_comment_metadata : boolean, default: `True`
+            If `True` (default), any comments that begin with '&' or '&&' will
+            be parsed and stored as part of the annotation set of the
+            corresponding object (accessible through the `annotations`
+            attribute of the object). This requires that the comment
+            contents conform to a particular format (NHX or BEAST: 'field =
+            value'). If `False`, then the comments will not be parsed,
+            but will be instead stored directly as elements of the `comments`
+            list attribute of the associated object.
         store_tree_weights : boolean, default: `False`
             If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
             associated with each tree, if any. Defaults to `False`.
@@ -240,7 +240,7 @@ class NewickReader(ioservice.DataReader):
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
         self.edge_len_type = kwargs.pop("edge_len_type", float)
         self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
-        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', False)
+        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
         self.default_tree_weight = kwargs.pop("default_tree_weight", self.__class__._default_tree_weight)
         self.encode_splits = kwargs.pop("encode_splits", False)

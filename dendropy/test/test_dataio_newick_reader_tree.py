@@ -735,7 +735,7 @@ class NewickTreeReaderOffsetTreeTest(
                             suppress_leaf_node_taxa=False,
                             rooting="default-unrooted")
                     reference_tree_idx = tree_offset
-                    self.compare_to_reference_tree(
+                    self.compare_to_reference_by_title_and_index(
                             tree=tree,
                             tree_file_title=tree_file_title,
                             reference_tree_idx=tree_offset)
@@ -804,7 +804,7 @@ class NewickTreeReaderOffsetTreeTest(
                             rooting="default-unrooted")
                     self.assertIs(tree.taxon_namespace, tns0)
                     reference_tree_idx = tree_offset
-                    self.compare_to_reference_tree(
+                    self.compare_to_reference_by_title_and_index(
                             tree=tree,
                             tree_file_title=tree_file_title,
                             reference_tree_idx=tree_offset)

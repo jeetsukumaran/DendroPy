@@ -1667,6 +1667,22 @@ class Tree(
         return tree_list[tree_offset]
     _parse_from_stream = classmethod(_parse_from_stream)
 
+    def yield_from_files(cls,
+            files,
+            schema,
+            taxon_namespace,
+            **kwargs):
+        if taxon_namespace is None:
+            taxon_namespace = taxonmodel.TaxonNamespace()
+        tree_yielder = dataio.get_tree_yielder(
+                files,
+                schema,
+                taxon_namespace=taxon_namespace,
+                tree_type=cls,
+                **kwargs)
+        return tree_yielder
+    yield_from_files = classmethod(yield_from_files)
+
     def node_factory(cls, **kwargs):
         """
         Creates and returns a :class:`Node` object.

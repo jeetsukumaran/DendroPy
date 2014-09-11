@@ -19,25 +19,29 @@
 import collections
 from dendropy.dataio import newickreader
 from dendropy.dataio import newickwriter
+from dendropy.dataio import newickyielder
 from dendropy.dataio import fastareader
 from dendropy.dataio import fastawriter
 from dendropy.dataio import nexusreader
 from dendropy.dataio import nexuswriter
+from dendropy.dataio import nexusyielder
 from dendropy.dataio import nexmlreader
 from dendropy.dataio import nexmlwriter
+from dendropy.dataio import nexmlyielder
 from dendropy.dataio import phylipreader
 from dendropy.dataio import phylipwriter
 from dendropy.utility import container
 
 _IOServices = collections.namedtuple(
         "_IOServices",
-        ["reader", "writer", "tree_iterator"]
+        ["reader", "writer", "tree_yielder"]
         )
 
 _IO_SERVICE_REGISTRY = container.CaseInsensitiveDict()
-_IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, None)
-_IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, nexuswriter.NexusWriter, None)
-_IO_SERVICE_REGISTRY["nexml"] = _IOServices(nexmlreader.NexmlReader, nexmlwriter.NexmlWriter, None)
+_IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, newickyielder.NewickTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, nexuswriter.NexusWriter, nexusyielder.NexusTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexus/newick"] = _IOServices(None, None, nexusyielder.NexusNewickTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexml"] = _IOServices(nexmlreader.NexmlReader, nexmlwriter.NexmlWriter, nexmlyielder.NexmlTreeDataYielder)
 _IO_SERVICE_REGISTRY["fasta"] = _IOServices(fastareader.FastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, fastawriter.FastaWriter, None)
@@ -76,9 +80,28 @@ def get_writer(
     except KeyError:
         raise NotImplementedError("'{}' is not a supported data writing schema".format(schema))
 
-def register_service(schema, reader=None, writer=None, tree_iterator=None):
+def get_tree_yielder(
+        files,
+        schema,
+        taxon_namespace,
+        tree_type,
+        **kwargs):
+    try:
+        yielder_type =_IO_SERVICE_REGISTRY[schema].tree_yielder
+        if yielder_type is None:
+            raise KeyError
+        yielder = yielder_type(
+                files=files,
+                taxon_namespace=taxon_namespace,
+                tree_type=tree_type,
+                **kwargs)
+        return yielder
+    except KeyError:
+        raise NotImplementedError("'{}' is not a supported data yielding schema".format(schema))
+
+def register_service(schema, reader=None, writer=None, tree_yielder=None):
     global _IO_SERVICE_REGISTRY
-    _IO_SERVICE_REGISTRY[schema] = _IOServices(reader, writer, tree_iterator)
+    _IO_SERVICE_REGISTRY[schema] = _IOServices(reader, writer, tree_yielder)
 
 def register_reader(schema, reader):
     global _IO_SERVICE_REGISTRY
@@ -87,7 +110,7 @@ def register_reader(schema, reader):
         register_service(schema=schema,
                 reader=reader,
                 writer=current.writer,
-                tree_iterator=current.tree_iterator)
+                tree_yielder=current.tree_yielder)
     except KeyError:
         register_service(schema=schema, reader=reader)
 

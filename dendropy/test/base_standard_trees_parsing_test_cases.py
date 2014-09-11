@@ -86,14 +86,14 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
 
                 # check new trees
                 for tree_idx, tree in enumerate(tree_list[old_len:]):
-                    self.compare_to_reference_tree(
+                    self.compare_to_reference_by_title_and_index(
                             tree=tree,
                             tree_file_title=tree_file_title,
                             reference_tree_idx=tree_idx)
 
                 # make sure old ones still intact
                 for tree_idx, tree in enumerate(tree_list[:old_len]):
-                    self.compare_to_reference_tree(
+                    self.compare_to_reference_by_title_and_index(
                             tree=tree,
                             tree_file_title=preloaded_tree_file_title,
                             reference_tree_idx=tree_idx)

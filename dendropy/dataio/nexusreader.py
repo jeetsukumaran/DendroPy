@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 
 ##############################################################################
@@ -192,6 +193,77 @@ class NexusReader(ioservice.DataReader):
     ## Life-cycle and Setup
 
     def __init__(self, **kwargs):
+        """
+
+        Keyword Arguments
+        -----------------
+        rooting : string, {['default-unrooted'], 'default-rooted', 'force-unrooted', 'force-rooted'}
+            Specifies how trees in the data source should be intepreted with
+            respect to their rooting:
+
+                '``default-unrooted``' [default]:
+                    All trees are interpreted as unrooted unless a '``[&R]``'
+                    comment token explicitly specifies them as rooted.
+                '``default-rooted``'
+                    All trees are interpreted as rooted unless a '``[&U]``'
+                    comment token explicitly specifies them as unrooted.
+                '``force-unrooted``'
+                    All trees are unconditionally interpreted as unrooted.
+                '``force-rooted``'
+                    All trees are unconditionally interpreted as rooted.
+
+        edge_len_type : type, default: `float`
+            Specifies the type of the edge lengths (`int` or `float`). Tokens
+            interpreted as branch lengths will be cast to this type.
+            Defaults to `float`.
+        suppress_edge_lengths : boolean, default: `False`
+            If `True`, edge length values will not be processed. If `False`,
+            edge length values will be processed.
+        extract_comment_metadata : boolean, default: `False`
+            If `True`, any comments that begin with '&' or '&&' will be parsed
+            and stored as part of the annotation set of the corresponding
+            object (accessible through the `annotations` attribute of the
+            object). This requires that the comment contents conform to
+            a particular format (NHX or BEAST: 'field = value'). If `False`,
+            then the comments will not be parsed, but will be instead stored
+            directly as elements of the `comments` list attribute of the
+            associated object.
+        store_tree_weights : boolean, default: `False`
+            If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
+            associated with each tree, if any. Defaults to `False`.
+        encode_splits : boolean, default: `False`
+            If `True`, split hash bitmasks will be calculated and attached to
+            the edges.
+        finish_node_func : function object, default: `None`
+            If specified, this function will be applied to each node after
+            it has been constructed.
+        case_sensitive_taxon_labels : boolean, default: `False`
+            If `True`, then taxon labels are case sensitive (e.g., "``P.regius``"
+            and "``P.REGIUS``" wil be treated as different operation taxonomic
+            unit concepts). Otherwise, taxon label intepretation will be made
+            without regard for case.
+        preserve_underscores : boolean, default: `False`
+            If `True`, unquoted underscores in labels will *not* converted to
+            spaces. Defaults to `False`: all underscores not protected by
+            quotes will be converted to spaces.
+        suppress_internal_node_taxa : boolean, default: `True`
+            If `False`, internal node labels will be instantantiated into
+            :class:`Taxon` objects. If `True`, internal node labels
+            will *not* be instantantiated as strings.
+        suppress_leaf_node_taxa : boolean, default: `False`
+            If `False`, leaf (external) node labels will be instantantiated
+            into :class:`Taxon` objects. If `True`, leaff (external) node
+            labels will *not* be instantantiated as strings.
+
+        exclude_chars : bool
+            If `False`, then character data will not be read. Defaults to
+            `True`: character data will be read.
+        exclude_trees : bool
+            If `False`, then tree data will not be read. Defaults to
+            `True`: tree data will be read.
+        attached_taxon_namespace : :class:`TaxonNamespace`
+            Unify all operational taxonomic unit definitions in this namespace.
+        """
 
         # base
         ioservice.DataReader.__init__(self)
@@ -209,16 +281,16 @@ class NexusReader(ioservice.DataReader):
         self.automatically_create_missing_taxa_blocks = kwargs.pop("automatically_create_missing_taxa_blocks", False)
         self.automatically_substitute_missing_taxa_blocks = kwargs.pop("automatically_substitute_missing_taxa_blocks", False)
 
-        # The following are used by NewickReader in addition to NexusReader,
-        # or have different defaults. So they are extracted/set here and
-        # then forwarded on ...
+        # The following are used by NewickReader in addition to NexusReader, So
+        # they are extracted/set here and then forwarded on ...
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
+        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', True)
 
         # As above, but the NEXUS format default is different from the NEWICK
         # default, so this rather convoluted approach
-        self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
-        kwargs["extract_comment_metadata"] = self.extract_comment_metadata
+        # self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
+        # kwargs["extract_comment_metadata"] = self.extract_comment_metadata
 
         # Create newick handler
         self.newick_reader = newickreader.NewickReader(**kwargs)
@@ -255,19 +327,28 @@ class NexusReader(ioservice.DataReader):
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents given in the file-like object `stream`.
         """
-        self._nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,
-                preserve_unquoted_underscores=self.preserve_underscores)
         self._taxon_namespace_factory = taxon_namespace_factory
         self._tree_list_factory = tree_list_factory
         self._char_matrix_factory = char_matrix_factory
         self._state_alphabet_factory = state_alphabet_factory
         self._global_annotations_target = global_annotations_target
-        self._parse_nexus_file()
+        self._parse_nexus_stream(stream)
         self._product = self.Product(
                 taxon_namespaces=self._taxon_namespaces,
                 tree_lists=self._tree_lists,
                 char_matrices=self._char_matrices)
         return self._product
+
+    ###########################################################################
+    ## Tokenizer Control
+
+    def create_tokenizer(self, stream, **kwargs):
+        self._nexus_tokenizer = nexusprocessing.NexusTokenizer(
+                stream, **kwargs)
+        return self._nexus_tokenizer
+
+    def set_stream(self, stream):
+        return self._nexus_tokenizer.set_stream(stream)
 
     ###########################################################################
     ## Book-keeping Control
@@ -364,6 +445,13 @@ class NexusReader(ioservice.DataReader):
                 raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
+    def _get_taxon_symbol_mapper(self, taxon_namespace):
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
+                taxon_namespace=taxon_namespace,
+                enable_lookup_by_taxon_number=True,
+                case_sensitive=self.case_sensitive_taxon_labels)
+        return taxon_symbol_mapper
+
     def _new_char_matrix(self, datatype_name, taxon_namespace, title=None):
         # if datatype_name is None:
         #     datatype_name = "standard"
@@ -425,8 +513,13 @@ class NexusReader(ioservice.DataReader):
     ###########################################################################
     ## Main Stream Parse Driver
 
-    def _parse_nexus_file(self):
+    def _parse_nexus_stream(self, stream):
         "Main file parsing driver."
+        if self._nexus_tokenizer is None:
+            self.create_tokenizer(stream,
+                preserve_unquoted_underscores=self.preserve_underscores)
+        else:
+            self._nexus_tokenizer.set_stream(stream)
         token = self._nexus_tokenizer.next_token()
         if token.upper() != "#NEXUS":
             raise self._nexus_error("Expecting '#NEXUS', but found '{}'".format(token),
@@ -870,10 +963,7 @@ class NexusReader(ioservice.DataReader):
         tree_comments = self._nexus_tokenizer.pull_captured_comments()
         # advance to '('; comments will be processed by newick reader
         self._nexus_tokenizer.next_token()
-        tree = self.newick_reader._parse_tree_statement(
-                nexus_tokenizer=self._nexus_tokenizer,
-                tree_factory=tree_factory,
-                taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
+        tree = self._build_tree_from_newick_tree_string(tree_factory, taxon_symbol_mapper)
         tree.label = tree_name
         nexusprocessing.process_comments_for_item(tree, pre_tree_comments, self.extract_comment_metadata)
         nexusprocessing.process_comments_for_item(tree, tree_comments, self.extract_comment_metadata)
@@ -891,16 +981,23 @@ class NexusReader(ioservice.DataReader):
         #     self._nexus_tokenizer.skip_to_semicolon()
         return tree
 
-    def _parse_translate_statement(self, taxon_namespace):
+    def _build_tree_from_newick_tree_string(self, tree_factory, taxon_symbol_mapper):
+        tree = self.newick_reader._parse_tree_statement(
+                nexus_tokenizer=self._nexus_tokenizer,
+                tree_factory=tree_factory,
+                taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
+        return tree
+
+    def _parse_translate_statement(self, taxon_namespace, taxon_symbol_mapper=None):
         """
         Processes a TRANSLATE command. Assumes that the file reader is
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self._nexus_tokenizer.current_token
-        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
-                taxon_namespace=taxon_namespace,
-                enable_lookup_by_taxon_number=True,
-                case_sensitive=False)
+        if taxon_symbol_mapper is None:
+            taxon_symbol_mapper = self._get_taxon_symbol_mapper(taxon_namespace=taxon_namespace)
+        else:
+            assert taxon_symbol_mapper.taxon_namespace is taxon_namespace
         if self._file_specified_ntax is None:
             # Not yet parsed TAXA block: NEXUS file without TAXA block
             # Badly-formed NEXUS file, yet widely-found in the wild
@@ -966,19 +1063,17 @@ class NexusReader(ioservice.DataReader):
                 if taxon_namespace is None:
                     taxon_namespace = self._get_taxon_namespace(link_title)
                 if taxon_symbol_mapper is None:
-                    taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace,
-                            enable_lookup_by_taxon_number=True,
-                            case_sensitive=False)
+                    taxon_symbol_mapper = self._get_taxon_symbol_mapper(taxon_namespace=taxon_namespace)
+                pre_tree_comments = self._nexus_tokenizer.pull_captured_comments()
                 if trees_block is None:
                     trees_block = self._new_tree_list(taxon_namespace=taxon_namespace, title=block_title)
-
                 # All comments leading up to the first 'TREE' statement assumed
                 # to belong to the TreeList corresponding to the TREES block
-                pre_tree_comments = self._nexus_tokenizer.pull_captured_comments()
                 nexusprocessing.process_comments_for_item(
                         trees_block,
                         pre_tree_comments,
                         self.extract_comment_metadata)
+                tree_factory = trees_block.new_tree
                 while True:
                     ## After the following, the current token
                     ## will be the token immediately following
@@ -987,7 +1082,7 @@ class NexusReader(ioservice.DataReader):
                     ## 'TREE' if there is another tree, or
                     ## 'END'/'ENDBLOCK'.
                     tree = self._parse_tree_statement(
-                            tree_factory=trees_block.new_tree,
+                            tree_factory=tree_factory,
                             taxon_symbol_mapper=taxon_symbol_mapper)
                     if self._nexus_tokenizer.is_eof() or not self._nexus_tokenizer.current_token:
                         break

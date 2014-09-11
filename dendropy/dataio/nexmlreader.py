@@ -356,9 +356,13 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
                 taxon_label = nxtaxon.get('label', None)
                 taxon_oid = nxtaxon.get('id', id(nxtaxon))
                 if taxon_label is not None and self.attached_taxon_namespace is not None:
-                    taxon = label_taxon_map.get_taxon(
-                            label=taxon_label,
-                            case_sensitive=self.case_sensitive_taxon_labels)
+                    # taxon = label_taxon_map.get_taxon(
+                    #         label=taxon_label,
+                    #         case_sensitive=self.case_sensitive_taxon_labels)
+                    try:
+                        taxon = label_taxon_map[taxon_label]
+                    except KeyError:
+                        taxon = None
                 if taxon is None:
                     taxon = taxon_namespace.new_taxon(label=taxon_label)
                 annotations = [i for i in nxtaxon.findall_annotations()]

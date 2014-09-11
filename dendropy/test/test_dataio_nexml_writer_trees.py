@@ -67,7 +67,7 @@ class NexmlTreeWriterDefaultTest(
                 s,
                 "nexml",
         )
-        self.compare_to_reference_tree(
+        self.compare_to_reference_by_title_and_index(
             tree=tree2,
             tree_file_title=tree_file_title,
             reference_tree_idx=0)
