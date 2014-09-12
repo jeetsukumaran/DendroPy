@@ -751,9 +751,9 @@ class CharacterMatrix(
             `taxon`.
         """
         if taxon in self._taxon_sequence_map:
-            raise ValueError("Character values vector for taxon {} already exists".format(taxon))
+            raise ValueError("Character values vector for taxon {} already exists".format(repr(taxon)))
         if taxon not in self.taxon_namespace:
-            raise ValueError("Taxon {} is not in object taxon namespace".format(taxon))
+            raise ValueError("Taxon {} is not in object taxon namespace".format(repr(taxon)))
         cv = self.__class__.character_sequence_type(values)
         self._taxon_sequence_map[taxon] = cv
         return cv

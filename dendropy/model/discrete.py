@@ -33,7 +33,7 @@ import dendropy
 class DiscreteCharacterEvolutionModel(object):
     "Base class for discrete character substitution models."
 
-    def __init__(self, state_alphabet, rng=None):
+    def __init__(self, state_alphabet, stationary_freqs=None, rng=None):
         """
         __init__ initializes the state_alphabet to define the character type on which
         this model acts.  The objects random number generator will be `rng` or `GLOBAL_RNG`
@@ -65,7 +65,7 @@ class DiscreteCharacterEvolutionModel(object):
         multi = probability.sample_multinomial
         desc_states = []
         for state in ancestral_states:
-            anc_state_idx = self.state_alphabet.index(state)
+            anc_state_idx = state.index
             desc_state_idx = multi(pmat[anc_state_idx], rng)
             desc_states.append(self.state_alphabet[desc_state_idx])
         return desc_states
@@ -110,7 +110,7 @@ class DiscreteCharacterEvolver(object):
         if rng is None:
             rng = GLOBAL_RNG
         if not in_place:
-            tree = copy.deepcopy(tree)
+            tree = tree.clone(1) # ==> taxon_namespace_scoped_copy()
 
         if self.seq_model is None:
             seq_model = getattr(tree, self.seq_model_attr, None)
@@ -143,35 +143,106 @@ class DiscreteCharacterEvolver(object):
                     n_prev_seq -= 1
         return tree
 
-    def compose_char_map(self, tree, taxon_set=None, include=None, exclude=None):
+    def extend_char_matrix_with_characters_on_tree(self, char_matrix, tree, include=None, exclude=None):
         """
-        Returns a CharacterDataMap where the keys are the taxa of the leaf_nodes
-        of `source_tree` and the values are sequences, with each sequence being the
-        concatentation of all the sequences in the list of sequences associated with
-        each tip. Specific sequences to be included/excluded can be fine-tuned using
-        the `include` and `exclude` args, where `include`=None means to include all
+        Creates a character matrix with new sequences (or extends sequences of
+        an existing character matrix if provided via `char_matrix`),
+        where the the sequence for each taxon corresponds to the concatenation
+        of all sequences in the list of sequences associated with tip that
+        references the given taxon.
+        Specific sequences to be included/excluded can be fine-tuned using the
+        `include` and `exclude` args, where `include`=None means to include all
         by default, and `exclude`=None means to exclude all by default.
         """
-        char_map = dendropy.CharacterDataMap()
         for leaf in tree.leaf_nodes():
-            cvec = dendropy.CharacterDataSequence(taxon=leaf.taxon)
+            cvec = char_matrix[leaf.taxon]
             seq_list = getattr(leaf, self.seq_attr)
             for seq_idx, seq in enumerate(seq_list):
                 if ((include is None) or (seq_idx in include))  \
                     and ((exclude is None) or (seq_idx not in exclude)):
                     for state in seq:
-                        cvec.append(dendropy.CharacterDataCell(value=state))
-            if taxon_set is not None:
-                taxon = taxon_set.require_taxon(label=leaf.taxon.label)
-            else:
-                taxon = leaf.taxon
-            char_map[taxon] = cvec
-        return char_map
+                        cvec.append(state)
+        return char_matrix
 
 ############################################################################
 ## Specialized Models: nucldeotides
 
-class Hky85(DiscreteCharacterEvolutionModel):
+class NucleotideCharacterEvolutionModel(DiscreteCharacterEvolutionModel):
+    "General nucleotide substitution model."
+
+    def __init__(self, base_freqs=None, state_alphabet=None, rng=None):
+        "__init__ calls SeqModel.__init__ and sets the base_freqs field"
+        if state_alphabet is None:
+            state_alphabet = dendropy.DNA_STATE_ALPHABET
+        DiscreteCharacterEvolutionModel.__init__(
+                self,
+                state_alphabet=state_alphabet,
+                rng=rng)
+        if base_freqs is None:
+            self.base_freqs = [0.25, 0.25, 0.25, 0.25]
+        else:
+            self.base_freqs = base_freqs
+
+    def stationary_sample(self, seq_len, rng=None):
+        """
+        Returns a NucleotideSequence() object with length `length`
+        representing a sample of characters drawn from this model's
+        stationary distribution.
+        """
+        probs = self.base_freqs
+        char_state_indices = [probability.sample_multinomial(probs, rng) for i in range(seq_len)]
+        return [self.state_alphabet[idx] for idx in char_state_indices]
+
+    def is_purine(self, state_index):
+        """
+        Returns True if state_index represents a purine (A or G) row or column
+        index: 0, 2
+        """
+        return state_index % 2 == 0
+
+    def is_pyrimidine(self, state_index):
+        """
+        Returns True if state_index represents a pyrimidine (C or T) row or column
+        index: 1, 3
+        """
+        return state_index % 2 == 1
+
+    def is_transversion(self, state1_idx, state2_idx):
+        """
+        Returns True if the change from state1 to state2, as
+        represented by the row or column indices, is a transversional
+        change.
+        """
+        return (self.is_purine(state1_idx) and self.is_pyrimidine(state2_idx)) \
+               or (self.is_pyrimidine(state1_idx) and self.is_purine(state2_idx))
+
+    def is_purine_transition(self, state1_idx, state2_idx):
+        """
+        Returns True if the change from state1 to state2, as
+        represented by the row or column indices, is a purine
+        transitional change.
+        """
+        return self.is_purine(state1_idx) and self.is_purine(state2_idx)
+
+    def is_pyrimidine_transition(self, state1_idx, state2_idx):
+        """
+        Returns True if the change from state1 to state2, as
+        represented by the row or column indices, is a pyrimidine
+        transitional change.
+        """
+        return self.is_pyrimidine(state1_idx) \
+               and self.is_pyrimidine(state2_idx)
+
+    def is_transition(self, state1_idx, state2_idx):
+        """
+        Returns True if the change from state1 to state2, as
+        represented by the row or column indices, is a
+        transitional change.
+        """
+        return (self.is_purine(state1_idx) and self.is_purine(state2_idx)) \
+               or (self.is_pyrimidine(state1_idx) and self.is_pyrimidine(state2_idx))
+
+class Hky85(NucleotideCharacterEvolutionModel):
     """
     Hasegawa et al. 1985 model. Implementation following Swofford et
     al., 1996.
@@ -181,16 +252,13 @@ class Hky85(DiscreteCharacterEvolutionModel):
         "__init__: if no arguments given, defaults to JC69."
         if state_alphabet is None:
             state_alphabet = dendropy.DNA_STATE_ALPHABET
-        DiscreteCharacterEvolutionModel.__init__(
+        NucleotideCharacterEvolutionModel.__init__(
                 self,
+                base_freqs=base_freqs,
                 state_alphabet=state_alphabet,
                 rng=rng)
         self.correct_rate = True
         self.kappa = kappa
-        if base_freqs is None:
-            self.base_freqs = [0.25, 0.25, 0.25, 0.25]
-        else:
-            self.base_freqs = base_freqs
 
     def __repr__(self):
         rep = "kappa=%f bases=%s" % (self.kappa, str(self.base_freqs))
@@ -293,11 +361,11 @@ class Jc69(Hky85):
     def __init__(self, state_alphabet=None, rng=None):
         "__init__: uses Hky85.__init__"
         Hky85.__init__(self,
-                                     kappa=1.0,
-                                     base_freqs=[0.25, 0.25, 0.25, 0.25],
-                                     state_alphabet=state_alphabet,
-                                     rng=rng,
-                                     )
+                kappa=1.0,
+                base_freqs=[0.25, 0.25, 0.25, 0.25],
+                state_alphabet=state_alphabet,
+                rng=rng,
+                )
 
 
 
@@ -384,17 +452,12 @@ def simulate_discrete_char_matrix(
         seq_len=seq_len,
         root_states=None,
         rng=rng)
-    char_map = seq_evolver.compose_char_map(tree, tree.taxon_namespace)
     if char_matrix is None:
-        char_matrix = dendropy.DnaCharacterMatrix()
-        char_matrix.taxon_namespace = tree_model.taxon_namespace
-    if char_matrix.taxon_namespace is None:
+        char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree_model.taxon_namespace)
         char_matrix.taxon_namespace = tree_model.taxon_namespace
     else:
         assert char_matrix.taxon_namespace is tree_model.taxon_namespace, "conflicting taxon sets"
-    char_matrix.extend_map(other_map=char_map,
-        overwrite_existing=False,
-        extend_existing=True)
+    seq_evolver.extend_char_matrix_with_characters_on_tree(char_matrix, tree)
     return char_matrix
 
 def hky85_char_matrix(
@@ -429,7 +492,9 @@ def hky85_char_matrix(
     rates, passing in the same `char_matrix` object each time.
     """
     if char_matrix is None:
-        char_matrix = dendropy.DnaCharacterMatrix()
+        char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree.taxon_namespace)
+    else:
+        assert char_matrix.taxon_namespace is tree_model.taxon_namespace
     state_alphabet = char_matrix.default_state_alphabet
     seq_model = Hky85(
             kappa=kappa,
