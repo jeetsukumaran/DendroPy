@@ -27,6 +27,6 @@ from dendropy.model.discrete import DiscreteCharacterEvolutionModel
 from dendropy.model.discrete import DiscreteCharacterEvolver
 from dendropy.model.discrete import simulate_discrete_char_dataset
 from dendropy.model.discrete import simulate_discrete_char_matrix
-from dendropy.model.nucleotide import Hky85CharacterEvolutionModel
-from dendropy.model.nucleotide import Jc69CharacterEvolutionModel
-from dendropy.model.nucleotide import hky_char_matrix
+from dendropy.model.discrete import Hky85
+from dendropy.model.discrete import Jc69
+from dendropy.model.discrete import hky85_char_matrix

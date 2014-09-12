@@ -17,21 +17,44 @@
 ##############################################################################
 
 """
-DEPRECATED IN DENDROPY 4: USE `dendropy.model.discrete` or
-`dendropy.model.nucleotide` instead.
+DEPRECATED IN DENDROPY 4: USE `dendropy.model.discrete`.
 """
 
-# ## legacy support
-# from dendropy.model.discrete import DiscreteCharacterEvolutionModel as SeqModel
-# from dendropy.model.discrete import DiscreteCharacterEvolver as SeqEvolver
-# from dendropy.model.discrete import simulate_discrete_char_dataset as generate_dataset
-# from dendropy.model.discrete import simulate_discrete_char_matrix as generate_char_matrix
-# from dendropy.model.nucleotide import Hky85CharacterEvolutionModel as Hky85SeqModel
-# from dendropy.model.nucleotide import Jc69CharacterEvolutionModel as Jc69CharacterEvolutionModel
+from dendropy.model import discrete
+from dendropy.utility import deprecate
 
-# from dendropy.utility import error
-# error.dendropy_module_migration_warning("dendropy.seqmodel", "dendropy.model.discrete")
+class SeqModel(discrete.DiscreteCharacterEvolutionModel):
+    def __init__(self, state_alphabet, rng=None):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: The 'dendropy.seqmodel.SeqModel' class has moved to 'dendropy.model.discrete.DiscreteCharacterEvolutionModel'.",
+                old_construct="from dendropy import seqmodel\nm = seqmodel.SeqModel(...)",
+                new_construct="from dendropy.model import discrete\nm = discrete.DiscreteCharacterEvolutionModel(...)")
+        discrete.DiscreteCharacterEvolutionModel.__init__(
+                self,
+                state_alphabet=state_alphabet,
+                rng=rng)
 
+class Hky85SeqModel(discrete.Hky85):
+    def __init__(self, kappa=1.0, base_freqs=None, state_alphabet=None, rng=None):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: The 'dendropy.seqmodel.Hky85SeqModel' class has moved to 'dendropy.model.discrete.Hky85'.",
+                old_construct="from dendropy import seqmodel\nm = seqmodel.NucleotideSeqModel(...)",
+                new_construct="from dendropy.model import discrete\ndiscrete.Hky85(...)")
+        discrete.Hky85.__init__(
+                self,
+                kappa=kappa,
+                base_freqs=base_freqs,
+                state_alphabet=state_alphabet,
+                rng=rng)
 
-
+class Jc69SeqModel(discrete.Jc69):
+    def __init__(self, state_alphabet=None, rng=None):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: The 'dendropy.seqmodel.Jc69SeqModel' class has moved to 'dendropy.model.discrete.Jc69'.",
+                old_construct="from dendropy import seqmodel\nm = seqmodel.NucleotideSeqModel(...)",
+                new_construct="from dendropy.model import discrete\ndiscrete.Jc69(...)")
+        discrete.Jc69.__init__(
+                self,
+                state_alphabet=state_alphabet,
+                rng=rng)
 

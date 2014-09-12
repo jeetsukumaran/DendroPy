@@ -168,6 +168,139 @@ class DiscreteCharacterEvolver(object):
             char_map[taxon] = cvec
         return char_map
 
+############################################################################
+## Specialized Models: nucldeotides
+
+class Hky85(DiscreteCharacterEvolutionModel):
+    """
+    Hasegawa et al. 1985 model. Implementation following Swofford et
+    al., 1996.
+    """
+
+    def __init__(self, kappa=1.0, base_freqs=None, state_alphabet=None, rng=None):
+        "__init__: if no arguments given, defaults to JC69."
+        if state_alphabet is None:
+            state_alphabet = dendropy.DNA_STATE_ALPHABET
+        DiscreteCharacterEvolutionModel.__init__(
+                self,
+                state_alphabet=state_alphabet,
+                rng=rng)
+        self.correct_rate = True
+        self.kappa = kappa
+        if base_freqs is None:
+            self.base_freqs = [0.25, 0.25, 0.25, 0.25]
+        else:
+            self.base_freqs = base_freqs
+
+    def __repr__(self):
+        rep = "kappa=%f bases=%s" % (self.kappa, str(self.base_freqs))
+        return rep
+
+    def corrected_substitution_rate(self, rate):
+        """Returns the factor that we have to multiply to the branch length
+        to make branch lengths proportional to # of substitutions per site."""
+        if self.correct_rate:
+            pia = self.base_freqs[0]
+            pic = self.base_freqs[1]
+            pig = self.base_freqs[2]
+            pit = self.base_freqs[3]
+            f = self.kappa*(pia*pig + pic*pit)
+            f += (pia + pig)*(pic + pit)
+            return (rate * 0.5/f)  # (rate * 0.5/f)
+        else:
+            return rate
+
+    def pij(self, state_i, state_j, tlen, rate=1.0):
+        """
+        Returns probability, p_ij, of going from state i to state j
+        over time tlen at given rate. (tlen * rate = nu, expected
+        number of substitutions)
+        """
+        nu = self.corrected_substitution_rate(rate) * tlen
+        if self.is_purine(state_j):
+            sumfreqs = self.base_freqs[0] + self.base_freqs[2]
+        else:
+            sumfreqs = self.base_freqs[1] + self.base_freqs[3]
+        factorA = 1 + (sumfreqs * (self.kappa - 1.0))
+        if state_i == state_j:
+            pij = self.base_freqs[state_j] \
+                  + self.base_freqs[state_j] \
+                      * (1.0/sumfreqs - 1) * math.exp(-1.0 * nu) \
+                  + ((sumfreqs - self.base_freqs[state_j])/sumfreqs) \
+                      * math.exp(-1.0 * nu * factorA)
+
+        elif self.is_transition(state_i, state_j):
+            pij = self.base_freqs[state_j] \
+                  + self.base_freqs[state_j] \
+                      * (1.0/sumfreqs - 1) * math.exp(-1.0 * nu) \
+                  - (self.base_freqs[state_j] / sumfreqs) \
+                      * math.exp(-1.0 * nu * factorA)
+        else:
+            pij = self.base_freqs[state_j] * (1.0 - math.exp(-1.0 * nu))
+        return pij
+
+    def qmatrix(self, rate=1.0):
+        "Returns the instantaneous rate of change matrix."
+        rate = self.corrected_substitution_rate(rate)
+        qmatrix = []
+        for state_i in range(4):
+            qmatrix.append([])
+            for state_j in range(4):
+                if state_i == state_j:
+                    # we cheat here and insert a placeholder till the
+                    # other cells are calculated
+                    qij = 0.0
+                else:
+                    if self.is_transition(state_i, state_j):
+                        qij = rate * self.kappa * self.base_freqs[state_j]
+                    else:
+                        qij = rate * self.base_freqs[state_j]
+                qmatrix[state_i].append(qij)
+        for state in range(4):
+            qmatrix[state][state] = -1.0 * sum(qmatrix[state])
+        return qmatrix
+
+    def pvector(self, state, tlen, rate=1.0):
+        """
+        Returns a vector of transition probabilities for a given state
+        over time `tlen` at rate `rate` for `state`. (tlen * rate =
+        nu, expected number of substitutions)
+        """
+        pvec = []
+        # in case later we want to allow characters passed in here
+        state_i = state
+        for state_j in range(4):
+            pvec.append(self.pij(state_i, state_j, tlen=tlen, rate=rate))
+        return pvec
+
+    def pmatrix(self, tlen, rate=1.0):
+        """
+        Returns a matrix of nucleotide substitution
+        probabilities. Based on analytical solution by Swofford et
+        al., 1996. (tlen * rate = nu, expected number of
+        substitutions)
+        """
+        pmatrix = []
+        for state_i in range(4):
+            pmatrix.append(self.pvector(state_i, tlen=tlen, rate=rate))
+        return pmatrix
+
+class Jc69(Hky85):
+    """
+    Jukes-Cantor 1969 model. Specializes HKY85 such that
+    kappa = 1.0, and base frequencies = [0.25, 0.25, 0.25, 0.25].
+    """
+    def __init__(self, state_alphabet=None, rng=None):
+        "__init__: uses Hky85.__init__"
+        Hky85.__init__(self,
+                                     kappa=1.0,
+                                     base_freqs=[0.25, 0.25, 0.25, 0.25],
+                                     state_alphabet=state_alphabet,
+                                     rng=rng,
+                                     )
+
+
+
 ##############################################################################
 ## Wrappers for Convenience
 
@@ -263,4 +396,50 @@ def simulate_discrete_char_matrix(
         overwrite_existing=False,
         extend_existing=True)
     return char_matrix
+
+def hky85_char_matrix(
+        seq_len,
+        tree_model,
+        mutation_rate=1.0,
+        kappa=1.0,
+        base_freqs=[0.25, 0.25, 0.25, 0.25],
+        root_states=None,
+        char_matrix=None,
+        rng=None):
+    """
+    Convenience class to wrap generation of characters (as a CharacterBlock
+    object) based on the HKY model.
+    `seq_len`       : length of sequence (number of characters)
+    `tree_model`    : dendropy.Tree object
+    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
+                      on tree reflect true expected number of changes
+    `root_states`   : vector of root states (length must equal `seq_len`)
+    `char_matrix`    : dendropy.DnaCharacterMatrix object.
+                      if given, new sequences for taxa on `tree_model` leaf_nodes
+                      will be appended to existing sequences of corresponding
+                      taxa in char_matrix; if not, a new
+                      dendropy.CharacterMatrix object will be created
+    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
+                      used
+    Returns: a dendropy.CharacterMatrix object.
+
+    Since characters will be appended to existing sequences, you can simulate a
+    sequences under a mixed model by calling this method multiple times with
+    different character model parameter values and/or different mutation
+    rates, passing in the same `char_matrix` object each time.
+    """
+    if char_matrix is None:
+        char_matrix = dendropy.DnaCharacterMatrix()
+    state_alphabet = char_matrix.default_state_alphabet
+    seq_model = Hky85(
+            kappa=kappa,
+            base_freqs=base_freqs,
+            state_alphabet=state_alphabet)
+    return simulate_discrete_char_matrix(seq_len=seq_len,
+                               tree_model=tree_model,
+                               seq_model=seq_model,
+                               mutation_rate=mutation_rate,
+                               root_states=root_states,
+                               char_matrix=char_matrix,
+                               rng=rng)
 

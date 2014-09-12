@@ -29,7 +29,7 @@ import copy
 
 from dendropy.utility import GLOBAL_RNG
 from dendropy.interop import seqgen
-from dendropy.model import nucleotide
+from dendropy.model import discrete
 from dendropy.model import coalescent
 import dendropy
 
@@ -76,7 +76,6 @@ class FragmentedPopulations(object):
         self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         d = dendropy.DataSet(self.mutation_tree.taxon_set)
-
         if self.use_seq_gen is True:
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
@@ -89,16 +88,17 @@ class FragmentedPopulations(object):
             sg.state_freqs = self.base_freqs
             sg.trees = [self.mutation_tree]
             d = sg.generate_dataset(dataset=d)
-            return d
         else:
-            return nucleotide.generate_hky_dataset(seq_len=seq_len,
-                                                tree_model=self.mutation_tree,
-                                                mutation_rate=1.0,
-                                                kappa=1.0,
-                                                base_freqs=[0.25, 0.25, 0.25, 0.25],
-                                                root_states=None,
-                                                dataset=d,
-                                                rng=self.rng)
+            char_matrix = discrete.hky_char_matrix(
+                    seq_len=seq_len,
+                    tree_model=self.mutation_tree,
+                    mutation_rate=1.0,
+                    kappa=1.0,
+                    base_freqs=[0.25, 0.25, 0.25, 0.25],
+                    root_states=None,
+                    rng=self.rng)
+            d.add_char_matrix(char_matrix)
+        return d
 
     def generate_pop_tree(self, species_name, samples_per_pop=10):
         tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
