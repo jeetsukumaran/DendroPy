@@ -91,12 +91,12 @@ class DiscreteCharacterEvolver(object):
         self.seq_label_attr = seq_label_attr
 
     def evolve_states(self,
-     tree,
-     seq_len,
-     root_states=None,
-     simulate_root_states=True,
-     in_place=False,
-     rng=None):
+            tree,
+            seq_len,
+            root_states=None,
+            simulate_root_states=True,
+            in_place=True,
+            rng=None):
         """
         Appends a new sequence of length `seq_len` to a list at each node
         in `tree`.  The attribute name of this list in each node is given
@@ -118,8 +118,11 @@ class DiscreteCharacterEvolver(object):
         # loop through edges in preorder (root->tips)
         for edge in tree.preorder_edge_iter():
             node = edge.head_node
-            if not hasattr(node, self.seq_attr):
-                setattr(node, self.seq_attr, [])
+            # if not hasattr(node, self.seq_attr):
+            #     setattr(node, self.seq_attr, [])
+            ## Unconditionally set attribute to clear it
+            ## NOTE: NOT TESTED!!!!!!!!!
+            setattr(node, self.seq_attr, [])
             seq_list = getattr(node, self.seq_attr)
             if edge.tail_node:
                 par = edge.tail_node
@@ -492,7 +495,7 @@ def hky85_char_matrix(
     rates, passing in the same `char_matrix` object each time.
     """
     if char_matrix is None:
-        char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree.taxon_namespace)
+        char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree_model.taxon_namespace)
     else:
         assert char_matrix.taxon_namespace is tree_model.taxon_namespace
     state_alphabet = char_matrix.default_state_alphabet
