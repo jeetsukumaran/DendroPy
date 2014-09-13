@@ -89,7 +89,7 @@ class FragmentedPopulations(object):
             sg.trees = [self.mutation_tree]
             d = sg.generate_dataset(dataset=d)
         else:
-            char_matrix = discrete.hky_char_matrix(
+            char_matrix = discrete.hky85_chars(
                     seq_len=seq_len,
                     tree_model=self.mutation_tree,
                     mutation_rate=1.0,

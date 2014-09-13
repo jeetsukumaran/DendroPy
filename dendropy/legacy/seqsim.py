@@ -33,13 +33,13 @@ def generate_hky_dataset(seq_len,
                          dataset=None,
                          rng=None):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_dataset()' function has been replaced with 'dendropy.simulate.charsim.hky85_char_matrix()'.",
+            preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_dataset()' function has been replaced with 'dendropy.simulate.charsim.hky85_chars()'.",
             old_construct="from dendropy import seqsim\ndataset = seqsim.generate_hky_dataset(...)",
-            new_construct="from dendropy.simulate import charsim\nchar_matrix = discrete.hky85_char_matrix(...)")
+            new_construct="import dendropy\nfrom dendropy.simulate import charsim\ndataset = dendropy.DataSet()\nchar_matrix = charsim.hky85_chars(...)\ndataset.add_char_matrix(char_matrix)")
     if dataset is None:
         dataset = dendropy.DataSet()
     char_matrix = dataset.new_char_matrix(char_matrix_type="dna", taxon_namespace=tree_model.taxon_namespace)
-    charsim.hky85_char_matrix(
+    charsim.hky85_chars(
             seq_len=seq_len,
             tree_model=tree_model,
             mutation_rate=mutation_rate,
@@ -59,10 +59,10 @@ def generate_hky_characters(seq_len,
                             char_matrix=None,
                             rng=None):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_characters()' function has been replaced with 'dendropy.simulate.charsim.hky85_char_matrix()'.",
+            preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_characters()' function has been replaced with 'dendropy.simulate.charsim.hky85_chars()'.",
             old_construct="from dendropy import seqsim\nchar_matrix = seqsim.generate_hky_characters(...)",
-            new_construct="from dendropy.simulate import charsim\nchar_matrix = discrete.hky85_char_matrix(...)")
-    return charsim.hky85_char_matrix(
+            new_construct="from dendropy.simulate import charsim\nchar_matrix = charsim.hky85_chars(...)")
+    return charsim.hky85_chars(
             seq_len=seq_len,
             tree_model=tree_model,
             mutation_rate=mutation_rate,
@@ -80,9 +80,9 @@ def generate_hky_characters(seq_len,
 #                      dataset=None,
 #                      rng=None):
 #     deprecate.dendropy_deprecation_warning(
-#             preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_characters()' function has been replaced with 'dendropy.simulate.charsim.hky85_char_matrix()'.",
+#             preamble="Deprecated since DendroPy 4: The 'dendropy.seqsim.generate_hky_characters()' function has been replaced with 'dendropy.simulate.charsim.hky85_chars()'.",
 #             old_construct="from dendropy import seqsim\nchar_matrix = seqsim.generate_hky_characters(...)",
-#             new_construct="from dendropy.simulate import charsim\nchar_matrix = discrete.hky85_char_matrix(...)")
+#             new_construct="from dendropy.simulate import charsim\nchar_matrix = discrete.hky85_chars(...)")
 
 # def generate_char_matrix(seq_len,
 #                         tree_model,

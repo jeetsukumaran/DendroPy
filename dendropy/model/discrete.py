@@ -412,7 +412,7 @@ def simulate_discrete_char_dataset(seq_len,
         taxon_namespace = dataset.add_taxon_namespace(tree_model.taxon_namespace)
     else:
         taxon_namespace = tree_model.taxon_namespace
-    char_matrix = simulate_discrete_char_matrix(
+    char_matrix = simulate_discrete_chars(
         seq_len=seq_len,
         tree_model=tree_model,
         seq_model=seq_model,
@@ -423,7 +423,7 @@ def simulate_discrete_char_dataset(seq_len,
     dataset.add_char_matrix(char_matrix=char_matrix)
     return dataset
 
-def simulate_discrete_char_matrix(
+def simulate_discrete_chars(
         seq_len,
         tree_model,
         seq_model,
@@ -479,7 +479,7 @@ def simulate_discrete_char_matrix(
         seq_evolver.clean_tree(tree)
     return char_matrix
 
-def hky85_char_matrix(
+def hky85_chars(
         seq_len,
         tree_model,
         mutation_rate=1.0,
@@ -524,7 +524,7 @@ def hky85_char_matrix(
             kappa=kappa,
             base_freqs=base_freqs,
             state_alphabet=state_alphabet)
-    return simulate_discrete_char_matrix(seq_len=seq_len,
+    return simulate_discrete_chars(seq_len=seq_len,
                                tree_model=tree_model,
                                seq_model=seq_model,
                                mutation_rate=mutation_rate,

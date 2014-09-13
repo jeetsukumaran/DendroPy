@@ -26,7 +26,7 @@ from dendropy.model.continuous import evolve_continuous_char
 from dendropy.model.discrete import DiscreteCharacterEvolutionModel
 from dendropy.model.discrete import DiscreteCharacterEvolver
 from dendropy.model.discrete import simulate_discrete_char_dataset
-from dendropy.model.discrete import simulate_discrete_char_matrix
+from dendropy.model.discrete import simulate_discrete_chars
 from dendropy.model.discrete import Hky85
 from dendropy.model.discrete import Jc69
-from dendropy.model.discrete import hky85_char_matrix
+from dendropy.model.discrete import hky85_chars
