@@ -118,11 +118,8 @@ class DiscreteCharacterEvolver(object):
         # loop through edges in preorder (root->tips)
         for edge in tree.preorder_edge_iter():
             node = edge.head_node
-            # if not hasattr(node, self.seq_attr):
-            #     setattr(node, self.seq_attr, [])
-            ## Unconditionally set attribute to clear it
-            ## NOTE: NOT TESTED!!!!!!!!!
-            setattr(node, self.seq_attr, [])
+            if not hasattr(node, self.seq_attr):
+                setattr(node, self.seq_attr, [])
             seq_list = getattr(node, self.seq_attr)
             if edge.tail_node:
                 par = edge.tail_node
@@ -146,7 +143,11 @@ class DiscreteCharacterEvolver(object):
                     n_prev_seq -= 1
         return tree
 
-    def extend_char_matrix_with_characters_on_tree(self, char_matrix, tree, include=None, exclude=None):
+    def extend_char_matrix_with_characters_on_tree(self,
+            char_matrix,
+            tree,
+            include=None,
+            exclude=None):
         """
         Creates a character matrix with new sequences (or extends sequences of
         an existing character matrix if provided via `char_matrix`),
@@ -166,6 +167,11 @@ class DiscreteCharacterEvolver(object):
                     for state in seq:
                         cvec.append(state)
         return char_matrix
+
+    def clean_tree(self, tree):
+        for nd in tree:
+            # setattr(nd, self.seq_attr, [])
+            delattr(nd, self.seq_attr)
 
 ############################################################################
 ## Specialized Models: nucldeotides
@@ -424,6 +430,7 @@ def simulate_discrete_char_matrix(
         mutation_rate=1.0,
         root_states=None,
         char_matrix=None,
+        retain_sequences_on_tree=False,
         rng=None):
     """
     Wrapper to conveniently generate a characters simulated under
@@ -439,6 +446,10 @@ def simulate_discrete_char_matrix(
                       will be appended to existing sequences of corresponding
                       taxa in char_matrix; if not, a new
                       dendropy.CharacterMatrix object will be created
+    `retain_sequences_on_tree` : if `False`, sequence annotations will be cleared from tree
+                   after simulation. Set to `True` if you want to, e.g.,
+                   evolve and accumulate different sequences on tree, or retain information
+                   for other purposes.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
 
@@ -451,7 +462,8 @@ def simulate_discrete_char_matrix(
     """
     seq_evolver = DiscreteCharacterEvolver(seq_model=seq_model,
                                mutation_rate=mutation_rate)
-    tree = seq_evolver.evolve_states(tree=tree_model,
+    tree = seq_evolver.evolve_states(
+        tree=tree_model,
         seq_len=seq_len,
         root_states=None,
         rng=rng)
@@ -460,7 +472,11 @@ def simulate_discrete_char_matrix(
         char_matrix.taxon_namespace = tree_model.taxon_namespace
     else:
         assert char_matrix.taxon_namespace is tree_model.taxon_namespace, "conflicting taxon sets"
-    seq_evolver.extend_char_matrix_with_characters_on_tree(char_matrix, tree)
+    seq_evolver.extend_char_matrix_with_characters_on_tree(
+            char_matrix=char_matrix,
+            tree=tree)
+    if not retain_sequences_on_tree:
+        seq_evolver.clean_tree(tree)
     return char_matrix
 
 def hky85_char_matrix(
@@ -471,6 +487,7 @@ def hky85_char_matrix(
         base_freqs=[0.25, 0.25, 0.25, 0.25],
         root_states=None,
         char_matrix=None,
+        retain_sequences_on_tree=False,
         rng=None):
     """
     Convenience class to wrap generation of characters (as a CharacterBlock
@@ -485,6 +502,10 @@ def hky85_char_matrix(
                       will be appended to existing sequences of corresponding
                       taxa in char_matrix; if not, a new
                       dendropy.CharacterMatrix object will be created
+    `retain_sequences_on_tree` : if `False`, sequence annotations will be cleared from tree
+                   after simulation. Set to `True` if you want to, e.g.,
+                   evolve and accumulate different sequences on tree, or retain information
+                   for other purposes.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
     Returns: a dendropy.CharacterMatrix object.
