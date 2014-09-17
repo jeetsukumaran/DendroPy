@@ -108,6 +108,7 @@ class NexmlWriter(ioservice.DataWriter):
 
         # customization
         self.markup_as_sequences = kwargs.pop("markup_as_sequences", False)
+        self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
         self.check_for_unused_keyword_arguments(kwargs)
 
         # book-keeping
