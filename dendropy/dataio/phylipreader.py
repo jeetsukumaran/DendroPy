@@ -211,10 +211,10 @@ class PhylipReader(ioservice.DataReader):
                 continue
             if current_taxon is None:
                 seq_label = None
-                if line.strip() and len(self.char_matrix.taxon_namespace) >= self.ntax:
-                    raise self._data_parse_error("Cannot add new sequence '%s': declared number of sequences (%d) already defined" \
-                                % (line.strip(), len(self.char_matrix.taxon_namespace)), line_index=line_index)
                 current_taxon, line = self._parse_taxon_from_line(line, line_index)
+                # if current_taxon not in self.char_matrix and len(self.char_matrix.taxon_namespace) >= self.ntax:
+                #     raise self._data_parse_error("Cannot add new sequence %s: declared number of sequences (%d) already defined" \
+                #                 % (current_taxon, len(self.char_matrix.taxon_namespace)), line_index=line_index)
             self._parse_sequence_from_line(current_taxon, line, line_index)
             if len(self.char_matrix[current_taxon]) >= self.nchar:
                 current_taxon = None
