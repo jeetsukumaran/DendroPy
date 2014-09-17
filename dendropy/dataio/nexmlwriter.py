@@ -520,6 +520,13 @@ class NexmlWriter(ioservice.DataWriter):
                     prefix_uri_tuples=self._prefix_uri_tuples))
             dest.write("\n")
 
+    def _compose_char_type_xml_for_continuous_type(self, indent_level, char_type_id=None):
+        if char_type_id is None:
+            char_type_id = self._get_nexml_id(object())
+        s = ('%s<char id="%s" />'
+            % ((self.indent*(indent_level)), char_type_id))
+        return char_type_id, s
+
     def _compose_char_type_xml_for_state_alphabet(self, state_alphabet, indent_level, char_type_id=None):
         if state_alphabet:
             char_type_state = ' states="%s" ' % self._state_alphabet_id_map[state_alphabet]
@@ -577,9 +584,12 @@ class NexmlWriter(ioservice.DataWriter):
             char_vector = char_matrix[taxon]
             for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
                 if cell_char_type is None:
-                    sa = self._get_state_alphabet_for_char_matrix(char_matrix)
-                    assert sa is not None
-                    char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa, indent_level=indent_level+1)
+                    if char_matrix.data_type == "continuous":
+                        char_type_id, char_type_xml = self._compose_char_type_xml_for_continuous_type(indent_level=indent_level+1)
+                    else:
+                        sa = self._get_state_alphabet_for_char_matrix(char_matrix)
+                        assert sa is not None
+                        char_type_id, char_type_xml = self._compose_char_type_xml_for_state_alphabet(sa, indent_level=indent_level+1)
                 else:
                     char_type_id, char_type_xml = self._compose_char_type_xml_for_character_type(cell_char_type, indent_level=indent_level+1)
                 if char_type_id not in char_type_ids_written:
