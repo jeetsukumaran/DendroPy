@@ -233,8 +233,6 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         be changed to '(A,B,C)' after this operation!
     """
     taxon_namespace = tree.taxon_namespace
-    if taxon_namespace is None:
-        taxon_namespace = tree.infer_taxa()
     if create_dict:
         tree.split_edges = {}
         split_map = tree.split_edges
