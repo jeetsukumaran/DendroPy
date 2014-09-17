@@ -29,7 +29,7 @@ def general_verify_character_cell_states(
         checker_reference_class,
         c1, c2,
         check_annotations=True):
-    if char_matrix.datatype_name != "continuous":
+    if char_matrix.data_type != "continuous":
         test_case.assertIs(c1, c2)
     else:
         test_case.assertEqual(c1, c2)

@@ -242,7 +242,7 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", self.suppress_leaf_node_taxa)
-        self.datatype_name = kwargs.pop("datatype_name", None)
+        self.data_type = kwargs.pop("data_type", None)
 
         self.check_for_unused_keyword_arguments(kwargs)
 
@@ -300,9 +300,9 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
         self._taxon_namespaces.append(taxon_namespace)
         return taxon_namespace
 
-    def _new_char_matrix(self, datatype_name, taxon_namespace, label=None):
+    def _new_char_matrix(self, data_type, taxon_namespace, label=None):
         char_matrix = self._char_matrix_factory(
-                datatype_name,
+                data_type,
                 taxon_namespace=taxon_namespace,
                 label=label)
         self._char_matrices.append(char_matrix)
@@ -610,21 +610,21 @@ class _NexmlCharBlockParser(_AnnotationParser):
         # character matrix instantiation
         nxchartype = nxchars.parse_type()
         if nxchartype.startswith('Dna'):
-            datatype_name = "dna"
+            data_type = "dna"
         elif nxchartype.startswith('Rna'):
-            datatype_name = "rna"
+            data_type = "rna"
         elif nxchartype.startswith('Protein'):
-            datatype_name = "protein"
+            data_type = "protein"
         elif nxchartype.startswith('Restriction'):
-            datatype_name = "restriction"
+            data_type = "restriction"
         elif nxchartype.startswith('Standard'):
-            datatype_name = "standard"
+            data_type = "standard"
         elif nxchartype.startswith('Continuous'):
-            datatype_name = "continuous"
+            data_type = "continuous"
         else:
             raise Exception("Character Block %s (\"%s\"): Character type '%s' not supported" % (char_matrix_oid, char_matrix.label, nxchartype))
         char_matrix = self._char_matrix_factory(
-                datatype_name,
+                data_type,
                 taxon_namespace=taxon_namespace,
                 label=label)
 
@@ -636,8 +636,8 @@ class _NexmlCharBlockParser(_AnnotationParser):
         # get state mappings
         nxformat = nxchars.find_char_format()
         if nxformat is not None:
-            self.parse_characters_format(nxformat, datatype_name, char_matrix)
-        elif datatype_name == "standard":
+            self.parse_characters_format(nxformat, data_type, char_matrix)
+        elif data_type == "standard":
             self.create_standard_character_alphabet(char_matrix)
 
         nxmatrix = nxchars.find_char_matrix()
@@ -658,7 +658,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
             for annotation in annotations:
                 self._parse_annotations(character_vector, annotation)
 
-            if datatype_name == "continuous":
+            if data_type == "continuous":
                 if nxchartype.endswith('Seqs'):
                     seq = nxrow.find_char_seq()
                     if seq is not None:
@@ -809,18 +809,18 @@ class _NexmlCharBlockParser(_AnnotationParser):
         state_alphabet.compile_lookup_mappings()
         return state_alphabet
 
-    def parse_characters_format(self, nxformat, datatype_name, char_matrix):
+    def parse_characters_format(self, nxformat, data_type, char_matrix):
         """
         Given an XmlElement schema element ("format"), this parses the
         state definitions (if any) and characters (column definitions, if any),
         and populates the given char_matrix accordingly.
         """
-        # if datatype_name == "standard":
+        # if data_type == "standard":
         #     for nxstates in nxformat.findall_char_states():
         #         char_matrix.state_alphabets.append(self.parse_state_alphabet(nxstates))
         # else:
         #     pass
-        if datatype_name in ("dna", "rna", "protein", "restriction"):
+        if data_type in ("dna", "rna", "protein", "restriction"):
             # fixed alphabet: map to existing states
             for nxstates in nxformat.findall_char_states():
                 state_alphabet_oid = nxstates.get("id", None)
@@ -834,7 +834,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
                     try:
                         state = char_matrix.default_state_alphabet[symbol]
                     except KeyError:
-                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, data_type))
                     assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
                     self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
                 for nxstate in nxstates.findall_polymorphic_state_set():
@@ -843,7 +843,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
                     try:
                         state = char_matrix.default_state_alphabet[symbol]
                     except KeyError:
-                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, data_type))
                     assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
                     self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
                 for nxstate in nxstates.findall_uncertain_state_set():
@@ -852,7 +852,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
                     try:
                         state = char_matrix.default_state_alphabet[symbol]
                     except KeyError:
-                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, datatype_name))
+                        raise Exception("'{}' is not a recognized symbol for the state alphabet for the '{}' data type".format(symbol, data_type))
                     assert (char_matrix.default_state_alphabet, state_oid) not in self._id_state_map
                     self._id_state_map[ (char_matrix.default_state_alphabet, state_oid) ] = state
         else:

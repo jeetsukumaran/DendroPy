@@ -55,7 +55,7 @@ class PhylipReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
         ioservice.DataReader.__init__(self)
-        self.datatype_name = kwargs.pop("datatype_name", None)
+        self.data_type = kwargs.pop("data_type", None)
         # if "char_matrix_type" in kwargs and "data_type" in kwargs:
         #     raise ValueError("Cannot specify both 'data_type' and 'char_matrix_type'")
         # if "data_type" in kwargs:
@@ -111,13 +111,13 @@ class PhylipReader(ioservice.DataReader):
         self.reset()
         self.stream = stream
         self.taxon_namespace = taxon_namespace_factory(label=None)
-        if self.datatype_name is None:
+        if self.data_type is None:
             raise TypeError("Data type must be specified for this schema")
         self.char_matrix = char_matrix_factory(
-                self.datatype_name,
+                self.data_type,
                 label=None,
                 taxon_namespace=self.taxon_namespace)
-        if self.datatype_name == "standard":
+        if self.data_type == "standard":
             state_alphabet = state_alphabet_factory(
                 fundamental_states="0123456789",
                 no_data_symbol="?",
@@ -177,7 +177,7 @@ class PhylipReader(ioservice.DataReader):
         return current_taxon, line
 
     def _parse_sequence_from_line(self, current_taxon, line, line_index):
-        if self.datatype_name == "continuous":
+        if self.data_type == "continuous":
             for c in line.split():
                 if not c:
                     continue

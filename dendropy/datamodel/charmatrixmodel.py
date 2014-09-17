@@ -318,7 +318,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Class Variables
 
-    datatype_name = None
+    data_type = None
     character_sequence_type = CharacterDataSequence
 
     ###########################################################################
@@ -337,7 +337,7 @@ class CharacterMatrix(
                 taxon_namespace.label = label
             return taxon_namespace
         label = kwargs.pop("label", None)
-        kwargs["datatype_name"] = cls.datatype_name
+        kwargs["data_type"] = cls.data_type
         reader = dataio.get_reader(schema, **kwargs)
         char_matrices = reader.read_char_matrices(
                 stream=stream,
@@ -348,13 +348,13 @@ class CharacterMatrix(
         if len(char_matrices) == 0:
             raise ValueError("No character data in data source")
         char_matrix = char_matrices[matrix_offset]
-        if char_matrix.datatype_name != cls.datatype_name:
+        if char_matrix.data_type != cls.data_type:
             raise ValueError(
                 "Data source (at offset {}) is of type '{}', "
                 "but current CharacterMatrix is of type '{}'.".format(
                     matrix_offset,
-                    char_matrix.datatype_name,
-                    cls.datatype_name))
+                    char_matrix.data_type,
+                    cls.data_type))
         return char_matrix
     _parse_from_stream = classmethod(_parse_from_stream)
 
@@ -1377,7 +1377,7 @@ class ContinuousCharacterMatrix(CharacterMatrix):
             return CharacterDataSequence.symbols_as_string(self, sep=sep)
 
     character_sequence_type = ContinuousCharacterDataSequence
-    datatype_name = "continuous"
+    data_type = "continuous"
 
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
@@ -1394,7 +1394,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         pass
     character_sequence_type = DiscreteCharacterDataSequence
 
-    datatype_name = "discrete"
+    data_type = "discrete"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1546,7 +1546,7 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
     class FixedAlphabetCharacterDataSequence(CharacterDataSequence):
         pass
     character_sequence_type = FixedAlphabetCharacterDataSequence
-    datatype_name = "fixed"
+    data_type = "fixed"
     datatype_alphabet = None
 
     def __init__(self, *args, **kwargs):
@@ -1564,7 +1564,7 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     class DnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = DnaCharacterDataSequence
-    datatype_name = "dna"
+    data_type = "dna"
     datatype_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
@@ -1573,7 +1573,7 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     class RnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = RnaCharacterDataSequence
-    datatype_name = "rna"
+    data_type = "rna"
     datatype_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
@@ -1582,7 +1582,7 @@ class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     class NucleotideCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = NucleotideCharacterDataSequence
-    datatype_name = "nucleotide"
+    data_type = "nucleotide"
     datatype_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
@@ -1591,7 +1591,7 @@ class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     class ProteinCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = ProteinCharacterDataSequence
-    datatype_name = "protein"
+    data_type = "protein"
     datatype_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
@@ -1600,7 +1600,7 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     class RestrictionSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = RestrictionSitesCharacterDataSequence
-    datatype_name = "restriction"
+    data_type = "restriction"
     datatype_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
@@ -1609,7 +1609,7 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     class InfiniteSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = InfiniteSitesCharacterDataSequence
-    datatype_name = "infinite"
+    data_type = "infinite"
     datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
@@ -1619,7 +1619,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         pass
     character_sequence_type = StandardCharacterDataSequence
 
-    datatype_name = "standard"
+    data_type = "standard"
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1634,7 +1634,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 ###############################################################################
 ## Main Character Matrix Factory Function
 
-datatype_name_matrix_map = {
+data_type_matrix_map = {
     'continuous' : ContinuousCharacterMatrix,
     'dna' : DnaCharacterMatrix,
     'rna' : RnaCharacterMatrix,
@@ -1644,16 +1644,16 @@ datatype_name_matrix_map = {
     'infinite' : InfiniteSitesCharacterMatrix,
 }
 
-def get_char_matrix_type(datatype_name):
-    if datatype_name is None:
-        raise TypeError("'datatype_name' must be specified")
-    matrix_type = datatype_name_matrix_map.get(datatype_name, None)
+def get_char_matrix_type(data_type):
+    if data_type is None:
+        raise TypeError("'data_type' must be specified")
+    matrix_type = data_type_matrix_map.get(data_type, None)
     if matrix_type is None:
-        raise KeyError("Unrecognized data type specification: '{}'".format(datatype_name,
-            sorted(datatype_name_matrix_map.keys())))
+        raise KeyError("Unrecognized data type specification: '{}'".format(data_type,
+            sorted(data_type_matrix_map.keys())))
     return matrix_type
 
-def new_char_matrix(datatype_name, **kwargs):
-    matrix_type = get_char_matrix_type(datatype_name=datatype_name)
+def new_char_matrix(data_type, **kwargs):
+    matrix_type = get_char_matrix_type(data_type=data_type)
     m = matrix_type(**kwargs)
     return m

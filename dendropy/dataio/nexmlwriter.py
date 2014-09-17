@@ -257,17 +257,17 @@ class NexmlWriter(ioservice.DataWriter):
         if char_matrix.label:
             parts.append('label=%s' % _protect_attr(char_matrix.label))
         parts.append('otus="%s"' % self._taxon_namespace_id_map[char_matrix.taxon_namespace])
-        if char_matrix.datatype_name == "dna":
+        if char_matrix.data_type == "dna":
             xsi_datatype = 'nex:Dna'
-        elif char_matrix.datatype_name == "rna":
+        elif char_matrix.data_type == "rna":
             xsi_datatype = 'nex:Rna'
-        elif char_matrix.datatype_name == "protein":
+        elif char_matrix.data_type == "protein":
             xsi_datatype = 'nex:Protein'
-        elif char_matrix.datatype_name == "restriction":
+        elif char_matrix.data_type == "restriction":
             xsi_datatype = 'nex:Restriction'
-        elif char_matrix.datatype_name == "standard":
+        elif char_matrix.data_type == "standard":
             xsi_datatype = 'nex:Standard'
-        elif char_matrix.datatype_name == "continuous":
+        elif char_matrix.data_type == "continuous":
             xsi_datatype = 'nex:Continuous'
         else:
             raise Exception("Unrecognized character block data type.")
@@ -303,7 +303,7 @@ class NexmlWriter(ioservice.DataWriter):
             if char_vector.has_annotations:
                 self._write_annotations_and_comments(char_vector, dest, indent_level=indent_level+3)
             if self.markup_as_sequences:
-                if char_matrix.datatype_name in ("dna", "rna", "protein", "restriction", "aa", "amino-acid"):
+                if char_matrix.data_type in ("dna", "rna", "protein", "restriction", "aa", "amino-acid"):
                     separator = ''
                 else:
                     # standard or continuous
@@ -330,7 +330,7 @@ class NexmlWriter(ioservice.DataWriter):
                     parts = []
                     parts.append('%s<cell' % (self.indent*(indent_level+3)))
                     parts.append('char="%s"' % cell_char_type_id_map[ (taxon, col_idx) ])
-                    if char_matrix.datatype_name == "continuous":
+                    if char_matrix.data_type == "continuous":
                         v = str(char_value)
                     else:
                         v = self._state_id_map[char_value]

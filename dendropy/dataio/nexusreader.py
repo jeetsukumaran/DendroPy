@@ -273,7 +273,7 @@ class NexusReader(ioservice.DataReader):
         # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
-        self._datatype_name = kwargs.pop("datatype_name", "standard")
+        self._data_type = kwargs.pop("data_type", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
         # Following are undocumented for a GOOD reason! They are experimental and subject to change!
@@ -452,11 +452,11 @@ class NexusReader(ioservice.DataReader):
                 case_sensitive=self.case_sensitive_taxon_labels)
         return taxon_symbol_mapper
 
-    def _new_char_matrix(self, datatype_name, taxon_namespace, title=None):
-        # if datatype_name is None:
-        #     datatype_name = "standard"
+    def _new_char_matrix(self, data_type, taxon_namespace, title=None):
+        # if data_type is None:
+        #     data_type = "standard"
         char_matrix = self._char_matrix_factory(
-                datatype_name,
+                data_type,
                 taxon_namespace=taxon_namespace,
                 label=title)
         self._char_matrices.append(char_matrix)
@@ -683,7 +683,7 @@ class NexusReader(ioservice.DataReader):
         self._nexus_tokenizer.skip_to_semicolon() # move past BEGIN command
         block_title = None
         link_title = None
-        self._datatype_name = "standard" # set as default
+        self._data_type = "standard" # set as default
         while (token != 'END'
                 and token != 'ENDBLOCK'
                 and not self._nexus_tokenizer.is_eof()
@@ -728,18 +728,18 @@ class NexusReader(ioservice.DataReader):
                 if token == '=':
                     token = self._nexus_tokenizer.require_next_token_ucase()
                     if token == "DNA" or token == "NUCLEOTIDES":
-                        self._datatype_name = "dna"
+                        self._data_type = "dna"
                     elif token == "RNA":
-                        self._datatype_name = "rna"
+                        self._data_type = "rna"
                     elif token == "NUCLEOTIDE":
-                        self._datatype_name = "nucleotide"
+                        self._data_type = "nucleotide"
                     elif token == "PROTEIN":
-                        self._datatype_name = "protein"
+                        self._data_type = "protein"
                     elif token == "CONTINUOUS":
-                        self._datatype_name = "continuous"
+                        self._data_type = "continuous"
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
-                        self._datatype_name = "standard"
+                        self._data_type = "standard"
                         self._symbols = "01"
                 else:
                     raise self._nexus_error("Expecting '=' after DATATYPE keyword")
@@ -845,10 +845,10 @@ class NexusReader(ioservice.DataReader):
             raise self._nexus_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         taxon_namespace = self._get_taxon_namespace(link_title)
         char_block = self._new_char_matrix(
-                self._datatype_name,
+                self._data_type,
                 taxon_namespace=taxon_namespace,
                 title=block_title)
-        if self._datatype_name == "continuous":
+        if self._data_type == "continuous":
             self._process_continuous_matrix_data(char_block)
         else:
             self._process_discrete_matrix_data(char_block)
@@ -892,7 +892,7 @@ class NexusReader(ioservice.DataReader):
         #     token = self._nexus_tokenizer.next_token()
 
     def _process_discrete_matrix_data(self, char_block):
-        if self._datatype_name == "standard":
+        if self._data_type == "standard":
             self._build_state_alphabet(char_block, self._symbols)
         taxon_namespace = char_block.taxon_namespace
         token = self._nexus_tokenizer.next_token()
