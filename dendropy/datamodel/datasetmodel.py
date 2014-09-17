@@ -307,7 +307,7 @@ class DataSet(
         attached.
         """
         if taxon_namespace is None:
-            raise TypeError("Automatic creation of a new TaxonNamespace is no longer supported: `taxon_namespace` argument required to be passed a valid 'TaxonNamespace' instance")
+            raise TypeError("Automatic creation of a new TaxonNamespace is no longer supported: `taxon_namespace` argument required to be passed a valid 'TaxonNamespace' instance. E.g.,:\n\n    taxon_namespace = dendropy.TaxonNamespace()\n    dataset.attach_taxon_namespace(taxon_namespace)\n")
             taxon_namespace = self.new_taxon_namespace()
         if type(taxon_namespace) == type(True):
             raise ValueError("attach_taxon_namespace() no longer accepts a bool argument: a valid 'TaxonNamespace' instance is required")
@@ -407,7 +407,7 @@ class DataSet(
     def attached_taxon_set_deprecation_warning(self, stacklevel=4):
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'attached_taxon_set' will no longer be supported in future releases; use 'attached_taxon_namespace' instead",
-                stacklevel=stacklevel)
+                stacklevel=3)
 
     def add_taxon_set(self, taxon_set):
         """
@@ -415,7 +415,7 @@ class DataSet(
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'add_taxon_set' will no longer be supported in future releases; use 'add_taxon_namespace' instead",
-                stacklevel=stacklevel)
+                stacklevel=3)
         return self.add_taxon_namespace(taxon_namespace=taxon_set)
 
     def new_taxon_set(self, *args, **kwargs):
@@ -424,7 +424,7 @@ class DataSet(
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'new_taxon_set' will no longer be supported in future releases; use 'new_taxon_namespace' instead",
-                stacklevel=stacklevel)
+                stacklevel=3)
         return self.new_taxon_namespace(*args, **kwargs)
 
     def attach_taxon_set(self, taxon_set=None):
@@ -433,7 +433,7 @@ class DataSet(
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'attach_taxon_set' will no longer be supported in future releases; use 'attach_taxon_namespace' instead",
-                stacklevel=stacklevel)
+                stacklevel=3)
         return self.attach_taxon_namespace(taxon_namespace=taxon_set)
 
     def detach_taxon_set(self):
@@ -442,7 +442,7 @@ class DataSet(
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
-                stacklevel=stacklevel)
+                stacklevel=3)
         self.detach_taxon_namespace()
 
     ### TreeList ###
