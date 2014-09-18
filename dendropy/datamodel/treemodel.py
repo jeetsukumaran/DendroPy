@@ -1366,10 +1366,7 @@ class Node(
         if depth is None or depth < 0:
             return
         output_strio = StringIO()
-        if self.label is None:
-            label = " (%s)" % self.oid
-        else:
-            label = " (%s: '%s')" % (self.oid, self.label)
+        label = str(self)
         output_strio.write('%s%sNode object at %s%s'
                 % (indent*' ',
                    itemize,
