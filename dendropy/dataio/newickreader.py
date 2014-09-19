@@ -181,6 +181,9 @@ class NewickReader(ioservice.DataReader):
             If `False`, leaf (external) node labels will be instantantiated
             into :class:`Taxon` objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
+        terminating_semicolon_required : boolean, default: `True`
+            If `True` [default], then a tree statement that does not end in a
+            semi-colon is an error. If `False`, then no error will be raised.
         """
 
         # base
@@ -250,6 +253,7 @@ class NewickReader(ioservice.DataReader):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", self.suppress_leaf_node_taxa)
+        self.terminating_semicolon_required = kwargs.pop("terminating_semicolon_required", True)
         self.check_for_unused_keyword_arguments(kwargs)
 
         # per-tree book-keeping
@@ -631,12 +635,13 @@ class NewickReader(ioservice.DataReader):
                         current_node.taxon = node_taxon
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
-                    # try:
-                    #     nexus_tokenizer.require_next_token()
-                    # except tokenizer.Tokenizer.UnexpectedEndOfStreamError:
-                    #     ## one possibility is that we have a single line
-                    #     ## tree string with no terminating semi-colon ...
-                    #     break
+                    try:
+                        nexus_tokenizer.require_next_token()
+                    except tokenizer.Tokenizer.UnexpectedEndOfStreamError:
+                        if self.terminating_semicolon_required:
+                            raise
+                        else:
+                            break
         ## if we are here, we have reached the end of the tree
         if self._parenthesis_nesting_level != 0:
             raise NewickReader.NewickReaderMalformedStatementError(
