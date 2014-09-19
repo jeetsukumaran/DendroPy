@@ -634,7 +634,7 @@ class NewickReader(ioservice.DataReader):
                         self._seen_taxa.add(node_taxon)
                         current_node.taxon = node_taxon
                     label_parsed = True;
-                    nexus_tokenizer.require_next_token()
+                    # nexus_tokenizer.require_next_token()
                     try:
                         nexus_tokenizer.require_next_token()
                     except tokenizer.Tokenizer.UnexpectedEndOfStreamError:
