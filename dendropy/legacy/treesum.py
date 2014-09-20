@@ -21,6 +21,23 @@ Split calculation and management.
 DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesum` instead.
 """
 
-# from dendropy.calculate.treesum import *
-# from dendropy.utility import error
-# error.dendropy_module_migration_warning("dendropy.treesum", "dendropy.calculate.treesum")
+from dendropy.calculate import treesum
+from dendropy.utility import deprecate
+
+class TreeSummarizer(treesum.TreeSummarizer):
+    def __init__(self, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: The 'dendropy.treesum.TreeSummarizer' class has moved to 'dendropy.calculate.treesum.TreeSummarizer'.",
+                old_construct="from dendropy import treesum\nm = treesum.TreeSummarizer(...)",
+                new_construct="from dendropy.calculate import treesum\nm = treesum.TreeSummarizer(...)")
+        treesum.TreeSummarizer.__init__(self, **kwargs)
+
+class TopologyCounter(treesum.TopologyCounter):
+    def __init__(self, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4: The 'dendropy.treesum.TopologyCounter' class has moved to 'dendropy.calculate.treesum.TopologyCounter'.",
+                old_construct="from dendropy import treesum\nm = treesum.TopologyCounter(...)",
+                new_construct="from dendropy.calculate import treesum\nm = treesum.TopologyCounter(...)")
+        treesum.TopologyCounter.__init__(self, **kwargs)
+
+
