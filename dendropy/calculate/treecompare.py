@@ -155,11 +155,11 @@ def weighted_robinson_foulds_distance(
                            value_type=float,
                            recalculate_splits=recalculate_splits)
 
-def false_positives_and_negatives(reference_tree, test_tree, recalculate_splits=False):
+def false_positives_and_negatives(reference_tree, comparison_tree, recalculate_splits=False):
     """
     Counts and returns number of false positive splits (splits found in
-    `test_tree` but not in `reference_tree`) and false negative splits (splits
-    found in `reference_tree` but not in `test_tree`).
+    `comparison_tree` but not in `reference_tree`) and false negative splits (splits
+    found in `reference_tree` but not in `comparison_tree`).
 
     Trees need to share the same :class:`TaxonNamespace` reference. The splits
     hash bitmasks of the trees must be correct for the current tree structures
@@ -171,9 +171,9 @@ def false_positives_and_negatives(reference_tree, test_tree, recalculate_splits=
     ----------
     reference_tree : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `test_tree` and must have split
+        same :class:`TaxonNamespace` reference as `comparison_tree` and must have split
         bitmasks encoded.
-    test_tree : :class:`dendropy.datamodel.Tree` object
+    comparison_tree : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `reference_tree` and must have split
         bitmasks encoded.
@@ -211,24 +211,24 @@ def false_positives_and_negatives(reference_tree, test_tree, recalculate_splits=
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
-    if reference_tree.taxon_namespace is not test_tree.taxon_namespace:
-        raise error.TaxonNamespaceIdentityError(reference_tree, test_tree)
+    if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:
+        raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
     if recalculate_splits:
         treesplit.encode_splits(reference_tree)
-        treesplit.encode_splits(test_tree)
+        treesplit.encode_splits(comparison_tree)
     else:
         if reference_tree.split_edges is None:
             reference_tree.encode_splits()
-        if test_tree.split_edges is None:
-            test_tree.encode_splits()
+        if comparison_tree.split_edges is None:
+            comparison_tree.encode_splits()
     for split in reference_tree.split_edges:
-        if split in test_tree.split_edges:
+        if split in comparison_tree.split_edges:
             pass
         else:
             false_negatives = false_negatives + 1
             sym_diff = sym_diff + 1
 
-    for split in test_tree.split_edges:
+    for split in comparison_tree.split_edges:
         if split in reference_tree.split_edges:
             pass
         else:
@@ -303,10 +303,10 @@ def euclidean_distance(
                            value_type=value_type,
                            recalculate_splits=recalculate_splits)
 
-def find_missing_splits(reference_tree, test_tree, recalculate_splits=False):
+def find_missing_splits(reference_tree, comparison_tree, recalculate_splits=False):
     """
     Returns a list of splits that are in `reference_tree`, but
-    not in `test_tree`.
+    not in `comparison_tree`.
 
     Trees need to share the same :class:`TaxonNamespace` reference. The splits
     hash bitmasks of the trees must be correct for the current tree structures
@@ -318,9 +318,9 @@ def find_missing_splits(reference_tree, test_tree, recalculate_splits=False):
     ----------
     reference_tree : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `test_tree` and must have split
+        same :class:`TaxonNamespace` reference as `comparison_tree` and must have split
         bitmasks encoded.
-    test_tree : :class:`dendropy.datamodel.Tree` object
+    comparison_tree : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
         same :class:`TaxonNamespace` reference as `reference_tree` and must have split
         bitmasks encoded.
@@ -337,18 +337,18 @@ def find_missing_splits(reference_tree, test_tree, recalculate_splits=False):
 
     """
     missing = []
-    if reference_tree.taxon_namespace is not test_tree.taxon_namespace:
-        raise error.TaxonNamespaceIdentityError(reference_tree, test_tree)
+    if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:
+        raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
     if recalculate_splits:
         treesplit.encode_splits(reference_tree)
-        treesplit.encode_splits(test_tree)
+        treesplit.encode_splits(comparison_tree)
     else:
         if reference_tree.split_edges is None:
             reference_tree.encode_splits()
-        if test_tree.split_edges is None:
-            test_tree.encode_splits()
+        if comparison_tree.split_edges is None:
+            comparison_tree.encode_splits()
     for split in reference_tree.split_edges:
-        if split in test_tree.split_edges:
+        if split in comparison_tree.split_edges:
             pass
         else:
             missing.append(split)
