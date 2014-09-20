@@ -232,9 +232,8 @@ def pop_gen_tree(tree=None,
 
         # get the internal nodes on the tree in reverse branching
         # order, so that newest nodes are returned first
-        nodes = tree.nodes(cmp_fn = lambda x, y : \
-                           int((y.distance_from_root()-x.distance_from_root())*10e+6),
-                           filter_fn = lambda x : not x.is_leaf())
+        nodes = tree.nodes(filter_fn = lambda x : not x.is_leaf())
+        nodes.sort(key=lambda x: x.distance_from_root())
         # assign the ages
         for index, node in enumerate(nodes):
             for child in node.child_nodes():
@@ -242,7 +241,7 @@ def pop_gen_tree(tree=None,
 
     # set the gene samples
     if samples is not None:
-        for index, leaf in enumerate(tree.leaf_iter()):
+        for index, leaf in enumerate(tree.leaf_node_iter()):
             setattr(leaf, num_genes_attr, samples[index])
             leaf.annotations.add_bound_attribute(num_genes_attr)
 
