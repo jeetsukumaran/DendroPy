@@ -358,16 +358,16 @@ def delete_outdegree_one(tree):
                 p.add_child(c, pos=pos)
                 p.remove_child(h)
 
-def lowest_bit_only(s):
-    m = s & (s - 1)
-    return m ^ s
+def lowest_bit_only(split):
+    m = split & (split - 1)
+    return m ^ split
 
 __n_bits_set = (0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4)
-def count_bits(a):
+def count_bits(split):
     '''Returns the number of bits set to one.'''
     global __n_bits_set
-    c = int(a)
-    if c != a:
+    c = int(split)
+    if c != split:
         raise ValueError('non-integer argument')
     if c < 1:
         if c < 0:
@@ -617,3 +617,18 @@ class SplitDistribution(object):
                 if edge.head_node is not None:
                     sna.append(edge.head_node.age)
 
+    def _get_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        return self.taxon_namespace
+
+    def _set_taxon_set(self, v):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        self.taxon_namespace = v
+
+    def _del_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+
+    taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
