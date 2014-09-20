@@ -22,6 +22,7 @@ framework.
 """
 
 import math
+import dendropy
 from dendropy.utility import GLOBAL_RNG
 from dendropy.mathlib import probability
 
@@ -529,11 +530,8 @@ def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     """
     Generates a tree under the unconstrained Kingman's coalescent process.
     """
-
-    # get our random number generator
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
-
     nodes = [dendropy.Node(taxon=t) for t in taxon_namespace]
     seed_node = coalesce_nodes(nodes=nodes,
                                     pop_size=pop_size,
@@ -543,16 +541,13 @@ def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
     return tree
 
-def mean_kingman_tree(taxon_namespace, pop_size=1):
+def mean_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     """
     Returns a tree with coalescent intervals given by the expected times under
     Kingman's neutral coalescent.
     """
-
-    # get our random number generator
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
-
     nodes = [dendropy.Node(taxon=t) for t in taxon_namespace]
     seed_node = coalesce_nodes(nodes=nodes,
                                     pop_size=pop_size,
@@ -626,7 +621,7 @@ def constrained_kingman_tree(pop_tree,
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
     # of 'taxon'.
-    for leaf_count, leaf in enumerate(pop_tree.leaf_iter()):
+    for leaf_count, leaf in enumerate(pop_tree.leaf_node_iter()):
         gene_nodes = []
         for gene_count in range(getattr(leaf, num_genes_attr)):
             gene_node = dendropy.Node()

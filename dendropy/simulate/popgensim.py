@@ -75,7 +75,7 @@ class FragmentedPopulations(object):
 
         self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
-        d = dendropy.DataSet(self.mutation_tree.taxon_set)
+        d = dendropy.DataSet(self.mutation_tree.taxon_namespace)
         if self.use_seq_gen is True:
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
@@ -136,7 +136,7 @@ class FragmentedPopulations(object):
         return self.gene_tree
 
 def pop_gen_tree(tree=None,
-                 taxon_set=None,
+                 taxon_namespace=None,
                  ages=None,
                  num_genes=None,
                  pop_sizes=None,
@@ -149,8 +149,8 @@ def pop_gen_tree(tree=None,
     (samples or lineages) in each leaf.
 
     If `tree` is given, then this is used as the tree to be decorated.
-    Otherwise, a Yule tree is generated based on the given taxon_set.
-    Either `tree` or `taxon_set` must be given.
+    Otherwise, a Yule tree is generated based on the given taxon_namespace.
+    Either `tree` or `taxon_namespace` must be given.
 
     The timing of the divergences can be controlled by specifying a vector of
     ages, `ages`. This should be sequences of values specifying the ages of the
@@ -199,11 +199,12 @@ def pop_gen_tree(tree=None,
 
     # get a yule tree
     if not tree:
-        if taxon_set:
-            tree = uniform_pure_birth(taxon_set=taxon_set,
+        if taxon_namespace:
+            from dendropy.simulate import treesim
+            tree = treesim.uniform_pure_birth_tree(taxon_namespace=taxon_namespace,
                                       rng=rng)
         else:
-            raise Exception("Either tree or taxa block must be given")
+            raise Exception("Either tree or taxon namespace must be given")
 
     num_pops = len(tree.leaf_nodes())
 

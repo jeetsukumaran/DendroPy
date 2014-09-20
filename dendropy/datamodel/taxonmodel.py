@@ -676,6 +676,12 @@ class TaxonNamespace(
         self._taxon_accession_index_map[taxon] = self._current_accession_count
         self._current_accession_count += 1
 
+    def append(self, taxon):
+        """
+        LEGACY. Use 'add_taxon()' instead.
+        """
+        return self.add_taxon(taxon)
+
     def add_taxa(self, taxa):
         """
         Adds multiple :class:`Taxon` objects to self.
