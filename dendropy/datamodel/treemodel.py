@@ -204,7 +204,7 @@ class Edge(
             else:
                 hn = "None"
             output_strio.write('\n%s%s' % (leader2, hn))
-            if hasattr(self, 'split_bitmask'):
+            if self.split_bitmask is not None:
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_namespace is None:
                     output_strio.write('\n%s%s' % (leader2, self.split_bitmask))
@@ -1395,7 +1395,7 @@ class Node(
             else:
                 parent_node_desc = 'None'
             output_strio.write('\n%s%s' % (leader2, parent_node_desc))
-            if hasattr(self.edge, 'split_bitmask'):
+            if self.edge.split_bitmask is not None:
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_namespace is None:
                     output_strio.write('\n%s%s' % (leader2, self.edge.split_bitmask))
@@ -1875,10 +1875,9 @@ class Tree(
     ##############################################################################
 
     def _get_split_edge_map(self):
-        if self._split_edge_map is None:
-            self.encode_splits()
+        # if self._split_edge_map is None:
+        #     self.encode_splits()
         return self._split_edge_map
-
     def _set_split_edge_map(self, m):
         self._split_edge_map = m
     split_edge_map = property(_get_split_edge_map, _set_split_edge_map)
@@ -2363,7 +2362,7 @@ class Tree(
         if split_bitmask is None or split_bitmask == 0:
             raise ValueError("Null split bitmask (0)")
 
-        if not hasattr(start_node.edge, "split_bitmask"):
+        if start_node.edge.split_bitmask is None:
             treesplit.encode_splits(self, delete_outdegree_one=False)
 
         if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
@@ -3563,6 +3562,10 @@ class Tree(
         Recalculates split hashes for tree.
         """
         treesplit.encode_splits(self, **kwargs)
+
+    def _has_splits_encoded(self):
+        return not self.split_edge_map is None
+    has_splits_encoded = property(_has_splits_encoded)
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (mutation)
