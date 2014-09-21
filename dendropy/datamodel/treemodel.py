@@ -1670,7 +1670,11 @@ class Tree(
             taxon_namespace=None,
             **kwargs):
         if taxon_namespace is None:
-            taxon_namespace = taxonmodel.TaxonNamespace()
+            taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
+            if taxon_namespace is None:
+                taxon_namespace = taxonmodel.TaxonNamespace()
+        else:
+            assert "taxon_set" not in kwargs
         tree_yielder = dataio.get_tree_yielder(
                 files,
                 schema,

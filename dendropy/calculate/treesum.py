@@ -188,7 +188,7 @@ class TreeSummarizer(object):
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        if recalculate_splits or tree.splti_edges is None:
+        if recalculate_splits or tree.split_edges is None:
             tree.encode_splits()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
