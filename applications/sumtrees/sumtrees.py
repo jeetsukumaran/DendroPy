@@ -37,10 +37,16 @@ except:
     pass
 import platform
 try:
-    import Queue
+    try:
+        # Python 3
+        import queue
+    except ImportError:
+        # Python 2.7
+        import Queue as queue
     import multiprocessing
     _MP = True
 except ImportError:
+    # Python < 2.7
     _MP = False
 
 import dendropy
@@ -109,7 +115,7 @@ if _MP:
             msg = "Thread %d: %s" % (self.process_idx+1, msg)
             self.messenger_lock.acquire()
             try:
-                self.messenger.send(msg, level=level, wrap=wrap)
+                self.messenger.log(msg, level=level, wrap=wrap)
             finally:
                 self.messenger_lock.release()
 
@@ -126,7 +132,7 @@ if _MP:
             while not self.kill_received:
                 try:
                     source = self.work_queue.get_nowait()
-                except Queue.Empty:
+                except queue.Empty:
                     break
                 self.send_info("Received task: '%s'." % source, wrap=False)
                 fsrc = open(source, "rU")
