@@ -3563,9 +3563,9 @@ class Tree(
         """
         treesplit.encode_splits(self, **kwargs)
 
-    def _has_splits_encoded(self):
-        return not self.split_edge_map is None
-    has_splits_encoded = property(_has_splits_encoded)
+    def _is_splits_encoded(self):
+        return self.split_edge_map is not None
+    is_splits_encoded = property(_is_splits_encoded)
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (mutation)
