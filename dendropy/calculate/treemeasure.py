@@ -89,7 +89,7 @@ class PatristicDistanceMatrix(object):
         if tree is not None:
             self.tree = tree
         assert self.tree is not None
-        if recalculate_splits or self.tree.split_edges is None:
+        if recalculate_splits or self.tree.split_edge_map is None:
             self.tree.encode_splits()
         self.taxon_namespace = self.tree.taxon_namespace
         self._pat_dists = {}
@@ -151,7 +151,7 @@ def patristic_distance(tree, taxon1, taxon2, recalculate_splits=False):
     patristic distance between the two. Much more inefficient than constructing
     a PatristicDistanceMatrix object.
     """
-    if recalculate_splits or tree.split_edges is None:
+    if recalculate_splits or tree.split_edge_map is None:
         tree.encode_splits()
     mrca = tree.mrca(taxa=[taxon1, taxon2])
     dist = 0

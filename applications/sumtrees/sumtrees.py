@@ -147,6 +147,7 @@ if _MP:
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
                         treesplit.encode_splits(tree)
                         self.split_distribution.count_splits_on_tree(tree)
+                        print(tree.split_edge_map)
                         if self.calc_tree_probs:
                             self.topology_counter.count(tree,
                                     tree_splits_encoded=True)
@@ -461,7 +462,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             help="if specified, a file listing tree (topologies) and the " \
                     + "frequencies of their occurrences will be saved to FILEPATH")
     other_summarization_optgroup.add_option("--extract-edges",
-            dest="split_edges_filepath",
+            dest="split_edge_map_filepath",
             default=None,
             metavar="FILEPATH",
             help="if specified, a tab-delimited file of splits and their edge " \
@@ -667,14 +668,14 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         trprobs_dest = None
         opts.calc_tree_probs = False
 
-    if opts.split_edges_filepath:
-        split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
-        if confirm_overwrite(filepath=split_edges_filepath, replace_without_asking=opts.replace):
-            split_edges_dest = open(split_edges_filepath, "w")
+    if opts.split_edge_map_filepath:
+        split_edge_map_filepath = os.path.expanduser(os.path.expandvars(opts.split_edge_map_filepath))
+        if confirm_overwrite(filepath=split_edge_map_filepath, replace_without_asking=opts.replace):
+            split_edge_map_dest = open(split_edge_map_filepath, "w")
         else:
             sys.exit(1)
     else:
-        split_edges_dest = None
+        split_edge_map_dest = None
 
     if opts.from_newick_stream:
         schema = "newick"
@@ -1041,14 +1042,14 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 node_label_element_separator=' ',
                 node_label_compose_func=None)
 
-    if split_edges_dest:
+    if split_edge_map_dest:
         messenger.info("Writing split edge lengths ...")
         for split in master_split_distribution.splits:
             row = []
             row.append(master_split_distribution.taxon_namespace.split_as_newick_string(split))
             for edge_length in master_split_distribution.split_edge_lengths[split]:
                 row.append("%s" % edge_length)
-            split_edges_dest.write("%s\n" % ("\t".join(row)))
+            split_edge_map_dest.write("%s\n" % ("\t".join(row)))
 
     if not opts.output_filepath:
         pass

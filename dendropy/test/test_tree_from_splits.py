@@ -43,7 +43,7 @@ class TreeFromSplitsTest(unittest.TestCase):
                     "nexus",
                     rooting=rooting)
             treesplit.encode_splits(ref_tree)
-            splits = ref_tree.split_edges.keys()
+            splits = ref_tree.split_edge_map.keys()
             t_tree = treesplit.tree_from_splits(
                     splits=splits,
                     taxon_namespace=ref_tree.taxon_namespace,

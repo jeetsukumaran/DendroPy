@@ -158,12 +158,12 @@ class TreeSummarizer(object):
         tree.reindex_taxa(taxon_namespace=split_distribution.taxon_namespace)
         assert tree.taxon_namespace is split_distribution.taxon_namespace
         treesplit.encode_splits(tree)
-        for split in tree.split_edges:
+        for split in tree.split_edge_map:
             if split in split_freqs:
                 split_support = split_freqs[split]
             else:
                 split_support = 0.0
-            self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)
+            self.map_split_support_to_node(tree.split_edge_map[split].head_node, split_support)
         return tree
 
     def annotate_nodes_and_edges(self,
@@ -188,7 +188,7 @@ class TreeSummarizer(object):
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        if recalculate_splits or tree.split_edges is None:
+        if recalculate_splits or tree.split_edge_map is None:
             tree.encode_splits()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
@@ -236,7 +236,7 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_edges is None:
+        if recalculate_splits or tree.split_edge_map is None:
             tree.encode_splits()
         #'height',
         #'height_median',
@@ -246,7 +246,7 @@ class TreeSummarizer(object):
         #'length_median',
         #'length_95hpd',
         #'length_range',
-        #for split, edge in tree.split_edges.items():
+        #for split, edge in tree.split_edge_map.items():
         for edge in tree.preorder_edge_iter():
             split = edge.split_bitmask
             nd = edge.head_node
@@ -280,9 +280,9 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_edges is None:
+        if recalculate_splits or tree.split_edge_map is None:
             tree.encode_splits()
-        for split, edge in tree.split_edges.items():
+        for split, edge in tree.split_edge_map.items():
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
@@ -303,7 +303,7 @@ class TreeSummarizer(object):
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in leaves:
             if not is_rooted:
-                split = con_tree.split_edges.normalize_key(node.edge.split_bitmask)
+                split = con_tree.split_edge_map.normalize_key(node.edge.split_bitmask)
             else:
                 split = node.edge.split_bitmask
             self.map_split_support_to_node(node, 1.0)
@@ -385,7 +385,7 @@ class TopologyCounter(object):
         """
         Set of all splits on tree: default topology hash.
         """
-        return frozenset(tree.split_edges.keys())
+        return frozenset(tree.split_edge_map.keys())
     hash_topology = staticmethod(hash_topology)
 
     def __init__(self):

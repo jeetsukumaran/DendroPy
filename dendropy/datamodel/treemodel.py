@@ -1849,7 +1849,7 @@ class Tree(
             self.weight = None
             self.length_type = None
             self.seed_node = None
-            self.split_edges = None
+            self._split_edge_map = None
             seed_node = kwargs.pop("seed_node", None)
             if seed_node is None:
                 self.seed_node = self.node_factory()
@@ -1858,6 +1858,30 @@ class Tree(
                 self.update_taxon_namespace()
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+
+    ##############################################################################
+    ###### LEGACY
+    def _get_split_edges(self):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.split_edge_map' for a mapping from split bitmasks to edges instead.",
+                stacklevel=3)
+        return self.split_edge_map
+    def _set_split_edges(self, m):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.split_edge_map' for a mapping from split bitmasks to edges instead.",
+                stacklevel=3)
+        self.split_edge_map = m
+    split_edges = property(_get_split_edges, _set_split_edges)
+    ##############################################################################
+
+    def _get_split_edge_map(self):
+        if self._split_edge_map is None:
+            self.encode_splits()
+        return self._split_edge_map
+
+    def _set_split_edge_map(self, m):
+        self._split_edge_map = m
+    split_edge_map = property(_get_split_edge_map, _set_split_edge_map)
 
     def __hash__(self):
         return id(self)
@@ -3036,7 +3060,7 @@ class Tree(
         tree traversal behaves as if the tree is rooted at 'new_seed_node', but
         it does not actually change the tree's rooting state.  If
         `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated.
+        `split_edge_map` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
         `delete_outdegree_one` is False, then it will be
@@ -3058,7 +3082,7 @@ class Tree(
                 update_splits = False
         to_edge_dict = None
         if update_splits:
-            to_edge_dict = getattr(self, "split_edges", None)
+            to_edge_dict = getattr(self, "split_edge_map", None)
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
             if len(root_children) == 2 and delete_outdegree_one:
@@ -3117,7 +3141,7 @@ class Tree(
         to place a clade as the first child under the root.
         Assumes that `outgroup_node` and `outgroup_node._parent_node` and are in the tree/
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated.
+        `split_edge_map` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
         `delete_outdegree_one` is False, then it will be
@@ -3140,7 +3164,7 @@ class Tree(
         representation so tree traversal behaves as if the tree is rooted at
         'new_seed_node', *and* changes the tree's rooting state.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated.
+        `split_edge_map` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
         `delete_outdegree_one` is False, then it will be
@@ -3167,7 +3191,7 @@ class Tree(
         to the old parent of the original edge, while `length2` will be
         assigned to the old child of the original edge.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated.
+        `split_edge_map` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
         `delete_outdegree_one` is False, then it will be
@@ -3191,7 +3215,7 @@ class Tree(
         two taxa in a tree.
         Sets the rooted flag on the tree to True.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated.
+        `split_edge_map` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
         `delete_outdegree_one` is False, then it will be
@@ -3463,7 +3487,7 @@ class Tree(
         """
         Randomly picks a new rooting position and rotates the branches around all
         internal nodes in the `self`. If `update_splits` is True, the the `split_bitmask`
-        and `split_edges` attributes kept valid.
+        and `split_edge_map` attributes kept valid.
         """
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
@@ -4156,11 +4180,11 @@ class Tree(
             if check_splits:
                 assert (cm & taxa_mask) == split_bitmask, \
                         "Split mask error: {} (taxa: {}, split: {})".format(cm, taxa_mask, split_bitmask)
-                assert self.split_edges[split_bitmask] == curr_edge, \
-                        "Expecting edge {} for split {}, but instead found {}".format(curr_edge, split_bitmask, self.split_edges[split_bitmask])
+                assert self.split_edge_map[split_bitmask] == curr_edge, \
+                        "Expecting edge {} for split {}, but instead found {}".format(curr_edge, split_bitmask, self.split_edge_map[split_bitmask])
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
         if check_splits:
-            for s, e in self.split_edges.iteritems():
+            for s, e in self.split_edge_map.iteritems():
                 assert e in edges
         return True
 
@@ -5039,10 +5063,10 @@ class TreeList(
         total = 0
         recalculate_splits = kwargs.get("recalculate_splits", False)
         for tree in self:
-            if recalculate_splits or tree.split_edges is None:
+            if recalculate_splits or tree.split_edge_map is None:
                 tree.encode_splits()
             total += 1
-            if split in tree.split_edges:
+            if split in tree.split_edge_map:
                 found += 1
         return float(found)/total
 
@@ -5298,7 +5322,7 @@ def _convert_node_to_root_polytomy(nd):
     added as needed).
 
     Returns a tuple of child nodes that were detached (or() if the tree was not
-    modified). This can be useful for removing the deleted node from the split_edges
+    modified). This can be useful for removing the deleted node from the split_edge_map
     dictionary.
     """
     nd_children = nd.child_nodes()

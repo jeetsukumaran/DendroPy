@@ -119,7 +119,7 @@ def tree_from_splits(splits,
                 parent_node.remove_child(child)
                 new_node.add_child(child)
             parent_node.add_child(new_node)
-            con_tree.split_edges[split_to_add] = new_edge
+            con_tree.split_edge_map[split_to_add] = new_edge
     return con_tree
 
 ###############################################################################
@@ -218,7 +218,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             where bits corresponding to indices of taxa descended from this
             edge are turned on
     If `create_dict` is True, then the following is added to the tree:
-        - `split_edges`:
+        - `split_edge_map`:
             [if `tree.is_rooted`]: a dictionary where keys are the
             splits and values are edges.
             [otherwise]: a container.NormalizedBitmaskDictionary where the keys are the
@@ -228,21 +228,21 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             the split_bitmask otherwise).
     If `delete_outdegree_one` is True then nodes with one
         will be deleted as they are encountered (this is required
-        if the split_edges dictionary is to refer to all edges in the tree).
+        if the split_edge_map dictionary is to refer to all edges in the tree).
         Note this will mean that an unrooted tree like '(A,(B,C))' will
         be changed to '(A,B,C)' after this operation!
     """
     taxon_namespace = tree.taxon_namespace
     if create_dict:
-        tree.split_edges = {}
-        split_map = tree.split_edges
+        tree.split_edge_map = {}
+        split_map = tree.split_edge_map
         # if tree.is_rooted:
-        #     tree.split_edges = {}
+        #     tree.split_edge_map = {}
         # else:
         #     atb = taxon_namespace.all_taxa_bitmask()
         #     d = container.NormalizedBitmaskDict(mask=atb)
-        #     tree.split_edges = d
-        # split_map = tree.split_edges
+        #     tree.split_edge_map = d
+        # split_map = tree.split_edge_map
     if not tree.seed_node:
         return
 
@@ -295,9 +295,9 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     if not tree.is_rooted:
         mask = tree.seed_node.edge.split_bitmask
         d = container.NormalizedBitmaskDict(mask=mask)
-        for k, v in tree.split_edges.items():
+        for k, v in tree.split_edge_map.items():
             d[k] = v
-        tree.split_edges = d
+        tree.split_edge_map = d
 
 def is_compatible(split1, split2, mask):
     """
@@ -592,8 +592,8 @@ class SplitDistribution(object):
         else:
             weight_to_use = float(tree.weight)
         self.sum_of_tree_weights += weight_to_use
-        for split in tree.split_edges:
-            edge = tree.split_edges[split]
+        for split in tree.split_edge_map:
+            edge = tree.split_edge_map[split]
             if self.is_rooted:
                 split = edge.split_bitmask
             try:
@@ -608,7 +608,7 @@ class SplitDistribution(object):
             if not self.ignore_edge_lengths:
                 sel = self.split_edge_lengths.setdefault(split,[])
                 if edge.length is not None:
-                    sel.append(tree.split_edges[split].length)
+                    sel.append(tree.split_edge_map[split].length)
                 # for correct behavior when some or all trees have no edge lengths
 #                 else:
 #                     self.split_edge_lengths[split].append(0.0)

@@ -49,10 +49,10 @@ class TestConsensusTree(unittest.TestCase):
         con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
         con_tree.update_splits()
         self.assertEqual(treecompare.symmetric_difference(self.mb_con_tree, con_tree), 0)
-        self.assertEqual(len(con_tree.split_edges), len(self.mb_con_tree.split_edges))
-        for split in self.mb_con_tree.split_edges:
-            edge1 = self.mb_con_tree.split_edges[split]
-            edge2 = con_tree.split_edges[split]
+        self.assertEqual(len(con_tree.split_edge_map), len(self.mb_con_tree.split_edge_map))
+        for split in self.mb_con_tree.split_edge_map:
+            edge1 = self.mb_con_tree.split_edge_map[split]
+            edge2 = con_tree.split_edge_map[split]
             if edge1.head_node.label and edge2.head_node.label:
                 s1 = float(edge1.head_node.label)
                 s2 = round(float(edge2.head_node.label), 2)
@@ -91,11 +91,11 @@ class TestTreeEdgeSummarization(unittest.TestCase):
                 taxon_namespace=self.taxon_namespace)
         exp_tree.update_splits()
         exp_tree.calc_node_ages()
-        self.assertEqual(exp_tree.split_edges.keys(), obs_tree.split_edges.keys())
-        splits = exp_tree.split_edges.keys()
+        self.assertEqual(exp_tree.split_edge_map.keys(), obs_tree.split_edge_map.keys())
+        splits = exp_tree.split_edge_map.keys()
         for split in splits:
-            exp_edge = exp_tree.split_edges[split]
-            obs_edge = obs_tree.split_edges[split]
+            exp_edge = exp_tree.split_edge_map[split]
+            obs_edge = obs_tree.split_edge_map[split]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):

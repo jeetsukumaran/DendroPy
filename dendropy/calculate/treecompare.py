@@ -217,19 +217,19 @@ def false_positives_and_negatives(reference_tree, comparison_tree, recalculate_s
         treesplit.encode_splits(reference_tree)
         treesplit.encode_splits(comparison_tree)
     else:
-        if reference_tree.split_edges is None:
+        if reference_tree.split_edge_map is None:
             reference_tree.encode_splits()
-        if comparison_tree.split_edges is None:
+        if comparison_tree.split_edge_map is None:
             comparison_tree.encode_splits()
-    for split in reference_tree.split_edges:
-        if split in comparison_tree.split_edges:
+    for split in reference_tree.split_edge_map:
+        if split in comparison_tree.split_edge_map:
             pass
         else:
             false_negatives = false_negatives + 1
             sym_diff = sym_diff + 1
 
-    for split in comparison_tree.split_edges:
-        if split in reference_tree.split_edges:
+    for split in comparison_tree.split_edge_map:
+        if split in reference_tree.split_edge_map:
             pass
         else:
             false_positives = false_positives + 1
@@ -343,12 +343,12 @@ def find_missing_splits(reference_tree, comparison_tree, recalculate_splits=Fals
         treesplit.encode_splits(reference_tree)
         treesplit.encode_splits(comparison_tree)
     else:
-        if reference_tree.split_edges is None:
+        if reference_tree.split_edge_map is None:
             reference_tree.encode_splits()
-        if comparison_tree.split_edges is None:
+        if comparison_tree.split_edge_map is None:
             comparison_tree.encode_splits()
-    for split in reference_tree.split_edges:
-        if split in comparison_tree.split_edges:
+    for split in reference_tree.split_edge_map:
+        if split in comparison_tree.split_edge_map:
             pass
         else:
             missing.append(split)
@@ -377,12 +377,12 @@ def mason_gamer_kellogg_score(tree1, tree2, recalculate_splits=False):
         tree1.encode_splits()
         tree2.encode_splits()
     else:
-        if tree1.split_edges is None:
+        if tree1.split_edge_map is None:
             tree1.encode_splits()
-        if tree2.split_edges is None:
+        if tree2.split_edge_map is None:
             tree2.encode_splits()
-    se1 = tree1.split_edges
-    se2 = tree2.split_edges
+    se1 = tree1.split_edge_map
+    se2 = tree2.split_edge_map
     splits = sorted(list(set(se1.keys() + se2.keys())))
 
 ###############################################################################
@@ -410,20 +410,20 @@ def _get_length_diffs(
         treesplit.encode_splits(tree1)
         treesplit.encode_splits(tree2)
     else:
-        if tree1.split_edges is None:
+        if tree1.split_edge_map is None:
             tree1.encode_splits()
-        if tree2.split_edges is None:
+        if tree2.split_edge_map is None:
             tree2.encode_splits()
-    split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
-    split_edges1_ref = tree1.split_edges
-    for split in split_edges1_ref: # O n : 2*bind
-        edge = split_edges1_ref[split]
+    split_edge_map2_copy = dict(tree2.split_edge_map) # O(n*(2*bind + dict_item_cost))
+    split_edge_map1_ref = tree1.split_edge_map
+    for split in split_edge_map1_ref: # O n : 2*bind
+        edge = split_edge_map1_ref[split]
         elen1 = getattr(edge, edge_weight_attr) # attr + bind
         if elen1 is None:
             elen1 = 0 # worst-case: bind
         value1 = value_type(elen1) #  ctor + bind
         try:
-            e2 = split_edges2_copy.pop(split) # attr + dict_lookup + bind
+            e2 = split_edge_map2_copy.pop(split) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_weight_attr) # attr + bind
             if elen2 is None:
                 # allow root edge to have split with no value: raise error if not root edge
@@ -437,13 +437,13 @@ def _get_length_diffs(
         length_diffs.append((value1,value2)) # ctor + listappend
         split_length_diffs[split] = length_diffs[-1]
 
-    for split in split_edges2_copy: # best-case not executed, worst case O(n) : 2*bind
-        edge = split_edges2_copy[split]
+    for split in split_edge_map2_copy: # best-case not executed, worst case O(n) : 2*bind
+        edge = split_edge_map2_copy[split]
         elen2 = getattr(edge, edge_weight_attr) # attr +  bind
         if elen2 is None:
             elen2 = 0
         value2 = value_type(elen2) #  ctor + bind
-        e1 = split_edges1_ref.get(split) # attr + dict_lookup + bind
+        e1 = split_edge_map1_ref.get(split) # attr + dict_lookup + bind
         if e1 is None:
             elen1 = 0.0
         else:

@@ -269,10 +269,10 @@ class TreeMidpointRootingTest(ExtendedTestCase):
             expected_tree = expected_trees[idx]
             test_tree.reroot_at_midpoint(update_splits=True)
             self.assertEqual(treecompare.symmetric_difference(test_tree, expected_tree), 0)
-            for split in test_tree.split_edges:
-                if test_tree.split_edges[split].head_node is test_tree.seed_node:
+            for split in test_tree.split_edge_map:
+                if test_tree.split_edge_map[split].head_node is test_tree.seed_node:
                     continue
-                self.assertAlmostEqual(test_tree.split_edges[split].length, expected_tree.split_edges[split].length, 3)
+                self.assertAlmostEqual(test_tree.split_edge_map[split].length, expected_tree.split_edge_map[split].length, 3)
 
 if __name__ == "__main__":
     unittest.main()
