@@ -21,6 +21,10 @@ Support for CLI operations.
 """
 import os
 import sys
+if sys.hexversion < 0x03000000:
+    input_str = raw_input
+else:
+    input_str = input
 
 import dendropy
 
@@ -33,7 +37,7 @@ def confirm_overwrite(filepath,
             overwrite = 'y'
         else:
             out.write('%s file already exists: "%s"\n' % (file_desc, filepath))
-            overwrite = raw_input("Overwrite (y/N)? ")
+            overwrite = input_str("Overwrite (y/N)? ")
         if not overwrite.lower().startswith("y"):
             return False
         else:

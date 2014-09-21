@@ -106,6 +106,10 @@ if _MP:
             self.messenger_lock = messenger_lock
             self.log_frequency = log_frequency
             self.kill_received = False
+            if self.is_rooted:
+                self._rooting = "force-rooted"
+            else:
+                self._rooting = "default-unrooted"
 
         def send_message(self, msg, level, wrap=True):
             if self.messenger is None:
@@ -140,14 +144,14 @@ if _MP:
                         [fsrc],
                         schema=self.schema,
                         taxon_namespace=self.taxon_namespace,
-                        as_rooted=self.is_rooted,
+                        rooting=self._rooting,
                         store_tree_weights=self.weighted_trees)):
+                    assert tree.taxon_namespace is self.taxon_namespace
                     if tidx >= self.tree_offset:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
                         treesplit.encode_splits(tree)
                         self.split_distribution.count_splits_on_tree(tree)
-                        print(tree.split_edge_map)
                         if self.calc_tree_probs:
                             self.topology_counter.count(tree,
                                     tree_splits_encoded=True)
@@ -206,7 +210,7 @@ def process_sources_parallel(
     tdfpath = support_filepaths[0]
     messenger.info("Pre-loading taxa based on '%s' ..." % tdfpath)
     taxon_namespace = discover_taxa(tdfpath, schema)
-    taxon_labels = [str(t) for t in taxon_namespace]
+    taxon_labels = [t.label for t in taxon_namespace]
     messenger.info("Found %d taxa: [%s]" % (len(taxon_labels), (', '.join(["'%s'" % t for t in taxon_labels]))))
 
     # load up queue
@@ -820,10 +824,14 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     if target_tree_filepath is not None:
         messenger.info("Mapping support to target tree ...")
         # if adding node metadata, we extract it from the target tree first
+        if opts.rooted_trees:
+            rooting = "force-rooted"
+        else:
+            rooting = "default-unrooted"
         for tree in dendropy.Tree.yield_from_files([target_tree_filepath],
                 schema="nexus/newick",
                 taxon_namespace=master_taxon_namespace,
-                as_rooted=opts.rooted_trees,
+                rooting=rooting,
                 extract_comment_metadata=tsum.add_node_metadata):
             if opts.root_target:
                 if opts.outgroup:
