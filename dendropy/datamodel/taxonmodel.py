@@ -1351,7 +1351,12 @@ class TaxonNamespace(
         s : string
             NEWICK representation of split specified by `split_bitmask`.
         """
-        return text.split_as_newick_string(split, self, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores)
+        from dendropy.dataio import nexusprocessing
+        return nexusprocessing.split_as_newick_string(
+                split_bitmask,
+                self,
+                preserve_spaces=preserve_spaces,
+                quote_underscores=quote_underscores)
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
