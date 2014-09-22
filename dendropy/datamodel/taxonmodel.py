@@ -1321,7 +1321,7 @@ class TaxonNamespace(
         taxa = []
         while split_bitmask:
             if split_bitmask & 1:
-                taxa.append(self._taxon_accession_index_map[index])
+                taxa.append(self._taxa[index])
             split_bitmask = split_bitmask >> 1
             index += 1
         return taxa
