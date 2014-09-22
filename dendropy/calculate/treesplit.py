@@ -409,6 +409,7 @@ class SplitDistribution(object):
         if split_set:
             for split in split_set:
                 self.add_split_count(split, count=1)
+        self._observed_tree_rootings = set()
 
     def _get_is_rooted(self):
         return self._is_rooted
@@ -452,6 +453,7 @@ class SplitDistribution(object):
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
+        self._observed_tree_rootings.update(split_dist._observed_tree_rootings)
         for split in split_dist.splits:
             if split not in self.split_counts:
                 self.splits.append(split)
@@ -592,6 +594,10 @@ class SplitDistribution(object):
         else:
             weight_to_use = float(tree.weight)
         self.sum_of_tree_weights += weight_to_use
+        if tree.is_rooted:
+            self._observed_tree_rootings.add(True)
+        else:
+            self._observed_tree_rootings.add(False)
         for split in tree.split_edge_map:
             edge = tree.split_edge_map[split]
             if self.is_rooted:
@@ -616,6 +622,10 @@ class SplitDistribution(object):
                 sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
                     sna.append(edge.head_node.age)
+
+    def is_mixed_rootings_counted(self):
+        print(self._observed_tree_rootings)
+        return len(self._observed_tree_rootings) > 1
 
     def _get_taxon_set(self):
         from dendropy import taxonmodel

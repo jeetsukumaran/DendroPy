@@ -47,16 +47,6 @@ _IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, fasta
 _IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["proteinfasta"] = _IOServices(fastareader.ProteinFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["phylip"] = _IOServices(phylipreader.PhylipReader, phylipwriter.PhylipWriter, None)
-# ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
-# ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
-# ioclient.register("nexus/newick", None, None, nexustreeiter.generalized_tree_source_iter)
-# ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
-# ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
-# ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
-# ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
-# ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
-# ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
-# ioclient.register("beast-summary-tree", beast.BeastSummaryTreeReader, None, beast.summary_tree_source_iter)
 
 def get_reader(schema, **kwargs):
     try:

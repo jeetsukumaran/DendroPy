@@ -106,8 +106,10 @@ if _MP:
             self.messenger_lock = messenger_lock
             self.log_frequency = log_frequency
             self.kill_received = False
-            if self.is_rooted:
-                self._rooting = "force-rooted"
+            if opts.rooted_trees is True:
+                self_rooting = "force-rooted"
+            elif opts.rooted_trees is False:
+                self._rooting = "force-unrooted"
             else:
                 self._rooting = "default-unrooted"
 
@@ -291,8 +293,10 @@ def process_sources_serial(
 
         # store filepaths, to open individually in loop
         srcs = support_filepaths
-    if is_rooted:
+    if is_rooted is True:
         rooting = "force-rooted"
+    elif is_rooted is False:
+        rooting = "force-unrooted"
     else:
         rooting = "default-unrooted"
     tree_yielder = dendropy.Tree.yield_from_files(
@@ -768,6 +772,13 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         report.append("Trees treated as weighted (default weight = 1.0).")
     else:
         report.append("Trees treated as unweighted.")
+    if master_split_distribution.is_mixed_rootings_counted():
+        messenger.error(
+                "Both rooted as well as unrooted trees found in input trees."
+                " Support values are meaningless. Rerun SumTrees using the"
+                " '--rooted' or the '--unrooted' option to force a consistent"
+                " rooting state for the support trees.")
+        sys.exit(1)
     n_taxa = len(master_taxon_namespace)
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = master_split_distribution.splits_considered()
@@ -824,8 +835,10 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     if target_tree_filepath is not None:
         messenger.info("Mapping support to target tree ...")
         # if adding node metadata, we extract it from the target tree first
-        if opts.rooted_trees:
+        if opts.rooted_trees is True:
             rooting = "force-rooted"
+        elif opts.rooted_trees is False:
+            rooting = "force-unrooted"
         else:
             rooting = "default-unrooted"
         for tree in dendropy.Tree.yield_from_files([target_tree_filepath],

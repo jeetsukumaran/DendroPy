@@ -30,13 +30,13 @@ try:
     import pkg_resources
     # TESTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "tests"))
     TESTS_DIR = pkg_resources.resource_filename("dendropy", "test")
-    SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "scripts"))
+    APPLICATIONS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "applications"))
     _LOG.info("using pkg_resources path mapping")
 except:
     LOCAL_DIR = os.path.dirname(__file__)
     TESTS_DIR = os.path.join(LOCAL_DIR, os.path.pardir)
     PACKAGE_DIR = os.path.join(TESTS_DIR, os.path.pardir)
-    SCRIPTS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "scripts")
+    APPLICATIONS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "applications")
     _LOG.info("using local filesystem path mapping")
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
@@ -96,10 +96,10 @@ def named_output_path(filename=None, suffix_timestamp=True):
         os.makedirs(TESTS_OUTPUT_DIR)
     return os.path.join(TESTS_OUTPUT_DIR, filename)
 
-def script_source_path(filename=None):
+def application_source_path(filename=None):
     if filename is None:
         filename = ""
-    return os.path.join(SCRIPTS_DIR, filename)
+    return os.path.join(APPLICATIONS_DIR, filename)
 
 class SandboxedFile(object):
 
