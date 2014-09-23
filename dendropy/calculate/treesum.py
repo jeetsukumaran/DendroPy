@@ -52,6 +52,7 @@ class TreeSummarizer(object):
     def tree_from_splits(self,
             split_distribution,
             min_freq=0.5,
+            rooted=None,
             include_edge_lengths=True):
         """Returns a consensus tree from splits in `split_distribution`.
 
@@ -65,11 +66,14 @@ class TreeSummarizer(object):
             split_freqs = split_distribution.weighted_split_frequencies
         else:
             split_freqs = split_distribution.split_frequencies
-        is_rooted = split_distribution.is_rooted
+        if rooted is None:
+            if split_distribution.is_all_counted_trees_rooted():
+                rooted = True
+            elif split_distribution.is_all_counted_trees_strictly_unrooted:
+                rooted = False
         #include_edge_lengths = self.support_as_labels and include_edge_lengths
         if self.support_as_edge_lengths and include_edge_lengths:
             raise Exception("Cannot map support as edge lengths if edge lengths are to be set on consensus tree")
-
         to_try_to_add = []
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
         for s in split_freqs:
@@ -80,7 +84,7 @@ class TreeSummarizer(object):
         splits_for_tree = [i[1] for i in to_try_to_add]
         con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
                 taxon_namespace=taxon_namespace,
-                is_rooted=is_rooted)
+                is_rooted=rooted)
         treesplit.encode_splits(con_tree)
 
         if include_edge_lengths:

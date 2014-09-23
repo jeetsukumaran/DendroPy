@@ -643,6 +643,12 @@ class SplitDistribution(object):
     def is_all_counted_trees_rooted(self):
         return (True in self.tree_rooting_types_counted) and (len(self.tree_rooting_types_counted) == 1)
 
+    def is_all_counted_trees_strictly_unrooted(self):
+        return (False in self.tree_rooting_types_counted) and (len(self.tree_rooting_types_counted) == 1)
+
+    def is_all_counted_trees_treated_as_unrooted(self):
+        return True not in self.tree_rooting_types_counted
+
     def _get_taxon_set(self):
         from dendropy import taxonmodel
         taxon_model.taxon_set_deprecation_warning()
