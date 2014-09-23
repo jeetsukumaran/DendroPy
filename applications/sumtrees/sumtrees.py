@@ -75,7 +75,7 @@ if _MP:
                 result_topology_hash_map_queue,
                 schema,
                 taxon_labels,
-                is_rooted,
+                rooting_interpretation,
                 ignore_node_ages,
                 ultrametricity_precision,
                 calc_tree_probs,
@@ -93,10 +93,9 @@ if _MP:
             self.taxon_labels = list(taxon_labels)
             self.taxon_namespace = dendropy.TaxonNamespace(self.taxon_labels)
             self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
-            self.split_distribution.is_rooted = is_rooted
             self.split_distribution.ignore_node_ages = ignore_node_ages
             self.split_distribution.ultrametricity_precision = ultrametricity_precision
-            self.is_rooted = is_rooted
+            self.rooting_interpretation = rooting_interpretation
             self.calc_tree_probs = calc_tree_probs
             self.topology_counter = treesum.TopologyCounter()
             self.weighted_trees = weighted_trees
@@ -106,12 +105,6 @@ if _MP:
             self.messenger_lock = messenger_lock
             self.log_frequency = log_frequency
             self.kill_received = False
-            if opts.rooted_trees is True:
-                self_rooting = "force-rooted"
-            elif opts.rooted_trees is False:
-                self._rooting = "force-unrooted"
-            else:
-                self._rooting = "default-unrooted"
 
         def send_message(self, msg, level, wrap=True):
             if self.messenger is None:
@@ -146,7 +139,7 @@ if _MP:
                         [fsrc],
                         schema=self.schema,
                         taxon_namespace=self.taxon_namespace,
-                        rooting=self._rooting,
+                        rooting=self.rooting_interpretation,
                         store_tree_weights=self.weighted_trees)):
                     assert tree.taxon_namespace is self.taxon_namespace
                     if tidx >= self.tree_offset:
@@ -191,7 +184,7 @@ def process_sources_parallel(
         num_processes,
         support_filepaths,
         schema,
-        is_rooted,
+        rooting_interpretation,
         ignore_node_ages,
         ultrametricity_precision,
         calc_tree_probs,
@@ -232,7 +225,7 @@ def process_sources_parallel(
                 result_topology_hash_map_queue=result_topology_hash_map_queue,
                 schema=schema,
                 taxon_labels=taxon_labels,
-                is_rooted=is_rooted,
+                rooting_interpretation=rooting_interpretation,
                 ignore_node_ages=ignore_node_ages,
                 ultrametricity_precision=ultrametricity_precision,
                 calc_tree_probs=calc_tree_probs,
@@ -247,7 +240,6 @@ def process_sources_parallel(
     # collate results
     result_count = 0
     split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
-    split_distribution.is_rooted = is_rooted
     split_distribution.ignore_node_ages = ignore_node_ages
     topology_counter = treesum.TopologyCounter()
     while result_count < num_processes:
@@ -262,7 +254,7 @@ def process_sources_parallel(
 def process_sources_serial(
         support_filepaths,
         schema,
-        is_rooted,
+        rooting_interpretation,
         ignore_node_ages,
         ultrametricity_precision,
         calc_tree_probs,
@@ -278,10 +270,8 @@ def process_sources_serial(
     taxon_namespace = dendropy.TaxonNamespace()
     split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
     split_distribution.ignore_node_ages = ignore_node_ages
-    split_distribution.is_rooted = is_rooted
     split_distribution.ultrametricity_precision = ultrametricity_precision
     topology_counter = treesum.TopologyCounter()
-
     if support_filepaths is None or len(support_filepaths) == 0:
         messenger.info("Reading trees from standard input.")
         srcs = [sys.stdin]
@@ -293,18 +283,12 @@ def process_sources_serial(
 
         # store filepaths, to open individually in loop
         srcs = support_filepaths
-    if is_rooted is True:
-        rooting = "force-rooted"
-    elif is_rooted is False:
-        rooting = "force-unrooted"
-    else:
-        rooting = "default-unrooted"
     tree_yielder = dendropy.Tree.yield_from_files(
             srcs,
             schema=schema,
             taxon_namespace=taxon_namespace,
             store_tree_weights=weighted_trees,
-            rooting=rooting)
+            rooting=rooting_interpretation)
     current_index = None
     for tidx, tree in enumerate(tree_yielder):
         current_yielder_index = tree_yielder.current_file_index
@@ -319,6 +303,8 @@ def process_sources_serial(
                 messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
             treesplit.encode_splits(tree)
             split_distribution.count_splits_on_tree(tree)
+            if len(split_distribution.tree_rooting_types_counted) > 1:
+                mixed_tree_rootings_in_source_error(messenger)
             topology_counter.count(tree, tree_splits_encoded=True)
         else:
             if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
@@ -326,6 +312,14 @@ def process_sources_serial(
 
     messenger.info("Serial processing of %d source(s) completed." % len(srcs))
     return split_distribution, topology_counter
+
+def mixed_tree_rootings_in_source_error(messenger):
+    messenger.error(
+            "Both rooted as well as unrooted trees found in input trees."
+            " Support values are meaningless. Rerun SumTrees using the"
+            " '--rooted' or the '--unrooted' option to force a consistent"
+            " rooting state for the support trees.")
+    sys.exit(1)
 
 def main_cli():
 
@@ -393,6 +387,15 @@ def main_cli():
             metavar="#.##",
             help="minimum frequency or probability for a clade or a split to be "\
                     + "included in the consensus tree, if used [default=%default]")
+    target_tree_optgroup.add_option("--root-target-at-midpoint",
+            action="store_true",
+            dest="root_target_at_midpoint",
+            default=None,
+            help="Explicitly root target tree(s) to be rooted at midpoint")
+    # target_tree_optgroup.add_option("--root-target-at-outgroup",
+    #         dest="root_target_at_outgroup",
+    #         default=None,
+    #         help="Explicitly root target tree(s) using specified outgroup")
 
     support_summarization_optgroup = OptionGroup(parser, "Support Summarization Options")
     parser.add_option_group(support_summarization_optgroup)
@@ -624,13 +627,6 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     else:
         target_tree_filepath = None
 
-    ### TODO: these will be command-line options in the future
-    ### here we just set it
-    assert not hasattr(opts, 'outgroup')
-    opts.outgroup = None
-    assert not hasattr(opts, 'root_target')
-    opts.root_target = None
-
     ### TODO: idiot-check edge length summarization
     # edge lengths
     if opts.edge_summarization:
@@ -654,6 +650,13 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 opts.rooted_trees = True
             else:
                 opts.calc_node_ages = False
+
+    if opts.rooted_trees is True:
+        rooting_interpretation = "force-rooted"
+    elif opts.rooted_trees is False:
+        rooting_interpretation = "force-unrooted"
+    else:
+        rooting_interpretation = "default-unrooted"
 
     # output
     if opts.output_filepath is None:
@@ -721,7 +724,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 num_processes=num_processes,
                 support_filepaths=support_filepaths,
                 schema=schema,
-                is_rooted=opts.rooted_trees,
+                rooting_interpretation=rooting_interpretation,
                 ignore_node_ages=not opts.calc_node_ages,
                 ultrametricity_precision=opts.ultrametricity_precision,
                 calc_tree_probs=opts.calc_tree_probs,
@@ -737,7 +740,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         master_split_distribution, master_topology_counter = process_sources_serial(
                 support_filepaths=support_filepaths,
                 schema=schema,
-                is_rooted=opts.rooted_trees,
+                rooting_interpretation=rooting_interpretation,
                 ignore_node_ages=not opts.calc_node_ages,
                 ultrametricity_precision=opts.ultrametricity_precision,
                 calc_tree_probs=opts.calc_tree_probs,
@@ -773,12 +776,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     else:
         report.append("Trees treated as unweighted.")
     if master_split_distribution.is_mixed_rootings_counted():
-        messenger.error(
-                "Both rooted as well as unrooted trees found in input trees."
-                " Support values are meaningless. Rerun SumTrees using the"
-                " '--rooted' or the '--unrooted' option to force a consistent"
-                " rooting state for the support trees.")
-        sys.exit(1)
+        mixed_tree_rootings_in_source_error(messenger)
     n_taxa = len(master_taxon_namespace)
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = master_split_distribution.splits_considered()
@@ -835,43 +833,36 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     if target_tree_filepath is not None:
         messenger.info("Mapping support to target tree ...")
         # if adding node metadata, we extract it from the target tree first
-        if opts.rooted_trees is True:
-            rooting = "force-rooted"
-        elif opts.rooted_trees is False:
-            rooting = "force-unrooted"
-        else:
-            rooting = "default-unrooted"
         for tree in dendropy.Tree.yield_from_files([target_tree_filepath],
                 schema="nexus/newick",
                 taxon_namespace=master_taxon_namespace,
-                rooting=rooting,
+                rooting=rooting_interpretation,
                 extract_comment_metadata=tsum.add_node_metadata):
-            if opts.root_target:
-                if opts.outgroup:
-                    pass
-                else:
-                    tree.root_at_midpoint(splits=True)
-            if opts.rooted_trees and not tree.is_rooted:
-                messenger.error("Support trees are treated as rooted, but target tree is unrooted. Root target tree(s) and re-run, or run using the '--root-target' flag.")
+            if opts.root_target_at_midpoint:
+                tree.root_at_midpoint(splits=True)
+            # elif opts.root_target_at_outgroup:
+            #     comments.append("Target tree(s) rooted at midpoint.")
+            if master_split_distribution.is_all_counted_trees_rooted:
+                if not tree.is_rooted:
+                    messenger.error("Support trees are rooted, but target tree is unrooted. Root target tree(s) and re-run, or run using the '--root-target' flag.")
+                    sys.exit(1)
+            elif tree.is_rooted:
+                messenger.error("Support trees are unrooted, but target tree is rooted. Ensure target tree(s) are all of the same rooting state as the input support trees.")
                 sys.exit(1)
-
             # strip out existing support statement
             # if tsum.add_node_metadata:
             #     for nd in tree.postorder_node_iter():
             #         for nd_comment_idx, comment in enumerate(nd.comments):
             #             nd.comments[nd_comment_idx] = support_comment_pattern.sub("", nd.comments[nd_comment_idx])
-
-            stree = tsum.map_split_support_to_tree(tree,
-                    master_split_distribution)
+            stree = tsum.map_split_support_to_tree(tree, master_split_distribution)
             tt_trees.append(stree)
         messenger.info("Parsed '%s': %d tree(s) in file" % (target_tree_filepath, len(tt_trees)))
         comments.append("Split support mapped to trees in:")
         comments.append("  - '%s' (%d trees)" % (os.path.abspath(target_tree_filepath), len(tt_trees)))
-        if opts.root_target:
-            if opts.outgroup:
-                comments.append("Target tree(s) rooted using outgroup: %s." % opts.outgroup)
-            else:
-                comments.append("Target tree(s) rooted at midpoint.")
+        if opts.root_target_at_midpoint:
+            comments.append("Target tree(s) rooted using outgroup: %s." % opts.outgroup)
+        # elif opts.root_target_at_outgroup:
+        #     comments.append("Target tree(s) rooted at midpoint.")
         comments.append(support_summarization + '.')
     else:
         messenger.info("Constructing clade consensus tree ...")
@@ -884,16 +875,14 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 min_freq=min_freq,
                 include_edge_lengths=False)
                 #include_edge_lengths=not opts.no_branch_lengths)
-        if opts.root_target:
-            stree.reroot_at_midpoint(update_splits=True)
-        report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
         tt_trees.append(stree)
-        if opts.root_target:
-            if opts.outgroup:
-                report.append("Consensus tree rooted using outgroup: %s." % opts.outgroup)
-            else:
-                report.append("Consensus tree rooted at midpoint.")
+        if opts.root_target_at_midpoint:
+            report.append("Consensus tree rooted using outgroup: %s." % opts.outgroup)
+            stree.reroot_at_midpoint(update_splits=True)
+        # elif opts.root_target_at_outgroup:
+        #     raise NotImplementedError
+        #     report.append("Consensus tree rooted at midpoint.")
         report.append(support_summarization + ".")
         messenger.info_lines(report)
         comments.extend(report)

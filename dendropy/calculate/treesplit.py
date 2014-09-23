@@ -27,6 +27,7 @@ _LOG = messaging.get_logger(__name__)
 
 from dendropy.utility import container
 from dendropy.utility import text
+from dendropy.utility import deprecate
 from dendropy.mathlib import statistics
 
 import dendropy
@@ -388,6 +389,7 @@ class SplitDistribution(object):
 
     def __init__(self, taxon_namespace=None, split_set=None):
         self.total_trees_counted = 0
+        self.tree_rooting_types_counted = set()
         self.sum_of_tree_weights = 0.0
         self.taxon_namespace = taxon_namespace
         self.splits = []
@@ -397,6 +399,7 @@ class SplitDistribution(object):
         self.split_node_ages = {}
         self.ignore_edge_lengths = False
         self.ignore_node_ages = True
+        self.error_on_mixed_rooting_types = True
         self.ultrametricity_precision = 0.0000001
         self._is_rooted = False
         self._split_freqs = None
@@ -409,22 +412,25 @@ class SplitDistribution(object):
         if split_set:
             for split in split_set:
                 self.add_split_count(split, count=1)
-        self._observed_tree_rootings = set()
 
+    def _is_rooted_deprecation_warning(self):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'SplitDistribution.is_rooted' and 'SplitDistribution.is_unrooted' are no longer valid attributes; rooting state tracking and management is now the responsibility of client code.",
+                stacklevel=4,
+                )
     def _get_is_rooted(self):
+        self._is_rooted_deprecation_warning()
         return self._is_rooted
-
     def _set_is_rooted(self, val):
+        self._is_rooted_deprecation_warning()
         self._is_rooted = val
-
     is_rooted = property(_get_is_rooted, _set_is_rooted)
-
     def _get_is_unrooted(self):
+        self._is_rooted_deprecation_warning()
         return not self._is_rooted
-
     def _set_is_unrooted(self, val):
+        self._is_rooted_deprecation_warning()
         self._is_rooted = not val
-
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
     # def add_split_count(self, split, count=1, weight=None):
@@ -453,7 +459,7 @@ class SplitDistribution(object):
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
-        self._observed_tree_rootings.update(split_dist._observed_tree_rootings)
+        self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
         for split in split_dist.splits:
             if split not in self.split_counts:
                 self.splits.append(split)
@@ -595,13 +601,20 @@ class SplitDistribution(object):
             weight_to_use = float(tree.weight)
         self.sum_of_tree_weights += weight_to_use
         if tree.is_rooted:
-            self._observed_tree_rootings.add(True)
+            self.tree_rooting_types_counted.add(True)
         else:
-            self._observed_tree_rootings.add(False)
+            self.tree_rooting_types_counted.add(False)
         for split in tree.split_edge_map:
             edge = tree.split_edge_map[split]
-            if self.is_rooted:
+
+            ### ??? artifact from a different splits coding scheme ???
+            # if self.is_rooted:
+            #     split = edge.split_bitmask
+            ### IS THIS NECESSARY??? ALL TESTS PASS WITH THIS COMMENTED OUT.
+            if tree.is_rooted:
                 split = edge.split_bitmask
+            ### IS THIS NECESSARY??? ALL TESTS PASS WITH THIS COMMENTED OUT.
+
             try:
                 self.split_counts[split] += 1
             except KeyError:
@@ -624,8 +637,11 @@ class SplitDistribution(object):
                     sna.append(edge.head_node.age)
 
     def is_mixed_rootings_counted(self):
-        print(self._observed_tree_rootings)
-        return len(self._observed_tree_rootings) > 1
+        return ( (True in self.tree_rooting_types_counted)
+                and (False in self.tree_rooting_types_counted or None in self.tree_rooting_types_counted) )
+
+    def is_all_counted_trees_rooted(self):
+        return (True in self.tree_rooting_types_counted) and (len(self.tree_rooting_types_counted) == 1)
 
     def _get_taxon_set(self):
         from dendropy import taxonmodel

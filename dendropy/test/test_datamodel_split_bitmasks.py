@@ -61,7 +61,6 @@ class SplitCountTest(ExtendedTestCase):
         dp_sd = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
         dp_sd.ignore_edge_lengths = True
         dp_sd.ignore_node_ages = True
-        dp_sd.is_rooted = is_rooted
 
         _LOG.debug("Taxon set: %s" % [t.label for t in taxon_namespace])
         taxa_mask = taxon_namespace.all_taxa_bitmask()

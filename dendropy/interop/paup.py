@@ -359,7 +359,6 @@ def build_split_distribution(bipartition_counts,
     value are the frequency of the split.
     """
     sd = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
-    sd.is_rooted = is_rooted
     sd.total_trees_counted = tree_count
     for g in bipartition_counts:
         sd.add_split_count(paup_group_to_mask(g, normalized=not is_rooted),

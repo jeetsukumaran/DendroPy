@@ -68,7 +68,6 @@ class TestTreeEdgeSummarization(unittest.TestCase):
                 collection_offset=0,
                 tree_offset=40)
         self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
-        self.split_distribution.is_rooted = True
         self.split_distribution.ignore_node_ages = False
         for tree in self.support_trees:
             tree.update_splits()

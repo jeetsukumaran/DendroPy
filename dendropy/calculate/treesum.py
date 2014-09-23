@@ -78,7 +78,6 @@ class TreeSummarizer(object):
                 to_try_to_add.append((freq, s))
         to_try_to_add.sort(reverse=True)
         splits_for_tree = [i[1] for i in to_try_to_add]
-
         con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
                 taxon_namespace=taxon_namespace,
                 is_rooted=is_rooted)
