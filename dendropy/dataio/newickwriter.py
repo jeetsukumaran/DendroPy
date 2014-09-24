@@ -108,6 +108,12 @@ class NewickWriter(ioservice.DataWriter):
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
+        numeric_value_format_specifier : string, default: ''
+            Format specification for numeric values. Will be applied to edge
+            lengths (if `edge_label_compose_func` is not given) as well as
+            annotations. The format specifier should be given in Python's
+            string format specification mini-language. E.g. ".8f", ".4E",
+            "8.4f".
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'newick' is used as
@@ -129,7 +135,8 @@ class NewickWriter(ioservice.DataWriter):
                     suppress_item_comments=True,
                     node_label_element_separator=' ',
                     node_label_compose_func=None,
-                    edge_label_compose_func=None)
+                    edge_label_compose_func=None,
+                    numeric_value_format_specifier='.8f')
         Notes
         -----
 
@@ -195,15 +202,26 @@ class NewickWriter(ioservice.DataWriter):
         self.node_label_element_separator = kwargs.pop("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.pop("node_label_compose_func", None)
         self.edge_label_compose_func = kwargs.pop("edge_label_compose_func", None)
+        self._numeric_value_format_specifier = ""
+        self._numeric_value_formatter = None
+        self.numeric_value_format_specifier = kwargs.pop("numeric_value_format_specifier", self._numeric_value_format_specifier)
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
         self.check_for_unused_keyword_arguments(kwargs)
+
+    def _get_numeric_value_format_specifier(self):
+        return self._numeric_value_format_specifier
+    def _set_numeric_value_format_specifier(self, f):
+        self._numeric_value_format_specifier = f
+        s = "{:" + self._numeric_value_format_specifier + "}"
+        self._numeric_value_formatter = s.format
+    numeric_value_format_specifier = property(_get_numeric_value_format_specifier, _set_numeric_value_format_specifier)
 
     def _format_edge_length(self, edge):
         """
         Note: instance method to allow overriding.
         """
-        return "{}".format(edge.length)
+        return self._numeric_value_formatter(edge.length)
 
     def _write(self,
             stream,
