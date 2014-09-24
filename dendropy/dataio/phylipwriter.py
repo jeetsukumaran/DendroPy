@@ -25,7 +25,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.dataio import ioservice
-from dendropy.utility import text
+from dendropy.utility import textprocessing
 
 STRICT_MODE_MAX_LABEL_LENGTH = 10
 
@@ -100,7 +100,7 @@ class PhylipWriter(ioservice.DataWriter):
             if self.strict:
                 label = label[:max_label_len]
             taxon_label_map[taxon] = label
-        taxon_label_map = text.unique_taxon_label_map(taxon_namespace, taxon_label_map, max_label_len)
+        taxon_label_map = textprocessing.unique_taxon_label_map(taxon_namespace, taxon_label_map, max_label_len)
         if self.strict:
             for t in taxon_label_map:
                 label = taxon_label_map[t]

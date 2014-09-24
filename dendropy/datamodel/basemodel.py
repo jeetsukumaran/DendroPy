@@ -31,7 +31,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container
 from dendropy.utility import bibtex
-from dendropy.utility import text
+from dendropy.utility import textprocessing
 
 ##############################################################################
 ## DataObject
@@ -765,7 +765,7 @@ class Annotation(Annotable):
     def _get_prefixed_name(self):
         return "{}:{}".format(self.name_prefix, self.name)
     def _set_prefixed_name(self, prefixed_name):
-        self._name_prefix, self.name = text.parse_curie_standard_qualified_name(prefixed_name)
+        self._name_prefix, self.name = textprocessing.parse_curie_standard_qualified_name(prefixed_name)
     prefixed_name = property(_get_prefixed_name, _set_prefixed_name)
 
 ##############################################################################

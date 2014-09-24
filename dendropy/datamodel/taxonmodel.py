@@ -83,7 +83,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.datamodel import basemodel
-from dendropy.utility import text
+from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
@@ -1297,7 +1297,7 @@ class TaxonNamespace(
             String representation of the split hash bitmask value passed as an
             argument.
         """
-        return "{}".format(text.int_to_bitstring(split_bitmask).rjust(len(self._taxon_accession_index_map), "0"))
+        return "{}".format(textprocessing.int_to_bitstring(split_bitmask).rjust(len(self._taxon_accession_index_map), "0"))
 
     def split_taxa_list(self, split_bitmask, index=0):
         """

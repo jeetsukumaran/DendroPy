@@ -59,9 +59,9 @@ def _clean_parsed_text(text):
     Strips outer quotes, curly braces, etc.; remove multiple
     consecutive whitespaces, etc.
     """
-    if text.startswith('{') and text.endswith('}'):
+    if textprocessing.startswith('{') and textprocessing.endswith('}'):
         text = text[1:-1]
-    elif text.startswith('"') and text.endswith('"'):
+    elif textprocessing.startswith('"') and textprocessing.endswith('"'):
         text = text[1:-1]
     text = re.sub("[\s]+", " ", text).strip()
     return text
@@ -218,10 +218,10 @@ class BibTexEntry(object):
         """
         Parses a BibTeX text entry.
         """
-        text = text.replace("\n", "")
+        text = textprocessing.replace("\n", "")
         self.bibtype = None
         self.citekey = None
-        text = text.strip()
+        text = textprocessing.strip()
         decompose_match = self.decompose_pattern.match(text)
         try:
             self.bibtype = decompose_match.group(1)
@@ -317,9 +317,9 @@ class BibTexDb(object):
 
     def add_from_text(self, text):
         """
-        Loads from text.
+        Loads from textprocessing.
         """
-        text = text.replace('\n','')
+        text = textprocessing.replace('\n','')
         entry_pattern = re.compile(r'@\w*{([^{}]+{[^{}]*({[^{}]*}[^{}]*)*})+}')
         for match in entry_pattern.finditer(text):
             entry = BibTexEntry(match.group())

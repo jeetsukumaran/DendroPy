@@ -24,7 +24,7 @@ import re
 import collections
 from dendropy.dataio import ioservice
 from dendropy.utility import container
-from dendropy.utility import text
+from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.dataio import xmlprocessing
 
@@ -59,13 +59,13 @@ class _AnnotationParser(object):
         datatype_hint = attrib.get("datatype", None)
         if key is None:
             raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
-        name_prefix, name = text.parse_curie_standard_qualified_name(key)
+        name_prefix, name = textprocessing.parse_curie_standard_qualified_name(key)
         try:
             namespace = self._namespace_registry.prefix_namespace_map[name_prefix]
         except KeyError:
             raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self._namespace_registry))
         if datatype_hint is not None:
-            dt_prefix, dt = text.parse_curie_standard_qualified_name(datatype_hint)
+            dt_prefix, dt = textprocessing.parse_curie_standard_qualified_name(datatype_hint)
             if dt_prefix is not None:
                 try:
                     dt_namespace = self._namespace_registry.prefix_namespace_map[dt_prefix]
