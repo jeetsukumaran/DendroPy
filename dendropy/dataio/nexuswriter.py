@@ -149,6 +149,7 @@ class NexusWriter(ioservice.DataWriter):
         self.unquoted_underscores = kwargs.get('unquoted_underscores', False)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
+        self.real_value_format_specifier = kwargs.pop("real_value_format_specifier", "")
 
         # As above, but the NEXUS format default is different from the NEWICK
         # default, so this rather convoluted approach
@@ -373,7 +374,9 @@ class NexusWriter(ioservice.DataWriter):
 
     def _write_item_annotations(self, stream, item):
         if not self.suppress_annotations and item.annotations:
-            a = nexusprocessing.format_item_annotations_as_comments(item, nhx=self.annotations_as_nhx)
+            a = nexusprocessing.format_item_annotations_as_comments(item,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier)
             stream.write("{}\n".format(a))
 
     def _write_block_title(self, stream, block):

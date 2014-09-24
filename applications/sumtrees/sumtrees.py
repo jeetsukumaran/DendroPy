@@ -793,11 +793,16 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     messenger.info_lines(report, prefix=" - ")
 
     ###################################################
-    #  Target tree and mapping
+    #  Formatting
 
     if not opts.support_as_percentages and opts.support_label_decimals < 2:
         messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
         opts.support_label_decimals = 2
+
+    real_value_format_specifier = ".8f"
+
+    ###################################################
+    #  Target tree and mapping
 
     tsum = treesum.TreeSummarizer()
     tsum.add_node_metadata = not opts.suppress_summary_metadata
@@ -959,7 +964,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
 
     result_trees = dendropy.TreeList(tt_trees, taxon_namespace=master_taxon_namespace)
     if opts.to_newick_format:
-        result_trees.write(output_dest,
+        result_trees.write_to_stream(output_dest,
                 "newick",
                 suppress_rooting=False,
                 suppress_edge_lengths=False,
@@ -974,7 +979,9 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 suppress_internal_taxon_labels=False,
                 suppress_internal_node_labels=False,
                 node_label_element_separator=' ',
-                node_label_compose_func=None)
+                node_label_compose_func=None,
+                real_value_format_specifier=real_value_format_specifier,
+                )
     else:
         if opts.include_taxa_block:
             simple = False
@@ -1003,7 +1010,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         if opts.additional_comments:
             comment.append("\n")
             comment.append(opts.additional_comments)
-        result_trees.write(output_dest,
+        result_trees.write_to_stream(output_dest,
                 "nexus",
                 simple=simple,
                 file_comments=comment,
@@ -1020,7 +1027,9 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 suppress_internal_taxon_labels=False,
                 suppress_internal_node_labels=False,
                 node_label_element_separator=' ',
-                node_label_compose_func=None)
+                node_label_compose_func=None,
+                real_value_format_specifier=real_value_format_specifier,
+                )
 
     if trprobs_dest:
         messenger.info("Writing tree probabilities ...")
@@ -1053,7 +1062,9 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 suppress_internal_taxon_labels=False,
                 suppress_internal_node_labels=False,
                 node_label_element_separator=' ',
-                node_label_compose_func=None)
+                node_label_compose_func=None,
+                real_value_format_specifier=real_value_format_specifier,
+                )
 
     if split_edge_map_dest:
         messenger.info("Writing split edge lengths ...")

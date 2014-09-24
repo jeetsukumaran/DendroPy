@@ -22,6 +22,8 @@ Specialized tokenizer for processing NEXUS/Newick streams.
 
 import re
 import io
+import numbers
+import decimal
 from dendropy.dataio.tokenizer import Tokenizer
 from dendropy.utility import container
 from dendropy.datamodel import basemodel
@@ -383,7 +385,10 @@ def process_comments_for_item(item,
 ###############################################################################
 ## NEWICK/NEXUS formatting support.
 
-def format_item_annotations_as_comments(annotated, nhx=False):
+def format_item_annotations_as_comments(
+        annotated,
+        nhx=False,
+        real_value_format_specifier=""):
     if not annotated.annotations:
         return ""
     parts = []
@@ -393,13 +398,22 @@ def format_item_annotations_as_comments(annotated, nhx=False):
         key = annote.name
         value = annote.value
         if isinstance(value, list) or isinstance(value, tuple):
-            items = ",".join(str(i) for i in value)
+            items = []
+            for item in value:
+                if isinstance(item, float) or isinstance(item, decimal.Decimal):
+                    items.append("{:{fs}}".format(item, fs=real_value_format_specifier))
+                else:
+                    items.append(str(item))
+            items = ",".join(items)
             parts.append("%s={%s}" % (key, items))
         elif isinstance(value, dict):
             ### TODO ###
             pass
         else:
-            parts.append("%s=%s" % (key, value))
+            if isinstance(value, float) or isinstance(value, decimal.Decimal):
+                parts.append("{key}={value:{fmtspec}}".format(key=key, value=value, fmtspec=real_value_format_specifier))
+            else:
+                parts.append("{}={}".format(key, value))
     if nhx:
         prefix = "[&&NHX:"
         separator = ":"

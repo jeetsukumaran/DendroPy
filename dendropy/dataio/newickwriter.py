@@ -108,8 +108,8 @@ class NewickWriter(ioservice.DataWriter):
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
-        numeric_value_format_specifier : string, default: ''
-            Format specification for numeric values. Will be applied to edge
+        real_value_format_specifier : string, default: ''
+            Format specification for real/float values. Will be applied to edge
             lengths (if `edge_label_compose_func` is not given) as well as
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
@@ -136,7 +136,7 @@ class NewickWriter(ioservice.DataWriter):
                     node_label_element_separator=' ',
                     node_label_compose_func=None,
                     edge_label_compose_func=None,
-                    numeric_value_format_specifier='.8f')
+                    real_value_format_specifier='.8f')
         Notes
         -----
 
@@ -202,26 +202,26 @@ class NewickWriter(ioservice.DataWriter):
         self.node_label_element_separator = kwargs.pop("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.pop("node_label_compose_func", None)
         self.edge_label_compose_func = kwargs.pop("edge_label_compose_func", None)
-        self._numeric_value_format_specifier = ""
-        self._numeric_value_formatter = None
-        self.numeric_value_format_specifier = kwargs.pop("numeric_value_format_specifier", self._numeric_value_format_specifier)
+        self._real_value_format_specifier = ""
+        self._real_value_formatter = None
+        self.real_value_format_specifier = kwargs.pop("real_value_format_specifier", self._real_value_format_specifier)
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
         self.check_for_unused_keyword_arguments(kwargs)
 
-    def _get_numeric_value_format_specifier(self):
-        return self._numeric_value_format_specifier
-    def _set_numeric_value_format_specifier(self, f):
-        self._numeric_value_format_specifier = f
-        s = "{:" + self._numeric_value_format_specifier + "}"
-        self._numeric_value_formatter = s.format
-    numeric_value_format_specifier = property(_get_numeric_value_format_specifier, _set_numeric_value_format_specifier)
+    def _get_real_value_format_specifier(self):
+        return self._real_value_format_specifier
+    def _set_real_value_format_specifier(self, f):
+        self._real_value_format_specifier = f
+        s = "{:" + self._real_value_format_specifier + "}"
+        self._real_value_formatter = s.format
+    real_value_format_specifier = property(_get_real_value_format_specifier, _set_real_value_format_specifier)
 
     def _format_edge_length(self, edge):
         """
         Note: instance method to allow overriding.
         """
-        return self._numeric_value_formatter(edge.length)
+        return self._real_value_formatter(edge.length)
 
     def _write(self,
             stream,
@@ -247,7 +247,10 @@ class NewickWriter(ioservice.DataWriter):
         # annotations/comments associated with first tree. So we place them at
         # *end* of document.
         if (not self.suppress_annotations) and (hasattr(tree_list, "_annotations")):
-            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree_list, nhx=self.annotations_as_nhx)
+            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree_list,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier,
+                    )
         else:
             annotation_comments = ""
         treelist_comments = self._compose_comment_string(tree_list)
@@ -272,7 +275,10 @@ class NewickWriter(ioservice.DataWriter):
         else:
             weight = ""
         if not self.suppress_annotations:
-            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree, nhx=self.annotations_as_nhx)
+            annotation_comments = nexusprocessing.format_item_annotations_as_comments(tree,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier,
+                    )
         else:
             annotation_comments = ""
         tree_comments = self._compose_comment_string(tree)
@@ -362,8 +368,12 @@ class NewickWriter(ioservice.DataWriter):
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
         if not self.suppress_annotations:
-            node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node, nhx=self.annotations_as_nhx)
-            edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge, nhx=self.annotations_as_nhx)
+            node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier)
+            edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier)
             statement = statement + node_annotation_comments + edge_annotation_comments
         edge_comment_str = self._compose_comment_string(node.edge)
         node_comment_str = self._compose_comment_string(node)
