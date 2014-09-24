@@ -78,7 +78,7 @@ class TreeSummarizer(object):
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
         for s in split_freqs:
             freq = split_freqs[s]
-            if (min_freq is None) or (freq > min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
+            if (min_freq is None) or (freq >= min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
                 to_try_to_add.append((freq, s))
         to_try_to_add.sort(reverse=True)
         splits_for_tree = [i[1] for i in to_try_to_add]

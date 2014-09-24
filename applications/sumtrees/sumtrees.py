@@ -27,6 +27,7 @@ from optparse import OptionParser
 from optparse import OptionGroup
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
+from decimal import Decimal
 
 import datetime
 import time
@@ -66,6 +67,9 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
+
+GREATER_THAN_50_PERCENT = float(Decimal(0.5).next_plus())
+
 if _MP:
     class SplitCountingWorker(multiprocessing.Process):
 
@@ -383,10 +387,10 @@ def main_cli():
     target_tree_optgroup.add_option("-f", "--min-clade-freq",
             dest="min_clade_freq",
             type="float",
-            default=0.50,
+            default=GREATER_THAN_50_PERCENT,
             metavar="#.##",
             help="minimum frequency or probability for a clade or a split to be "\
-                    + "included in the consensus tree, if used [default=%default]")
+                    + "included in the consensus tree, if used [default: > 0.05]")
     target_tree_optgroup.add_option("--root-target-at-midpoint",
             action="store_true",
             dest="root_target_at_midpoint",
@@ -429,7 +433,7 @@ do not indicate support with internal node labels or edge lengths
             dest="support_label_decimals",
             type="int",
             metavar="#",
-            default=2,
+            default=8,
             help="number of decimal places in indication of support values [default=%default]")
 
     edge_summarization_optgroup = OptionGroup(parser, "Edge Length Summarization Options")
