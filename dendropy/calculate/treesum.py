@@ -434,7 +434,7 @@ class TreeSummarizer(object):
         --------
 
             trees = dendropy.TreeList.get_from_path(
-                    "data/mcmc1.rooted.nex",
+                    "issue_mth_2009-02-03.rooted.nexus",
                     "nexus")
             tsum = treesum.TreeSummarizer()
             mcct, mct = tsum.calculate_tree_clade_credibilities(trees)
@@ -444,11 +444,15 @@ class TreeSummarizer(object):
 
             for tree, tree_desc in zip(result_trees, tree_descs):
                 print("{:>30}: {} '{}': {} {}".format(
-                    tree_desc,
-                    trees.index(mct)+1,
-                    mct.label,
-                    mct.log_product_of_clade_posteriors,
-                    mct.sum_of_clade_posteriors))
+                        tree_desc,
+                        trees.index(tree)+1,
+                        tree.label,
+                        tree.log_product_of_clade_posteriors,
+                        tree.sum_of_clade_posteriors))
+
+            # Produces:
+            # Maximum Credibility Tree: 71 'bootrep71': -33.888380488585284 85.83000000000001
+            # Maximum Clade Credibility Tree: 74 'bootrep74': -38.45253940270466 89.89000000000001
 
         """
         if burnin_offset is not None:
@@ -479,8 +483,8 @@ class TreeSummarizer(object):
             if max_product_of_clade_posteriors is None or log_product_of_clade_posteriors > max_product_of_clade_posteriors:
                 max_product_of_clade_posteriors = log_product_of_clade_posteriors
                 max_product_of_clade_posteriors_tree = tree
-            if max_sum_of_clade_posteriors is None or log_product_of_clade_posteriors > max_sum_of_clade_posteriors:
-                max_sum_of_clade_posteriors = log_product_of_clade_posteriors
+            if max_sum_of_clade_posteriors is None or sum_of_clade_posteriors > max_sum_of_clade_posteriors:
+                max_sum_of_clade_posteriors = sum_of_clade_posteriors
                 max_sum_of_clade_posteriors_tree = tree
         return max_product_of_clade_posteriors_tree, max_sum_of_clade_posteriors_tree
 
