@@ -1313,7 +1313,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         ``threshold``.
         """
         for e in self.postorder_edge_iter():
-            if e.length <= threshold:
+            if e.length is None or (e.length <= threshold) and e.is_internal():
                e.collapse()
         if update_splits:
             self.update_splits()
