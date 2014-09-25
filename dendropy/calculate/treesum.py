@@ -459,6 +459,7 @@ class TreeSummarizer(object):
             self.count_splits_on_trees(trees,
                     split_distribution=split_distribution,
                     trees_splits_encoded=trees_splits_encoded)
+            tree_splits_encoded = True
         max_product_of_clade_posteriors_tree = None
         max_product_of_clade_posteriors = None
         max_sum_of_clade_posteriors_tree = None
@@ -466,8 +467,10 @@ class TreeSummarizer(object):
         for tree in trees:
             log_product_of_clade_posteriors = 0
             sum_of_clade_posteriors = 0
-            for node in tree:
-                posterior = split_distribution[node.edge.split_bitmask]
+            if not tree_splits_encoded:
+                tree.encode_splits()
+            for split in tree.split_edge_map:
+                posterior = split_distribution[split]
                 if posterior:
                     log_product_of_clade_posteriors += math.log(posterior)
                     sum_of_clade_posteriors += posterior

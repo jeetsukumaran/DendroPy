@@ -506,7 +506,6 @@ class SplitDistribution(object):
     def __getitem__(self, split_bitmask):
         """
         Returns freqency of split_bitmask.
-        EXPERIMENTAL! BOOK-KEEPING NOT TESTED!"
         """
         return self._get_split_frequencies().get(split_bitmask, 0.0)
 
