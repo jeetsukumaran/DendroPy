@@ -20,6 +20,7 @@
 Tree summarization and consensus tree building.
 """
 
+import math
 import dendropy
 import collections
 from dendropy.calculate import treesplit
@@ -362,6 +363,123 @@ class TreeSummarizer(object):
                 trees_splits_encoded=trees_splits_encoded)
         tree = self.tree_from_splits(split_distribution, min_freq=min_freq)
         return tree
+
+    def calculate_tree_clade_credibilities(self,
+            trees,
+            split_distribution=None,
+            burnin_offset=0,
+            log_product_of_clade_posteriors_attr_name="log_product_of_clade_posteriors",
+            sum_of_clade_posteriors_attr_name="sum_of_clade_posteriors",
+            trees_splits_encoded=False):
+        """
+        Calculates the "clade credibility scores" of trees from a set of trees,
+        storing the log product of clade posteriors in a new attribute of the tree,
+        `log_product_of_clade_posteriors`, and the sum of clade posteriors in
+        another attribute of the tree, `sum_of_clade_posteriors`. Returns a
+        tuple, with the first element the tree with the highest product of
+        clade posteriors and the second element the tree with highest sum of
+        clade posteriors.
+
+        From `Wikipedia <http://en.wikipedia.org/wiki/Maximum_clade_credibility_tree>`_ :
+
+            A maximum clade credibility tree is a tree that summarises the
+            results of a Bayesian phylogenetic inference. Whereas a
+            majority-rule tree combines the most common clades, potentially
+            resulting in a tree that was not sampled during the analysis, the
+            maximum-credibility method evaluates each of the sampled posterior
+            trees. Each clade within the tree is given a score based on the
+            number of times that it appears in other sampled posterior trees,
+            and these scores are added to give a total score for the tree. The
+            tree with the highest score represents the maximum clade
+            credibility tree.
+
+            Since each clade's score is akin to a probability, it may be more
+            appropriate to multiply, rather than add, each clade's score
+            (expressed as a probability, or the fraction of posterior trees
+            that contain the clade) to generate a total score for the
+            tree. This would generate a Maximum credibility tree. However, both
+            methods are used in various contexts.
+
+        Parameters
+        ----------
+        trees : a :class:`TreeList` or iterable of trees
+            The list of trees from which to compute the clade posterior
+            probabilities.
+        split_distribution : :class:`SplitDistribution`
+            If split frequencies have already been computed, the
+            :class:`SplitDistribution` used to manage the counts can be passed
+            here. If `None`, and new one will be created and the splits will be counted.
+        burnin_offset : int
+            Number of trees to skip for burinin (only applies if a
+            :class:`SplitDistribution` instance was not passed and the
+            splits have to be counted.
+        log_product_of_clade_posteriors_attr_name : str
+            The attribute on each tree with which to store the log of the
+            product of the clade posteriors.
+        sum_of_clade_posteriors_attr_name : str
+            The attribute on each tree with which to store the sum of the clade
+            posteriors.
+        tree_splits_encoded : bool
+            If `True`, then the splits are assumed to have already been encoded
+            and will not be updated on three trees.
+
+        Returns
+        -------
+        mct_tree : :class:`Tree`
+            The :class:`Tree` with the highest product of clade posterior probabilities.
+        mcct_tree : :class:`Tree`
+            The :class:`Tree` with the highest sum of clade posterior probabilities.
+
+        Examples
+        --------
+
+            trees = dendropy.TreeList.get_from_path(
+                    "data/mcmc1.rooted.nex",
+                    "nexus")
+            tsum = treesum.TreeSummarizer()
+            mcct, mct = tsum.calculate_tree_clade_credibilities(trees)
+
+            result_trees = (mcct, mct)
+            tree_descs = ("Maximum Credibility Tree", "Maximum Clade Credibility Tree")
+
+            for tree, tree_desc in zip(result_trees, tree_descs):
+                print("{:>30}: {} '{}': {} {}".format(
+                    tree_desc,
+                    trees.index(mct)+1,
+                    mct.label,
+                    mct.log_product_of_clade_posteriors,
+                    mct.sum_of_clade_posteriors))
+
+        """
+        if burnin_offset is not None:
+            trees = trees[burnin_offset:]
+        taxon_namespace = trees[0].taxon_namespace
+        if split_distribution is None:
+            split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
+            self.count_splits_on_trees(trees,
+                    split_distribution=split_distribution,
+                    trees_splits_encoded=trees_splits_encoded)
+        max_product_of_clade_posteriors_tree = None
+        max_product_of_clade_posteriors = None
+        max_sum_of_clade_posteriors_tree = None
+        max_sum_of_clade_posteriors = None
+        for tree in trees:
+            log_product_of_clade_posteriors = 0
+            sum_of_clade_posteriors = 0
+            for node in tree:
+                posterior = split_distribution[node.edge.split_bitmask]
+                if posterior:
+                    log_product_of_clade_posteriors += math.log(posterior)
+                    sum_of_clade_posteriors += posterior
+            setattr(tree, log_product_of_clade_posteriors_attr_name, log_product_of_clade_posteriors)
+            setattr(tree, sum_of_clade_posteriors_attr_name, sum_of_clade_posteriors)
+            if max_product_of_clade_posteriors is None or log_product_of_clade_posteriors > max_product_of_clade_posteriors:
+                max_product_of_clade_posteriors = log_product_of_clade_posteriors
+                max_product_of_clade_posteriors_tree = tree
+            if max_sum_of_clade_posteriors is None or log_product_of_clade_posteriors > max_sum_of_clade_posteriors:
+                max_sum_of_clade_posteriors = log_product_of_clade_posteriors
+                max_sum_of_clade_posteriors_tree = tree
+        return max_product_of_clade_posteriors_tree, max_sum_of_clade_posteriors_tree
 
 ##############################################################################
 ## Convenience Function to Get Consensus Tree

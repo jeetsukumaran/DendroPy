@@ -503,6 +503,13 @@ class SplitDistribution(object):
                 num_nt_splits += self.split_counts[s]
         return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
 
+    def __getitem__(self, split_bitmask):
+        """
+        Returns freqency of split_bitmask.
+        EXPERIMENTAL! BOOK-KEEPING NOT TESTED!"
+        """
+        return self._get_split_frequencies().get(split_bitmask, 0.0)
+
     def calc_freqs(self):
         "Forces recalculation of frequencies."
         self._split_freqs = {}
