@@ -627,6 +627,9 @@ class Annotation(Annotable):
         * `namespace`
         * `annotate_as_reference`
         * `is_hidden`
+        * `real_value_format_specifier` - format specifier for printing or rendering
+          values as string, given in Python's format specification
+          mini-language. E.g., '.8f', '4E', '>04d'.
 
     """
 
@@ -641,6 +644,7 @@ class Annotation(Annotable):
             annotate_as_reference=False,
             is_hidden=False,
             label=None,
+            real_value_format_specifier=None,
             ):
         self._value = value
         self.is_attribute = is_attribute
@@ -656,6 +660,7 @@ class Annotation(Annotable):
         self.namespace = namespace
         self.annotate_as_reference = annotate_as_reference
         self.is_hidden = is_hidden
+        self.real_value_format_specifier = real_value_format_specifier
 
     def __eq__(self, o):
         return self is o
@@ -835,7 +840,9 @@ class AnnotationSet(container.OrderedSet):
             name_is_prefixed=False,
             is_attribute=False,
             annotate_as_reference=False,
-            is_hidden=False):
+            is_hidden=False,
+            real_value_format_specifier=None,
+            ):
         """
         Add an annotation.
 
@@ -864,6 +871,10 @@ class AnnotationSet(container.OrderedSet):
             The value should be interpreted as a URI that points to content.
         is_hidden : boolean, optional
             Do not write or print this annotation when writing data.
+        real_value_format_specifier : str
+          Format specifier for printing or rendering values as string, given
+          in Python's format specification mini-language. E.g., '.8f', '4E',
+          '>04d'.
 
         Returns
         -------
@@ -891,6 +902,7 @@ class AnnotationSet(container.OrderedSet):
                 is_attribute=is_attribute,
                 annotate_as_reference=annotate_as_reference,
                 is_hidden=is_hidden,
+                real_value_format_specifier=real_value_format_specifier,
                 )
         return self.add(annote)
 
@@ -903,6 +915,7 @@ class AnnotationSet(container.OrderedSet):
             name_is_prefixed=False,
             annotate_as_reference=False,
             is_hidden=False,
+            real_value_format_specifier=None,
             owner_instance=None,
             ):
         """
@@ -967,6 +980,7 @@ class AnnotationSet(container.OrderedSet):
                 is_attribute=True,
                 annotate_as_reference=annotate_as_reference,
                 is_hidden=is_hidden,
+                real_value_format_specifier=real_value_format_specifier,
                 )
         return self.add(annote)
 

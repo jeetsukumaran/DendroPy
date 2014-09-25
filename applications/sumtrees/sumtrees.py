@@ -799,7 +799,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
         opts.support_label_decimals = 2
 
-    real_value_format_specifier = ".8f"
+    real_value_format_specifier = None
 
     ###################################################
     #  Target tree and mapping

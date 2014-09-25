@@ -385,10 +385,48 @@ def process_comments_for_item(item,
 ###############################################################################
 ## NEWICK/NEXUS formatting support.
 
+def format_annotated_value(
+        value,
+        annotated_real_value_format_specifier,
+        real_value_format_specifier=None,
+        override_annotation_format_specifier=False):
+    if isinstance(value, float) or isinstance(value, decimal.Decimal):
+        if override_annotation_format_specifier and real_value_format_specifier is not None:
+            fmtspec = real_value_format_specifier
+        elif annotated_real_value_format_specifier is not None:
+            fmtspec = annotated_real_value_format_specifier
+        elif real_value_format_specifier is not None:
+            fmtspec = real_value_format_specifier
+        else:
+            fmtspec = ""
+    else:
+        if annotated_real_value_format_specifier is not None:
+            fmtspec = annotated_real_value_format_specifier
+        else:
+            fmtspec = ""
+    return "{:{fmtspec}}".format(value, fmtspec=fmtspec)
+
 def format_item_annotations_as_comments(
         annotated,
         nhx=False,
-        real_value_format_specifier=""):
+        real_value_format_specifier=None,
+        override_annotation_format_specifier=False):
+    """
+    `annotated` - Annotated object
+    `nhx`       - render as NHX '[&& ...]'? Otherwise as '[& ...]'
+    `real_value_format_specifier` - Format specification for real/float values.
+                   The format specifier should be given in Python's string
+                   format specification mini-language. E.g. ".8f", ".4E",
+                   "8.4f". If the annotation has its `format_specifier`
+                   attribute set, then this argument is ignored for rendering
+                   that particular annotation unless
+                   `override_annotation_format_specifier` is `True`. Defaults to "".
+    `override_annotation_format_specifier`
+                    If the annotation has its `format_specifier` attribute set,
+                    then this it will be used in preference to the
+                    `real_value_format_specifier` above unless this argument is
+                    `True`. Defaults to `False`.
+    """
     if not annotated.annotations:
         return ""
     parts = []
@@ -400,20 +438,22 @@ def format_item_annotations_as_comments(
         if isinstance(value, list) or isinstance(value, tuple):
             items = []
             for item in value:
-                if isinstance(item, float) or isinstance(item, decimal.Decimal):
-                    items.append("{:{fs}}".format(item, fs=real_value_format_specifier))
-                else:
-                    items.append(str(item))
+                items.append(format_annotated_value(
+                    value=item,
+                    annotated_real_value_format_specifier=annote.real_value_format_specifier,
+                    real_value_format_specifier=real_value_format_specifier,
+                    override_annotation_format_specifier=override_annotation_format_specifier))
             items = ",".join(items)
             parts.append("%s={%s}" % (key, items))
         elif isinstance(value, dict):
-            ### TODO ###
-            pass
+            raise TypeError("Dictionary types not supported for rendering as NEWICK-formatted metadata")
         else:
-            if isinstance(value, float) or isinstance(value, decimal.Decimal):
-                parts.append("{key}={value:{fmtspec}}".format(key=key, value=value, fmtspec=real_value_format_specifier))
-            else:
-                parts.append("{}={}".format(key, value))
+            x = format_annotated_value(
+                    value=value,
+                    annotated_real_value_format_specifier=annote.real_value_format_specifier,
+                    real_value_format_specifier=real_value_format_specifier,
+                    override_annotation_format_specifier=override_annotation_format_specifier)
+            parts.append("{key}={value}".format(key=key, value=x))
     if nhx:
         prefix = "[&&NHX:"
         separator = ":"

@@ -149,7 +149,8 @@ class TreeSummarizer(object):
         if self.add_node_metadata and attr_name:
             setattr(node, attr_name, support_value)
             node.annotations.drop(name=attr_name)
-            node.annotations.add_bound_attribute(attr_name)
+            node.annotations.add_bound_attribute(attr_name,
+                    real_value_format_specifier=".{}f".format(self.support_label_decimals))
         return node
 
     def map_split_support_to_tree(self, tree, split_distribution):

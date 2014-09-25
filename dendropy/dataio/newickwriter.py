@@ -212,6 +212,8 @@ class NewickWriter(ioservice.DataWriter):
     def _get_real_value_format_specifier(self):
         return self._real_value_format_specifier
     def _set_real_value_format_specifier(self, f):
+        if f is None:
+            f = ""
         self._real_value_format_specifier = f
         s = "{:" + self._real_value_format_specifier + "}"
         self._real_value_formatter = s.format
