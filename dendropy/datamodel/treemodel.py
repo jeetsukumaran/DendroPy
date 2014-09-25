@@ -3295,11 +3295,11 @@ class Tree(
             threshold=0.0000001,
             update_splits=False):
         """
-        Collapse all edges with edge lengths less than or equal to
-        ``threshold``.
+        Collapse all *internal* edges with edge lengths less than or equal to
+        ``threshold`` (or with `None` for edge length).
         """
         for e in self.postorder_edge_iter():
-            if e.length <= threshold:
+            if e.length is None or (e.length <= threshold) and e.is_internal():
                e.collapse()
         if update_splits:
             self.update_splits()
