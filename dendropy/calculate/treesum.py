@@ -372,13 +372,34 @@ class TreeSummarizer(object):
             sum_of_clade_posteriors_attr_name="sum_of_clade_posteriors",
             trees_splits_encoded=False):
         """
-        Calculates the "clade credibility scores" of trees from a set of trees,
-        storing the log product of clade posteriors in a new attribute of the tree,
-        `log_product_of_clade_posteriors`, and the sum of clade posteriors in
-        another attribute of the tree, `sum_of_clade_posteriors`. Returns a
-        tuple, with the first element the tree with the highest product of
-        clade posteriors and the second element the tree with highest sum of
-        clade posteriors.
+        Calculates the "clade credibility scores" of each tree in a set of trees.
+
+        The clade credibility score is a function of the posteriors of the
+        nodes of a tree. Typically, the product (or log of the product) of the
+        node posteriors or the sum of the node posteriors are used. Given a set
+        of trees, the node posteriors are taken to be the frequency that the
+        clade (or split) represented by that node appears in the set of the
+        tree. The log product of clade posteriors is then the log of the
+        product of the proportional frequency each split is found amongst the
+        trees in the set of trees considered. Similarly, the sum of clade
+        posteriors is the sum of the proportional frequency each split is found
+        amongst the trees in the set of trees considered.
+
+
+        The log product of clade posteriors is stored in a new attribute of the
+        tree, `log_product_of_clade_posteriors`, while the sum of clade
+        posteriors is stored in another attribute of the tree,
+        `sum_of_clade_posteriors`.
+
+        This method returns a tuple, with the first element the tree with the highest
+        *product* of clade posteriors, and the second element the tree with
+        highest *sum* of clade posteriors.
+
+        This method implements the approach used by the BEAST program to
+        summarize a posterior distribution of trees. The first element returned
+        by this method corresponds to the the "maximum credibility tree", while
+        the second element returned by this method corresponds to the "maximum
+        clade credibility tree" of the BEAST program.
 
         From `Wikipedia <http://en.wikipedia.org/wiki/Maximum_clade_credibility_tree>`_ :
 
@@ -437,9 +458,9 @@ class TreeSummarizer(object):
                     "issue_mth_2009-02-03.rooted.nexus",
                     "nexus")
             tsum = treesum.TreeSummarizer()
-            mcct, mct = tsum.calculate_tree_clade_credibilities(trees)
+            t1, t2 = tsum.calculate_tree_clade_credibilities(trees)
 
-            result_trees = (mcct, mct)
+            result_trees = (t1, t2)
             tree_descs = ("Maximum Credibility Tree", "Maximum Clade Credibility Tree")
 
             for tree, tree_desc in zip(result_trees, tree_descs):
