@@ -107,7 +107,7 @@ class FragmentedPopulations(object):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
         tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))
-        self.pop_tree = dendropy.Tree(stream=StringIO.StringIO(tree_string), schema="newick")
+        self.pop_tree = dendropy.Tree.get_from_string(tree_string, schema="newick")
         return self.pop_tree
 
     def generate_gene_tree(self, species_name, samples_per_pop=10):
