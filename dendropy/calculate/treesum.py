@@ -350,18 +350,17 @@ class TreeSummarizer(object):
             split_distribution.count_splits_on_tree(tree)
         return split_distribution
 
-    def consensus_tree(self, trees, min_freq=0.5, trees_splits_encoded=False, **kwargs):
+    def consensus_tree(self, trees, min_freq=0.5, trees_splits_encoded=False):
         """
         Returns a consensus tree of all trees in `trees`, with minumum frequency
         of split to be added to the consensus tree given by `min_freq`.
         """
-        taxon_namespace = kwargs.pop("taxon_namespace", trees[0].taxon_namespace)
+        taxon_namespace = trees[0].taxon_namespace
         split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
-        tsum = TreeSummarizer(**kwargs)
-        tsum.count_splits_on_trees(trees,
+        self.count_splits_on_trees(trees,
                 split_distribution=split_distribution,
                 trees_splits_encoded=trees_splits_encoded)
-        tree = tsum.tree_from_splits(split_distribution, min_freq=min_freq)
+        tree = self.tree_from_splits(split_distribution, min_freq=min_freq)
         return tree
 
 ##############################################################################
