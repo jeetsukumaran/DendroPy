@@ -4457,15 +4457,14 @@ class TreeList(
             tlst5.read_from_path("boot3.tre", "newick")
 
             # populated from list of Tree objects
-            tlist6_1 = Tree(stream=StringIO("((A,B),(C,D))"), schema="newick")
-            tlist6_2 = Tree(stream=StringIO("((A,C),(B,D))"), schema="newick")
+            tlist6_1 = Tree.get_from_string("((A,B),(C,D))",
+                    schema="newick")
+            tlist6_2 = Tree.get_from_string("((A,C),(B,D))",
+                    schema="newick")
             tlist6 = TreeList([tlist5_1, tlist5_2])
 
-            # tree from data source specified in constructor
-            tlst7 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), schema="newick") # same
-
             # passing keywords to underlying tree parser
-            tlst8 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"),
+            tlst8 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));",
                              schema="newick",
                              taxon_namespace=tlst3.taxon_namespace,
                              encode_splits=True)
