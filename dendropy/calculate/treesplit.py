@@ -22,9 +22,7 @@ Split calculation and management.
 
 import sys
 from copy import deepcopy
-from dendropy.utility import messaging
-_LOG = messaging.get_logger(__name__)
-
+import math
 from dendropy.utility import container
 from dendropy.utility import textprocessing
 from dendropy.utility import deprecate
@@ -589,7 +587,7 @@ class SplitDistribution(object):
         return dict(self._split_node_age_summaries)
     split_node_age_summaries = property(_get_split_node_age_summaries)
 
-    def count_splits_on_tree(self, tree):
+    def count_splits_on_tree(self, tree, is_splits_encoded=False):
         """
         Counts splits in this tree and add to totals. `tree` must be decorated
         with splits, and no attempt is made to normalize taxa.
@@ -610,6 +608,8 @@ class SplitDistribution(object):
             self.tree_rooting_types_counted.add(True)
         else:
             self.tree_rooting_types_counted.add(False)
+        if not is_splits_encoded:
+            tree.update_splits()
         for split in tree.split_edge_map:
             edge = tree.split_edge_map[split]
 
@@ -654,6 +654,147 @@ class SplitDistribution(object):
 
     def is_all_counted_trees_treated_as_unrooted(self):
         return True not in self.tree_rooting_types_counted
+
+    def split_support_iter(self,
+            tree,
+            is_splits_encoded=False,
+            include_external_splits=False,
+            traversal_strategy="preorder",
+            node_support_attr_name=None,
+            edge_support_attr_name=None,
+            ):
+        """
+        Returns iterator over support values for the splits of a given tree,
+        where the support value is given by the proportional frequency of the
+        split in the current split distribution.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The :class:`Tree` which will be scored.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included.
+            If `False`, then these are skipped. This should only make a
+            difference when dealing with splits collected from trees of
+            different leaf sets.
+        traversal_strategy : str
+            One of: "preorder" or "postorder". Specfies order in which splits
+            are visited.
+
+        Returns
+        -------
+        s : list of floats
+            List of values for splits in the tree corresponding to the
+            proportional frequency that the split is found in the current
+            distribution.
+        """
+        if traversal_strategy == "preorder":
+            if include_external_splits:
+                iter_func = tree.preorder_node_iter
+            else:
+                iter_func = tree.preorder_internal_node_iter
+        elif traversal_strategy == "postorder":
+            if include_external_splits:
+                iter_func = tree.postorder_node_iter
+            else:
+                iter_func = tree.postorder_internal_node_iter
+        else:
+            raise ValueError("Traversal strategy not supported: '{}'".format(traversal_strategy))
+        if not is_splits_encoded:
+            tree.encode_splits()
+        split_frequencies = self._get_split_frequencies()
+        for nd in iter_func():
+            split = nd.edge.split_bitmask
+            support = split_frequencies.get(split, 0.0)
+            yield support
+
+    def product_of_split_support_on_tree(self,
+            tree,
+            is_splits_encoded=False,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the (log) product of the support of the splits of the
+        tree, where the support is given by the proportional frequency of the
+        split in the current split distribution.
+
+        The tree that has the highest product of split support out of a sample
+        of trees corresponds to the "maximum credibility tree" for that sample.
+        This can also be referred to as the "maximum clade credibility tree",
+        though this latter term is sometimes use for the tree that has the
+        highest *sum* of split support (see
+        :meth:`SplitDistribution.sum_of_split_support_on_tree()`).
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The tree for which the score should be calculated.
+        is_splits_encoded : bool
+            If `True`, then the splits are assumed to have already been encoded
+            and will not be updated on the trees.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : numeric
+            The log product of the support of the splits of the tree.
+        """
+        log_product_of_split_support = 0.0
+        for split_support in self.split_support_iter(
+                tree=tree,
+                is_splits_encoded=is_splits_encoded,
+                include_external_splits=include_external_splits,
+                traversal_strategy="preorder",
+                ):
+            if split_support:
+                log_product_of_split_support += math.log(split_support)
+        return log_product_of_split_support
+
+    def sum_of_split_support_on_tree(self,
+            tree,
+            is_splits_encoded=False,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the sum of the support of the splits of the tree, where the
+        support is given by the proportional frequency of the split in the
+        current distribtion.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The tree for which the score should be calculated.
+        is_splits_encoded : bool
+            If `True`, then the splits are assumed to have already been encoded
+            and will not be updated on the trees.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : numeric
+            The sum of the support of the splits of the tree.
+        """
+        sum_of_split_support = 0.0
+        for split_support in self.split_support_iter(
+                tree=tree,
+                is_splits_encoded=is_splits_encoded,
+                include_external_splits=include_external_splits,
+                traversal_strategy="preorder",
+                ):
+            sum_of_split_support += split_support
+        return sum_of_split_support
 
     def _get_taxon_set(self):
         from dendropy import taxonmodel

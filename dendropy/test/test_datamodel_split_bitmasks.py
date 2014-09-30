@@ -77,8 +77,7 @@ class SplitCountTest(ExtendedTestCase):
             for tree in trees:
                 self.assertIs(tree.taxon_namespace, taxon_namespace)
                 self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
-                treesplit.encode_splits(tree)
-                dp_sd.count_splits_on_tree(tree)
+                dp_sd.count_splits_on_tree(tree, is_splits_encoded=False)
         self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
 
         # SplitsDistribution counts trivial splits, whereas PAUP*
@@ -203,6 +202,36 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
             first.prune_subtree(nd)
         # the trees are now (b,c,(d,e)) and (b,d,(c,e)) so the symmetric diff is 2
         self.assertEqual(2, treecompare.symmetric_difference(first, second))
+
+class TestTreeSplitSupportCredibilityScoring(unittest.TestCase):
+
+    def setUp(self):
+        self.trees = dendropy.TreeList.get_from_path(
+                pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
+                "nexus")
+        self.split_distribution = treesplit.SplitDistribution()
+        for tree in self.trees:
+            self.split_distribution.count_splits_on_tree(
+                    tree,
+                    is_splits_encoded=False)
+
+    def test_product_of_split_support_on_tree(self):
+        t1 = self.trees[70]
+        self.assertAlmostEqual(
+                self.split_distribution.product_of_split_support_on_tree(t1),
+                -33.888380488585284)
+
+    def test_sum_of_split_support_on_tree(self):
+        t1 = self.trees[73]
+        self.assertAlmostEqual(
+                self.split_distribution.sum_of_split_support_on_tree(t1),
+                30.89000000000001)
+
+    def test_sum_of_split_support_on_tree2(self):
+        t1 = self.trees[73]
+        self.assertAlmostEqual(
+                self.split_distribution.sum_of_split_support_on_tree(t1, include_external_splits=True),
+                30.89000000000001 + len(self.trees.taxon_namespace))
 
 if __name__ == "__main__":
     if paup.DENDROPY_PAUP_INTEROPERABILITY:
