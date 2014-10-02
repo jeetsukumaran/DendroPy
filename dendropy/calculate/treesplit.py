@@ -387,7 +387,13 @@ def count_bits(split):
 class SplitDistribution(object):
     "Collects information regarding splits over multiple trees."
 
-    def __init__(self, taxon_namespace=None, split_set=None):
+    def __init__(self,
+            taxon_namespace=None,
+            split_set=None,
+            ignore_edge_lengths=False,
+            ignore_node_ages=True,
+            ignore_tree_weights=False,
+            ultrametricity_precision=0.0000001):
         self.total_trees_counted = 0
         self.tree_rooting_types_counted = set()
         self.sum_of_tree_weights = 0.0
@@ -400,10 +406,11 @@ class SplitDistribution(object):
         self.weighted_split_counts = {}
         self.split_edge_lengths = {}
         self.split_node_ages = {}
-        self.ignore_edge_lengths = False
-        self.ignore_node_ages = True
+        self.ignore_edge_lengths = ignore_edge_lengths
+        self.ignore_node_ages = ignore_node_ages
+        self.ignore_tree_weights = ignore_tree_weights
+        self.ultrametricity_precision = ultrametricity_precision
         self.error_on_mixed_rooting_types = True
-        self.ultrametricity_precision = 0.0000001
         self._is_rooted = False
         self._split_freqs = None
         self._weighted_split_freqs = None
@@ -623,7 +630,7 @@ class SplitDistribution(object):
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
             tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)
-        if tree.weight is None:
+        if tree.weight is None or self.ignore_tree_weights:
             weight_to_use = 1.0
         else:
             weight_to_use = float(tree.weight)

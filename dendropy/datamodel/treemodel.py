@@ -5095,6 +5095,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             tree_traversal_order="preorder",
             ignore_edge_lengths=False,
             ignore_node_ages=True,
+            ignore_tree_weights=False,
             ):
         """
         Parameters
@@ -5111,6 +5112,14 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             One of 'preorder' or 'postorder'. When decomposing trees into
             splits and edge lengths, the default order that the edges should be
             visited.
+        ignore_edge_lengths : bool
+            If `True`, then edge lengths of splits will not be stored. If
+            `False`, then edge lengths will be stored.
+        ignore_node_ages : bool
+            If `True`, then node ages of splits will not be stored. If
+            `False`, then node ages will be stored.
+        ignore_tree_weights : bool
+            If `True`, then tree weights will not be used to weight splits.
         """
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
                 taxon_namespace=taxon_namespace)
@@ -5120,12 +5129,19 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self._tree_traversal_order = None
         self._tree_traversal_method_name = None
         self.tree_traversal_order = tree_traversal_order
+        self.ignore_edge_lengths = ignore_edge_lengths
+        self.ignore_node_ages = ignore_node_ages
+        self.ignore_tree_weights = ignore_tree_weights
         self.default_edge_length_value = 0.0 # edge.length of `None` gets this value
 
         # Storage
         self._tree_splits = []
         self._tree_edge_lengths = []
-        self._split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+        self._split_distribution = treesplit.SplitDistribution(
+                taxon_namespace=self.taxon_namespace,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                )
 
     ##############################################################################
     ## Book-Keeping
@@ -5146,12 +5162,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def _get_is_rooted_trees(self):
         return self._rooted_trees
     is_rooted_trees = property(_get_is_rooted_trees)
-
-    ##############################################################################
-    ## Metrics
-
-    def __len__(self):
-        return len(self._tree_splits)
 
     ##############################################################################
     ## Fundamental Tree Accession
@@ -5298,18 +5308,27 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     ## Convenient I/O
 
     def read_from_stream(self, fileobj, schema, **kwargs):
+        """
+        Reads trees from a file. See :meth:`TreeList.read_from_stream()`.
+        """
         return self.read_from_files(
                 files=[fileobj],
                 schema=schema,
                 **kwargs)
 
     def read_from_path(self, filepath, schema, **kwargs):
+        """
+        Reads trees from a path. See :meth:`TreeList.read_from_path()`.
+        """
         return self.read_from_files(
                 files=[filepath],
                 schema=schema,
                 **kwargs)
 
     def read_from_string(self, src_str, schema, **kwargs):
+        """
+        Reads trees from a string. See :meth:`TreeList.read_from_string()`.
+        """
         return self.read_from_files(
                 files=[StringIO(src_str)],
                 schema=schema,
@@ -5371,19 +5390,36 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def extend(self, tree_array):
         """
-        In-place addition of trees in `other` to self.
+        Accession of data from `tree_array` to self.
 
         Parameters
         ----------
-        tree_array :
-        is_splits_encoded : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
-            splits already encoded and updated.
+        tree_array : :class:`TreeArray`
+            A :class:`TreeArray` instance from which to add data.
 
         """
-        return self.add_trees(trees=other,
-                is_splits_encoded=is_splits_encoded)
+        assert self.taxon_namespace is tree_array.taxon_namespace
+        assert self._is_rooted_trees is tree_array._is_rooted_trees
+        assert self._tree_traversal_order == tree_array._tree_traversal_order
+        assert self.ignore_edge_lengths is tree_array.ignore_edge_lengths
+        assert self.ignore_node_ages is tree_array.ignore_node_ages
+        assert self.ignore_tree_weights is tree_array.ignore_tree_weights
+        self._tree_splits.extend(tree_array._tree_splits)
+        self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
+        self._split_distribution.update(tree_array._split_distribution)
+        return self
+
+    def __iadd__(self, tree_array):
+        """
+        Accession of data from `tree_array` to self.
+
+        Parameters
+        ----------
+        tree_array : :class:`TreeArray`
+            A :class:`TreeArray` instance from which to add data.
+
+        """
+        return self.extend(tree_array)
 
     def __add__(self, other):
         """
@@ -5399,13 +5435,33 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             :class:`TreeArray` object containing clones of :class:`Tree` objects
             in `self` and `other`.
         """
-        raise NotImplementedError
+        ta = TreeArray(
+                taxon_namespace=self.taxon_namespace,
+                is_rooted_trees=self._is_rooted_trees,
+                tree_traversal_order=self._tree_traversal_order,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                ignore_tree_weights=self.ignore_tree_weights)
+        ta += self
+        ta += other
+        return ta
 
-    def __contains__(self, tree):
-        raise NotImplementedError
+    def __contains__(self, splits):
+        # expensive!!
+        return tuple(splits) in self._tree_splits
 
-    def __delitem__(self, tree):
+    def __delitem__(self, index):
         raise NotImplementedError
+        # expensive!!
+        # tree_splits = self._trees_splits[index]
+        ### TODO: remove this "tree" from underlying splits distribution
+        # for split in tree_splits:
+        #   self._split_distribution.split_counts[split] -= 1
+        # etc.
+        # becomes complicated because tree weights need to be updated etc.
+        # del self._tree_splits[index]
+        # del self._tree_edge_lengths[index]
+        # return
 
     def __iter__(self):
         """
@@ -5422,36 +5478,22 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def __getitem__(self, index):
         """
-        If `index` is an integer, then :class:`Tree` object at position `index`
-        is returned. If `index` is a slice, then a :class:`TreeList` is returned
-        with references (i.e., not copies or clones, but the actual original
-        instances themselves) to :class:`Tree` objects in the positions given
-        by the slice. The :class:`TaxonNamespace` is the same as `self`.
-
-        Parameters
-        ----------
-        index : integer or slice
-            Index or slice.
-
-        Returns
-        -------
-        t : :class:`Tree` object or :class:`TreeList` object
-
+        Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
+        to the "tree" at `index`.
         """
         return self._tree_splits[index], self._tree_edge_lengths[index]
 
     def __setitem__(self, index, value):
-        """
-        Sets split and edge length at index.
-        """
-        self._tree_splits[index] = tuple(splits)
-        self._tree_edge_lengths[index] = tuple(edge_lengths)
-
-    def clear(self):
-        # list.clear() only with 3.4 or so ...
         raise NotImplementedError
 
-    def index(self, tree):
+    def clear(self):
+        raise NotImplementedError
+        self._tree_list = []
+        self._edge_lengths = []
+        self._split_distribution.clear()
+
+    def index(self, splits):
+        return self._tree_splits.index(splits)
         raise NotImplementedError
 
     def pop(self, index=-1):
