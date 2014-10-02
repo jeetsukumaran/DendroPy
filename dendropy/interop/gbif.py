@@ -20,6 +20,7 @@
 Wrappers for interacting with GBIF.
 """
 
+import sys
 if sys.version_info.major < 3:
     from urllib import urlencode
     from urllib import urlopen

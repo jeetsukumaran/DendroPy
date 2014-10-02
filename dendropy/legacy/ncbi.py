@@ -253,9 +253,9 @@ class Entrez(object):
             try:
                 accession, gi = parse_accession_number_and_gi_from_gb(gb_str)
             except TypeError:
-                print "---"
-                print gb_str
-                print "---"
+                print("---")
+                print(gb_str)
+                print("---")
                 raise
             if key_field == "accession":
                 gb_recs_dict[accession] = gb_str
@@ -287,7 +287,7 @@ class Entrez(object):
         results_str = self.fetch(db='nucleotide', ids=id_list, rettype='fasta')
         try:
             d = matrix_type.get_from_string(results_str, 'fasta', **kwargs)
-        except DataParseError, e:
+        except DataParseError:
             sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
             raise
         for taxon in d.taxon_set:
