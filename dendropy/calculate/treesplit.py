@@ -592,10 +592,32 @@ class SplitDistribution(object):
         return dict(self._split_node_age_summaries)
     split_node_age_summaries = property(_get_split_node_age_summaries)
 
-    def count_splits_on_tree(self, tree, is_splits_encoded=False):
+    def count_splits_on_tree(self,
+            tree,
+            is_splits_encoded=False,
+            edge_iterator=None,
+            default_edge_length_value=None):
         """
         Counts splits in this tree and add to totals. `tree` must be decorated
         with splits, and no attempt is made to normalize taxa.
+
+        Parameters
+        ----------
+        tree : a :class:`Tree` object.
+            The tree on which to count the splits.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        Returns
+        --------
+        s : iterable of splits
+            A list of split bitmasks from `tree`.
+        e :
+            A list of edge length values from `tree`.
+        a :
+            A list of node age values from `tree`.
         """
         assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
@@ -612,17 +634,18 @@ class SplitDistribution(object):
             self.tree_rooting_types_counted.add(False)
         if not is_splits_encoded:
             tree.update_splits()
-        for split in tree.split_edge_map:
-            edge = tree.split_edge_map[split]
-
-            ### ??? artifact from a different splits coding scheme ???
-            # if self.is_rooted:
-            #     split = edge.split_bitmask
-            ### IS THIS NECESSARY??? ALL TESTS PASS WITH THIS COMMENTED OUT.
-            if tree.is_rooted:
-                split = edge.split_bitmask
-            ### IS THIS NECESSARY??? ALL TESTS PASS WITH THIS COMMENTED OUT.
-
+        if edge_iterator is None:
+            edge_iterator = tree.split_edge_map.values
+        splits = []
+        edge_lengths = []
+        node_ages = []
+        for edge in edge_iterator():
+            split = edge.split_bitmask
+            if not tree.is_rooted:
+                # splits on edges are not normalized, so rotation
+                # errors can creep in when dealing with unrooted trees
+                split = tree.split_edge_map.normalize_key(split)
+            splits.append(split)
             try:
                 self.split_counts[split] += 1
             except KeyError:
@@ -634,15 +657,24 @@ class SplitDistribution(object):
                 self.weighted_split_counts[split] = weight_to_use
             if not self.ignore_edge_lengths:
                 sel = self.split_edge_lengths.setdefault(split,[])
-                if edge.length is not None:
-                    sel.append(tree.split_edge_map[split].length)
-                # for correct behavior when some or all trees have no edge lengths
-#                 else:
-#                     self.split_edge_lengths[split].append(0.0)
+                if edge.length is None:
+                    elen = default_edge_length_value
+                else:
+                    elen = edge.length
+                edge_lengths.append(elen)
+            else:
+                sel = None
             if not self.ignore_node_ages:
                 sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
-                    sna.append(edge.head_node.age)
+                    nage = edge.head_node.age
+                else:
+                    nage = None
+                sna.append(nage)
+                node_ages.append(nage)
+            else:
+                sna = None
+        return splits, edge_lengths, node_ages
 
     def is_mixed_rootings_counted(self):
         return ( (True in self.tree_rooting_types_counted)

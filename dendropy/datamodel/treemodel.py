@@ -5073,6 +5073,400 @@ class TreeList(
         return float(found)/total
 
 ###############################################################################
+### TreeArray
+
+class TreeArray(taxonmodel.TaxonNamespaceAssociated):
+    """
+    Storage of minimal tree structural information as represented by toplogy
+    and edge lengths.
+
+    This class stores trees as collections of splits and edge lengths. All
+    other information, such as labels, metadata annotations, etc. will be
+    discarded. A full :class:`Tree` instance can be reconstructed as needed
+    from the structural information stored by this class.
+    """
+
+    ##############################################################################
+    ## Life-Cycle
+
+    def __init__(self,
+            taxon_namespace=None,
+            is_rooted_trees=None,
+            tree_traversal_order="preorder",
+            ignore_edge_lengths=False,
+            ignore_node_ages=True,
+            ):
+        """
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace`
+            The operational taxonomic unit concept namespace to manage taxon
+            references.
+        is_rooted_trees : bool
+            If not set, then it will be set based on the rooting state of the
+            first tree added. If `True`, then trying to add an unrooted tree
+            will result in an error. If `False`, then trying to add a rooted
+            tree will result in an error.
+        tree_traversal_order : str
+            One of 'preorder' or 'postorder'. When decomposing trees into
+            splits and edge lengths, the default order that the edges should be
+            visited.
+        """
+        taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                taxon_namespace=taxon_namespace)
+
+        # Configuration
+        self._is_rooted_trees = is_rooted_trees
+        self._tree_traversal_order = None
+        self._tree_traversal_method_name = None
+        self.tree_traversal_order = tree_traversal_order
+        self.default_edge_length_value = 0.0 # edge.length of `None` gets this value
+
+        # Storage
+        self._tree_splits = []
+        self._tree_edge_lengths = []
+        self._split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+
+    ##############################################################################
+    ## Book-Keeping
+
+    def _get_tree_traversal_order(self):
+        return self._tree_traversal_order
+    def _set_tree_traversal_order(self, tree_traversal_order):
+        if tree_traversal_order == "preorder":
+            self._tree_traversal_order = "preorder"
+            self._tree_traversal_method_name = "preorder_edge_iter"
+        elif tree_traversal_order == "postorder":
+            self._tree_traversal_order = "postorder"
+            self._tree_traversal_method_name = "postorder_edge_iter"
+        else:
+            raise ValueError(tree_traversal_order)
+    tree_traversal_order = property(_get_tree_traversal_order, _set_tree_traversal_order)
+
+    def _get_is_rooted_trees(self):
+        return self._rooted_trees
+    is_rooted_trees = property(_get_is_rooted_trees)
+
+    ##############################################################################
+    ## Metrics
+
+    def __len__(self):
+        return len(self._tree_splits)
+
+    ##############################################################################
+    ## Fundamental Tree Accession
+
+    def add_tree(self,
+            tree,
+            is_splits_encoded=False,
+            index=None):
+        """
+        Adds the structure represented by a :class:`Tree` instance to the
+        collection.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            A :class:`Tree` instance. This must have the same rooting state as
+            all the other trees accessioned into this collection as well as
+            that of `self.is_rooted_trees`.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+        index : integer
+            Insert before index.
+
+        Returns
+        -------
+        index : int
+            The index of the accession.
+        s : iterable of splits
+            A list of split bitmasks from `tree`.
+        e :
+            A list of edge length values from `tree`.
+        """
+        if self.taxon_namespace is not tree.taxon_namespace:
+            raise error.TaxonNamespaceIdentityError(self, tree)
+        if self._is_rooted_trees is None:
+            self._is_rooted_trees = tree.is_rooted
+        else:
+            assert self._is_rooted_trees == tree.is_rooted
+
+        # if we did not care about preserving order ...
+        splits, edge_lengths, node_ages = self._split_distribution.count_splits_on_tree(
+                tree=tree,
+                is_splits_encoded=is_splits_encoded,
+                edge_iterator=getattr(tree, self._tree_traversal_method_name),
+                default_edge_length_value=self.default_edge_length_value)
+        # if not is_splits_encoded:
+        #     tree.encode_splits()
+        # splits = []
+        # edge_lengths = []
+        # tree_traversal_iter = getattr(tree, self._tree_traversal_method_name)
+        # for edge in tree_traversal_iter():
+        #     splits.append(edge.split_bitmask)
+        #     if edge.length is None:
+        #         edge_lengths.append(self.default_edge_length_value)
+        #     else:
+        #         edge_lengths.append(edge.length)
+        return self.add_splits(splits=splits,
+                edge_lengths=edge_lengths,
+                index=index)
+
+    def add_splits(self, splits, edge_lengths, index=None):
+        """
+        Adds a "tree" as represented by a list of splits and edge lengths.
+
+        Parameters
+        ----------
+        splits : iterable of ints
+            An iterable of split bitmasks.
+        edge_lengths : iterable of values
+            An iterable of (usually numeric) values for each split listed in ``splits``.
+        index : integer
+            Insert before index.
+
+        """
+        assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
+        splits = tuple(splits)
+        edge_lengths = tuple(edge_lengths)
+        if index is None:
+            index = len(self._tree_splits)
+            self._tree_splits.append(splits)
+            self._tree_edge_lengths.append(edge_lengths)
+        else:
+            self._tree_splits.insert(index, splits)
+            self._tree_edge_lengths.append(index, edge_lengths)
+        return index, splits, edge_lengths
+
+    def add_trees(self, trees, is_splits_encoded=False):
+        """
+        Adds multiple structures represneted by an iterator over or iterable of
+        :class:`Tree` instances to the collection.
+
+        Parameters
+        ----------
+        trees : iterator over or iterable of :class:`Tree` instances
+            An iterator over or iterable of :class:`Tree` instances. Thess must
+            have the same rooting state as all the other trees accessioned into
+            this collection as well as that of `self.is_rooted_trees`.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        """
+        for tree in trees:
+            self.add_tree(tree,
+                    is_splits_encoded=is_splits_encoded)
+
+    def read_from_files(self,
+            files,
+            schema,
+            **kwargs):
+        """
+        Adds multiple structures from one or more external file sources to the
+        collection.
+
+        Parameters
+        ----------
+        files : iterable of strings and/or file objects
+            A list or some other iterable of file paths or file-like objects
+            (string elements will be assumed to be paths to files, while all
+            other types of elements will be assumed to be file-like
+            objects opened for reading).
+        schema : string
+            The data format of the source. E.g., "nexus", "newick", "nexml".
+        \*\*kwargs : keyword arguments
+            These will be passed directly to the underlying schema-specific
+            reader implementation.
+        """
+        if "taxon_namespace" in kwargs:
+            if kwargs["taxon_namespace"] is not self.taxon_namespace:
+                raise ValueError("TaxonNamespace object passed as keyword argument is not the same as self's TaxonNamespace reference")
+            kwargs.pop("taxon_namespace")
+        for tree in treemodel.Tree.yield_from_files(
+                files=files,
+                schema=schema,
+                taxon_namespace=self.taxon_namespace,
+                **kwargs):
+            self.add_tree(tree=tree,
+                    is_splits_encoded=False)
+
+    ##############################################################################
+    ## Convenient I/O
+
+    def read_from_stream(self, fileobj, schema, **kwargs):
+        return self.read_from_files(
+                files=[fileobj],
+                schema=schema,
+                **kwargs)
+
+    def read_from_path(self, filepath, schema, **kwargs):
+        return self.read_from_files(
+                files=[filepath],
+                schema=schema,
+                **kwargs)
+
+    def read_from_string(self, src_str, schema, **kwargs):
+        return self.read_from_files(
+                files=[StringIO(src_str)],
+                schema=schema,
+                **kwargs)
+
+    ##############################################################################
+    ## Container (List) Interface
+
+    def append(tree, is_splits_encoded=False):
+        """
+        Adds a :class:`Tree` instance to the collection before position given
+        by `index`.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            A :class:`Tree` instance. This must have the same rooting state as
+            all the other trees accessioned into this collection as well as
+            that of `self.is_rooted_trees`.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        """
+        return self.add_tree(tree=tree,
+                is_splits_encoded=is_splits_encoded)
+
+    def insert(index, tree, is_splits_encoded=False):
+        """
+        Adds a :class:`Tree` instance to the collection before position given
+        by `index`.
+
+        Parameters
+        ----------
+        index : integer
+            Insert before index.
+        tree : :class:`Tree`
+            A :class:`Tree` instance. This must have the same rooting state as
+            all the other trees accessioned into this collection as well as
+            that of `self.is_rooted_trees`.
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        Returns
+        -------
+        index : int
+            The index of the accession.
+        s : iterable of splits
+            A list of split bitmasks from `tree`.
+        e :
+            A list of edge length values `tree`.
+        """
+        return self.add_tree(tree=tree,
+                is_splits_encoded=is_splits_encoded,
+                index=index)
+
+    def extend(self, tree_array):
+        """
+        In-place addition of trees in `other` to self.
+
+        Parameters
+        ----------
+        tree_array :
+        is_splits_encoded : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        """
+        return self.add_trees(trees=other,
+                is_splits_encoded=is_splits_encoded)
+
+    def __add__(self, other):
+        """
+        Creates and returns new :class:`TreeArray`.
+
+        Parameters
+        ----------
+        other : iterable of :class:`Tree` objects
+
+        Returns
+        -------
+        tlist : :class:`TreeArray` object
+            :class:`TreeArray` object containing clones of :class:`Tree` objects
+            in `self` and `other`.
+        """
+        raise NotImplementedError
+
+    def __contains__(self, tree):
+        raise NotImplementedError
+
+    def __delitem__(self, tree):
+        raise NotImplementedError
+
+    def __iter__(self):
+        """
+        Yields pairs of (split, edge_length) from the store.
+        """
+        for split, edge_length in zip(self._tree_splits, self._tree_edge_lengths):
+            yield split, edge_length
+
+    def __reversed__(self):
+        raise NotImplementedError
+
+    def __len__(self):
+        return len(self._tree_splits)
+
+    def __getitem__(self, index):
+        """
+        If `index` is an integer, then :class:`Tree` object at position `index`
+        is returned. If `index` is a slice, then a :class:`TreeList` is returned
+        with references (i.e., not copies or clones, but the actual original
+        instances themselves) to :class:`Tree` objects in the positions given
+        by the slice. The :class:`TaxonNamespace` is the same as `self`.
+
+        Parameters
+        ----------
+        index : integer or slice
+            Index or slice.
+
+        Returns
+        -------
+        t : :class:`Tree` object or :class:`TreeList` object
+
+        """
+        return self._tree_splits[index], self._tree_edge_lengths[index]
+
+    def __setitem__(self, index, value):
+        """
+        Sets split and edge length at index.
+        """
+        self._tree_splits[index] = tuple(splits)
+        self._tree_edge_lengths[index] = tuple(edge_lengths)
+
+    def clear(self):
+        # list.clear() only with 3.4 or so ...
+        raise NotImplementedError
+
+    def index(self, tree):
+        raise NotImplementedError
+
+    def pop(self, index=-1):
+        raise NotImplementedError
+
+    def remove(self, tree):
+        raise NotImplementedError
+
+    def reverse(self):
+        raise NotImplementedError
+
+    def sort(self, key=None, reverse=False):
+        raise NotImplementedError
+
+###############################################################################
 ### AsciiTreePlot
 
 class AsciiTreePlot(object):
