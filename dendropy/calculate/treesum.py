@@ -21,10 +21,121 @@ Tree summarization and consensus tree building.
 """
 
 import math
-import dendropy
 import collections
+import dendropy
+from dendropy.datamodel import taxonmodel
 from dendropy.calculate import treesplit
 from dendropy.mathlib.statistics import mean_and_sample_variance
+
+##############################################################################
+## TreeDistribution
+
+class TreeDistribution(taxonmodel.TaxonNamespaceAssociated):
+    """
+    Manages a distribution of trees.
+    """
+
+    ##########################################################################
+    ## Life-Cycle
+
+    def __init__(self,
+            taxon_namespace=None,
+            weighted_trees=False,
+
+            tree_store_mode="full"):
+        """
+
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace`
+            The operational taxonomic unit concept namespace to manage taxon
+            references.
+        weighted_trees : bool
+            If `True`, then tree weights will be used to weight the splits.
+        tree_store_mode : str
+            Sets the tree storage mode:
+
+                "full"
+                    Trees added to the distribution will be stored as full
+                    references to the original objects.
+                "none" (or `None`)
+                    Trees will not be stored.
+                "structure"
+                    Currently: same as "full".
+                    In the future: Trees added to the distribution will only
+                    have their topology (as represented by splits) and edge
+                    lengths stored. This means that any other information
+                    (e.g., metadata annotations, dynamically-added attributes,
+                    edge/node labels) will be lost. Futhermore
+                    accessing trees (e.g., when asking for the maximum clade
+                    credibility tree) requires that a new full
+                    :class:`Tree` object be reconstructed from the topology +
+                    edge length information.
+
+            Some tree summarization methods, e.g., the majority rule consensus
+            tree, do not require that the tree be stored.  Other tree
+            summarization methods, e.g., the maximum clade credibility tree, do
+            require access to full trees. In cases where you know that you will
+            not be using any calculations to be performed by this
+            TreeDistribution object that require it to have access to the full
+            trees, then setting `tree_store_mode` to `None` will result in
+            increased performance due to memory savings. In cases where the
+            individual trees are needed, then "full" or "structure" is
+            required. Currently, "structure" is the same as "full", i.e., the
+            entire tree is stored. However, we plan to implement a compressed
+            storage scheme that only retains structural information. If all you
+            require is to recover the tree structure (i.e., nothing beyond the
+            topology and edge lengths, e.g., labels, annotations and
+            metadata), then this will be the most efficient option.
+        """
+        taxonmodel.TaxonNamespaceAssociated.__init__(self, taxon_namespace=taxon_namespace)
+        self.weighted_trees = weighted_trees
+        self._tree_store_mode = tree_store_mode
+        if self.tree_store_mode == "full" or self.tree_store_mode == "structure":
+            self._tree_store = []
+        elif self._tree_store_mode == "none" or self._tree_store_mode is None:
+            self._tree_store_mode = None
+            self._tree_store = None
+        else:
+            raise ValueError(tree_store_mode)
+        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+
+    ##########################################################################
+    ## Tree Store Mode (Read-only)
+
+    def _get_tree_store_mode(self):
+        """
+        Reports current tree storage mode.
+        """
+        return self._tree_store_mode
+    tree_store_mode = property(_get_tree_store_mode)
+
+    ##########################################################################
+    ## Tree Storage and Access
+
+    def store_tree(self, tree):
+        if self._tree_store_mode is None:
+            return
+        else:
+            self._tree_store.append(tree)
+
+    ##########################################################################
+    ## Adding Trees
+
+    def add_tree(self, tree, is_splits_encoded=False):
+        pass
+
+    def add_trees(self, tree_iterator, is_splits_encoded=False):
+        pass
+
+    def add_trees_from_file(self, source, schema, **kwargs):
+        pass
+
+    def update(self, other_tree_distribution):
+        pass
+
+    def update_split_distribution(self, split_distribution):
+        pass
 
 ##############################################################################
 ## TreeSummarizer
@@ -47,7 +158,6 @@ class TreeSummarizer(object):
         self.add_node_metadata = kwargs.get("add_node_metadata", True)
         self.default_support_label_decimals = 4
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
-        self.total_trees_counted = 0
         self.weighted_splits = False
 
     def tree_from_splits(self,
@@ -291,9 +401,6 @@ class TreeSummarizer(object):
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
-                #if len(lengths) != split_distribution.total_trees_counted:
-                #    # not all input trees had edge lengths (at least, for this split)
-                #    pass
                 edge.length = summarization_func(lengths)
             elif (split in split_distribution.split_edge_lengths
                     and not split_distribution.split_edge_lengths[split]):
@@ -330,7 +437,7 @@ class TreeSummarizer(object):
             #        include_edge_length_var=False)
         return con_tree
 
-    def count_splits_on_trees(self, tree_iterator, split_distribution=None, trees_splits_encoded=False):
+    def count_splits_on_trees(self, tree_iterator, split_distribution=None, is_splits_encoded=False):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
@@ -339,19 +446,17 @@ class TreeSummarizer(object):
             split_distribution = treesplit.SplitDistribution()
         taxon_namespace = split_distribution.taxon_namespace
         for tree_idx, tree in enumerate(tree_iterator):
-            self.total_trees_counted += 1
             if taxon_namespace is None:
                 assert(split_distribution.taxon_namespace is None)
                 split_distribution.taxon_namespace = tree.taxon_namespace
                 taxon_namespace = tree.taxon_namespace
             else:
                 assert(taxon_namespace is tree.taxon_namespace)
-            if not trees_splits_encoded:
-                treesplit.encode_splits(tree)
-            split_distribution.count_splits_on_tree(tree)
+            split_distribution.count_splits_on_tree(tree,
+                    is_splits_encoded=is_splits_encoded)
         return split_distribution
 
-    def consensus_tree(self, trees, min_freq=0.5, trees_splits_encoded=False):
+    def consensus_tree(self, trees, min_freq=0.5, is_splits_encoded=False):
         """
         Returns a consensus tree of all trees in `trees`, with minumum frequency
         of split to be added to the consensus tree given by `min_freq`.
@@ -360,159 +465,14 @@ class TreeSummarizer(object):
         split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
         self.count_splits_on_trees(trees,
                 split_distribution=split_distribution,
-                trees_splits_encoded=trees_splits_encoded)
+                is_splits_encoded=is_splits_encoded)
         tree = self.tree_from_splits(split_distribution, min_freq=min_freq)
         return tree
 
-    def calculate_tree_clade_credibilities(self,
-            trees,
-            split_distribution=None,
-            burnin_offset=0,
-            log_product_of_clade_posteriors_attr_name="log_product_of_clade_posteriors",
-            sum_of_clade_posteriors_attr_name="sum_of_clade_posteriors",
-            trees_splits_encoded=False):
-        """
-        Calculates the "clade credibility scores" of each tree in a set of trees.
-
-        The clade credibility score is a function of the posteriors of the
-        nodes of a tree. Typically, the product (or log of the product) of the
-        node posteriors or the sum of the node posteriors are used. Given a set
-        of trees, the node posteriors are taken to be the frequency that the
-        clade (or split) represented by that node appears in the set of the
-        tree. The log product of clade posteriors is then the log of the
-        product of the proportional frequency each split is found amongst the
-        trees in the set of trees considered. Similarly, the sum of clade
-        posteriors is the sum of the proportional frequency each split is found
-        amongst the trees in the set of trees considered.
-
-
-        The log product of clade posteriors is stored in a new attribute of the
-        tree, `log_product_of_clade_posteriors`, while the sum of clade
-        posteriors is stored in another attribute of the tree,
-        `sum_of_clade_posteriors`.
-
-        This method returns a tuple, with the first element the tree with the highest
-        *product* of clade posteriors, and the second element the tree with
-        highest *sum* of clade posteriors.
-
-        This method implements the approach used by the BEAST program to
-        summarize a posterior distribution of trees. The first element returned
-        by this method corresponds to the the "maximum credibility tree", while
-        the second element returned by this method corresponds to the "maximum
-        clade credibility tree" of the BEAST program.
-
-        From `Wikipedia <http://en.wikipedia.org/wiki/Maximum_clade_credibility_tree>`_ :
-
-            A maximum clade credibility tree is a tree that summarises the
-            results of a Bayesian phylogenetic inference. Whereas a
-            majority-rule tree combines the most common clades, potentially
-            resulting in a tree that was not sampled during the analysis, the
-            maximum-credibility method evaluates each of the sampled posterior
-            trees. Each clade within the tree is given a score based on the
-            number of times that it appears in other sampled posterior trees,
-            and these scores are added to give a total score for the tree. The
-            tree with the highest score represents the maximum clade
-            credibility tree.
-
-            Since each clade's score is akin to a probability, it may be more
-            appropriate to multiply, rather than add, each clade's score
-            (expressed as a probability, or the fraction of posterior trees
-            that contain the clade) to generate a total score for the
-            tree. This would generate a Maximum credibility tree. However, both
-            methods are used in various contexts.
-
-        Parameters
-        ----------
-        trees : a :class:`TreeList` or iterable of trees
-            The list of trees from which to compute the clade posterior
-            probabilities.
-        split_distribution : :class:`SplitDistribution`
-            If split frequencies have already been computed, the
-            :class:`SplitDistribution` used to manage the counts can be passed
-            here. If `None`, and new one will be created and the splits will be counted.
-        burnin_offset : int
-            Number of trees to skip for burinin (only applies if a
-            :class:`SplitDistribution` instance was not passed and the
-            splits have to be counted.
-        log_product_of_clade_posteriors_attr_name : str
-            The attribute on each tree with which to store the log of the
-            product of the clade posteriors.
-        sum_of_clade_posteriors_attr_name : str
-            The attribute on each tree with which to store the sum of the clade
-            posteriors.
-        tree_splits_encoded : bool
-            If `True`, then the splits are assumed to have already been encoded
-            and will not be updated on three trees.
-
-        Returns
-        -------
-        mct_tree : :class:`Tree`
-            The :class:`Tree` with the highest product of clade posterior probabilities.
-        mcct_tree : :class:`Tree`
-            The :class:`Tree` with the highest sum of clade posterior probabilities.
-
-        Examples
-        --------
-
-            trees = dendropy.TreeList.get_from_path(
-                    "issue_mth_2009-02-03.rooted.nexus",
-                    "nexus")
-            tsum = treesum.TreeSummarizer()
-            t1, t2 = tsum.calculate_tree_clade_credibilities(trees)
-
-            result_trees = (t1, t2)
-            tree_descs = ("Maximum Credibility Tree", "Maximum Clade Credibility Tree")
-
-            for tree, tree_desc in zip(result_trees, tree_descs):
-                print("{:>30}: {} '{}': {} {}".format(
-                        tree_desc,
-                        trees.index(tree)+1,
-                        tree.label,
-                        tree.log_product_of_clade_posteriors,
-                        tree.sum_of_clade_posteriors))
-
-            # Produces:
-            # Maximum Credibility Tree: 71 'bootrep71': -33.888380488585284 85.83000000000001
-            # Maximum Clade Credibility Tree: 74 'bootrep74': -38.45253940270466 89.89000000000001
-
-        """
-        if burnin_offset is not None:
-            trees = trees[burnin_offset:]
-        taxon_namespace = trees[0].taxon_namespace
-        if split_distribution is None:
-            split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
-            self.count_splits_on_trees(trees,
-                    split_distribution=split_distribution,
-                    trees_splits_encoded=trees_splits_encoded)
-            tree_splits_encoded = True
-        max_product_of_clade_posteriors_tree = None
-        max_product_of_clade_posteriors = None
-        max_sum_of_clade_posteriors_tree = None
-        max_sum_of_clade_posteriors = None
-        for tree in trees:
-            log_product_of_clade_posteriors = 0
-            sum_of_clade_posteriors = 0
-            if not tree_splits_encoded:
-                tree.encode_splits()
-            for split in tree.split_edge_map:
-                posterior = split_distribution[split]
-                if posterior:
-                    log_product_of_clade_posteriors += math.log(posterior)
-                    sum_of_clade_posteriors += posterior
-            setattr(tree, log_product_of_clade_posteriors_attr_name, log_product_of_clade_posteriors)
-            setattr(tree, sum_of_clade_posteriors_attr_name, sum_of_clade_posteriors)
-            if max_product_of_clade_posteriors is None or log_product_of_clade_posteriors > max_product_of_clade_posteriors:
-                max_product_of_clade_posteriors = log_product_of_clade_posteriors
-                max_product_of_clade_posteriors_tree = tree
-            if max_sum_of_clade_posteriors is None or sum_of_clade_posteriors > max_sum_of_clade_posteriors:
-                max_sum_of_clade_posteriors = sum_of_clade_posteriors
-                max_sum_of_clade_posteriors_tree = tree
-        return max_product_of_clade_posteriors_tree, max_sum_of_clade_posteriors_tree
-
 ##############################################################################
-## Convenience Function to Get Consensus Tree
+## Convenience Wrappers
 
-def consensus_tree(trees, min_freq=0.5, trees_splits_encoded=False, **kwargs):
+def consensus_tree(trees, min_freq=0.5, is_splits_encoded=False, **kwargs):
     """
     Returns a consensus tree of all trees in `trees`, with minumum frequency
     of split to be added to the consensus tree given by `min_freq`.
@@ -520,7 +480,7 @@ def consensus_tree(trees, min_freq=0.5, trees_splits_encoded=False, **kwargs):
     tsum = TreeSummarizer(**kwargs)
     return tsum.consensus_tree(trees,
             min_freq=min_freq,
-            trees_splits_encoded=trees_splits_encoded)
+            is_splits_encoded=is_splits_encoded)
 
 ##############################################################################
 ## TreeCounter
@@ -556,11 +516,11 @@ class TopologyCounter(object):
 
     def count(self,
             tree,
-            tree_splits_encoded=False):
+            is_splits_encoded=False):
         """
         Logs/registers a tree.
         """
-        if not tree_splits_encoded:
+        if not is_splits_encoded:
             treesplit.encode_splits(tree)
         topology = self.hash_topology(tree)
         if topology not in self.topology_hash_map:

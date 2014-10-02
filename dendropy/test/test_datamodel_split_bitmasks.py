@@ -209,7 +209,7 @@ class TestTreeSplitSupportCredibilityScoring(unittest.TestCase):
         self.trees = dendropy.TreeList.get_from_path(
                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
                 "nexus")
-        self.split_distribution = treesplit.SplitDistribution()
+        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.trees.taxon_namespace)
         for tree in self.trees:
             self.split_distribution.count_splits_on_tree(
                     tree,

@@ -389,7 +389,10 @@ class SplitDistribution(object):
         self.total_trees_counted = 0
         self.tree_rooting_types_counted = set()
         self.sum_of_tree_weights = 0.0
-        self.taxon_namespace = taxon_namespace
+        if taxon_namespace is not None:
+            self.taxon_namespace = taxon_namespace
+        else:
+            self.taxon_namespace = dendropy.TaxonNamespace()
         self.splits = []
         self.split_counts = {}
         self.weighted_split_counts = {}
@@ -592,10 +595,7 @@ class SplitDistribution(object):
         Counts splits in this tree and add to totals. `tree` must be decorated
         with splits, and no attempt is made to normalize taxa.
         """
-        if self.taxon_namespace is None:
-            self.taxon_namespace = tree.taxon_namespace
-        else:
-            assert tree.taxon_namespace is self.taxon_namespace
+        assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
             tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)

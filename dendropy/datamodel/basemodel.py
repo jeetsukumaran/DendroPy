@@ -29,9 +29,33 @@ except ImportError:
     from io import StringIO # Python 3
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
+if sys.hexversion < 0x03000000:
+    from urllib2 import Request
+    from urllib2 import urlopen
+    from urllib import urlencode
+    from urllib2 import HTTPError
+else:
+    from urllib.request import Request
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+    from urllib.error import HTTPError
 from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
+
+##############################################################################
+## Utility (to be moved)
+
+def read_url(url, strip_markup=False):
+    """
+    Return contents of url as string.
+    """
+    s = urlopen(url)
+    text = s.read()
+    if strip_markup:
+        return re.sub(r'<[^>]*?>', '', text)
+    else:
+        return text
 
 ##############################################################################
 ## DataObject

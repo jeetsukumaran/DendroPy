@@ -149,11 +149,10 @@ if _MP:
                     if tidx >= self.tree_offset:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
-                        treesplit.encode_splits(tree)
-                        self.split_distribution.count_splits_on_tree(tree)
+                        self.split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
                         if self.calc_tree_probs:
                             self.topology_counter.count(tree,
-                                    tree_splits_encoded=True)
+                                    is_splits_encoded=True)
                     else:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
@@ -305,11 +304,10 @@ def process_sources_serial(
         if tidx >= tree_offset:
             if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                 messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
-            treesplit.encode_splits(tree)
-            split_distribution.count_splits_on_tree(tree)
+            split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
             if len(split_distribution.tree_rooting_types_counted) > 1:
                 mixed_tree_rootings_in_source_error(messenger)
-            topology_counter.count(tree, tree_splits_encoded=True)
+            topology_counter.count(tree, is_splits_encoded=True)
         else:
             if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                 messenger.info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)

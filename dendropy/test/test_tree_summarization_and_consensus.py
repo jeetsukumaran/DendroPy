@@ -46,7 +46,7 @@ class TestConsensusTree(unittest.TestCase):
         self.mb_con_tree.update_splits()
 
     def testConsensus(self):
-        con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
+        con_tree = self.tree_list.consensus(min_freq=0.50, is_splits_encoded=False, support_label_decimals=2)
         con_tree.update_splits()
         self.assertEqual(treecompare.symmetric_difference(self.mb_con_tree, con_tree), 0)
         self.assertEqual(len(con_tree.split_edge_map), len(self.mb_con_tree.split_edge_map))
@@ -57,6 +57,74 @@ class TestConsensusTree(unittest.TestCase):
                 s1 = float(edge1.head_node.label)
                 s2 = round(float(edge2.head_node.label), 2)
                 self.assertAlmostEqual(s1, s2, 2)
+
+# class TestTreeCredibilityScoring(unittest.TestCase):
+
+#     def test_from_trees_noburnin_max_product_cc(self):
+#         trees = dendropy.TreeList.get_from_path(
+#                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
+#                 "nexus")
+#         tsum = treesum.TreeSummarizer()
+#         t1, t2 = tsum.calculate_tree_clade_credibilities(trees=trees)
+#         for t in trees:
+#             self.assertTrue(hasattr(t, "log_product_of_split_support"))
+#             self.assertTrue(hasattr(t, "sum_of_split_posteriors"))
+#         self.assertEqual(trees.index(t1), 70)
+#         self.assertAlmostEqual(t1.log_product_of_split_support, -33.888380488585284)
+#         # self.assertAlmostEqual(t1.sum_of_split_posteriors, 85.83000000000001)
+
+#     def test_from_trees_noburnin_max_sum_cc(self):
+#         trees = dendropy.TreeList.get_from_path(
+#                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
+#                 "nexus")
+#         tsum = treesum.TreeSummarizer()
+#         t1, t2 = tsum.calculate_tree_clade_credibilities(trees=trees)
+#         for t in trees:
+#             self.assertTrue(hasattr(t, "log_product_of_split_support"))
+#             self.assertTrue(hasattr(t, "sum_of_split_posteriors"))
+#         self.assertEqual(trees.index(t2), 73)
+#         # self.assertAlmostEqual(t2.log_product_of_split_support, -38.45253940270466)
+#         self.assertAlmostEqual(t2.sum_of_split_posteriors, 89.89000000000001)
+
+#     def test_from_trees_with_burnin_max_product_cc(self):
+#         trees = dendropy.TreeList.get_from_path(
+#                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
+#                 "nexus")
+#         burnin = 30
+#         tsum = treesum.TreeSummarizer()
+#         t1, t2 = tsum.calculate_tree_clade_credibilities(
+#                 trees=trees,
+#                 burnin=burnin)
+#         for t in trees[burnin:]:
+#             self.assertTrue(hasattr(t, "log_product_of_split_support"))
+#             self.assertTrue(hasattr(t, "sum_of_split_posteriors"))
+
+#         # Best tree: bootrep71 (tree number 71)
+#         # Highest Log Clade Credibility: -33.95771606695942
+#         self.assertEqual(trees.index(t1), 70)
+#         self.assertAlmostEqual(t1.log_product_of_split_support, -33.95771606695942)
+#         # self.assertAlmostEqual(t1.sum_of_split_posteriors, 85.98571428571427)
+
+#     def test_from_trees_with_burnin_max_sum_cc(self):
+#         trees = dendropy.TreeList.get_from_path(
+#                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
+#                 "nexus")
+#         burnin = 30
+#         tsum = treesum.TreeSummarizer()
+#         t1, t2 = tsum.calculate_tree_clade_credibilities(
+#                 trees=trees,
+#                 burnin=burnin)
+#         for t in trees[burnin:]:
+#             self.assertTrue(hasattr(t, "log_product_of_split_support"))
+#             self.assertTrue(hasattr(t, "sum_of_split_posteriors"))
+
+#         # Best tree: bootrep74 (tree number 74)
+#         # Highest Sum Clade Credibility: 30.89
+#         # Best tree: bootrep74 (tree number 74)
+#         # Highest Sum Clade Credibility: 31.185714285714287
+#         self.assertTrue(trees.index(t2), 73)
+#         # self.assertAlmostEqual(t2.log_product_of_split_support, -37.912350577390605)
+#         self.assertAlmostEqual(t2.sum_of_split_posteriors, 31.185714285714287)
 
 class TestTreeEdgeSummarization(unittest.TestCase):
 
@@ -70,8 +138,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
         self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
         self.split_distribution.ignore_node_ages = False
         for tree in self.support_trees:
-            tree.update_splits()
-            self.split_distribution.count_splits_on_tree(tree)
+            self.split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
 
     def testMeanNodeAgeSummarizationOnMCCT(self):
         path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
