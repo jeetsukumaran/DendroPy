@@ -25,9 +25,9 @@ dendropy.interop.genbank.GenBankProtein instead ***
 
 import warnings
 from dendropy.utility import messaging
+from dendropy.utility import urlio
 _LOG = messaging.get_logger(__name__)
 
-import urllib
 import sys
 import dendropy
 import re
@@ -232,10 +232,8 @@ class Entrez(object):
                 'id': id_list,
                 'rettype': rettype,
                 'retmode': 'text'}
-        query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
-        query = urllib.urlopen(query_url)
-        results_str = query.read()
-        return results_str
+        query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urlio.urlencode(params)
+        return urlio.read_url(query_url)
 
     def fetch_gbrecs_as_plaintext_dict(self,
             db,

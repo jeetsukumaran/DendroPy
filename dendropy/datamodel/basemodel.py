@@ -29,33 +29,10 @@ except ImportError:
     from io import StringIO # Python 3
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
-if sys.hexversion < 0x03000000:
-    from urllib2 import Request
-    from urllib2 import urlopen
-    from urllib import urlencode
-    from urllib2 import HTTPError
-else:
-    from urllib.request import Request
-    from urllib.request import urlopen
-    from urllib.parse import urlencode
-    from urllib.error import HTTPError
 from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
-
-##############################################################################
-## Utility (to be moved)
-
-def read_url(url, strip_markup=False):
-    """
-    Return contents of url as string.
-    """
-    s = urlopen(url)
-    text = s.read()
-    if strip_markup:
-        return re.sub(r'<[^>]*?>', '', text)
-    else:
-        return text
+from dendropy.utility import urlio
 
 ##############################################################################
 ## DataObject
@@ -241,7 +218,7 @@ class Readable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        text = read_url(src, strip_markup=strip_markup)
+        text = urlio.read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
         try:
             return cls._parse_from_stream(stream=ssrc,
@@ -431,7 +408,7 @@ class Readable(object):
                 - :class:`CharacterMatrix`: number of sequences
                 - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
         """
-        src_str = read_url(url)
+        src_str = urlio.read_url(url)
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
 
