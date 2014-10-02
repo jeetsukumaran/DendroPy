@@ -5287,7 +5287,7 @@ class TreeStructureStore(taxonmodel.TaxonNamespaceAssociated):
     def __init__(self,
             taxon_namespace=None,
             is_rooted_trees=None,
-            tree_traversal_order="postorder",
+            tree_traversal_order="preorder",
             ):
         """
         Parameters
@@ -5336,6 +5336,12 @@ class TreeStructureStore(taxonmodel.TaxonNamespaceAssociated):
     is_rooted_trees = property(_get_is_rooted_trees)
 
     ##############################################################################
+    ## Metrics
+
+    def __len__(self):
+        return len(self._splits)
+
+    ##############################################################################
     ## Tree Accession
 
     def add_splits(self, splits, edge_lengths):
@@ -5378,6 +5384,8 @@ class TreeStructureStore(taxonmodel.TaxonNamespaceAssociated):
         e :
             A list of edge length values `tree`.
         """
+        if self.taxon_namespace is not tree.taxon_namespace:
+            raise error.TaxonNamespaceIdentityError(self, tree)
         if self._is_rooted_trees is None:
             self._is_rooted_trees = tree.is_rooted
         else:
@@ -5464,7 +5472,7 @@ class TreeStructureStore(taxonmodel.TaxonNamespaceAssociated):
         """
         Returns pair (split, edge_length) for tree stored at `index`.
         """
-        return self._splits[index], self._edge_lengths[_index]
+        return self._splits[index], self._edge_lengths[index]
 
     def __setitem__(self, index, splits, edge_lengths):
         """

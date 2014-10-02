@@ -37,6 +37,7 @@ from dendropy.datamodel.treemodel import Edge
 from dendropy.datamodel.treemodel import Node
 from dendropy.datamodel.treemodel import Tree
 from dendropy.datamodel.treemodel import TreeList
+from dendropy.datamodel.treemodel import TreeStructureStore
 from dendropy.datamodel.charstatemodel import StateAlphabet
 from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RNA_STATE_ALPHABET
