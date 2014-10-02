@@ -37,7 +37,7 @@ from optparse import OptionParser
 
 import dendropy
 from dendropy.utility.messaging import get_logger
-from dendropy.utility import session
+from dendropy.utility import processio
 _LOG = get_logger("interop.seqgen")
 
 HOSTNAME = socket.gethostname()
@@ -196,7 +196,7 @@ class SeqGen(object):
         args.append(tree_inputf.name)
         #_LOG.debug("seq-gen args: = %s" % " ".join(args))
         run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = session.communicate(run)
+        stdout, stderr = processio.communicate(run)
         if stderr or run.returncode != 0:
             raise RuntimeError("Seq-gen error: %s" % stderr)
         if taxon_namespace is None:

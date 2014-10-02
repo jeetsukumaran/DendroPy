@@ -28,7 +28,7 @@ import dendropy
 import random
 
 from dendropy.utility.messaging import ConsoleMessenger
-from dendropy.utility import session
+from dendropy.utility import processio
 
 def get_messenger(verbosity=1):
     if verbosity == 0:
@@ -504,7 +504,7 @@ class RaxmlRunner(object):
             stdout=stdout_pipe,
             stderr=stderr_pipe,
             cwd=self.working_dir_path)
-        stdout, stderr = session.communicate(p)
+        stdout, stderr = processio.communicate(p)
         if p.returncode != 0:
             sys.stderr.write("[RAxML run failed]:\n\n%s\n\n" % (" ".join(cmd)))
             sys.stdout.write(stdout)
@@ -607,7 +607,7 @@ class RaxmlRunner(object):
             stdout=stdout_pipe,
             stderr=stderr_pipe,
             cwd=self.working_dir_path)
-        stdout, stderr = session.communicate(p)
+        stdout, stderr = processio.communicate(p)
         if p.returncode != 0:
             self._send_error("RAxML run failed")
             if self.verbosity < 2:
@@ -665,7 +665,7 @@ class RaxmlRunner(object):
     #             stdin=subprocess.PIPE,
     #             stdout=subprocess.PIPE,
     #             stderr=subprocess.PIPE)
-    #     stdout, stderr = session.communicate(run)
+    #     stdout, stderr = processio.communicate(run)
     #     results = stdout.split("\n")
     #     if run.returncode:
     #         sys.stderr.write("\n*** ERROR FROM RAxML:\n")

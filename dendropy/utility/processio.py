@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Wraps external process as a session, i.e., allow for non-blocking
+Wraps external process as a processio, i.e., allow for non-blocking
 read/writes to stdout/stderr/stdin.
 """
 

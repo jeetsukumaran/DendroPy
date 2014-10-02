@@ -22,7 +22,7 @@ Wrapper around calls to MUSCLE
 
 import dendropy
 import subprocess
-from dendropy.utility import session
+from dendropy.utility import processio
 
 def muscle_align(char_matrix, muscle_args=None, muscle_path='muscle'):
     cmd = [muscle_path]
@@ -32,7 +32,7 @@ def muscle_align(char_matrix, muscle_args=None, muscle_path='muscle'):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-    stdout, stderr = session.communicate(p, char_matrix.as_string("fasta"))
+    stdout, stderr = processio.communicate(p, char_matrix.as_string("fasta"))
     if p.returncode:
         raise Exception(stderr)
     d = char_matrix.__class__.get_from_string(stdout,

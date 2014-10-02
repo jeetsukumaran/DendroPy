@@ -32,7 +32,7 @@ import dendropy.test
 from dendropy.utility import container
 from dendropy.utility import messaging
 from dendropy.utility import filesys
-from dendropy.utility import session
+from dendropy.utility import processio
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
@@ -99,7 +99,7 @@ def get_split_distribution(tree_filepaths,
 ###############################################################################
 ## PAUP* WRAPPERS
 
-class PaupSession(session.Session):
+class PaupSession(processio.Session):
     """
     Starts a PAUP* session, which remains active until explicitly closed.
     Various commands can get executed and results returned.
@@ -111,7 +111,7 @@ class PaupSession(session.Session):
     # FLAG_DETECT = re.compile(r'[^\[]\s*%s\s*[^\]]' % EOC_FLAG, re.MULTILINE)
 
     def __init__(self, paup_path=None):
-        session.Session.__init__(self, join_err_to_out=False)
+        processio.Session.__init__(self, join_err_to_out=False)
         if paup_path is None:
             self.paup_path = PAUP_PATH
         else:
@@ -159,7 +159,7 @@ class PaupSession(session.Session):
     def read_data(self, data):
         """
         Writes `data` as NEXUS-formatted file and
-        executes file within session.
+        executes file within processio.
         """
         cf = tempfile.NamedTemporaryFile("w", delete=True)
         data.write_to_stream(cf, "nexus")
@@ -189,8 +189,8 @@ class PaupRunner(object):
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
-        # stdout, stderr = session.communicate(paup_run, commands)
-        stdout, stderr = session.communicate(paup_run, commands)
+        # stdout, stderr = processio.communicate(paup_run, commands)
+        stdout, stderr = processio.communicate(paup_run, commands)
         results = stdout.split("\n")
         if stderr:
             _LOG.error("\n*** ERROR FROM PAUP ***")
@@ -427,7 +427,7 @@ def bipartitions(data_filepath,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-    stdout, stderr = session.communicate(paup_run, paup_template % paup_args)
+    stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
     results = stdout.split('\n')
     tax_labels = []
     bipartitions = []
@@ -502,7 +502,7 @@ def pscore_trees(
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-    stdout, stderr = session.communicate(paup_run, paup_block)
+    stdout, stderr = processio.communicate(paup_run, paup_block)
     if stderr:
         sys.stderr.write("\n*** ERROR FROM PAUP ***")
         sys.stderr.write(stderr)
@@ -564,7 +564,7 @@ def estimate_ultrametric_tree(
                                     shell=True,
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE)
-        stdout, stderr = session.communicate(paup_run, paup_block)
+        stdout, stderr = processio.communicate(paup_run, paup_block)
         t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_namespace=char_matrix.taxon_namespace)
         cf.close()
         input_tree_file_handle.close()
@@ -638,7 +638,7 @@ def estimate_tree(char_matrix,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-    stdout, stderr = session.communicate(paup_run, paup_template % paup_args)
+    stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
     t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_namespace=char_matrix.taxon_namespace)
     cf.close()
     output_tree_file_handle.close()
@@ -703,7 +703,7 @@ def estimate_model(char_matrix,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-    stdout, stderr = session.communicate(paup_run, paup_template % paup_args)
+    stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
     results = {}
     patterns = {
         'likelihood' : re.compile('-ln L\s+([\d\.]+)'),
@@ -767,7 +767,7 @@ def prune_taxa_from_trees(trees, taxa, paup_path='paup'):
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
-    stdout, stderr = session.communicate(paup_run, paup_template)
+    stdout, stderr = processio.communicate(paup_run, paup_template)
     t = dendropy.TreeList.get_from_path(output_tree_filepath,
             "nexus",
             taxon_namespace=trees.taxon_namespace)
