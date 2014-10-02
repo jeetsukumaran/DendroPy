@@ -49,10 +49,10 @@ class TreeStructureStoreBasicTreeAccession(unittest.TestCase):
 
     def test_add_tree(self):
         trees = self.get_trees()
-        tss = dendropy.TreeStructureStore(taxon_namespace=trees.taxon_namespace)
+        tsd = dendropy.TreeSplitDistribution(taxon_namespace=trees.taxon_namespace)
         for tree in trees:
-            tss.add_tree(tree)
-        self.verify_tree_structure_store(tss, trees)
+            tsd.add_tree(tree)
+        self.verify_tree_structure_store(tsd, trees)
 
 
 if __name__ == "__main__":
