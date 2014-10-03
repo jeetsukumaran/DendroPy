@@ -86,19 +86,19 @@ class SplitCountTest(ExtendedTestCase):
 #                 "dp = %d, sd = %d" % (len(dp_sd.splits), len(paup_sd.splits))
 
         taxa_mask = taxon_namespace.all_taxa_bitmask()
-        for split in dp_sd.splits:
+        for split in dp_sd.split_counts:
             if not treesplit.is_trivial_split(split, taxa_mask):
-                self.assertIn(split, paup_sd.splits)
+                self.assertIn(split, paup_sd.split_counts)
                 self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
-                paup_sd.splits.remove(split)
+                del paup_sd.split_counts[split]
 
         # if any splits remain, they were not
         # in dp_sd or were trivial
-        remaining_splits = list(paup_sd.splits)
+        remaining_splits = list(paup_sd.split_counts.keys())
         for split in remaining_splits:
             if treesplit.is_trivial_split(split, taxa_mask):
-                paup_sd.splits.remove(split)
-        self.assertEqual(len(paup_sd.splits), 0)
+                del paup_sd.split_counts[split]
+        self.assertEqual(len(paup_sd.split_counts), 0)
 
     def testUnrootedSplitCounts(self):
         for tc in self.test_cases:

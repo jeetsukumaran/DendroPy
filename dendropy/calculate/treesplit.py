@@ -21,8 +21,9 @@ Split calculation and management.
 """
 
 import sys
-from copy import deepcopy
 import math
+import collections
+from copy import deepcopy
 from dendropy.utility import container
 from dendropy.utility import textprocessing
 from dendropy.utility import deprecate
@@ -401,9 +402,8 @@ class SplitDistribution(object):
             self.taxon_namespace = taxon_namespace
         else:
             self.taxon_namespace = dendropy.TaxonNamespace()
-        self.splits = []
-        self.split_counts = {}
-        self.weighted_split_counts = {}
+        self.split_counts = collections.Counter()
+        self.weighted_split_counts = collections.Counter()
         self.split_edge_lengths = {}
         self.split_node_ages = {}
         self.ignore_edge_lengths = ignore_edge_lengths
@@ -443,24 +443,7 @@ class SplitDistribution(object):
         self._is_rooted = not val
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
-    # def add_split_count(self, split, count=1, weight=None):
-    #     if split not in self.splits:
-    #         self.splits.append(split)
-    #         self.split_counts[split] = 0
-    #     self.split_counts[split] += count
-    #     if weight is not None:
-    #         try:
-    #             self.weighted_split_counts[split] += weight
-    #         except:
-    #             self.weighted_split_counts[split] = weight
-    #         ## this is wrong! it adds the weight of the tree
-    #         ## multiple times, once for each split in the tree,
-    #         ## as opposed to just once for the tree
-    #         self.sum_of_tree_weights += weight
     def add_split_count(self, split, count=1):
-        if split not in self.splits:
-            self.splits.append(split)
-            self.split_counts[split] = 0
         self.split_counts[split] += count
 
     def update(self, split_dist):
@@ -471,11 +454,7 @@ class SplitDistribution(object):
         self._trees_counted_for_summaries = 0
         self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
         for split in split_dist.splits:
-            if split not in self.split_counts:
-                self.splits.append(split)
-                self.split_counts[split] = split_dist.split_counts[split]
-            else:
-                self.split_counts[split] += split_dist.split_counts[split]
+            self.split_counts[split] += split_dist.split_counts[split]
             if split in split_dist.weighted_split_counts:
                 if split not in self.weighted_split_counts:
                     self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
@@ -653,15 +632,8 @@ class SplitDistribution(object):
                 # errors can creep in when dealing with unrooted trees
                 split = tree.split_edge_map.normalize_key(split)
             splits.append(split)
-            try:
-                self.split_counts[split] += 1
-            except KeyError:
-                self.splits.append(split)
-                self.split_counts[split] = 1
-            try:
-                self.weighted_split_counts[split] += weight_to_use
-            except KeyError:
-                self.weighted_split_counts[split] = weight_to_use
+            self.split_counts[split] += 1
+            self.weighted_split_counts[split] += weight_to_use
             if not self.ignore_edge_lengths:
                 sel = self.split_edge_lengths.setdefault(split,[])
                 if edge.length is None:
