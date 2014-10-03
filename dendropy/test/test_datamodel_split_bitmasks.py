@@ -22,6 +22,8 @@ Testing of calculation of and operations with split bitmask hashes.
 
 import warnings
 import unittest
+import re
+import sys
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
@@ -39,12 +41,21 @@ _LOG = messaging.get_logger(__name__)
 
 class SplitCountTest(ExtendedTestCase):
 
-    def check_split_counting(self, tree_filename, is_rooted, ignore_tree_weights=False):
+    @classmethod
+    def setUpClass(cls):
+        if sys.version_info.major < 3:
+            cls.assertRaisesRegex = cls.assertRaisesRegexp
+
+    def check_split_counting(self,
+            tree_filename,
+            test_as_rooted,
+            parser_rooting_interpretation,
+            ignore_tree_weights=False):
         tree_filepath = pathmap.tree_source_path(tree_filename)
         paup_sd = paup.get_split_distribution(
                 tree_filepaths=[tree_filepath],
                 taxa_filepath=tree_filepath,
-                is_rooted=is_rooted,
+                is_rooted=test_as_rooted,
                 ignore_tree_weights=ignore_tree_weights,
                 burnin=0)
         taxon_namespace = paup_sd.taxon_namespace
@@ -54,13 +65,9 @@ class SplitCountTest(ExtendedTestCase):
         dp_sd.ignore_tree_weights = ignore_tree_weights
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         taxon_namespace.is_mutable = False
-        if is_rooted:
-            rooting = "force-rooted"
-        else:
-            rooting = "force-unrooted"
         trees = dendropy.TreeList.get_from_path(tree_filepath,
                 "nexus",
-                rooting=rooting,
+                rooting=parser_rooting_interpretation,
                 taxon_namespace=taxon_namespace)
         for tree in trees:
             self.assertIs(tree.taxon_namespace, taxon_namespace)
@@ -70,8 +77,8 @@ class SplitCountTest(ExtendedTestCase):
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         for split in dp_sd.split_counts:
             if not treesplit.is_trivial_split(split, taxa_mask):
-                self.assertIn(split, paup_sd.split_counts)
-                self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
+                self.assertIn(split, paup_sd.split_counts, "split not found")
+                self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split], "incorrect split frequency")
                 del paup_sd.split_counts[split]
         remaining_splits = list(paup_sd.split_counts.keys())
         for split in remaining_splits:
@@ -79,7 +86,7 @@ class SplitCountTest(ExtendedTestCase):
                 del paup_sd.split_counts[split]
         self.assertEqual(len(paup_sd.split_counts), 0)
 
-    def testUnrootedSplitCounts(self):
+    def test_basic_split_counting_under_different_rootings(self):
         test_cases = (
             'pythonidae.reference-trees.nexus',
             'feb032009.trees.nexus',
@@ -87,8 +94,28 @@ class SplitCountTest(ExtendedTestCase):
             'maj-rule-bug2.trees.nexus',
             )
         for is_rooted in (True, False):
+            if is_rooted:
+                rooting = "force-rooted"
+            else:
+                rooting = "force-unrooted"
             for test_case in test_cases:
-                self.check_split_counting(test_case, is_rooted=is_rooted)
+                self.check_split_counting(
+                        test_case,
+                        test_as_rooted=is_rooted,
+                        parser_rooting_interpretation=rooting)
+
+    def test_basic_split_count_with_incorrect_rootings_raises_error(self):
+        assertion_error_regexp1 = re.compile("(incorrect split frequency|split not found)")
+        test_cases = (
+            ('pythonidae.reference-trees.nexus', True, "force-unrooted", assertion_error_regexp1),
+            ('feb032009.trees.nexus', False, "force-rooted", assertion_error_regexp1),
+            )
+        for test_case, test_as_rooted, parser_rooting_interpretation, assertion_error_regexp in test_cases:
+            with self.assertRaisesRegex(AssertionError, assertion_error_regexp):
+                self.check_split_counting(
+                        test_case,
+                        test_as_rooted=test_as_rooted,
+                        parser_rooting_interpretation=parser_rooting_interpretation)
 
 class CladeMaskTest(unittest.TestCase):
 
