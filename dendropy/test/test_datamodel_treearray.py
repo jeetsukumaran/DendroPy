@@ -29,7 +29,7 @@ class TreeArrayBasicTreeAccession(unittest.TestCase):
                 taxon_namespace=taxon_namespace)
         return trees
 
-    def verify_tree_array(self, tree_array, source_trees):
+    def verify_tree_array(self, tree_array, source_trees, ignore_edges=False):
         self.assertEqual(len(tree_array), len(source_trees))
         for idx, source_tree in enumerate(source_trees):
             source_tree.encode_splits()

@@ -5203,7 +5203,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         else:
             assert self._is_rooted_trees == tree.is_rooted
 
-        # if we did not care about preserving order ...
         splits, edge_lengths, node_ages = self._split_distribution.count_splits_on_tree(
                 tree=tree,
                 is_splits_encoded=is_splits_encoded,
@@ -5240,7 +5239,10 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
         splits = tuple(splits)
-        edge_lengths = tuple(edge_lengths)
+        if self.ignore_edge_lengths:
+            edge_lengths = tuple([0] * len(splits))
+        else:
+            edge_lengths = tuple(edge_lengths)
         if index is None:
             index = len(self._tree_splits)
             self._tree_splits.append(splits)
@@ -5296,7 +5298,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             if kwargs["taxon_namespace"] is not self.taxon_namespace:
                 raise ValueError("TaxonNamespace object passed as keyword argument is not the same as self's TaxonNamespace reference")
             kwargs.pop("taxon_namespace")
-        for tree in treemodel.Tree.yield_from_files(
+        for tree in Tree.yield_from_files(
                 files=files,
                 schema=schema,
                 taxon_namespace=self.taxon_namespace,
