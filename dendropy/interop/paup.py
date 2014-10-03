@@ -440,13 +440,13 @@ def bipartitions(data_filepath,
         bp_match = bipartition_pattern.match(line)
         if bp_match:
             bipartitions.append(bp_match.group(1))
-            bipartition_counts[bp_match.group(1)] = int(bp_match.group(2))
+            bipartition_counts[bp_match.group(1)] = float(bp_match.group(2)) # counts may be weighted, so non-integer
             bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
         else:
             bp_match2 = bipartition_pattern.match(line)
             if bp_match2:
                 bipartitions.append(bp_match2.group(1))
-                bipartition_counts[bp_match2.group(1)] = int(bp_match2.group(2))
+                bipartition_counts[bp_match2.group(1)] = float(bp_match2.group(2)) # counts may be weighted, so non-integer
                 bipartition_freqs[bp_match2.group(1)] = float(bp_match2.group(2))
             else:
                 ti_match = taxinfo_pattern.match(line)
