@@ -39,61 +39,40 @@ _LOG = messaging.get_logger(__name__)
 
 class SplitCountTest(ExtendedTestCase):
 
-    def setUp(self):
-        self.test_cases = [('pythonidae.reference-trees.nexus', 'pythonidae.reference-trees.nexus')]
-        if True: # runlevel.is_test_enabled(runlevel.SLOW, _LOG, self.__class__.__name__):
-            self.test_cases.extend([
-                ('feb032009.trees.nexus', 'feb032009.trees.nexus'),
-                ('maj-rule-bug1.trees.nexus', 'maj-rule-bug1.trees.nexus'),
-                ('maj-rule-bug2.trees.nexus', 'maj-rule-bug2.trees.nexus'),
-            ])
-
-    def countSplits(self, tc, is_rooted):
-        # _LOG.info(tc[0] + "; " + tc[1])
-        tree_filepaths = [pathmap.tree_source_path(tc[0])]
-        taxa_filepath = pathmap.tree_source_path(tc[1])
+    def check_split_counting(self, tree_filename, is_rooted, ignore_tree_weights=False):
+        tree_filepath = pathmap.tree_source_path(tree_filename)
         paup_sd = paup.get_split_distribution(
-                tree_filepaths,
-                taxa_filepath,
+                tree_filepaths=[tree_filepath],
+                taxa_filepath=tree_filepath,
                 is_rooted=is_rooted,
+                ignore_tree_weights=ignore_tree_weights,
                 burnin=0)
         taxon_namespace = paup_sd.taxon_namespace
         dp_sd = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
         dp_sd.ignore_edge_lengths = True
         dp_sd.ignore_node_ages = True
-
-        _LOG.debug("Taxon set: %s" % [t.label for t in taxon_namespace])
+        dp_sd.ignore_tree_weights = ignore_tree_weights
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         taxon_namespace.is_mutable = False
         if is_rooted:
             rooting = "force-rooted"
         else:
             rooting = "force-unrooted"
-        for tree_filepath in tree_filepaths:
-            trees = dendropy.TreeList.get_from_path(tree_filepath,
-                    "nexus",
-                    rooting=rooting,
-                    taxon_namespace=taxon_namespace)
-            for tree in trees:
-                self.assertIs(tree.taxon_namespace, taxon_namespace)
-                self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
-                dp_sd.count_splits_on_tree(tree, is_splits_encoded=False)
+        trees = dendropy.TreeList.get_from_path(tree_filepath,
+                "nexus",
+                rooting=rooting,
+                taxon_namespace=taxon_namespace)
+        for tree in trees:
+            self.assertIs(tree.taxon_namespace, taxon_namespace)
+            self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
+            dp_sd.count_splits_on_tree(tree, is_splits_encoded=False)
         self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
-
-        # SplitsDistribution counts trivial splits, whereas PAUP*
-        # contree does not, so the following will not work
-#            assert len(dp_sd.splits) == len(paup_sd.splits),\
-#                 "dp = %d, sd = %d" % (len(dp_sd.splits), len(paup_sd.splits))
-
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         for split in dp_sd.split_counts:
             if not treesplit.is_trivial_split(split, taxa_mask):
                 self.assertIn(split, paup_sd.split_counts)
                 self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
                 del paup_sd.split_counts[split]
-
-        # if any splits remain, they were not
-        # in dp_sd or were trivial
         remaining_splits = list(paup_sd.split_counts.keys())
         for split in remaining_splits:
             if treesplit.is_trivial_split(split, taxa_mask):
@@ -101,12 +80,15 @@ class SplitCountTest(ExtendedTestCase):
         self.assertEqual(len(paup_sd.split_counts), 0)
 
     def testUnrootedSplitCounts(self):
-        for tc in self.test_cases:
-            self.countSplits(tc, is_rooted=False)
-
-    def testRootedSplitCounts(self):
-        for tc in self.test_cases:
-            self.countSplits(tc, is_rooted=True)
+        test_cases = (
+            'pythonidae.reference-trees.nexus',
+            'feb032009.trees.nexus',
+            'maj-rule-bug1.trees.nexus',
+            'maj-rule-bug2.trees.nexus',
+            )
+        for is_rooted in (True, False):
+            for test_case in test_cases:
+                self.check_split_counting(test_case, is_rooted=is_rooted)
 
 class CladeMaskTest(unittest.TestCase):
 

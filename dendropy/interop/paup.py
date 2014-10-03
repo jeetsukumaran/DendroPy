@@ -68,6 +68,7 @@ def symmetric_difference(tree1, tree2):
             tree_filepaths=[tf.name],
             taxa_filepath=tf.name,
             is_rooted=tree1.is_rooted,
+            ignore_tree_weights=True,
             burnin=0)
     sf = sd.split_frequencies
     conflicts = 0
@@ -79,6 +80,7 @@ def symmetric_difference(tree1, tree2):
 def get_split_distribution(tree_filepaths,
                             taxa_filepath,
                             is_rooted=False,
+                            ignore_tree_weights=False,
                             burnin=0):
     """Returns a SplitDistribution object of splits calculated over
     specified trees"""
@@ -86,7 +88,7 @@ def get_split_distribution(tree_filepaths,
     p.stage_execute_file(taxa_filepath, clear_trees=True)
     p.stage_list_taxa()
     p.stage_load_trees(tree_filepaths=tree_filepaths, is_rooted=is_rooted, burnin=burnin)
-    p.stage_count_splits()
+    p.stage_count_splits(ignore_tree_weights=ignore_tree_weights)
     p.run()
     taxon_namespace = p.parse_taxon_namespace()
     tree_count, bipartition_counts = p.parse_group_freqs()
@@ -210,7 +212,10 @@ class PaupRunner(object):
         """
         self.commands.append("[!TAXON LIST BEGIN]\ntstatus / full;\n[!TAXON LIST END]\n")
 
-    def stage_count_splits(self, majrule_filepath=None, majrule_freq=0.5):
+    def stage_count_splits(self,
+            ignore_tree_weights=False,
+            majrule_filepath=None,
+            majrule_freq=0.5):
         """
         Given trees in memory, this composes a command to count the split
         frequencies across the trees as well as a save the majority-rule
@@ -221,10 +226,14 @@ class PaupRunner(object):
             treefile = " treefile=%s replace=yes "
         else:
             treefile = ""
+        if ignore_tree_weights:
+            treewts = "UseTreeWts=no"
+        else:
+            treewts = "UseTreeWts=yes"
         paup_template = []
         paup_template.append("[!SPLITS COUNT BEGIN]")
-        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d;" \
-            % (treefile, percent));
+        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d %s;" \
+            % (treefile, percent, treewts));
         paup_template.append("[!SPLITS COUNT END]")
         self.commands.extend(paup_template)
 
@@ -240,10 +249,11 @@ class PaupRunner(object):
         self.commands.append("deroot;")
 
     def stage_load_trees(self,
-                            tree_filepaths,
-                            is_rooted=False,
-                            burnin=0,
-                            mode=7): # keep trees in memory, specify 3 to clear
+            tree_filepaths,
+            is_rooted=False,
+            ignore_tree_weights=False,
+            burnin=0,
+            mode=7): # keep trees in memory, specify 3 to clear
         """
         Composes commands to load a set of trees into PAUP*, with the specified
         number of burnin dropped. NOTE: Taxa Block must be active.
@@ -254,7 +264,11 @@ class PaupRunner(object):
             rooting = "rooted=yes"
         else:
             rooting = "unrooted=yes"
-        gettree_template = 'gett file= %%s storebrlens=yes warntree=no %s from=%d mode=%d;' % (rooting, burnin+1, mode)
+        if ignore_tree_weights:
+            treewts = "storetreewts=yes"
+        else:
+            treewts = "storetreewts=yes"
+        gettree_template = 'gett file= %%s storebrlens=yes warntree=no %s %s from=%d mode=%d;' % (rooting, treewts, burnin+1, mode)
         paup_template = []
         paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
         for tree_filepath in tree_filepaths:
