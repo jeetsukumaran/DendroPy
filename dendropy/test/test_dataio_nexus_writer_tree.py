@@ -34,7 +34,7 @@ from dendropy.test.test_dataio_newick_writer import newick_tree_writer_test_tree
 class NexusTreeWriterTests(
         curated_test_tree.CuratedTestTree,
         compare_and_validate.ValidateWriteable,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_simple(self):
         tree1, all_nodes, leaf_nodes, internal_nodes = self.get_tree(

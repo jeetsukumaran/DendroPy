@@ -33,7 +33,7 @@ from dendropy.test.support import standard_file_test_trees
 class NexmlTreeWriterTests(
         curated_test_tree.CuratedTestTree,
         compare_and_validate.ValidateWriteable,
-        unittest.TestCase):
+        dendropytest.ExtendedTestCase):
 
     def test_simple(self):
         tree1, all_nodes, leaf_nodes, internal_nodes = self.get_tree(
