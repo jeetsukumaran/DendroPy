@@ -402,10 +402,9 @@ class SplitDistribution(object):
             self.taxon_namespace = taxon_namespace
         else:
             self.taxon_namespace = dendropy.TaxonNamespace()
-        self.split_counts = collections.Counter()
-        self.weighted_split_counts = collections.Counter()
-        self.split_edge_lengths = {}
-        self.split_node_ages = {}
+        self.split_counts = collections.defaultdict(float)
+        self.split_edge_lengths = collections.defaultdict(list)
+        self.split_node_ages = collections.defaultdict(list)
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.ignore_tree_weights = ignore_tree_weights
@@ -413,9 +412,7 @@ class SplitDistribution(object):
         self.error_on_mixed_rooting_types = True
         self._is_rooted = False
         self._split_freqs = None
-        self._weighted_split_freqs = None
         self._trees_counted_for_freqs = 0
-        self._trees_counted_for_weighted_freqs = 0
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
@@ -453,21 +450,23 @@ class SplitDistribution(object):
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
         self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
-        for split in split_dist.splits:
+        for split in split_dist.split_counts:
             self.split_counts[split] += split_dist.split_counts[split]
-            if split in split_dist.weighted_split_counts:
-                if split not in self.weighted_split_counts:
-                    self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
-                else:
-                    self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
-            if split in self.split_edge_lengths:
-                self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
-            elif split in split_dist.split_edge_lengths:
-                self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
-            if split in self.split_node_ages:
-                self.split_node_ages[split].extend(split_dist.split_node_ages[split])
-            elif split in split_dist.split_node_ages:
-                self.split_node_ages[split] = split_dist.split_node_ages[split]
+            self.split_edge_lengths[split] += split_dist.split_edge_lengths[split]
+            self.split_node_ages[split] += split_dist.split_node_ages[split]
+            # if split in split_dist.weighted_split_counts:
+            #     if split not in self.weighted_split_counts:
+            #         self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
+            #     else:
+            #         self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
+            # if split in self.split_edge_lengths:
+            #     self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
+            # elif split in split_dist.split_edge_lengths:
+            #     self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
+            # if split in self.split_node_ages:
+            #     self.split_node_ages[split].extend(split_dist.split_node_ages[split])
+            # elif split in split_dist.split_node_ages:
+            #     self.split_node_ages[split] = split_dist.split_node_ages[split]
 
     def splits_considered(self):
         """
@@ -502,45 +501,64 @@ class SplitDistribution(object):
         "Forces recalculation of frequencies."
         self._split_freqs = {}
         if self.total_trees_counted == 0:
-            for split in self.split_counts.keys():
+            for split in self.split_counts:
                 self._split_freqs[split] = 1.0
         else:
-            total = self.total_trees_counted
+            # total = self.total_trees_counted
+            if not self.sum_of_tree_weights:
+                total_weight = self.total_trees_counted
+            else:
+                total_weight = float(self.sum_of_tree_weights)
             for split in self.split_counts:
-                self._split_freqs[split] = float(self.split_counts[split]) / total
+                count = self.split_counts[split]
+                self._split_freqs[split] = float(self.split_counts[split]) / total_weight
         self._trees_counted_for_freqs = self.total_trees_counted
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         return self._split_freqs
 
-    def calc_weighted_freqs(self):
-        "Forces recalculation of weighted frequencies."
-        self._weighted_split_freqs = {}
-        if not self.sum_of_tree_weights:
-            total_weight = 1.0
-        else:
-            total_weight = float(self.sum_of_tree_weights)
-        for split in self.weighted_split_counts.keys():
-            # sys.stderr.write("{}, {} = {}\n".format(self.weighted_split_counts[split], total_weight, self.weighted_split_counts[split] / total_weight))
-            self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
-        self._trees_counted_for_weighted_freqs = self.total_trees_counted
-        self._trees_counted_for_summaries = self.total_trees_counted
-        return self._weighted_split_freqs
+    # def calc_weighted_freqs(self):
+    #     "Forces recalculation of weighted frequencies."
+    #     self._weighted_split_freqs = {}
+    #     if not self.sum_of_tree_weights:
+    #         total_weight = 1.0
+    #     else:
+    #         total_weight = float(self.sum_of_tree_weights)
+    #     for split in self.weighted_split_counts:
+    #         # sys.stderr.write("{}, {} = {}\n".format(self.weighted_split_counts[split], total_weight, self.weighted_split_counts[split] / total_weight))
+    #         self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
+    #     self._trees_counted_for_weighted_freqs = self.total_trees_counted
+    #     self._trees_counted_for_summaries = self.total_trees_counted
+    #     return self._weighted_split_freqs
 
     def _get_split_frequencies(self):
-        "Returns dictionary of splits : split frequencies."
         if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
             self.calc_freqs()
         return self._split_freqs
     split_frequencies = property(_get_split_frequencies)
 
-    def _get_weighted_split_frequencies(self):
-        "Returns dictionary of splits : weighted_split frequencies."
-        if self._weighted_split_freqs is None \
-                or self._trees_counted_for_weighted_freqs != self.total_trees_counted:
-            self.calc_weighted_freqs()
-        return self._weighted_split_freqs
-    weighted_split_frequencies = property(_get_weighted_split_frequencies)
+    # def _get_split_frequencies(self):
+    #     "Returns dictionary of splits : split frequencies."
+    #     if self.ignore_tree_weights:
+    #         return self._get_unweighted_split_frequencies()
+    #     else:
+    #         return self._get_weighted_split_frequencies()
+    # split_frequencies = property(_get_split_frequencies)
+
+    # def _get_unweighted_split_frequencies(self):
+    #     "Returns dictionary of splits : split frequencies."
+    #     if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
+    #         self.calc_freqs()
+    #     return self._split_freqs
+    # unweighted_split_frequencies = property(_get_unweighted_split_frequencies)
+
+    # def _get_weighted_split_frequencies(self):
+    #     "Returns dictionary of splits : weighted_split frequencies."
+    #     if self._weighted_split_freqs is None \
+    #             or self._trees_counted_for_weighted_freqs != self.total_trees_counted:
+    #         self.calc_weighted_freqs()
+    #     return self._weighted_split_freqs
+    # weighted_split_frequencies = property(_get_weighted_split_frequencies)
 
     def summarize_edge_lengths(self):
         self._split_edge_length_summaries = {}
@@ -632,8 +650,7 @@ class SplitDistribution(object):
                 # errors can creep in when dealing with unrooted trees
                 split = tree.split_edge_map.normalize_key(split)
             splits.append(split)
-            self.split_counts[split] += 1
-            self.weighted_split_counts[split] += weight_to_use
+            self.split_counts[split] += weight_to_use
             if not self.ignore_edge_lengths:
                 sel = self.split_edge_lengths.setdefault(split,[])
                 if edge.length is None:

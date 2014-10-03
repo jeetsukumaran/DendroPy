@@ -5132,7 +5132,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.ignore_tree_weights = ignore_tree_weights
-        self.default_edge_length_value = 0.0 # edge.length of `None` gets this value
+        self.default_edge_length_value = 0 # edge.length of `None` gets this value
 
         # Storage
         self._tree_splits = []
@@ -5237,11 +5237,12 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             Insert before index.
 
         """
-        assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
         splits = tuple(splits)
         if self.ignore_edge_lengths:
-            edge_lengths = tuple([0] * len(splits))
+            # edge_lengths = tuple( [None] * len(splits) )
+            edge_lengths = tuple( None for x in range(len(splits)) )
         else:
+            assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
             edge_lengths = tuple(edge_lengths)
         if index is None:
             index = len(self._tree_splits)

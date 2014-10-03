@@ -107,11 +107,21 @@ else:
                                                is_rooted=is_rooted)
             sf = sd.split_frequencies
             for g in bipartition_counts:
-                s = paup.paup_group_to_mask(g, normalized=not is_rooted)
-                self.assertIn(s, sd.splits)
+                s = paup.paup_group_to_mask(g,
+                        normalized=not is_rooted)
                 self.assertIn(s, sd.split_counts)
                 self.assertEqual(sd.split_counts[s], bipartition_counts[g])
                 self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
+                if s not in sf:
+                    s2 = paup.paup_group_to_mask(g,
+                            normalized=is_rooted)
+                    print(sf)
+                    print(s)
+                    print(s in sf)
+                    print(s2)
+                    print(s2 in sf)
+                    assert False
+
                 self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
 
     class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
