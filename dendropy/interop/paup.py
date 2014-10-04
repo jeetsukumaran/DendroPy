@@ -56,26 +56,21 @@ elif not os.path.exists(PAUP_PATH):
 else:
     DENDROPY_PAUP_INTEROPERABILITY = True
 
+STANDARD_PREAMBLE = "set warnreset=no increase=auto warnroot=no warnReset=no warnTree=no warnTSave=no warnBlkName=no errorStop=no errorBeep=no queryBeep=no"
+
 class PaupService(object):
 
-    def __init__(self,
+    @staticmethod
+    def call(
+            paup_commands,
             suppress_standard_preamble=False,
             ignore_error_returncode=False,
+            strip_extraneous_prompts_from_stdout=True,
             strip_extraneous_prompts_from_stderr=True,
             cwd=None,
             env=None,
-            paup_path="paup"):
-        self.suppress_standard_preamble = suppress_standard_preamble
-        self.ignore_error_returncode = ignore_error_returncode
-        self.strip_extraneous_prompts_from_stderr = strip_extraneous_prompts_from_stderr
-        self.cwd = cwd
-        self.env = env
-        self.paup_path = paup_path
-        self.standard_preamble = "set warnreset=no increase=auto warnroot=no warnReset=no warnTree=no warnTSave=no warnBlkName=no errorStop=no errorBeep=no queryBeep=no"
-        self._nexus_writer = nexuswriter.NexusWriter()
-        self.commands = []
-
-    def execute(self, paup_commands):
+            paup_path="paup"
+            ):
         """
         Executes a sequence of commands in PAUP* and returns the results.
 
@@ -84,6 +79,24 @@ class PaupService(object):
         paup_commands : iterable of strings
             A list or some other iterable of strings representing PAUP
             commands.
+        suppress_standard_preamble : bool
+            If `True`, then the command sequence will not be prefaced by the
+            standard preamble.
+        ignore_error_returncode : bool
+            If `True`, then a non-0 return code from the PAUP process will not
+            result in an exception being raised.
+        strip_extraneous_prompts_from_stdout : bool
+            If `True`, then all occurrences of 'paup>' will be removed from the
+            standard output contents.
+        strip_extraneous_prompts_from_stderr : bool
+            If `True`, then all occurrences of 'paup>' will be removed from the
+            standard error contents.
+        cwd : string
+            Set the working directory of the PAUP* process to this directory.
+        cwd : dictionary
+            Environmental variables to set for the PAUP* process.
+        paup_path : string
+            Path to the PAUP* executable.
 
         Returns
         -------
@@ -92,24 +105,30 @@ class PaupService(object):
         stderr : string
             Contents of the PAUP process standard error.
         """
-        commands = paup_commands
-        if not self.suppress_standard_preamble:
-            commands.insert(0, self.standard_preamble)
+        if isinstance(paup_commands, str):
+            commands = [paup_commands]
+        else:
+            commands = list(paup_commands)
+        if not suppress_standard_preamble:
+            commands.insert(0, STANDARD_PREAMBLE)
         commands.append("quit")
         paup_block = ";\n".join(commands) + ";\n"
         p = subprocess.Popen(
-                [self.paup_path, "-n", "-u"],
+                [paup_path, "-n", "-u"],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                cwd=self.cwd,
-                env=self.env,
+                cwd=cwd,
+                env=env,
                 )
         stdout, stderr = processio.communicate(p, paup_block)
-        if self.strip_extraneous_prompts_from_stderr:
+        if strip_extraneous_prompts_from_stdout:
+            # weird dev/paup error ... lots or prompts spring up
+            stdout = stdout.replace("paup>", "")
+        if strip_extraneous_prompts_from_stderr:
             # weird dev/paup error ... lots or prompts spring up
             stderr = stderr.replace("paup>", "")
-        if p.returncode != 0 and not self.ignore_error_returncode:
+        if p.returncode != 0 and not ignore_error_returncode:
             _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
             _LOG.error(paup_block)
             _LOG.error("\n*** ERROR FROM PAUP ***")
@@ -117,11 +136,31 @@ class PaupService(object):
             sys.exit(1)
         return stdout, stderr
 
+    def __init__(self,
+            suppress_standard_preamble=False,
+            ignore_error_returncode=False,
+            strip_extraneous_prompts_from_stderr=True,
+            strip_extraneous_prompts_from_stdout=True,
+            cwd=None,
+            env=None,
+            paup_path="paup"):
+        self.suppress_standard_preamble = suppress_standard_preamble
+        self.ignore_error_returncode = ignore_error_returncode
+        self.strip_extraneous_prompts_from_stderr = strip_extraneous_prompts_from_stderr
+        self.strip_extraneous_prompts_from_stdout = strip_extraneous_prompts_from_stdout
+        self.cwd = cwd
+        self.env = env
+        self.paup_path = paup_path
+        self._nexus_writer = nexuswriter.NexusWriter()
+        self.commands = []
+
+
     def count_splits_from_files(self,
             tree_filepaths=None,
-            is_rooted=False,
-            ignore_tree_weights=False,
-            burnin=0):
+            is_rooted=None,
+            ignore_tree_weights=None,
+            burnin=None,
+            taxa_definition_filepath=None):
         """
         Counts splits (bipartitions) in trees from files and returns the results.
 
@@ -139,14 +178,31 @@ class PaupService(object):
             Otherwise, they will be regarded.
         burnin : integer
             Skip these many trees (from beginning of each source).
-
+        taxa_definition_filepath : str
+            Path of file containing TAXA block to execute. This is crucial to
+            getting the taxon order (and hence, indexes, and hence, split
+            bitmasks) correct. If not given, will use the first file
+            given in `tree_filepaths`.
         Returns
         -------
         d : dictionary
-            A dictionary with keys being the split bitmasks, and the values
-            being a tuple, with the first element the (weighted) count of the
-            split occurrence and the second element the proportional frequency.
+            A dictionary with the following keys and values:
+
+                -   "bipartition_counts" : dictionary with split bitmasks as keys
+                    and (weighted) counts of occurrences as values
+                -   "bipartition_frequencies" : dictionary with split bitmasks as keys
+                    and (weighted) proportional frequencies of occurrences as values
+                -   "num_trees" : number of trees counted
+                -   "taxon_namespace" : :class:`TaxonNamespace` instance
+                    corresponding to the taxa <=> split bitmask mapping
+                -   "is_rooted" : indicates whether the trees were rooted or not
         """
+        self.commands = []
+        if taxa_definition_filepath is None:
+            taxa_definition_filepath = tree_filepaths[0]
+        self.stage_execute_file(
+                taxa_definition_filepath,
+                clear_trees=True)
         self.stage_load_trees(
             tree_filepaths=tree_filepaths,
             is_rooted=is_rooted,
@@ -157,10 +213,17 @@ class PaupService(object):
         self.stage_tree_info()
         self.stage_count_splits()
         stdout, stderr = self._execute_command_sequence()
-        # taxon_namespace = p.parse_taxon_namespace()
+        taxon_namespace = self.parse_taxon_namespace(stdout)
         is_rooted = self.parse_is_tree_rooted(stdout)
         tree_count, bipartition_counts, bipartition_freqs = self.parse_group_freqs(stdout, is_rooted=is_rooted)
-        return tree_count, bipartition_counts, bipartition_freqs
+        d = {
+            "num_trees" : tree_count,
+            "bipartition_counts" : bipartition_counts,
+            "bipartition_freqs" : bipartition_freqs,
+            "taxon_namespace" : taxon_namespace,
+            "is_rooted" : is_rooted,
+            }
+        return d
 
     def stage_execute_file(self,
             filepath,
@@ -173,9 +236,9 @@ class PaupService(object):
 
     def stage_load_trees(self,
             tree_filepaths,
-            is_rooted=False,
-            ignore_tree_weights=False,
-            burnin=0,
+            is_rooted=None,
+            ignore_tree_weights=None,
+            burnin=None,
             mode=7): # keep trees in memory, specify 3 to clear
         """
         Composes commands to load a set of trees into PAUP*, with the specified
@@ -183,16 +246,20 @@ class PaupService(object):
         """
         if isinstance(tree_filepaths, str):
             raise Exception("expecting list of filepaths, not string")
-        if is_rooted:
-            rooting = "rooted=yes"
-        elif is_rooted is False:
-            rooting = "unrooted=yes"
-        else:
+        if is_rooted is None:
             rooting = ""
-        if ignore_tree_weights:
-            treewts = "storetreewts=yes"
+        elif is_rooted:
+            rooting = "rooted=yes"
+        else:
+            rooting = "unrooted=yes"
+        if ignore_tree_weights is None:
+            treewts = ""
+        elif ignore_tree_weights:
+            treewts = "storetreewts=no"
         else:
             treewts = "storetreewts=yes"
+        if burnin is None:
+            burnin = 0
         gettree_template = "gett file= '{{tree_filepath}}' storebrlens=yes warntree=no {rooting} {treewts} from={burnin} mode={mode};".format(
                 rooting=rooting,
                 treewts=treewts,
@@ -216,7 +283,7 @@ class PaupService(object):
         return self.commands
 
     def stage_count_splits(self,
-            ignore_tree_weights=False,
+            ignore_tree_weights=None,
             majrule_filepath=None,
             majrule_freq=0.5):
         """
@@ -225,30 +292,32 @@ class PaupService(object):
         consensus tree if a path is given.
         """
         percent = int(100 * majrule_freq)
-        if majrule_filepath is not None:
-            treefile = " treefile={filepath} replace=yes "
-        else:
+        if majrule_filepath is None:
             treefile = ""
-        if ignore_tree_weights:
-            treewts = "UseTreeWts=no"
         else:
-            treewts = "UseTreeWts=yes"
+            treefile = " treefile={filepath} replace=yes "
+        if ignore_tree_weights is None:
+            treewts = ""
+        elif ignore_tree_weights:
+            treewts = "usetreewts=no"
+        else:
+            treewts = "usetreewts=yes"
         commands = []
         commands.append("[!SPLITS COUNT BEGIN]")
-        commands.append("contree / strict=no {treefile} showtree=no grpfreq=yes majrule=yes percent={percent} {treewts};".format(
+        commands.append("contree / strict=no {treefile} showtree=no grpfreq=yes majrule=yes percent={percent} {treewts}".format(
             treefile=treefile,
             percent=percent,
             treewts=treewts))
         commands.append("[!SPLITS COUNT END]")
         self.commands.extend(commands)
+        return self.commands
 
-    def stage_execute_file(self,
-                                filepath,
-                                clear_trees=False):
+    def stage_execute_file(self, filepath, clear_trees=False):
         """Executes file, optionally clearing trees from file if requested"""
-        self.commands.append("execute %s;" % filepath)
+        self.commands.append("execute '{}'".format(filepath))
         if clear_trees:
-            self.commands.append("cleartrees;")
+            self.commands.append("cleartrees")
+        return self.commands
 
     ##############################################################################
     ## Processing of Output
@@ -288,7 +357,7 @@ class PaupService(object):
                 break
             match = pattern.match(line)
             if match:
-                s = match.groups(1)
+                s = match.groups(1)[0]
                 if s == "unrooted":
                     return False
                 else:
@@ -360,7 +429,10 @@ class PaupService(object):
                     split_rep = split_reps[split_idx] + bp_match.group(1)
                 split_bitmask = self.parse_group_to_mask(split_rep, normalized=not is_rooted)
                 bipartition_counts[split_bitmask] = float(bp_match.group(2))
-                bipartition_freqs[split_bitmask] = float(bp_match.group(3))
+                try:
+                    bipartition_freqs[split_bitmask] = float(bp_match.group(3)) / 100
+                except IndexError:
+                    bipartition_freqs[split_bitmask] = bipartition_counts[split_bitmask] / 100
                 split_idx += 1
             else:
                 # either (1) partial row or (2) break between sections
@@ -379,15 +451,17 @@ class PaupService(object):
     ## Support
 
     def _execute_command_sequence(self):
-        stdout, stderr = self.execute(self.commands)
+        stdout, stderr = PaupService.call(self.commands)
         self.commands = []
-        print(stdout)
         stdout = stdout.split("\n")
         stderr = stderr.split("\n")
         return stdout, stderr
 
 ##############################################################################
 ## Wrappers for PAUP* Services
+
+def call(*args, **kwargs):
+    return PaupService.call(*args, **kwargs)
 
 def symmetric_difference(tree1, tree2):
     if tree1.taxon_namespace is not tree2.taxon_namespace:
