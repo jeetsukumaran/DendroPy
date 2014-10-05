@@ -68,7 +68,7 @@ class FastaWriter(ioservice.DataWriter):
             else:
                 s = "".join("{}".format(c) for c in seq)
                 stream.write("{}\n".format(s))
-            stream.write("\n")
+            stream.write("\n\n")
 
 
 
