@@ -41,7 +41,7 @@ else:
         _LOG.info("coverage imported successfully: test coverage analysis available")
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
-        from dendropy.test.support import get_test_suite
+        from dendropy.test.support.dendropytest import get_test_suite
         from dendropy.test.support import pathmap
 
         class CoverageAnalysis(Command):
