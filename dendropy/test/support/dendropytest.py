@@ -55,7 +55,8 @@ def discover_test_module_paths(filter_patterns=None):
     for filename in filenames:
         if test_module_pattern.match(filename):
             if filter_pattern is None or filter_pattern.match(filename):
-                test_modules.append("" + os.path.splitext(filename)[0])
+                # test_modules.append("" + os.path.splitext(filename)[0])
+                test_modules.append("dendropy.test." + os.path.splitext(filename)[0])
     return test_modules
 
 def get_test_suite(test_names=None):
