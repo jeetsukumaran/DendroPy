@@ -65,6 +65,7 @@ class PaupService(object):
             paup_commands,
             suppress_standard_preamble=False,
             ignore_error_returncode=False,
+            ignore_nonempty_stderr=False,
             strip_extraneous_prompts_from_stdout=True,
             strip_extraneous_prompts_from_stderr=True,
             cwd=None,
@@ -84,6 +85,9 @@ class PaupService(object):
             standard preamble.
         ignore_error_returncode : bool
             If `True`, then a non-0 return code from the PAUP process will not
+            result in an exception being raised.
+        ignore_nonempty_stderr : bool
+            If `True`, then the PAUP process writing to standard error will not
             result in an exception being raised.
         strip_extraneous_prompts_from_stdout : bool
             If `True`, then all occurrences of 'paup>' will be removed from the
@@ -128,13 +132,37 @@ class PaupService(object):
         if strip_extraneous_prompts_from_stderr:
             # weird dev/paup error ... lots or prompts spring up
             stderr = stderr.replace("paup>", "")
-        if p.returncode != 0 and not ignore_error_returncode:
+            chk_stderr = stderr
+        else:
+            chk_stderr = stderr.replace("paup>", "")
+        if (p.returncode != 0 and not ignore_error_returncode) or (chk_stderr != "" and not ignore_nonempty_stderr):
             _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
             _LOG.error(paup_block)
             _LOG.error("\n*** ERROR FROM PAUP ***")
             _LOG.error(stderr)
             sys.exit(1)
         return stdout, stderr
+
+    @staticmethod
+    def bipartition_groups_to_split_bitmask(group_string, normalized=None):
+        """
+        This converts a PAUP* group representation (i.e. a string of askterisks
+        and periods, where the asterisks denote the taxon index counting from
+        left to right) to a mask representation:
+            - a clade mask, where 1's represent descendents of the split/edge
+                (with taxon index counting from right to left, i.e., first taxon
+                is right-most bit)
+            - a split mask, an unrooted normalized version of the above, where
+                if the right most bit is not 1 the clade mask is complemented
+                (and not changed otherwise).
+        """
+        group_string = group_string[::-1] # flip to get correct orientation
+        split_bitmask = int(group_string.replace("*", "1").replace(".", "0"), 2)
+        if normalized:
+            mask=((2 ** len(group_string)) -1)
+            return container.NormalizedBitmaskDict.normalize(split_bitmask, mask, 1)
+        else:
+            return split_bitmask
 
     def __init__(self,
             suppress_standard_preamble=False,
@@ -364,26 +392,6 @@ class PaupService(object):
                     return True
         raise Exception("Unable to find tree information")
 
-    def parse_group_to_mask(self, group_string, normalized=None):
-        """
-        This converts a PAUP* group representation (i.e. a string of askterisks
-        and periods, where the asterisks denote the taxon index counting from
-        left to right) to a mask representation:
-            - a clade mask, where 1's represent descendents of the split/edge
-                (with taxon index counting from right to left, i.e., first taxon
-                is right-most bit)
-            - a split mask, an unrooted normalized version of the above, where
-                if the right most bit is not 1 the clade mask is complemented
-                (and not changed otherwise).
-        """
-        group_string = group_string[::-1] # flip to get correct orientation
-        split_bitmask = int(group_string.replace("*", "1").replace(".", "0"), 2)
-        if normalized:
-            mask=((2 ** len(group_string)) -1)
-            return container.NormalizedBitmaskDict.normalize(split_bitmask, mask, 1)
-        else:
-            return split_bitmask
-
     def parse_group_freqs(self, paup_output, is_rooted=None):
         """
         Given PAUP* output that includes a split counting procedure, this
@@ -427,7 +435,7 @@ class PaupService(object):
                     split_rep = bp_match.group(1)
                 else:
                     split_rep = split_reps[split_idx] + bp_match.group(1)
-                split_bitmask = self.parse_group_to_mask(split_rep, normalized=not is_rooted)
+                split_bitmask = PaupService.bipartition_groups_to_split_bitmask(split_rep, normalized=not is_rooted)
                 bipartition_counts[split_bitmask] = float(bp_match.group(2))
                 try:
                     bipartition_freqs[split_bitmask] = float(bp_match.group(3)) / 100
