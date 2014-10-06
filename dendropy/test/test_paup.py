@@ -27,6 +27,7 @@ import collections
 import unittest
 
 from dendropy.test.support import pathmap
+from dendropy.test.support import paupsplitsreference
 from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.utility import container
 from dendropy.utility import messaging
@@ -36,38 +37,6 @@ _LOG = messaging.get_logger(__name__)
 
 from dendropy.calculate import treesplit
 from dendropy.interop import paup
-
-def get_splits_reference(
-        splits_filename,
-        splits_dir=None,
-        key_column_index=0):
-    # Key columns are:
-    #     0   : PAUP* bipartition string representation '....**...' etc.
-    #     1   : unnormalized split bitmask (for rooted trees)
-    #     2   : normalized split bitmask (for unrooted trees)
-    #     3   : (weighted) counts
-    #     4   : (weighted) frequencies
-    if splits_dir is not None:
-        splits_filepath = os.path.join(splits_dir, splits_filename)
-    else:
-        splits_filepath = pathmap.splits_source_path(splits_filename)
-    d = collections.OrderedDict()
-    with open(splits_filepath, "r") as src:
-        for row in src:
-            content = row.split("#")[0]
-            if not content:
-                continue
-            fields = content.split("\t")
-            assert len(fields) == 5, "{}: {}".format(content, fields)
-            key = fields[key_column_index]
-            d[key] = {
-                "bipartition_string": fields[0],
-                "unnormalized_split_bitmask": int(fields[1]),
-                "normalized_split_bitmask": int(fields[2]),
-                "count": float(fields[3]),
-                "frequency": float(fields[4])/100,
-            }
-    return d
 
 
 if not paup.DENDROPY_PAUP_INTEROPERABILITY:
@@ -139,7 +108,7 @@ else:
             self.assertEqual(num_trees, expected_num_trees)
             self.assertIs(is_rooted, expected_is_rooted)
 
-            splits_ref = get_splits_reference(
+            splits_ref = paupsplitsreference.get_splits_reference(
                     splits_filename=splits_filename,
                     key_column_index=0,
                     )
