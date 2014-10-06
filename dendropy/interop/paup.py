@@ -226,11 +226,10 @@ class PaupService(object):
                 -   "is_rooted" : indicates whether the trees were rooted or not
         """
         self.commands = []
-        if taxa_definition_filepath is None:
-            taxa_definition_filepath = tree_filepaths[0]
-        self.stage_execute_file(
-                taxa_definition_filepath,
-                clear_trees=True)
+        if taxa_definition_filepath is not None:
+            self.stage_execute_file(
+                    taxa_definition_filepath,
+                    clear_trees=True)
         self.stage_load_trees(
             tree_filepaths=tree_filepaths,
             is_rooted=is_rooted,
@@ -240,7 +239,9 @@ class PaupService(object):
         self.stage_list_taxa()
         self.stage_tree_info()
         self.stage_count_splits()
+        # print("\n".join(self.commands))
         stdout, stderr = self._execute_command_sequence()
+        # print("\n".join(stdout))
         taxon_namespace = self.parse_taxon_namespace(stdout)
         is_rooted = self.parse_is_tree_rooted(stdout)
         tree_count, bipartition_counts, bipartition_freqs = self.parse_group_freqs(stdout, is_rooted=is_rooted)
@@ -367,7 +368,8 @@ class PaupService(object):
                 break
             ti_match = taxinfo_pattern.match(line)
             if ti_match:
-                taxlabels.append(ti_match.group(2).strip())
+                label = ti_match.group(2).strip()
+                taxlabels.append(label)
         taxon_namespace = dendropy.TaxonNamespace()
         for taxlabel in taxlabels:
             taxon_namespace.new_taxon(label=taxlabel)
@@ -388,8 +390,10 @@ class PaupService(object):
                 s = match.groups(1)[0]
                 if s == "unrooted":
                     return False
-                else:
+                elif s == "rooted":
                     return True
+                else:
+                    return None
         raise Exception("Unable to find tree information")
 
     def parse_group_freqs(self, paup_output, is_rooted=None):
