@@ -22,6 +22,8 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.test.support import pathmap
 
+_SPLITS_REFERENCE_FIELD_TYPES = [str, int, int, float, float]
+
 def get_splits_reference(
         splits_filename,
         splits_dir=None,
@@ -44,12 +46,14 @@ def get_splits_reference(
                 continue
             fields = content.split("\t")
             assert len(fields) == 5, "{}: {}".format(content, fields)
+            for idx, field in enumerate(fields):
+                fields[idx] = _SPLITS_REFERENCE_FIELD_TYPES[idx](fields[idx])
             key = fields[key_column_index]
             d[key] = {
                 "bipartition_string": fields[0],
-                "unnormalized_split_bitmask": int(fields[1]),
-                "normalized_split_bitmask": int(fields[2]),
-                "count": float(fields[3]),
-                "frequency": float(fields[4])/100,
+                "unnormalized_split_bitmask": fields[1],
+                "normalized_split_bitmask": fields[2],
+                "count": fields[3],
+                "frequency": fields[4]/100,
             }
     return d

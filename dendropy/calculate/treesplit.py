@@ -390,35 +390,42 @@ class SplitDistribution(object):
 
     def __init__(self,
             taxon_namespace=None,
-            split_set=None,
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             ignore_tree_weights=False,
             ultrametricity_precision=0.0000001):
-        self.total_trees_counted = 0
-        self.tree_rooting_types_counted = set()
-        self.sum_of_tree_weights = 0.0
+
+        # taxon namespace management
         if taxon_namespace is not None:
             self.taxon_namespace = taxon_namespace
         else:
             self.taxon_namespace = dendropy.TaxonNamespace()
-        self.split_counts = collections.defaultdict(float)
-        self.split_edge_lengths = collections.defaultdict(list)
-        self.split_node_ages = collections.defaultdict(list)
+
+        # configuration
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.ignore_tree_weights = ignore_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
         self.error_on_mixed_rooting_types = True
+
+        # storage
+        self.total_trees_counted = 0
+        self.sum_of_tree_weights = 0.0
+        self.tree_rooting_types_counted = set()
+        self.split_counts = collections.defaultdict(float)
+        self.split_edge_lengths = collections.defaultdict(list)
+        self.split_node_ages = collections.defaultdict(list)
+
+        # secondary/derived/generated/collected data
         self._is_rooted = False
         self._split_freqs = None
         self._trees_counted_for_freqs = 0
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
-        if split_set:
-            for split in split_set:
-                self.add_split_count(split, count=1)
+
+    def __len__(self):
+        return len(self.split_counts)
 
     def _is_rooted_deprecation_warning(self):
         deprecate.dendropy_deprecation_warning(

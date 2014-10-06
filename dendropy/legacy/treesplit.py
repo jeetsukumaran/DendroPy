@@ -138,7 +138,11 @@ class SplitDistribution(treesplit.SplitDistribution):
                 old_construct="from dendropy import treesplit\nm = treesplit.SplitDistribution(...)",
                 new_construct="from dendropy.calculate import treesplit\nm = treesplit.SplitDistribution(...)")
         treesplit.SplitDistribution.__init__(self,
-                taxon_namespace=taxon_set,
-                split_set=split_set)
+                taxon_namespace=taxon_set)
+        if split_set:
+            for split in split_set:
+                self.add_split_count(split, count=1)
+
+
 
 
