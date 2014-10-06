@@ -85,14 +85,27 @@ class SplitDistributionTestCases(ExtendedTestCase):
         # splits_distribution also counts trivial splits, so this will not work
         # self.assertEqual(len(splits_ref), len(sd))
 
-        expected_nontrivial_splits = set(splits_ref.keys())
+        expected_nontrivial_splits = list(splits_ref.keys())
         observed_splits = set(sd.split_counts.keys())
+        visited_splits = []
         # for k in sorted(observed_splits):
         #     print("{}: {}, {}".format(k, sd.split_counts[k], sd[k]))
+        all_taxa_bitmask = sd.taxon_namespace.all_taxa_bitmask()
         for split in expected_nontrivial_splits:
             self.assertAlmostEqual(sd.split_counts[split], splits_ref[split]["count"], 2,
                     "{} (using '{}'): {}".format(tree_filename, splits_filename, split))
-            # self.assertIn(split, observed_splits, sorted(observed_splits))
+            self.assertAlmostEqual(sd[split], splits_ref[split]["frequency"], 2,
+                    "{} (using '{}'): {}".format(tree_filename, splits_filename, split))
+            self.assertAlmostEqual(sd.split_frequencies[split], splits_ref[split]["frequency"], 2,
+                    "{} (using '{}'): {}".format(tree_filename, splits_filename, split))
+            if split in observed_splits:
+                observed_splits.remove(split)
+            visited_splits.append(split)
+        self.assertEqual(len(visited_splits), len(expected_nontrivial_splits))
+
+        # ensure remaining splits (not given in PAUP splits file) are trivial ones (which are not tracked by PAUP)
+        for split in observed_splits:
+            self.assertTrue(treesplit.is_trivial_split(split, all_taxa_bitmask))
 
     def test_group1(self):
         sources = [
