@@ -3,28 +3,28 @@
 BEGIN TAXA;
     DIMENSIONS NTAX=22;
     TAXLABELS
-        Mesoplodon_europaeus
-        Mesoplodon_peruvianus
-        Ziphius_cavirostris
+        Bos_taurus
+        Balaena_mysticetus
+        Balaenoptera_physalus
+        Cephalorhynchus_eutropia
+        Delphinapterus_leucas
+        Delphinus_delphis
+        Eschrichtius_robustus
+        Globicephala_melas
+        Inia_geoffrensis
         Kogia_breviceps
         Kogia_simus
-        Balaena_mysticetus
-        Eschrichtius_robustus
-        Megaptera_novaeangliae
-        Balaenoptera_physalus
-        Physeter_catodon
-        Inia_geoffrensis
-        Delphinapterus_leucas
-        Lissodelphis_peronii
-        Delphinus_delphis
-        Tursiops_truncatus
-        Cephalorhynchus_eutropia
-        Lagenorhynchus_obscurus
-        Globicephala_melas
         Lagenorhynchus_albirostris
+        Lagenorhynchus_obscurus
+        Lissodelphis_peronii
+        Megaptera_novaeangliae
+        Mesoplodon_europaeus
+        Mesoplodon_peruvianus
         Phocoena_phocoena
         Phocoena_spinipinnis
-        Bos_taurus
+        Physeter_catodon
+        Tursiops_truncatus
+        Ziphius_cavirostris
   ;
 END;
 

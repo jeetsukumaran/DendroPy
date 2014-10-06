@@ -49,16 +49,16 @@ class SplitDistributionTestCases(ExtendedTestCase):
             is_rooted,
             expected_num_trees,
             ):
-
-        if is_rooted:
-            key_column_index = 2 # unnormalized
+        if is_rooted is None:
+            key_column_index = 1 # unnormalized
+        elif is_rooted:
+            key_column_index = 1 # unnormalized
         else:
             key_column_index = 1 # normalized
         splits_ref = paupsplitsreference.get_splits_reference(
                 splits_filename=splits_filename,
                 key_column_index=key_column_index,
                 )
-
         # print("* {} ({})".format(tree_filename, splits_filename))
         tree_filepath = pathmap.tree_source_path(tree_filename)
         trees = dendropy.TreeList.get_from_path(
@@ -90,33 +90,8 @@ class SplitDistributionTestCases(ExtendedTestCase):
         # for k in sorted(observed_splits):
         #     print("{}: {}, {}".format(k, sd.split_counts[k], sd[k]))
         for split in expected_nontrivial_splits:
-            # print("{}: {} vs {}".format(split, sd[split], splits_ref[split]["count"]))
             self.assertAlmostEqual(sd.split_counts[split], splits_ref[split]["count"], 2)
             # self.assertIn(split, observed_splits, sorted(observed_splits))
-
-        # for split in expected_nontrivial_splits:
-        #     self.assert
-
-
-        # self.assertEqual(len(splits_ref), len(bipartition_freqs))
-        # if is_rooted:
-        #     splits_ref_bitmasks = set([splits_ref[x]["unnormalized_split_bitmask"] for x in splits_ref])
-        # else:
-        #     splits_ref_bitmasks = set([splits_ref[x]["normalized_split_bitmask"] for x in splits_ref])
-        # counts_keys = set(bipartition_counts.keys())
-        # freqs_keys = set(bipartition_freqs.keys())
-        # self.assertEqual(len(counts_keys), len(splits_ref_bitmasks))
-        # self.assertEqual(counts_keys, splits_ref_bitmasks, "\n    {}\n\n    {}\n\n".format(sorted(counts_keys), sorted(splits_ref_bitmasks)))
-        # for split_str_rep in splits_ref:
-        #     ref = splits_ref[split_str_rep]
-        #     self.assertEqual(split_str_rep, ref["bipartition_string"])
-        #     self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=False),
-        #             ref["unnormalized_split_bitmask"])
-        #     self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=True),
-        #             ref["normalized_split_bitmask"])
-        #     split_bitmask = paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=not is_rooted)
-        #     self.assertEqual(bipartition_counts[split_bitmask], ref["count"])
-        #     self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
 
     def test_group1(self):
         sources = [
@@ -128,12 +103,12 @@ class SplitDistributionTestCases(ExtendedTestCase):
                 ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees" , 251, True , True), # Weighted
                 ("cetaceans.mb.strict-clock.mcmc.weighted-02.trees" , 251, True , True), # Weighted
                 ("cetaceans.mb.strict-clock.mcmc.weighted-03.trees" , 251, True , True), # Weighted
+                ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
+                ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
                 ("cetaceans.raxml.bootstraps.trees"    , 250, None , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
                 ("cetaceans.raxml.bootstraps.weighted-01.trees"    , 250, None , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
                 ("cetaceans.raxml.bootstraps.weighted-02.trees"    , 250, None , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
                 ("cetaceans.raxml.bootstraps.weighted-03.trees"    , 250, None , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
-                ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
-                ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
         ]
         splits_filename_template = "{stemname}.is-rooted-{is_rooted}.use-tree-weights-{use_weights}.burnin-{burnin}.splits.txt"
         for tree_filename, num_trees, treefile_is_rooted, treefile_is_weighted in sources:
