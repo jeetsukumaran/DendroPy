@@ -62,10 +62,10 @@ def get_splits_reference(
             key = fields[key_column_index]
             d[key] = {
                 "bipartition_string": fields[0],
-                "unnormalized_split_bitmask": fields[1],
-                "normalized_split_bitmask": fields[2],
-                "count": fields[3],
-                "frequency": fields[4],
+                "unnormalized_split_bitmask": int(fields[1]),
+                "normalized_split_bitmask": int(fields[2]),
+                "count": float(fields[3]),
+                "frequency": float(fields[4])/100,
             }
     return d
 
@@ -145,22 +145,24 @@ else:
                     )
             self.assertEqual(len(splits_ref), len(bipartition_counts))
             self.assertEqual(len(splits_ref), len(bipartition_freqs))
-            # for split_str_rep in self.expected_split_freqs:
-            #     split_bitmask = paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=not is_rooted)
-            #     self.assertIn(split_bitmask, bipartition_counts)
-            #     self.assertEqual(self.expected_split_freqs[split_str_rep], bipartition_counts[split_bitmask])
-            # sd = paup.build_split_distribution(bipartition_counts,
-            #                                    tree_count,
-            #                                    taxon_namespace,
-            #                                    is_rooted=is_rooted)
-            # sf = sd.split_frequencies
-            # for g in bipartition_counts:
-            #     s = paup.paup_group_to_mask(g, normalized=not is_rooted)
-            #     self.assertIn(s, sd.split_counts)
-            #     self.assertEqual(sd.split_counts[s], bipartition_counts[g])
-            #     self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
-            #     self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
-
+            if is_rooted:
+                splits_ref_bitmasks = set([splits_ref[x]["unnormalized_split_bitmask"] for x in splits_ref])
+            else:
+                splits_ref_bitmasks = set([splits_ref[x]["normalized_split_bitmask"] for x in splits_ref])
+            counts_keys = set(bipartition_counts.keys())
+            freqs_keys = set(bipartition_freqs.keys())
+            self.assertEqual(len(counts_keys), len(splits_ref_bitmasks))
+            self.assertEqual(counts_keys, splits_ref_bitmasks, "\n    {}\n\n    {}\n\n".format(sorted(counts_keys), sorted(splits_ref_bitmasks)))
+            for split_str_rep in splits_ref:
+                ref = splits_ref[split_str_rep]
+                self.assertEqual(split_str_rep, ref["bipartition_string"])
+                self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=False),
+                        ref["unnormalized_split_bitmask"])
+                self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=True),
+                        ref["normalized_split_bitmask"])
+                split_bitmask = paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=not is_rooted)
+                self.assertEqual(bipartition_counts[split_bitmask], ref["count"])
+                self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
 
         def test_group1(self):
             expected_taxon_labels = [

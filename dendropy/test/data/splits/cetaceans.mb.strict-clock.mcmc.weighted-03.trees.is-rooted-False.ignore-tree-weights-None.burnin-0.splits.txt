@@ -1,5 +1,5 @@
 # set warnreset=no increase=auto warnroot=no warnReset=no warnTree=no warnTSave=no warnBlkName=no errorStop=no errorBeep=no queryBeep=no;
-# execute 'trees/cetaceans.mb.strict-clock.mcmc.weighted-03.trees';
+# execute 'trees/cetaceans.taxa.nex';
 # cleartrees;
 # gett file = 'trees/cetaceans.mb.strict-clock.mcmc.weighted-03.trees' storebrlens=yes warntree=no unrooted=yes  from=1 mode=7;
 # treeinfo;
