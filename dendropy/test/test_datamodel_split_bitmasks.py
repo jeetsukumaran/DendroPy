@@ -143,12 +143,14 @@ class SplitCountTest(ExtendedTestCase):
             dp_ignore_tree_weights=False,
             ):
         tree_filepath = pathmap.tree_source_path(tree_filename)
-        paup_sd = paup.get_split_distribution(
+        ps = paup.PaupService()
+        paup_sd = ps.get_split_distribution_from_files(
                 tree_filepaths=[tree_filepath],
-                taxa_filepath=tree_filepath,
                 is_rooted=test_as_rooted,
-                ignore_tree_weights=test_ignore_tree_weights,
-                burnin=0)
+                use_tree_weights=not test_ignore_tree_weights,
+                burnin=0,
+                taxa_definition_filepath=tree_filepath
+                )
         taxon_namespace = paup_sd.taxon_namespace
         dp_sd = treesplit.SplitDistribution(
                 taxon_namespace=taxon_namespace,
@@ -197,36 +199,10 @@ class SplitCountTest(ExtendedTestCase):
     def test_basic_split_count_with_incorrect_weight_treatment_raises_error(self):
         assertion_error_regexp1 = re.compile("incorrect split frequency")
         test_cases = (
-                ("feb032009.trees.nexus", True),
-                ("test_split_counting.rooted.weighted01.nexus", True),
-                # ("test_split_counting.rooted.weighted02.nexus", True),
-                # ("test_split_counting.rooted.weighted03.nexus", True),
-                # ("test_split_counting.rooted.weighted04.nexus", True),
-                # ("test_split_counting.rooted.weighted05.nexus", True),
-                # ("test_split_counting.rooted.weighted06.nexus", True),
-                # ("test_split_counting.rooted.weighted07.nexus", True),
-                # ("test_split_counting.rooted.weighted08.nexus", True),
-                # ("test_split_counting.rooted.weighted09.nexus", True),
-                # ("test_split_counting.rooted.weighted10.nexus", True),
-                # ("test_split_counting.unrooted.weighted01.nexus", False),
-                # ("test_split_counting.unrooted.weighted02.nexus", False),
-                # ("test_split_counting.unrooted.weighted03.nexus", False),
-                # ("test_split_counting.unrooted.weighted04.nexus", False),
-                # ("test_split_counting.unrooted.weighted05.nexus", False),
-                # ("test_split_counting.unrooted.weighted06.nexus", False),
-                # ("test_split_counting.unrooted.weighted07.nexus", False),
-                # ("test_split_counting.unrooted.weighted08.nexus", False),
-                # ("test_split_counting.unrooted.weighted09.nexus", False),
-                # ("test_split_counting.unrooted.weighted10.nexus", False),
+                ("cetaceans.mb.no-clock.mcmc.weighted-01.trees", True),
+                ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees", True),
             )
         for test_case, test_as_rooted in test_cases:
-            self.check_split_counting(
-                    test_case,
-                    test_as_rooted=test_as_rooted,
-                    parser_rooting_interpretation="default-rooted",
-                    test_ignore_tree_weights=False,
-                    dp_ignore_tree_weights=False,
-                    )
             with self.assertRaisesRegex(AssertionError, assertion_error_regexp1):
                 self.check_split_counting(
                         test_case,

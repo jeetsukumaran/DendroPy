@@ -187,7 +187,8 @@ class PaupService(object):
             is_rooted=None,
             use_tree_weights=None,
             burnin=None,
-            taxa_definition_filepath=None):
+            taxa_definition_filepath=None,
+            taxon_namespace=None):
         """
         Counts splits (bipartitions) in trees from files and returns the results.
 
@@ -210,6 +211,9 @@ class PaupService(object):
             getting the taxon order (and hence, indexes, and hence, split
             bitmasks) correct. If not given, will use the first file
             given in `tree_filepaths`.
+        taxon_namespace : :class:`TaxonNamespace`
+            The :class:`TaxonNamespace` object to populate.
+
         Returns
         -------
         d : dictionary
@@ -241,7 +245,8 @@ class PaupService(object):
         # print("\n".join(self.commands))
         stdout, stderr = self._execute_command_sequence()
         # print("\n".join(stdout))
-        taxon_namespace = self.parse_taxon_namespace(stdout)
+        taxon_namespace = self.parse_taxon_namespace(stdout,
+                taxon_namespace=taxon_namespace)
         is_rooted = self.parse_is_tree_rooted(stdout)
         tree_count, bipartition_counts, bipartition_freqs = self.parse_group_freqs(stdout, is_rooted=is_rooted)
         d = {
@@ -252,6 +257,60 @@ class PaupService(object):
             "is_rooted" : is_rooted,
             }
         return d
+
+    def get_split_distribution_from_files(self,
+            tree_filepaths=None,
+            is_rooted=None,
+            use_tree_weights=None,
+            burnin=None,
+            taxa_definition_filepath=None,
+            taxon_namespace=None,
+            split_distribution=None):
+        """
+        Returns a SplitDistribution object based on splits given in
+        tree files.
+
+        tree_filepaths : iterable of strings
+            A list or some other iterable of file paths containing trees in
+            NEXUS format.
+        is_rooted : bool
+            If `True` then trees will be treated as rooted. If `False`, then
+            rooting follows that specified in the tree statements, defaulting
+            to unrooted if not specified.
+        use_tree_weights : bool
+            If `False` then tree weighting statements are disregarded.
+            Otherwise, they will be regarded.
+        burnin : integer
+            Skip these many trees (from beginning of each source).
+        taxa_definition_filepath : str
+            Path of file containing TAXA block to execute. This is crucial to
+            getting the taxon order (and hence, indexes, and hence, split
+            bitmasks) correct. If not given, will use the first file
+            given in `tree_filepaths`.
+        taxon_namespace : :class:`TaxonNamespace`
+            :class:`TaxonNamespace` object to use.
+        split_distribution : :class:`SplitDistribution`
+            :class:`SplitDistribution object to use.
+        """
+        if split_distribution is None:
+            split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
+            taxon_namespace = split_distribution.taxon_namespace
+        else:
+            if taxon_namespace is None:
+                taxon_namespace = split_distribution.taxon_namespace
+            else:
+                assert split_distribution.taxon_namespace is taxon_namespace
+        result = self.count_splits_from_files(
+            tree_filepaths=tree_filepaths,
+            is_rooted=is_rooted,
+            use_tree_weights=use_tree_weights,
+            burnin=burnin,
+            taxa_definition_filepath=taxa_definition_filepath,
+            taxon_namespace=taxon_namespace)
+        for split in result["bipartition_counts"]:
+            split_distribution.add_split_count(split, result["bipartition_counts"][split])
+        split_distribution.total_trees_counted = result["num_trees"]
+        return split_distribution
 
     def stage_execute_file(self,
             filepath,
@@ -350,7 +409,7 @@ class PaupService(object):
     ##############################################################################
     ## Processing of Output
 
-    def parse_taxon_namespace(self, paup_output):
+    def parse_taxon_namespace(self, paup_output, taxon_namespace=None):
         """
         Given PAUP* output that includes a taxon listing as produced by
         `stage_list_taxa`, this parses out and returns a taxon block.
@@ -369,9 +428,10 @@ class PaupService(object):
             if ti_match:
                 label = ti_match.group(2).strip()
                 taxlabels.append(label)
-        taxon_namespace = dendropy.TaxonNamespace()
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
         for taxlabel in taxlabels:
-            taxon_namespace.new_taxon(label=taxlabel)
+            taxon_namespace.require_taxon(label=taxlabel)
         return taxon_namespace
 
     def parse_is_tree_rooted(self, paup_output):
