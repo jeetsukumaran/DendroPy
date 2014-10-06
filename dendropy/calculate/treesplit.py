@@ -227,7 +227,9 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             normalized (unrooted) split representations and the values
             are edges. A normalized split_mask is where the split_bitmask
             is complemented if the right-most bit is not '0' (or just
-            the split_bitmask otherwise).
+            the split_bitmask otherwise). This is to account for rotations that
+            would result in a different clade if the tree were rooted but are
+            not different if the tree is unrooted.
     If `delete_outdegree_one` is True then nodes with one
         will be deleted as they are encountered (this is required
         if the split_edge_map dictionary is to refer to all edges in the tree).

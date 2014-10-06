@@ -50,11 +50,11 @@ class SplitDistributionTestCases(ExtendedTestCase):
             expected_num_trees,
             ):
         if is_rooted is None:
-            key_column_index = 1 # unnormalized
+            key_column_index = 1
         elif is_rooted:
-            key_column_index = 1 # unnormalized
+            key_column_index = 1
         else:
-            key_column_index = 1 # normalized
+            key_column_index = 1
         splits_ref = paupsplitsreference.get_splits_reference(
                 splits_filename=splits_filename,
                 key_column_index=key_column_index,
@@ -90,7 +90,8 @@ class SplitDistributionTestCases(ExtendedTestCase):
         # for k in sorted(observed_splits):
         #     print("{}: {}, {}".format(k, sd.split_counts[k], sd[k]))
         for split in expected_nontrivial_splits:
-            self.assertAlmostEqual(sd.split_counts[split], splits_ref[split]["count"], 2)
+            self.assertAlmostEqual(sd.split_counts[split], splits_ref[split]["count"], 2,
+                    "{} (using '{}'): {}".format(tree_filename, splits_filename, split))
             # self.assertIn(split, observed_splits, sorted(observed_splits))
 
     def test_group1(self):
