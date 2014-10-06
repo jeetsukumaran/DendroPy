@@ -238,7 +238,7 @@ class PaupService(object):
             mode=7)
         self.stage_list_taxa()
         self.stage_tree_info()
-        self.stage_count_splits()
+        self.stage_count_splits(ignore_tree_weights=ignore_tree_weights)
         # print("\n".join(self.commands))
         stdout, stderr = self._execute_command_sequence()
         # print("\n".join(stdout))

@@ -161,8 +161,17 @@ else:
             issue_mth_taxon_labels = ["T{:02d}".format(i) for i in range(1, 60)]
             sources = [
                     ("cetaceans.mb.no-clock.mcmc.trees"    , 251, False, False), # Trees explicitly unrooted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-01.trees" , 251, False , True), # Weighted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-02.trees" , 251, False , True), # Weighted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-03.trees" , 251, False , True), # Weighted
                     ("cetaceans.mb.strict-clock.mcmc.trees", 251, True , False), # Trees explicitly rooted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees" , 251, True , True), # Weighted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-02.trees" , 251, True , True), # Weighted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-03.trees" , 251, True , True), # Weighted
                     ("cetaceans.raxml.bootstraps.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-01.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-02.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-03.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
                     ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
                     ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
             ]
@@ -175,31 +184,32 @@ else:
                 else:
                     expected_taxon_labels = issue_mth_taxon_labels
                     taxa_definition_filepath = pathmap.tree_source_path("issue_mth_2009-02-03.unrooted.nexus")
-                for paup_read_as_rooted in (None, True, False):
-                    for paup_burnin in (0, 150):
-                        if tree_filename.startswith("issue_mth") and paup_burnin > 0:
-                            continue
-                        if paup_read_as_rooted is None:
-                            expected_is_rooted = treefile_is_rooted
-                        elif paup_read_as_rooted:
-                            expected_is_rooted = True
-                        else:
-                            expected_is_rooted = False
-                        splits_filename = splits_filename_template.format(
-                                stemname=stemname,
-                                is_rooted=paup_read_as_rooted,
-                                ignore_weights=None,
-                                burnin=paup_burnin)
-                        self.check_splits_counting(
-                                tree_filename=tree_filename,
-                                taxa_definition_filepath=taxa_definition_filepath,
-                                splits_filename=splits_filename,
-                                paup_as_rooted=paup_read_as_rooted,
-                                paup_ignore_tree_weights=None,
-                                paup_burnin=paup_burnin,
-                                expected_taxon_labels=expected_taxon_labels,
-                                expected_is_rooted=expected_is_rooted,
-                                expected_num_trees=num_trees-paup_burnin)
+                for ignore_weights in (False, True, None):
+                    for paup_read_as_rooted in (None, True, False):
+                        for paup_burnin in (0, 150):
+                            if tree_filename.startswith("issue_mth") and paup_burnin > 0:
+                                continue
+                            if paup_read_as_rooted is None:
+                                expected_is_rooted = treefile_is_rooted
+                            elif paup_read_as_rooted:
+                                expected_is_rooted = True
+                            else:
+                                expected_is_rooted = False
+                            splits_filename = splits_filename_template.format(
+                                    stemname=stemname,
+                                    is_rooted=paup_read_as_rooted,
+                                    ignore_weights=ignore_weights,
+                                    burnin=paup_burnin)
+                            self.check_splits_counting(
+                                    tree_filename=tree_filename,
+                                    taxa_definition_filepath=taxa_definition_filepath,
+                                    splits_filename=splits_filename,
+                                    paup_as_rooted=paup_read_as_rooted,
+                                    paup_ignore_tree_weights=ignore_weights,
+                                    paup_burnin=paup_burnin,
+                                    expected_taxon_labels=expected_taxon_labels,
+                                    expected_is_rooted=expected_is_rooted,
+                                    expected_num_trees=num_trees-paup_burnin)
 
     class PaupWrapperTaxaParse(ExtendedTestCase):
 
