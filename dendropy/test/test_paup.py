@@ -134,7 +134,7 @@ else:
                 self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
 
         def test_group1(self):
-            expected_taxon_labels = [
+            cetacean_taxon_labels = [
                 "Bos taurus",
                 "Balaena mysticetus",
                 "Balaenoptera physalus",
@@ -158,17 +158,27 @@ else:
                 "Tursiops truncatus",
                 "Ziphius cavirostris",
             ]
+            issue_mth_taxon_labels = ["T{:02d}".format(i) for i in range(1, 60)]
             sources = [
                     ("cetaceans.mb.no-clock.mcmc.trees"    , 251, False, False), # Trees explicitly unrooted
                     ("cetaceans.mb.strict-clock.mcmc.trees", 251, True , False), # Trees explicitly rooted
                     ("cetaceans.raxml.bootstraps.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
+                    ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
             ]
-            taxa_definition_filepath = pathmap.tree_source_path("cetaceans.taxa.nex")
-            splits_filename_template = "{stemname}.trees.is-rooted-{is_rooted}.ignore-tree-weights-{ignore_weights}.burnin-{burnin}.splits.txt"
+            splits_filename_template = "{stemname}.is-rooted-{is_rooted}.ignore-tree-weights-{ignore_weights}.burnin-{burnin}.splits.txt"
             for tree_filename, num_trees, treefile_is_rooted, treefile_is_weighted in sources:
-                stemname = tree_filename.rsplit(".", 1)[0]
+                stemname = tree_filename
+                if "cetacean" in tree_filename:
+                    expected_taxon_labels = cetacean_taxon_labels
+                    taxa_definition_filepath = pathmap.tree_source_path("cetaceans.taxa.nex")
+                else:
+                    expected_taxon_labels = issue_mth_taxon_labels
+                    taxa_definition_filepath = pathmap.tree_source_path("issue_mth_2009-02-03.unrooted.nexus")
                 for paup_read_as_rooted in (None, True, False):
                     for paup_burnin in (0, 150):
+                        if tree_filename.startswith("issue_mth") and paup_burnin > 0:
+                            continue
                         if paup_read_as_rooted is None:
                             expected_is_rooted = treefile_is_rooted
                         elif paup_read_as_rooted:
