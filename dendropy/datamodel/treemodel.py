@@ -5095,7 +5095,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             tree_traversal_order="preorder",
             ignore_edge_lengths=False,
             ignore_node_ages=True,
-            ignore_tree_weights=False,
+            use_tree_weights=True,
             ):
         """
         Parameters
@@ -5118,8 +5118,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         ignore_node_ages : bool
             If `True`, then node ages of splits will not be stored. If
             `False`, then node ages will be stored.
-        ignore_tree_weights : bool
-            If `True`, then tree weights will not be used to weight splits.
+        use_tree_weights : bool
+            If `False`, then tree weights will not be used to weight splits.
         """
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
                 taxon_namespace=taxon_namespace)
@@ -5131,7 +5131,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self.tree_traversal_order = tree_traversal_order
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
-        self.ignore_tree_weights = ignore_tree_weights
+        self.use_tree_weights = use_tree_weights
         self.default_edge_length_value = 0 # edge.length of `None` gets this value
 
         # Storage
@@ -5406,7 +5406,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         assert self._tree_traversal_order == tree_array._tree_traversal_order
         assert self.ignore_edge_lengths is tree_array.ignore_edge_lengths
         assert self.ignore_node_ages is tree_array.ignore_node_ages
-        assert self.ignore_tree_weights is tree_array.ignore_tree_weights
+        assert self.use_tree_weights is tree_array.use_tree_weights
         self._tree_splits.extend(tree_array._tree_splits)
         self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
         self._split_distribution.update(tree_array._split_distribution)
@@ -5444,7 +5444,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree_traversal_order=self._tree_traversal_order,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
-                ignore_tree_weights=self.ignore_tree_weights)
+                use_tree_weights=self.use_tree_weights)
         ta += self
         ta += other
         return ta

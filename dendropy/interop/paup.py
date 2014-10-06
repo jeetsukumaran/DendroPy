@@ -182,11 +182,10 @@ class PaupService(object):
         self._nexus_writer = nexuswriter.NexusWriter()
         self.commands = []
 
-
     def count_splits_from_files(self,
             tree_filepaths=None,
             is_rooted=None,
-            ignore_tree_weights=None,
+            use_tree_weights=None,
             burnin=None,
             taxa_definition_filepath=None):
         """
@@ -201,8 +200,8 @@ class PaupService(object):
             If `True` then trees will be treated as rooted. If `False`, then
             rooting follows that specified in the tree statements, defaulting
             to unrooted if not specified.
-        ignore_tree_weights : bool
-            If `True` then tree weighting statements are disregarded.
+        use_tree_weights : bool
+            If `False` then tree weighting statements are disregarded.
             Otherwise, they will be regarded.
         burnin : integer
             Skip these many trees (from beginning of each source).
@@ -233,12 +232,12 @@ class PaupService(object):
         self.stage_load_trees(
             tree_filepaths=tree_filepaths,
             is_rooted=is_rooted,
-            ignore_tree_weights=ignore_tree_weights,
+            use_tree_weights=use_tree_weights,
             burnin=burnin,
             mode=7)
         self.stage_list_taxa()
         self.stage_tree_info()
-        self.stage_count_splits(ignore_tree_weights=ignore_tree_weights)
+        self.stage_count_splits(use_tree_weights=use_tree_weights)
         # print("\n".join(self.commands))
         stdout, stderr = self._execute_command_sequence()
         # print("\n".join(stdout))
@@ -266,7 +265,7 @@ class PaupService(object):
     def stage_load_trees(self,
             tree_filepaths,
             is_rooted=None,
-            ignore_tree_weights=None,
+            use_tree_weights=None,
             burnin=None,
             mode=7): # keep trees in memory, specify 3 to clear
         """
@@ -281,12 +280,12 @@ class PaupService(object):
             rooting = "rooted=yes"
         else:
             rooting = "unrooted=yes"
-        if ignore_tree_weights is None:
+        if use_tree_weights is None:
             treewts = ""
-        elif ignore_tree_weights:
-            treewts = "storetreewts=no"
-        else:
+        elif use_tree_weights:
             treewts = "storetreewts=yes"
+        else:
+            treewts = "storetreewts=no"
         if burnin is None:
             burnin = 0
         gettree_template = "gett file= '{{tree_filepath}}' storebrlens=yes warntree=no {rooting} {treewts} from={burnin} mode={mode};".format(
@@ -312,7 +311,7 @@ class PaupService(object):
         return self.commands
 
     def stage_count_splits(self,
-            ignore_tree_weights=None,
+            use_tree_weights=None,
             majrule_filepath=None,
             majrule_freq=0.5):
         """
@@ -325,12 +324,12 @@ class PaupService(object):
             treefile = ""
         else:
             treefile = " treefile={filepath} replace=yes "
-        if ignore_tree_weights is None:
+        if use_tree_weights is None:
             treewts = ""
-        elif ignore_tree_weights:
-            treewts = "usetreewts=no"
-        else:
+        elif use_tree_weights:
             treewts = "usetreewts=yes"
+        else:
+            treewts = "usetreewts=no"
         commands = []
         commands.append("[!SPLITS COUNT BEGIN]")
         commands.append("contree / strict=no {treefile} showtree=no grpfreq=yes majrule=yes percent={percent} {treewts}".format(
@@ -488,7 +487,7 @@ def symmetric_difference(tree1, tree2):
             tree_filepaths=[tf.name],
             taxa_filepath=tf.name,
             is_rooted=tree1.is_rooted,
-            ignore_tree_weights=True,
+            use_tree_weights=True,
             burnin=0)
     sf = sd.split_frequencies
     conflicts = 0
@@ -496,117 +495,6 @@ def symmetric_difference(tree1, tree2):
         if v < 1.0:
             conflicts += 1
     return conflicts
-
-# def get_split_distribution(tree_filepaths,
-#                             taxa_filepath,
-#                             is_rooted=False,
-#                             ignore_tree_weights=False,
-#                             burnin=0):
-#     """Returns a SplitDistribution object of splits calculated over
-#     specified trees"""
-#     p = PaupRunner()
-#     p.stage_execute_file(taxa_filepath, clear_trees=True)
-#     p.stage_list_taxa()
-#     p.stage_load_trees(tree_filepaths=tree_filepaths, is_rooted=is_rooted, burnin=burnin)
-#     p.stage_count_splits(ignore_tree_weights=ignore_tree_weights)
-#     p.run()
-#     taxon_namespace = p.parse_taxon_namespace()
-#     tree_count, bipartition_counts, bipartition_freqs = p.parse_group_freqs()
-#     sd = build_split_distribution(bipartition_counts,
-#                                     tree_count,
-#                                     taxon_namespace,
-#                                     is_rooted=is_rooted)
-#     return sd
-
-# def build_split_distribution(bipartition_counts,
-#                                 tree_count,
-#                                 taxon_namespace,
-#                                 is_rooted=False):
-#     """
-#     Returns a populated SplitDistribution object based on the given
-#     bipartition info, ``bipartition_counts``.
-#     ``bipartition_counts`` is a dictionary, where the keys are PAUP split
-#     info (e.g. '.*****.*.*.**************************************') and the
-#     value are the frequency of the split.
-#     """
-#     sd = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
-#     sd.total_trees_counted = tree_count
-#     for g in bipartition_counts:
-#         sd.add_split_count(paup_group_to_mask(g, normalized=not is_rooted),
-#             bipartition_counts[g])
-#     return sd
-
-# def bipartitions(data_filepath,
-#                     tree_filepath,
-#                     is_rooted=False,
-#                     use_tree_weights=True,
-#                     min_clade_freq=0.5,
-#                     burnin=0,
-#                     paup_path=PAUP_PATH,
-#                     ):
-#     """
-#     Given a set of trees (and data file), this uses PAUP*'s contree
-#     command to calculate the splits (bipartitions) on the trees, as well
-#     as their counts and relative percentages. Returned is:
-
-#         - list of taxon labels, in order of the index assigned to them by PAUP
-#         - list of bipartition strings in PAUP*'s notation (e.g., "...**.*.*")
-#         - a dictionary with the bipartition string as a key and the count of the
-#             bipartition occurrence in the trees examined as values
-#         - a dictionary with the bipartition string as a key and the
-#             percentage of trees with the bipartition occurence as values.
-#     """
-
-#     if use_tree_weights:
-#         treewts = "yes"
-#     else:
-#         treewts = "no"
-#     paup_args = {
-#         'data_filepath': data_filepath,
-#         'tree_filepath': tree_filepath,
-#         'percent': min_clade_freq * 100,
-#         'burnin': burnin+1,
-#         'treewts': treewts,
-#         'unrooted' : not is_rooted,
-#     }
-#     paup_template = """\
-#     set warnreset=no;
-#     set increase=auto;
-#     exe {data_filepath};
-#     gett file={tree_filepath} storebrlens=yes warntree=no unrooted={unrooted} StoreTreeWts={treewts};
-#     tstatus / full;
-#     contree {burnin}-. / strict=no showtree=no grpfreq=yes majrule=yes percent={percent} UseTreeWts={treewts};
-# """
-#     paup_run = subprocess.Popen([paup_path, "-n"],
-#                                 stdin=subprocess.PIPE,
-#                                 stdout=subprocess.PIPE)
-#     paup_input = paup_template.format(**paup_args)
-#     stdout, stderr = processio.communicate(paup_run, paup_input)
-#     results = stdout.split('\n')
-#     tax_labels = []
-#     bipartitions = []
-#     bipartition_freqs = {}
-#     bipartition_counts = {}
-#     bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
-#     bipartition_pattern2 = re.compile('([\.|\*]+)\s+([\d\.]+)')
-#     taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
-#     for line in results:
-#         bp_match = bipartition_pattern.match(line)
-#         if bp_match:
-#             bipartitions.append(bp_match.group(1))
-#             bipartition_counts[bp_match.group(1)] = float(bp_match.group(2)) # counts may be weighted, so non-integer
-#             bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
-#         else:
-#             bp_match2 = bipartition_pattern.match(line)
-#             if bp_match2:
-#                 bipartitions.append(bp_match2.group(1))
-#                 bipartition_counts[bp_match2.group(1)] = float(bp_match2.group(2)) # counts may be weighted, so non-integer
-#                 bipartition_freqs[bp_match2.group(1)] = float(bp_match2.group(2))
-#             else:
-#                 ti_match = taxinfo_pattern.match(line)
-#                 if ti_match:
-#                     tax_labels.append(ti_match.group(2).strip())
-#     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
 def pscore_trees(
         trees,
@@ -998,196 +886,4 @@ class PaupSession(processio.Session):
         cf.flush()
         stdout, stderr = self.execute_file(cf.name)
         return stdout, stderr
-
-# class PaupRunner(object):
-#     """ Wrapper around PAUP* """
-
-#     def __init__(self, paup_path=None):
-#         if paup_path is None:
-#             self.paup_path = PAUP_PATH
-#         else:
-#             self.paup_path = paup_path
-#         self.commands = []
-#         self.output = []
-
-#     ### WRAPPER OPERATIONS ###
-
-#     def run(self):
-#         """ executes list of commands in PAUP*,
-#         return results of stdout """
-#         commands = "\n".join(self.commands) + "\n"
-#         paup_run = subprocess.Popen([self.paup_path, "-n"],
-#                                     stdin=subprocess.PIPE,
-#                                     stdout=subprocess.PIPE,
-#                                     stderr=subprocess.PIPE)
-#         # stdout, stderr = processio.communicate(paup_run, commands)
-#         stdout, stderr = processio.communicate(paup_run, commands)
-#         results = stdout.split("\n")
-#         stderr = stderr.replace("paup>", "") # weird dev/paup error ... lots or prompts spring up
-#         if stderr:
-#             _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
-#             _LOG.error(commands)
-#             _LOG.error("\n*** ERROR FROM PAUP ***")
-#             _LOG.error(stderr)
-#             # _LOG.error("\n*** PAUP OUTPUT ***\n")
-#             # _LOG.error(stdout)
-#             sys.exit(1)
-#         self.output.extend(results)
-#         return results
-
-#     ### PAUP COMMANDS ###
-
-#     def stage_list_taxa(self):
-#         """
-#         Given a data file in memory, this gets PAUP* to print a list of
-#         taxa that can be used to build a TaxaBlock later.
-#         """
-#         self.commands.append("[!TAXON LIST BEGIN]\ntstatus / full;\n[!TAXON LIST END]\n")
-
-#     def stage_count_splits(self,
-#             ignore_tree_weights=False,
-#             majrule_filepath=None,
-#             majrule_freq=0.5):
-#         """
-#         Given trees in memory, this composes a command to count the split
-#         frequencies across the trees as well as a save the majority-rule
-#         consensus tree if a path is given.
-#         """
-#         percent = 100 * majrule_freq
-#         if majrule_filepath is not None:
-#             treefile = " treefile=%s replace=yes "
-#         else:
-#             treefile = ""
-#         if ignore_tree_weights:
-#             treewts = "UseTreeWts=no"
-#         else:
-#             treewts = "UseTreeWts=yes"
-#         paup_template = []
-#         paup_template.append("[!SPLITS COUNT BEGIN]")
-#         paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d %s;" \
-#             % (treefile, percent, treewts));
-#         paup_template.append("[!SPLITS COUNT END]")
-#         self.commands.extend(paup_template)
-
-#     def stage_execute_file(self,
-#                                 filepath,
-#                                 clear_trees=False):
-#         """Executes file, optionally clearing trees from file if requested"""
-#         self.commands.append("execute %s;" % filepath)
-#         if clear_trees:
-#             self.commands.append("cleartrees;")
-
-#     def stage_deroot(self):
-#         self.commands.append("deroot;")
-
-#     def stage_load_trees(self,
-#             tree_filepaths,
-#             is_rooted=False,
-#             ignore_tree_weights=False,
-#             burnin=0,
-#             mode=7): # keep trees in memory, specify 3 to clear
-#         """
-#         Composes commands to load a set of trees into PAUP*, with the specified
-#         number of burnin dropped. NOTE: Taxa Block must be active.
-#         """
-#         if isinstance(tree_filepaths, str):
-#             raise Exception("expecting list of filepaths, not string")
-#         if is_rooted:
-#             rooting = "rooted=yes"
-#         else:
-#             rooting = "unrooted=yes"
-#         if ignore_tree_weights:
-#             treewts = "storetreewts=yes"
-#         else:
-#             treewts = "storetreewts=yes"
-#         gettree_template = 'gett file= %%s storebrlens=yes warntree=no %s %s from=%d mode=%d;' % (rooting, treewts, burnin+1, mode)
-#         paup_template = []
-#         paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
-#         for tree_filepath in tree_filepaths:
-#             paup_template.append(gettree_template % tree_filepath)
-#         self.commands.extend(paup_template)
-
-#     ### OUTPUT PARSERS ###
-
-#     def parse_taxon_namespace(self):
-#         """
-#         Given PAUP* output that includes a taxon listing as produced by
-#         `stage_list_taxa`, this parses out and returns a taxon block.
-#         """
-#         taxlabels = []
-#         taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
-#         idx = 0
-#         for line in self.output:
-#             idx += 1
-#             if line == "TAXON LIST BEGIN":
-#                 break
-#         for line in self.output[idx:]:
-#             if line == "TAXON LIST END":
-#                 break
-#             ti_match = taxinfo_pattern.match(line)
-#             if ti_match:
-#                 taxlabels.append(ti_match.group(2).strip())
-#         taxon_namespace = dendropy.TaxonNamespace()
-#         for taxlabel in taxlabels:
-#             taxon_namespace.new_taxon(label=taxlabel)
-#         return taxon_namespace
-
-#     def parse_group_freqs(self):
-#         """
-#         Given PAUP* output that includes a split counting procedure,
-#         this collects the splits and returns a dictionary of group strings and
-#         their frequencies
-#         """
-#         bipartitions = []
-#         bipartition_freqs = {}
-#         bipartition_counts = {}
-#         tree_count = None
-#         tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree.*', re.I)
-
-#         bipartition_section = re.compile('Bipartitions found in one or more trees and frequency of occurrence:')
-#         bp_full_row_with_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
-#         bp_full_row_with_no_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)')
-#         bp_row = re.compile('([\.|\*]+).*')
-
-#         # find tree count
-#         for idx, line in enumerate(self.output):
-#             tp_match = tree_count_pattern.match(line)
-#             if tp_match:
-#                 break
-#         if not tp_match:
-#             raise Exception("Failed to find tree count in PAUP* output")
-#         tree_count = int(tp_match.group(1))
-
-#         while not bp_row.match(self.output[idx]):
-#             idx += 1
-
-#         split_idx = 0
-#         split_reps = {}
-#         for line in self.output[idx:]:
-#             if line == "SPLITS COUNT END":
-#                     break
-#             bp_match = bp_full_row_with_perc_col.match(line)
-#             if not bp_match:
-#                 bp_match = bp_full_row_with_no_perc_col.match(line)
-#             if bp_match:
-#                 # full row, or end of partial rows
-#                 if len(split_reps) == 0:
-#                     split_rep = bp_match.group(1)
-#                 else:
-#                     split_rep = split_reps[split_idx] + bp_match.group(1)
-#                 bipartition_counts[split_rep] = float(bp_match.group(2))
-#                 bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
-#                 split_idx += 1
-#             else:
-#                 # either (1) partial row or (2) break between sections
-#                 bp_match = bp_row.match(line)
-#                 if not bp_match:
-#                     split_idx = 0
-#                 else:
-#                     if split_idx in split_reps:
-#                         split_reps[split_idx] += bp_match.group(1)
-#                     else:
-#                         split_reps[split_idx] = bp_match.group(1)
-#                     split_idx += 1
-#         return tree_count, bipartition_counts, bipartition_freqs
 

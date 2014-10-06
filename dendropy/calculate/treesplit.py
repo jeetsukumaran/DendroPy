@@ -392,7 +392,7 @@ class SplitDistribution(object):
             taxon_namespace=None,
             ignore_edge_lengths=False,
             ignore_node_ages=True,
-            ignore_tree_weights=False,
+            use_tree_weights=True,
             ultrametricity_precision=0.0000001):
 
         # taxon namespace management
@@ -404,7 +404,7 @@ class SplitDistribution(object):
         # configuration
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
-        self.ignore_tree_weights = ignore_tree_weights
+        self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
         self.error_on_mixed_rooting_types = True
 
@@ -544,29 +544,6 @@ class SplitDistribution(object):
         return self._split_freqs
     split_frequencies = property(_get_split_frequencies)
 
-    # def _get_split_frequencies(self):
-    #     "Returns dictionary of splits : split frequencies."
-    #     if self.ignore_tree_weights:
-    #         return self._get_unweighted_split_frequencies()
-    #     else:
-    #         return self._get_weighted_split_frequencies()
-    # split_frequencies = property(_get_split_frequencies)
-
-    # def _get_unweighted_split_frequencies(self):
-    #     "Returns dictionary of splits : split frequencies."
-    #     if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
-    #         self.calc_freqs()
-    #     return self._split_freqs
-    # unweighted_split_frequencies = property(_get_unweighted_split_frequencies)
-
-    # def _get_weighted_split_frequencies(self):
-    #     "Returns dictionary of splits : weighted_split frequencies."
-    #     if self._weighted_split_freqs is None \
-    #             or self._trees_counted_for_weighted_freqs != self.total_trees_counted:
-    #         self.calc_weighted_freqs()
-    #     return self._weighted_split_freqs
-    # weighted_split_frequencies = property(_get_weighted_split_frequencies)
-
     def summarize_edge_lengths(self):
         self._split_edge_length_summaries = {}
         for split, elens in self.split_edge_lengths.items():
@@ -634,10 +611,10 @@ class SplitDistribution(object):
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
             tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)
-        if tree.weight is None or self.ignore_tree_weights:
-            weight_to_use = 1.0
-        else:
+        if tree.weight is not None and self.use_tree_weights:
             weight_to_use = float(tree.weight)
+        else:
+            weight_to_use = 1.0
         self.sum_of_tree_weights += weight_to_use
         if tree.is_rooted:
             self.tree_rooting_types_counted.add(True)

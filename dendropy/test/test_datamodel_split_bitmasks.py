@@ -45,7 +45,7 @@ class SplitDistributionTestCases(ExtendedTestCase):
     def check_splits_distribution(self,
             tree_filename,
             splits_filename,
-            ignore_tree_weights,
+            use_tree_weights,
             is_rooted,
             expected_num_trees,
             ):
@@ -59,15 +59,15 @@ class SplitDistributionTestCases(ExtendedTestCase):
                 key_column_index=key_column_index,
                 )
 
-        print("* {} ({})".format(tree_filename, splits_filename))
+        # print("* {} ({})".format(tree_filename, splits_filename))
         tree_filepath = pathmap.tree_source_path(tree_filename)
         trees = dendropy.TreeList.get_from_path(
                 tree_filepath,
                 "nexus",
-                store_tree_weights=not ignore_tree_weights)
+                store_tree_weights=use_tree_weights)
         sd = treesplit.SplitDistribution(
                 taxon_namespace=trees.taxon_namespace,
-                ignore_tree_weights=ignore_tree_weights)
+                use_tree_weights=use_tree_weights)
         for tree in trees:
             sd.count_splits_on_tree(tree)
 
@@ -120,7 +120,7 @@ class SplitDistributionTestCases(ExtendedTestCase):
 
     def test_group1(self):
         sources = [
-                # ("cetaceans.mb.no-clock.mcmc.trees"    , 251, False, False), # Trees explicitly unrooted
+                ("cetaceans.mb.no-clock.mcmc.trees"    , 251, False, False), # Trees explicitly unrooted
                 ("cetaceans.mb.no-clock.mcmc.weighted-01.trees" , 251, False , True), # Weighted
                 ("cetaceans.mb.no-clock.mcmc.weighted-02.trees" , 251, False , True), # Weighted
                 ("cetaceans.mb.no-clock.mcmc.weighted-03.trees" , 251, False , True), # Weighted
@@ -135,21 +135,21 @@ class SplitDistributionTestCases(ExtendedTestCase):
                 ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
                 ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
         ]
-        splits_filename_template = "{stemname}.is-rooted-{is_rooted}.ignore-tree-weights-{ignore_weights}.burnin-{burnin}.splits.txt"
+        splits_filename_template = "{stemname}.is-rooted-{is_rooted}.use-tree-weights-{use_weights}.burnin-{burnin}.splits.txt"
         for tree_filename, num_trees, treefile_is_rooted, treefile_is_weighted in sources:
             stemname = tree_filename
-            for ignore_weights in (False, True, None):
+            for use_weights in (False, True, None):
                 expected_is_rooted = treefile_is_rooted
                 splits_filename = splits_filename_template.format(
                         stemname=stemname,
                         is_rooted=expected_is_rooted,
-                        ignore_weights=ignore_weights,
+                        use_weights=use_weights,
                         burnin=0)
                 self.check_splits_distribution(
                         tree_filename=tree_filename,
                         splits_filename=splits_filename,
                         is_rooted=treefile_is_rooted,
-                        ignore_tree_weights=ignore_weights,
+                        use_tree_weights=use_weights,
                         expected_num_trees=num_trees)
 
 class SplitCountTest(ExtendedTestCase):

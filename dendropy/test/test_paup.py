@@ -78,7 +78,7 @@ else:
                 taxa_definition_filepath,
                 splits_filename,
                 paup_as_rooted,
-                paup_ignore_tree_weights,
+                paup_use_tree_weights,
                 paup_burnin,
                 expected_taxon_labels,
                 expected_is_rooted,
@@ -90,7 +90,7 @@ else:
                     tree_filepaths=[tree_filepath],
                     taxa_definition_filepath=taxa_definition_filepath,
                     is_rooted=paup_as_rooted,
-                    ignore_tree_weights=paup_ignore_tree_weights,
+                    use_tree_weights=paup_use_tree_weights,
                     burnin=paup_burnin,
                     )
             num_trees = result["num_trees"]
@@ -175,7 +175,7 @@ else:
                     ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
                     ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
             ]
-            splits_filename_template = "{stemname}.is-rooted-{is_rooted}.ignore-tree-weights-{ignore_weights}.burnin-{burnin}.splits.txt"
+            splits_filename_template = "{stemname}.is-rooted-{is_rooted}.use-tree-weights-{use_weights}.burnin-{burnin}.splits.txt"
             for tree_filename, num_trees, treefile_is_rooted, treefile_is_weighted in sources:
                 stemname = tree_filename
                 if "cetacean" in tree_filename:
@@ -184,7 +184,7 @@ else:
                 else:
                     expected_taxon_labels = issue_mth_taxon_labels
                     taxa_definition_filepath = pathmap.tree_source_path("issue_mth_2009-02-03.unrooted.nexus")
-                for ignore_weights in (False, True, None):
+                for use_weights in (False, True, None):
                     for paup_read_as_rooted in (None, True, False):
                         for paup_burnin in (0, 150):
                             if tree_filename.startswith("issue_mth") and paup_burnin > 0:
@@ -198,14 +198,14 @@ else:
                             splits_filename = splits_filename_template.format(
                                     stemname=stemname,
                                     is_rooted=paup_read_as_rooted,
-                                    ignore_weights=ignore_weights,
+                                    use_weights=use_weights,
                                     burnin=paup_burnin)
                             self.check_splits_counting(
                                     tree_filename=tree_filename,
                                     taxa_definition_filepath=taxa_definition_filepath,
                                     splits_filename=splits_filename,
                                     paup_as_rooted=paup_read_as_rooted,
-                                    paup_ignore_tree_weights=ignore_weights,
+                                    paup_use_tree_weights=use_weights,
                                     paup_burnin=paup_burnin,
                                     expected_taxon_labels=expected_taxon_labels,
                                     expected_is_rooted=expected_is_rooted,
