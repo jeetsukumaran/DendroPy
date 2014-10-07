@@ -67,19 +67,29 @@ def tree_from_splits(
     #new_old_split_map = {}
     for s in splits:
         m = s & taxa_mask
-        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-            if not is_rooted:
-                c = (~m) & taxa_mask
-                if (c-1) & c: # not singleton (i.e., one "0")
-                    if 1 & m:
-                        k = c
-                    else:
-                        k = m
-                    splits_to_add.append(k)
-                    #new_old_split_map[k] = m
-            else:
+        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1"); # need to modify if dealing with incomplete leaf sets
+            if is_rooted:
                 splits_to_add.append(m)
-                #new_old_split_map[m] = m
+            else:
+                # c = (~m) & taxa_mask
+                # if (c-1) & c: # not singleton (i.e., one "0")
+                #     if 1 & m:
+                #         k = c
+                #     else:
+                #         k = m
+                #     splits_to_add.append(k)
+                #     #new_old_split_map[k] = m
+
+                if is_non_singleton_split(m, taxa_mask):
+                    k = container.NormalizedBitmaskDict.normalize(m, taxa_mask, lowest_bit_only(taxa_mask))
+                    splits_to_add.append(k)
+
+                # if is_non_singleton_split(m, taxa_mask):
+                #     if 1 & m:
+                #         k = m # right-most bit is '1': no change
+                #     else:
+                #         k = (~m) & taxa_mask
+                #     splits_to_add.append(k)
 
     # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
     #for freq, split_to_add, split_in_dict in to_try_to_add:
@@ -87,11 +97,28 @@ def tree_from_splits(
         if (split_to_add & root_edge.split_bitmask) != split_to_add:
             continue
         elif leaf_to_root_search:
-            lb = lowest_bit_only(split_to_add)
+            print("---")
+            print("current split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
+            if is_rooted:
+                lb = lowest_bit_only(split_to_add)
+            else:
+                lb = ~set_lowest_zero_bit_only(split_to_add) & taxa_mask
+                print("LB, pre-flipping:      {}".format(split_as_string(set_lowest_zero_bit_only(split_to_add), len(taxon_namespace))))
+                print("LB, post-flipping:     {}".format(split_as_string(lb, len(taxon_namespace))))
             one_leaf = to_leaf_dict[lb]
             parent_node = one_leaf
-            while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
+
+            # print("starting parent node = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace), symbol1="a", symbol2="b")))
+            # print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace), symbol1="a", symbol2="b")))
+
+            print("starting parent node = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace))))
+            print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
+            print("          is equal to: {}".format(split_as_string(split_to_add | parent_node.edge.split_bitmask, len(taxon_namespace))))
+            if (split_to_add | parent_node.edge.split_bitmask) == split_to_add:
+                print("Condition met:         {}".format(split_as_string(split_to_add & parent_node.edge.split_bitmask, len(taxon_namespace))))
+            while (split_to_add | parent_node.edge.split_bitmask) != split_to_add and parent_node.parent_node is not None:
                 parent_node = parent_node.parent_node
+                print("new parent node      = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace))))
         else:
             parent_node = con_tree.mrca(split_bitmask=split_to_add)
         if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
@@ -100,15 +127,37 @@ def tree_from_splits(
         #self.map_split_support_to_node(node=new_node, split_support=freq)
         new_node_children = []
         new_edge = new_node.edge
-        new_edge.split_bitmask = 0
+        if is_rooted:
+            new_edge.split_bitmask = 0
+        else:
+            new_edge.split_bitmask = 1
         for child in parent_node.child_nodes():
             # might need to modify the following if rooted splits
             # are used
             cecm = child.edge.split_bitmask
-            if (cecm & split_to_add ):
-                assert cecm != split_to_add
-                new_edge.split_bitmask |= cecm
-                new_node_children.append(child)
+            print("                cecm = {}".format(split_as_string(cecm, len(taxon_namespace))))
+            print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
+            print("          is equal to: {}".format(split_as_string( (~cecm & taxa_mask) & (~split_to_add & taxa_mask), len(taxon_namespace))))
+            if is_rooted:
+                if (cecm & split_to_add ):
+                    print("(adding)")
+                    assert cecm != split_to_add
+                    new_edge.split_bitmask |= cecm
+                    new_node_children.append(child)
+            else:
+                if ((~cecm & taxa_mask) & (~split_to_add & taxa_mask)):
+                    print("(adding)")
+                    assert cecm != split_to_add
+                    print("OLD MASK IS EQUAL TO : {}".format(split_as_string(new_edge.split_bitmask, len(taxon_namespace))))
+                    print("ADD CHILD            : {}".format(split_as_string(cecm, len(taxon_namespace))))
+                    new_node_children.append(child)
+                    x = dendropy.Tree(seed_node=new_node, taxon_namespace=taxon_namespace)
+                    x.is_rooted = False
+                    x.encode_splits()
+                    print("NEW MASK IS EQUAL TO : {}".format(split_as_string(new_edge.split_bitmask, len(taxon_namespace))))
+                else:
+                    print("(NOT ADDING)")
+                print()
 
         # Check to see if we have accumulated all of the bits that we
         #   needed, but none that we don't need.
@@ -371,8 +420,13 @@ def delete_outdegree_one(tree):
                 p.remove_child(h)
 
 def lowest_bit_only(split):
+    "Returns a mask in which the only bit set is the lowest (rightmost) set bit in `split`"
     m = split & (split - 1)
     return m ^ split
+
+def set_lowest_zero_bit_only(split):
+    "Returns a mask in which the only bit set is the lowest (rightmost) *unset* bit in `split`"
+    return lowest_bit_only(~split)
 
 __n_bits_set = (0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4)
 def count_bits(split):

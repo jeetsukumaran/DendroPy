@@ -312,9 +312,9 @@ class NormalizedBitmaskDict(dict):
 
     def normalize(key, mask, lowest_relevant_bit):
         if key & lowest_relevant_bit:
-            return (~key) & mask
-        else:
             return key & mask
+        else:
+            return (~key) & mask
         # assert (key & mask) == key
         # return key
     normalize = staticmethod(normalize)

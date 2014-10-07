@@ -2361,11 +2361,21 @@ class Tree(
 
         if split_bitmask is None or split_bitmask == 0:
             raise ValueError("Null split bitmask (0)")
-
         if start_node.edge.split_bitmask is None:
             treesplit.encode_splits(self, delete_outdegree_one=False)
+        if not self.is_rooted:
+            # 2014-09-07: now that splits on unrooted trees are stored in their
+            # normalized form on edges, we need to normalize the split we are
+            # searching for
+            xxx = split_bitmask
+            split_bitmask = self.split_edge_map.normalize_key(split_bitmask)
 
         if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
+            print(treesplit.split_as_string(start_node.edge.split_bitmask, len(self.taxon_namespace)))
+            print(treesplit.split_as_string(split_bitmask, len(self.taxon_namespace)))
+            print(treesplit.split_as_string(xxx, len(self.taxon_namespace)))
+            print(treesplit.split_as_string(start_node.edge.split_bitmask & split_bitmask, len(self.taxon_namespace)))
+            print(treesplit.split_as_string(start_node.edge.split_bitmask & xxx, len(self.taxon_namespace)))
             return None
 
         curr_node = start_node

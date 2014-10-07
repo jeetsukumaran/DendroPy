@@ -154,6 +154,29 @@ def patristic_distance(tree, taxon1, taxon2, recalculate_splits=False):
     if recalculate_splits or tree.split_edge_map is None:
         tree.encode_splits()
     mrca = tree.mrca(taxa=[taxon1, taxon2])
+
+    ### DEBUG
+    def _debug_str(node):
+        if node.taxon is not None:
+            if node.taxon.label is not None:
+                tag = node.taxon.label
+            else:
+                tag = "Taxon@{}".format(id(node.taxon.label))
+        elif node.label is not None:
+            tag = node.label
+        else:
+            tag = "Node@{}".format(id(node))
+        return tag
+    print(tree.as_string("newick"))
+    print("MRCA for '{}' and '{}' is: '{}'".format(taxon1.label, taxon2.label, _debug_str(mrca)))
+    for node in tree:
+        if node is mrca:
+            is_mrca = "[MRCA of '{}' and '{}']".format(taxon1.label, taxon2.label)
+        else:
+            is_mrca = ""
+        print("{}{}: {}".format(is_mrca, _debug_str(node), [_debug_str(ch) for ch in node._child_nodes]))
+    ### DEBUG
+
     dist = 0
     n = tree.find_node(lambda x: x.taxon == taxon1)
     while n != mrca:

@@ -33,10 +33,10 @@ class TreeFromSplitsTest(unittest.TestCase):
 
     def testTrees(self):
         tree_files = [
-                ("pythonidae.beast.summary.tre", "force-rooted", True),
-                ("primates.beast.mcct.medianh.tre", "force-rooted", True),
                 ("dendropy-test-trees-n33-unrooted-x100a.nexus", "force-unrooted", False),
-                ("dendropy-test-trees-multifurcating-unrooted.nexus", "force-unrooted", False),
+                # ("dendropy-test-trees-multifurcating-unrooted.nexus", "force-unrooted", False),
+                # ("pythonidae.beast.summary.tre", "force-rooted", True),
+                # ("primates.beast.mcct.medianh.tre", "force-rooted", True),
                 ]
         for tree_file, rooting, is_rooted in tree_files:
             ref_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path(tree_file),
@@ -44,11 +44,15 @@ class TreeFromSplitsTest(unittest.TestCase):
                     rooting=rooting)
             treesplit.encode_splits(ref_tree)
             splits = ref_tree.split_edge_map.keys()
+            # splits = [n.edge.split_bitmask for n in ref_tree]
             t_tree = treesplit.tree_from_splits(
                     splits=splits,
                     taxon_namespace=ref_tree.taxon_namespace,
                     is_rooted=ref_tree.is_rooted)
             treesplit.encode_splits(t_tree)
+            print("----")
+            print(ref_tree.as_string("newick"))
+            print(t_tree.as_string("newick"))
             self.assertEqual(treecompare.symmetric_difference(ref_tree, t_tree), 0)
 
 if __name__ == "__main__":
