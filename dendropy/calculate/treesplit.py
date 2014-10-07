@@ -48,7 +48,7 @@ def tree_from_splits(
     """
     leaf_to_root_search = True
     con_tree = dendropy.Tree(taxon_namespace=taxon_namespace)
-    con_tree.is_rooted = is_rooted
+    con_tree.is_rooted = True
     for taxon in taxon_namespace:
         con_tree.seed_node.new_child(taxon=taxon)
     taxa_mask = taxon_namespace.all_taxa_bitmask()
@@ -67,29 +67,15 @@ def tree_from_splits(
     #new_old_split_map = {}
     for s in splits:
         m = s & taxa_mask
-        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1"); # need to modify if dealing with incomplete leaf sets
+        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
             if is_rooted:
                 splits_to_add.append(m)
             else:
-                # c = (~m) & taxa_mask
-                # if (c-1) & c: # not singleton (i.e., one "0")
-                #     if 1 & m:
-                #         k = c
-                #     else:
-                #         k = m
-                #     splits_to_add.append(k)
-                #     #new_old_split_map[k] = m
-
-                if is_non_singleton_split(m, taxa_mask):
-                    k = container.NormalizedBitmaskDict.normalize(m, taxa_mask, lowest_bit_only(taxa_mask))
-                    splits_to_add.append(k)
-
-                # if is_non_singleton_split(m, taxa_mask):
-                #     if 1 & m:
-                #         k = m # right-most bit is '1': no change
-                #     else:
-                #         k = (~m) & taxa_mask
-                #     splits_to_add.append(k)
+                if 1 & m:
+                    # "denormalize" splits
+                    splits_to_add.append( (~m) & taxa_mask )
+                else:
+                    splits_to_add.append(m)
 
     # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
     #for freq, split_to_add, split_in_dict in to_try_to_add:
@@ -97,28 +83,11 @@ def tree_from_splits(
         if (split_to_add & root_edge.split_bitmask) != split_to_add:
             continue
         elif leaf_to_root_search:
-            print("---")
-            print("current split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
-            if is_rooted:
-                lb = lowest_bit_only(split_to_add)
-            else:
-                lb = ~set_lowest_zero_bit_only(split_to_add) & taxa_mask
-                print("LB, pre-flipping:      {}".format(split_as_string(set_lowest_zero_bit_only(split_to_add), len(taxon_namespace))))
-                print("LB, post-flipping:     {}".format(split_as_string(lb, len(taxon_namespace))))
+            lb = lowest_bit_only(split_to_add)
             one_leaf = to_leaf_dict[lb]
             parent_node = one_leaf
-
-            # print("starting parent node = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace), symbol1="a", symbol2="b")))
-            # print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace), symbol1="a", symbol2="b")))
-
-            print("starting parent node = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace))))
-            print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
-            print("          is equal to: {}".format(split_as_string(split_to_add | parent_node.edge.split_bitmask, len(taxon_namespace))))
-            if (split_to_add | parent_node.edge.split_bitmask) == split_to_add:
-                print("Condition met:         {}".format(split_as_string(split_to_add & parent_node.edge.split_bitmask, len(taxon_namespace))))
-            while (split_to_add | parent_node.edge.split_bitmask) != split_to_add and parent_node.parent_node is not None:
+            while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
                 parent_node = parent_node.parent_node
-                print("new parent node      = {}".format(split_as_string(parent_node.edge.split_bitmask, len(taxon_namespace))))
         else:
             parent_node = con_tree.mrca(split_bitmask=split_to_add)
         if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
@@ -127,37 +96,15 @@ def tree_from_splits(
         #self.map_split_support_to_node(node=new_node, split_support=freq)
         new_node_children = []
         new_edge = new_node.edge
-        if is_rooted:
-            new_edge.split_bitmask = 0
-        else:
-            new_edge.split_bitmask = 1
+        new_edge.split_bitmask = 0
         for child in parent_node.child_nodes():
             # might need to modify the following if rooted splits
             # are used
             cecm = child.edge.split_bitmask
-            print("                cecm = {}".format(split_as_string(cecm, len(taxon_namespace))))
-            print("      & split to add = {}".format(split_as_string(split_to_add, len(taxon_namespace))))
-            print("          is equal to: {}".format(split_as_string( (~cecm & taxa_mask) & (~split_to_add & taxa_mask), len(taxon_namespace))))
-            if is_rooted:
-                if (cecm & split_to_add ):
-                    print("(adding)")
-                    assert cecm != split_to_add
-                    new_edge.split_bitmask |= cecm
-                    new_node_children.append(child)
-            else:
-                if ((~cecm & taxa_mask) & (~split_to_add & taxa_mask)):
-                    print("(adding)")
-                    assert cecm != split_to_add
-                    print("OLD MASK IS EQUAL TO : {}".format(split_as_string(new_edge.split_bitmask, len(taxon_namespace))))
-                    print("ADD CHILD            : {}".format(split_as_string(cecm, len(taxon_namespace))))
-                    new_node_children.append(child)
-                    x = dendropy.Tree(seed_node=new_node, taxon_namespace=taxon_namespace)
-                    x.is_rooted = False
-                    x.encode_splits()
-                    print("NEW MASK IS EQUAL TO : {}".format(split_as_string(new_edge.split_bitmask, len(taxon_namespace))))
-                else:
-                    print("(NOT ADDING)")
-                print()
+            if (cecm & split_to_add ):
+                assert cecm != split_to_add
+                new_edge.split_bitmask |= cecm
+                new_node_children.append(child)
 
         # Check to see if we have accumulated all of the bits that we
         #   needed, but none that we don't need.
@@ -171,7 +118,80 @@ def tree_from_splits(
                 new_node.add_child(child)
             parent_node.add_child(new_node)
             con_tree.split_edge_map[split_to_add] = new_edge
+    if not is_rooted:
+        con_tree.is_rooted = False
+        con_tree.encode_splits()
     return con_tree
+
+
+# def tree_from_splits(
+#         splits,
+#         taxon_namespace,
+#         split_edge_lengths=None,
+#         is_rooted=False):
+#     """
+#     Builds a tree from a set of splits, `splits`, using taxon references from
+#     `taxon_namespace`.
+#     If `is_rooted` is True, then tree will be rooted.
+#     If `split_edge_lengths` is not None, it should be a dictionary mapping
+#     splits to edge lengths.
+#     """
+#     leaf_to_root_search = True
+#     con_tree = dendropy.Tree(taxon_namespace=taxon_namespace)
+#     con_tree.is_rooted = True # build the tree up as rooted, and then unroot if needed
+#     for taxon in taxon_namespace:
+#         con_tree.seed_node.new_child(taxon=taxon)
+#     taxa_mask = taxon_namespace.all_taxa_bitmask()
+#     encode_splits(con_tree)
+#     leaves = con_tree.leaf_nodes()
+#     if leaf_to_root_search:
+#         to_leaf_dict = {}
+#         for leaf_idx, leaf in enumerate(leaves):
+#             to_leaf_dict[leaf.edge.split_bitmask] = leaf
+#     root = con_tree.seed_node
+#     root_edge = root.edge
+#     splits_to_add = []
+#     for s in splits:
+#         m = s & taxa_mask
+#         if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1"); # need to modify if dealing with incomplete leaf sets
+#             splits_to_add.append(m)
+#     for split_to_add in splits_to_add:
+#         if (split_to_add & root_edge.split_bitmask) != split_to_add:
+#             continue
+#         elif leaf_to_root_search:
+#             lb = lowest_bit_only(split_to_add)
+#             one_leaf = to_leaf_dict[lb]
+#             parent_node = one_leaf
+#             while (split_to_add | parent_node.edge.split_bitmask) != split_to_add and parent_node.parent_node is not None:
+#                 parent_node = parent_node.parent_node
+#         else:
+#             parent_node = con_tree.mrca(split_bitmask=split_to_add)
+#         if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
+#             continue # split is not in tree, or already in tree.
+#         new_node = dendropy.Node()
+#         new_node_children = []
+#         new_edge = new_node.edge
+#         new_edge.split_bitmask = 0
+#         for child in parent_node.child_nodes():
+#             child_split_mask = child.edge.split_bitmask
+#             if (child_split_mask & split_to_add):
+#                 assert child_split_mask != split_to_add
+#                 new_edge.split_bitmask |= child_split_mask
+#                 new_node_children.append(child)
+#         # Check to see if we have accumulated all of the bits that we
+#         #   needed, but none that we don't need.
+#         if new_edge.split_bitmask == split_to_add:
+#             if split_edge_lengths:
+#                 new_edge.length = split_edge_lengths[split_to_add]
+#             for child in new_node_children:
+#                 parent_node.remove_child(child)
+#                 new_node.add_child(child)
+#             parent_node.add_child(new_node)
+#             con_tree.split_edge_map[split_to_add] = new_edge
+#     if not is_rooted:
+#         con_tree.is_rooted = False
+#         con_tree.encode_splits()
+#     return con_tree
 
 ###############################################################################
 ## TOOLS/UTILITIES FOR MANAGING SPLITS

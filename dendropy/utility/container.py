@@ -310,47 +310,27 @@ class NormalizedBitmaskDict(dict):
         return m ^ s
     lowest_bit_only = staticmethod(lowest_bit_only)
 
+    # this is for the right-most-bit-is-1 normalization convention
     def normalize(key, mask, lowest_relevant_bit):
         if key & lowest_relevant_bit:
-            return key & mask
+            return key & mask                # keep right-most bit to 1
         else:
-            return (~key) & mask
-        # assert (key & mask) == key
-        # return key
+            return (~key) & mask             # force right-most bit as 1
     normalize = staticmethod(normalize)
-#
-#     real_normalize = normalize
-#     def verbose_normalize(key, mask, lowest_relevant_bit):
-#         bm = bin(mask)[2:]
-#         bk = bin(key)[2:]
-#         r = NormalizedBitmaskDict.real_normalize(key, mask, lowest_relevant_bit)
-#         br = bin(r)[2:]
-#         l = max(len(br), max(len(bm), len(bk)))
-#         if mask < 0:
-#             sm = bm.rjust(l, '1')
-#         else:
-#             sm = bm.rjust(l, '0')
-#         sk = bk.rjust(l, '0')
-#         sr = br.rjust(l, '0')
-#         import sys
-#         sys.stderr.write('''Normalizing...
-# key  = %s %d
-# mask = %s %d
-# ret  = %s %d
-# ''' % (sk, key, sm, mask, sr, r))
-#         return r
-#     normalize = staticmethod(verbose_normalize)
+
+    # this is for the right-most-bit-is-0 normalization convention
+    # def normalize(key, mask, lowest_relevant_bit):
+    #     if key & lowest_relevant_bit:
+    #         return (~key) & mask             # force right-most bit as 0
+    #     else:
+    #         return key & mask                # force right-most bit to 0
+    # normalize = staticmethod(normalize)
 
     def __init__(self, other=None, mask=None):
         "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
         self.lowest_relevant_bit = NormalizedBitmaskDict.lowest_bit_only(mask)
         self.mask = mask
-#         sys.stderr.write('''NormalizedBitmaskDict.__init__
-# mask      = %s %d
-# self.mask = %s %d
-# ''' % (bin(mask), mask, bin(self.mask), self.mask))
-        # self.mask = mask
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
                 self.mask = other.mask

@@ -1245,6 +1245,24 @@ class TaxonNamespace(
             self._bitmask_taxon_map[m] = taxon
             return m
 
+    def accession_index(self, taxon):
+        """
+        Returns the accession index of `taxon`. Note that this may not be the
+        same as the list index of the taxon if taxa have been deleted from the
+        namespace.
+
+        Parameters
+        ----------
+        taxon : :class:`Taxon`
+            :class:`Taxon` object for which to return the accession index.
+
+        Returns
+        -------
+        h : integer
+            The accession index.
+        """
+        return self._taxon_accession_index_map[taxon]
+
     def taxa_bitmask(self, **kwargs):
         """
         Retrieves the list of split hash bitmask values representing all taxa
