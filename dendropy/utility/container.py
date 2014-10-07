@@ -368,12 +368,18 @@ class NormalizedBitmaskDict(dict):
             o[key] = copy.deepcopy(val, memo)
         return o
 
+    def normalize_key_and_assign_value(self, key, value):
+        "*Almost* like __setitem__(), but returns value of normalized key to calling code."
+        normalized_key = self.normalize_key(key)
+        dict.__setitem__(self, normalized_key, value)
+        return normalized_key
+
     def normalize_key(self, key):
         return NormalizedBitmaskDict.normalize(key, self.mask, self.lowest_relevant_bit)
 
     def __setitem__(self, key, value):
         "Sets item with normalized key."
-        dict.__setitem__(self, self.normalize_key(key), value)
+        self.normalize_key_and_assign_value(key, value)
 
     def __getitem__(self, key):
         "Gets an item by its key."

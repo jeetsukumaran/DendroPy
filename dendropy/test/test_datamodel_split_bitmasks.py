@@ -246,8 +246,9 @@ class SplitCountTest(ExtendedTestCase):
 class CladeMaskTest(unittest.TestCase):
 
     def runTest(self):
+        # rooted tree: so clade bitmasks
         tree_list = dendropy.TreeList.get_from_stream(
-            StringIO("""((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"""),
+            StringIO("""[&R]((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"""),
             "newick")
         for i in tree_list:
             _LOG.debug(i._get_indented_form())

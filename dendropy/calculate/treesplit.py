@@ -294,13 +294,21 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         edge.split_bitmask = cm
         if create_dict:
             split_map[cm] = edge
-    # create normalized bitmasks, where the full (tree) split mask is *not*
-    # all the taxa, but only those found on the tree
+    # Create normalized bitmasks, where the full (tree) split mask is *not*
+    # all the taxa, but only those found on the tree; this is to handle
+    # cases where we are dealing with trees with incomplete leaf-sets.
     if not tree.is_rooted:
         mask = tree.seed_node.edge.split_bitmask
         d = container.NormalizedBitmaskDict(mask=mask)
-        for k, v in tree.split_edge_map.items():
-            d[k] = v
+        # 2014-09-07, Previously: normalize split in dictionary, but
+        # edge retains unnormalized split
+        # for k, v in tree.split_edge_map.items():
+        #     d[k] = v
+        # 2014-09-07: Normalize split bitmask in dictionary *and* on edge
+        for split in tree.split_edge_map:
+            edge = tree.split_edge_map[split]
+            normalized_split = d.normalize_key_and_assign_value(split, edge)
+            edge.split_bitmask = normalized_split
         tree.split_edge_map = d
 
 def is_compatible(split1, split2, mask):
@@ -631,10 +639,11 @@ class SplitDistribution(object):
         node_ages = []
         for edge in edge_iterator():
             split = edge.split_bitmask
-            if not tree.is_rooted:
-                # splits on edges are not normalized, so rotation
-                # errors can creep in when dealing with unrooted trees
-                split = tree.split_edge_map.normalize_key(split)
+            # 2014-09-07: no longer needed: edge splits are normalized for unrooted trees when being encoded
+            # if not tree.is_rooted:
+            #     # splits on edges are not normalized, so rotation
+            #     # errors can creep in when dealing with unrooted trees
+            #     split = tree.split_edge_map.normalize_key(split)
             splits.append(split)
             self.split_counts[split] += weight_to_use
             if not self.ignore_edge_lengths:
