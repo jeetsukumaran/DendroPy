@@ -4015,7 +4015,7 @@ class Tree(
                 Boolean: whether or not to write out internal node id's.
             `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            `display_width`
+            `width`
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -4039,7 +4039,7 @@ class Tree(
                 Boolean: whether or not to write out internal node id's.
             `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            `display_width`
+            `width`
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -4062,7 +4062,7 @@ class Tree(
                 Boolean: whether or not to write out internal node id's.
             ``leaf_spacing_factor``
                 Positive integer: number of rows between each leaf.
-            ``display_width``
+            ``width``
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -5534,7 +5534,7 @@ class AsciiTreePlot(object):
                 Boolean: whether or not to write out internal node id's.
             * `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            * `display_width`
+            * `width`
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -5543,7 +5543,8 @@ class AsciiTreePlot(object):
         self.show_internal_node_ids = kwargs.get('show_internal_node_ids', False)
         self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
 #        self.null_edge_length = kwargs.get('null_edge_length', 0)
-        self.display_width = kwargs.get('display_width', None)
+        self.width = kwargs.get('width', None)
+        self.display_width = kwargs.get('display_width', self.width) # legacy
         self.reset()
 
     def reset(self):
@@ -5611,7 +5612,7 @@ class AsciiTreePlot(object):
             label.append(str(id(nd)))
         if not label:
             return "@"
-        return "".join(label)
+        return "".join(str(s) for s in label)
 
     def compose(self, tree):
         self.reset()
