@@ -103,6 +103,15 @@ Tree Terminology
         corresponding to any other node is called a proper subtree (in analogy
         to the term proper subset).
 
+    split
+    bipartition
+        A split is an partition of the leaf set of a tree into two
+        mutually-exclusive and collectively-comprehensive subsets. It
+        corresponds to an edge of a tree: if we imagine "splitting" or cutting
+        a tree into two trees at a given edge, the leaf sets of each of the new
+        trees form the two subsets of the partitioning. A split is sometimes
+        referred to as a bipartition.
+
     tree
         An `arborescence
         <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, or a
