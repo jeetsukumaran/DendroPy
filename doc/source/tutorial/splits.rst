@@ -8,8 +8,8 @@ Splits or Bipartitions are a Division of Leaves into Two Groups
 A "split" is a bipartition of a leaf or tip set of a tree, i.e., the division or sorting of the leaves/tips of a tree into two mutually-exclusive and collectively-comprehensive subsets.
 The term "bipartition" is often also used to refer to the same concept. For example, the Mr. Bayes documentation says that: "taxon bipartition is defined by removing a branch on the tree, dividing the tree into those taxa to the left and right of the removed branch. This set is called a taxon bipartition"
 
-Splits Correspond to Edges and Splits as Partitions of Taxa
------------------------------------------------------------
+Edges Correspond to Splits, and Splits Correspond to Partitions of Taxa
+-----------------------------------------------------------------------
 
 Every edge on a tree corresponds to a split in the sense that if were were to "split" or bisect a tree at a particular edge, the leaf sets of each of the two new trees constitute the a bipartition of the leaf set of the original tree.
 
@@ -61,26 +61,95 @@ We can succintly and usefully represent the split that induces the partition abo
 
 This, in essence, is how splits are represented in DendroPy: as integers that are interpreted as bitfields, or the terminology preferred by DendroPy, *bitmasks*, where the 0's and 1's assign taxa to different subsets of the bipartition.
 
-Split Bitmasks and Leafset Bitmasks
------------------------------------
+Split Bitmasks and Clade Bitmasks
+---------------------------------
 
-In DendroPy, a "split bitmask" is an attribute of a tree edge that describes the split represented by that edge (i.e., the partition of the taxa induced by bisecting the tree on that edge).
-A "leafset bitmask", on the other hand, is an attribute of a tree *node* that describes the taxa associated with the descendent leaves of that node.
-For rooted trees, the split bitmask of an edge will be identical to the leafset bitmask of the node subtending that edge.
-For unrooted trees, however, the split bitmask of an edge may not be the same as the leafset bitmask of the node.
+In DendroPy, a "split bitmask" describes the split represented by that edge (i.e., the partition of the taxa induced by bisecting the tree on that edge).
+A "clade bitmask", on the other hand, describes the taxa associated with the descendent leaves of that node, with a "0" indicating the absence of that taxon and a "1" indicating the presence of that taxon.
+A split bitmask is used to establish *split* *identity* across different trees (for this reason it is also sometimes called a split hash), while a clade bitmask is used to work with various ancestor-descendent relationships within the same tree (it can be used to, for example, quickly assess if a taxon descends from a particular node, or if a particular node is a common ancestor of two taxa).
+For rooted trees, the split bitmask and the clade bitmask of a particular edge are *always* the same value.
+For unrooted trees, however, this is not necessarily the case.
 This is because the split bitmasks of unrooted trees are *normalized* to always have a least-significant bit of 0. The choice of 0 as opposed to 1 is arbitrary, but the reason is so ensure that we can have consistent comparisons of groups across trees of different rotations (and "pseudo-rootings" created by the constraints of tree representation in, e.g., the NEWICK format) by enforcing the convention that group "0" will always be the group that includes the first taxon (i.e., the taxon with index 1, corresponding to the position of the least-significant or right-most bit).
 
-Thus, the child node of particular edge may have the first three taxa as ultimate descendents (i.e., the leafset bitmask of its daughter nodes is "00111"). In a rooted tree, which has a distincting directionality from a real root to tip, that is all there is to it. However, in an urooted tree, there is no such distinct directionality, and the node that "child node" of the edge may easily become a "parent node" in another representation of the *same* unrooted topology, in which case the leafset bitmask would be "11000". If we did not normalize the split bitmasks, these two splits would be considered different, when, for unrooted topologies they are actually the same. By adopting the convention of enforcing the least-significant bit to be 0 in unrooted tree split bitmasks, i.e., that the first-indexed taxon is always in group "0", the split bitmask of "00111" is normalized to "11100": the memberships of the partition subsets remain the same, with the same taxa on either side of the bipartiton; only the arbitrary label assignment of "1" or "0" to the subsets is switched.
+Why can't we use the clade bitmask as the split bitmask for unrooted trees?
+This is because we can rely on the clade bitmask to reliably establish split identity across different representation of unrooted trees.
+In an urooted tree, any directionality, as given by, e.g. going from a parent node or child node of an edge, is an artifact of the tree representation.
+With an unrooted tree, we can only be sure that a node is either internal or a leaf, and distinctions between parent/ancestor nodes and child/descendent nodes are arbitrary and ephemeral.
+Because a tree structure requires a parent-child relationship between nodes, this is imposed on an unrooted tree when it is constructed, and for any pair of neighbor nodes, the designation of one as parent and the other as child is contigent on the vagaries of how the tree was serialized, deserialized, and constructed.
+Thus, the edge corresponding to a particular split may have a particular child node in one unrooted tree representation, but in *different* representation of the *same* split in the *same* unrooted tree, the same child node may actually be a parent node.
+So, 'clade bitmasks' are unstable representations of splits for unrooted trees (but remain accurate and convenient representations of the descendent leaf-sets of nodes in both unrooted and rooted trees).
+By normalizing the clade bitmasks to ensure a particular consistency in membership (i.e., group "0" always includes the first taxon), we can usefully compare splits (or the groups induced by splits) across different representations, pseudo-rooting, or rotations of unrooted trees.
 
-To see why, let us consider the following trees:
+Calculating Splits on Trees
+---------------------------
 
+Calling :meth:`Tree.encode_splits()` on an object populates the edges of the :class:`Tree` object with two attributes, :attr:`Edge.split_bitmask` and :attr:`Edge.clade_bitmask`. The first is a hash of the split identity, and can be used to identify and compare splits across different trees. The second is a hash of the leaf-set descended from the edge, and can be used to establish ancestor-descendent relationships.
 
-    (A,(B,(C,(D,E))));
-    ((((A,B),C),E),D);
+A large number of DendroPy functions calculate the split and clade bitmasks in the background: from tree comparison approaches (e.g., calculating the Robinson-Foulds distance), to working with within-tree operations (e.g., finding the most-recent common ancestor between two nodes or patrisitic distances between taxa), to tree-set operations (e.g., building consensus trees or scoring tree clade credibilities and finding the maximum clade credibility tree).
+When passing trees to these methods and functions, these functions will call :meth:`Tree.encode_splits()` automatically for you unless you explicitly specify that this should not be done by passing in '``is_splits_encoded=True``'. You want to do this to avoid the overhead of unnecessarily recalculating the split and clade bitmasks every time, as these operations can simply use the values stored in the :attr:`Edge.split_bitmask` and :attr:`Edge.clade_bitmask` attributes.
 
-These two topologies are actually identical except for the rooting position: when interpreted as unrooted trees, the symmetric distance between them is 0.
+The typical usage idiom in this context would be to:
 
+    (1) Establish a common taxon namespace [i.e., creating a global
+        :class:`TaxonNamespace` object and pass it in to all
+        reading/parsing/input operations]
+    (2) Read/load the trees, calling :meth:`Tree.encode_splits()` on each one.
+    (3) Perform the calculations, making sure to specify ``is_splits_encoded=True``.
 
-Let us consider the split that separates {A,B,C} from {D,E}, i.e. "00111".
+For, example, the following snippet shows how you might count the number of trees in a bootstrap file that have the same topology as a tree of interest::
 
+    import dendropy
+    from dendropy.calculate import treecompare
+    taxa = dendropy.TaxonNamespace()
+    target_tree = dendropy.Tree.get_from_path(
+        "mle.tre",
+        "nexus",
+        taxon_namespace=taxa)
+    count = 0
+    for sup_tree in dendropy.Tree.yield_from_files(
+        files=["boots1.tre", "boots2.tre", "boostraps3.tre"],
+        schema="nexus",
+        taxon_namespace=taxa):
+        d = treecompare.symmetric_difference(target_tree, sup_tree)
+        if d == 0:
+            count += 1
+    print(count)
 
+For this application, it is simpler just to let the calculations take place in the background. But, for example, if for some reason you wanted to do something more complicated, as it calculating the counts with respect to multiple trees of interest, you should try and avoid the redundant recalculation of the bitmasks::
+
+    import dendropy
+
+    from dendropy.calculate import treecompare
+    taxa = dendropy.TaxonNamespace()
+    tree1 = dendropy.Tree.get_from_path(
+        "mle1.tre",
+        "nexus",
+        taxon_namespace=taxa)
+    tree1.encode_splits()
+    tree2 = dendropy.Tree.get_from_path(
+        "mle2.tre",
+        "nexus",
+        taxon_namespace=taxa)
+    tree2.encode_splits()
+    counts1 = 0
+    counts2
+    for sup_tree in dendropy.Tree.yield_from_files(
+        files=["boots1.tre", "boots2.tre", "boostraps3.tre"],
+        schema="nexus",
+        taxon_namespace=taxa):
+        sup_tree.encode_splits()
+        if treecompare.symmetric_difference(
+                tree1, sup_tree, is_splits_encoded=True):
+            count1 += 1
+        if treecompare.symmetric_difference(
+                tree2, sup_tree, is_splits_encoded=True):
+            count2 += 2
+    print(count1, count2)
+
+Once the split and clade bitmasks have been calculated, as noted above, they are stored in the tree. Some functions inspect the tree to see if the :attr:`Edge.split_bitmask` and :attr:`Edge.clade_bitmask` fields have been populated, and, if so, skip the splits encoding operations themselves.
+*If* the tree structure has changed since the splits were last encoded (either explicitly, by you calling :meth:`Tree.encode_splits()` yourself, or implicitly, by a calculation operation), then you have to make sure to update he splits on the tree by re-calling :meth:`Tree.encode_splits()` to avoid errors.
+
+Note that in all cases, for splits to be meaningfully compared two conditions must hold:
+
+    (1) The trees must reference the *same* operational taxonomic unit namespace object, :class:`TaxonNamespace`.
+    (2) The trees must have the same rooting state (i.e., all rooted or all unrooted).
