@@ -87,6 +87,7 @@ from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
+from dendropy.calculate import treesplit
 
 ##############################################################################
 ## Helper functions
@@ -1393,6 +1394,35 @@ class TaxonNamespace(
                 self,
                 preserve_spaces=preserve_spaces,
                 quote_underscores=quote_underscores)
+
+    def split_as_string(self, split_mask, symbol1=None, symbol2=None):
+        """
+        Represents a split as a newick string.
+
+        Parameters
+        ----------
+        split_bitmask : integer
+            Split hash bitmask value.
+        preserve_spaces : boolean, optional
+            If `False` (default), then spaces in taxon labels will be replaced
+            by underscores. If `True`, then taxon labels with spaces will be
+            wrapped in quotes.
+        quote_underscores : boolean, optional
+            If `True` (default), then taxon labels with underscores will be
+            wrapped in quotes. If `False`, then the labels will not be wrapped
+            in quotes.
+
+        Returns
+        -------
+        s : string
+            NEWICK representation of split specified by `split_bitmask`.
+        """
+        assert split_mask is not None
+        return treesplit.split_as_string(
+                split_mask=split_mask,
+                width=len(self),
+                symbol1=symbol1,
+                symbol2=symbol2)
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
