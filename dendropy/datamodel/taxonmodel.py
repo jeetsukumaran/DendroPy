@@ -1217,6 +1217,24 @@ class TaxonNamespace(
         b = 1 << self._current_accession_count
         return b - 1
 
+    def normalize_split_bitmask(self, split_bitmask):
+        """
+        "Normalizes" split, by ensuring that the least-significant bit is
+        always 1 (used on unrooted trees to establish split identity
+        independent of rotation).
+
+        Parameters
+        ----------
+        split_bitmask : integer
+            Split bitmask hash to be normalized.
+
+        Returns
+        -------
+        h : integer
+            Normalized split bitmask.
+        """
+        return container.NormalizedBitmaskDict.normalize(split_bitmask, self.all_taxa_bitmask(), 1)
+
     def taxon_bitmask(self, taxon):
         """
         Returns bitmask value of split hash for split subtending node with

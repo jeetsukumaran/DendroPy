@@ -308,7 +308,11 @@ class PaupService(object):
             taxa_definition_filepath=taxa_definition_filepath,
             taxon_namespace=taxon_namespace)
         for split in result["bipartition_counts"]:
-            split_distribution.add_split_count(split, result["bipartition_counts"][split])
+            if not is_rooted:
+                sd_split_key = taxon_namespace.normalize_split_bitmask(split)
+            else:
+                sd_split_key = split
+            split_distribution.add_split_count(sd_split_key, result["bipartition_counts"][split])
         split_distribution.total_trees_counted = result["num_trees"]
         return split_distribution
 

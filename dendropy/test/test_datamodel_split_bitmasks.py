@@ -50,11 +50,11 @@ class SplitDistributionTestCases(ExtendedTestCase):
             expected_num_trees,
             ):
         if is_rooted is None:
-            key_column_index = 1
+            key_column_index = 2 # default to unrooted: normalized split bitmask
         elif is_rooted:
-            key_column_index = 1
+            key_column_index = 1 # leafset_bitmask / unnormalized split bitmask
         else:
-            key_column_index = 1
+            key_column_index = 2 # normalized split bitmask
         splits_ref = paupsplitsreference.get_splits_reference(
                 splits_filename=splits_filename,
                 key_column_index=key_column_index,
@@ -187,6 +187,12 @@ class SplitCountTest(ExtendedTestCase):
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         for split in dp_sd.split_counts:
             if not treesplit.is_trivial_split(split, taxa_mask):
+                # if split not in paup_sd.split_counts:
+                #     print("{}: {}".format(split, split in paup_sd.split_counts))
+                #     s2 = taxon_namespace.normalize_split_bitmask(split)
+                #     print("{}: {}".format(s2, s2 in paup_sd.split_counts))
+                #     s3 = ~split & taxon_namespace.all_taxa_bitmask()
+                #     print("{}: {}".format(s3, s3 in paup_sd.split_counts))
                 self.assertIn(split, paup_sd.split_counts, "split not found")
                 self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split], "incorrect split frequency")
                 del paup_sd.split_counts[split]
@@ -212,7 +218,7 @@ class SplitCountTest(ExtendedTestCase):
     def test_basic_split_count_with_incorrect_weight_treatment_raises_error(self):
         assertion_error_regexp1 = re.compile("incorrect split frequency")
         test_cases = (
-                ("cetaceans.mb.no-clock.mcmc.weighted-01.trees", True),
+                ("cetaceans.mb.no-clock.mcmc.weighted-01.trees", False),
                 ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees", True),
             )
         for test_case, test_as_rooted in test_cases:

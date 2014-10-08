@@ -30,8 +30,8 @@ def get_splits_reference(
         key_column_index=0):
     # Key columns are:
     #     0   : PAUP* bipartition string representation '....**...' etc.
-    #     1   : unnormalized split bitmask (for rooted trees)
-    #     2   : normalized split bitmask (for unrooted trees)
+    #     1   : unnormalized split bitmask (for rooted trees) == leafset_bitmask for all trees and split_bitmask for rooted trees
+    #     2   : normalized split bitmask (for unrooted trees) == split_bitmask for unrooted trees
     #     3   : (weighted) counts
     #     4   : (weighted) frequencies
     if splits_dir is not None:
