@@ -25,93 +25,6 @@ import copy
 import sys
 
 ###############################################################################
-## ItemAttributeProviderList
-
-class ItemAttributeProxyList(list):
-    """
-    This list will return the attribute of its elements instead of the
-    elements themselves.
-    """
-
-    def __init__(self, attr_name, *args):
-        """
-        __init__ calls the list.__init__ with all unnamed args.
-
-        `attr_name` is the name of the attribute or property that should be
-        returned.
-        """
-        self.bound_attr_name = attr_name
-        list.__init__(self, *args)
-
-    def __getitem__(self, *args):
-        item = list.__getitem__(self, *args)
-#         assert hasattr(item, self.bound_attr_name)
-        return getattr(item, self.bound_attr_name)
-
-    def __iter__(self):
-        """
-        Iterates over all elements in self, returning their `<bound_attr_name>`
-        attribute.
-        """
-        for item in list.__iter__(self):
-            yield getattr(item, self.bound_attr_name)
-
-    def aggregate(self):
-        """
-        Returns a shallow-copy list of the `<bound_attr_name>` attribute of self's
-        members.
-        """
-        return [getattr(item, self.bound_attr_name) for item in self]
-
-###############################################################################
-## ItemSublistProxyList
-
-class ItemSublistProxyList(list):
-    """
-    This list will return a the elements of the bound list attribute of its own
-    elements instead of the element themselves.
-    """
-
-    def __init__(self, attr_name, *args):
-        """
-       __init__ calls the list.__init__ with all unnamed args.
-
-        `attr_name` is the name of the attribute or property that should be
-        returned.
-        """
-        self.bound_attr_name = attr_name
-        list.__init__(self, *args)
-
-    def __str__(self):
-        return str([str(i) for i in self])
-
-    def __getitem__(self, *args):
-        req_idx = int(args[0])
-        for idx, i in enumerate(self):
-            if idx == req_idx:
-                return i
-        raise IndexError("list index out of range: %d (max=%d)" % (req_idx, idx))
-
-    def __len__(self):
-        return len([i for i in self])
-
-    def __iter__(self):
-        """
-        Iterates over all elements in self, returning their `<bound_attr_name>`
-        attribute.
-        """
-        for item in list.__iter__(self):
-            for sublist_item in getattr(item, self.bound_attr_name):
-                yield sublist_item
-
-    def aggregate(self):
-        """
-        Returns a shallow-copy list of the `<bound_attr_name>` attribute of self's
-        members.
-        """
-        return [i for i in self]
-
-###############################################################################
 ## OrderedSet
 
 class OrderedSet(object):
@@ -296,53 +209,67 @@ class OrderedSet(object):
 ###############################################################################
 ## NormalizedBitmaskDict
 
-class NormalizedBitmaskDict(dict):
+class NormalizedBitmaskDict(collections.OrderedDict):
     """
-    Keys, {K_i}, are longs. `mask` must be provided before elements can be
-    added removed from dictionary. All keys are normalized such that the right-
-    most bit is '0'. That is, if the key's right-most bit is '0', it is added
-    as-is, otherwise it is complemented by XOR'ing it with 'mask'.
+    Keys, {K_i}, are longs. `fill_bitmask` must be provided before elements can be
+    added removed from dictionary. All keys are normalized such that the
+    least- significant bit is '0'. That is, if the key's least-significant bit
+    is '0', it is added as-is, otherwise it is complemented by XOR'ing it with
+    'fill_bitmask'.
     """
 
-    # copied from treesplit, which is a bit ugly, but this is a two-liner...
-    def lowest_bit_only(s):
+    def least_significant_set_bit(s):
+        """
+        Returns least-significant bit in integer 's' that is set.
+        """
         m = s & (s - 1)
         return m ^ s
-    lowest_bit_only = staticmethod(lowest_bit_only)
+    least_significant_set_bit = staticmethod(least_significant_set_bit)
 
-    # this is for the right-most-bit-is-1 normalization convention
-    def normalize(key, mask, lowest_relevant_bit):
-        if key & lowest_relevant_bit:
-            return key & mask                # keep right-most bit to 1
-        else:
-            return (~key) & mask             # force right-most bit as 1
-    normalize = staticmethod(normalize)
-
-    # this is for the right-most-bit-is-0 normalization convention
-    # def normalize(key, mask, lowest_relevant_bit):
+    # this is for the least-significant-bit-is-1 normalization convention
+    # def normalize(key, fill_bitmask, lowest_relevant_bit):
     #     if key & lowest_relevant_bit:
-    #         return (~key) & mask             # force right-most bit as 0
+    #         return key & fill_bitmask                # keep least-significant bit to 1
     #     else:
-    #         return key & mask                # force right-most bit to 0
+    #         return (~key) & fill_bitmask             # force least-significant bit as 1
     # normalize = staticmethod(normalize)
 
-    def __init__(self, other=None, mask=None):
-        "__init__ assigns `mask`, and then populates from `other`, if given."
-        dict.__init__(self)
-        self.lowest_relevant_bit = NormalizedBitmaskDict.lowest_bit_only(mask)
-        self.mask = mask
+    # this is for the least-significant-bit-is-0 normalization convention
+    def normalize(key, fill_bitmask, lowest_relevant_bit):
+        if key & lowest_relevant_bit:
+            return (~key) & fill_bitmask             # force least-significant bit to 0
+        else:
+            return key & fill_bitmask                # keep least-significant bit as 0
+    normalize = staticmethod(normalize)
+
+    def __init__(self, other=None, fill_bitmask=None):
+        """
+
+        Parameters
+        ----------
+        fill_bitmask : integer
+            A bitmask where all possible bits that can be set to 1 are set to 1.
+            When representing a taxon namespaces, with 8 taxa, for example,
+            this would be 0b11111111. Incomplete leaf-sets on trees need to
+            having the missing taxa bits set to 0. For example, for a tree
+            missing taxa 2, 3, and 5, `fill_bitmask` would be 0b11101001.
+
+        """
+        collections.OrderedDict.__init__(self)
+        self.lowest_relevant_bit = NormalizedBitmaskDict.least_significant_set_bit(fill_bitmask)
+        self.fill_bitmask = fill_bitmask
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
-                self.mask = other.mask
+                self.fill_bitmask = other.fill_bitmask
                 self.lowest_relevant_bit = other.lowest_relevant_bit
             if isinstance(other, dict):
                 for key, val in other.items():
                     self[key] = val
 
     def __deepcopy__(self, memo):
-        o = NormalizedBitmaskDict(mask=self.mask)
+        o = NormalizedBitmaskDict(fill_bitmask=self.fill_bitmask)
         memo[id(self)] = o
-        o.mask = self.mask
+        o.fill_bitmask = self.fill_bitmask
         o.lowest_relevant_bit = self.lowest_relevant_bit
         for key, val in self.items():
             o[key] = copy.deepcopy(val, memo)
@@ -355,7 +282,7 @@ class NormalizedBitmaskDict(dict):
         return normalized_key
 
     def normalize_key(self, key):
-        return NormalizedBitmaskDict.normalize(key, self.mask, self.lowest_relevant_bit)
+        return NormalizedBitmaskDict.normalize(key, self.fill_bitmask, self.lowest_relevant_bit)
 
     def __setitem__(self, key, value):
         "Sets item with normalized key."
@@ -895,4 +822,91 @@ class RecastingIterator(object):
                     return self.casting_func(source_next)
                 else:
                     return source_next
+
+###############################################################################
+## ItemAttributeProviderList
+
+class ItemAttributeProxyList(list):
+    """
+    This list will return the attribute of its elements instead of the
+    elements themselves.
+    """
+
+    def __init__(self, attr_name, *args):
+        """
+        __init__ calls the list.__init__ with all unnamed args.
+
+        `attr_name` is the name of the attribute or property that should be
+        returned.
+        """
+        self.bound_attr_name = attr_name
+        list.__init__(self, *args)
+
+    def __getitem__(self, *args):
+        item = list.__getitem__(self, *args)
+#         assert hasattr(item, self.bound_attr_name)
+        return getattr(item, self.bound_attr_name)
+
+    def __iter__(self):
+        """
+        Iterates over all elements in self, returning their `<bound_attr_name>`
+        attribute.
+        """
+        for item in list.__iter__(self):
+            yield getattr(item, self.bound_attr_name)
+
+    def aggregate(self):
+        """
+        Returns a shallow-copy list of the `<bound_attr_name>` attribute of self's
+        members.
+        """
+        return [getattr(item, self.bound_attr_name) for item in self]
+
+###############################################################################
+## ItemSublistProxyList
+
+class ItemSublistProxyList(list):
+    """
+    This list will return a the elements of the bound list attribute of its own
+    elements instead of the element themselves.
+    """
+
+    def __init__(self, attr_name, *args):
+        """
+       __init__ calls the list.__init__ with all unnamed args.
+
+        `attr_name` is the name of the attribute or property that should be
+        returned.
+        """
+        self.bound_attr_name = attr_name
+        list.__init__(self, *args)
+
+    def __str__(self):
+        return str([str(i) for i in self])
+
+    def __getitem__(self, *args):
+        req_idx = int(args[0])
+        for idx, i in enumerate(self):
+            if idx == req_idx:
+                return i
+        raise IndexError("list index out of range: %d (max=%d)" % (req_idx, idx))
+
+    def __len__(self):
+        return len([i for i in self])
+
+    def __iter__(self):
+        """
+        Iterates over all elements in self, returning their `<bound_attr_name>`
+        attribute.
+        """
+        for item in list.__iter__(self):
+            for sublist_item in getattr(item, self.bound_attr_name):
+                yield sublist_item
+
+    def aggregate(self):
+        """
+        Returns a shallow-copy list of the `<bound_attr_name>` attribute of self's
+        members.
+        """
+        return [i for i in self]
 

@@ -246,7 +246,6 @@ class NewickReader(ioservice.DataReader):
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
         self.default_tree_weight = kwargs.pop("default_tree_weight", self.__class__._default_tree_weight)
-        self.encode_splits = kwargs.pop("encode_splits", False)
         self.finish_node_func = kwargs.pop("finish_node_func", None)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
         self.preserve_unquoted_underscores = kwargs.pop('preserve_underscores', False)

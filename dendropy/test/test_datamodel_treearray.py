@@ -32,13 +32,13 @@ class TreeArrayBasicTreeAccession(unittest.TestCase):
     def verify_tree_array(self, tree_array, source_trees, ignore_edges=False):
         self.assertEqual(len(tree_array), len(source_trees))
         for idx, source_tree in enumerate(source_trees):
-            source_tree.encode_splits()
-            source_splits = list(source_tree.split_edge_map.keys())
+            source_splits = [b.split_bitmask for b in source_tree.encode_bipartitions()]
             tss_splits, tss_edges = tree_array[idx]
             self.assertEqual(len(tss_splits), len(source_splits))
             self.assertEqual(set(tss_splits), set(source_splits))
-            for idx, nd in enumerate(source_tree.preorder_node_iter()):
-                source_split = nd.edge.split_bitmask
+            # since encoding is done in postorder, we can rely on correspondence of index ...
+            for idx, nd in enumerate(source_tree.postorder_node_iter()):
+                source_split = nd.edge.bipartition.split_bitmask
                 tss_split = tss_splits[idx]
                 tss_edge_length = tss_edges[idx]
                 self.assertEqual(source_split, tss_split)

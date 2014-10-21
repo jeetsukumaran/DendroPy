@@ -67,6 +67,9 @@ class CuratedTestTree(object):
     internal_levelorder_sequence = ("a", "bc", "egf", "h",)
     inorder_sequence = ("i", "b", "j", "e", "k", "a", "l", "g", "m", "c", "n", "f", "o", "h", "p",)
     ageorder_sequence = ("i", "j", "k", "l", "m", "n", "o", "p", "e", "g", "h", "b", "f", "c", "a",)
+    leaf_labels = ( "i", "j", "k", "l", "m", "n", "o", "p",)
+    internal_labels = ( "a", "b", "c", "e", "f", "g", "h",)
+    all_labels = ( "a", "b", "c", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", )
     node_children = {
             "a" : ("b", "c",),
             "b" : ("i", "e",),

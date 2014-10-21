@@ -29,14 +29,14 @@ import unittest
 from dendropy.test.support import pathmap
 from dendropy.test.support import paupsplitsreference
 from dendropy.test.support.dendropytest import ExtendedTestCase
-from dendropy.utility import container
 from dendropy.utility import messaging
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 _LOG = messaging.get_logger(__name__)
 
-from dendropy.calculate import treesplit
+from dendropy.utility import bitprocessing
 from dendropy.interop import paup
+from dendropy import Bipartition
 
 
 if not paup.DENDROPY_PAUP_INTEROPERABILITY:
@@ -50,26 +50,26 @@ else:
 
         def testUnnormalized(self):
             for i in range(0xFF):
-                s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
+                s = bitprocessing.int_as_bitstring(i, 8, ".", "*")[::-1]
                 r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=False)
                 self.assertEqual(r, i, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(r, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(r, 8)))
 
         def testNormalized0(self):
             for i in range(0xFF):
-                s = treesplit.split_as_string(i, 8, "*", ".")[::-1]
+                s = bitprocessing.int_as_bitstring(i, 8, "*", ".")[::-1]
                 r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=True)
-                normalized = container.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
+                normalized = Bipartition.normalize_bitmask(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(normalized, 8)))
 
         def testNormalized1(self):
             for i in range(0xFF):
-                s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
+                s = bitprocessing.int_as_bitstring(i, 8, ".", "*")[::-1]
                 r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=True)
-                normalized = container.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
+                normalized = Bipartition.normalize_bitmask(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(normalized, 8)))
 
     class PaupWrapperSplitsParse(ExtendedTestCase):
 

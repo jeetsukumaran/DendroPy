@@ -40,7 +40,6 @@ from dendropy.dataio import nexuswriter
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
-from dendropy.calculate import treesplit
 
 DENDROPY_PAUP_INTEROPERABILITY = False
 if "PAUP_PATH" in os.environ:
@@ -293,7 +292,7 @@ class PaupService(object):
             :class:`SplitDistribution object to use.
         """
         if split_distribution is None:
-            split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
+            split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
             taxon_namespace = split_distribution.taxon_namespace
         else:
             if taxon_namespace is None:
@@ -309,7 +308,7 @@ class PaupService(object):
             taxon_namespace=taxon_namespace)
         for split in result["bipartition_counts"]:
             if not is_rooted:
-                sd_split_key = taxon_namespace.normalize_split_bitmask(split)
+                sd_split_key = split_distribution.normalize_bitmask(split)
             else:
                 sd_split_key = split
             split_distribution.add_split_count(sd_split_key, result["bipartition_counts"][split])

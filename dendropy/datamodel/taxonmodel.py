@@ -83,11 +83,11 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.datamodel import basemodel
+from dendropy.utility import bitprocessing
 from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
-from dendropy.calculate import treesplit
 
 ##############################################################################
 ## Helper functions
@@ -513,7 +513,7 @@ class TaxonNamespace(
         self._taxa = []
         self._taxon_accession_index_map = {}
         self._taxon_bitmask_map = {}
-        self._bitmask_taxon_map = {}
+        # self._split_bitmask_taxon_map = {}
         self._current_accession_count = 0
         if len(args) > 1:
             raise TypeError("TaxonNamespace() takes at most 1 non-keyword argument ({} given)".format(len(args)))
@@ -788,7 +788,7 @@ class TaxonNamespace(
             self._taxon_accession_index_map.pop(taxon, None)
         bm = self._taxon_bitmask_map.pop(taxon, None)
         if bm is not None:
-            self._bitmask_taxon_map.pop(bm, None)
+            # self._split_bitmask_taxon_map.pop(bm, None)
             self._taxon_accession_index_map.pop(taxon, None)
 
     def remove_taxon_label(self, label, case_sensitive=False):
@@ -862,7 +862,7 @@ class TaxonNamespace(
         self._accession_index_taxon_map.clear()
         self._taxon_accession_index_map.clear()
         self._taxon_bitmask_map.clear()
-        self._bitmask_taxon_map.clear()
+        # self._split_bitmask_taxon_map.clear()
 
     ### Look-up and Retrieval of Taxa
 
@@ -1189,21 +1189,39 @@ class TaxonNamespace(
 
     ### Split Management
 
-    def complement_split_bitmask(self, split_bitmask):
-        """
-        Returns complement of the given split bitmask.
+    # def complement_bitmask(self, bitmask):
+    #     """
+    #     Returns complement of the given split or clade bitmask.
 
-        Parameters
-        ----------
-        split_bitmask : integer
-            Split bitmask hash to be complemented.
+    #     Parameters
+    #     ----------
+    #     bitmask : integer
+    #         Bitmask to be complemented.
 
-        Returns
-        -------
-        h : integer
-            Complement of `split`.
-        """
-        return (~split) & self.all_taxa_bitmask()
+    #     Returns
+    #     -------
+    #     h : integer
+    #         Complement of `bitmask`.
+    #     """
+    #     return (~bitmask) & self.all_taxa_bitmask()
+
+    # def normalize_bitmask(self, bitmask):
+    #     """
+    #     "Normalizes" split, by ensuring that the least-significant bit is
+    #     always 1 (used on unrooted trees to establish split identity
+    #     independent of rotation).
+
+    #     Parameters
+    #     ----------
+    #     bitmask : integer
+    #         Split bitmask hash to be normalized.
+
+    #     Returns
+    #     -------
+    #     h : integer
+    #         Normalized split bitmask.
+    #     """
+    #     return container.NormalizedBitmaskDict.normalize(bitmask, self.all_taxa_bitmask(), 1)
 
     def all_taxa_bitmask(self):
         """
@@ -1217,24 +1235,6 @@ class TaxonNamespace(
         #return pow(2, len(self)) - 1
         b = 1 << self._current_accession_count
         return b - 1
-
-    def normalize_split_bitmask(self, split_bitmask):
-        """
-        "Normalizes" split, by ensuring that the least-significant bit is
-        always 1 (used on unrooted trees to establish split identity
-        independent of rotation).
-
-        Parameters
-        ----------
-        split_bitmask : integer
-            Split bitmask hash to be normalized.
-
-        Returns
-        -------
-        h : integer
-            Normalized split bitmask.
-        """
-        return container.NormalizedBitmaskDict.normalize(split_bitmask, self.all_taxa_bitmask(), 1)
 
     def taxon_bitmask(self, taxon):
         """
@@ -1261,7 +1261,7 @@ class TaxonNamespace(
             # i = self._taxa.index(taxon)
             m = 1 << i
             self._taxon_bitmask_map[taxon] = m
-            self._bitmask_taxon_map[m] = taxon
+            # self._split_bitmask_taxon_map[m] = taxon
             return m
 
     def accession_index(self, taxon):
@@ -1319,31 +1319,14 @@ class TaxonNamespace(
         """
         return self.taxa_bitmask(**kwargs)
 
-    def split_bitmask_string(self, split_bitmask):
-        """
-        Returns bitstring representation of split_bitmask.
-
-        Parameters
-        ----------
-        split_bitmask : integer
-            Split hash bitmask value to be represented as a string.
-
-        Returns
-        -------
-        s : string
-            String representation of the split hash bitmask value passed as an
-            argument.
-        """
-        return "{}".format(textprocessing.int_to_bitstring(split_bitmask).rjust(len(self._taxon_accession_index_map), "0"))
-
-    def split_taxa_list(self, split_bitmask, index=0):
+    def bitmask_taxa_list(self, bitmask, index=0):
         """
         Returns list of :class:`Taxon` objects represented by split
-        `split_bitmask`.
+        `bitmask`.
 
         Parameters
         ----------
-        split_bitmask : integer
+        bitmask : integer
             Split hash bitmask value.
         index : integer, optional
             Start from this :class:`Taxon` object instead of the first
@@ -1353,18 +1336,18 @@ class TaxonNamespace(
         -------
         taxa : :py:class:`list` [:class:`Taxon`]
             List of :class:`Taxon` objects specified or spanned by
-            `split_bitmask`.
+            `bitmask`.
         """
         taxa = []
-        while split_bitmask:
-            if split_bitmask & 1:
+        while bitmask:
+            if bitmask & 1:
                 taxa.append(self._accession_index_taxon_map[index])
-            split_bitmask = split_bitmask >> 1
+            bitmask = bitmask >> 1
             index += 1
         return taxa
 
-    def split_as_newick_string(self,
-            split_bitmask,
+    def bitmask_as_newick_string(self,
+            bitmask,
             preserve_spaces=False,
             quote_underscores=True):
         """
@@ -1372,7 +1355,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        split_bitmask : integer
+        bitmask : integer
             Split hash bitmask value.
         preserve_spaces : boolean, optional
             If `False` (default), then spaces in taxon labels will be replaced
@@ -1386,43 +1369,17 @@ class TaxonNamespace(
         Returns
         -------
         s : string
-            NEWICK representation of split specified by `split_bitmask`.
+            NEWICK representation of split specified by `bitmask`.
         """
         from dendropy.dataio import nexusprocessing
-        return nexusprocessing.split_as_newick_string(
-                split_bitmask,
+        return nexusprocessing.bitmask_as_newick_string(
+                bitmask,
                 self,
                 preserve_spaces=preserve_spaces,
                 quote_underscores=quote_underscores)
 
-    def split_as_string(self, split_mask, symbol1=None, symbol2=None):
-        """
-        Represents a split as a newick string.
-
-        Parameters
-        ----------
-        split_bitmask : integer
-            Split hash bitmask value.
-        preserve_spaces : boolean, optional
-            If `False` (default), then spaces in taxon labels will be replaced
-            by underscores. If `True`, then taxon labels with spaces will be
-            wrapped in quotes.
-        quote_underscores : boolean, optional
-            If `True` (default), then taxon labels with underscores will be
-            wrapped in quotes. If `False`, then the labels will not be wrapped
-            in quotes.
-
-        Returns
-        -------
-        s : string
-            NEWICK representation of split specified by `split_bitmask`.
-        """
-        assert split_mask is not None
-        return treesplit.split_as_string(
-                split_mask=split_mask,
-                width=len(self),
-                symbol1=symbol1,
-                symbol2=symbol2)
+    def bitmask_as_bitstring(self, b):
+        return bitprocessing.int_as_bitstring(b, length=self._current_accession_count)
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """

@@ -38,27 +38,27 @@ def collapse_clade(node):
     _deprecate_tree_manip("treemanip.collapse_clade(node)", "node.collapse_clade()")
     node.collapse_clade()
 
-def prune_subtree(tree, node, delete_outdegree_one=True):
+def prune_subtree(tree, node, suppress_unifurcations=True):
     _deprecate_tree_manip("treemanip.prune_subtree(tree, node)", "tree.prune_subtree(node)")
     tree.prune_subtree(node=node,
-            delete_outdegree_one=delete_outdegree_one)
+            suppress_unifurcations=suppress_unifurcations)
     return tree
 
-def prune_leaves_without_taxa(tree, delete_outdegree_one=True):
+def prune_leaves_without_taxa(tree, suppress_unifurcations=True):
     _deprecate_tree_manip("treemanip.prune_leaves_without_taxa(tree)", "tree.prune_leaves_without_taxa()")
-    tree.prune_leaves_without_taxa(delete_outdegree_one=delete_outdegree_one)
+    tree.prune_leaves_without_taxa(suppress_unifurcations=suppress_unifurcations)
     return tree
 
-def prune_taxa(tree, taxa, delete_outdegree_one=True):
+def prune_taxa(tree, taxa, suppress_unifurcations=True):
     _deprecate_tree_manip("treemanip.prune_taxa(tree, taxa)", "tree.prune_taxa(taxa)")
     tree.prune_taxa(taxa=taxa,
-            delete_outdegree_one=delete_outdegree_one)
+            suppress_unifurcations=suppress_unifurcations)
     return tree
 
-def retain_taxa(tree, taxa, delete_outdegree_one=True):
+def retain_taxa(tree, taxa, suppress_unifurcations=True):
     _deprecate_tree_manip("treemanip.retain_taxa(tree, taxa)", "tree.retain_taxa(taxa)")
     tree.retain_taxa(taxa=taxa,
-            delete_outdegree_one=delete_outdegree_one)
+            suppress_unifurcations=suppress_unifurcations)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
     _deprecate_tree_manip("randomly_reorient_tree(tree)", "tree.randomly_reorient()")

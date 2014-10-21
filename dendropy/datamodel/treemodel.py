@@ -21,20 +21,613 @@ This module handles the core definition of tree data structure class,
 as well as all the structural classes that make up a tree.
 """
 
-import warnings
+import collections
+import math
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
 import copy
 import sys
+from dendropy.utility import container
 from dendropy.utility import terminal
 from dendropy.utility import error
+from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
-from dendropy.calculate import treesplit
+
+##############################################################################
+### Bipartition
+
+class Bipartition(object):
+    """
+    A bipartition on a tree.
+
+    A bipartition of a tree is a division or sorting of the leaves/tips of a
+    tree into two mutually-exclusive and collectively-comprehensive subsets,
+    obtained by bisecting the tree at a particular edge. There is thus a
+    one-to-one correspondence with an edge of a tree and a bipartition. The
+    term "split" is often also used to refer to the same concept, though this
+    is typically applied to unrooted trees.
+
+    A bipartition is modeled using a bitmask. This is a a bit array
+    representing the membership of taxa, with the least-significant bit
+    corresponding to the first taxon, the next least-signficant bit
+    corresponding to the second taxon, and so on, till the last taxon
+    corresponding to the most-significant bit. Taxon membership in one of two
+    arbitrary groups, '0' or '1', is indicated by its corresponding bit being
+    unset or set, respectively.
+
+    To allow comparisons and correct identification of the same bipartition
+    across different rotational and orientiational representations of unrooted
+    trees, we *normalize* the bipartition such that the first taxon is always
+    assigned to group '0' for bipartition representations of unrooted trees.
+
+    The normalization of the bitmask loses information about the actual
+    descendents of a particular edge. Thus in addition to the
+    :attr:`Bipartition.bitmask` attribute, each :class:`Bipartition` object
+    also maintains a :attr:`Bipartition.leafset_bitmask` attribute which is
+    *unnormalized*. This is a bit array representing the presence or absence of
+    taxa in the subtree descending from the child node of the edge of which
+    this bipartition is associated. The least-significant bit corresponds to
+    the first taxon, the next least-signficant bit corresponds to the second
+    taxon, and so on, with the last taxon corresponding to the most-significant
+    bit. For rooted trees, the value of :attr:`Bipartition.bitmask` and
+    :attr:`Bipartition.leafset_bitmask` are identical. For unrooted trees, they
+    may or may not be equal.
+
+    In general, we use :attr:`Bipartition.bitmask` data to establish the *identity*
+    of a split or bipartition across *different* trees: for example, when
+    computing the Robinson-Foulds distances between trees, or in assessing the
+    support for different bipartitions given an MCMC or bootstrap sample of trees.
+    Here the normalization of the bitmask in unrooted trees allows for the
+    (arbitrarily-labeled) group '0' to be consistent across different
+    representations, rotations, and orientations of trees.
+
+    On the other hand, we use :attr:`Bipartition.leafset_bitmask` data to work
+    with various ancestor-descendent relationships *within* the *same* tree:
+    for example, to quickly assess if a taxon descends from a particular
+    node in a given tree, or if a particular node is a common ancestor of
+    two taxa in a given tree.
+
+    The :class:`Bipartition` object might be used in keys in dictionaries and
+    look-up tables implemented as sets to allow for, e.g., calculation of
+    support in terms of the number times a particular bipartition is observed.
+    The :attr:`Bipartition.bitmask` is used as hash value for this purpose. As
+    such, it is crucial that this value does not change once a particular
+    :class:`Bipartition` object is stored in a dictionary or set. To this end,
+    we impose the constraint that :class:`Bipartition` objects are immutable
+    unless the ``is_mutable`` attribute is explicitly set to ``True`` as a sort
+    of waiver signed by the client code. Client code does this at its risk,
+    with the warning that anything up to and including the implosion of the
+    universe may occur if the :class:`Bipartition` object is a member of an set
+    of dictionary at the time (or, at the very least, the modified
+    :class:`Bipartition` object may not be accessible from dictionaries
+    and sets in which it is stored, or may occlude other
+    :class:`Bipartition` objects in the container).
+
+    Note
+    ----
+
+    There are two possible ways of mapping taxa to bits in a bitarray or bitstring.
+
+    In the "Least-Signficiant-Bit" (LSB) scheme, the first taxon corresponds to the
+    least-significant, or left-most bit. So, given four taxa, indexed from 1 to 4,
+    taxon 1 would map to 0b0001, taxon 2 would map to 0b0010, taxon 3 would map
+    to 0b0100, and taxon 4 would map to 0b1000.
+
+    In the "Most-Significant-Bit" (MSB) scheme, on the other hand, the first taxon
+    corresponds to the most-significant, or right-most bit. So, given four
+    taxa, indexed from 1 to 4, taxon 1 would map to 0b1000, taxon 2 would map
+    to 0b0100, taxon 3 would map to 0b0010, and taxon 4 would map to 0b0001.
+
+    We selected the Least Significant Bit (LSB) approach because the MSB scheme
+    requires the size of the taxon namespace to fixed before the index can be
+    assigned to any taxa. For example, under the MSB scheme, if there are 4
+    taxa, the bitmask for taxon 1 is 0b1000 == 8, but if another taxon is
+    added, then the bitmask for taxon 1 will become 0b10000 == 16. On the other
+    hand, under the LSB scheme, the bitmask for taxon 1 will be 0b0001 == 1 if
+    there are 4 taxa, and 0b00001 == 1 if there 5 taxa, and so on. This
+    stability of taxon indexes even as the taxon namespace grows is a strongly
+    desirable property, and this the adoption of the LSB scheme.
+
+    Constraining the first taxon to be in group 0 (LSB-0) rather than group 1
+    (LSB-1) is motivated by the fact that, in the former, we can would combine
+    the bitmasks of child nodes using OR (logical addition) operations when
+    calculating the bitmask for a parent node, whereas, with the latter, we
+    would need to use AND operations. The former strikes us as more intuitive.
+
+    """
+
+    def normalize_bitmask(bitmask, fill_bitmask, lowest_relevant_bit):
+        if bitmask & lowest_relevant_bit:
+            return (~bitmask) & fill_bitmask             # force least-significant bit to 0
+        else:
+            return bitmask & fill_bitmask                # keep least-significant bit as 0
+    normalize_bitmask = staticmethod(normalize_bitmask)
+
+    def is_trivial_bitmask(bitmask, fill_bitmask):
+        """
+        Returns True if the bitmask occurs in any tree of the taxa `mask` -- if
+        there is only fewer than two 1's or fewer than two 0's in `bitmask` (among
+        all of the that are 1 in mask).
+        """
+        masked_split = bitmask & fill_bitmask
+        if bitmask == 0 or bitmask == fill_bitmask:
+            return True
+        if ((masked_split - 1) & masked_split) == 0:
+            return True
+        cm = (~bitmask) & fill_bitmask
+        if ((cm - 1) & cm) == 0:
+            return True
+        return False
+    is_trivial_bitmask = staticmethod(is_trivial_bitmask)
+
+    def is_compatible_bitmasks(m1, m2, fill_bitmask):
+        """
+        Returns `True` if `m1` is compatible with `m2`
+
+        Parameters
+        ----------
+        m1 : int
+            A bitmask representing a split.
+        m2 : int
+            A bitmask representing a split.
+
+        Returns
+        -------
+        b : bool
+            `True` if `m1` is compatible with `m2`. `False` otherwise.
+        """
+        if 0 == (m1 & m2):
+            return True
+        c2 = m1 ^ m2
+        if 0 == (m1 & c2):
+            return True
+        c1 = fill_bitmask ^ m1
+        if 0 == (c1 & m2):
+            return True
+        if 0 == (c1 & c2):
+            return True
+        return False
+
+   ##############################################################################
+   ## Life-cycle
+
+    def __init__(self,
+            bitmask=None,
+            leafset_bitmask=None,
+            tree_leafset_bitmask=None,
+            is_rooted=None,
+            edge=None,
+            suppress_calculation=False,
+            is_mutable=None):
+        """
+
+        Parameters
+        ----------
+        bitmask : integer
+            A bit array representing the membership of taxa, with the
+            least-significant bit corresponding to the first taxon, the next
+            least-signficant bit correspodning to the second taxon, and so on,
+            till the last taxon corresponding to the most-significant bit.
+            Taxon membership in one of two arbitrary groups, '0' or '1', is
+            indicated by its correspondign bit being unset or set,
+            respectively.
+        leafset_bitmask : integer
+            A bit array representing the presence or absence of taxa in the
+            subtree descending from the child node of the edge of which this
+            bipartition is associated. The least-significant bit corresponds to
+            the first taxon, the next least-signficant bit corresponds to the
+            second taxon, and so on, with the last taxon corresponding to the
+            most-significant bit.
+        tree_leafset_bitmask : integer
+            The `leafset_bitmask` of the root edge of the tree with which this
+            bipartition is associated. In, general, this will be $0b1111...n$,
+            where $n$ is the number of taxa, *except* in cases of trees with
+            incomplete leaf-sets, where the positions corresponding to the
+            missing taxa will have the bits unset.
+        is_rooted : bool
+            Specifies whether or not the tree with which this bipartition is
+            associated is rooted.
+        """
+        self._split_bitmask = bitmask or 0
+        self._leafset_bitmask = leafset_bitmask or bitmask
+        self._tree_leafset_bitmask = tree_leafset_bitmask
+        self._lowest_relevant_bit = None
+        self._is_rooted = is_rooted
+        self.edge = edge
+        if self._leafset_bitmask and not suppress_calculation:
+            self.is_mutable = True
+            self.compile_split_bitmask(leafset_bitmask=leafset_bitmask,tree_leafset_bitmask=tree_leafset_bitmask)
+            if is_mutable is None:
+                self.is_mutable = True
+            else:
+                self.is_mutable = is_mutable
+        elif is_mutable is not None:
+            self.is_mutable = is_mutable
+
+    ##############################################################################
+    ## Identity
+
+    def __hash__(self):
+        assert not self.is_mutable, "Bipartition is mutable: hash is unstable"
+        return self._split_bitmask or 0
+
+    def __eq__(self, other):
+        # return self._split_bitmask == other._split_bitmask
+        return (self._split_bitmask is not None and self._split_bitmask == other._split_bitmask) or (self._split_bitmask is other._split_bitmask)
+
+    ##############################################################################
+    ## All properties are publically read-only if not mutable
+
+    def _get_split_bitmask(self):
+        return self._split_bitmask
+    def _set_split_bitmask(self, value):
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        self._split_bitmask = value
+    split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
+
+    def _get_leafset_bitmask(self):
+        return self._leafset_bitmask
+    def _set_leafset_bitmask(self, value):
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        self._leafset_bitmask = value
+    leafset_bitmask = property(_get_leafset_bitmask, _set_leafset_bitmask)
+
+    def _get_tree_leafset_bitmask(self):
+        return self._tree_leafset_bitmask
+    def _set_tree_leafset_bitmask(self, value):
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        self.compile_tree_leafset_bitmask(value)
+    tree_leafset_bitmask = property(_get_tree_leafset_bitmask, _set_tree_leafset_bitmask)
+
+    def _get_is_rooted(self):
+        return self._is_rooted
+    def _set_is_rooted(self, value):
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        self._is_rooted = value
+    is_rooted = property(_get_is_rooted, _set_is_rooted)
+
+    ##############################################################################
+    ## Representation
+
+    def __str__(self):
+        return bin(self._split_bitmask)[2:].rjust(bitprocessing.bit_length(self._tree_leafset_bitmask), '0')
+
+    def split_as_bitstring(self, symbol0="0", symbol1="1", reverse=False):
+        """
+        Composes and returns and representation of the bipartition as a
+        bitstring.
+
+        Parameters
+        ----------
+        symbol1 : str
+            The symbol to represent group '0' in the bitmask.
+        symbol1 : str
+            The symbol to represent group '1' in the bitmask.
+        reverse : bool
+            If `True`, then the first taxon will correspond to the
+            most-significant bit, instead of the least-significant bit, as is
+            the default.
+
+        Returns
+        -------
+        s : str
+            The bitstring representing the bipartition.
+
+        Example
+        -------
+        To represent a bipartition in the same scheme used by, e.g. PAUP* or
+        Mr. Bayes::
+
+            print(bipartition.split_as_bitstring('.', '*', reverse=True))
+        """
+        return self.bitmask_as_bitstring(
+                mask=self._split_bitmask,
+                symbol0=symbol0,
+                symbol1=symbol1,
+                reverse=reverse)
+
+    def leafset_as_bitstring(self, symbol0="0", symbol1="1", reverse=False):
+        """
+        Composes and returns and representation of the bipartition leafset as a
+        bitstring.
+
+        Parameters
+        ----------
+        symbol1 : str
+            The symbol to represent group '0' in the bitmask.
+        symbol1 : str
+            The symbol to represent group '1' in the bitmask.
+        reverse : bool
+            If `True`, then the first taxon will correspond to the
+            most-significant bit, instead of the least-significant bit, as is
+            the default.
+
+        Returns
+        -------
+        s : str
+            The bitstring representing the bipartition.
+
+        Example
+        -------
+        To represent a bipartition in the same scheme used by, e.g. PAUP* or
+        Mr. Bayes::
+
+            print(bipartition.as_string('.', '*', reverse=True))
+        """
+        return self.bitmask_as_bitstring(
+                mask=self._leafset_bitmask,
+                symbol0=symbol0,
+                symbol1=symbol1,
+                reverse=reverse)
+
+    def bitmask_as_bitstring(self, mask, symbol0=None, symbol1=None, reverse=False):
+        return bitprocessing.int_as_bitstring(mask,
+                length=bitprocessing.bit_length(self._tree_leafset_bitmask),
+                symbol0=symbol0,
+                symbol1=symbol1,
+                reverse=reverse)
+
+    ##############################################################################
+    ## Calculation
+
+    def compile_tree_leafset_bitmask(self,
+            tree_leafset_bitmask,
+            lowest_relevant_bit=None):
+        """
+        Avoids recalculation of `lowest_relevant_bit` if specified.
+        """
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        self._tree_leafset_bitmask = tree_leafset_bitmask
+        if lowest_relevant_bit is not None:
+            self._lowest_relevant_bit = lowest_relevant_bit
+        elif self._tree_leafset_bitmask:
+            self._lowest_relevant_bit = bitprocessing.least_significant_set_bit(self._tree_leafset_bitmask)
+        else:
+            self._lowest_relevant_bit = None
+        return self._tree_leafset_bitmask
+
+    def compile_leafset_bitmask(self,
+           leafset_bitmask=None,
+           tree_leafset_bitmask=None):
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        if tree_leafset_bitmask is not None:
+            self.compile_tree_leafset_bitmask(tree_leafset_bitmask)
+        if leafset_bitmask is None:
+            leafset_bitmask = self._leafset_bitmask
+        if self._tree_leafset_bitmask:
+            self._leafset_bitmask = leafset_bitmask & self._tree_leafset_bitmask
+        else:
+            self._leafset_bitmask = leafset_bitmask
+        return self._leafset_bitmask
+
+    def compile_split_bitmask(self,
+           leafset_bitmask=None,
+           tree_leafset_bitmask=None,
+           is_rooted=None,
+           is_mutable=True):
+        """
+        Updates the values of the various masks specified and calculates the
+        normalized bipartition bitmask.
+
+        If a rooted bipartition, then this is set to the value of the leafset
+        bitmask.
+        If an unrooted bipartition, then the leafset bitmask is normalized such that
+        the lowest-significant bit (i.e., the group to which the first taxon
+        belongs) is set to '0'.
+
+        Also makes this bipartition immutable (unless `is_mutable` is `False`),
+        which facilitates it being used in dictionaries and sets.
+
+        Parameters
+        ----------
+        leafset_bitmask : integer
+            A bit array representing the presence or absence of taxa in the
+            subtree descending from the child node of the edge of which this
+            bipartition is associated. The least-significant bit corresponds to
+            the first taxon, the next least-signficant bit corresponds to the
+            second taxon, and so on, with the last taxon corresponding to the
+            most-significant bit. If not specified or `None`, the current value
+            of `self.leafset_bitmask` is used.
+        tree_leafset_bitmask : integer
+            The `leafset_bitmask` of the root edge of the tree with which this
+            bipartition is associated. In, general, this will be $0b1111...n$,
+            where $n$ is the number of taxa, *except* in cases of trees with
+            incomplete leaf-sets, where the positions corresponding to the
+            missing taxa will have the bits unset. If not specified or `None`,
+            the current value of `self.tree_leafset_bitmask` is used.
+        is_rooted : bool
+            Specifies whether or not the tree with which this bipartition is
+            associated is rooted. If not specified or `None`, the current value
+            of `self.is_rooted` is used.
+
+        Returns
+        -------
+        bitmask : integer
+            The bipartition bitmask.
+        """
+        assert self.is_mutable, "Bipartition instance is not mutable"
+        if is_rooted is not None:
+            self._is_rooted = is_rooted
+        if tree_leafset_bitmask:
+            self.compile_tree_leafset_bitmask(tree_leafset_bitmask=tree_leafset_bitmask)
+        if leafset_bitmask:
+            self.compile_leafset_bitmask(leafset_bitmask=leafset_bitmask)
+        if self._leafset_bitmask is None:
+            return
+        if self._is_rooted:
+            self._split_bitmask = self._leafset_bitmask
+        else:
+            self._split_bitmask = Bipartition.normalize_bitmask(
+                    bitmask=self._leafset_bitmask,
+                    fill_bitmask=self._tree_leafset_bitmask,
+                    lowest_relevant_bit=self._lowest_relevant_bit)
+        if is_mutable is not None:
+            self.is_mutable = is_mutable
+        return self._split_bitmask
+
+    ##############################################################################
+    ## Operations
+
+    def normalize(self, bitmask, convention="lsb0"):
+        """
+        Return `bitmask` ensuring that the bit corresponding to the first
+        taxon is 1.
+        """
+        if convention == "lsb0":
+            if self._lowest_relevant_bit & bitmask:
+                return bitmask & self._tree_leafset_bitmask
+            else:
+                return (~bitmask) & self._tree_leafset_bitmask
+        elif convention == "lsb1":
+            if self._lowest_relevant_bit & bitmask:
+                return (~bitmask) & self._tree_leafset_bitmask
+            else:
+                return bitmask & self._tree_leafset_bitmask
+        else:
+            raise ValueError("Unrecognized convention: {}".format(convention))
+
+    def is_compatible_with(self, other):
+        """
+        Returns `True` if `other` is compatible with self.
+
+        Parameters
+        ----------
+        other : :class:`Bipartition`
+            The bipartition to check for compatibility.
+
+        Returns
+        -------
+        b : bool
+            `True` if `other` is compatible with `self`; `False` otherwise.
+        """
+        m1 = self._split_bitmask
+        if isinstance(other, int):
+            m2 = other
+        else:
+            m2 = other._split_bitmask
+        return Bipartition.is_compatible_bitmasks(m1, m2, self._tree_leafset_bitmask)
+
+    def is_incompatible_with(self, other):
+        """
+        Returns `True` if `other` conflicts with self.
+
+        Parameters
+        ----------
+        other : :class:`Bipartition`
+            The bipartition to check for conflicts.
+
+        Returns
+        -------
+        b : bool
+            `True` if `other` conflicts with `self`; `False` otherwise.
+        """
+        return not self.is_compatible_with(other)
+
+    def is_trivial(self):
+        """
+        Returns
+        -------
+        b : bool
+            `True` if this bipartition divides a leaf and the rest of the
+            tree.
+        """
+        return is_trivial_bitmask(self._split_bitmask,
+                self._tree_leafset_bitmask)
+
+    def split_as_newick_string(self,
+            taxon_namespace,
+            preserve_spaces=False,
+            quote_underscores=True):
+        """
+        Represents this bipartition split as a newick string.
+
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to reference.
+        preserve_spaces : boolean, optional
+            If `False` (default), then spaces in taxon labels will be replaced
+            by underscores. If `True`, then taxon labels with spaces will be
+            wrapped in quotes.
+        quote_underscores : boolean, optional
+            If `True` (default), then taxon labels with underscores will be
+            wrapped in quotes. If `False`, then the labels will not be wrapped
+            in quotes.
+
+        Returns
+        -------
+        s : string
+            NEWICK representation of split specified by `bitmask`.
+        """
+        return taxon_namespace.bitmask_as_newick_string(
+                bitmask=self._split_bitmask,
+                preserve_spaces=preserve_spaces,
+                quote_underscores=quote_underscores)
+
+    def leafset_as_newick_string(self,
+            taxon_namespace,
+            preserve_spaces=False,
+            quote_underscores=True):
+        """
+        Represents this bipartition leafset as a newick string.
+
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to reference.
+        preserve_spaces : boolean, optional
+            If `False` (default), then spaces in taxon labels will be replaced
+            by underscores. If `True`, then taxon labels with spaces will be
+            wrapped in quotes.
+        quote_underscores : boolean, optional
+            If `True` (default), then taxon labels with underscores will be
+            wrapped in quotes. If `False`, then the labels will not be wrapped
+            in quotes.
+
+        Returns
+        -------
+        s : string
+            NEWICK representation of split specified by `bitmask`.
+        """
+        return taxon_namespace.bitmask_as_newick_string(
+                bitmask=self._leafset_bitmask,
+                preserve_spaces=preserve_spaces,
+                quote_underscores=quote_underscores)
+
+    def leafset_taxa(self, taxon_namespace):
+        """
+        Returns list of :class:`Taxon` objects in the leafset of this
+        bipartition.
+
+        Parameters
+        ----------
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to reference.
+        index : integer, optional
+            Start from this :class:`Taxon` object instead of the first
+            :class:`Taxon` object in the collection.
+
+        Returns
+        -------
+        taxa : :py:class:`list` [:class:`Taxon`]
+            List of :class:`Taxon` objects specified or spanned by
+            `bitmask`.
+        """
+        return taxon_namespace.bitmask_taxa_list(
+                bitmask=self._leafset_bitmask,
+                index=index)
+
+    # def as_newick_string
+    # def is_trivial
+    # def is_non_singleton
+    # def leafset_hash
+    # def leafset_as_bitstring
+    # def is_compatible
 
 ##############################################################################
 ### Edge
@@ -45,6 +638,9 @@ class Edge(
     """
     An :term:`edge` on a :term:`tree`.
     """
+
+    ###########################################################################
+    ### Life-cycle and Identity
 
     def __init__(self, **kwargs):
         """
@@ -69,8 +665,29 @@ class Edge(
         self.length = kwargs.pop("length", None)
         if kwargs:
             raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
-        self.split_bitmask = None
+
+        self._bipartition = None
         self.comments = []
+
+    def __copy__(self, memo=None):
+        raise TypeError("Cannot directly copy Edge")
+
+    def taxon_namespace_scoped_copy(self, memo=None):
+        raise TypeError("Cannot directly copy Edge")
+
+    def __deepcopy__(self, memo=None):
+        # call Annotable.__deepcopy__()
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
+        # return super(Edge, self).__deepcopy__(memo=memo)
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
+
+    ###########################################################################
+    ### Basic Structure
 
     def _get_tail_node(self):
         if self._head_node is None:
@@ -91,23 +708,6 @@ class Edge(
         # book-keeping; following should also set `_head_node` of `self`
         node.edge = self
     head_node = property(_get_head_node, _set_head_node)
-
-    def __copy__(self, memo=None):
-        raise TypeError("Cannot directly copy Edge")
-
-    def taxon_namespace_scoped_copy(self, memo=None):
-        raise TypeError("Cannot directly copy Edge")
-
-    def __deepcopy__(self, memo=None):
-        # call Annotable.__deepcopy__()
-        return basemodel.Annotable.__deepcopy__(self, memo=memo)
-        # return super(Edge, self).__deepcopy__(memo=memo)
-
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return self is other
 
     def is_leaf(self):
         "Returns True if the head node has no children"
@@ -131,7 +731,7 @@ class Edge(
     adjacent_edges = property(get_adjacent_edges)
 
     ###########################################################################
-    ### Structural
+    ### Structural Manipulation
 
     def collapse(self):
         """
@@ -153,11 +753,75 @@ class Edge(
             p.insert_child(pos, child)
             pos += 1
 
-    def invert(self):
+    def invert(self, update_bipartitions=False):
         """
         Changes polarity of edge.
         """
-        self.head_node, self.tail_node = self.tail_node, self.head_node
+        # self.head_node, self.tail_node = self.tail_node, self.head_node
+
+        if not self.head_node:
+            raise ValueError("Cannot invert edge with 'None' for head node")
+        if not self.tail_node:
+            raise ValueError("Cannot invert edge with 'None' for tail node")
+
+        old_head_node = self.head_node
+        new_tail_node = old_head_node
+        old_tail_node = self.tail_node
+        new_head_node = old_tail_node
+        grandparent = old_tail_node._parent_node
+        if grandparent is not None:
+            for idx, ch in enumerate(grandparent._child_nodes):
+                if ch is old_tail_node:
+                    grandparent._child_nodes[idx] = old_head_node
+                    break
+            else:
+                # we did not break loop: force insertion of old_head_node if
+                # not already there
+                if old_head_node not in grandparent._child_nodes:
+                    grandparent._child_nodes.append(old_head_node)
+        assert old_head_node in old_tail_node._child_nodes
+        old_tail_node.remove_child(old_head_node)
+        assert old_head_node not in old_tail_node._child_nodes
+        old_head_node.add_child(old_tail_node)
+        old_tail_node.edge.length, old_head_node.edge.length = old_head_node.edge.length, old_tail_node.edge_length
+
+    ###########################################################################
+    ### Bipartition Management
+
+    def _get_bipartition(self):
+        if self._bipartition is None:
+            self._bipartition = Bipartition(
+                    edge=self,
+                    is_mutable=True,
+                    )
+        return self._bipartition
+    def _set_bipartition(self, v=None):
+        self._bipartition = v
+    bipartition = property(_get_bipartition, _set_bipartition)
+
+    def _get_split_bitmask(self):
+        return self.bipartition._split_bitmask
+    def _set_split_bitmask(self, h):
+        self.bipartition._split_bitmask = h
+    split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
+
+    def _get_leafset_bitmask(self):
+        return self.bipartition._leafset_bitmask
+    def _set_leafset_bitmask(self, h):
+        self.bipartition._leafset_bitmask = h
+    leafset_bitmask = property(_get_leafset_bitmask, _set_leafset_bitmask)
+
+    def _get_tree_leafset_bitmask(self):
+        return self.bipartition._tree_leafset_bitmask
+    def _set_tree_leafset_bitmask(self, h):
+        self.bipartition._tree_leafset_bitmask = h
+    tree_leafset_bitmask = property(_get_tree_leafset_bitmask, _set_tree_leafset_bitmask)
+
+    def split_as_bitstring(self):
+        return self.bipartition.split_as_bitstring()
+
+    def leafset_as_bitstring(self):
+        return self.bipartition.leafset_as_bitstring()
 
     ###########################################################################
     ### Representation
@@ -204,12 +868,6 @@ class Edge(
             else:
                 hn = "None"
             output_strio.write('\n%s%s' % (leader2, hn))
-            if self.split_bitmask is not None:
-                output_strio.write('\n%s[Clade Mask]' % leader1)
-                if taxon_namespace is None:
-                    output_strio.write('\n%s%s' % (leader2, self.split_bitmask))
-                else:
-                    output_strio.write('\n%s%s' % (leader2, taxon_namespace.split_bitmask_string(self.split_bitmask)))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
@@ -834,22 +1492,22 @@ class Node(
         node = self.__class__(**kwargs)
         return self.insert_child(index=index, node=node)
 
-    def remove_child(self, node, suppress_deg_two=False):
+    def remove_child(self, node, suppress_unifurcations=False):
         """
         Removes a node from the child set of this node.
 
         Results in the parent of the node being removed set to `None`.  If
-        `suppress_deg_two` is `True`, if this node ends up having only one
+        `suppress_unifurcations` is `True`, if this node ends up having only one
         child after removal of the specified node, then this node will be
         removed from the tree, with its single child added to the child node
         set of its parent and the edge length adjusted accordingly.
-        `suppress_deg_two` should only be `True` for unrooted trees.
+        `suppress_unifurcations` should only be `True` for unrooted trees.
 
         Parameters
         ----------
         node : :class:`Node`
             The node to be removed.
-        suppress_deg_two : boolean, optional
+        suppress_unifurcations : boolean, optional
             If `False` (default), no action is taken. If `True`, then if the
             node removal results in a node with degree of two (i.e., a single
             parent and a single child), then it will be removed from
@@ -869,13 +1527,13 @@ class Node(
             node.edge.tail_node = None
             index = children.index(node)
             children.remove(node)
-            if suppress_deg_two:
+            if suppress_unifurcations:
                 if self._parent_node:
                     if len(children) == 1:
                         child = children[0]
                         pos = self._parent_node._child_nodes.index(self)
                         self._parent_node.insert_child(pos, child)
-                        self._parent_node.remove_child(self, suppress_deg_two=False)
+                        self._parent_node.remove_child(self, suppress_unifurcations=False)
                         try:
                             child.edge.length += self.edge.length
                         except:
@@ -896,7 +1554,7 @@ class Node(
                         except:
                             pass
                         pos = self._child_nodes.index(to_remove)
-                        self.remove_child(to_remove, suppress_deg_two=False)
+                        self.remove_child(to_remove, suppress_unifurcations=False)
                         tr_children = to_remove._child_nodes
                         tr_children.reverse()
                         for c in tr_children:
@@ -906,7 +1564,7 @@ class Node(
             raise ValueError("Tried to remove a node that is not listed as a child")
         return node
 
-    def reversible_remove_child(self, node, suppress_deg_two=False):
+    def reversible_remove_child(self, node, suppress_unifurcations=False):
         """
         This function is a (less-efficient) version of remove_child that also
         returns the data needed by reinsert_nodes to "undo" the removal.
@@ -914,10 +1572,10 @@ class Node(
         Returns a list of tuples.  The first element of each tuple is the
         node removed, the other elements are the information needed by
         `reinsert_nodes' in order to restore the tree to the same topology as
-        it was before the call to `remove_child.` If `suppress_deg_two` is False
+        it was before the call to `remove_child.` If `suppress_unifurcations` is False
         then the returned list will contain only one item.
 
-        `suppress_deg_two` should only be called on unrooted trees.
+        `suppress_unifurcations` should only be called on unrooted trees.
         """
         if not node:
             raise ValueError("Tried to remove an non-existing or null node")
@@ -930,7 +1588,7 @@ class Node(
         node._parent_node = None
         node.edge.tail_node = None
         children.remove(node)
-        if suppress_deg_two:
+        if suppress_unifurcations:
             p = self._parent_node
             if p:
                 if len(children) == 1:
@@ -938,7 +1596,7 @@ class Node(
                     pos = p._child_nodes.index(self)
                     p.insert_child(pos, child)
                     self._child_nodes = []
-                    p.remove_child(self, suppress_deg_two=False)
+                    p.remove_child(self, suppress_unifurcations=False)
                     e = child.edge
                     try:
                         e.length += self.edge.length
@@ -962,7 +1620,7 @@ class Node(
                     except:
                         e = None
                     pos = self._child_nodes.index(to_remove)
-                    self.remove_child(to_remove, suppress_deg_two=False)
+                    self.remove_child(to_remove, suppress_unifurcations=False)
                     tr_children = to_remove._child_nodes
                     to_remove._child_nodes = []
                     for n, c in enumerate(tr_children):
@@ -1024,34 +1682,15 @@ class Node(
         leaves = [i for i in self.leaf_iter()]
         self.set_child_nodes(leaves)
 
-    def collapse_conflicting(self, split, split_bitmask):
+    def collapse_conflicting(self, bipartition):
         """
-        Collapses every edge in the
-        subtree that conflicts with split.  This can include the edge subtending
-        subtree_root.
+        Collapses every edge in the subtree that conflicts with the given
+        bipartition. This can include the edge subtending subtree_root.
         """
-        # we flip splits so that both the split and each edges split  have the
-        # lowest bit of the clade mask set to one
-        lb = treesplit.lowest_bit_only(split_bitmask)
-
-        if lb & split:
-            cropped_split = split & split_bitmask
-        else:
-            cropped_split = (~split) & split_bitmask
-
         to_collapse_head_nodes = []
         for nd in self.postorder_iter():
-            if not nd.is_leaf():
-                ncm = nd.edge.split_bitmask
-                if lb & ncm:
-                    nd_split = ncm & split_bitmask
-                else:
-                    nd_split = (~ncm) & split_bitmask
-
-                cm_union = nd_split | cropped_split
-                if (cm_union != nd_split) and (cm_union != cropped_split):
-                    to_collapse_head_nodes.append(nd)
-
+            if nd._child_nodes and nd.edge.bipartition.is_incompatible_with(bipartition):
+                to_collapse_head_nodes.append(nd)
         for nd in to_collapse_head_nodes:
             e = nd.edge
             e.collapse()
@@ -1064,18 +1703,26 @@ class Node(
         Returns the edge subtending this node.
         """
         return self._edge
-    def _set_edge(self, edge):
+    def _set_edge(self, new_edge):
         """
         Sets the edge subtending this node, and sets head_node of
         `edge` to point to self.
         """
         # if edge is None:
         #     raise ValueError("A Node cannot have 'None' for an edge")
-        self._edge = edge
+        if new_edge is self._edge:
+            return
+        if self._parent_node is not None:
+            try:
+                self._parent_node._child_nodes.remove(self)
+            except ValueError:
+                pass
+
+        ## Minimal management
+        self._edge = new_edge
         if self._edge:
-            # set attribute directly instead of going
-            # through managed property to avoid recursion
             self._edge._head_node = self
+
     edge = property(_get_edge, _set_edge)
 
     def _get_edge_length(self):
@@ -1091,17 +1738,57 @@ class Node(
         self._edge.length = v
     edge_length = property(_get_edge_length, _set_edge_length)
 
-    def _get_split_bitmask(self):
+    def _get_bipartition(self):
         """
-        Returns the split hash bitmask for this node.
+        Returns the bipartition for the edge subtending this node.
         """
-        return self._edge.split_bitmask
-    def _set_split_bitmask(self, v=None):
+        return self._edge.bipartition
+    def _set_bipartition(self, v=None):
         """
-        Sets the split hash bitmask for htis node.
+        Sets the bipartition for the edge subtending this node.
         """
-        self._edge.split_bitmask = v
-    split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
+        self._edge.bipartition = v
+    bipartition = property(_get_bipartition, _set_bipartition)
+
+    # def swap_edge(self, other):
+    #     new_edge = other._edge
+    #     old_edge = self._edge
+
+
+
+
+    #     if new_edge:
+    #         self._edge = new_edge
+    #         if old_edge:
+    #             old_bipartition = old_edge.bipartition
+    #         else:
+    #             old_bipartition = None
+    #         if new_edge:
+    #             new_edge_previous_head = self._edge._head_node
+    #         else:
+    #             new_edge_previous_head = None
+    #         if new_edge_previous_head is None:
+    #             self._parent_node = None
+    #         else:
+    #             if new_edge_previous_head is not self:
+    #                 self._parent_node = new_edge_previous_head._parent_node
+    #                 new_edge_previous_head._parent_node = None
+    #                 new_edge_previous_head.edge = Edge(head_node=new_edge_previous_head)
+    #                 new_edge_previous_head._edge.bipartition = self._edge.bipartition
+    #                 new_edge_previous_head._edge.bipartition.edge = new_edge_previous_head._edge
+    #                 self._edge.bipartition = old_bipartition
+    #                 self._edge.bipartition.edge = self._edge
+    #             if self._parent_node is not None:
+    #                 for idx, ch in enumerate(self._parent_node._child_nodes):
+    #                     if ch is new_edge_previous_head:
+    #                         self._parent_node._child_nodes[idx] = self
+    #                         break
+    #                 else:
+    #                     if self not in self._parent_node._child_nodes:
+    #                         self._parent_node._child_nodes.append(self)
+    #         self._edge._head_node = self
+    #     else:
+    #         self._edge = edge
 
     ###########################################################################
     ### Parent Access and Manipulation
@@ -1395,12 +2082,6 @@ class Node(
             else:
                 parent_node_desc = 'None'
             output_strio.write('\n%s%s' % (leader2, parent_node_desc))
-            if self.edge.split_bitmask is not None:
-                output_strio.write('\n%s[Clade Mask]' % leader1)
-                if taxon_namespace is None:
-                    output_strio.write('\n%s%s' % (leader2, self.edge.split_bitmask))
-                else:
-                    output_strio.write('\n%s%s' % (leader2, taxon_namespace.split_bitmask_string(self.edge.split_bitmask)))
             output_strio.write('\n%s[Children]' % leader1)
             if len(self._child_nodes) == 0:
                 output_strio.write('\n%sNone' % leader2)
@@ -1509,7 +2190,6 @@ class Node(
 
     def _write_indented_form(self, out, **kwargs):
         indentation = kwargs.get("indentation", "    ")
-        split_bitmasks = kwargs.get("splits", True)
         level = kwargs.get("level", 0)
         ancestors = []
         siblings = []
@@ -1527,8 +2207,8 @@ class Node(
     def _write_indented_form_line(self, out, level, **kwargs):
         indentation = kwargs.get("indentation", "    ")
         label = _format_node(self, **kwargs)
-        if kwargs.get("splits"):
-            cm = "%s " % _format_split(self.edge.split_bitmask, **kwargs)
+        if kwargs.get("bipartitions"):
+            cm = "%s " % _format_bipartition(self.edge.bipartition, **kwargs)
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
@@ -1669,6 +2349,41 @@ class Tree(
             schema,
             taxon_namespace=None,
             **kwargs):
+        """
+        Iterates over trees from files, returning them one-by-one instead of
+        instantiating all of them in memory at once.
+
+        For operations where it is sufficient to process each tree individually
+        (e.g., performing a calculation or set of calculations on a tree and
+        storing the result, after the which the entire tree itself is
+        not needed), this approach is *far* more performant that reading in the
+        trees using a :class:`TreeList`. This is because a full tree structure
+        requires significant memory overhead, and as memory gets used up and
+        the OS starts page faulting, performance starts taking some serious
+        hits.
+
+        Parameters
+        ----------
+        files : iterable of file paths or file-like objects.
+            Iterable of sources, which can either be strings specifying file
+            paths or file-like objects open for reading. If a source element is
+            a string (``isinstance(i,str) == True``), then it is assumed to be
+            a path to a file. Otherwise, the source is assumed to be a file-like
+            object.
+        schema : string
+            The name of the data format (e.g., "newick" or "nexus").
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to use to manage
+            taxon definitions.
+        \*\*kwargs : keyword arguments
+            These will be passed directly to the schema-parser implementation.
+
+        Yields
+        ------
+        t : :class:`Tree`
+            Trees as read from the file.
+
+        """
         if taxon_namespace is None:
             taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
             if taxon_namespace is None:
@@ -1683,6 +2398,170 @@ class Tree(
                 **kwargs)
         return tree_yielder
     yield_from_files = classmethod(yield_from_files)
+
+    def from_bipartition_encoding(
+            cls,
+            bipartition_encoding,
+            taxon_namespace,
+            is_rooted=False,
+            edge_lengths=None,
+            ):
+        """
+        Reconstructs a tree from a bipartition encoding.
+
+        Parameters
+        ----------
+        bipartition_encoding : iterable[:class:`Bipartition`]
+            An iterable of :class:`Bipartition` instances representing a tree.
+            Bipartitions will be added to the tree in the order given by
+            iterating over this. Bipartitions that are incompatible with the
+            tree will be skipped. So if not all bipartitions are compatible
+            with each other, then the sequence of bipartitions given in
+            ``bipartition_encoding`` should be in order of their support values
+            or some other preference criteria.
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to use to manage
+            taxon definitions.
+        is_rooted : bool
+            Specifies whether or not the tree is rooted.
+        edge_lengths : iterable or `False` or `None`
+            An iterable of edge lengths. If `False`, then no edge lengths will
+            be added. If `None`, then edge lengths will be pulled from the
+            `edge` attribute of each :class:`Bipartition` object in
+            `bipartition_encoding`. Otherwise, this should be in the same order
+            as the bipartition encoding.
+
+        Returns
+        -------
+        t : :class:`Tree`
+            The tree reconstructed from the given bipartition encoding.
+        """
+        split_bitmasks = [b.split_bitmask for b in bipartition_encoding]
+        if edge_lengths is not None:
+            split_edge_lengths = dict(zip(split_bitmasks, edge_lengths))
+        elif edge_lengths is not False:
+            split_edge_lengths = dict(zip(split_bitmasks,
+                [b.edge.length for b in bipartition_encoding]))
+        return cls.from_split_bitmasks(
+                split_bitmasks=split_bitmasks,
+                taxon_namespace=taxon_namespace,
+                split_edge_lengths=split_edge_lengths,
+                is_rooted=is_rooted)
+    from_bipartition_encoding = classmethod(from_bipartition_encoding)
+
+    def from_split_bitmasks(
+            cls,
+            split_bitmasks,
+            taxon_namespace,
+            is_rooted=False,
+            split_edge_lengths=None,
+            ):
+        """
+        Reconstructs a tree from a collection of splits represented as bitmasks.
+
+        Parameters
+        ----------
+        split_bitmasks : iterable[int]
+            An iterable of split bitmasks representing a tree.
+            Splits will be added to the tree in the order given by
+            iterating over this. Splits that are incompatible with the
+            tree will be skipped. So if not all splits are compatible
+            with each other, then the sequence of splits given in
+            ``bipartition_encoding`` should be in order of their support values
+            or some other preference criteria.
+        taxon_namespace : :class:`TaxonNamespace` instance
+            The operational taxonomic unit concept namespace to use to manage
+            taxon definitions.
+        is_rooted : bool
+            Specifies whether or not the tree is rooted.
+        edge_lengths : dict or `False` or `None`
+            If `False` or `None`, then no edge lengths will be added.
+            Otherwise, this should be a dictionary mapping splits to edge
+            lengths.
+        Returns
+        -------
+        t : :class:`Tree`
+            The tree reconstructed from the given bipartition encoding.
+        """
+        leaf_to_root_search = True
+        reconstructed_tree = cls(taxon_namespace=taxon_namespace)
+        # reconstructed_tree.is_rooted = True
+        reconstructed_tree.is_rooted = is_rooted
+        for taxon in taxon_namespace:
+            reconstructed_tree.seed_node.new_child(taxon=taxon)
+        all_taxa_bitmask = taxon_namespace.all_taxa_bitmask()
+        reconstructed_tree.encode_bipartitions()
+        reconstructed_tree.bipartition_encoding = []
+        leaves = reconstructed_tree.leaf_nodes()
+        if leaf_to_root_search:
+            to_leaf_dict = {}
+            for leaf in leaves:
+                to_leaf_dict[leaf.edge.bipartition.leafset_bitmask] = leaf
+        root = reconstructed_tree.seed_node
+        root_edge = root.edge
+
+        split_bitmasks_to_add = []
+        for s in split_bitmasks:
+            m = s & all_taxa_bitmask
+            if (m != all_taxa_bitmask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
+                if is_rooted:
+                    split_bitmasks_to_add.append(m)
+                else:
+                    if 1 & m:
+                        split_bitmasks_to_add.append( (~m) & all_taxa_bitmask )
+                    else:
+                        # "denormalize" split_bitmasks
+                        split_bitmasks_to_add.append(m)
+
+        # Now when we add split_bitmasks in order, we will do a greedy, extended majority-rule consensus tree
+        #for freq, split_to_add, split_in_dict in to_try_to_add:
+        _get_mask = lambda x: getattr(x.bipartition, "_leafset_bitmask")
+        for split_to_add in split_bitmasks_to_add:
+            if (split_to_add & root_edge.bipartition.leafset_bitmask) != split_to_add:
+                # incompatible
+                continue
+            elif leaf_to_root_search:
+                lb = bitprocessing.least_significant_set_bit(split_to_add)
+                one_leaf = to_leaf_dict[lb]
+                parent_node = one_leaf
+                while (split_to_add & parent_node.edge.bipartition.leafset_bitmask) != split_to_add:
+                    parent_node = parent_node.parent_node
+            else:
+                parent_node = reconstructed_tree.mrca(split_bitmask=split_to_add)
+            if parent_node is None or parent_node.edge.bipartition.leafset_bitmask == split_to_add:
+                continue # split is not in tree, or already in tree.
+            new_node = cls.node_factory()
+            #self.map_split_support_to_node(node=new_node, split_support=freq)
+            new_node_children = []
+            new_edge = new_node.edge
+            new_mask = 0
+            for child in parent_node.child_nodes():
+                # might need to modify the following if rooted split_bitmasks
+                # are used
+                cecm = child.edge.bipartition.leafset_bitmask
+                if (cecm & split_to_add):
+                    assert cecm != split_to_add
+                    new_mask |= cecm
+                    new_node_children.append(child)
+                    new_edge.bipartition = Bipartition(
+                            leafset_bitmask=new_mask,
+                            tree_leafset_bitmask=all_taxa_bitmask,
+                            is_mutable=False)
+                    reconstructed_tree.bipartition_encoding.append(new_edge.bipartition)
+            # Check to see if we have accumulated all of the bits that we
+            #   needed, but none that we don't need.
+            if new_edge.bipartition.leafset_bitmask == split_to_add:
+                if split_edge_lengths:
+                    new_edge.length = split_edge_lengths[split_to_add]
+                    #old_split = new_old_split_map[split_to_add]
+                    #new_edge.length = split_edge_lengths[old_split]
+                for child in new_node_children:
+                    parent_node.remove_child(child)
+                    new_node.add_child(child)
+                parent_node.add_child(new_node)
+                # reconstructed_tree.split_edge_map[split_to_add] = new_edge
+        return reconstructed_tree
+    from_split_bitmasks = classmethod(from_split_bitmasks)
 
     def node_factory(cls, **kwargs):
         """
@@ -1849,7 +2728,9 @@ class Tree(
             self.weight = None
             self.length_type = None
             self.seed_node = None
-            self._split_edge_map = None
+            self.bipartition_encoding = None
+            self._split_bitmask_edge_map = None
+            self._bipartition_edge_map = None
             seed_node = kwargs.pop("seed_node", None)
             if seed_node is None:
                 self.seed_node = self.node_factory()
@@ -1860,27 +2741,22 @@ class Tree(
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
     ##############################################################################
-    ###### LEGACY
+    ## Bipartitions
+
     def _get_split_edges(self):
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.split_edge_map' for a mapping from split bitmasks to edges instead.",
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.split_bitmask_edge_map' attribute.",
                 stacklevel=3)
-        return self.split_edge_map
+        return self.bipartition_encoding
     def _set_split_edges(self, m):
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.split_edge_map' for a mapping from split bitmasks to edges instead.",
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.split_bitmask_edge_map' attribute.",
                 stacklevel=3)
-        self.split_edge_map = m
+        self.bipartition_encoding = m
     split_edges = property(_get_split_edges, _set_split_edges)
-    ##############################################################################
 
-    def _get_split_edge_map(self):
-        # if self._split_edge_map is None:
-        #     self.encode_splits()
-        return self._split_edge_map
-    def _set_split_edge_map(self, m):
-        self._split_edge_map = m
-    split_edge_map = property(_get_split_edge_map, _set_split_edge_map)
+    ##############################################################################
+    ## Identity
 
     def __hash__(self):
         return id(self)
@@ -2300,27 +3176,28 @@ class Tree(
         Returns the shallowest node in the tree (the node nearest the tips)
         that has all of the taxa that:
 
-            * are specified by the split bitmask given by the keyword argument
-              `split_bitmask`
+            * are specified by the leafset bitmask given by the keyword argument
+              `leafset_bitmask`
             * are in the list of Taxon objects given by the keyword argument
               `taxa`
             * have the labels specified by the list of strings given by the
               keyword argument `taxon_labels`
 
-        Returns `None` if no appropriate node is found.  Assumes that edges on
-        tree have been decorated with splits hashes. It is possible that split is
-        not compatible with the subtree that is returned! (compatibility tests
-        are not fully performed).  This function is used to find the
-        "insertion point" for a new split via a root to tip search.
+        Returns `None` if no appropriate node is found. Assumes that
+        bipartitions have been encoded on the tree. It is possible that the
+        leafset bitmask is not compatible with the subtree that is returned!
+        (compatibility tests are not fully performed).  This function is used
+        to find the "insertion point" for a new bipartition via a root to tip
+        search.
 
         Parameters
         ----------
         \*\*kwargs : keyword arguments
             Exactly one of the following must be specified:
 
-                `split_bitmask` : integer
+                `leafset_bitmask` : integer
                     Node object subtended by the first edge compatible with this
-                    split will be returned.
+                    leafset bitmask will be returned.
                 `taxa` : collections.Iterable [:class:`Taxon`]
                     Shallowest node object with descendent nodes associated with
                     all the :class:`Taxon` objects specified will be returned.
@@ -2343,9 +3220,9 @@ class Tree(
             if no such node exists.
         """
         start_node = kwargs.get("start_node", self.seed_node)
-        split_bitmask = None
-        if "split_bitmask" in kwargs:
-            split_bitmask = kwargs["split_bitmask"]
+        leafset_bitmask = None
+        if "leafset_bitmask" in kwargs:
+            leafset_bitmask = kwargs["leafset_bitmask"]
         else:
             taxa = kwargs.get("taxa", None)
             if taxa is None:
@@ -2354,18 +3231,18 @@ class Tree(
                     if len(taxa) != len(kwargs["taxon_labels"]):
                         raise KeyError("Not all labels matched to taxa")
                 else:
-                    raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
+                    raise TypeError("Must specify one of: 'leafset_bitmask', 'taxa' or 'taxon_labels'")
             if taxa is None:
                 raise ValueError("No taxa matching criteria found")
-            split_bitmask = self.taxon_namespace.taxa_bitmask(taxa=taxa)
+            leafset_bitmask = self.taxon_namespace.taxa_bitmask(taxa=taxa)
 
-        if split_bitmask is None or split_bitmask == 0:
-            raise ValueError("Null split bitmask (0)")
+        if leafset_bitmask is None or leafset_bitmask == 0:
+            raise ValueError("Null leafset bitmask (0)")
 
-        if start_node.edge.split_bitmask is None:
-            treesplit.encode_splits(self, delete_outdegree_one=False)
+        if start_node.edge.bipartition.leafset_bitmask is None or not kwargs.get("is_bipartitions_updated", True):
+            self.encode_bipartitions(suppress_unifurcations=False)
 
-        if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
+        if (start_node.edge.bipartition.leafset_bitmask & leafset_bitmask) != leafset_bitmask:
             return None
 
         curr_node = start_node
@@ -2373,13 +3250,13 @@ class Tree(
         nd_source = iter(start_node.child_nodes())
         try:
             while True:
-                cm = curr_node.edge.split_bitmask
-                cms = (cm & split_bitmask)
+                cm = curr_node.edge.bipartition.leafset_bitmask
+                cms = (cm & leafset_bitmask)
                 if cms:
-                    # for at least one taxon cm has 1 and split has 1
-                    if cms == split_bitmask:
-                        # curr_node has all of the 1's that split has
-                        if cm == split_bitmask:
+                    # for at least one taxon cm has 1 and bipartition has 1
+                    if cms == leafset_bitmask:
+                        # curr_node has all of the 1's that bipartition has
+                        if cm == leafset_bitmask:
                             return curr_node
                         last_match = curr_node
                         nd_source = iter(curr_node.child_nodes())
@@ -2390,9 +3267,9 @@ class Tree(
                 curr_node = next(nd_source)
         except StopIteration:
             # we shouldn't reach this if all of the descendants are properly
-            #   decorated with split_bitmask attributes, but there may be some hacky
+            #   decorated with leafset_bitmask attributes, but there may be some hacky
             #   context in which we want to allow the function to be called with
-            #   leaves that have not been encoded with split_bitmasks.
+            #   leaves that have not been encoded with leafset_bitmasks.
             return last_match
 
     ###########################################################################
@@ -2690,12 +3567,16 @@ class Tree(
         itor : :py:class:`collections.Iterator` [:class:`Node`]
             An iterator yielding nodes in `self` in pre-order sequence.
         """
-        if filter_fn is not None:
-            f = lambda x : filter_fn(x.edge)
-        else:
-            f = None
-        for nd in self.seed_node.preorder_iter(filter_fn=f):
-            yield nd.edge
+        # NOTE: from-scratch implementation here instead of wrapping
+        # `preorder_node_iter()`for efficiency
+        stack = [self.seed_node._edge]
+        while stack:
+            edge = stack.pop(0)
+            if filter_fn is None or filter_fn(edge):
+                yield edge
+            child_edges = [n._edge for n in edge._head_node._child_nodes]
+            child_edges.extend(stack)
+            stack = child_edges
 
     def preorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
@@ -2724,13 +3605,18 @@ class Tree(
         itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding the internal edges of `self`.
         """
-        if filter_fn is not None:
-            f = lambda x : filter_fn(x.edge)
+        # NOTE: from-scratch implementation here instead of wrapping
+        # `preorder_internal_node_iter()`for efficiency
+        if exclude_seed_edge:
+            froot = lambda e: e._head_node._parent_node is not None
         else:
-            f = None
-        for nd in self.seed_node.preorder_internal_node_iter(filter_fn=f,
-                exclude_seed_node=exclude_seed_edge):
-            yield nd.edge
+            froot = lambda e: True
+        if filter_fn:
+            f = lambda x: (froot(x) and x._head_node._child_nodes and filter_fn(x)) or None
+        else:
+            f = lambda x: (x and froot(x) and x._head_node._child_nodes) or None
+        return self.preorder_edge_iter(filter_fn=f)
+
 
     def postorder_edge_iter(self, filter_fn=None):
         """
@@ -2753,13 +3639,21 @@ class Tree(
         -------
         itor : :py:class:`collections.Iterator` [:class:`Edge`]
             An iterator yielding the edges in `self` in post-order sequence.
+
         """
-        if filter_fn is not None:
-            f = lambda x : filter_fn(x.edge)
-        else:
-            f = None
-        for nd in self.seed_node.postorder_iter(filter_fn=f):
-            yield nd.edge
+        # NOTE: from-scratch implementation here instead of wrapping
+        # `postorder_node_iter()`for efficiency
+        stack = [(self.seed_node._edge, False)]
+        while stack:
+            edge, state = stack.pop(0)
+            if state:
+                if filter_fn is None or filter_fn(edge):
+                    yield edge
+            else:
+                stack.insert(0, (edge, True))
+                child_edges = [(n._edge, False) for n in edge._head_node._child_nodes]
+                child_edges.extend(stack)
+                stack = child_edges
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
@@ -2789,13 +3683,17 @@ class Tree(
             An iterator yielding the internal edges of `self` in post-order
             sequence.
         """
-        if filter_fn is not None:
-            f = lambda x : filter_fn(x.edge)
+        # NOTE: from-scratch implementation here instead of wrapping
+        # `preorder_internal_node_iter()`for efficiency
+        if exclude_seed_edge:
+            froot = lambda e: e._head_node._parent_node is not None
         else:
-            f = None
-        for nd in self.seed_node.postorder_internal_node_iter(filter_fn=f,
-                exclude_seed_node=exclude_seed_edge):
-            yield nd.edge
+            froot = lambda e: True
+        if filter_fn:
+            f = lambda x: (froot(x) and x._head_node._child_nodes and filter_fn(x)) or None
+        else:
+            f = lambda x: (x and froot(x) and x._head_node._child_nodes) or None
+        return self.postorder_edge_iter(filter_fn=f)
 
     def levelorder_edge_iter(self, filter_fn=None):
         """
@@ -3027,7 +3925,7 @@ class Tree(
         self._is_rooted = not val
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
-    def deroot(self):
+    def collapse_basal_bifurcation(self, set_as_unrooted_tree=True):
         "Converts a degree-2 node at the root to a degree-3 node."
         seed_node = self.seed_node
         if not seed_node:
@@ -3048,152 +3946,182 @@ class Tree(
         except:
             pass
         to_del_edge.collapse()
-        self.is_rooted = False
+        if set_as_unrooted_tree:
+            self.is_rooted = False
         return self.seed_node
 
-    def reseed_at(self, new_seed_node, update_splits=False, delete_outdegree_one=True):
-        """
-        Takes an internal node, `new_seed_node` that must already be in the tree and
-        rotates the tree such that `new_seed_node` is the `seed_node` of the tree.
-        This is a 'soft' rerooting -- i.e., changes the tree representation so
-        tree traversal behaves as if the tree is rooted at 'new_seed_node', but
-        it does not actually change the tree's rooting state.  If
-        `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edge_map` attributes will be updated.
-        If the *old* root of the tree had an outdegree of 2, then after this
-        operation, it will have an outdegree of one. In this case, unless
-        `delete_outdegree_one` is False, then it will be
-        removed from the tree.
-        """
-        if new_seed_node.is_leaf():
-            raise ValueError('Rooting at a leaf is not supported')
+    def deroot(self):
+        self.collapse_basal_bifurcation(set_as_unrooted_tree=True)
 
-        old_par = new_seed_node._parent_node
-        if old_par is None:
+    def reseed_at(self,
+            new_seed_node,
+            update_bipartitions=False,
+            collapse_unrooted_basal_bifurcation=True,
+            suppress_unifurcations=True):
+        """
+        Reseeds the tree at a different (existing) node.
+
+        Takes an internal node, `new_seed_node` that must already be in the
+        tree and rotates the tree such that `new_seed_node` is the `seed_node`
+        of the tree. This is a 'soft' rerooting -- i.e., changes the tree
+        representation so tree traversal behaves as if the tree is rooted at
+        'new_seed_node', but it does not actually change the tree's rooting
+        state.  If `update_bipartitions` is True, then the edges'
+        `bipartition_bitmask` and the tree's `bipartition_edge_map` attributes
+        will be updated. If the *old* root of the tree had an outdegree of 2,
+        then after this operation, it will have an outdegree of one. In this
+        case, unless `suppress_unifurcations` is False, then it will be removed
+        from the tree.
+        """
+
+        # def _dump_node(nd, name):
+        #     print("- {}: {}".format(name, nd.label))
+        #     if nd._parent_node:
+        #         print("    Node Parent: {}".format(nd._parent_node.label))
+        #     else:
+        #         print("    Node Parent: None")
+        #     if nd._edge.tail_node:
+        #         print("    Edge Parent: {}".format(nd._edge.tail_node.label))
+        #     else:
+        #         print("    Edge Parent: None")
+        #     debug_children = []
+        #     for ch in nd._child_nodes:
+        #         parts = []
+        #         if ch._parent_node:
+        #             parts.append(ch._parent_node.label)
+        #         else:
+        #             parts.append("None")
+        #         if ch.edge.tail_node:
+        #             parts.append(ch.edge.tail_node.label)
+        #         else:
+        #             parts.append("None")
+        #         debug_children.append("{} ({})".format(ch.label, "/".join(parts)))
+        #     debug_children = ", ".join(debug_children)
+        #     print("    Children (Node Parent, Edge Tail Node Parent): {}".format(debug_children))
+
+        if self.seed_node is new_seed_node:
             return
-        full_encode = False
-        if update_splits:
-            if self.seed_node.edge.split_bitmask is not None:
-                taxa_mask = self.seed_node.edge.split_bitmask
-                assert taxa_mask is not None
-            else:
-                full_encode = True
-                update_splits = False
-        to_edge_dict = None
-        if update_splits:
-            to_edge_dict = getattr(self, "split_edge_map", None)
-        if old_par is self.seed_node:
-            root_children = old_par.child_nodes()
-            if len(root_children) == 2 and delete_outdegree_one:
-                # root (old_par) was of degree 2, thus we need to suppress the
-                #   node
-                fc = root_children[0]
-                if fc is new_seed_node:
-                    sister = root_children[1]
-                else:
-                    assert root_children[1] is new_seed_node
-                    sister = fc
-                if new_seed_node.edge.length:
-                    sister.edge.length += new_seed_node.edge.length
-                edge_to_del = new_seed_node.edge
-                new_seed_node.edge = old_par.edge
-                if update_splits:
-                    assert new_seed_node.edge.split_bitmask == taxa_mask
-                if to_edge_dict:
-                    del to_edge_dict[edge_to_del.split_bitmask]
-                # new_seed_node.add_child(sister, edge_length=sister.edge.length)
-                new_seed_node.add_child(sister)
-                self.seed_node = new_seed_node
-                return
+
+        old_seed_node = self.seed_node
+        old_parent_node = new_seed_node._parent_node
+        if old_parent_node is None:
+            return
+
+        if new_seed_node._child_nodes:
+            new_seed_node_is_leaf = False
         else:
-            self.reseed_at(old_par,
-                    update_splits=update_splits,
-                    delete_outdegree_one=delete_outdegree_one)
-        old_par.edge, new_seed_node.edge = new_seed_node.edge, old_par.edge
-        e = old_par.edge
-        if update_splits:
-            if to_edge_dict:
-                del to_edge_dict[e.split_bitmask]
-            e.split_bitmask = (~(e.split_bitmask)) & taxa_mask
-            if to_edge_dict:
-                to_edge_dict[e.split_bitmask] = e
-            assert new_seed_node.edge.split_bitmask == taxa_mask
-        if new_seed_node in old_par._child_nodes:
-            old_par.remove_child(new_seed_node)
-        new_seed_node.add_child(old_par)
-        # assert old_par.parent_node is new_seed_node
-        # assert new_seed_node not in old_par._child_nodes
-        # assert new_seed_node.parent_node is None
-        # for x in (new_seed_node, old_par):
-        #     print("---")
-        #     print("{}: {}".format(x, ",".join(str(ch) for ch in x._child_nodes)))
-        # assert False
-        old_par.edge.length = e.length
+            new_seed_node_is_leaf = True
+
+        if update_bipartitions:
+            if self.seed_node.edge.bipartition is None or not self.bipartition_encoding:
+                full_encode = True
+                in_place_update_bipartitions = False # do not do in-place updating as we are recoding from scratch
+            else:
+                full_encode = False
+                in_place_update_bipartitions = True
+        else:
+                full_encode = False
+                in_place_update_bipartitions = False
+        if in_place_update_bipartitions:
+            bipartition_ids_to_delete = set()
+        else:
+            bipartition_ids_to_delete = None
+
+        edges_to_invert = []
+        current_node = new_seed_node
+        while current_node:
+            if current_node._parent_node is not None:
+                edges_to_invert.append(current_node.edge)
+            current_node = current_node._parent_node
+        while edges_to_invert:
+            edge = edges_to_invert.pop()
+            edge.invert(update_bipartitions=update_bipartitions)
+
+        if new_seed_node_is_leaf and suppress_unifurcations:
+            ## Cannot just suppress_unifurcations, because wrong node will be deleted
+            ## need to remove child (i.e. new seed node's old parent, which is now its child, needs to be deleted)
+            # self.suppress_unifurcations(update_bipartitions=update_bipartitions)
+            if len(new_seed_node._child_nodes) == 1:
+                nsn_ch = new_seed_node._child_nodes[0]
+                new_seed_node.remove_child(nsn_ch)
+                for ch in nsn_ch._child_nodes:
+                    new_seed_node.add_child(ch)
         self.seed_node = new_seed_node
-        if full_encode:
-            treesplit.encode_splits(self, delete_outdegree_one=delete_outdegree_one)
+
+        if update_bipartitions:
+            self.encode_bipartitions(
+                    suppress_unifurcations=suppress_unifurcations,
+                    collapse_unrooted_basal_bifurcation=collapse_unrooted_basal_bifurcation)
+        else:
+            if (collapse_unrooted_basal_bifurcation
+                    and not self._is_rooted
+                    and len(self.seed_node._child_nodes) == 2):
+                self.collapse_basal_bifurcation()
+            if suppress_unifurcations:
+                self.suppress_unifurcations()
+
         return self.seed_node
 
-    def to_outgroup_position(self, outgroup_node, update_splits=False, delete_outdegree_one=True):
+    def to_outgroup_position(self, outgroup_node, update_bipartitions=False, suppress_unifurcations=True):
         """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
         Assumes that `outgroup_node` and `outgroup_node._parent_node` and are in the tree/
-        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edge_map` attributes will be updated.
+        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
+        `bipartition_encoding` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `delete_outdegree_one` is False, then it will be
+        `suppress_unifurcations` is False, then it will be
         removed from the tree.
         """
         p = outgroup_node._parent_node
         assert p is not None
-        self.reseed_at(p, update_splits=update_splits, delete_outdegree_one=delete_outdegree_one)
+        self.reseed_at(p, update_bipartitions=update_bipartitions, suppress_unifurcations=suppress_unifurcations)
         p.remove_child(outgroup_node)
         _ognlen = outgroup_node.edge.length
         p.insert_child(0, outgroup_node)
         assert outgroup_node.edge.length == _ognlen
         return self.seed_node
 
-    def reroot_at_node(self, new_root_node, update_splits=False, delete_outdegree_one=True):
+    def reroot_at_node(self, new_root_node, update_bipartitions=False, suppress_unifurcations=True):
         """
         Takes an internal node, `new_seed_node` that must already be in the tree and
         roots the tree at that node.
         This is a 'hard' rerooting -- i.e., changes the tree
         representation so tree traversal behaves as if the tree is rooted at
         'new_seed_node', *and* changes the tree's rooting state.
-        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edge_map` attributes will be updated.
+        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
+        `bipartition_encoding` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `delete_outdegree_one` is False, then it will be
+        `suppress_unifurcations` is False, then it will be
         removed from the tree.
         """
         self.reseed_at(new_seed_node=new_root_node,
-                update_splits=False,
-                delete_outdegree_one=delete_outdegree_one)
+                update_bipartitions=False,
+                suppress_unifurcations=suppress_unifurcations)
         self.is_rooted = True
-        if update_splits:
-            self.update_splits(delete_outdegree_one=delete_outdegree_one)
+        if update_bipartitions:
+            self.update_bipartitions(suppress_unifurcations=suppress_unifurcations)
         return self.seed_node
 
     def reroot_at_edge(self,
             edge,
             length1=None,
             length2=None,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Takes an internal edge, `edge`, adds a new node to it, and then roots
         the tree on the new node.
         `length1` and `length2` will be assigned to the new (sub-)edge leading
         to the old parent of the original edge, while `length2` will be
         assigned to the old child of the original edge.
-        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edge_map` attributes will be updated.
+        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
+        `bipartition_encoding` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `delete_outdegree_one` is False, then it will be
+        `suppress_unifurcations` is False, then it will be
         removed from the tree.
         """
         old_tail = edge.tail_node
@@ -3204,20 +4132,20 @@ class Tree(
         new_seed_node.add_child(old_head)
         old.head.edge.length = length2
         self.reroot_at_node(new_seed_node,
-                update_splits=update_splits,
-                delete_outdegree_one=delete_outdegree_one)
+                update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
         return self.seed_node
 
-    def reroot_at_midpoint(self, update_splits=False, delete_outdegree_one=True):
+    def reroot_at_midpoint(self, update_bipartitions=False, suppress_unifurcations=True):
         """
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
         Sets the rooted flag on the tree to True.
-        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edge_map` attributes will be updated.
+        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
+        `bipartition_encoding` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `delete_outdegree_one` is False, then it will be
+        `suppress_unifurcations` is False, then it will be
         removed from the tree.
         """
         from dendropy.calculate import treemeasure
@@ -3249,7 +4177,7 @@ class Tree(
         assert break_on_node is not None or target_edge is not None
 
         if break_on_node:
-            self.reseed_at(break_on_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
+            self.reseed_at(break_on_node, update_bipartitions=False, suppress_unifurcations=suppress_unifurcations)
             new_seed_node = break_on_node
         else:
             tail_node_edge_len = target_edge.length - head_node_edge_len
@@ -3263,13 +4191,17 @@ class Tree(
             # old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
             old_tail_node.add_child(new_seed_node)
             new_seed_node.edge.length = tail_node_edge_len
-            self.reseed_at(new_seed_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
+            self.reseed_at(new_seed_node, update_bipartitions=False, suppress_unifurcations=suppress_unifurcations)
         self.is_rooted = True
-        if update_splits:
-            self.update_splits(delete_outdegree_one=False)
+        if update_bipartitions:
+            self.update_bipartitions(suppress_unifurcations=False)
         return self.seed_node
 
-    def delete_outdegree_one_nodes(self):
+    def suppress_unifurcations(self, update_bipartitions=False):
+        if update_bipartitions and self.bipartition_encoding:
+            bipartitions_to_delete = set()
+        else:
+            bipartitions_to_delete = None
         for nd in self.postorder_node_iter():
             children = nd._child_nodes
             if len(children) == 1:
@@ -3278,6 +4210,8 @@ class Tree(
                         children[0].edge.length = nd.edge.length
                     else:
                         children[0].edge.length += nd.edge.length
+                if bipartitions_to_delete is not None:
+                    bipartitions_to_delete.add(id(nd.edge.bipartition))
                 if nd._parent_node is not None:
                     parent = nd._parent_node
                     pos = parent._child_nodes.index(nd)
@@ -3285,15 +4219,20 @@ class Tree(
                     parent.insert_child(index=pos, node=children[0])
                     # assert children[0]._parent_node is parent
                     # assert children[0] in parent._child_nodes
+                    # assert children[0].edge.tail_node is parent
+                    # assert children[0].edge.head_node is children[0]
                     nd._parent_node = None
                 else:
                     # assert nd is self.seed_node
                     self.seed_node = children[0]
                     self.seed_node._parent_node = None
+        if bipartitions_to_delete:
+            old_encoding = self.bipartition_encoding
+            self.bipartition_encoding = [b for b in old_encoding if id(b) not in bipartitions_to_delete]
 
     def collapse_unweighted_edges(self,
             threshold=0.0000001,
-            update_splits=False):
+            update_bipartitions=False):
         """
         Collapse all *internal* edges with edge lengths less than or equal to
         ``threshold`` (or with `None` for edge length).
@@ -3301,12 +4240,12 @@ class Tree(
         for e in self.postorder_edge_iter():
             if e.length is None or (e.length <= threshold) and e.is_internal():
                e.collapse()
-        if update_splits:
-            self.update_splits()
+        if update_bipartitions:
+            self.update_bipartitions()
 
-    def resolve_polytomies(self, update_splits=False, rng=None):
+    def resolve_polytomies(self, update_bipartitions=False, rng=None):
         """
-        Arbitrarily resolve polytomies using 0-length splits.
+        Arbitrarily resolve polytomies using 0-length bipartitions.
 
         If `rng` is an object with a sample() method then the polytomy will be
             resolved by sequentially adding (generating all tree topologies
@@ -3350,13 +4289,13 @@ class Tree(
                         nn1.add_child(c2)
                         node.add_child(nn1)
                         children = node.child_nodes()
-        if update_splits:
-            self.update_splits()
+        if update_bipartitions:
+            self.update_bipartitions()
 
     def prune_subtree(self,
             node,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Removes subtree starting at `node` from tree.
         """
@@ -3365,14 +4304,14 @@ class Tree(
         if node._parent_node is None:
             raise TypeError('Node has no parent and is implicit root: cannot be pruned')
         node._parent_node.remove_child(node)
-        if delete_outdegree_one:
-            self.delete_outdegree_one_nodes()
-        if update_splits:
-            self.update_splits()
+        if suppress_unifurcations:
+            self.suppress_unifurcations()
+        if update_bipartitions:
+            self.update_bipartitions()
 
     def prune_leaves_without_taxa(self,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Removes all terminal nodes that have their ``taxon`` attribute set to
         ``None``.
@@ -3380,12 +4319,12 @@ class Tree(
         for nd in self.leaf_node_iter():
             if nd.taxon is None:
                 nd.edge.tail_node.remove_child(nd)
-        if delete_outdegree_one:
-            self.delete_outdegree_one_nodes()
-        if update_splits:
-            self.update_splits()
+        if suppress_unifurcations:
+            self.suppress_unifurcations()
+        if update_bipartitions:
+            self.update_bipartitions()
 
-    def xprune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
+    def xprune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
@@ -3414,14 +4353,14 @@ class Tree(
                     nd._child_nodes.remove(ch)
                     # ch.edge.tail_node.remove_child(ch)
             to_process.extend(nd._child_nodes)
-        if delete_outdegree_one:
-            self.delete_outdegree_one_nodes()
+        if suppress_unifurcations:
+            self.suppress_unifurcations()
         # print self.as_string("newick")
         # for nd in sorted(self.postorder_node_iter()):
         #     print nd.oid
         # print "<<\n"
 
-    def prune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
+    def prune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
@@ -3430,35 +4369,35 @@ class Tree(
         for nd in self.postorder_node_iter():
             if nd.taxon and nd.taxon in taxa:
                 nd.edge.tail_node.remove_child(nd)
-        self.prune_leaves_without_taxa(update_splits=update_splits,
-                delete_outdegree_one=delete_outdegree_one)
+        self.prune_leaves_without_taxa(update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
 
-    def prune_nodes(self, nodes, prune_leaves_without_taxa=False, update_splits=False, delete_outdegree_one=True):
+    def prune_nodes(self, nodes, prune_leaves_without_taxa=False, update_bipartitions=False, suppress_unifurcations=True):
         for nd in nodes:
             if nd.edge.tail_node is None:
                 raise Exception("Attempting to remove root node or node without parent")
             nd.edge.tail_node.remove_child(nd)
         if prune_leaves_without_taxa:
-            self.prune_leaves_without_taxa(update_splits=update_splits,
-                    delete_outdegree_one=delete_outdegree_one)
+            self.prune_leaves_without_taxa(update_bipartitions=update_bipartitions,
+                    suppress_unifurcations=suppress_unifurcations)
 
     def prune_taxa_with_labels(self,
             labels,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Removes terminal nodes that are associated with Taxon objects with
         labels given by `labels`.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.prune_taxa(taxa=taxa,
-                update_splits=update_splits,
-                delete_outdegree_one=delete_outdegree_one)
+                update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
 
     def retain_taxa(self,
             taxa,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Removes terminal nodes that are not associated with any
         of the Taxon objects given by ``taxa`` (which can be any iterable, including a
@@ -3466,35 +4405,35 @@ class Tree(
         """
         to_prune = [t for t in self.taxon_namespace if t not in taxa]
         self.prune_taxa(to_prune,
-                update_splits=update_splits,
-                delete_outdegree_one=delete_outdegree_one)
+                update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
 
     def retain_taxa_with_labels(self,
             labels,
-            update_splits=False,
-            delete_outdegree_one=True):
+            update_bipartitions=False,
+            suppress_unifurcations=True):
         """
         Removes terminal nodes that are not associated with Taxon objects with
         labels given by `labels`.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.retain_taxa(taxa=taxa,
-                update_splits=update_splits,
-                delete_outdegree_one=delete_outdegree_one)
+                update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
 
-    def randomly_reorient(self, rng=None, update_splits=False):
+    def randomly_reorient(self, rng=None, update_bipartitions=False):
         """
         Randomly picks a new rooting position and rotates the branches around all
-        internal nodes in the `self`. If `update_splits` is True, the the `split_bitmask`
-        and `split_edge_map` attributes kept valid.
+        internal nodes in the `self`. If `update_bipartitions` is True, the the `bipartition_bitmask`
+        and `bipartition_edge_map` attributes kept valid.
         """
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
         nd = rng.sample(self.nodes(), 1)[0]
         if nd.is_leaf():
-            self.to_outgroup_position(nd, update_splits=update_splits)
+            self.to_outgroup_position(nd, update_bipartitions=update_bipartitions)
         else:
-            self.reseed_at(nd, update_splits=update_splits)
+            self.reseed_at(nd, update_bipartitions=update_bipartitions)
         self.randomly_rotate(rng=rng)
 
     def randomly_rotate(self, rng=None):
@@ -3544,28 +4483,6 @@ class Tree(
         for nd in new_terminals:
             for ch in nd.child_nodes():
                 nd.remove_child(ch)
-
-    def update_splits(self, **kwargs):
-        """
-        Recalculates split hashes for tree.
-        """
-        treesplit.encode_splits(self, **kwargs)
-
-    def encode_splits(self, **kwargs):
-        """
-        Recalculates split hashes for tree.
-        """
-        treesplit.encode_splits(self, **kwargs)
-
-    def update_splits_encoding(self, **kwargs):
-        """
-        Recalculates split hashes for tree.
-        """
-        treesplit.encode_splits(self, **kwargs)
-
-    def _is_splits_encoded(self):
-        return self.split_edge_map is not None
-    is_splits_encoded = property(_is_splits_encoded)
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (mutation)
@@ -3724,6 +4641,156 @@ class Tree(
         return num_lineages
 
     ###########################################################################
+    ### Bipartition Management
+
+    def _compile_mutable_bipartition_for_edge(self, edge):
+        edge.bipartition.compile_split_bitmask(
+                tree_leafset_bitmask=self.seed_node.edge.bipartition._leafset_bitmask,
+                is_mutable=True)
+        return edge.bipartition
+
+    def _compile_immutable_bipartition_for_edge(self, edge):
+        edge.bipartition.compile_split_bitmask(
+                tree_leafset_bitmask=self.seed_node.edge.bipartition._leafset_bitmask,
+                is_mutable=False)
+        return edge.bipartition
+
+    def encode_bipartitions(self,
+            suppress_unifurcations=True,
+            collapse_unrooted_basal_bifurcation=True,
+            suppress_storage=False,
+            is_bipartitions_mutable=False):
+        """
+        Calculates the bipartitions of this tree.
+
+        Parameters
+        ----------
+        suppress_unifurcations : bool
+            If `True`, nodes of outdegree 1 will be deleted as they are
+            encountered.
+        collapse_unrooted_basal_bifurcation: bool
+            If `True`, then a basal bifurcation on an unrooted tree will be
+            collapsed to a trifurcation. This mean that an unrooted tree like
+            '(A,(B,C))' will be changed to '(A,B,C)' after this.
+        suppress_storage : bool
+            By default, the bipartition encoding is stored as a list (assigned
+            to `self.bipartition_encoding`) and returned. If `suppress_storage`
+            is `True`, then the list is not created.
+        is_bipartitions_mutable : bool
+            By default, the :class:`Bipartition` instances coded will be locked
+            or frozen, allowing their use in hashing containers such as
+            dictionary (keys) and sets. To allow modification of values, the
+            `is_mutable` attribute must be set to `True`.
+
+        Returns
+        -------
+        b : list[:class:`Bipartition`] or `None`
+            A list of :class:`Bipartition` objects of this :class:`Tree`
+            representing the structure of this tree, or, if `suppress_storage`
+            is `True`, then `None`.
+
+        """
+        taxon_namespace = self._taxon_namespace
+        seed_node = self.seed_node
+        if not seed_node:
+            return
+        if (collapse_unrooted_basal_bifurcation
+                and not self._is_rooted
+                and len(seed_node._child_nodes) == 2):
+            # We do this because an unrooted tree
+            # has no *true* degree-3 internal nodes:
+            #
+            #      \  | |  /
+            #       +-+-+-+
+            #      /       \
+            #
+            # (whereas, with a rooted tree, the basal bipartition is a true
+            # degree-3 node: the edge subtending it does not really
+            # exist in the graph -- it is not a true link connecting
+            # two nodes).
+            self.collapse_basal_bifurcation()
+        tree_edges = []
+        for edge in self.postorder_edge_iter():
+            leafset_bitmask = 0
+            head_node = edge._head_node
+            child_nodes = head_node._child_nodes
+            num_children = len(child_nodes)
+            if num_children == 1 and suppress_unifurcations:
+                # collapsing node: remove, and do not process/add edge
+                if head_node.edge.length is not None:
+                    if child_nodes[0].edge.length is None:
+                        child_nodes[0].edge.length = head_node.edge.length
+                    else:
+                        child_nodes[0].edge.length += head_node.edge.length
+                if head_node._parent_node is not None:
+                    parent = head_node._parent_node
+                    pos = parent._child_nodes.index(head_node)
+                    parent.remove_child(head_node)
+                    parent.insert_child(index=pos, node=child_nodes[0])
+                    head_node._parent_node = None
+                else:
+                    self.seed_node = children[0]
+                    self.seed_node._parent_node = None
+            else:
+                if num_children == 0:
+                    tree_edges.append(edge)
+                    taxon = edge._head_node.taxon
+                    if taxon:
+                        leafset_bitmask = taxon_namespace.taxon_bitmask(taxon)
+                else:
+                    tree_edges.append(edge)
+                    for child in child_nodes:
+                        leafset_bitmask |= child.edge.bipartition._leafset_bitmask
+                edge.bipartition = Bipartition(suppress_calculation=True, is_mutable=True)
+                edge.bipartition._leafset_bitmask = leafset_bitmask
+                edge.bipartition._is_rooted = self._is_rooted
+                edge.bipartition.edge = edge
+        # Create normalized bitmasks, where the full (self) bipartition mask is *not*
+        # all the taxa, but only those found on the self; this is to handle
+        # cases where we are dealing with selfs with incomplete leaf-sets.
+        tree_leafset_bitmask = self.seed_node.edge.bipartition._leafset_bitmask
+        if is_bipartitions_mutable:
+            _compile_bipartition = self._compile_mutable_bipartition_for_edge
+        else:
+            _compile_bipartition = self._compile_immutable_bipartition_for_edge
+        if suppress_storage:
+            self.bipartition_encoding = None
+            for x in map(_compile_bipartition, tree_edges):
+                pass
+        else:
+            # self.bipartition_encoding = dict(zip(map(self._compile_bipartition_for_edge, tree_edges), tree_edges))
+            self.bipartition_encoding = list(map(_compile_bipartition, tree_edges))
+        self._split_bitmask_edge_map = None
+        self._bipartition_edge_map = None
+        return self.bipartition_encoding
+
+    def update_bipartitions(self, **kwargs):
+        """
+        Recalculates bipartition hashes for tree.
+        """
+        self.encode_bipartitions(**kwargs)
+
+    def _get_split_bitmask_edge_map(self):
+        if not self._split_bitmask_edge_map:
+            self._split_bitmask_edge_map = {}
+            if not self.bipartition_encoding:
+                self.encode_bipartitions()
+            for b in self.bipartition_encoding:
+                self._split_bitmask_edge_map[b.split_bitmask] = b.edge
+        return self._split_bitmask_edge_map
+    split_bitmask_edge_map = property(_get_split_bitmask_edge_map)
+
+    def _get_bipartition_edge_map(self):
+        if not self._bipartition_edge_map:
+            self._bipartition_edge_map = {}
+            if not self.bipartition_encoding:
+                self.encode_bipartitions()
+            for b in self.bipartition_encoding:
+                self._bipartition_edge_map[b] = b.edge
+        return self._bipartition_edge_map
+    bipartition_edge_map = property(_get_bipartition_edge_map)
+
+    ###########################################################################
     ### Metrics -- Unary
 
     def B1(self):
@@ -3783,22 +4850,22 @@ class Tree(
     ###########################################################################
     ### Comparisons with Another Tree
 
-    def _check_children_for_split_compatibility(self, nd_list, split):
-        for nd in nd_list:
-            if treesplit.is_compatible(nd.edge.split_bitmask, split, self.taxon_namespace.all_taxa_bitmask()):
-                # see if nd has all of the leaves that are flagged as 1 in the split of interest
-                if (nd.edge.split_bitmask & split) == split:
-                    return nd
-            else:
-                return None
-        return None
-
-    def is_compatible_with_split(self, split):
+    def is_compatible_with_bipartition(self, bipartition, is_bipartitions_updated=False):
+        """
+        Returns true if the :class:`Bipartition` `bipartition` is compatible
+        with this tree.
+        """
+        if not is_bipartitions_updated or not self.bipartitions_encoding:
+            self.encode_bipartitions()
         nd = self.seed_node
         while True:
-            if nd.edge.split_bitmask == split:
+            if nd.edge.bipartition._split_bitmask == bipartition._split_bitmask:
                 return True
-            nd = self._check_children_for_split_compatibility(nd._child_nodes, split)
+            nd = None
+            for child in nd._child_nodes:
+                if bipartition.is_compatible_with(child.edge.bipartition):
+                    nd = child
+                    break
             if nd is None:
                 return False
 
@@ -3806,11 +4873,11 @@ class Tree(
         raise NotImplementedError
 
     def find_missing_splits(self, other_tree):
-        """DEPRECATED: Use 'dendropy.treecompare.find_missing_splits()'."""
+        """DEPRECATED: Use 'dendropy.treecompare.find_missing_bipartitions()'."""
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: Statistics comparing two trees are now implemented in the 'dendropy.calculate.treecompare' module.",
                 old_construct="tree1.find_missing_splits(tree2)",
-                new_construct="from dendropy.calculate import treecompare\ntreecompare.find_missing_splits(tree1, tree2)")
+                new_construct="from dendropy.calculate import treecompare\ntreecompare.find_missing_bipartitions(tree1, tree2)")
         from dendropy.calculate import treecompare
         return treecompare.find_missing_splits(self, other_tree)
 
@@ -4001,23 +5068,6 @@ class Tree(
         """
         Returns a string representation a graphic of this tree using ASCII
         characters.
-
-        Keyword arguments:
-
-            `plot_metric`
-                A string which specifies how branches should be scaled, one of:
-                'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'length' (edge
-                length/weights).
-            `show_internal_node_labels`
-                Boolean: whether or not to write out internal node labels.
-            `show_internal_node_ids`
-                Boolean: whether or not to write out internal node id's.
-            `leaf_spacing_factor`
-                Positive integer: number of rows between each leaf.
-            `width`
-                Force a particular display width, in terms of number of columns.
-
         """
         ap = AsciiTreePlot(**kwargs)
         return ap.compose(self)
@@ -4025,53 +5075,21 @@ class Tree(
     def write_ascii_plot(self, stream, **kwargs):
         """
         Writes an ASCII text graphic of this tree to `stream`.
-
-        Keyword arguments:
-
-            `plot_metric`
-                A string which specifies how branches should be scaled, one of:
-                'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'length' (edge
-                length/weights).
-            `show_internal_node_labels`
-                Boolean: whether or not to write out internal node labels.
-            `show_internal_node_ids`
-                Boolean: whether or not to write out internal node id's.
-            `leaf_spacing_factor`
-                Positive integer: number of rows between each leaf.
-            `width`
-                Force a particular display width, in terms of number of columns.
-
         """
         return stream.write(self.as_ascii_plot(**kwargs))
 
     def print_plot(self, **kwargs):
         """
         Writes an ASCII text graphic of this tree to standard output.
-
-        Keyword arguments:
-
-            ``plot_metric``
-                A string which specifies how branches should be scaled, one of:
-                'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'length' (edge
-                length/weights).
-            ``show_internal_node_labels``
-                Boolean: whether or not to write out internal node labels.
-            ``show_internal_node_ids``
-                Boolean: whether or not to write out internal node id's.
-            ``leaf_spacing_factor``
-                Positive integer: number of rows between each leaf.
-            ``width``
-                Force a particular display width, in terms of number of columns.
-
         """
         import sys
         self.write_ascii_plot(sys.stdout, **kwargs)
         sys.stdout.write("\n")
 
     def write_as_dot(self, out, **kwargs):
-        """Writes the tree to `out` as a DOT formatted digraph"""
+        """
+        Writes the tree to `out` as a DOT formatted digraph
+        """
         if not kwargs.get("taxon_namespace"):
             kwargs["taxon_namespace"] = self.taxon_namespace
         out.write("digraph G {\n")
@@ -4112,7 +5130,7 @@ class Tree(
         return out.getvalue()
 
     def _write_indented_form(self, out, **kwargs):
-        if kwargs.get("splits"):
+        if kwargs.get("bipartitions"):
             if not kwargs.get("taxon_namespace"):
                 kwargs["taxon_namespace"] = self.taxon_namespace
         self.seed_node._write_indented_form(out, **kwargs)
@@ -4134,22 +5152,21 @@ class Tree(
         """Performs sanity-checks of the tree data structure.
 
         kwargs:
-            `check_splits` if True specifies that the split_edge and split_bitmask attributes
-                are checked.
+            `check_bipartitions` if True specifies that the bipartition attributes are checked.
         """
-        check_splits = kwargs.get('check_splits', False)
+        check_bipartitions = kwargs.get('check_bipartitions', False)
         taxon_namespace = kwargs.get('taxon_namespace')
         if taxon_namespace is None:
             taxon_namespace = self.taxon_namespace
-        if check_splits:
-            taxa_mask = self.seed_node.edge.split_bitmask
+        if check_bipartitions:
+            taxa_mask = self.seed_node.edge.bipartition._leafset_bitmask
         nodes = {}
         edges = {}
         curr_node = self.seed_node
         assert curr_node._parent_node is None, \
-                "{} is seed node, but has non-`None` parent node: {}".format(curr_node, curr_node._parent_node)
+                "{} is seed node, but has non-'None' parent node: {}".format(curr_node, curr_node._parent_node)
         assert curr_node.edge.tail_node is None, \
-                "{} is seed node, but edge has non-`None` tail node: {}".format(curr_node, curr_node.edge._parent_node)
+                "{} is seed node, but edge has non-'None' tail node: {}".format(curr_node, curr_node.edge._parent_node)
         ancestors = []
         siblings = []
         while curr_node:
@@ -4164,31 +5181,35 @@ class Tree(
                     "Head node of edge of {}, {}, is {}, not {}".format(curr_node, curr_edge, curr_edge.head_node, curr_node)
             assert curr_edge.tail_node is curr_node._parent_node, \
                     "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node._parent_node)
-            if check_splits:
+            if check_bipartitions:
                 cm = 0
-                split_bitmask = curr_edge.split_bitmask
-                assert (split_bitmask | taxa_mask) == taxa_mask, \
-                        "Split mask error: {} (taxa: {})".format(split_bitmask, taxa_mask)
+                assert (curr_edge.bipartition._leafset_bitmask | taxa_mask) == taxa_mask, \
+                        "Bipartition mask error: {} | {} != {}".format(curr_edge.bipartition.leafset_as_bitstring(), self.seed_node.edge.bipartition.leafset_as_bitstring(), self.seed_node.edge.bipartition.leafset_as_bitstring(), )
             c = curr_node._child_nodes
             if c:
                 for child in c:
                     assert child._parent_node is curr_node, \
                             "Child of {}, {}, has {} as parent".format(curr_node, child, child._parent_node)
-                    if check_splits:
-                        cm |= child.edge.split_bitmask
-            elif check_splits:
+                    if check_bipartitions:
+                        cm |= child.edge.bipartition._leafset_bitmask
+            elif check_bipartitions:
                 assert curr_node.taxon is not None, \
-                        "Cannot check splits: {} is a leaf node, but its `taxon` attribute is `None`".format(curr_node)
+                        "Cannot check bipartitions: {} is a leaf node, but its 'taxon' attribute is 'None'".format(curr_node)
                 cm = taxon_namespace.taxon_bitmask(curr_node.taxon)
-            if check_splits:
-                assert (cm & taxa_mask) == split_bitmask, \
-                        "Split mask error: {} (taxa: {}, split: {})".format(cm, taxa_mask, split_bitmask)
-                assert self.split_edge_map[split_bitmask] == curr_edge, \
-                        "Expecting edge {} for split {}, but instead found {}".format(curr_edge, split_bitmask, self.split_edge_map[split_bitmask])
+            if check_bipartitions:
+                assert (cm & taxa_mask) == curr_edge.bipartition._leafset_bitmask, \
+                        "Bipartition leafset bitmask error: {} (taxa: {}, leafset: {})".format(
+                                curr_edge.bipartition.bitmask_as_bitstring(cm),
+                                curr_edge.bipartition.bitmask_as_bitstring(taxa_mask),
+                                curr_edge.bipartition.leafset_as_bitstring())
+                assert curr_edge.bipartition.edge is curr_edge, \
+                        "Expecting edge {} for bipartition {}, but instead found {}".format(curr_edge, curr_edge.bipartition, curr_edge.bipartition.edge)
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
-        if check_splits:
-            for s, e in self.split_edge_map.iteritems():
-                assert e in edges
+        if check_bipartitions:
+            for b in self.bipartition_encoding:
+                e = b.edge
+                assert b is e.bipartition
+                assert e in edges, "{}: {} => {}".format(e, e.tail_node, e.head_node)
         return True
 
     def _as_newick_string(self, **kwargs):
@@ -4467,7 +5488,10 @@ class TreeList(
             tlst8 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));",
                              schema="newick",
                              taxon_namespace=tlst3.taxon_namespace,
-                             encode_splits=True)
+                             rooting="force-rooted",
+                             extract_comment_metadata=True,
+                             store_tree_weights=False,
+                             preserve_underscores=True)
 
             # Subsets of trees can be read. Note that in most cases, the entire
             # data source is parsed, so this is not more efficient than reading
@@ -5029,48 +6053,517 @@ class TreeList(
    ##############################################################################
    ## Special Calculations and Operations on Entire Collection
 
-    def consensus(self, min_freq=0.5, is_splits_encoded=False, **kwargs):
+    def consensus(self, min_freq=0.5, is_bipartitions_updated=False, **kwargs):
         """
         Returns a consensus tree of all trees in self, with minumum frequency
-        of split to be added to the consensus tree given by `min_freq`.
+        of bipartition to be added to the consensus tree given by `min_freq`.
         """
         from dendropy.calculate import treesum
         return treesum.consensus_tree(
                 self,
                 min_freq=min_freq,
-                is_splits_encoded=is_splits_encoded,
+                is_bipartitions_updated=is_bipartitions_updated,
                 **kwargs)
 
-    def frequency_of_split(self, **kwargs):
+    def frequency_of_bipartition(self, **kwargs):
         """
-        Given a split or bipartition specified as:
+        Given a bipartition specified as:
 
+            - a :class:`Bipartition` instance given the keyword 'bipartition'
             - a split bitmask given the keyword 'split_bitmask'
             - a list of `Taxon` objects given with the keyword `taxa`
             - a list of taxon labels given with the keyword `labels`
-            - a list of oids given with the keyword `oids`
 
         this function returns the proportion of trees in self
         in which the split is found.
         """
+        split = None
         if "split_bitmask" in kwargs:
             split = kwargs["split_bitmask"]
-        else:
+        elif "bipartition" in kwargs:
+            split = kwargs["bipartition"].split_bitmask
+        elif "taxa" in kwargs or "labels" in kwargs:
             split = self.taxon_namespace.taxa_bitmask(**kwargs)
-            k = list(kwargs.values())[0]
-            if treesplit.count_bits(split) != len(k):
-                raise IndexError('Not all taxa could be mapped to split (%s): %s' \
-                    % (self.taxon_namespace.split_bitmask_string(split), k))
+            if "taxa" in kwargs:
+                k = len(kwargs["taxa"])
+            else:
+                k = len(kwargs["labels"])
+            if bitprocessing.num_set_bits(split) != k:
+                raise IndexError('Not all taxa could be mapped to bipartition (%s): %s' \
+                    % (self.taxon_namespace.bitmask_as_bitstring(split), k))
         found = 0
         total = 0
-        recalculate_splits = kwargs.get("recalculate_splits", False)
+        is_bipartitions_updated = kwargs.get("is_bipartitions_updated", False)
         for tree in self:
-            if recalculate_splits or tree.split_edge_map is None:
-                tree.encode_splits()
+            if not is_bipartitions_updated or not tree.bipartitions:
+                tree.encode_bipartitions()
+            bipartition_encoding = set(b.split_bitmask for b in tree.bipartition_encoding)
             total += 1
-            if split in tree.split_edge_map:
+            if split in bipartition_encoding:
                 found += 1
-        return float(found)/total
+        try:
+            return float(found)/total
+        except ZeroDivisionError:
+            return 0
+
+###############################################################################
+### SplitDistribution
+
+class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
+    """
+    Collects information regarding splits over multiple trees.
+    """
+
+    def __init__(self,
+            taxon_namespace=None,
+            ignore_edge_lengths=False,
+            ignore_node_ages=True,
+            use_tree_weights=True,
+            ultrametricity_precision=0.0000001):
+
+        # Taxon Namespace
+        taxonmodel.TaxonNamespaceAssociated.__init__(self,
+                taxon_namespace=taxon_namespace)
+
+        # configuration
+        self.ignore_edge_lengths = ignore_edge_lengths
+        self.ignore_node_ages = ignore_node_ages
+        self.use_tree_weights = use_tree_weights
+        self.ultrametricity_precision = ultrametricity_precision
+        self.error_on_mixed_rooting_types = True
+
+        # storage
+        self.total_trees_counted = 0
+        self.sum_of_tree_weights = 0.0
+        self.tree_rooting_types_counted = set()
+        self.split_counts = collections.defaultdict(float)
+        self.split_edge_lengths = collections.defaultdict(list)
+        self.split_node_ages = collections.defaultdict(list)
+
+        # secondary/derived/generated/collected data
+        self._is_rooted = False
+        self._split_freqs = None
+        self._trees_counted_for_freqs = 0
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
+        self._trees_counted_for_summaries = 0
+
+    def normalize_bitmask(self, bitmask):
+        """
+        "Normalizes" split, by ensuring that the least-significant bit is
+        always 1 (used on unrooted trees to establish split identity
+        independent of rotation).
+
+        Parameters
+        ----------
+        bitmask : integer
+            Split bitmask hash to be normalized.
+
+        Returns
+        -------
+        h : integer
+            Normalized split bitmask.
+        """
+        return Bipartition.normalize_bitmask(
+                bitmask=bitmask,
+                fill_bitmask=self.taxon_namespace.all_taxa_bitmask(),
+                lowest_relevant_bit=1)
+
+    def __len__(self):
+        return len(self.split_counts)
+
+    def _is_rooted_deprecation_warning(self):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'SplitDistribution.is_rooted' and 'SplitDistribution.is_unrooted' are no longer valid attributes; rooting state tracking and management is now the responsibility of client code.",
+                stacklevel=4,
+                )
+    def _get_is_rooted(self):
+        self._is_rooted_deprecation_warning()
+        return self._is_rooted
+    def _set_is_rooted(self, val):
+        self._is_rooted_deprecation_warning()
+        self._is_rooted = val
+    is_rooted = property(_get_is_rooted, _set_is_rooted)
+    def _get_is_unrooted(self):
+        self._is_rooted_deprecation_warning()
+        return not self._is_rooted
+    def _set_is_unrooted(self, val):
+        self._is_rooted_deprecation_warning()
+        self._is_rooted = not val
+    is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
+
+    def add_split_count(self, split, count=1):
+        self.split_counts[split] += count
+
+    def update(self, split_dist):
+        self.total_trees_counted += split_dist.total_trees_counted
+        self.sum_of_tree_weights += split_dist.sum_of_tree_weights
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
+        self._trees_counted_for_summaries = 0
+        self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
+        for split in split_dist.split_counts:
+            self.split_counts[split] += split_dist.split_counts[split]
+            self.split_edge_lengths[split] += split_dist.split_edge_lengths[split]
+            self.split_node_ages[split] += split_dist.split_node_ages[split]
+            # if split in split_dist.weighted_split_counts:
+            #     if split not in self.weighted_split_counts:
+            #         self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
+            #     else:
+            #         self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
+            # if split in self.split_edge_lengths:
+            #     self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
+            # elif split in split_dist.split_edge_lengths:
+            #     self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
+            # if split in self.split_node_ages:
+            #     self.split_node_ages[split].extend(split_dist.split_node_ages[split])
+            # elif split in split_dist.split_node_ages:
+            #     self.split_node_ages[split] = split_dist.split_node_ages[split]
+
+    def splits_considered(self):
+        """
+        Returns 4 values:
+            total number of splits counted
+            total number of unique splits counted
+            total number of non-trivial splits counted
+            total number of unique non-trivial splits counted
+        """
+        if not self.split_counts:
+            return 0, 0, 0, 0
+        num_splits = 0
+        num_unique_splits = 0
+        num_nt_splits = 0
+        num_nt_unique_splits = 0
+        taxa_mask = self.taxon_namespace.all_taxa_bitmask()
+        for s in self.split_counts:
+            num_unique_splits += 1
+            num_splits += self.split_counts[s]
+            if is_non_singleton_split(s, taxa_mask):
+                num_nt_unique_splits += 1
+                num_nt_splits += self.split_counts[s]
+        return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
+
+    def __getitem__(self, split_bitmask):
+        """
+        Returns freqency of split_bitmask.
+        """
+        return self._get_split_frequencies().get(split_bitmask, 0.0)
+
+    def calc_freqs(self):
+        "Forces recalculation of frequencies."
+        self._split_freqs = {}
+        if self.total_trees_counted == 0:
+            for split in self.split_counts:
+                self._split_freqs[split] = 1.0
+        else:
+            # total = self.total_trees_counted
+            if not self.sum_of_tree_weights:
+                total_weight = self.total_trees_counted
+            else:
+                total_weight = float(self.sum_of_tree_weights)
+            for split in self.split_counts:
+                count = self.split_counts[split]
+                self._split_freqs[split] = float(self.split_counts[split]) / total_weight
+        self._trees_counted_for_freqs = self.total_trees_counted
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
+        return self._split_freqs
+
+    # def calc_weighted_freqs(self):
+    #     "Forces recalculation of weighted frequencies."
+    #     self._weighted_split_freqs = {}
+    #     if not self.sum_of_tree_weights:
+    #         total_weight = 1.0
+    #     else:
+    #         total_weight = float(self.sum_of_tree_weights)
+    #     for split in self.weighted_split_counts:
+    #         # sys.stderr.write("{}, {} = {}\n".format(self.weighted_split_counts[split], total_weight, self.weighted_split_counts[split] / total_weight))
+    #         self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
+    #     self._trees_counted_for_weighted_freqs = self.total_trees_counted
+    #     self._trees_counted_for_summaries = self.total_trees_counted
+    #     return self._weighted_split_freqs
+
+    def _get_split_frequencies(self):
+        if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
+            self.calc_freqs()
+        return self._split_freqs
+    split_frequencies = property(_get_split_frequencies)
+
+    def summarize_edge_lengths(self):
+        self._split_edge_length_summaries = {}
+        for split, elens in self.split_edge_lengths.items():
+            if not elens:
+                continue
+            try:
+                self._split_edge_length_summaries[split] = statistics.summarize(elens)
+            except ValueError:
+                pass
+        return self._split_edge_length_summaries
+
+    def summarize_node_ages(self):
+        self._split_node_age_summaries = {}
+        for split, ages in self.split_node_ages.items():
+            if not ages:
+                continue
+            try:
+                self._split_node_age_summaries[split] = statistics.summarize(ages)
+            except ValueError:
+                pass
+        return self._split_node_age_summaries
+
+    def _get_split_edge_length_summaries(self):
+        if self._split_edge_length_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.summarize_edge_lengths()
+        return dict(self._split_edge_length_summaries)
+    split_edge_length_summaries = property(_get_split_edge_length_summaries)
+
+    def _get_split_node_age_summaries(self):
+        if self._split_node_age_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.summarize_node_ages()
+        return dict(self._split_node_age_summaries)
+    split_node_age_summaries = property(_get_split_node_age_summaries)
+
+    def count_splits_on_tree(self,
+            tree,
+            is_bipartitions_updated=False,
+            default_edge_length_value=None):
+        """
+        Counts splits in this tree and add to totals. `tree` must be decorated
+        with splits, and no attempt is made to normalize taxa.
+
+        Parameters
+        ----------
+        tree : a :class:`Tree` object.
+            The tree on which to count the splits.
+        is_bipartitions_updated : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+
+        Returns
+        --------
+        s : iterable of splits
+            A list of split bitmasks from `tree`.
+        e :
+            A list of edge length values from `tree`.
+        a :
+            A list of node age values from `tree`.
+        """
+        assert tree.taxon_namespace is self.taxon_namespace
+        self.total_trees_counted += 1
+        if not self.ignore_node_ages:
+            tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)
+        if tree.weight is not None and self.use_tree_weights:
+            weight_to_use = float(tree.weight)
+        else:
+            weight_to_use = 1.0
+        self.sum_of_tree_weights += weight_to_use
+        if tree.is_rooted:
+            self.tree_rooting_types_counted.add(True)
+        else:
+            self.tree_rooting_types_counted.add(False)
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
+        splits = []
+        edge_lengths = []
+        node_ages = []
+        for bipartition in tree.bipartition_encoding:
+            split = bipartition.split_bitmask
+            edge = bipartition.edge
+            splits.append(split)
+            self.split_counts[split] += weight_to_use
+            if not self.ignore_edge_lengths:
+                sel = self.split_edge_lengths.setdefault(split,[])
+                if edge.length is None:
+                    elen = default_edge_length_value
+                else:
+                    elen = edge.length
+                edge_lengths.append(elen)
+            else:
+                sel = None
+            if not self.ignore_node_ages:
+                sna = self.split_node_ages.setdefault(split, [])
+                if edge.head_node is not None:
+                    nage = edge.head_node.age
+                else:
+                    nage = None
+                sna.append(nage)
+                node_ages.append(nage)
+            else:
+                sna = None
+        return splits, edge_lengths, node_ages
+
+    def is_mixed_rootings_counted(self):
+        return ( (True in self.tree_rooting_types_counted)
+                and (False in self.tree_rooting_types_counted or None in self.tree_rooting_types_counted) )
+
+    def is_all_counted_trees_rooted(self):
+        return (True in self.tree_rooting_types_counted) and (len(self.tree_rooting_types_counted) == 1)
+
+    def is_all_counted_trees_strictly_unrooted(self):
+        return (False in self.tree_rooting_types_counted) and (len(self.tree_rooting_types_counted) == 1)
+
+    def is_all_counted_trees_treated_as_unrooted(self):
+        return True not in self.tree_rooting_types_counted
+
+    def split_support_iter(self,
+            tree,
+            is_bipartitions_updated=False,
+            include_external_splits=False,
+            traversal_strategy="preorder",
+            node_support_attr_name=None,
+            edge_support_attr_name=None,
+            ):
+        """
+        Returns iterator over support values for the splits of a given tree,
+        where the support value is given by the proportional frequency of the
+        split in the current split distribution.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The :class:`Tree` which will be scored.
+        is_bipartitions_updated : bool
+            If `False` [default], then the tree will have its splits encoded or
+            updated. Otherwise, if `True`, then the tree is assumed to have its
+            splits already encoded and updated.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included.
+            If `False`, then these are skipped. This should only make a
+            difference when dealing with splits collected from trees of
+            different leaf sets.
+        traversal_strategy : str
+            One of: "preorder" or "postorder". Specfies order in which splits
+            are visited.
+
+        Returns
+        -------
+        s : list of floats
+            List of values for splits in the tree corresponding to the
+            proportional frequency that the split is found in the current
+            distribution.
+        """
+        if traversal_strategy == "preorder":
+            if include_external_splits:
+                iter_func = tree.preorder_node_iter
+            else:
+                iter_func = tree.preorder_internal_node_iter
+        elif traversal_strategy == "postorder":
+            if include_external_splits:
+                iter_func = tree.postorder_node_iter
+            else:
+                iter_func = tree.postorder_internal_node_iter
+        else:
+            raise ValueError("Traversal strategy not supported: '{}'".format(traversal_strategy))
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
+        split_frequencies = self._get_split_frequencies()
+        for nd in iter_func():
+            split = nd.edge.split_bitmask
+            support = split_frequencies.get(split, 0.0)
+            yield support
+
+    def product_of_split_support_on_tree(self,
+            tree,
+            is_bipartitions_updated=False,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the (log) product of the support of the splits of the
+        tree, where the support is given by the proportional frequency of the
+        split in the current split distribution.
+
+        The tree that has the highest product of split support out of a sample
+        of trees corresponds to the "maximum credibility tree" for that sample.
+        This can also be referred to as the "maximum clade credibility tree",
+        though this latter term is sometimes use for the tree that has the
+        highest *sum* of split support (see
+        :meth:`SplitDistribution.sum_of_split_support_on_tree()`).
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The tree for which the score should be calculated.
+        is_bipartitions_updated : bool
+            If `True`, then the splits are assumed to have already been encoded
+            and will not be updated on the trees.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : numeric
+            The log product of the support of the splits of the tree.
+        """
+        log_product_of_split_support = 0.0
+        for split_support in self.split_support_iter(
+                tree=tree,
+                is_bipartitions_updated=is_bipartitions_updated,
+                include_external_splits=include_external_splits,
+                traversal_strategy="preorder",
+                ):
+            if split_support:
+                log_product_of_split_support += math.log(split_support)
+        return log_product_of_split_support
+
+    def sum_of_split_support_on_tree(self,
+            tree,
+            is_bipartitions_updated=False,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the sum of the support of the splits of the tree, where the
+        support is given by the proportional frequency of the split in the
+        current distribtion.
+
+        Parameters
+        ----------
+        tree : :class:`Tree`
+            The tree for which the score should be calculated.
+        is_bipartitions_updated : bool
+            If `True`, then the splits are assumed to have already been encoded
+            and will not be updated on the trees.
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : numeric
+            The sum of the support of the splits of the tree.
+        """
+        sum_of_split_support = 0.0
+        for split_support in self.split_support_iter(
+                tree=tree,
+                is_bipartitions_updated=is_bipartitions_updated,
+                include_external_splits=include_external_splits,
+                traversal_strategy="preorder",
+                ):
+            sum_of_split_support += split_support
+        return sum_of_split_support
+
+    def _get_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        return self.taxon_namespace
+
+    def _set_taxon_set(self, v):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        self.taxon_namespace = v
+
+    def _del_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+
+    taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
 ###############################################################################
 ### TreeArray
@@ -5092,7 +6585,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def __init__(self,
             taxon_namespace=None,
             is_rooted_trees=None,
-            tree_traversal_order="preorder",
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
@@ -5108,10 +6600,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             first tree added. If `True`, then trying to add an unrooted tree
             will result in an error. If `False`, then trying to add a rooted
             tree will result in an error.
-        tree_traversal_order : str
-            One of 'preorder' or 'postorder'. When decomposing trees into
-            splits and edge lengths, the default order that the edges should be
-            visited.
         ignore_edge_lengths : bool
             If `True`, then edge lengths of splits will not be stored. If
             `False`, then edge lengths will be stored.
@@ -5126,9 +6614,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
         # Configuration
         self._is_rooted_trees = is_rooted_trees
-        self._tree_traversal_order = None
-        self._tree_traversal_method_name = None
-        self.tree_traversal_order = tree_traversal_order
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
@@ -5137,7 +6622,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         # Storage
         self._tree_splits = []
         self._tree_edge_lengths = []
-        self._split_distribution = treesplit.SplitDistribution(
+        self._split_distribution = SplitDistribution(
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
@@ -5145,19 +6630,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     ##############################################################################
     ## Book-Keeping
-
-    def _get_tree_traversal_order(self):
-        return self._tree_traversal_order
-    def _set_tree_traversal_order(self, tree_traversal_order):
-        if tree_traversal_order == "preorder":
-            self._tree_traversal_order = "preorder"
-            self._tree_traversal_method_name = "preorder_edge_iter"
-        elif tree_traversal_order == "postorder":
-            self._tree_traversal_order = "postorder"
-            self._tree_traversal_method_name = "postorder_edge_iter"
-        else:
-            raise ValueError(tree_traversal_order)
-    tree_traversal_order = property(_get_tree_traversal_order, _set_tree_traversal_order)
 
     def _get_is_rooted_trees(self):
         return self._rooted_trees
@@ -5168,7 +6640,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def add_tree(self,
             tree,
-            is_splits_encoded=False,
+            is_bipartitions_updated=False,
             index=None):
         """
         Adds the structure represented by a :class:`Tree` instance to the
@@ -5180,7 +6652,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             A :class:`Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
             that of `self.is_rooted_trees`.
-        is_splits_encoded : bool
+        is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
             splits already encoded and updated.
@@ -5202,23 +6674,10 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             self._is_rooted_trees = tree.is_rooted
         else:
             assert self._is_rooted_trees == tree.is_rooted
-
         splits, edge_lengths, node_ages = self._split_distribution.count_splits_on_tree(
                 tree=tree,
-                is_splits_encoded=is_splits_encoded,
-                edge_iterator=getattr(tree, self._tree_traversal_method_name),
+                is_bipartitions_updated=is_bipartitions_updated,
                 default_edge_length_value=self.default_edge_length_value)
-        # if not is_splits_encoded:
-        #     tree.encode_splits()
-        # splits = []
-        # edge_lengths = []
-        # tree_traversal_iter = getattr(tree, self._tree_traversal_method_name)
-        # for edge in tree_traversal_iter():
-        #     splits.append(edge.split_bitmask)
-        #     if edge.length is None:
-        #         edge_lengths.append(self.default_edge_length_value)
-        #     else:
-        #         edge_lengths.append(edge.length)
         return self.add_splits(splits=splits,
                 edge_lengths=edge_lengths,
                 index=index)
@@ -5253,7 +6712,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             self._tree_edge_lengths.append(index, edge_lengths)
         return index, splits, edge_lengths
 
-    def add_trees(self, trees, is_splits_encoded=False):
+    def add_trees(self, trees, is_bipartitions_updated=False):
         """
         Adds multiple structures represneted by an iterator over or iterable of
         :class:`Tree` instances to the collection.
@@ -5264,7 +6723,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             An iterator over or iterable of :class:`Tree` instances. Thess must
             have the same rooting state as all the other trees accessioned into
             this collection as well as that of `self.is_rooted_trees`.
-        is_splits_encoded : bool
+        is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
             splits already encoded and updated.
@@ -5272,7 +6731,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         for tree in trees:
             self.add_tree(tree,
-                    is_splits_encoded=is_splits_encoded)
+                    is_bipartitions_updated=is_bipartitions_updated)
 
     def read_from_files(self,
             files,
@@ -5305,7 +6764,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 taxon_namespace=self.taxon_namespace,
                 **kwargs):
             self.add_tree(tree=tree,
-                    is_splits_encoded=False)
+                    is_bipartitions_updated=False)
 
     ##############################################################################
     ## Convenient I/O
@@ -5340,7 +6799,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     ##############################################################################
     ## Container (List) Interface
 
-    def append(tree, is_splits_encoded=False):
+    def append(tree, is_bipartitions_updated=False):
         """
         Adds a :class:`Tree` instance to the collection before position given
         by `index`.
@@ -5351,16 +6810,16 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             A :class:`Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
             that of `self.is_rooted_trees`.
-        is_splits_encoded : bool
+        is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
             splits already encoded and updated.
 
         """
         return self.add_tree(tree=tree,
-                is_splits_encoded=is_splits_encoded)
+                is_bipartitions_updated=is_bipartitions_updated)
 
-    def insert(index, tree, is_splits_encoded=False):
+    def insert(index, tree, is_bipartitions_updated=False):
         """
         Adds a :class:`Tree` instance to the collection before position given
         by `index`.
@@ -5373,7 +6832,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             A :class:`Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
             that of `self.is_rooted_trees`.
-        is_splits_encoded : bool
+        is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
             splits already encoded and updated.
@@ -5388,7 +6847,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             A list of edge length values `tree`.
         """
         return self.add_tree(tree=tree,
-                is_splits_encoded=is_splits_encoded,
+                is_bipartitions_updated=is_bipartitions_updated,
                 index=index)
 
     def extend(self, tree_array):
@@ -5403,7 +6862,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         assert self.taxon_namespace is tree_array.taxon_namespace
         assert self._is_rooted_trees is tree_array._is_rooted_trees
-        assert self._tree_traversal_order == tree_array._tree_traversal_order
         assert self.ignore_edge_lengths is tree_array.ignore_edge_lengths
         assert self.ignore_node_ages is tree_array.ignore_node_ages
         assert self.use_tree_weights is tree_array.use_tree_weights
@@ -5441,7 +6899,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         ta = TreeArray(
                 taxon_namespace=self.taxon_namespace,
                 is_rooted_trees=self._is_rooted_trees,
-                tree_traversal_order=self._tree_traversal_order,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
                 use_tree_weights=self.use_tree_weights)
@@ -5522,30 +6979,46 @@ class AsciiTreePlot(object):
 
     def __init__(self, **kwargs):
         """
-        __init__ takes the following kwargs:
 
-            * `plot_metric` A string which specifies how branches should be scaled, one of:
-                'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'length' (edge
-                length/weights).
-            * `show_internal_node_labels`
-                Boolean: whether or not to write out internal node labels.
-            * `show_internal_node_ids`
-                Boolean: whether or not to write out internal node id's.
-            * `leaf_spacing_factor`
-                Positive integer: number of rows between each leaf.
-            * `width`
-                Force a particular display width, in terms of number of columns.
+        Keyword Arguments
+        -----------------
+
+        plot_metric : str
+            A string which specifies how branches should be scaled, one of:
+            'age' (distance from tips), 'depth' (distance from root),
+            'level' (number of branches from root) or 'length' (edge
+            length/weights).
+        show_internal_node_labels : bool
+            Whether or not to write out internal node labels.
+        leaf_spacing_factor : int
+            Positive integer: number of rows between each leaf.
+        width : int
+            Force a particular display width, in terms of number of columns.
+        node_label_compose_func : function object
+            A function that takes a :class:Node object as an argument and returns
+            the string to be used to display it.
 
         """
-        self.plot_metric = kwargs.get('plot_metric', 'depth')
-        self.show_internal_node_labels = kwargs.get('show_internal_node_labels', False)
-        self.show_internal_node_ids = kwargs.get('show_internal_node_ids', False)
-        self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
-#        self.null_edge_length = kwargs.get('null_edge_length', 0)
-        self.width = kwargs.get('width', None)
-        self.display_width = kwargs.get('display_width', self.width) # legacy
-        self.reset()
+        self.plot_metric = kwargs.pop('plot_metric', 'depth')
+        self.show_internal_node_labels = kwargs.pop('show_internal_node_labels', False)
+        self.show_external_node_labels = kwargs.pop('show_internal_node_labels', True)
+        self.leaf_spacing_factor = kwargs.pop('leaf_spacing_factor', 2)
+#        self.null_edge_length = kwargs.pop('null_edge_length', 0)
+        self.width = kwargs.pop('width', None)
+        self.display_width = kwargs.pop('display_width', self.width) # legacy
+        self.compose_node = kwargs.pop("node_label_compose_func", None)
+        if self.compose_node is None:
+            self.compose_node = self.default_compose_node
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+
+    def default_compose_node(self, node):
+        if node.taxon is not None and node.taxon.label is not None:
+            return node.taxon.label
+        elif node.label is not None:
+            return node.label
+        else:
+            return "@"
 
     def reset(self):
         self.grid = []
@@ -5553,6 +7026,7 @@ class AsciiTreePlot(object):
         self.node_col = {}
         self.node_offset = {}
         self.current_leaf_row = 0
+        self.node_label_map = {}
 
     def _calc_node_offsets(self, tree):
         if self.plot_metric == 'age' or self.plot_metric == 'depth':
@@ -5598,21 +7072,18 @@ class AsciiTreePlot(object):
     def draw(self, tree, dest):
         dest.write(self.compose(tree))
 
-    def get_label_for_node(self, nd):
-        if nd.taxon and nd.taxon.label:
-            return nd.taxon.label
-        # @TODO: we should have a separate setting for labeling nodes with an
-        # id, but thus far when I want to see this, I want
-        # internal_nodes_labels too...
-        label = []
-        if self.show_internal_node_labels and nd.label:
-            label.append(nd.label)
-        if self.show_internal_node_ids:
-            label.append("@")
-            label.append(str(id(nd)))
-        if not label:
-            return "@"
-        return "".join(str(s) for s in label)
+    def get_label_for_node(self, node):
+        try:
+            return self.node_label_map[node]
+        except KeyError:
+            if node._child_nodes and self.show_internal_node_labels:
+                label = self.compose_node(node)
+            elif not node._child_nodes and self.show_external_node_labels:
+                label = self.compose_node(node)
+            else:
+                label = ""
+            self.node_label_map[node] = label
+            return label
 
     def compose(self, tree):
         self.reset()
@@ -5690,7 +7161,7 @@ class AsciiTreePlot(object):
                 for y in range(start_row, end_row):
                     self.grid[y][self.node_col[node]] = '|'
             label = []
-            if self.show_internal_node_labels or self.show_internal_node_ids:
+            if self.show_internal_node_labels:
                 label = self.get_label_for_node(node)
                 self.draw_internal_text(label, self.node_row[node], self.node_col[node])
             else:
@@ -5752,11 +7223,10 @@ def _format_edge(e, **kwargs):
         return ef(e)
     return str(e)
 
-def _format_split(split, width=None, **kwargs):
-    if width is None:
-        width = len(kwargs.get("taxon_namespace"))
-    s = treesplit.split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
-    return s
+def _format_split(split, length=None, **kwargs):
+    if length is None:
+        length = len(kwargs.get("taxon_namespace"))
+    return bitprocessing.int_as_bitstring(split, length=length)
 
 def _convert_node_to_root_polytomy(nd):
     """If `nd` has two children and at least on of them is an internal node,

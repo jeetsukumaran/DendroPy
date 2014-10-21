@@ -21,37 +21,36 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 """
 
 from math import sqrt
-from dendropy.calculate import treesplit
 from dendropy.utility import error
 
 ###############################################################################
 ## Public Functions
 
-def symmetric_difference(tree1, tree2, recalculate_splits=False):
+def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
     """
     Returns *unweighted* Robinson-Foulds distance between two trees.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The splits
-    hash bitmasks of the trees must be correct for the current tree structures
-    (by calling :meth:`Tree.encode_splits()` method) or the
-    `recalculate_splits` argument must be `True` to force recalculation of
-    splits.
+    Trees need to share the same :class:`TaxonNamespace` reference. The
+    bipartition bitmasks of the trees must be correct for the current tree
+    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
+    `is_bipartitions_updated` argument must be `False` to force recalculation
+    of bipartitions.
 
     Parameters
     ----------
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree2` and must have
+        bipartitions encoded.
     tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded.
-    recalculate_splits : bool
-        If `True`, then the split hash bitmasks on *both* trees will be updated
-        before comparison. If `False` (default) then the split hash bitmasks
-        will only be calculate for a :class:`Tree` object if they have not been
-        calculated before, either explicitly or implicitly.
+        same :class:`TaxonNamespace` reference as `tree1` and must have
+        bipartitions encoded.
+    is_bipartitions_updated : bool
+        If `False`, then the bipartitions on *both* trees will be updated
+        before comparison. If `True` then the bipartitions will only be
+        calculated for a :class:`Tree` object if they have not been calculated
+        before, either explicitly or implicitly.
 
     Returns
     -------
@@ -73,55 +72,55 @@ def symmetric_difference(tree1, tree2, recalculate_splits=False):
                 "t2.nex",
                 "nexus",
                 taxon_namespace=tns)
-        tree1.encode_splits()
-        tree2.encode_splits()
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
         print(treecompare.symmetric_difference(tree1, tree2))
 
     """
     t = false_positives_and_negatives(
             tree1,
             tree2,
-            recalculate_splits=recalculate_splits)
+            is_bipartitions_updated=is_bipartitions_updated)
     return t[0] + t[1]
 
-def unweighted_robinson_foulds_distance(tree1, tree2, recalculate_splits=False):
+def unweighted_robinson_foulds_distance(tree1, tree2, is_bipartitions_updated=False):
     """
     Alias for :func:`symmetric_difference()`.
     """
-    return symmetric_difference(tree1, tree2, recalculate_splits)
+    return symmetric_difference(tree1, tree2, is_bipartitions_updated)
 
 def weighted_robinson_foulds_distance(
         tree1,
         tree2,
         edge_weight_attr="length",
-        recalculate_splits=False):
+        is_bipartitions_updated=False):
     """
     Returns *weighted* Robinson-Foulds distance between two trees based on
     `edge_weight_attr`.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The splits
-    hash bitmasks of the trees must be correct for the current tree structures
-    (by calling :meth:`Tree.encode_splits()` method) or the
-    `recalculate_splits` argument must be `True` to force recalculation of
-    splits.
+    Trees need to share the same :class:`TaxonNamespace` reference. The
+    bipartition bitmasks of the trees must be correct for the current tree
+    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
+    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    bipartitions.
 
     Parameters
     ----------
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree2` and must have
+        bipartitions encoded.
     tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree1` and must have
+        bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
-    recalculate_splits : bool
-        If `True`, then the split hash bitmasks on *both* trees will be updated
-        before comparison. If `False` (default) then the split hash bitmasks
-        will only be calculate for a :class:`Tree` object if they have not been
-        calculated before, either explicitly or implicitly.
+    is_bipartitions_updated : bool
+        If `True`, then the bipartitions on *both* trees will be updated before
+        comparison. If `False` (default) then the bipartitions will only be
+        calculated for a :class:`Tree` object if they have not been calculated
+        before, either explicitly or implicitly.
 
     Returns
     -------
@@ -142,45 +141,49 @@ def weighted_robinson_foulds_distance(
                 "t2.nex",
                 "nexus",
                 taxon_namespace=tns)
-        tree1.encode_splits()
-        tree2.encode_splits()
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
         print(treecompare.weighted_robinson_foulds_distance(tree1, tree2))
 
     """
     df = lambda length_diffs: sum([abs(i[0] - i[1]) for i in length_diffs])
-    return _splits_distance(tree1,
+    return _bipartition_difference(tree1,
                            tree2,
                            dist_func=df,
                            edge_weight_attr=edge_weight_attr,
                            value_type=float,
-                           recalculate_splits=recalculate_splits)
+                           is_bipartitions_updated=is_bipartitions_updated)
 
-def false_positives_and_negatives(reference_tree, comparison_tree, recalculate_splits=False):
+def false_positives_and_negatives(
+        reference_tree,
+        comparison_tree,
+        is_bipartitions_updated=False):
     """
-    Counts and returns number of false positive splits (splits found in
-    `comparison_tree` but not in `reference_tree`) and false negative splits (splits
-    found in `reference_tree` but not in `comparison_tree`).
+    Counts and returns number of false positive bipar (bipartitions found in
+    `comparison_tree` but not in `reference_tree`) and false negative
+    bipartitions (bipartitions found in `reference_tree` but not in
+    `comparison_tree`).
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The splits
-    hash bitmasks of the trees must be correct for the current tree structures
-    (by calling :meth:`Tree.encode_splits()` method) or the
-    `recalculate_splits` argument must be `True` to force recalculation of
-    splits.
+    Trees need to share the same :class:`TaxonNamespace` reference. The
+    bipartition bitmasks of the trees must be correct for the current tree
+    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
+    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    bipartitions.
 
     Parameters
     ----------
     reference_tree : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `comparison_tree` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree2` and must have
+        bipartitions encoded.
     comparison_tree : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `reference_tree` and must have split
-        bitmasks encoded.
-    recalculate_splits : bool
-        If `True`, then the split hash bitmasks on *both* trees will be updated
-        before comparison. If `False` (default) then the split hash bitmasks
-        will only be calculate for a :class:`Tree` object if they have not been
+        same :class:`TaxonNamespace` reference as `tree1` and must have
+        bipartitions encoded.
+    is_bipartitions_updated : bool
+        If `True`, then the bipartitions on *both* trees will be updated
+        before comparison. If `False` (default) then the bipartitions
+        will only be calculated for a :class:`Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
@@ -203,72 +206,59 @@ def false_positives_and_negatives(reference_tree, comparison_tree, recalculate_s
                 "t2.nex",
                 "nexus",
                 taxon_namespace=tns)
-        tree1.encode_splits()
-        tree2.encode_splits()
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
         print(treecompare.false_positives_and_negatives(tree1, tree2))
 
     """
-    sym_diff = 0
-    false_positives = 0
-    false_negatives = 0
     if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:
         raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
-    if recalculate_splits:
-        treesplit.encode_splits(reference_tree)
-        treesplit.encode_splits(comparison_tree)
+    if not is_bipartitions_updated:
+        reference_tree.encode_bipartitions()
+        comparison_tree.encode_bipartitions()
     else:
-        if reference_tree.split_edge_map is None:
-            reference_tree.encode_splits()
-        if comparison_tree.split_edge_map is None:
-            comparison_tree.encode_splits()
-    for split in reference_tree.split_edge_map:
-        if split in comparison_tree.split_edge_map:
-            pass
-        else:
-            false_negatives = false_negatives + 1
-            sym_diff = sym_diff + 1
-
-    for split in comparison_tree.split_edge_map:
-        if split in reference_tree.split_edge_map:
-            pass
-        else:
-            false_positives = false_positives + 1
-            sym_diff = sym_diff + 1
-
-    return false_positives, false_negatives
+        if reference_tree.bipartition_encoding is None:
+            reference_tree.encode_bipartitions()
+        if comparison_tree.bipartition_encoding is None:
+            comparison_tree.encode_bipartitions()
+    ref_bipartitions = set(reference_tree.bipartition_encoding)
+    comparison_bipartitions = set(comparison_tree.bipartition_encoding)
+    false_positives = ref_bipartitions.difference(comparison_bipartitions)
+    false_negatives = comparison_bipartitions.difference(ref_bipartitions)
+    return len(false_positives), len(false_negatives)
 
 def euclidean_distance(
         tree1,
         tree2,
         edge_weight_attr="length",
         value_type=float,
-        recalculate_splits=False):
+        is_bipartitions_updated=False):
     """
     Returns the Euclidean distance (a.k.a. Felsenstein's 2004 "branch length
     distance") between two trees based on `edge_weight_attr`.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The splits
-    hash bitmasks of the trees must be correct for the current tree structures
-    (by calling :meth:`Tree.encode_splits()` method) or the
-    `recalculate_splits` argument must be `True` to force recalculation of
-    splits.
+    Trees need to share the same :class:`TaxonNamespace` reference. The
+    bipartition bitmasks of the trees must be correct for the current tree
+    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
+    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    bipartitions.
 
     Parameters
     ----------
     tree1 : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree2` and must have
+        bipartitions encoded.
     tree2 : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree1` and must have
+        bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
-    recalculate_splits : bool
-        If `True`, then the split hash bitmasks on *both* trees will be updated
-        before comparison. If `False` (default) then the split hash bitmasks
-        will only be calculate for a :class:`Tree` object if they have not been
+    is_bipartitions_updated : bool
+        If `True`, then the bipartitions on *both* trees will be updated
+        before comparison. If `False` (default) then the bipartitions
+        will only be calculated for a :class:`Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
@@ -290,68 +280,68 @@ def euclidean_distance(
                 "t2.nex",
                 "nexus",
                 taxon_namespace=tns)
-        tree1.encode_splits()
-        tree2.encode_splits()
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
         print(treecompare.euclidean_distance(tree1, tree2))
 
     """
     df = lambda length_diffs: sqrt(sum([pow(i[0] - i[1], 2) for i in length_diffs]))
-    return _splits_distance(tree1,
+    return _bipartition_difference(tree1,
                            tree2,
                            dist_func=df,
                            edge_weight_attr=edge_weight_attr,
                            value_type=value_type,
-                           recalculate_splits=recalculate_splits)
+                           is_bipartitions_updated=is_bipartitions_updated)
 
-def find_missing_splits(reference_tree, comparison_tree, recalculate_splits=False):
+def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_updated=False):
     """
-    Returns a list of splits that are in `reference_tree`, but
+    Returns a list of bipartitions that are in `reference_tree`, but
     not in `comparison_tree`.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The splits
-    hash bitmasks of the trees must be correct for the current tree structures
-    (by calling :meth:`Tree.encode_splits()` method) or the
-    `recalculate_splits` argument must be `True` to force recalculation of
-    splits.
+    Trees need to share the same :class:`TaxonNamespace` reference. The
+    bipartition bitmasks of the trees must be correct for the current tree
+    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
+    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    bipartitions.
 
     Parameters
     ----------
     reference_tree : :class:`dendropy.datamodel.Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `comparison_tree` and must have split
-        bitmasks encoded.
+        same :class:`TaxonNamespace` reference as `tree2` and must have
+        bipartitions encoded.
     comparison_tree : :class:`dendropy.datamodel.Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `reference_tree` and must have split
-        bitmasks encoded.
-    recalculate_splits : bool
-        If `True`, then the split hash bitmasks on *both* trees will be updated
-        before comparison. If `False` (default) then the split hash bitmasks
-        will only be calculate for a :class:`Tree` object if they have not been
+        same :class:`TaxonNamespace` reference as `tree1` and must have
+        bipartitions encoded.
+    is_bipartitions_updated : bool
+        If `True`, then the bipartitions on *both* trees will be updated
+        before comparison. If `False` (default) then the bipartitions
+        will only be calculated for a :class:`Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
     -------
-    s : list[splits]
-        A list of splits that are in the first tree but not in the second.
+    s : list[:class:`Bipartition`]
+        A list of bipartitions that are in the first tree but not in the second.
 
     """
     missing = []
     if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:
         raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
-    if recalculate_splits:
-        treesplit.encode_splits(reference_tree)
-        treesplit.encode_splits(comparison_tree)
+    if not is_bipartitions_updated:
+        reference_tree.encode_bipartitions()
+        comparision_tree.encode_bipartitions()
     else:
-        if reference_tree.split_edge_map is None:
-            reference_tree.encode_splits()
-        if comparison_tree.split_edge_map is None:
-            comparison_tree.encode_splits()
-    for split in reference_tree.split_edge_map:
-        if split in comparison_tree.split_edge_map:
+        if reference_tree.bipartition_encoding is None:
+            reference_tree.encode_bipartitions()
+        if comparison_tree.bipartition_encoding is None:
+            comparison_tree.encode_bipartitions()
+    for bipartition in reference_tree.bipartition_encoding:
+        if bipartition in comparison_tree.bipartition_encoding:
             pass
         else:
-            missing.append(split)
+            missing.append(bipartition)
     return missing
 
 ###############################################################################
@@ -365,7 +355,7 @@ def robinson_foulds_distance(tree1, tree2, edge_weight_attr="length"):
     """
     return weighted_robinson_foulds_distance(tree1, tree2, edge_weight_attr)
 
-def mason_gamer_kellogg_score(tree1, tree2, recalculate_splits=False):
+def mason_gamer_kellogg_score(tree1, tree2, is_bipartitions_updated=False):
     """
     Mason-Gamer and Kellogg. Testing for phylogenetic conflict among molecular
     data sets in the tribe Triticeae (Gramineae). Systematic Biology (1996)
@@ -373,17 +363,17 @@ def mason_gamer_kellogg_score(tree1, tree2, recalculate_splits=False):
     """
     if tree1.taxon_namespace is not tree2.taxon_namespace:
         raise error.TaxonNamespaceIdentityError(tree1, tree2)
-    if recalculate_splits:
-        tree1.encode_splits()
-        tree2.encode_splits()
+    if not is_bipartitions_updated:
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
     else:
-        if tree1.split_edge_map is None:
-            tree1.encode_splits()
-        if tree2.split_edge_map is None:
-            tree2.encode_splits()
-    se1 = tree1.split_edge_map
-    se2 = tree2.split_edge_map
-    splits = sorted(list(set(se1.keys() + se2.keys())))
+        if tree1.bipartition_encoding is None:
+            tree1.encode_bipartitions()
+        if tree2.bipartition_encoding is None:
+            tree2.encode_bipartitions()
+    se1 = tree1.bipartition_encoding
+    se2 = tree2.bipartition_encoding
+    bipartitions = sorted(list(set(se1.keys() + se2.keys())))
 
 ###############################################################################
 ## Supporting
@@ -393,71 +383,71 @@ def _get_length_diffs(
         tree2,
         edge_weight_attr="length",
         value_type=float,
-        recalculate_splits=False,
-        split_length_diff_map=False):
+        is_bipartitions_updated=False,
+        bipartition_length_diff_map=False):
     """
     Returns a list of tuples, with the first element of each tuple representing
-    the length of the branch subtending a particular split on ``tree1``, and
+    the length of the branch subtending a particular bipartition on ``tree1``, and
     the second element the length of the same branch on ``tree2``. If a
-    particular split is found on one tree but not in the other, a value of zero
-    is used for the missing split.
+    particular bipartition is found on one tree but not in the other, a value of zero
+    is used for the missing bipartition.
     """
     length_diffs = []
-    split_length_diffs = {}
+    bipartition_length_diffs = {}
     if tree1.taxon_namespace is not tree2.taxon_namespace:
         raise error.TaxonNamespaceIdentityError(tree1, tree2)
-    if recalculate_splits:
-        treesplit.encode_splits(tree1)
-        treesplit.encode_splits(tree2)
+    if not is_bipartitions_updated:
+        tree1.encode_bipartitions()
+        tree2.encode_bipartitions()
     else:
-        if tree1.split_edge_map is None:
-            tree1.encode_splits()
-        if tree2.split_edge_map is None:
-            tree2.encode_splits()
-    split_edge_map2_copy = dict(tree2.split_edge_map) # O(n*(2*bind + dict_item_cost))
-    split_edge_map1_ref = tree1.split_edge_map
-    for split in split_edge_map1_ref: # O n : 2*bind
-        edge = split_edge_map1_ref[split]
+        if tree1.bipartition_encoding is None:
+            tree1.encode_bipartitions()
+        if tree2.bipartition_encoding is None:
+            tree2.encode_bipartitions()
+    tree1_split_bitmask_edge_map = dict(tree2.split_bitmask_edge_map) # O(n*(2*bind + dict_item_cost))
+    tree2_split_bitmask_edge_map = tree1.split_bitmask_edge_map
+    for split_bitmask in tree2_split_bitmask_edge_map: # O n : 2*bind
+        edge = tree2_split_bitmask_edge_map[split_bitmask]
         elen1 = getattr(edge, edge_weight_attr) # attr + bind
         if elen1 is None:
             elen1 = 0 # worst-case: bind
         value1 = value_type(elen1) #  ctor + bind
         try:
-            e2 = split_edge_map2_copy.pop(split) # attr + dict_lookup + bind
+            e2 = tree1_split_bitmask_edge_map.pop(split_bitmask) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_weight_attr) # attr + bind
             if elen2 is None:
-                # allow root edge to have split with no value: raise error if not root edge
+                # allow root edge to have split_bitmask with no value: raise error if not root edge
                 if e2.tail_node is None:
                     elen2 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_namespace.split_as_newick_string(split)))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_namespace.bitmask_as_newick_string(split_bitmask)))
         except KeyError: # excep
             elen2 = 0.0
         value2 = value_type(elen2) #  ctor + bind # best case
         length_diffs.append((value1,value2)) # ctor + listappend
-        split_length_diffs[split] = length_diffs[-1]
+        bipartition_length_diffs[split_bitmask] = length_diffs[-1]
 
-    for split in split_edge_map2_copy: # best-case not executed, worst case O(n) : 2*bind
-        edge = split_edge_map2_copy[split]
+    for split_bitmask in tree1_split_bitmask_edge_map: # best-case not executed, worst case O(n) : 2*bind
+        edge = tree1_split_bitmask_edge_map[split_bitmask]
         elen2 = getattr(edge, edge_weight_attr) # attr +  bind
         if elen2 is None:
             elen2 = 0
         value2 = value_type(elen2) #  ctor + bind
-        e1 = split_edge_map1_ref.get(split) # attr + dict_lookup + bind
+        e1 = tree2_split_bitmask_edge_map.get(split_bitmask) # attr + dict_lookup + bind
         if e1 is None:
             elen1 = 0.0
         else:
             elen1 = getattr(e1, edge_weight_attr) # attr  + bind
             if elen1 is None:
-                # allow root edge to have split with no value: raise error if not root edge
+                # allow root edge to have split_bitmask with no value: raise error if not root edge
                 if e1.tail_node is None:
                     elen1 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split_bitmask))
                 #elen1 = 0
         value1 = value_type(elen1)
         length_diffs.append((value1,value2)) # ctor + listappend
-        split_length_diffs[split] = length_diffs[-1]
+        bipartition_length_diffs[split_bitmask] = length_diffs[-1]
     # the numbers below do not reflect additions to the code to protect against
     #   edges with length None
     # loops
@@ -473,30 +463,30 @@ def _get_length_diffs(
     #       O(n * (dict_lookup + 3*attr + 3*ctor + 8*bind + listappend + dict_item_cost))
     #  worst-case:
     #     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 9*bind + listappend + 0.5*(dict_item_cost + excep))
-    if split_length_diff_map:
-        return length_diffs, split_length_diffs
+    if bipartition_length_diff_map:
+        return length_diffs, bipartition_length_diffs
     else:
         return length_diffs
 
-def _splits_distance(
+def _bipartition_difference(
         tree1,
         tree2,
         dist_func,
         edge_weight_attr="length",
         value_type=float,
-        recalculate_splits=False):
+        is_bipartitions_updated=False):
     """
     Returns distance between two trees, each represented by a dictionary of
-    splits (as split_mask strings) to edges, using `dist_func` to calculate the
+    bipartitions (as bipartition_mask strings) to edges, using `dist_func` to calculate the
     distance based on `edge_weight_attr` of the edges. `dist_func` is a function
     that takes a list of pairs of values, where the values correspond to the edge
-    lengths of a given split on tree1 and tree2 respectively.
+    lengths of a given bipartition on tree1 and tree2 respectively.
     """
     length_diffs = _get_length_diffs(
             tree1,
             tree2,
             edge_weight_attr=edge_weight_attr,
             value_type=value_type,
-            recalculate_splits=recalculate_splits)
+            is_bipartitions_updated=is_bipartitions_updated)
     return dist_func(length_diffs)
 

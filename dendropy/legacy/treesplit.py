@@ -18,126 +18,141 @@
 
 """
 Split calculation and management.
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.treesplit` instead.
+DEPRECATED IN DENDROPY 4.
 """
 
-from dendropy.calculate import treesplit
+import dendropy
+from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 
 def tree_from_splits(splits, taxon_set, is_rooted=False):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.tree_from_splits()' function has moved to 'dendropy.calculate.treesplit.weighted_tree_from_splits()'.",
-            old_construct="from dendropy import treesplit\nd = treesplit.tree_from_splits(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.tree_from_splits(...)")
-    return treesplit.tree_from_splits(splits=splits,
-            taxon_set=taxon_namespace,
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.tree_from_splits()'.",
+            old_construct="from dendropy import treesplit\ntree = treesplit.tree_from_splits(...)",
+            new_construct="import dendropy\ntree = dendropy.Tree.from_split_bitmasks(...)")
+    return dendropy.Tree.from_split_bitmasks(
+            split_bitmasks=splits,
+            taxon_namespace=taxon_set,
             is_rooted=is_rooted)
 
 def split_to_list(s, mask=-1, one_based=False, ordination_in_mask=False):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.split_to_list()' function has moved to 'dendropy.calculate.treesplit.split_to_list()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.split_to_list()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.split_to_list(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.split_to_list(...)")
-    return treesplit.split_to_list(
+            new_construct="from dendropy.utility import bitprocessing\nd = bitprocessing.indexes_of_set_bits(...)")
+    return bitprocessing.indexes_of_set_bits(
             s=s,
-            mask=mask,
+            fill_bitmask=mask,
             one_based=one_based,
             ordination_in_mask=ordination_in_mask)
 
 def is_trivial_split(split, mask):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.is_trivial_split()' function has moved to 'dendropy.calculate.treesplit.is_trivial_split()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.is_trivial_split()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.is_trivial_split(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.is_trivial_split(...)")
-    return treesplit.is_trivial_split(split=split, mask=mask)
+            new_construct="import dendropy\nd = dendropy.Bipartition.is_trivial_bitmask(...)")
+    return dendropy.Bipartition.is_trivial_bitmask(bitmask=split, fill_bitmask=mask)
 
 def is_non_singleton_split(split, mask):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.is_non_singleton_split()' function has moved to 'dendropy.calculate.treesplit.is_non_singleton_split()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.is_non_singleton_split()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.is_non_singleton_split(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.is_non_singleton_split(...)")
-    return treesplit.is_non_singleton_split(split=split, mask=mask)
+            new_construct="import dendropy\nd = not dendropy.Bipartition.is_trivial_bitmask(...)")
+    return dendropy.Bipartition.is_trivial_bitmask(bitmask=split, fill_bitmask=mask)
 
 def split_as_string(split_mask, width, symbol1=None, symbol2=None):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.split_as_string()' function has moved to 'dendropy.calculate.treesplit.split_as_string()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.split_as_string()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.split_as_string(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.split_as_string(...)")
-    return treesplit.split_as_string(
-            split_mask=split_mask,
-            width=width,
+            new_construct="""\
+# if using a bipartition
+d = bipartition.split_as_bitstring(...)
+d = bipartition.leafset_as_bitstring(...)
+# if a "raw" bitmask
+from dendropy.utility import bitprocessing
+d = bitprocessing.int_as_bitstring(...)""")
+    return bitprocessing.int_as_bitstring(
+            mask=split_mask,
+            length=width,
+            symbol0=symbol0,
             symbol1=symbol1,
-            symbol2=symbol2)
+            reverse=False)
 
 def split_as_string_rev(split_mask, width, symbol1='.', symbol2='*'):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.split_as_string_rev()' function has moved to 'dendropy.calculate.treesplit.split_as_string_rev()'.",
-            old_construct="from dendropy import treesplit\nd = treesplit.split_as_string_rev(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.split_as_string_rev(...)")
-    return treesplit.split_as_string_rev(
-            split_mask=split_mask,
-            width=width,
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.split_as_string_rev()'.",
+            old_construct="from dendropy import treesplit\nd = treesplit.split_as_string(...)",
+            new_construct="""\
+# if using a bipartition
+d = bipartition.split_as_bitstring(...)[::-1]
+d = bipartition.leafset_as_bitstring(...)[::-1]
+# if a "raw" bitmask
+from dendropy.utility import bitprocessing
+d = bitprocessing.int_as_bitstring(..., reverse=True)""")
+    return bitprocessing.int_as_bitstring(
+            mask=split_mask,
+            length=width,
+            symbol0=symbol0,
             symbol1=symbol1,
-            symbol2=symbol2)
+            reverse=True)
 
 def find_edge_from_split(root, split_to_find, mask=-1):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.find_edge_from_split()' function has moved to 'dendropy.calculate.treesplit.find_edge_from_split()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.find_edge_from_split()'",
             old_construct="from dendropy import treesplit\nd = treesplit.find_edge_from_split(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.find_edge_from_split(...)")
-    return treesplit.find_edge_from_split(
-            root=root,
-            split_to_find=split_to_find,
-            mask=mask)
+            new_construct="""\
+# if using a bipartition
+d = bipartition.edge
+# if a "raw" bitmask
+d = tree.find_edge_for_split_bitmask(...)""")
+    return root.find_edge_for_split_bitmask(split_to_find, fill_bitmask=mask)
 
-def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
+def encode_splits(tree, create_dict=True, suppress_unifurcations=True):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.encode_splits()' function has moved to 'dendropy.calculate.treesplit.encode_splits()'.",
-            old_construct="from dendropy import treesplit\nd = treesplit.encode_splits(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.encode_splits(...)")
-    return treesplit.encode_splits(
-            tree=tree,
-            create_dict=create_dict,
-            delete_outdegree_one=delete_outdegree_one)
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.encode_splits()'.",
+            old_construct="from dendropy import treesplit\nd = treesplit.encode_splits(tree, ...)",
+            new_construct="bipartitions = tree.encode_bipartitions(...)\nsplit_bitmasks = tree.split_bitmask_edge_map.keys()")
+    return tree.encode_bipartitions(suppress_unifurcations=suppress_unifurcations)
 
 def is_compatible(split1, split2, mask):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.is_compatible()' function has moved to 'dendropy.calculate.treesplit.is_compatible()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.is_compatible()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.is_compatible(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.is_compatible(...)")
-    return treesplit.is_compatible(
-            split1=split1,
-            split2=split2,
-            mask=mask)
+            new_construct="""\
+# if using a bipartition
+d = bipartition.is_compatible_with(other_bipartition)
+# if a "raw" bitmask
+d = dendropy.Bipartition.is_compatible_bitmasks(m1, m2, fill_bitmask=mask)""")
+    return Bipartition.is_compatible_bitmasks(m1, m2, fill_bitmask=mask)
 
 def delete_outdegree_one(tree):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.delete_outdegree_one()' function has moved to 'dendropy.calculate.treesplit.delete_outdegree_one()'.",
-            old_construct="from dendropy import treesplit\nd = treesplit.delete_outdegree_one(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.delete_outdegree_one(...)")
-    return treesplit.delete_outdegree_one(tree=tree)
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.delete_outdegree_one()'.",
+            old_construct="from dendropy import treesplit\nd = treesplit.delete_outdegree_one(tree)",
+            new_construct="tree.suppress_unifurcations()")
+    return tree.suppress_unifurcations()
 
 def lowest_bit_only(s):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.lowest_bit_only()' function has moved to 'dendropy.calculate.treesplit.lowest_bit_only()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.lowest_bit_only()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.lowest_bit_only(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.lowest_bit_only(...)")
-    return treesplit.lowest_bit_only(split=s)
+            new_construct="from dendropy.utility import bitprocessing\nd = bitprocessing.least_significant_set_bit(...)")
+    return bitprocessing.least_significant_set_bit(s)
 
 def count_bits(a):
     deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.count_bits()' function has moved to 'dendropy.calculate.treesplit.count_bits()'.",
+            preamble="Deprecated since DendroPy 4: 'dendropy.treesplit.count_bits()'.",
             old_construct="from dendropy import treesplit\nd = treesplit.count_bits(...)",
-            new_construct="from dendropy.calculate import treesplit\nd = treesplit.count_bits(...)")
-    return treesplit.count_bits(split=a)
+            new_construct="from dendropy.utility import bitprocessing\nd = bitprocessing.num_set_bits(...)")
+    return bitprocessing.num_set_bits(a)
 
-class SplitDistribution(treesplit.SplitDistribution):
+class SplitDistribution(dendropy.SplitDistribution):
     def __init__(self, taxon_set=None, split_set=None):
         deprecate.dendropy_deprecation_warning(
                 preamble="Deprecated since DendroPy 4: The 'dendropy.treesplit.SplitDistribution' class has moved to 'dendropy.calculate.treesplit.SplitDistribution'.",
                 old_construct="from dendropy import treesplit\nm = treesplit.SplitDistribution(...)",
-                new_construct="from dendropy.calculate import treesplit\nm = treesplit.SplitDistribution(...)")
-        treesplit.SplitDistribution.__init__(self,
+                new_construct="import dendropy\nm = dendropy.SplitDistribution(...)")
+        dendropy.SplitDistribution.__init__(self,
                 taxon_namespace=taxon_set)
         if split_set:
             for split in split_set:

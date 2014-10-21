@@ -24,7 +24,6 @@ import math
 import collections
 import dendropy
 from dendropy.datamodel import taxonmodel
-from dendropy.calculate import treesplit
 from dendropy.mathlib.statistics import mean_and_sample_variance
 
 ##############################################################################
@@ -98,7 +97,7 @@ class TreeDistribution(taxonmodel.TaxonNamespaceAssociated):
             self._tree_store = None
         else:
             raise ValueError(tree_store_mode)
-        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+        self.split_distribution = dendropy.SplitDistribution(taxon_namespace=self.taxon_namespace)
 
     ##########################################################################
     ## Tree Store Mode (Read-only)
@@ -122,10 +121,10 @@ class TreeDistribution(taxonmodel.TaxonNamespaceAssociated):
     ##########################################################################
     ## Adding Trees
 
-    def add_tree(self, tree, is_splits_encoded=False):
+    def add_tree(self, tree, is_bipartitions_updated=False):
         pass
 
-    def add_trees(self, tree_iterator, is_splits_encoded=False):
+    def add_trees(self, tree_iterator, is_bipartitions_updated=False):
         pass
 
     def add_trees_from_file(self, source, schema, **kwargs):
@@ -193,10 +192,11 @@ class TreeSummarizer(object):
                 to_try_to_add.append((freq, s))
         to_try_to_add.sort(reverse=True)
         splits_for_tree = [i[1] for i in to_try_to_add]
-        con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
+        con_tree = dendropy.Tree.from_split_bitmasks(
+                split_bitmasks=splits_for_tree,
                 taxon_namespace=taxon_namespace,
                 is_rooted=rooted)
-        treesplit.encode_splits(con_tree)
+        con_tree.encode_bipartitions()
 
         if include_edge_lengths:
             split_edge_lengths = {}
@@ -211,7 +211,7 @@ class TreeSummarizer(object):
             split_edge_lengths = None
 
         for node in con_tree.postorder_node_iter():
-            split = node.edge.split_bitmask
+            split = node.edge.bipartition.split_bitmask
             if split in split_freqs:
                 self.map_split_support_to_node(node=node, split_support=split_freqs[split])
             if include_edge_lengths and split in split_distribution.split_edge_lengths:
@@ -272,13 +272,13 @@ class TreeSummarizer(object):
             split_freqs = split_distribution.split_frequencies
         tree.reindex_taxa(taxon_namespace=split_distribution.taxon_namespace)
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        treesplit.encode_splits(tree)
-        for split in tree.split_edge_map:
+        tree.encode_bipartitions()
+        for split in tree.split_bitmask_edge_map:
             if split in split_freqs:
                 split_support = split_freqs[split]
             else:
                 split_support = 0.0
-            self.map_split_support_to_node(tree.split_edge_map[split].head_node, split_support)
+            self.map_split_support_to_node(tree.split_bitmask_edge_map[split].head_node, split_support)
         return tree
 
     def annotate_nodes_and_edges(self,
@@ -303,7 +303,7 @@ class TreeSummarizer(object):
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        if recalculate_splits or tree.split_edge_map is None:
+        if recalculate_splits or tree.split_bitmask_edge_map is None:
             tree.encode_splits()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
@@ -351,7 +351,7 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_edge_map is None:
+        if recalculate_splits or tree.split_bitmask_edge_map is None:
             tree.encode_splits()
         #'height',
         #'height_median',
@@ -361,9 +361,9 @@ class TreeSummarizer(object):
         #'length_median',
         #'length_95hpd',
         #'length_range',
-        #for split, edge in tree.split_edge_map.items():
+        #for split, edge in tree.split_bitmask_edge_map.items():
         for edge in tree.preorder_edge_iter():
-            split = edge.split_bitmask
+            split = edge.bipartition.split_bitmask
             nd = edge.head_node
             if split in split_distribution.split_node_ages:
                 ages = split_distribution.split_node_ages[split]
@@ -395,9 +395,9 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_edge_map is None:
+        if recalculate_splits or tree.split_bitmask_edge_map is None:
             tree.encode_splits()
-        for split, edge in tree.split_edge_map.items():
+        for split, edge in tree.split_bitmask_edge_map.items():
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
@@ -415,9 +415,9 @@ class TreeSummarizer(object):
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in leaves:
             if not is_rooted:
-                split = con_tree.split_edge_map.normalize_key(node.edge.split_bitmask)
-            else:
                 split = node.edge.split_bitmask
+            else:
+                split = node.edge.leafset_bitmask
             self.map_split_support_to_node(node, 1.0)
             if include_edge_lengths:
                 elen = split_distribution.split_edge_lengths.get(split, [0.0])
@@ -437,13 +437,13 @@ class TreeSummarizer(object):
             #        include_edge_length_var=False)
         return con_tree
 
-    def count_splits_on_trees(self, tree_iterator, split_distribution=None, is_splits_encoded=False):
+    def count_splits_on_trees(self, tree_iterator, split_distribution=None, is_bipartitions_updated=False):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
         """
         if split_distribution is None:
-            split_distribution = treesplit.SplitDistribution()
+            split_distribution = dendropy.SplitDistribution()
         taxon_namespace = split_distribution.taxon_namespace
         for tree_idx, tree in enumerate(tree_iterator):
             if taxon_namespace is None:
@@ -453,26 +453,26 @@ class TreeSummarizer(object):
             else:
                 assert(taxon_namespace is tree.taxon_namespace)
             split_distribution.count_splits_on_tree(tree,
-                    is_splits_encoded=is_splits_encoded)
+                    is_bipartitions_updated=is_bipartitions_updated)
         return split_distribution
 
-    def consensus_tree(self, trees, min_freq=0.5, is_splits_encoded=False):
+    def consensus_tree(self, trees, min_freq=0.5, is_bipartitions_updated=False):
         """
         Returns a consensus tree of all trees in `trees`, with minumum frequency
         of split to be added to the consensus tree given by `min_freq`.
         """
         taxon_namespace = trees[0].taxon_namespace
-        split_distribution = treesplit.SplitDistribution(taxon_namespace=taxon_namespace)
+        split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
         self.count_splits_on_trees(trees,
                 split_distribution=split_distribution,
-                is_splits_encoded=is_splits_encoded)
+                is_bipartitions_updated=is_bipartitions_updated)
         tree = self.tree_from_splits(split_distribution, min_freq=min_freq)
         return tree
 
 ##############################################################################
 ## Convenience Wrappers
 
-def consensus_tree(trees, min_freq=0.5, is_splits_encoded=False, **kwargs):
+def consensus_tree(trees, min_freq=0.5, is_bipartitions_updated=False, **kwargs):
     """
     Returns a consensus tree of all trees in `trees`, with minumum frequency
     of split to be added to the consensus tree given by `min_freq`.
@@ -480,7 +480,7 @@ def consensus_tree(trees, min_freq=0.5, is_splits_encoded=False, **kwargs):
     tsum = TreeSummarizer(**kwargs)
     return tsum.consensus_tree(trees,
             min_freq=min_freq,
-            is_splits_encoded=is_splits_encoded)
+            is_bipartitions_updated=is_bipartitions_updated)
 
 ##############################################################################
 ## TreeCounter
@@ -494,7 +494,7 @@ class TopologyCounter(object):
         """
         Set of all splits on tree: default topology hash.
         """
-        return frozenset(tree.split_edge_map.keys())
+        return frozenset(tree.split_bitmask_edge_map.keys())
     hash_topology = staticmethod(hash_topology)
 
     def __init__(self):
@@ -516,12 +516,12 @@ class TopologyCounter(object):
 
     def count(self,
             tree,
-            is_splits_encoded=False):
+            is_bipartitions_updated=False):
         """
         Logs/registers a tree.
         """
-        if not is_splits_encoded:
-            treesplit.encode_splits(tree)
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
         topology = self.hash_topology(tree)
         if topology not in self.topology_hash_map:
             self.topology_hash_map[topology] = 1
@@ -552,7 +552,8 @@ class TopologyCounter(object):
         hash_freqs = self.calc_hash_freqs()
         tree_freqs = collections.OrderedDict()
         for topology_hash, (count, freq) in hash_freqs.items():
-            tree = treesplit.tree_from_splits(splits=topology_hash,
+            tree = dendropy.Tree.from_split_bitmasks(
+                split_bitmasks=topology_hash,
                 taxon_namespace=taxon_namespace,
                 is_rooted=is_rooted)
             tree_freqs[tree] = (count, freq)

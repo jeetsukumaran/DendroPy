@@ -23,14 +23,12 @@ NEXUS data read/write parse/format tests.
 import unittest
 from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
-from dendropy.calculate import treesplit
 from dendropy.calculate import treecompare
 import dendropy
 
 _LOG = get_logger(__name__)
 
-class TreeFromSplitsTest(unittest.TestCase):
-
+class TreeFromBipartitionsTest(unittest.TestCase):
     def testTrees(self):
         tree_files = [
                 ("dendropy-test-trees-n33-unrooted-x100a.nexus", "force-unrooted", False),
@@ -42,14 +40,12 @@ class TreeFromSplitsTest(unittest.TestCase):
             ref_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path(tree_file),
                     "nexus",
                     rooting=rooting)
-            treesplit.encode_splits(ref_tree)
-            splits = ref_tree.split_edge_map.keys()
-            # splits = [n.edge.split_bitmask for n in ref_tree]
-            t_tree = treesplit.tree_from_splits(
-                    splits=splits,
+            bipartition_encoding = ref_tree.encode_bipartitions()
+            t_tree = dendropy.Tree.from_bipartition_encoding(
+                    bipartition_encoding,
                     taxon_namespace=ref_tree.taxon_namespace,
                     is_rooted=ref_tree.is_rooted)
-            treesplit.encode_splits(t_tree)
+            # t_tree.encode_bipartitions()
             _LOG.debug("--\n       File: {} ({})".format(tree_file, ref_tree.is_rooted))
             _LOG.debug("     Original: {}".format(ref_tree.as_string("newick")))
             _LOG.debug("Reconstructed: {}".format(t_tree.as_string("newick")))

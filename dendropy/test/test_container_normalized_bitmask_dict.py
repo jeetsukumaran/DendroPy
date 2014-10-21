@@ -27,7 +27,7 @@ class TestNormalizedBitmaskDict(unittest.TestCase):
 
     def runTest(self):
         """Testing NormalizedBitmaskDict"""
-        mask = 0xFF # 1111 1111
+        fill_bitmask = 0xFF # 1111 1111
         splits = [
             ((0x03, '0000 0011'), (0x03, '0000 0011')),
             ((0x34, '0011 0100'), (0xCB, '1100 1011')),
@@ -35,7 +35,7 @@ class TestNormalizedBitmaskDict(unittest.TestCase):
             ((0x12, '0001 0010'), (0xED, '1110 1101')),
             ((0x75, '0111 0101'), (0x75, '0111 0101')),
             ]
-        d = container.NormalizedBitmaskDict(mask=mask)
+        d = container.NormalizedBitmaskDict(fill_bitmask=fill_bitmask)
         for s in splits:
             d[s[0][0]] = s[0][1]
 

@@ -33,8 +33,8 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import paupsplitsreference
 from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
+from dendropy.utility import bitprocessing
 from dendropy.interop import paup
-from dendropy.calculate import treesplit
 from dendropy.calculate import treecompare
 import dendropy
 
@@ -65,7 +65,7 @@ class SplitDistributionTestCases(ExtendedTestCase):
                 tree_filepath,
                 "nexus",
                 store_tree_weights=use_tree_weights)
-        sd = treesplit.SplitDistribution(
+        sd = dendropy.SplitDistribution(
                 taxon_namespace=trees.taxon_namespace,
                 use_tree_weights=use_tree_weights)
         for tree in trees:
@@ -105,7 +105,7 @@ class SplitDistributionTestCases(ExtendedTestCase):
 
         # ensure remaining splits (not given in PAUP splits file) are trivial ones (which are not tracked by PAUP)
         for split in observed_splits:
-            self.assertTrue(treesplit.is_trivial_split(split, all_taxa_bitmask))
+            self.assertTrue(dendropy.Bipartition.is_trivial_bitmask(split, all_taxa_bitmask))
 
     def test_group1(self):
         sources = [
@@ -165,9 +165,7 @@ class SplitCountTest(ExtendedTestCase):
                 taxa_definition_filepath=tree_filepath
                 )
         taxon_namespace = paup_sd.taxon_namespace
-        dp_sd = treesplit.SplitDistribution(
-                taxon_namespace=taxon_namespace,
-                )
+        dp_sd = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
         dp_sd.ignore_edge_lengths = True
         dp_sd.ignore_node_ages = True
         dp_sd.ignore_tree_weights = dp_ignore_tree_weights
@@ -182,14 +180,14 @@ class SplitCountTest(ExtendedTestCase):
             self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
             dp_sd.count_splits_on_tree(
                     tree,
-                    is_splits_encoded=False)
+                    is_bipartitions_updated=False)
         self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         for split in dp_sd.split_counts:
-            if not treesplit.is_trivial_split(split, taxa_mask):
+            if not dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
                 # if split not in paup_sd.split_counts:
                 #     print("{}: {}".format(split, split in paup_sd.split_counts))
-                #     s2 = taxon_namespace.normalize_split_bitmask(split)
+                #     s2 = taxon_namespace.normalize_bitmask(split)
                 #     print("{}: {}".format(s2, s2 in paup_sd.split_counts))
                 #     s3 = ~split & taxon_namespace.all_taxa_bitmask()
                 #     print("{}: {}".format(s3, s3 in paup_sd.split_counts))
@@ -198,7 +196,7 @@ class SplitCountTest(ExtendedTestCase):
                 del paup_sd.split_counts[split]
         remaining_splits = list(paup_sd.split_counts.keys())
         for split in remaining_splits:
-            if treesplit.is_trivial_split(split, taxa_mask):
+            if dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
                 del paup_sd.split_counts[split]
         self.assertEqual(len(paup_sd.split_counts), 0)
 
@@ -258,35 +256,35 @@ class CladeMaskTest(unittest.TestCase):
             "newick")
         for i in tree_list:
             _LOG.debug(i._get_indented_form())
-            treesplit.encode_splits(i)
+            i.encode_bipartitions()
             _LOG.debug(i._get_indented_form(splits=True))
             i._debug_check_tree(splits=True, logger_obj=_LOG)
         root1 = tree_list[0].seed_node
         root1e = root1.edge
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask), list(range(6)))
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, one_based=True), list(range(1,7)))
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, mask=21, one_based=True), [1, 3, 5])
-        self.assertEqual(treesplit.split_to_list(root1e.split_bitmask, mask=21), [0, 2, 4])
-        self.assertEqual(treesplit.count_bits(root1e.split_bitmask), 6)
+        self.assertEqual(bitprocessing.indexes_of_set_bits(root1e.split_bitmask), list(range(6)))
+        self.assertEqual(bitprocessing.indexes_of_set_bits(root1e.split_bitmask, one_based=True), list(range(1,7)))
+        self.assertEqual(bitprocessing.indexes_of_set_bits(root1e.split_bitmask, fill_bitmask=21, one_based=True), [1, 3, 5])
+        self.assertEqual(bitprocessing.indexes_of_set_bits(root1e.split_bitmask, fill_bitmask=21), [0, 2, 4])
+        self.assertEqual(bitprocessing.num_set_bits(root1e.split_bitmask), 6)
 
         fc1 = root1.child_nodes()[0]
         fc1e = fc1.edge
-        self.assertEqual(treesplit.split_to_list(fc1e.split_bitmask), [0, 1])
-        self.assertEqual(treesplit.split_to_list(fc1e.split_bitmask, one_based=True), [1, 2])
-        self.assertEqual(treesplit.split_to_list(fc1e.split_bitmask, mask=0x15, one_based=True), [1])
-        self.assertEqual(treesplit.split_to_list(fc1e.split_bitmask, mask=0x15), [0])
-        self.assertEqual(treesplit.count_bits(fc1e.split_bitmask), 2)
+        self.assertEqual(bitprocessing.indexes_of_set_bits(fc1e.split_bitmask), [0, 1])
+        self.assertEqual(bitprocessing.indexes_of_set_bits(fc1e.split_bitmask, one_based=True), [1, 2])
+        self.assertEqual(bitprocessing.indexes_of_set_bits(fc1e.split_bitmask, fill_bitmask=0x15, one_based=True), [1])
+        self.assertEqual(bitprocessing.indexes_of_set_bits(fc1e.split_bitmask, fill_bitmask=0x15), [0])
+        self.assertEqual(bitprocessing.num_set_bits(fc1e.split_bitmask), 2)
 
 class CountBitsTest(unittest.TestCase):
 
     def runTest(self):
-        self.assertEqual(treesplit.count_bits(21), 3)
+        self.assertEqual(bitprocessing.num_set_bits(21), 3)
 
 class LowestBitTest(unittest.TestCase):
 
     def runTest(self):
         for n, expected in enumerate([0, 1, 2, 1, 4, 1, 2, 1, 8, 1, 2, 1, 4, 1, 2, 1, 16]):
-            self.assertEqual(treesplit.lowest_bit_only(n), expected)
+            self.assertEqual(bitprocessing.least_significant_set_bit(n), expected)
 
 class IsTrivialTest(unittest.TestCase):
 
@@ -294,12 +292,12 @@ class IsTrivialTest(unittest.TestCase):
         y = True
         n = False
         for i, r in enumerate([y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, ]):
-            self.assertEqual(r, treesplit.is_trivial_split(i, 0xF))
+            self.assertEqual(r, dendropy.Bipartition.is_trivial_bitmask(i, 0xF))
         for i, r in enumerate([y, y, y, n, y, n, n, n, y, n, n, n, n, n, n, y, y, n, n, n, n, n, n, y, n, n, n, y, n, y, y, y, ]):
-            self.assertEqual(r, treesplit.is_trivial_split(i, 0x1F))
+            self.assertEqual(r, dendropy.Bipartition.is_trivial_bitmask(i, 0x1F))
                               #0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1
         for i, r in enumerate([y, y, y, n, y, n, n, y, y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, y, n, n, y, n, y, y, y, ]):
-            self.assertEqual(r, treesplit.is_trivial_split(i, 0x17))
+            self.assertEqual(r, dendropy.Bipartition.is_trivial_bitmask(i, 0x17))
 
 class IncompleteLeafSetSplitTest(unittest.TestCase):
 
@@ -351,11 +349,11 @@ class TestTreeSplitSupportCredibilityScoring(unittest.TestCase):
         self.trees = dendropy.TreeList.get_from_path(
                 pathmap.tree_source_path("issue_mth_2009-02-03.rooted.nexus"),
                 "nexus")
-        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.trees.taxon_namespace)
+        self.split_distribution = dendropy.SplitDistribution(taxon_namespace=self.trees.taxon_namespace)
         for tree in self.trees:
             self.split_distribution.count_splits_on_tree(
                     tree,
-                    is_splits_encoded=False)
+                    is_bipartitions_updated=False)
 
     def test_product_of_split_support_on_tree(self):
         t1 = self.trees[70]

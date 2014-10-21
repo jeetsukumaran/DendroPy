@@ -504,8 +504,8 @@ def reconciliation_discordance(gene_tree, species_tree):
         if len(gn_children) > 0:
             ssplit = 0
             for gn_child in gn_children:
-                ssplit = ssplit | gene_node_species_nodes[gn_child].edge.split_bitmask
-            sanc = species_tree.mrca(start_node=species_tree.seed_node, split_bitmask=ssplit)
+                ssplit = ssplit | gene_node_species_nodes[gn_child].edge.leafset_bitmask
+            sanc = species_tree.mrca(start_node=species_tree.seed_node, leafset_bitmask=ssplit)
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []

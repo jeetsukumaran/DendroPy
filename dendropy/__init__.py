@@ -33,10 +33,12 @@ from dendropy.datamodel.taxonmodel import TaxonNamespace
 from dendropy.datamodel.taxonmodel import TaxonNamespacePartition
 from dendropy.datamodel.taxonmodel import TaxonNamespaceMapping
 from dendropy.datamodel.taxonmodel import TaxonSet # Legacy
+from dendropy.datamodel.treemodel import Bipartition
 from dendropy.datamodel.treemodel import Edge
 from dendropy.datamodel.treemodel import Node
 from dendropy.datamodel.treemodel import Tree
 from dendropy.datamodel.treemodel import TreeList
+from dendropy.datamodel.treemodel import SplitDistribution
 from dendropy.datamodel.treemodel import TreeArray
 from dendropy.datamodel.charstatemodel import StateAlphabet
 from dendropy.datamodel.charstatemodel import DNA_STATE_ALPHABET

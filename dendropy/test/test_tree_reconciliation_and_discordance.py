@@ -67,7 +67,7 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
 
     def testFittedEdgesDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
-            gt.update_splits()
+            gt.encode_bipartitions()
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
                     contained_taxon_namespace=self.gene_trees.taxon_namespace,
                     contained_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
@@ -117,13 +117,13 @@ class DeepCoalTest(unittest.TestCase):
         assert len(expected_deep_coalescences) == len(gene_trees) * len(species_trees)
 
         for t in gene_trees + species_trees:
-            t.update_splits()
+            t.update_bipartitions()
         idx = 0
         _LOG.info("Species\t\tGene\t\tDC\t\tExp.DC\t\tDiff")
         for gt in gene_trees:
-            gt.update_splits()
+            gt.update_bipartitions()
             for st in species_trees:
-                st.update_splits()
+                st.update_bipartitions()
                 dc = reconcile.reconciliation_discordance(gt, st)
                 _LOG.info("%s\t\t%s\t\t%s\t\t%s\t\t%s"
                     % (st._as_newick_string(),

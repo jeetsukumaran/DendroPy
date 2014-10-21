@@ -23,7 +23,6 @@ Tests of summarization.
 import unittest
 import dendropy
 from dendropy.calculate import treesum
-from dendropy.calculate import treesplit
 from dendropy.calculate import treecompare
 from dendropy.test.support import pathmap
 from dendropy.mathlib import statistics
@@ -43,16 +42,16 @@ class TestConsensusTree(unittest.TestCase):
                 pathmap.tree_source_path("pythonidae.mb.con"),
                 schema="nexus",
                 taxon_namespace=self.tree_list.taxon_namespace)
-        self.mb_con_tree.update_splits()
+        self.mb_con_tree.encode_bipartitions()
 
     def testConsensus(self):
-        con_tree = self.tree_list.consensus(min_freq=0.50, is_splits_encoded=False, support_label_decimals=2)
-        con_tree.update_splits()
+        con_tree = self.tree_list.consensus(min_freq=0.50, is_bipartitions_updated=False, support_label_decimals=2)
+        con_tree.encode_bipartitions()
         self.assertEqual(treecompare.symmetric_difference(self.mb_con_tree, con_tree), 0)
-        self.assertEqual(len(con_tree.split_edge_map), len(self.mb_con_tree.split_edge_map))
-        for split in self.mb_con_tree.split_edge_map:
-            edge1 = self.mb_con_tree.split_edge_map[split]
-            edge2 = con_tree.split_edge_map[split]
+        self.assertEqual(len(con_tree.bipartition_encoding), len(self.mb_con_tree.bipartition_encoding))
+        for bipartition in self.mb_con_tree.bipartition_encoding:
+            edge1 = self.mb_con_tree.bipartition_edge_map[bipartition]
+            edge2 = con_tree.bipartition_edge_map[bipartition]
             if edge1.head_node.label and edge2.head_node.label:
                 s1 = float(edge1.head_node.label)
                 s2 = round(float(edge2.head_node.label), 2)
@@ -135,15 +134,15 @@ class TestTreeEdgeSummarization(unittest.TestCase):
                 taxon_namespace=self.taxon_namespace,
                 collection_offset=0,
                 tree_offset=40)
-        self.split_distribution = treesplit.SplitDistribution(taxon_namespace=self.taxon_namespace)
+        self.split_distribution = dendropy.SplitDistribution(taxon_namespace=self.taxon_namespace)
         self.split_distribution.ignore_node_ages = False
         for tree in self.support_trees:
-            self.split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
+            self.split_distribution.count_splits_on_tree(tree, is_bipartitions_updated=False)
 
     def testMeanNodeAgeSummarizationOnMCCT(self):
         path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
         obs_tree = dendropy.Tree.get_from_path(path_to_target, "nexus")
-        obs_tree.update_splits()
+        obs_tree.encode_bipartitions()
         ts = treesum.TreeSummarizer(support_as_labels=True,
                 support_as_percentages=False,
                 support_label_decimals=4)
@@ -155,13 +154,12 @@ class TestTreeEdgeSummarization(unittest.TestCase):
         exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.medianh.tre"),
                 "nexus",
                 taxon_namespace=self.taxon_namespace)
-        exp_tree.update_splits()
+        exp_tree.encode_bipartitions()
         exp_tree.calc_node_ages()
-        self.assertEqual(exp_tree.split_edge_map.keys(), obs_tree.split_edge_map.keys())
-        splits = exp_tree.split_edge_map.keys()
-        for split in splits:
-            exp_edge = exp_tree.split_edge_map[split]
-            obs_edge = obs_tree.split_edge_map[split]
+        self.assertEqual(exp_tree.bipartition_encoding, obs_tree.bipartition_encoding)
+        for exp_bipartition in exp_tree.bipartition_encoding:
+            exp_edge = exp_bipartition.edge
+            obs_edge = obs_tree.bipartition_edge_map[exp_bipartition]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
@@ -191,7 +189,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
         result_tree_freqs = tc.calc_tree_freqs(taxon_namespace=taxa)
         for idx, (result_tree, result_freq) in enumerate(result_tree_freqs.items()):
             expected_tree = expected_trees[idx]
-            expected_tree.update_splits()
+            expected_tree.encode_bipartitions()
             expected_freq = expected_freq_values[idx]
             expected_count = weights[idx]
             self.assertEqual(treecompare.symmetric_difference(result_tree, expected_tree), 0,

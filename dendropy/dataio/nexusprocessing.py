@@ -483,7 +483,7 @@ def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
         return "'{}'".format("''".join(s))
     return label
 
-def split_as_newick_string(split, taxon_set, preserve_spaces=False, quote_underscores=True):
+def bitmask_as_newick_string(split, taxon_set, preserve_spaces=False, quote_underscores=True):
     """
     Represents a split as a newick string.
     """

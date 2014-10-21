@@ -31,7 +31,6 @@ from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 
 import dendropy
-from dendropy.calculate.treesplit import encode_splits
 from dendropy.calculate import treemeasure
 from dendropy.calculate import treecompare
 
@@ -815,8 +814,8 @@ class TreeEuclideanDistTest(unittest.TestCase):
                         ((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);
                         """),
             schema="newick")
-         for i in tree_list:
-             encode_splits(i)
+         for t in tree_list:
+             t.encode_bipartitions()
          self.assertAlmostEqual(treecompare.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
          self.assertAlmostEqual(treecompare.euclidean_distance(tree_list[0], tree_list[2]), math.sqrt(2.0))
          self.assertAlmostEqual(treecompare.euclidean_distance(tree_list[0], tree_list[3]), 0.97103099999999998)
@@ -829,9 +828,9 @@ class TreeSymmetricDistTest(unittest.TestCase):
     def runTest(self):
          ref = dendropy.Tree.get_from_stream(StringIO("((t5,t6),((t4,(t2,t1)),t3));"), schema="newick")
          taxon_namespace = ref.taxon_namespace
-         encode_splits(ref)
+         ref.encode_bipartitions()
          o_tree = dendropy.Tree.get_from_stream(StringIO("((t1,t2),((t4,(t5,t6)),t3));"), schema="newick", taxon_namespace=taxon_namespace)
-         encode_splits(o_tree)
+         o_tree.encode_bipartitions()
          self.assertEqual(treecompare.symmetric_difference(o_tree, ref), 2)
 
 class TreePatristicDistTest(unittest.TestCase):
@@ -854,7 +853,7 @@ class TreePatristicDistTest(unittest.TestCase):
         _chk_distance(pdm, "c", "d", 6)
 
     def testPatDistFunc(self):
-        encode_splits(self.tree)
+        self.tree.encode_bipartitions()
         def _chk_distance(t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.get_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.get_taxon(label=t2)
@@ -1107,13 +1106,13 @@ class FrequencyOfSplitsTest(unittest.TestCase):
                 schema='nexus')
 
     def testCount1(self):
-        split_leaves = ['Python regius', 'Apodora papuana']
-        f = self.trees.frequency_of_split(labels=split_leaves)
+        bipartition_leaves = ['Python regius', 'Apodora papuana']
+        f = self.trees.frequency_of_bipartition(labels=bipartition_leaves)
         self.assertAlmostEqual(f, 0.04)
 
     def testRaisesIndexError(self):
-        split_leaves = ['Bad Taxon', 'Apodora papuana']
-        self.assertRaises(IndexError, self.trees.frequency_of_split, labels=split_leaves)
+        bipartition_leaves = ['Bad Taxon', 'Apodora papuana']
+        self.assertRaises(IndexError, self.trees.frequency_of_bipartition, labels=bipartition_leaves)
 
 
 if __name__ == "__main__":

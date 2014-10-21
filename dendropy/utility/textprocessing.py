@@ -80,22 +80,6 @@ def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=N
 ###############################################################################
 ## Various formatters and pretty-printer
 
-if sys.version_info[1] > 5 or sys.version_info[0] > 2:
-    def int_to_bitstring(n):
-        assert n >= 0
-        return bin(n)[2:]
-else:
-    def int_to_bitstring(n):
-        m = 1
-        sl = []
-        while m <= n:
-            if m & n:
-                sl.insert(0, '1')
-            else:
-                sl.insert(0, '0')
-            m <<= 1
-        return "".join(sl)
-
 def pretty_timestamp(t=None, style=0):
     if t is None:
         t = time.localtime()

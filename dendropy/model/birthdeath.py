@@ -226,7 +226,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                     leaf_nodes = [tree.seed_node]
                     curr_num_leaves = 1
                     for nd in tree.seed_node.child_nodes():
-                        tree.prune_subtree(nd, delete_outdegree_one=False)
+                        tree.prune_subtree(nd, suppress_unifurcations=False)
                     extinct_tips = []
                     total_time = 0
             assert(curr_num_leaves == len(leaf_nodes))
@@ -251,7 +251,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         for e, prev_length in edges_at_slice:
             daughter_nd = e.head_node
             for nd in daughter_nd.child_nodes():
-                tree.prune_subtree(nd, delete_outdegree_one=False)
+                tree.prune_subtree(nd, suppress_unifurcations=False)
                 #_LOG.debug("After pruning %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
                 try:
                     extinct_tips.remove(nd)
@@ -278,12 +278,12 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 #             _LOG.debug("%d %s" % (n, repr(pnd)))
 #        _LOG.debug("Before prune of %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
         if nd.parent_node:
-            tree.prune_subtree(nd, delete_outdegree_one=False)
+            tree.prune_subtree(nd, suppress_unifurcations=False)
 #         _LOG.debug("Deleted " + str(nd.__dict__))
 #         for n, pnd in enumerate(tree.postorder_node_iter()):
 #             _LOG.debug("%d %s" % (n, repr(pnd)))
 #         tree._debug_tree_is_valid()
-    tree.delete_outdegree_one_nodes()
+    tree.suppress_unifurcations()
 #    tree._debug_tree_is_valid()
 #    _LOG.debug("After deg2suppression:\n%s" % (tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
 
