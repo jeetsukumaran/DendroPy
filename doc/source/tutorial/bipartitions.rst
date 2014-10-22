@@ -2,6 +2,40 @@
 Bipartitions
 ************
 
+Brief Usage Overview
+====================
+
+1. Many tree statistics and operations in DendroPy use the *bipartition
+   encoding* of a :class:`Tree` instance in the background, including, for
+   example:
+
+    -   tree statistics and metrics
+    -   tree comparisons
+    -   tree scoring
+
+2. By default, the DendroPy functions assume that bipartitions are *not*
+   encoded, or are not up-to-date with respect to the curren tree structure,
+   resulting in their recalculation *every* time. This is computationally
+   inefficient, and you want to avoid it if, indeed, the bipartition encoding
+   of a tree is current. You can control whether or not these service functions
+   recalculate the bipartition encoding by passing in the argument
+   ``is_bipartitions_updated=True`` to suppress the recalculation or
+   ``is_bipartitions_updated=False`` to force it.
+
+2. If you are doing multiple operations that require a bipartition encoding,
+   you should call :class:`Tree.encode_bipartitions()` *once* for each tree,
+   and, then, as long as the trees are *not* *modified* since the encoding,
+   specify the ``is_bipartitions_updated=True`` argument to each of the
+   functions that use it to ensure that the bipartitions are not recalculated
+   each time.
+
+3. If, on the other hand, you modify a tree structure in any way, e.g.,
+   rerooting, pruning, add/removing nodes or subtrees, you should update the
+   bipartition encoding of a tree yourself by calling
+   :class:`Tree.encode_bipartitions()`, or make sure to specify
+   ``is_bipartitions_updated=False`` to the *first* function that you call
+   following the tree modification.
+
 Modeling Bipartitions
 =====================
 
@@ -246,8 +280,15 @@ associated with the leaves descended from the bipartition of a particular edge.
 Using Bipartitions
 ==================
 
-Bipartitions Encoding
----------------------
+Bipartition Encoding
+--------------------
+
+The bipartition encoding of a tree is a specification of the structure of tree
+in terms of the complete set of bipartitions that can be found on it. Given a
+bipartition encoding of a tree, the entire topology can be reconstructed
+completely and accurately. In addition, the bipartition encoding of trees can
+be used to quickly and accurately compare, relate, and calculate various
+statistics between different trees and within the same tree.
 
 In DendroPy, the :meth:`Tree.encode_bipartitions()` method calculates the
 bipartitions of a tree. The :attr:`Edge.bipartition` attribute of each edge
@@ -266,6 +307,19 @@ corresponding edges through the :attr:`Tree.bipartition_edge_map` attribute, or
 a dictionary mapping split bitmasks to their corresponding edges through the
 :attr:`Tree.split_bitmask_edge_map` attribute.
 
+By default, the :class:`Bipartition` instances created are immutable. This is
+to allow them to be used in sets or dictionary keys, and thus exploit O(1)
+look-up/access performance. The hash value of a :class:`Bipartition` object is
+its :attr:`Bipartition.split_bitmask` attribute; two distinct
+:class:`Bipartition` objects are considered equivalent even if they refer to
+different :class:`Edge` objects on different :class:`Tree` objects if their
+:attr:`Bipartition.split_bitmask` values are the same. If you need to modify
+the values of a :class:`Bipartition`, you need to set the
+:attr:`Bipartition.is_mutable` attribute to `True`. Note that changing any
+values that modify the hash of a :class:`Bipartition` instance that is already
+in a hash container such as a set or dictionary will make that instance or
+possibly other members of the container inaccessible: never change the value of
+a :class:`Bipartition` instance if it is in a set or dictionary.
 
 Calculating Bipartitions on Trees
 ---------------------------------
@@ -343,5 +397,7 @@ For this application, it is simpler just to let the calculations take place in t
 
 Note that in all cases, for bipartitions to be meaningfully compared two conditions must hold:
 
-    (1) The trees must reference the *same* operational taxonomic unit namespace object, :class:`TaxonNamespace`.
-    (2) The trees must have the same rooting state (i.e., all rooted or all unrooted).
+    1. The trees must reference the *same* operational taxonomic unit namespace
+       object, :class:`TaxonNamespace`.
+    2. The trees must have the same rooting state (i.e., all rooted or all
+       unrooted).
