@@ -14,7 +14,7 @@ Brief Usage Overview
     -   tree scoring
 
 2. By default, the DendroPy functions assume that bipartitions are *not*
-   encoded, or are not up-to-date with respect to the curren tree structure,
+   encoded, or are not up-to-date with respect to the current tree structure,
    resulting in their recalculation *every* time. This is computationally
    inefficient, and you want to avoid it if, indeed, the bipartition encoding
    of a tree is current. You can control whether or not these service functions
@@ -113,8 +113,10 @@ bipartition can be represented as the decimal integer "108".
 
 This, in essence, is how bipartitions are represented in DendroPy: as integers
 that are interpreted as *bitmasks* (also known as bit arrays, bit vectors, or
-bit fields), where the 0's and 1's assign taxa to different subsets of the
-bipartition.
+bit fields, though exact application of terminology varies depending on whether
+or not primary operations are bitwise or dereferencing through offset indexes
+or field names, etc.), where the 0's and 1's assign taxa to different subsets
+of the bipartition.
 
 As an example, consider the following tree::
 
@@ -297,7 +299,10 @@ bipartition's split bitmask stored in the :attr:`Bipartition.split_bitmask`
 attribute and the leafset bitmask stored in the
 :attr:`Bipartition.leaf_bitmask` attribute. In addition, each
 :class:`Bipartition` also stores a reference to the edge to which it
-corresponds in its :attr:`Bipartition.edge` attribute.
+corresponds in its :attr:`Bipartition.edge` attribute. For convenience, the
+split bitmask and the leafset bitmask associated with each bipartition of an
+edge can be also be accesed through the :attr:`Edge.split_bitmask` and
+:attr:`Ede.leafset_bitmask` properties, respectively.
 
 You can access these :class:`Bipartition` objects by iterating over the edges
 of the tree, but it might be more convenient to access them through the
@@ -401,3 +406,8 @@ Note that in all cases, for bipartitions to be meaningfully compared two conditi
        object, :class:`TaxonNamespace`.
     2. The trees must have the same rooting state (i.e., all rooted or all
        unrooted).
+
+-- ### DOCUMENTATION IN PROGRESS ###
+
+-- IF YOU REFERENCE THIS DOCUMENTATION OR ANY PART THEREOF, PLEASE CITE IT AS:
+-- "Sukumaran, J. 2014. The DendroPy Tutorial. Day Month Year article was published. Web. Day Month Year article was accessed. <URL>
