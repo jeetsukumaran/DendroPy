@@ -43,14 +43,16 @@ A Bipartition is a Partitioning of Taxa Corresponding to an Edge of a Tree
 --------------------------------------------------------------------------
 
 A bipartition is the division or sorting of the leaves/tips of a tree into two
-mutually-exclusive and collectively-comprehensive subsets. Every edge on a tree
-corresponds to a bipartition in the sense that if were were to split or bisect
-a tree at a particular edge, the leaf sets of each of the two new trees
-constitute the a bipartition of the leaf set of the original tree. In the
-context of evolutionary trees like a phylogeny, the leaves typically are
-associated with operational taxonomic unit concepts, or, for short, taxa. So,
-just as we view a tree as a schematic representation of the relationships of
-taxa, we can see bipartitions as a representation of a clustering of taxa.
+mutually-exclusive and collectively-exhaustive subsets (i.e., a *partition*, in
+the set theory sense, of the leaves of the tree into exactly two non-empty
+subsets; hence the term, "*bi*-partition"). Every edge on a tree corresponds to
+a bipartition in the sense that if were were to split or bisect a tree at a
+particular edge, the leaf sets of each of the two new trees constitute the a
+bipartition of the leaf set of the original tree. In the context of
+evolutionary trees like a phylogeny, the leaves typically are associated with
+operational taxonomic unit concepts, or, for short, taxa. So, just as we view a
+tree as a schematic representation of the relationships of taxa, we can see
+bipartitions as a representation of a clustering of taxa.
 
 For example, given a tree:
 
