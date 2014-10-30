@@ -3842,19 +3842,10 @@ class Tree(
                 self.taxon_namespace.add_taxon(nd.taxon)
         return self.taxon_namespace
 
-    def purge_taxon_namespace(self):
-        """
-        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
-        not associated with `self` or any item in `self`.
-        """
-        taxa = self.taxa()
-        to_remove = [t for t in self.taxon_namespace if t not in taxa]
-        for t in to_remove:
-            self.taxon_namespace.remove_taxon(t)
-
     def taxa(self, taxa=None):
         """
-        Returns set of :class:`Taxon` instances associated with `self`.
+        Returns a set populated with all of :class:`Taxon` instances associated
+        with `self`.
 
         Parameters
         ----------
@@ -6088,6 +6079,27 @@ class TreeList(
         for tree in self._trees:
             tree._taxon_namespace = self.taxon_namespace
             tree.update_taxon_namespace()
+
+    def taxa(self, taxa=None):
+        """
+        Returns a set populated with all of :class:`Taxon` instances associated
+        with `self`.
+
+        Parameters
+        ----------
+        taxa : set()
+            Set to populate. If not specified, a new one will be created.
+
+        Returns
+        -------
+        taxa : set[:class:`Taxon`]
+            Set of taxa associated with `self`.
+        """
+        if taxa is None:
+            taxa = set()
+        for tree in self:
+            tree.taxa(taxa)
+        return taxa
 
     def reindex_subcomponent_taxa():
         raise NotImplementedError()

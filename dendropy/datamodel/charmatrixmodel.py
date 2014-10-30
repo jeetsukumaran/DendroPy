@@ -1181,6 +1181,50 @@ class CharacterMatrix(
             else:
                 self._taxon_sequence_map[taxon]= self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
+    def remove_sequences(self, taxa):
+        """
+        Removes sequences associated with :class:`Taxon` instances specified in
+        `taxa`. A `KeyError` is raised if a :class:`Taxon` instance is
+        specified for which there is no associated sequences.
+
+        Parameters
+        ----------
+        taxa : iterable[:class:`Taxon`]
+            List or some other iterable of :class:`Taxon` instances.
+        """
+        for taxon in taxa:
+            del self._taxon_sequence_map[taxon]
+
+    def discard_sequences(self, taxa):
+        """
+        Removes sequences associated with :class:`Taxon` instances specified in
+        `taxa` if they exist.
+
+        Parameters
+        ----------
+        taxa : iterable[:class:`Taxon`]
+            List or some other iterable of :class:`Taxon` instances.
+        """
+        for taxon in taxa:
+            try:
+                del self._taxon_sequence_map[taxon]
+            except KeyError:
+                pass
+
+    def keep_sequences(self, taxa):
+        """
+        Discards all sequences *not* associated with any of the :class:`Taxon` instances.
+
+        Parameters
+        ----------
+        taxa : iterable[:class:`Taxon`]
+            List or some other iterable of :class:`Taxon` instances.
+        """
+        to_keep = set(taxa)
+        for taxon in self._taxon_sequence_map:
+            if taxon not in to_keep:
+                del self._taxon_sequence_map[taxon]
+
     # def extend_characters(self, other_matrix):
     #     """
     #     DEPRECATED

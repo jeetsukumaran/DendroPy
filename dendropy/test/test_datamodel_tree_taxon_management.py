@@ -411,6 +411,19 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_randomly_assign_taxa(self):
         self.assertFalse(self.fail_incomplete_tests())
 
+class TestTreeTaxa(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.tree1, self.anodes1, self.lnodes1, self.inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_leaf_node_taxa=False)
+        self.expected_taxa = set([nd.taxon for nd in self.anodes1 if nd.taxon is not None])
+
+    def test_basic_taxa(self):
+        self.assertEqual(self.tree1.taxa(), self.expected_taxa)
+
 class TestTreePurgeTaxonNamespace(
         curated_test_tree.CuratedTestTree,
         dendropytest.ExtendedTestCase):

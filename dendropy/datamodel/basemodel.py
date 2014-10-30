@@ -55,7 +55,7 @@ class DataObject(object):
         self._label = v
     label = property(_get_label, _set_label)
 
-    def clone(self, depth=0):
+    def clone(self, depth=1):
         """
         Creates and returns a copy of `self`.
 
@@ -73,7 +73,7 @@ class DataObject(object):
                 - 1: taxon-namespace-scoped copy: All member objects are full
                   independent instances, *except* for :class:`TaxonNamespace`
                   and :class:`Taxon` instances: these are references.
-                - 3: Exhaustive deep-copy: all objects are cloned.
+                - 2: Exhaustive deep-copy: all objects are cloned.
         """
         if depth == 0:
             return copy.copy(self)
