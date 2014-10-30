@@ -370,6 +370,29 @@ class TaxonNamespaceAssociated(object):
         """
         raise NotImplementedError()
 
+    def purge_taxon_namespace(self):
+        """
+        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
+        not associated with `self` or any item in `self`.
+        """
+        raise NotImplementedError()
+
+    def taxa(self, taxa=None):
+        """
+        Returns set of :class:`Taxon` instances associated with `self`.
+
+        Parameters
+        ----------
+        taxa : set()
+            Set to populate. If not specified, a new one will be created.
+
+        Returns
+        -------
+        taxa : set[:class:`Taxon`]
+            Set of taxa associated with `self`.
+        """
+        raise NotImplementedError()
+
     def reindex_taxa(self, taxon_namespace=None, clear=False):
         """
         DEPRECATED: Use `migrate_taxon_namespace()` instead.

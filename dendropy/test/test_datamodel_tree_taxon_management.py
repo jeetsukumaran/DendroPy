@@ -411,5 +411,30 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_randomly_assign_taxa(self):
         self.assertFalse(self.fail_incomplete_tests())
 
+class TestTreePurgeTaxonNamespace(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.tree1, self.anodes1, self.lnodes1, self.inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_leaf_node_taxa=False)
+        self.expected_taxa = set([nd.taxon for nd in self.anodes1 if nd.taxon is not None])
+
+    def test_noop_purge(self):
+        self.assertEqual(set(self.tree1.taxon_namespace), self.expected_taxa)
+        self.tree1.purge_taxon_namespace()
+        self.assertEqual(set(self.tree1.taxon_namespace), self.expected_taxa)
+
+    def test_basic_purge(self):
+        self.assertEqual(set(self.tree1.taxon_namespace), self.expected_taxa)
+        added_taxa = set(self.expected_taxa)
+        for label in ("z1", "z2", "z3", "z4"):
+            t = self.tree1.taxon_namespace.new_taxon(label=label)
+            added_taxa.add(t)
+        self.assertEqual(set(self.tree1.taxon_namespace), added_taxa)
+        self.tree1.purge_taxon_namespace()
+        self.assertEqual(set(self.tree1.taxon_namespace), self.expected_taxa)
+
 if __name__ == "__main__":
     unittest.main()

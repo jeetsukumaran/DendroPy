@@ -3831,6 +3831,48 @@ class Tree(
                 self.taxon_namespace.add_taxon(nd.taxon)
         return self.taxon_namespace
 
+    def update_taxon_namespace(self):
+        """
+        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
+        not associated with `self` or any item in `self`.
+        """
+        taxa_to_keep = set()
+        for nd in self:
+            if nd.taxon is not None:
+                self.taxon_namespace.add_taxon(nd.taxon)
+        return self.taxon_namespace
+
+    def purge_taxon_namespace(self):
+        """
+        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
+        not associated with `self` or any item in `self`.
+        """
+        taxa = self.taxa()
+        to_remove = [t for t in self.taxon_namespace if t not in taxa]
+        for t in to_remove:
+            self.taxon_namespace.remove_taxon(t)
+
+    def taxa(self, taxa=None):
+        """
+        Returns set of :class:`Taxon` instances associated with `self`.
+
+        Parameters
+        ----------
+        taxa : set()
+            Set to populate. If not specified, a new one will be created.
+
+        Returns
+        -------
+        taxa : set[:class:`Taxon`]
+            Set of taxa associated with `self`.
+        """
+        if taxa is None:
+            taxa = set()
+        for nd in self:
+            if nd.taxon is not None:
+                taxa.add(nd.taxon)
+        return taxa
+
     def infer_taxa(self):
         """
         Creates (and returns) a new TaxonNamespace object for `self` populated
