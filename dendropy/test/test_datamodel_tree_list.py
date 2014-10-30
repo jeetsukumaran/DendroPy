@@ -1094,6 +1094,56 @@ class TestTreeListAppend(
                 self.assertIn(nd.original_taxon, self.foreign_tns)
                 self.assertIn(nd.original_taxon, self.tree_list.taxon_namespace)
 
+class TestTreeListTaxa(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.tree_list = dendropy.TreeList()
+        self.expected_taxa = None
+        for i in range(10):
+            tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                    taxon_namespace=self.tree_list.taxon_namespace,
+                    suppress_internal_node_taxa=False,
+                    suppress_leaf_node_taxa=False)
+            self.tree_list.append(tree1)
+            if self.expected_taxa is None:
+                self.expected_taxa = set([nd.taxon for nd in anodes1 if nd.taxon is not None])
+
+    def test_basic_taxa(self):
+        self.assertEqual(self.tree_list.taxa(), self.expected_taxa)
+
+class TestTreeListPurgeTaxonNamespace(
+        curated_test_tree.CuratedTestTree,
+        dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.tree_list = dendropy.TreeList()
+        self.expected_taxa = None
+        for i in range(10):
+            tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                    taxon_namespace=self.tree_list.taxon_namespace,
+                    suppress_internal_node_taxa=False,
+                    suppress_leaf_node_taxa=False)
+            self.tree_list.append(tree1)
+            if self.expected_taxa is None:
+                self.expected_taxa = set([nd.taxon for nd in anodes1 if nd.taxon is not None])
+
+    def test_noop_purge(self):
+        self.assertEqual(set(self.tree_list.taxon_namespace), self.expected_taxa)
+        self.tree_list.purge_taxon_namespace()
+        self.assertEqual(set(self.tree_list.taxon_namespace), self.expected_taxa)
+
+    def test_basic_purge(self):
+        self.assertEqual(set(self.tree_list.taxon_namespace), self.expected_taxa)
+        added_taxa = set(self.expected_taxa)
+        for label in ("z1", "z2", "z3", "z4"):
+            t = self.tree_list.taxon_namespace.new_taxon(label=label)
+            added_taxa.add(t)
+        self.assertEqual(set(self.tree_list.taxon_namespace), added_taxa)
+        self.tree_list.purge_taxon_namespace()
+        self.assertEqual(set(self.tree_list.taxon_namespace), self.expected_taxa)
+
 class TreeListCreation(unittest.TestCase):
 
     def test_create_with_taxon_namespace(self):
