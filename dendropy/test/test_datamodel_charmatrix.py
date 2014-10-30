@@ -1092,7 +1092,7 @@ class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
             self.char_matrix[t] = seq
 
     def test_basic_taxa(self):
-        self.assertEqual(self.char_matrix.taxon_poll(), self.expected_taxa)
+        self.assertEqual(self.char_matrix.poll_taxa(), self.expected_taxa)
 
 class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
 

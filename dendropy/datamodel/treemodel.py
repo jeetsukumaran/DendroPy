@@ -3842,7 +3842,7 @@ class Tree(
                 self.taxon_namespace.add_taxon(nd.taxon)
         return self.taxon_namespace
 
-    def taxon_poll(self, taxa=None):
+    def poll_taxa(self, taxa=None):
         """
         Returns a set populated with all of :class:`Taxon` instances associated
         with `self`.
@@ -6080,7 +6080,7 @@ class TreeList(
             tree._taxon_namespace = self.taxon_namespace
             tree.update_taxon_namespace()
 
-    def taxon_poll(self, taxa=None):
+    def poll_taxa(self, taxa=None):
         """
         Returns a set populated with all of :class:`Taxon` instances associated
         with `self`.
@@ -6098,7 +6098,7 @@ class TreeList(
         if taxa is None:
             taxa = set()
         for tree in self:
-            tree.taxon_poll(taxa)
+            tree.poll_taxa(taxa)
         return taxa
 
     def reindex_subcomponent_taxa():

@@ -691,7 +691,7 @@ class CharacterMatrix(
                 self._taxon_sequence_map[t] = self._taxon_sequence_map[original_taxon]
                 del self._taxon_sequence_map[original_taxon]
 
-    def taxon_poll(self, taxa=None):
+    def poll_taxa(self, taxa=None):
         """
         Returns a set populated with all of :class:`Taxon` instances associated
         with `self`.
