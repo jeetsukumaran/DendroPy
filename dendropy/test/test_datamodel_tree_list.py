@@ -1111,7 +1111,7 @@ class TestTreeListTaxa(
                 self.expected_taxa = set([nd.taxon for nd in anodes1 if nd.taxon is not None])
 
     def test_basic_taxa(self):
-        self.assertEqual(self.tree_list.taxa(), self.expected_taxa)
+        self.assertEqual(self.tree_list.taxon_poll(), self.expected_taxa)
 
 class TestTreeListPurgeTaxonNamespace(
         curated_test_tree.CuratedTestTree,

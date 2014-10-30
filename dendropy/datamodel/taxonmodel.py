@@ -375,31 +375,15 @@ class TaxonNamespaceAssociated(object):
         Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
         not associated with `self` or any item in `self`.
         """
-        taxa = self.taxa()
+        taxa = self.taxon_poll()
         to_remove = [t for t in self.taxon_namespace if t not in taxa]
         for t in to_remove:
             self.taxon_namespace.remove_taxon(t)
 
-    def taxa(self, taxa=None):
+    def taxon_poll(self, taxa=None):
         """
         Returns a set populated with all of :class:`Taxon` instances associated
         with `self`.
-
-        Parameters
-        ----------
-        taxa : set()
-            Set to populate. If not specified, a new one will be created.
-
-        Returns
-        -------
-        taxa : set[:class:`Taxon`]
-            Set of taxa associated with `self`.
-        """
-        raise NotImplementedError()
-
-    def taxa(self, taxa=None):
-        """
-        Returns set of :class:`Taxon` instances associated with `self`.
 
         Parameters
         ----------

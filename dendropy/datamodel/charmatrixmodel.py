@@ -691,6 +691,27 @@ class CharacterMatrix(
                 self._taxon_sequence_map[t] = self._taxon_sequence_map[original_taxon]
                 del self._taxon_sequence_map[original_taxon]
 
+    def taxon_poll(self, taxa=None):
+        """
+        Returns a set populated with all of :class:`Taxon` instances associated
+        with `self`.
+
+        Parameters
+        ----------
+        taxa : set()
+            Set to populate. If not specified, a new one will be created.
+
+        Returns
+        -------
+        taxa : set[:class:`Taxon`]
+            Set of taxa associated with `self`.
+        """
+        if taxa is None:
+            taxa = set()
+        for taxon in self._taxon_sequence_map:
+            taxa.add(taxon)
+        return taxa
+
     def update_taxon_namespace(self):
         """
         All :class:`Taxon` objects in `self` that are not in

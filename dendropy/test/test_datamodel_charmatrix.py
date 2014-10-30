@@ -1076,5 +1076,53 @@ class InfiniteSitesCharacterMatrixCreatingAndCloningTestCase(
         cls.nseqs = 100
         cls.build()
 
+class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.char_matrix = charmatrixmodel.CharacterMatrix()
+        labels = [
+                "a", "b", "c", "d", "e", "f",
+                ]
+        self.expected_taxa = set()
+        for label in labels:
+            t = dendropy.Taxon(label=label)
+            self.char_matrix.taxon_namespace.add_taxon(t)
+            self.expected_taxa.add(t)
+            seq = [_ for _ in range(4)]
+            self.char_matrix[t] = seq
+
+    def test_basic_taxa(self):
+        self.assertEqual(self.char_matrix.taxon_poll(), self.expected_taxa)
+
+class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
+
+    def setUp(self):
+        self.char_matrix = charmatrixmodel.CharacterMatrix()
+        labels = [
+                "a", "b", "c", "d", "e", "f",
+                ]
+        self.expected_taxa = set()
+        for label in labels:
+            t = dendropy.Taxon(label=label)
+            self.char_matrix.taxon_namespace.add_taxon(t)
+            self.expected_taxa.add(t)
+            seq = [_ for _ in range(4)]
+            self.char_matrix[t] = seq
+
+    def test_noop_purge(self):
+        self.assertEqual(set(self.char_matrix.taxon_namespace), self.expected_taxa)
+        self.char_matrix.purge_taxon_namespace()
+        self.assertEqual(set(self.char_matrix.taxon_namespace), self.expected_taxa)
+
+    def test_basic_purge(self):
+        self.assertEqual(set(self.char_matrix.taxon_namespace), self.expected_taxa)
+        added_taxa = set(self.expected_taxa)
+        for label in ("z1", "z2", "z3", "z4"):
+            t = self.char_matrix.taxon_namespace.new_taxon(label=label)
+            added_taxa.add(t)
+        self.assertEqual(set(self.char_matrix.taxon_namespace), added_taxa)
+        self.char_matrix.purge_taxon_namespace()
+        self.assertEqual(set(self.char_matrix.taxon_namespace), self.expected_taxa)
+
 if __name__ == "__main__":
     unittest.main()
