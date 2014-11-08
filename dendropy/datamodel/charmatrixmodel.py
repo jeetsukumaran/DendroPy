@@ -515,7 +515,6 @@ class CharacterMatrix(
                     char_matrix.taxon_namespace.add_taxon(taxon)
             s = cls.coerce_values(source_dict[key])
             char_matrix[taxon] = s
-        char_matrix.taxon_namespace.is_case_sensitive = tns_case_sensitive
         return char_matrix
     from_dict = classmethod(from_dict)
 
