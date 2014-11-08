@@ -813,7 +813,14 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
             redundant_taxa=False):
         if unify_taxa_by_label:
             if not case_sensitive_label_mapping:
-                expected_labels = list(set((label.upper() if label is not None else None) for label in self.node_label_to_taxon_label_map.values()))
+                expected_labels = []
+                for label in self.node_label_to_taxon_label_map.values():
+                    if label is None:
+                        expected_labels.append(label)
+                    else:
+                        label = label.upper()
+                        if label not in expected_labels:
+                            expected_labels.append(label)
             else:
                 expected_labels = list(set(label for label in self.node_label_to_taxon_label_map.values()))
         else:

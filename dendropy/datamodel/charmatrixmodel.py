@@ -502,15 +502,20 @@ class CharacterMatrix(
         """
         if char_matrix is None:
             char_matrix = cls(**kwargs)
+        if case_sensitive_taxon_labels:
+            force_case_sensitivity = "case-sensitive"
+        else:
+            force_case_sensitivity = "case-insensitive"
         for key in source_dict:
             if isinstance(key, str):
-                taxon = char_matrix.taxon_namespace.require_taxon(key, case_sensitive=case_sensitive_taxon_labels)
+                taxon = char_matrix.taxon_namespace.require_taxon(key, force_case_sensitivity=force_case_sensitivity)
             else:
                 taxon = key
                 if taxon not in char_matrix.taxon_namespace:
                     char_matrix.taxon_namespace.add_taxon(taxon)
             s = cls.coerce_values(source_dict[key])
             char_matrix[taxon] = s
+        char_matrix.taxon_namespace.is_case_sensitive = tns_case_sensitive
         return char_matrix
     from_dict = classmethod(from_dict)
 
@@ -676,9 +681,8 @@ class CharacterMatrix(
                     if unify_taxa_by_label:
                         # this will force usage of any taxon with
                         # a label that matches the current taxon
-                        t = self.taxon_namespace.require_taxon(
-                                label=original_taxon.label,
-                                case_sensitive=case_sensitive_label_mapping)
+                        t = self.taxon_namespace.require_taxon(label=original_taxon.label,
+                            force_case_sensitivity="case-sensitive" if case_sensitive_label_mapping else "case-insensitive")
                     else:
                         # this will unconditionally create a new taxon
                         t = self.taxon_namespace.new_taxon(label=original_taxon.label)

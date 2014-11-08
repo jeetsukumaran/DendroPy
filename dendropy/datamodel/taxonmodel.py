@@ -464,6 +464,9 @@ class TaxonNamespace(
                 If `True` (default), then :class:`Taxon` objects can be added to this
                 namespace. If `False`, then adding :class:`Taxon` objects will result
                 in an error.
+            is_case_sensitive : boolean, optional (default = `False`)
+                Whether or not taxon names are considered case sensitive or
+                insensitive.
 
         Notes
         -----
@@ -536,6 +539,7 @@ class TaxonNamespace(
         kwargs_set_label = kwargs.pop("label", None)
         self.comments = []
         self.is_mutable = kwargs.pop('is_mutable', True)
+        self.is_case_sensitive = kwargs.pop('is_case_sensitive', False)
         self._accession_index_taxon_map = {}
         self._taxa = []
         self._taxon_accession_index_map = {}
@@ -818,7 +822,7 @@ class TaxonNamespace(
             # self._split_bitmask_taxon_map.pop(bm, None)
             self._taxon_accession_index_map.pop(taxon, None)
 
-    def remove_taxon_label(self, label, case_sensitive=False):
+    def remove_taxon_label(self, label, force_case_sensitivity=None):
         """
         Removes *all* :class:`Taxon` objects with label matching `label` from the
         collection in this namespace.
@@ -827,11 +831,6 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the :class:`Taxon` object label to remove.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Raises
         ------
@@ -845,13 +844,13 @@ class TaxonNamespace(
             objects are found.
         """
         taxa = self._lookup_label(label,
-                case_sensitive=case_sensitive,
                 multiple=True,
-                error_if_not_found=True)
+                error_if_not_found=True,
+                force_case_sensitivity=force_case_sensitivity)
         for taxon in taxa:
             self.remove_taxon(taxon)
 
-    def discard_taxon_label(self, label, case_sensitive=False):
+    def discard_taxon_label(self, label, force_case_sensitivity=None):
         """
         Removes *all* :class:`Taxon` objects with label matching `label` from the
         collection in this namespace.
@@ -860,11 +859,6 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the :class:`Taxon` object label to remove.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         See Also
         --------
@@ -872,9 +866,9 @@ class TaxonNamespace(
             raise an error if no matching :class:`Taxon` objects are found.
         """
         taxa = self._lookup_label(label,
-                case_sensitive=case_sensitive,
                 multiple=True,
-                error_if_not_found=False)
+                error_if_not_found=False,
+                force_case_sensitivity=force_case_sensitivity)
         if taxa is None:
             return
         for taxon in taxa:
@@ -896,29 +890,29 @@ class TaxonNamespace(
     def _lookup_label(self,
             label,
             multiple=True,
-            case_sensitive=False,
-            error_if_not_found=False):
+            error_if_not_found=False,
+            force_case_sensitivity=None):
         """
-        Return :class:`Taxon` object(s) with label matching `label`.
-        If `multiple` is `True`, then a list of :class:`Taxon` objects with labels
+        Return :class:`Taxon` object(s) with label matching `label`. If
+        `multiple` is `True`, then a list of :class:`Taxon` objects with labels
         that match `label` are returned, otherwise just the first one is
-        returned. If `case_sensitive` is `False`, then the matching is done
-        without regard for case. If no :class:`Taxon` object is in the current the
-        namespace that matches the criteria, then `None` is returned unless
-        `error_if_not_found` is `False`, in which case :class:`LookupError` is raised.
+        returned.  If no :class:`Taxon` object is in the current the namespace
+        that matches the criteria, then `None` is returned unless
+        `error_if_not_found` is `False`, in which case :class:`LookupError` is
+        raised.
         """
         taxa = []
-        if not case_sensitive:
-            label = str(label).lower()
+        if self.is_case_sensitive or force_case_sensitivity == "case-sensitive":
             for taxon in self._taxa:
-                if label == str(taxon.label).lower():
+                if label == taxon.label:
                     if not multiple:
                         return taxon
                     else:
                         taxa.append(taxon)
         else:
+            label = str(label).lower()
             for taxon in self._taxa:
-                if label == taxon.label:
+                if label == taxon.lower_cased_label:
                     if not multiple:
                         return taxon
                     else:
@@ -930,7 +924,7 @@ class TaxonNamespace(
         else:
             return None
 
-    def findall(self, label, case_sensitive=False):
+    def findall(self, label, force_case_sensitivity=None):
         """
         Return list of :class:`Taxon` object(s) with label matching `label`.
 
@@ -939,11 +933,6 @@ class TaxonNamespace(
         label : string or string-like
             The value which the `label` attribute of the :class:`Taxon` object(s)
             to be returned must match.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -961,14 +950,14 @@ class TaxonNamespace(
         taxa = self._lookup_label(
                 label=label,
                 multiple=True,
-                case_sensitive=case_sensitive,
-                error_if_not_found=False)
+                error_if_not_found=False,
+                force_case_sensitivity=force_case_sensitivity)
         if taxa is None:
             return []
         else:
             return taxa
 
-    def has_taxon_label(self, label, case_sensitive=False):
+    def has_taxon_label(self, label, force_case_sensitivity=None):
         """
         Checks for presence of a :class:`Taxon` object with the given label.
 
@@ -976,11 +965,6 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the :class:`Taxon` object label to match.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -991,11 +975,11 @@ class TaxonNamespace(
         t = self._lookup_label(
                 label=label,
                 multiple=False,
-                case_sensitive=case_sensitive,
-                error_if_not_found=False)
+                error_if_not_found=False,
+                force_case_sensitivity=force_case_sensitivity)
         return t is not None
 
-    def has_taxa_labels(self, labels, case_sensitive=False):
+    def has_taxa_labels(self, labels, force_case_sensitivity=None):
         """
         Checks for presence of :class:`Taxon` objects with the given labels.
 
@@ -1003,11 +987,6 @@ class TaxonNamespace(
         ----------
         labels : :py:class:`collections.Iterable` [string]
             The values of the :class:`Taxon` object labels to match.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -1019,13 +998,13 @@ class TaxonNamespace(
         for label in labels:
             f = self._lookup_label(label=label,
                     multiple=False,
-                    case_sensitive=case_sensitive,
-                    error_if_not_found=False)
+                    error_if_not_found=False,
+                    force_case_sensitivity=force_case_sensitivity)
             if f is None:
                 return False
         return True
 
-    def get_taxon(self, label, case_sensitive=False):
+    def get_taxon(self, label, force_case_sensitivity=None):
         """
         Retrieves a :class:`Taxon` object with the given label.
 
@@ -1040,11 +1019,6 @@ class TaxonNamespace(
         label : string or string-like
             The value which the `label` attribute of the :class:`Taxon` object
             to be returned must match.
-        case_sensitive : boolean,
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -1054,15 +1028,12 @@ class TaxonNamespace(
         """
         return self._lookup_label(label=label,
                 multiple=False,
-                case_sensitive=case_sensitive,
-                error_if_not_found=False)
+                error_if_not_found=False,
+                force_case_sensitivity=force_case_sensitivity)
 
-    def get_taxa(self, labels, case_sensitive=False):
+    def get_taxa(self, labels, force_case_sensitivity=None):
         """
         Retrieves list of :class:`Taxon` objects with given labels.
-
-        If `case_sensitive` is `True`, then the label matching is made
-        without regard for case.
 
         Parameters
         ----------
@@ -1070,11 +1041,6 @@ class TaxonNamespace(
             Any :class:`Taxon` object in this namespace collection that has a label
             attribute that matches any value in `labels` will be included in
             the list returned.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -1086,8 +1052,8 @@ class TaxonNamespace(
         for label in labels:
             tt = self._lookup_label(label=label,
                     multiple=True,
-                    case_sensitive=case_sensitive,
-                    error_if_not_found=False)
+                    error_if_not_found=False,
+                    force_case_sensitivity=force_case_sensitivity)
             if tt is None:
                 continue
             for t in tt:
@@ -1095,13 +1061,12 @@ class TaxonNamespace(
                     taxa.append(t)
         return taxa
 
-    def require_taxon(self, label, case_sensitive=False):
+    def require_taxon(self, label, force_case_sensitivity=None):
         """
         Retrieves a :class:`Taxon` object with the given label, creating it if
         necessary.
 
-        Retrieves a Taxon object with the label, `label`.  If `case_sensitive`
-        is `False`, then the label matching is made without regard for case.
+        Retrieves a Taxon object with the label, `label`.
         If multiple :class:`Taxon` objects exist with labels that match
         `label`, then only the first one is returned.  If no such
         :class:`Taxon` object exists in the current namespace and the
@@ -1115,11 +1080,6 @@ class TaxonNamespace(
         label : string or string-like
             The value which the `label` attribute of the :class:`Taxon` object
             to be returned must match.
-        case_sensitive : boolean, optional
-            If `True`, then the label matching is done as-is. If `False`
-            (default), then both the `label` argument as well as the
-            :class:`Taxon` object's `label` attribute are coerced into
-            lower-case label strings before checking for a match.
 
         Returns
         -------
@@ -1136,8 +1096,8 @@ class TaxonNamespace(
         """
         taxon = self._lookup_label(label=label,
                 multiple=False,
-                case_sensitive=case_sensitive,
-                error_if_not_found=False)
+                error_if_not_found=False,
+                force_case_sensitivity=force_case_sensitivity)
         if taxon is not None:
             return taxon
         if not self.is_mutable:
@@ -1185,20 +1145,19 @@ class TaxonNamespace(
         """
         return [t.label for t in self._taxa]
 
-    def label_taxon_map(self, case_sensitive_keys=False):
+    def label_taxon_map(self, force_case_sensitivity=None):
         """
         Returns dictionary with taxon labels as keys and corresponding :class:`Taxon`
         objects as values.
 
+        If the :class:`TaxonNamespace` is current case-insensitive, then the
+        dictionary returned will have case-insensitive keys, other the
+        dictionary will be case-sensitive. You can override this by explicitly
+        specifying `force_case_sensitivity` to 'case-sensitive' or
+        'case-insensitive'.
+
         No attempt is made to handle collisions.
 
-        Parameters
-        ----------
-        case_sensitive_keys : boolean, optional
-            If `True` (default), then normal Python `dict` object will be
-            returned, resulting in case-sensitive keys. If `False`, then a
-            :class:`CaseInsensitiveDict` object will return, allowing for
-            case-insensitive lookups.
 
         Returns
         -------
@@ -1206,10 +1165,10 @@ class TaxonNamespace(
             Dictionary with :attr:`Taxon.label` values of :class:`Taxon` objects in
             `self` as keys and corresponding :class:`Taxon` objects as values.
         """
-        if not case_sensitive_keys:
-            d = container.CaseInsensitiveDict()
-        else:
+        if self.is_case_sensitive or force_case_sensitivity == "case-sensitive":
             d = {}
+        else:
+            d = container.CaseInsensitiveDict()
         for t in self._taxa:
             d[t.label] = t
         return d
@@ -1482,7 +1441,20 @@ class Taxon(
             # self.copy_annotations_from(other_taxon, attribute_object_mapper=memo)
         else:
             basemodel.DataObject.__init__(self, label=label)
+            self._lower_cased_label = None
         self.comments = []
+
+    def _set_label(self, v):
+        self._label = v
+        self._lower_cased_label = None
+
+    def _get_lower_cased_label(self):
+        if self._label is None:
+            return None
+        if self._lower_cased_label is None:
+            self._lower_cased_label = str(self._label).lower()
+        return self._lower_cased_label
+    lower_cased_label = property(_get_lower_cased_label)
 
     def __copy__(self):
         raise TypeError("Cannot shallow-copy Taxon")
