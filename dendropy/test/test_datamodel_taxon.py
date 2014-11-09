@@ -332,9 +332,9 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         labels_upper = [label.upper() for label in self.str_labels if label.upper() != label]
         assert labels_upper
         for label in labels_upper:
-            tns.is_case_sensitive = True
+            tns.is_label_lookup_case_sensitive = True
             self.assertFalse(tns.has_taxon_label(label))
-            tns.is_case_sensitive = False
+            tns.is_label_lookup_case_sensitive = False
             self.assertTrue(tns.has_taxon_label(label))
 
     def test_has_labels(self):
@@ -353,16 +353,16 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         tns = TaxonNamespace(self.str_labels)
         labels_upper = [label.upper() for label in self.str_labels if label.upper() != label]
         assert labels_upper
-        tns.is_case_sensitive = True
+        tns.is_label_lookup_case_sensitive = True
         self.assertFalse(tns.has_taxa_labels(labels_upper))
-        tns.is_case_sensitive = False
+        tns.is_label_lookup_case_sensitive = False
         self.assertTrue(tns.has_taxa_labels(labels_upper))
 
     def test_findall_multiple(self):
         tns = TaxonNamespace(self.str_labels)
         multilabels= ["_", "z"]
         for label in multilabels:
-            tns.is_case_sensitive=True
+            tns.is_label_lookup_case_sensitive=True
             taxa = tns.findall(label=label)
             self.assertTrue(isinstance(taxa, collections.Iterable))
             self.assertEqual(len(taxa), len([s for s in self.str_labels if s == label]))
@@ -371,7 +371,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
 
     def test_findall_not_found(self):
         tns = TaxonNamespace(self.str_labels)
-        tns.is_case_sensitive=True
+        tns.is_label_lookup_case_sensitive=True
         taxa = tns.findall(label="x")
         self.assertEqual(taxa, [])
 
@@ -399,7 +399,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
             self.assertIsNot(t, None)
             self.assertEqual(t.label.lower(), label.lower())
         # test: case sensitive
-        tns.is_case_sensitive = True
+        tns.is_label_lookup_case_sensitive = True
         for label in labels_upper:
             t = tns.get_taxon(label)
             self.assertIs(t, None)
@@ -429,7 +429,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         labels_upper = [label.upper() for label in self.str_labels if label.upper() != label]
         assert labels_upper
         for label in labels_upper:
-            tns.is_case_sensitive = False
+            tns.is_label_lookup_case_sensitive = False
             t = tns.require_taxon(label)
             self.assertEqual(t.label.lower(), label.lower())
             self.assertEqual(len(tns), len(self.str_labels))
@@ -441,7 +441,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         labels_upper = list(set(labels_upper))
         assert labels_upper
         for label in labels_upper:
-            tns.is_case_sensitive = True
+            tns.is_label_lookup_case_sensitive = True
             t = tns.require_taxon(label)
             self.assertEqual(t.label, label)
         self.validate_taxon_concepts(tns, self.str_labels + labels_upper)
@@ -480,7 +480,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         for t, label in zip(t2, labels_upper):
             self.assertEqual(t.label.lower(), label.lower())
         # test: case sensitive
-        tns.is_case_sensitive = True
+        tns.is_label_lookup_case_sensitive = True
         t1 = tns.get_taxa(labels_upper)
         self.assertEqual(len(t1), 0)
 
@@ -609,9 +609,9 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         for idx, label in enumerate(set(ucase_labels)):
             if label != label.lower():
                 with self.assertRaises(LookupError):
-                    tns.is_case_sensitive = True
+                    tns.is_label_lookup_case_sensitive = True
                     tns.remove_taxon_label(label)
-            tns.is_case_sensitive = False
+            tns.is_label_lookup_case_sensitive = False
             tns.remove_taxon_label(label)
             for t in taxa:
                 if t.label.upper() == label.upper() and t in expected:
@@ -669,7 +669,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         tns = TaxonNamespace(taxa)
         expected = taxa[:]
         # test: case sensitive
-        tns.is_case_sensitive = True
+        tns.is_label_lookup_case_sensitive = True
         for idx, label in enumerate(set(ucase_labels)):
             if label != label.lower():
                 x1 = len(tns)
