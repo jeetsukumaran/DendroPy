@@ -672,10 +672,9 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix = self.get_char_matrix()
         tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix.taxon_namespace = new_tns
-        char_matrix.reconstruct_taxon_namespace(
-                unify_taxa_by_label=False,
-                case_sensitive_label_mapping=True)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=False)
         # print("\n--\n")
         # for t in self.char_matrix:
             # print("{}: {}".format(repr(t), self.char_matrix[t]))
@@ -708,10 +707,10 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix._taxon_namespace = new_tns
         self.assertEqual(len(char_matrix.taxon_namespace), 0)
-        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=False,
-                case_sensitive_label_mapping=True)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=False)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -723,10 +722,10 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix._taxon_namespace = new_tns
         self.assertEqual(len(char_matrix.taxon_namespace), 0)
-        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                case_sensitive_label_mapping=True)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -738,19 +737,19 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
     def test_reconstruct_taxon_namespace_unifying_case_sensitive_fail(self):
         char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix._taxon_namespace = new_tns
         with self.assertRaises(error.TaxonNamespaceReconstructionError):
-            char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                    case_sensitive_label_mapping=True)
+            char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True)
 
     def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
         char_matrix = self.get_char_matrix()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = False
         char_matrix._taxon_namespace = new_tns
         self.assertEqual(len(char_matrix.taxon_namespace), 0)
-        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True,
-                case_sensitive_label_mapping=False)
+        char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -765,20 +764,19 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions(),
                 ):
             new_tns = dendropy.TaxonNamespace()
+            new_tns.is_label_lookup_case_sensitive = False
             char_matrix._taxon_namespace = new_tns
             with self.assertRaises(error.TaxonNamespaceReconstructionError):
-                char_matrix.reconstruct_taxon_namespace(
-                        unify_taxa_by_label=True,
-                        case_sensitive_label_mapping=False)
+                char_matrix.reconstruct_taxon_namespace(unify_taxa_by_label=True)
 
     def test_basic_migration(self):
         char_matrix = self.get_char_matrix()
         tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix.migrate_taxon_namespace(
                 new_tns,
-                unify_taxa_by_label=False,
-                case_sensitive_label_mapping=True)
+                unify_taxa_by_label=False)
         self.assertIsNot(char_matrix.taxon_namespace, tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.assertEqual(len(char_matrix), char_matrix.nseqs)
@@ -807,10 +805,10 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix.migrate_taxon_namespace(
                 new_tns,
-                unify_taxa_by_label=False,
-                case_sensitive_label_mapping=True)
+                unify_taxa_by_label=False)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -822,10 +820,10 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
         char_matrix = self.get_char_matrix_with_case_insensitive_label_collisions()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         char_matrix.migrate_taxon_namespace(
                 new_tns,
-                unify_taxa_by_label=True,
-                case_sensitive_label_mapping=True)
+                unify_taxa_by_label=True)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -837,20 +835,20 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
     def test_migrate_taxon_namespace_unifying_case_sensitive_fail(self):
         char_matrix = self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions()
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = True
         with self.assertRaises(error.TaxonNamespaceReconstructionError):
             char_matrix.migrate_taxon_namespace(
                     new_tns,
-                    unify_taxa_by_label=True,
-                    case_sensitive_label_mapping=True)
+                    unify_taxa_by_label=True)
 
     def test_migrate_taxon_namespace_unifying_case_insensitive(self):
         char_matrix = self.get_char_matrix()
         original_tns = char_matrix.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
+        new_tns.is_label_lookup_case_sensitive = False
         char_matrix.migrate_taxon_namespace(
                 new_tns,
-                unify_taxa_by_label=True,
-                case_sensitive_label_mapping=False)
+                unify_taxa_by_label=True)
         self.assertIsNot(char_matrix.taxon_namespace, original_tns)
         self.assertIs(char_matrix.taxon_namespace, new_tns)
         self.verify_taxon_namespace_reconstruction(
@@ -865,12 +863,12 @@ class TestCharacterMatrixReconstructAndMigrateTaxonNamespace(
                 self.get_char_matrix_with_case_insensitive_and_case_sensitive_label_collisions(),
                 ):
             new_tns = dendropy.TaxonNamespace()
+            new_tns.is_label_lookup_case_sensitive = False
             char_matrix._taxon_namespace = new_tns
             with self.assertRaises(error.TaxonNamespaceReconstructionError):
                 char_matrix.migrate_taxon_namespace(
                         new_tns,
-                        unify_taxa_by_label=True,
-                        case_sensitive_label_mapping=False)
+                        unify_taxa_by_label=True)
 
 class MatrixCreatingAndCloningTester(
         compare_and_validate.Comparator):

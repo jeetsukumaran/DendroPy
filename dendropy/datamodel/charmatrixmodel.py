@@ -663,7 +663,6 @@ class CharacterMatrix(
 
     def reconstruct_taxon_namespace(self,
             unify_taxa_by_label=True,
-            case_sensitive_label_mapping=True,
             taxon_mapping_memo=None):
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}
@@ -677,8 +676,7 @@ class CharacterMatrix(
                     if unify_taxa_by_label:
                         # this will force usage of any taxon with
                         # a label that matches the current taxon
-                        t = self.taxon_namespace.require_taxon(label=original_taxon.label,
-                                is_case_sensitive=case_sensitive_label_mapping)
+                        t = self.taxon_namespace.require_taxon(label=original_taxon.label)
                     else:
                         # this will unconditionally create a new taxon
                         t = self.taxon_namespace.new_taxon(label=original_taxon.label)

@@ -221,7 +221,6 @@ class TaxonNamespaceAssociated(object):
     def migrate_taxon_namespace(self,
             taxon_namespace,
             unify_taxa_by_label=True,
-            case_sensitive_label_mapping=True,
             taxon_mapping_memo=None):
         """
         Move this object and all members to a new operational taxonomic unit
@@ -238,6 +237,19 @@ class TaxonNamespaceAssociated(object):
         the object (and all its member objects) being associated with a new,
         independent taxon namespace.
 
+        Label mapping case sensitivity follows the
+        `self.taxon_namespace.is_label_lookup_case_sensitive` setting. If
+        `False` and `unify_taxa_by_label` is also `True`, then the
+        establishment of correspondence between :class:`Taxon` objects in the
+        old and new namespaces with be based on case-insensitive matching of
+        labels. E.g., if there are four :class:`Taxon` objects with labels
+        'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
+        that reference these will reference a single new :class:`Taxon` object
+        in the new namespace (with a label some existing casing variant of
+        'foo'). If `True`: if `unify_taxa_by_label` is `True`,
+        :class:`Taxon` objects with labels identical except in case will be
+        considered distinct.
+
         Parameters
         ----------
         taxon_namespace : :class:`TaxonNamespace`
@@ -250,18 +262,6 @@ class TaxonNamespaceAssociated(object):
             reference to a single :class:`Taxon` object in the new namespace.
             If `False`: references to distinct :class:`Taxon` objects will
             remain distinct, even if the labels are the same.
-
-        case_sensitive_label_mapping : boolean, optional
-            If `False` and `unify_taxa_by_label` is also `True`, then the
-            establishment of correspondence between :class:`Taxon` objects in
-            the old and new namespaces with be based on case-insensitive
-            matching of labels. E.g., if there are four :class:`Taxon` objects with
-            labels 'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then
-            all objects that reference these will reference a single
-            new :class:`Taxon` object in the new namespace (with a label some
-            existing casing variant of 'foo'). Defaults to `True`:
-            if `unify_taxa_by_label` is `True`, :class:`Taxon` objects with
-            labels identical except in case will be considered distinct.
 
         taxon_mapping_memo : dictionary
             Similar to `memo` of deepcopy, this is a dictionary that maps
@@ -310,12 +310,10 @@ class TaxonNamespaceAssociated(object):
         self._taxon_namespace = taxon_namespace
         self.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
-                case_sensitive_label_mapping=case_sensitive_label_mapping,
                 taxon_mapping_memo=taxon_mapping_memo)
 
     def reconstruct_taxon_namespace(self,
             unify_taxa_by_label=True,
-            case_sensitive_label_mapping=True,
             taxon_mapping_memo=None):
         """
         Repopulates the current taxon namespace with new taxon objects,
@@ -324,6 +322,19 @@ class TaxonNamespaceAssociated(object):
         `self.taxon_namespace` will be replaced with a new :class:`Taxon`
         object that will be created with the same label and added to
         :attr:`self.taxon_namespace`.
+
+        Label mapping case sensitivity follows the
+        `self.taxon_namespace.is_label_lookup_case_sensitive` setting. If
+        `False` and `unify_taxa_by_label` is also `True`, then the
+        establishment of correspondence between :class:`Taxon` objects in the
+        old and new namespaces with be based on case-insensitive matching of
+        labels. E.g., if there are four :class:`Taxon` objects with labels
+        'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
+        that reference these will reference a single new :class:`Taxon` object
+        in the new namespace (with a label some existing casing variant of
+        'foo'). If `True`: if `unify_taxa_by_label` is `True`,
+        :class:`Taxon` objects with labels identical except in case will be
+        considered distinct.
 
         Note
         ----
@@ -340,18 +351,6 @@ class TaxonNamespaceAssociated(object):
             reference to a single :class:`Taxon` object in the new namespace.
             If `False`: references to distinct :class:`Taxon` objects will
             remain distinct, even if the labels are the same.
-
-        case_sensitive_label_mapping : boolean, optional
-            If `False` and `unify_taxa_by_label` is also `True`, then the
-            establishment of correspondence between :class:`Taxon` objects in
-            the old and new namespaces with be based on case-insensitive
-            matching of labels. E.g., if there are four :class:`Taxon` objects with
-            labels 'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then
-            all objects that reference these will reference a single
-            new :class:`Taxon` object in the new namespace (with a label some
-            existing casing variant of 'foo'). Defaults to `True`:
-            if `unify_taxa_by_label` is `True`, :class:`Taxon` objects with
-            labels identical except in case will be considered distinct.
 
         taxon_mapping_memo : dictionary
             Similar to `memo` of deepcopy, this is a dictionary that maps
