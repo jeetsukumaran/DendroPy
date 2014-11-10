@@ -194,7 +194,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                 suppress_internal_node_taxa=False,
                 suppress_leaf_node_taxa=False)
         original_tns = tree.taxon_namespace
-        original_tns.is_label_lookup_case_sensitive = True
+        original_tns.is_case_sensitive = True
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
         tree.reconstruct_taxon_namespace(
@@ -208,7 +208,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_reconstruct_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = True
+        new_tns.is_case_sensitive = True
         self.tree._taxon_namespace = new_tns
         self.assertEqual(len(self.tree.taxon_namespace), 0)
         self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=False)
@@ -221,7 +221,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_reconstruct_taxon_namespace_unifying_case_sensitive(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = True
+        new_tns.is_case_sensitive = True
         self.tree._taxon_namespace = new_tns
         self.assertEqual(len(self.tree.taxon_namespace), 0)
         self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=True)
@@ -235,7 +235,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_reconstruct_taxon_namespace_unifying_case_insensitive(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = False
+        new_tns.is_case_sensitive = False
         self.tree._taxon_namespace = new_tns
         self.assertEqual(len(self.tree.taxon_namespace), 0)
         self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=True)
@@ -255,7 +255,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             self.create_redundant_taxa()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
-            new_tns.is_label_lookup_case_sensitive = ci
+            new_tns.is_case_sensitive = ci
             self.tree._taxon_namespace = new_tns
             self.assertEqual(len(self.tree.taxon_namespace), 0)
             self.tree.reconstruct_taxon_namespace(unify_taxa_by_label=unify)
@@ -275,7 +275,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             self.setUp()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
-            new_tns.is_label_lookup_case_sensitive = ci
+            new_tns.is_case_sensitive = ci
             self.tree._taxon_namespace = new_tns
             self.assertEqual(len(self.tree.taxon_namespace), 0)
             memo = {}
@@ -295,7 +295,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
                 suppress_internal_node_taxa=False,
                 suppress_leaf_node_taxa=False)
         original_tns = tree.taxon_namespace
-        original_tns.is_label_lookup_case_sensitive = True
+        original_tns.is_case_sensitive = True
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
         tree.migrate_taxon_namespace(
@@ -315,7 +315,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
         original_taxa = [t for t in original_tns]
         original_labels = [t.label for t in original_tns]
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = True
+        new_tns.is_case_sensitive = True
         tree.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=False)
@@ -330,7 +330,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_migrate_taxon_namespace_non_unifying(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = True
+        new_tns.is_case_sensitive = True
         self.tree.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=False)
@@ -344,7 +344,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_migrate_taxon_namespace_unifying_case_sensitive(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = True
+        new_tns.is_case_sensitive = True
         self.tree.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=True)
@@ -358,7 +358,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
     def test_migrate_taxon_namespace_unifying_case_insensitive(self):
         original_tns = self.tree.taxon_namespace
         new_tns = dendropy.TaxonNamespace()
-        new_tns.is_label_lookup_case_sensitive = False
+        new_tns.is_case_sensitive = False
         self.tree.migrate_taxon_namespace(
                 new_tns,
                 unify_taxa_by_label=True)
@@ -377,7 +377,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             self.setUp()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
-            new_tns.is_label_lookup_case_sensitive = ci
+            new_tns.is_case_sensitive = ci
             memo = {}
             for taxon in self.original_taxa:
                 memo[taxon] = dendropy.Taxon()
@@ -400,7 +400,7 @@ class TestTreeMigrateAndReconstructTaxonNamespace(
             self.create_redundant_taxa()
             original_tns = self.tree.taxon_namespace
             new_tns = dendropy.TaxonNamespace()
-            new_tns.is_label_lookup_case_sensitive = ci
+            new_tns.is_case_sensitive = ci
             self.tree.migrate_taxon_namespace(
                     new_tns,
                     unify_taxa_by_label=unify)

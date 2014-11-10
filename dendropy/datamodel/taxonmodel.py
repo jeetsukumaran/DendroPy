@@ -238,7 +238,7 @@ class TaxonNamespaceAssociated(object):
         independent taxon namespace.
 
         Label mapping case sensitivity follows the
-        `self.taxon_namespace.is_label_lookup_case_sensitive` setting. If
+        `self.taxon_namespace.is_case_sensitive` setting. If
         `False` and `unify_taxa_by_label` is also `True`, then the
         establishment of correspondence between :class:`Taxon` objects in the
         old and new namespaces with be based on case-insensitive matching of
@@ -324,7 +324,7 @@ class TaxonNamespaceAssociated(object):
         :attr:`self.taxon_namespace`.
 
         Label mapping case sensitivity follows the
-        `self.taxon_namespace.is_label_lookup_case_sensitive` setting. If
+        `self.taxon_namespace.is_case_sensitive` setting. If
         `False` and `unify_taxa_by_label` is also `True`, then the
         establishment of correspondence between :class:`Taxon` objects in the
         old and new namespaces with be based on case-insensitive matching of
@@ -463,7 +463,7 @@ class TaxonNamespace(
                 If `True` (default), then :class:`Taxon` objects can be added to this
                 namespace. If `False`, then adding :class:`Taxon` objects will result
                 in an error.
-            is_label_lookup_case_sensitive : boolean, optional (default = `False`)
+            is_case_sensitive : boolean, optional (default = `False`)
                 Whether or not taxon names are considered case sensitive or
                 insensitive.
 
@@ -538,7 +538,7 @@ class TaxonNamespace(
         kwargs_set_label = kwargs.pop("label", None)
         self.comments = []
         self.is_mutable = kwargs.pop('is_mutable', True)
-        self.is_label_lookup_case_sensitive = kwargs.pop('is_label_lookup_case_sensitive', False)
+        self.is_case_sensitive = kwargs.pop('is_case_sensitive', False)
         self._accession_index_taxon_map = {}
         self._taxa = []
         self._taxon_accession_index_map = {}
@@ -681,7 +681,7 @@ class TaxonNamespace(
             The label for which to search.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -709,7 +709,7 @@ class TaxonNamespace(
             instances with a `label` attribute matching the `label` argument.
         """
         taxa = []
-        if is_case_sensitive is True or (is_case_sensitive is None and self.is_label_lookup_case_sensitive):
+        if is_case_sensitive is True or (is_case_sensitive is None and self.is_case_sensitive):
             for taxon in self._taxa:
                 if label == taxon.label:
                     if first_match_only:
@@ -901,7 +901,7 @@ class TaxonNamespace(
             The value of the :class:`Taxon` object label to remove.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -949,7 +949,7 @@ class TaxonNamespace(
             The value of the :class:`Taxon` object label to remove.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1002,7 +1002,7 @@ class TaxonNamespace(
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1036,7 +1036,7 @@ class TaxonNamespace(
             The value of the :class:`Taxon` object label to match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1067,7 +1067,7 @@ class TaxonNamespace(
             The values of the :class:`Taxon` object labels to match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1107,7 +1107,7 @@ class TaxonNamespace(
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1138,7 +1138,7 @@ class TaxonNamespace(
             the list returned.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1198,7 +1198,7 @@ class TaxonNamespace(
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_label_lookup_case_sensitive` attribute of `self` to decide
+            `is_case_sensitive` attribute of `self` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by :class:`Taxon`
             instances. This can be over-ridden by specifying
@@ -1288,7 +1288,7 @@ class TaxonNamespace(
             Dictionary with :attr:`Taxon.label` values of :class:`Taxon` objects in
             `self` as keys and corresponding :class:`Taxon` objects as values.
         """
-        if is_case_sensitive is True or (is_case_sensitive is None and self.is_label_lookup_case_sensitive):
+        if is_case_sensitive is True or (is_case_sensitive is None and self.is_case_sensitive):
             d = {}
         else:
             d = container.CaseInsensitiveDict()
