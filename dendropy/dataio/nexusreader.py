@@ -596,10 +596,10 @@ class NexusReader(ioservice.DataReader):
     def _get_taxon(self, taxon_namespace, label):
         if not self._file_specified_ntax or len(taxon_namespace) < self._file_specified_ntax:
             taxon = taxon_namespace.require_taxon(label=label,
-                    force_case_mode="case-sensitive" if self.case_sensitive_taxon_labels else "case-insensitive")
+                    is_case_sensitive=self.case_sensitive_taxon_labels)
         else:
             taxon = taxon_namespace.get_taxon(label=label,
-                    force_case_mode="case-sensitive" if self.case_sensitive_taxon_labels else "case-insensitive")
+                    is_case_sensitive=self.case_sensitive_taxon_labels)
         if taxon is None:
             raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
         return taxon

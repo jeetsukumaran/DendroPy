@@ -3810,7 +3810,7 @@ class Tree(
                         # this will force usage of any taxon with
                         # a label that matches the current taxon
                         t = self.taxon_namespace.require_taxon(label=node.taxon.label,
-                                force_case_mode="case-sensitive" if case_sensitive_label_mapping else "case-insensitive")
+                                is_case_sensitive=case_sensitive_label_mapping)
                     else:
                         # this will unconditionally create a new taxon
                         t = self.taxon_namespace.new_taxon(label=node.taxon.label)
