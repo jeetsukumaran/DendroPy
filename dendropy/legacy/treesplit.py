@@ -123,7 +123,23 @@ def is_compatible(split1, split2, mask):
 d = bipartition.is_compatible_with(other_bipartition)
 # if a "raw" bitmask
 d = dendropy.Bipartition.is_compatible_bitmasks(m1, m2, fill_bitmask=mask)""")
-    return Bipartition.is_compatible_bitmasks(m1, m2, fill_bitmask=mask)
+    """
+    Mask should have 1 for every leaf in the leaf_set
+    """
+    # m1 = mask & split1
+    # m2 = mask & split2
+    # if 0 == (m1 & m2):
+    #     return True
+    # c2 = mask ^ split2
+    # if 0 == (m1 & c2):
+    #     return True
+    # c1 = mask ^ split1
+    # if 0 == (c1 & m2):
+    #     return True
+    # if 0 == (c1 & c2):
+    #     return True
+    # return False
+    return dendropy.Bipartition.is_compatible_bitmasks(split1, split2, fill_bitmask=mask)
 
 def delete_outdegree_one(tree):
     deprecate.dendropy_deprecation_warning(

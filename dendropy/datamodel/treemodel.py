@@ -478,16 +478,18 @@ class Bipartition(object):
         Return `bitmask` ensuring that the bit corresponding to the first
         taxon is 1.
         """
+        if self._is_rooted:
+            return bitmask
         if convention == "lsb0":
             if self._lowest_relevant_bit & bitmask:
-                return bitmask & self._tree_leafset_bitmask
-            else:
                 return (~bitmask) & self._tree_leafset_bitmask
+            else:
+                return bitmask & self._tree_leafset_bitmask
         elif convention == "lsb1":
             if self._lowest_relevant_bit & bitmask:
-                return (~bitmask) & self._tree_leafset_bitmask
-            else:
                 return bitmask & self._tree_leafset_bitmask
+            else:
+                return (~bitmask) & self._tree_leafset_bitmask
         else:
             raise ValueError("Unrecognized convention: {}".format(convention))
 
@@ -4794,11 +4796,29 @@ class Tree(
         self._bipartition_edge_map = None
         return self.bipartition_encoding
 
-    def update_bipartitions(self, **kwargs):
+    def update_bipartitions(self, *args, **kwargs):
         """
         Recalculates bipartition hashes for tree.
         """
-        self.encode_bipartitions(**kwargs)
+        self.encode_bipartitions(*args, **kwargs)
+
+    def encode_splits(self, *args, **kwargs):
+        """
+        Recalculates bipartition hashes for tree.
+        """
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'Tree.encode_splits()' will no longer be supported in future releases; use 'Tree.encode_bipartitions()' instead",
+                stacklevel=3)
+        return self.encode_bipartitions(*args, **kwargs)
+
+    def update_splits(self, *args, **kwargs):
+        """
+        Recalculates bipartition hashes for tree.
+        """
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'Tree.update_bipartitions()' will no longer be supported in future releases; use 'Tree.update_bipartitions()' instead",
+                stacklevel=3)
+        return self.encode_bipartitions(*args, **kwargs)
 
     def _get_split_bitmask_edge_map(self):
         if not self._split_bitmask_edge_map:
@@ -4885,18 +4905,28 @@ class Tree(
         Returns true if the :class:`Bipartition` `bipartition` is compatible
         with this tree.
         """
+        return self.is_compatible_with_split(
+                split_bitmask=bipartition._split_bitmask,
+                is_bipartitions_updated=is_bipartitions_updated)
+
+    def is_compatible_with_split(self, split_bitmask, is_bipartitions_updated=False):
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
-        nd = self.seed_node
+        if not self.is_rooted:
+            split_bitmask = self.seed_node.bipartition.normalize(split_bitmask)
+        current_node = self.seed_node
         while True:
-            if nd.edge.bipartition._split_bitmask == bipartition._split_bitmask:
+            if current_node.edge.bipartition._split_bitmask == split_bitmask:
                 return True
-            nd = None
-            for child in nd._child_nodes:
-                if bipartition.is_compatible_with(child.edge.bipartition):
-                    nd = child
-                    break
-            if nd is None:
+            for child in current_node._child_nodes:
+                if child.edge.bipartition.is_compatible_with(split_bitmask):
+                    # see if nd has all of the leaves that are flagged as 1 in the split of interest
+                    if (child.edge.bipartition._split_bitmask & split_bitmask) == split_bitmask:
+                        current_node = child
+                        break
+                    else:
+                        return False
+            else:
                 return False
 
     def is_compatible_with_tree(self, other):
