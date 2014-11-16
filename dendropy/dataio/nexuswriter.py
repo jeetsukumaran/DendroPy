@@ -98,6 +98,13 @@ class NexusWriter(ioservice.DataWriter):
         store_tree_weights : boolean, default: `False`
             If `True`, tree weights are written. Default is `False`: tree
             weights will not be written.
+        translate_tree_taxa : boolean or dict or `None`, default: `None`.
+            If not `False` or `None`, a "TRANSLATE" statement will be written
+            and referenced in tree statements (instead of using the taxon
+            labels). If `True`, then a default translate statement will
+            be used, with tokens given by the taxon indexes. If a dictionary is
+            given, then the keys should be :class:`Taxon` objects and the
+            values should be the token (strings).
         suppress_annotations : boolean, default: `False`
             If `True`, metadata annotations will be ignored.
             Defaults to `False`: metadata annotations will be written.
@@ -143,6 +150,7 @@ class NexusWriter(ioservice.DataWriter):
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
         self.continuous_character_state_value_format_func = kwargs.pop("continuous_character_state_value_format_func", self._format_continuous_character_value)
         self.discrete_character_state_value_format_func = kwargs.pop("discrete_character_state_value_format_func", self._format_discrete_character_value)
+        self.translate_tree_taxa = kwargs.pop("translate_tree_taxa", None)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
         # they are extracted/set here and then forwarded on ...
@@ -254,12 +262,35 @@ class NexusWriter(ioservice.DataWriter):
         stream.write("  ;\n")
         stream.write("END;\n\n")
 
+    def _set_and_write_translate_block(self, stream, taxon_namespace):
+        if not self.translate_tree_taxa:
+            self._newick_writer.taxon_token_map = None
+            return
+        if self.translate_tree_taxa is True:
+            m = {}
+            for taxon_idx, t in enumerate(taxon_namespace):
+                m[t] = str(taxon_namespace.accession_index(t))
+                # m[t] = str(taxon_idx)
+            self._newick_writer.taxon_token_map = m
+        else:
+            self._newick_writer.taxon_token_map = dict(self.translate_tree_taxa)
+        stream.write("        Translate\n")
+        statement = []
+        for taxon in taxon_namespace:
+            label = nexusprocessing.escape_nexus_token(str(taxon.label),
+                    preserve_spaces=self.preserve_spaces,
+                    quote_underscores=not self.unquoted_underscores)
+            statement.append("             {} {}".format(self._newick_writer.taxon_token_map[taxon], label))
+        statement = ",\n".join(statement)
+        stream.write("{}\n             ;\n".format(statement))
+
     def _write_trees_block(self, stream, tree_list):
         stream.write("BEGIN TREES;\n")
         self._write_block_title(stream, tree_list)
         self._write_item_annotations(stream, tree_list)
         self._write_item_comments(stream, tree_list)
         self._write_link_to_taxa_block(stream, tree_list.taxon_namespace)
+        self._set_and_write_translate_block(stream, tree_list.taxon_namespace)
         for tree_idx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label

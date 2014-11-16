@@ -80,7 +80,14 @@ class NewickWriter(ioservice.DataWriter):
         store_tree_weights : boolean, default: `False`
             If `True`, tree weights are written. Default is `False`: tree
             weights will not be written.
-        supppress_annotations : boolean, default: `True`
+        taxon_token_map : boolean or dict or `None`, default: `None`.
+            If not `False` or `None`, a "TRANSLATE" statement will be written
+            and referenced in tree statements (instead of using the taxon
+            labels). If `True`, then a default translate statement will
+            be used, with tokens given by the taxon indexes. If a dictionary is
+            given, then the keys should be :class:`Taxon` objects and the
+            values should be the token (strings).
+        suppress_annotations : boolean, default: `True`
             If `False`, metadata annotations will be written out as special
             comments. Defaults to `True`: metadata annotations will be ignored.
         annotations_as_nhx : boolean, default: `False`
@@ -130,13 +137,15 @@ class NewickWriter(ioservice.DataWriter):
                     unquoted_underscores=False,
                     preserve_spaces=False,
                     store_tree_weights=False,
+                    taxon_token_map=None,
                     suppress_annotations=True,
                     annotations_as_nhx=False,
                     suppress_item_comments=True,
                     node_label_element_separator=' ',
                     node_label_compose_func=None,
                     edge_label_compose_func=None,
-                    real_value_format_specifier='.8f')
+                    real_value_format_specifier='.8f',
+                    )
         Notes
         -----
 
@@ -194,6 +203,7 @@ class NewickWriter(ioservice.DataWriter):
         # self.unquoted_underscores = not kwargs.pop('quote_underscores', not self.unquoted_underscores) # legacy
         self.preserve_spaces = kwargs.pop("preserve_spaces", False)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
+        self.taxon_token_map = kwargs.pop("taxon_token_map", {})
         self.suppress_annotations = kwargs.pop("suppress_annotations", True)
         # self.suppress_annotations = not kwargs.pop("annotations_as_comments", not self.suppress_annotations) # legacy
         self.annotations_as_nhx = kwargs.pop("annotations_as_nhx", False)
@@ -208,6 +218,14 @@ class NewickWriter(ioservice.DataWriter):
         if self.edge_label_compose_func is None:
             self.edge_label_compose_func = self._format_edge_length
         self.check_for_unused_keyword_arguments(kwargs)
+
+    def _get_taxon_tree_token(self, taxon):
+        try:
+            return self.taxon_token_map[taxon]
+        except KeyError:
+            t = str(taxon.label)
+            self.taxon_token_map[taxon] = t
+            return t
 
     def _get_real_value_format_specifier(self):
         return self._real_value_format_specifier
@@ -303,7 +321,7 @@ class NewickWriter(ioservice.DataWriter):
             item_comment_str = ""
         return item_comment_str
 
-    def _choose_display_tag(self, node):
+    def _render_node_tag(self, node):
         """
         Based on current settings, the attributes of a node, and
         whether or not the node is a leaf, returns an appropriate tag.
@@ -319,7 +337,7 @@ class NewickWriter(ioservice.DataWriter):
                         and node.taxon \
                         and node.taxon.label is not None \
                         and not self.suppress_leaf_taxon_labels:
-                    tag_parts.append(str(node.taxon.label))
+                    tag_parts.append(self._get_taxon_tree_token(node.taxon))
                 if hasattr(node, 'label') \
                         and node.label \
                         and node.label is not None \
@@ -334,7 +352,7 @@ class NewickWriter(ioservice.DataWriter):
                         and node.taxon \
                         and node.taxon.label is not None \
                         and not self.suppress_internal_taxon_labels:
-                    tag_parts.append(str(node.taxon.label))
+                    tag_parts.append(self._get_taxon_tree_token(node.taxon))
                 if hasattr(node, 'label') \
                         and node.label \
                         and node.label is not None \
@@ -362,11 +380,11 @@ class NewickWriter(ioservice.DataWriter):
             subnodes = [self._compose_node(child) for child in child_nodes]
             statement = '(' + ','.join(subnodes) + ')'
             if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
-                statement = statement + self._choose_display_tag(node)
+                statement = statement + self._render_node_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
         else:
-            statement = self._choose_display_tag(node)
+            statement = self._render_node_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
         if not self.suppress_annotations:
