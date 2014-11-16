@@ -220,6 +220,8 @@ class NewickWriter(ioservice.DataWriter):
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _get_taxon_tree_token(self, taxon):
+        if self.taxon_token_map is None:
+            self.taxon_token_map = {}
         try:
             return self.taxon_token_map[taxon]
         except KeyError:
