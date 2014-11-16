@@ -181,9 +181,6 @@ class Bipartition(object):
         b : bool
             `True` if `m1` is compatible with `m2`. `False` otherwise.
         """
-        if fill_bitmask != 0:
-            m1 = fill_bitmask & m1
-            m2 = fill_bitmask & m2
         if 0 == (m1 & m2):
             return True
         c2 = m1 ^ m2
@@ -481,6 +478,8 @@ class Bipartition(object):
         Return `bitmask` ensuring that the bit corresponding to the first
         taxon is 1.
         """
+        if self._is_rooted:
+            return bitmask
         if convention == "lsb0":
             if self._lowest_relevant_bit & bitmask:
                 return (~bitmask) & self._tree_leafset_bitmask
@@ -2215,6 +2214,7 @@ class Node(
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
+
 
 ##############################################################################
 ### Tree
@@ -4910,45 +4910,18 @@ class Tree(
                 is_bipartitions_updated=is_bipartitions_updated)
 
     def is_compatible_with_split(self, split_bitmask, is_bipartitions_updated=False):
-
-        target_bitmask = split_bitmask
-
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
-
-        # trivial split: "compatible" if found on tree
-        if Bipartition.is_trivial_bitmask(
-                bitmask=target_bitmask,
-                fill_bitmask=self.seed_node.edge.bipartition.leafset_bitmask):
-            if self.seed_node.edge.bipartition.leafset_bitmask & target_bitmask:
-                return True
-            else:
-                return False
-
+        if not self.is_rooted:
+            split_bitmask = self.seed_node.bipartition.normalize(split_bitmask)
         current_node = self.seed_node
-
-        # maybe we want to always check for both
-        # if self.is_rooted:
-        #     normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
-        # else:
-        #     normalized_target_bitmask = target_bitmask
-        normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
-
         while True:
-            if current_node.edge.bipartition._split_bitmask == normalized_target_bitmask or current_node.edge.bipartition._leafset_bitmask == target_bitmask:
+            if current_node.edge.bipartition._split_bitmask == split_bitmask:
                 return True
             for child in current_node._child_nodes:
-                if not child._child_nodes:
-                    continue
-                if child.edge.bipartition._split_bitmask == normalized_target_bitmask or child.edge.bipartition._leafset_bitmask == target_bitmask:
-                    return True
-                # if child.edge.bipartition.is_compatible_with(target_bitmask):
-                if Bipartition.is_compatible_bitmasks(
-                        child.edge.bipartition._leafset_bitmask,
-                        target_bitmask,
-                        child.edge.bipartition._tree_leafset_bitmask) and (child.edge.bipartition._leafset_bitmask & target_bitmask):
-                    # see if nd has all of the leaves that are flagged as 1 in the leafset of interest
-                    if (child.edge.bipartition._leafset_bitmask & target_bitmask) == target_bitmask:
+                if child.edge.bipartition.is_compatible_with(split_bitmask):
+                    # see if nd has all of the leaves that are flagged as 1 in the split of interest
+                    if (child.edge.bipartition._split_bitmask & split_bitmask) == split_bitmask:
                         current_node = child
                         break
                     else:
@@ -5325,30 +5298,6 @@ class Tree(
         method of the object.
         """
         self.seed_node._write_newick(out, **kwargs)
-
-    def _plot_bipartitions_on_tree(self,
-            show_splits=True,
-            show_leafsets=True,
-            show_taxon_labels=False,
-            is_bipartitions_updated=False,
-            width=80):
-        if not is_bipartitions_updated:
-            self.encode_bipartitions()
-        def _print_node(nd):
-            d = []
-            if show_splits:
-                d.append(nd.bipartition.split_as_bitstring())
-            if show_leafsets:
-                d.append(nd.bipartition.leafset_as_bitstring())
-            s = "/".join(d)
-            if show_taxon_labels and nd.taxon is not None:
-                s = s + " ({})".format(nd.taxon.label)
-            return s
-        return self.as_ascii_plot(
-                show_internal_node_labels=True,
-                node_label_compose_func=_print_node,
-                width=width,
-                )
 
 ##############################################################################
 ### TreeList
