@@ -2713,6 +2713,7 @@ class Tree(
             self._is_rooted = None
             self.weight = None
             self.length_type = None
+            self._seed_node = None
             self.seed_node = None
             self.bipartition_encoding = None
             self._split_bitmask_edge_map = None
@@ -3965,6 +3966,14 @@ class Tree(
         if set_as_unrooted_tree:
             self.is_rooted = False
         return self.seed_node
+
+    def _get_seed_node(self):
+        return self._seed_node
+    def _set_seed_node(self, node):
+        self._seed_node = node
+        if self._seed_node is not None:
+            self._seed_node.parent_node = None
+    seed_node = property(_get_seed_node, _set_seed_node)
 
     def deroot(self):
         self.collapse_basal_bifurcation(set_as_unrooted_tree=True)
