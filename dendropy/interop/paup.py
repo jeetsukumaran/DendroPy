@@ -135,6 +135,8 @@ class PaupService(object):
         else:
             chk_stderr = stderr.replace("paup>", "")
         if (p.returncode != 0 and not ignore_error_returncode) or (chk_stderr != "" and not ignore_nonempty_stderr):
+            if p.returncode != 0:
+                _LOG.error("[Non-zero return code: {}]".format(p.returncode))
             _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
             _LOG.error(paup_block)
             _LOG.error("\n*** ERROR FROM PAUP ***")

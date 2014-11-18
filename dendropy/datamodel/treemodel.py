@@ -181,6 +181,9 @@ class Bipartition(object):
         b : bool
             `True` if `m1` is compatible with `m2`. `False` otherwise.
         """
+        if fill_bitmask != 0:
+            m1 = fill_bitmask & m1
+            m2 = fill_bitmask & m2
         if 0 == (m1 & m2):
             return True
         c2 = m1 ^ m2
@@ -478,8 +481,6 @@ class Bipartition(object):
         Return `bitmask` ensuring that the bit corresponding to the first
         taxon is 1.
         """
-        if self._is_rooted:
-            return bitmask
         if convention == "lsb0":
             if self._lowest_relevant_bit & bitmask:
                 return (~bitmask) & self._tree_leafset_bitmask
@@ -538,7 +539,7 @@ class Bipartition(object):
             `True` if this bipartition divides a leaf and the rest of the
             tree.
         """
-        return is_trivial_bitmask(self._split_bitmask,
+        return Bipartition.is_trivial_bitmask(self._split_bitmask,
                 self._tree_leafset_bitmask)
 
     def split_as_newick_string(self,
@@ -1752,45 +1753,29 @@ class Node(
         self._edge.bipartition = v
     bipartition = property(_get_bipartition, _set_bipartition)
 
-    # def swap_edge(self, other):
-    #     new_edge = other._edge
-    #     old_edge = self._edge
+    def _get_split_bitmask(self):
+        return self._edge.bipartition._split_bitmask
+    def _set_split_bitmask(self, h):
+        self._edge.bipartition._split_bitmask = h
+    split_bitmask = property(_get_split_bitmask, _set_split_bitmask)
 
+    def _get_leafset_bitmask(self):
+        return self._edge.bipartition._leafset_bitmask
+    def _set_leafset_bitmask(self, h):
+        self._edge.bipartition._leafset_bitmask = h
+    leafset_bitmask = property(_get_leafset_bitmask, _set_leafset_bitmask)
 
+    def _get_tree_leafset_bitmask(self):
+        return self._edge.bipartition._tree_leafset_bitmask
+    def _set_tree_leafset_bitmask(self, h):
+        self._edge.bipartition._tree_leafset_bitmask = h
+    tree_leafset_bitmask = property(_get_tree_leafset_bitmask, _set_tree_leafset_bitmask)
 
+    def split_as_bitstring(self):
+        return self._edge.bipartition.split_as_bitstring()
 
-    #     if new_edge:
-    #         self._edge = new_edge
-    #         if old_edge:
-    #             old_bipartition = old_edge.bipartition
-    #         else:
-    #             old_bipartition = None
-    #         if new_edge:
-    #             new_edge_previous_head = self._edge._head_node
-    #         else:
-    #             new_edge_previous_head = None
-    #         if new_edge_previous_head is None:
-    #             self._parent_node = None
-    #         else:
-    #             if new_edge_previous_head is not self:
-    #                 self._parent_node = new_edge_previous_head._parent_node
-    #                 new_edge_previous_head._parent_node = None
-    #                 new_edge_previous_head.edge = Edge(head_node=new_edge_previous_head)
-    #                 new_edge_previous_head._edge.bipartition = self._edge.bipartition
-    #                 new_edge_previous_head._edge.bipartition.edge = new_edge_previous_head._edge
-    #                 self._edge.bipartition = old_bipartition
-    #                 self._edge.bipartition.edge = self._edge
-    #             if self._parent_node is not None:
-    #                 for idx, ch in enumerate(self._parent_node._child_nodes):
-    #                     if ch is new_edge_previous_head:
-    #                         self._parent_node._child_nodes[idx] = self
-    #                         break
-    #                 else:
-    #                     if self not in self._parent_node._child_nodes:
-    #                         self._parent_node._child_nodes.append(self)
-    #         self._edge._head_node = self
-    #     else:
-    #         self._edge = edge
+    def leafset_as_bitstring(self):
+        return self._edge.bipartition.leafset_as_bitstring()
 
     ###########################################################################
     ### Parent Access and Manipulation
@@ -2214,7 +2199,6 @@ class Node(
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
-
 
 ##############################################################################
 ### Tree
@@ -4910,18 +4894,45 @@ class Tree(
                 is_bipartitions_updated=is_bipartitions_updated)
 
     def is_compatible_with_split(self, split_bitmask, is_bipartitions_updated=False):
+
+        target_bitmask = split_bitmask
+
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
-        if not self.is_rooted:
-            split_bitmask = self.seed_node.bipartition.normalize(split_bitmask)
+
+        # trivial split: "compatible" if found on tree
+        if Bipartition.is_trivial_bitmask(
+                bitmask=target_bitmask,
+                fill_bitmask=self.seed_node.edge.bipartition.leafset_bitmask):
+            if self.seed_node.edge.bipartition.leafset_bitmask & target_bitmask:
+                return True
+            else:
+                return False
+
         current_node = self.seed_node
+
+        # maybe we want to always check for both
+        # if self.is_rooted:
+        #     normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
+        # else:
+        #     normalized_target_bitmask = target_bitmask
+        normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
+
         while True:
-            if current_node.edge.bipartition._split_bitmask == split_bitmask:
+            if current_node.edge.bipartition._split_bitmask == normalized_target_bitmask or current_node.edge.bipartition._leafset_bitmask == target_bitmask:
                 return True
             for child in current_node._child_nodes:
-                if child.edge.bipartition.is_compatible_with(split_bitmask):
-                    # see if nd has all of the leaves that are flagged as 1 in the split of interest
-                    if (child.edge.bipartition._split_bitmask & split_bitmask) == split_bitmask:
+                if not child._child_nodes:
+                    continue
+                if child.edge.bipartition._split_bitmask == normalized_target_bitmask or child.edge.bipartition._leafset_bitmask == target_bitmask:
+                    return True
+                # if child.edge.bipartition.is_compatible_with(target_bitmask):
+                if Bipartition.is_compatible_bitmasks(
+                        child.edge.bipartition._leafset_bitmask,
+                        target_bitmask,
+                        child.edge.bipartition._tree_leafset_bitmask) and (child.edge.bipartition._leafset_bitmask & target_bitmask):
+                    # see if nd has all of the leaves that are flagged as 1 in the leafset of interest
+                    if (child.edge.bipartition._leafset_bitmask & target_bitmask) == target_bitmask:
                         current_node = child
                         break
                     else:
@@ -5298,6 +5309,30 @@ class Tree(
         method of the object.
         """
         self.seed_node._write_newick(out, **kwargs)
+
+    def _plot_bipartitions_on_tree(self,
+            show_splits=True,
+            show_leafsets=True,
+            show_taxon_labels=False,
+            is_bipartitions_updated=False,
+            width=80):
+        if not is_bipartitions_updated:
+            self.encode_bipartitions()
+        def _print_node(nd):
+            d = []
+            if show_splits:
+                d.append(nd.bipartition.split_as_bitstring())
+            if show_leafsets:
+                d.append(nd.bipartition.leafset_as_bitstring())
+            s = "/".join(d)
+            if show_taxon_labels and nd.taxon is not None:
+                s = s + " ({})".format(nd.taxon.label)
+            return s
+        return self.as_ascii_plot(
+                show_internal_node_labels=True,
+                node_label_compose_func=_print_node,
+                width=width,
+                )
 
 ##############################################################################
 ### TreeList

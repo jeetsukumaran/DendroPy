@@ -1422,6 +1422,31 @@ class TaxonNamespace(
             bitmask |= self.taxon_bitmask(taxon)
         return bitmask
 
+    def taxa_bipartition(self, **kwargs):
+        """
+        Returns a bipartition that represents all taxa specified by
+        keyword-specified list of taxon objects (`taxa=`) or labels
+        (`labels=`).
+
+        Parameters
+        ----------
+        \*\*kwargs : keyword arguments
+            Requires one of:
+
+                taxa : :py:class:`collections.Iterable` [:class:`Taxon`]
+                    Iterable of :class:`Taxon` objects.
+                labels : :py:class:`collections.Iterable` [string]
+                    Iterable of :class:`Taxon` label values.
+
+        Returns
+        -------
+        b : :py:class:`list` [integer]
+            List of split hash bitmask values for specified :class:`Taxon`
+            objects.
+        """
+        from dendropy.treemodel import Bipartition
+        return Bipartition(bitmask=bitmask)
+
     def get_taxa_bitmask(self, **kwargs):
         """
         LEGACY. Use 'taxa_bitmask' instead.
