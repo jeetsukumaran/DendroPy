@@ -70,8 +70,8 @@ class TestSplitCompatibility(dendropytest.ExtendedTestCase):
                     trees_filepath,
                     "nexus",)
             bipartitions = generate_bipartitions(trees, bipartition_generation_mode, is_rooted=trees[0].is_rooted)
+            # for bipartition1_idx, bipartition1 in enumerate(bipartitions):
             for bipartition1_idx, bipartition1 in enumerate(bipartitions):
-            # for bipartition1_idx, bipartition1 in enumerate(bipartitions[136:]):
                 for tree_idx, tree in enumerate(trees):
                     compatible_bipartitions = set()
                     incompatible_bipartitions = set()
@@ -87,22 +87,24 @@ class TestSplitCompatibility(dendropytest.ExtendedTestCase):
                     self.assertEqual(len(compatible_bipartitions) + len(incompatible_bipartitions), len(bipartition_encoding))
                     if is_compatible:
                         self.assertEqual(len(incompatible_bipartitions), 0,
-                                "Tree {} of '{}': bipartition {} (index = {}) found compatible with tree, but is incompatible with following bipartitions on tree: {}".
+                                "Tree {} of '{}': bipartition {} (leafset = {}, index = {}) found compatible with tree, but is incompatible with following bipartitions on tree: {}".
                                 format(
                                     tree_idx,
                                     trees_filename,
                                     bipartition1.split_as_bitstring(),
+                                    bipartition1.leafset_as_bitstring(),
                                     bipartition1_idx,
                                     [b.split_as_bitstring() for b in incompatible_bipartitions],
                                     ))
                         self.assertEqual(len(compatible_bipartitions), len(bipartition_encoding))
                     else:
                         self.assertTrue(len(incompatible_bipartitions) > 0,
-                                "Tree {} of '{}': bipartition {} (index = {}) found incompatible with tree, but is compatible with all bipartitions on tree: {}".
+                                "Tree {} of '{}': bipartition {} (leafset = {}, index = {}) found incompatible with tree, but is compatible with all bipartitions on tree: {}".
                                 format(
                                     tree_idx,
                                     trees_filename,
                                     bipartition1.split_as_bitstring(),
+                                    bipartition1.leafset_as_bitstring(),
                                     bipartition1_idx,
                                     [b.split_as_bitstring() for b in compatible_bipartitions],
                                     ))

@@ -535,6 +535,53 @@ class Bipartition(object):
         """
         return not self.is_compatible_with(other)
 
+    def is_nested_within(self, other, is_other_masked_for_tree_leafset=False):
+        """
+        Returns `True` if the current bipartition is contained
+        within other.
+
+        Parameters
+        ----------
+        other : :class:`Bipartition`
+            The bipartition to check.
+
+        Returns
+        -------
+        b : bool
+            `True` if the the bipartition is "contained" within `other`
+        """
+        if self._is_rooted:
+            m1 = self._leafset_bitmask
+            m2 = other._leafset_bitmask
+        else:
+            m1 = self._split_bitmask
+            m2 = other._split_bitmask
+        if not is_other_masked_for_tree_leafset:
+            m2 = self._tree_leafset_bitmask & m2
+        return ( (m1 & m2) == m1 )
+
+    def is_leafset_nested_within(self, other):
+        """
+        Returns `True` if the leafset of `self` is a subset of the leafset of
+        `other`.
+
+        Parameters
+        ----------
+        other : :class:`Bipartition`
+            The bipartition to check for compatibility.
+
+        Returns
+        -------
+        b : bool
+            `True` if the leafset of `self` is contained in `other`.
+        """
+        if isinstance(other, int):
+            m2 = other
+        else:
+            m2 = other._leafset_bitmask
+        m2 = self._tree_leafset_bitmask & m2
+        return ( (m2 & self._leafset_bitmask) ==  self._leafset_bitmask )
+
     def is_trivial(self):
         """
         Returns
@@ -4900,44 +4947,20 @@ class Tree(
     def is_compatible_with_bipartition(self, bipartition, is_bipartitions_updated=False):
         """
         Returns true if the :class:`Bipartition` `bipartition` is compatible
-        with this tree.
+        with all bipartitions of this tree.
         """
+        # print(self._plot_bipartitions_on_tree())
 
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
 
-        if self.seed_node.edge.bipartition == bipartition:
+        if bipartition in self.bipartition_encoding:
             return True
-
-        # if ( (self.is_rooted and Bipartition.is_trivial_leafset(leafset_bitmask=target_bitmask))
-        #         or (not self.is_rooted and Bipartition.is_trivial_bitmask(
-        #             bitmask=target_bitmask,
-        #             fill_bitmask=self.seed_node.edge.bipartition.leafset_bitmask)) ):
-        if bipartition.is_trivial():
-            if self.seed_node.edge.bipartition.leafset_bitmask & bipartition.leafset_bitmask:
-                return True
-            else:
-                return False
-
-        current_node = self.seed_node
-
-        while True:
-            if current_node.edge.bipartition == bipartition:
-                return True
-            for child in current_node._child_nodes:
-                if not child._child_nodes:
-                    continue
-                if child.edge.bipartition == bipartition:
-                    return True
-                if (child.edge.bipartition.is_compatible_with(bipartition) and child.edge.bipartition._leafset_bitmask & (bipartition._leafset_bitmask & self.seed_node.edge.bipartition._leafset_bitmask)):
-                    # see if nd has all of the leaves that are flagged as 1 in the leafset of interest
-                    if child.edge.bipartition._leafset_bitmask & bipartition._leafset_bitmask == bipartition._leafset_bitmask:
-                        current_node = child
-                        break
-                    else:
-                        return False
-            else:
-                return False
+        else:
+            for b in self.bipartition_encoding:
+                if not b.is_compatible_with(bipartition):
+                    return False
+            return True
 
     def is_compatible_with_tree(self, other):
         raise NotImplementedError
@@ -5314,7 +5337,7 @@ class Tree(
             show_leafsets=True,
             show_taxon_labels=False,
             is_bipartitions_updated=False,
-            width=80):
+            width=120):
         if not is_bipartitions_updated:
             self.encode_bipartitions()
         def _print_node(nd):
