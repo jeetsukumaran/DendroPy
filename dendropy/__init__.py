@@ -22,9 +22,6 @@ classes and methods for instantiating objects in the
 `dendropy.dataobject` subpackage to for usage by client code.
 """
 
-import sys
-import os
-
 ###############################################################################
 ## Populate the 'dendropy' namespace
 
@@ -79,15 +76,23 @@ from dendropy.legacy import treesum
 
 ###############################################################################
 ## PACKAGE METADATA
-
+import collections
+version_info = collections.namedtuple("dendropy_version_info",
+        ["major", "minor", "micro", "releaselevel"])(
+                major=4,
+                minor=0,
+                micro=0,
+                releaselevel="development"
+                )
 __project__ = "DendroPy"
-__version__ = "4.0.0"
+__version__ = ".".join(str(s) for s in version_info[:3])
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
 def revision():
+    import os
     from dendropy.utility import vcsinfo
     try:
         try:
@@ -112,6 +117,7 @@ def description():
     return "{} {}{}".format(__project__, __version__, revision_text)
 
 if __name__ == "__main__":
+    import sys
     sys.stdout.write("{}\n".format(description()))
 
 
