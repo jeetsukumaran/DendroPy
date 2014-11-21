@@ -61,16 +61,17 @@ class TestSplitCompatibility(dendropytest.ExtendedTestCase):
     def test_compatibility(self):
         regimes = (
             ("dendropy-test-trees-n12-x2.nexus", "all"),
-            # ("dendropy-test-trees-n33-unrooted-x100a.nexus", "from-trees"),
-            # ("dendropy-test-trees-n10-rooted-treeshapes.nexus", "all"),
+            ("dendropy-test-trees-n33-unrooted-x100a.nexus", "from-trees"),
+            ("dendropy-test-trees-n10-rooted-treeshapes.nexus", "all"),
         )
         for trees_filename_idx, (trees_filename, bipartition_generation_mode) in enumerate(regimes):
             trees_filepath = pathmap.tree_source_path(trees_filename)
             trees = dendropy.TreeList.get_from_path(
                     trees_filepath,
                     "nexus",)
-            bipartitions = generate_bipartitions(trees, bipartition_generation_mode)
+            bipartitions = generate_bipartitions(trees, bipartition_generation_mode, is_rooted=trees[0].is_rooted)
             for bipartition1_idx, bipartition1 in enumerate(bipartitions):
+            # for bipartition1_idx, bipartition1 in enumerate(bipartitions[136:]):
                 for tree_idx, tree in enumerate(trees):
                     compatible_bipartitions = set()
                     incompatible_bipartitions = set()
@@ -85,22 +86,24 @@ class TestSplitCompatibility(dendropytest.ExtendedTestCase):
                     is_compatible = tree.is_compatible_with_bipartition(bipartition1)
                     self.assertEqual(len(compatible_bipartitions) + len(incompatible_bipartitions), len(bipartition_encoding))
                     if is_compatible:
-                        self.assertEqual(len(compatible_bipartitions), len(bipartition_encoding))
                         self.assertEqual(len(incompatible_bipartitions), 0,
-                                "Tree {} of '{}': bipartition {} found compatible, but is in incompatible set: {}".
+                                "Tree {} of '{}': bipartition {} (index = {}) found compatible with tree, but is incompatible with following bipartitions on tree: {}".
                                 format(
                                     tree_idx,
                                     trees_filename,
                                     bipartition1.split_as_bitstring(),
+                                    bipartition1_idx,
                                     [b.split_as_bitstring() for b in incompatible_bipartitions],
                                     ))
+                        self.assertEqual(len(compatible_bipartitions), len(bipartition_encoding))
                     else:
                         self.assertTrue(len(incompatible_bipartitions) > 0,
-                                "Tree {} of '{}': bipartition {} found incompatible, but is compatible with all bipartitions on tree: {}".
+                                "Tree {} of '{}': bipartition {} (index = {}) found incompatible with tree, but is compatible with all bipartitions on tree: {}".
                                 format(
                                     tree_idx,
                                     trees_filename,
                                     bipartition1.split_as_bitstring(),
+                                    bipartition1_idx,
                                     [b.split_as_bitstring() for b in compatible_bipartitions],
                                     ))
 

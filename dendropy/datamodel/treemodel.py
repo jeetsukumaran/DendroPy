@@ -165,6 +165,10 @@ class Bipartition(object):
         return False
     is_trivial_bitmask = staticmethod(is_trivial_bitmask)
 
+    def is_trivial_leafset(leafset_bitmask):
+        return bitprocessing.num_set_bits(leafset_bitmask) == 1
+    is_trivial_leafset = staticmethod(is_trivial_leafset)
+
     def is_compatible_bitmasks(m1, m2, fill_bitmask):
         """
         Returns `True` if `m1` is compatible with `m2`
@@ -196,8 +200,8 @@ class Bipartition(object):
             return True
         return False
 
-   ##############################################################################
-   ## Life-cycle
+    ##############################################################################
+    ## Life-cycle
 
     def __init__(self,
             bitmask=None,
@@ -4898,50 +4902,36 @@ class Tree(
         Returns true if the :class:`Bipartition` `bipartition` is compatible
         with this tree.
         """
-        return self.is_compatible_with_split(
-                split_bitmask=bipartition._split_bitmask,
-                is_bipartitions_updated=is_bipartitions_updated)
-
-    def is_compatible_with_split(self, split_bitmask, is_bipartitions_updated=False):
-
-        target_bitmask = split_bitmask
 
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
 
-        # trivial split: "compatible" if found on tree
-        if Bipartition.is_trivial_bitmask(
-                bitmask=target_bitmask,
-                fill_bitmask=self.seed_node.edge.bipartition.leafset_bitmask):
-            if self.seed_node.edge.bipartition.leafset_bitmask & target_bitmask:
+        if self.seed_node.edge.bipartition == bipartition:
+            return True
+
+        # if ( (self.is_rooted and Bipartition.is_trivial_leafset(leafset_bitmask=target_bitmask))
+        #         or (not self.is_rooted and Bipartition.is_trivial_bitmask(
+        #             bitmask=target_bitmask,
+        #             fill_bitmask=self.seed_node.edge.bipartition.leafset_bitmask)) ):
+        if bipartition.is_trivial():
+            if self.seed_node.edge.bipartition.leafset_bitmask & bipartition.leafset_bitmask:
                 return True
             else:
                 return False
 
         current_node = self.seed_node
 
-        # maybe we want to always check for both
-        # if self.is_rooted:
-        #     normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
-        # else:
-        #     normalized_target_bitmask = target_bitmask
-        normalized_target_bitmask = self.seed_node.bipartition.normalize(target_bitmask)
-
         while True:
-            if current_node.edge.bipartition._split_bitmask == normalized_target_bitmask or current_node.edge.bipartition._leafset_bitmask == target_bitmask:
+            if current_node.edge.bipartition == bipartition:
                 return True
             for child in current_node._child_nodes:
                 if not child._child_nodes:
                     continue
-                if child.edge.bipartition._split_bitmask == normalized_target_bitmask or child.edge.bipartition._leafset_bitmask == target_bitmask:
+                if child.edge.bipartition == bipartition:
                     return True
-                # if child.edge.bipartition.is_compatible_with(target_bitmask):
-                if Bipartition.is_compatible_bitmasks(
-                        child.edge.bipartition._leafset_bitmask,
-                        target_bitmask,
-                        child.edge.bipartition._tree_leafset_bitmask) and (child.edge.bipartition._leafset_bitmask & target_bitmask):
+                if (child.edge.bipartition.is_compatible_with(bipartition) and child.edge.bipartition._leafset_bitmask & (bipartition._leafset_bitmask & self.seed_node.edge.bipartition._leafset_bitmask)):
                     # see if nd has all of the leaves that are flagged as 1 in the leafset of interest
-                    if (child.edge.bipartition._leafset_bitmask & target_bitmask) == target_bitmask:
+                    if child.edge.bipartition._leafset_bitmask & bipartition._leafset_bitmask == bipartition._leafset_bitmask:
                         current_node = child
                         break
                     else:
