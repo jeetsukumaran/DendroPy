@@ -72,10 +72,10 @@ d = bipartition.leafset_as_bitstring(...)
 from dendropy.utility import bitprocessing
 d = bitprocessing.int_as_bitstring(...)""")
     return bitprocessing.int_as_bitstring(
-            mask=split_mask,
+            n=split_mask,
             length=width,
-            symbol0=symbol0,
-            symbol1=symbol1,
+            symbol0=symbol1,
+            symbol1=symbol2,
             reverse=False)
 
 def split_as_string_rev(split_mask, width, symbol1='.', symbol2='*'):

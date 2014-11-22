@@ -1512,6 +1512,36 @@ class TaxonNamespace(
                 preserve_spaces=preserve_spaces,
                 quote_underscores=quote_underscores)
 
+    def split_as_newick_string(self,
+            split,
+            preserve_spaces=False,
+            quote_underscores=True):
+        """
+        Represents a split as a newick string.
+
+        Parameters
+        ----------
+        bitmask : integer
+            Split hash bitmask value.
+        preserve_spaces : boolean, optional
+            If `False` (default), then spaces in taxon labels will be replaced
+            by underscores. If `True`, then taxon labels with spaces will be
+            wrapped in quotes.
+        quote_underscores : boolean, optional
+            If `True` (default), then taxon labels with underscores will be
+            wrapped in quotes. If `False`, then the labels will not be wrapped
+            in quotes.
+
+        Returns
+        -------
+        s : string
+            NEWICK representation of split specified by `bitmask`.
+        """
+        return self.bitmask_as_newick_string(
+                bitmask=split,
+                preserve_spaces=preserve_spaces,
+                quote_underscores=quote_underscores)
+
     def bitmask_as_bitstring(self, b):
         return bitprocessing.int_as_bitstring(b, length=self._current_accession_count)
 
