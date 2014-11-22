@@ -203,18 +203,11 @@ class Bipartition(object):
     ##############################################################################
     ## Life-cycle
 
-    def __init__(self,
-            bitmask=None,
-            leafset_bitmask=None,
-            tree_leafset_bitmask=None,
-            is_rooted=None,
-            edge=None,
-            suppress_calculation=False,
-            is_mutable=None):
+    def __init__(self, **kwargs):
         """
 
-        Parameters
-        ----------
+        Keyword Arguments
+        -----------------
         bitmask : integer
             A bit array representing the membership of taxa, with the
             least-significant bit corresponding to the first taxon, the next
@@ -240,15 +233,18 @@ class Bipartition(object):
             Specifies whether or not the tree with which this bipartition is
             associated is rooted.
         """
-        self._split_bitmask = bitmask or 0
-        self._leafset_bitmask = leafset_bitmask or bitmask
-        self._tree_leafset_bitmask = tree_leafset_bitmask
+        self._split_bitmask = kwargs.get("bitmask", 0)
+        self._leafset_bitmask = kwargs.get("leafset_bitmask", self._split_bitmask)
+        self._tree_leafset_bitmask = kwargs.get("tree_leafset_bitmask", None)
         self._lowest_relevant_bit = None
-        self._is_rooted = is_rooted
-        self.edge = edge
-        if self._leafset_bitmask and not suppress_calculation:
+        self._is_rooted = kwargs.get("is_rooted", None)
+        self.edge = kwargs.get("edge", None)
+        is_mutable = kwargs.get("is_mutable", None)
+        if self._leafset_bitmask and not kwargs.get("suppress_calculation", False):
             self.is_mutable = True
-            self.compile_split_bitmask(leafset_bitmask=leafset_bitmask,tree_leafset_bitmask=tree_leafset_bitmask)
+            self.compile_split_bitmask(
+                    leafset_bitmask=self._leafset_bitmask,
+                    tree_leafset_bitmask=self._tree_leafset_bitmask)
             if is_mutable is None:
                 self.is_mutable = True
             else:
