@@ -5275,20 +5275,22 @@ class Tree(
                 assert curr_node.taxon is not None, \
                         "Cannot check bipartitions: {} is a leaf node, but its 'taxon' attribute is 'None'".format(curr_node)
                 cm = taxon_namespace.taxon_bitmask(curr_node.taxon)
-            if check_bipartitions and unique_bipartition_edge_mapping:
+            if check_bipartitions:
                 assert (cm & taxa_mask) == curr_edge.bipartition._leafset_bitmask, \
                         "Bipartition leafset bitmask error: {} (taxa: {}, leafset: {})".format(
                                 curr_edge.bipartition.bitmask_as_bitstring(cm),
                                 curr_edge.bipartition.bitmask_as_bitstring(taxa_mask),
                                 curr_edge.bipartition.leafset_as_bitstring())
-                assert self.bipartition_edge_map[curr_edge.bipartition] is curr_edge, \
-                        "Expecting edge {} for bipartition {}, but instead found {}".format(curr_edge, curr_edge.bipartition, self.bipartition_edge_map[curr_edge.bipartition])
+                if unique_bipartition_edge_mapping:
+                    assert self.bipartition_edge_map[curr_edge.bipartition] is curr_edge, \
+                            "Expecting edge {} for bipartition {}, but instead found {}".format(curr_edge, curr_edge.bipartition, self.bipartition_edge_map[curr_edge.bipartition])
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
-        if check_bipartitions and unique_bipartition_edge_mapping:
+        if check_bipartitions:
             for b in self.bipartition_encoding:
                 e = self.bipartition_edge_map[b]
-                assert b is e.bipartition
                 assert e in edges, "{}: {} => {}".format(e, e.tail_node, e.head_node)
+                if unique_bipartition_edge_mapping:
+                    assert b is e.bipartition
         return True
 
     def _as_newick_string(self, **kwargs):
