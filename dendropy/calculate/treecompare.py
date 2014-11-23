@@ -404,50 +404,52 @@ def _get_length_diffs(
             tree1.encode_bipartitions()
         if tree2.bipartition_encoding is None:
             tree2.encode_bipartitions()
-    tree1_split_bitmask_edge_map = dict(tree2.split_bitmask_edge_map) # O(n*(2*bind + dict_item_cost))
-    tree2_split_bitmask_edge_map = tree1.split_bitmask_edge_map
-    for split_bitmask in tree2_split_bitmask_edge_map: # O n : 2*bind
-        edge = tree2_split_bitmask_edge_map[split_bitmask]
+
+    tree1_bipartition_edge_map = dict(tree2.bipartition_edge_map) # O(n*(2*bind + dict_item_cost))
+    tree2_bipartition_edge_map = tree1.bipartition_edge_map
+    for bipartition in tree2_bipartition_edge_map: # O n : 2*bind
+        edge = tree2_bipartition_edge_map[bipartition]
         elen1 = getattr(edge, edge_weight_attr) # attr + bind
         if elen1 is None:
             elen1 = 0 # worst-case: bind
         value1 = value_type(elen1) #  ctor + bind
         try:
-            e2 = tree1_split_bitmask_edge_map.pop(split_bitmask) # attr + dict_lookup + bind
+            e2 = tree1_bipartition_edge_map.pop(bipartition) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_weight_attr) # attr + bind
             if elen2 is None:
-                # allow root edge to have split_bitmask with no value: raise error if not root edge
+                # allow root edge to have bipartition with no value: raise error if not root edge
                 if e2.tail_node is None:
                     elen2 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_namespace.bitmask_as_newick_string(split_bitmask)))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_namespace.bitmask_as_newick_string(bipartition)))
         except KeyError: # excep
             elen2 = 0.0
         value2 = value_type(elen2) #  ctor + bind # best case
         length_diffs.append((value1,value2)) # ctor + listappend
-        bipartition_length_diffs[split_bitmask] = length_diffs[-1]
+        bipartition_length_diffs[bipartition] = length_diffs[-1]
 
-    for split_bitmask in tree1_split_bitmask_edge_map: # best-case not executed, worst case O(n) : 2*bind
-        edge = tree1_split_bitmask_edge_map[split_bitmask]
+    for bipartition in tree1_bipartition_edge_map: # best-case not executed, worst case O(n) : 2*bind
+        edge = tree1_bipartition_edge_map[bipartition]
         elen2 = getattr(edge, edge_weight_attr) # attr +  bind
         if elen2 is None:
             elen2 = 0
         value2 = value_type(elen2) #  ctor + bind
-        e1 = tree2_split_bitmask_edge_map.get(split_bitmask) # attr + dict_lookup + bind
+        e1 = tree2_bipartition_edge_map.get(bipartition) # attr + dict_lookup + bind
         if e1 is None:
             elen1 = 0.0
         else:
             elen1 = getattr(e1, edge_weight_attr) # attr  + bind
             if elen1 is None:
-                # allow root edge to have split_bitmask with no value: raise error if not root edge
+                # allow root edge to have bipartition with no value: raise error if not root edge
                 if e1.tail_node is None:
                     elen1 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split_bitmask))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, bipartition))
                 #elen1 = 0
         value1 = value_type(elen1)
         length_diffs.append((value1,value2)) # ctor + listappend
-        bipartition_length_diffs[split_bitmask] = length_diffs[-1]
+        bipartition_length_diffs[bipartition] = length_diffs[-1]
+
     # the numbers below do not reflect additions to the code to protect against
     #   edges with length None
     # loops

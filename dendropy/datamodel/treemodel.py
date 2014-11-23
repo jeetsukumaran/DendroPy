@@ -2778,12 +2778,12 @@ class Tree(
 
     def _get_split_edges(self):
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.split_bitmask_edge_map' attribute.",
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.bipartition_edge_map' attribute.",
                 stacklevel=3)
         return self.bipartition_encoding
     def _set_split_edges(self, m):
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.split_bitmask_edge_map' attribute.",
+                message="Deprecated since DendroPy 4: 'Tree.split_edges' will no longer be supported in future releases; use 'Tree.bipartition_encoding' for a list of bipartitions on the tree, or dereference the edge through the 'Tree.bipartition_edge_map' attribute.",
                 stacklevel=3)
         self.bipartition_encoding = m
     split_edges = property(_get_split_edges, _set_split_edges)
@@ -4718,7 +4718,8 @@ class Tree(
             suppress_unifurcations=True,
             collapse_unrooted_basal_bifurcation=True,
             suppress_storage=False,
-            is_bipartitions_mutable=False):
+            is_bipartitions_mutable=False,
+            populate_supplemental_maps=False):
         """
         Calculates the bipartitions of this tree.
 
@@ -4740,6 +4741,8 @@ class Tree(
             or frozen, allowing their use in hashing containers such as
             dictionary (keys) and sets. To allow modification of values, the
             `is_mutable` attribute must be set to `True`.
+        populate_supplement_maps : bool
+            By default, `Tree.bipartition_edge_map`
 
         Returns
         -------
@@ -4845,16 +4848,6 @@ class Tree(
                 message="Deprecated since DendroPy 4: 'Tree.update_bipartitions()' will no longer be supported in future releases; use 'Tree.update_bipartitions()' instead",
                 stacklevel=3)
         return self.encode_bipartitions(*args, **kwargs)
-
-    def _get_split_bitmask_edge_map(self):
-        if not self._split_bitmask_edge_map:
-            self._split_bitmask_edge_map = {}
-            if not self.bipartition_encoding:
-                self.encode_bipartitions()
-            for edge in self.postorder_edge_iter():
-                self._split_bitmask_edge_map[edge.bipartition.split_bitmask] = edge
-        return self._split_bitmask_edge_map
-    split_bitmask_edge_map = property(_get_split_bitmask_edge_map)
 
     def _get_bipartition_edge_map(self):
         if not self._bipartition_edge_map:

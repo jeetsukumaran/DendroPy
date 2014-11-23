@@ -273,18 +273,19 @@ class TreeSummarizer(object):
         tree.reindex_taxa(taxon_namespace=split_distribution.taxon_namespace)
         assert tree.taxon_namespace is split_distribution.taxon_namespace
         tree.encode_bipartitions()
-        for split in tree.split_bitmask_edge_map:
+        for edge in tree.postorder_edge_iter():
+            split = edge.bipartition.split_bitmask
             if split in split_freqs:
                 split_support = split_freqs[split]
             else:
                 split_support = 0.0
-            self.map_split_support_to_node(tree.split_bitmask_edge_map[split].head_node, split_support)
+            self.map_split_support_to_node(edge.head_node, split_support)
         return tree
 
     def annotate_nodes_and_edges(self,
             tree,
             split_distribution,
-            recalculate_splits=False):
+            is_bipartitions_updated=False,):
         """
         Summarizes edge length and age information in `split_distribution` for
         each node on target tree `tree`.
@@ -303,8 +304,8 @@ class TreeSummarizer(object):
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
-        if recalculate_splits or tree.split_bitmask_edge_map is None:
-            tree.encode_splits()
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
         fields = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
@@ -336,7 +337,7 @@ class TreeSummarizer(object):
             collapse_negative_edges=False,
             allow_negative_edges=False,
             summarization_func=None,
-            recalculate_splits=False):
+            is_bipartitions_updated=False):
         """
         Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
         result of `summarization_func` applied to the vector of ages of the
@@ -351,7 +352,7 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_bitmask_edge_map is None:
+        if is_bipartitions_updated:
             tree.encode_splits()
         #'height',
         #'height_median',
@@ -361,7 +362,6 @@ class TreeSummarizer(object):
         #'length_median',
         #'length_95hpd',
         #'length_range',
-        #for split, edge in tree.split_bitmask_edge_map.items():
         for edge in tree.preorder_edge_iter():
             split = edge.bipartition.split_bitmask
             nd = edge.head_node
@@ -384,7 +384,7 @@ class TreeSummarizer(object):
             tree,
             split_distribution,
             summarization_func=None,
-            recalculate_splits=False):
+            is_bipartitions_updated=False):
         """
         Sets the lengths of edges on `tree` (a `Tree` object) to the mean
         lengths of the corresponding edges on the input trees (in
@@ -395,9 +395,10 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
-        if recalculate_splits or tree.split_bitmask_edge_map is None:
-            tree.encode_splits()
-        for split, edge in tree.split_bitmask_edge_map.items():
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
+        for edge in tree.postorder_edge_iter():
+            split = edge.bipartition.split_bitmask
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
@@ -494,7 +495,7 @@ class TopologyCounter(object):
         """
         Set of all splits on tree: default topology hash.
         """
-        return frozenset(tree.split_bitmask_edge_map.keys())
+        return frozenset(tree.bipartition_encoding)
     hash_topology = staticmethod(hash_topology)
 
     def __init__(self):
@@ -552,8 +553,8 @@ class TopologyCounter(object):
         hash_freqs = self.calc_hash_freqs()
         tree_freqs = collections.OrderedDict()
         for topology_hash, (count, freq) in hash_freqs.items():
-            tree = dendropy.Tree.from_split_bitmasks(
-                split_bitmasks=topology_hash,
+            tree = dendropy.Tree.from_bipartition_encoding(
+                bipartition_encoding=topology_hash,
                 taxon_namespace=taxon_namespace,
                 is_rooted=is_rooted)
             tree_freqs[tree] = (count, freq)
