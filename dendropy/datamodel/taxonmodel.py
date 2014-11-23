@@ -886,6 +886,12 @@ class TaxonNamespace(
             # self._split_bitmask_taxon_map.pop(bm, None)
             self._taxon_accession_index_map.pop(taxon, None)
 
+    def remove(self, taxon):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'TaxonNamespace.remove()'; use 'TaxonNamespace.remove_taxon()' instead",
+                stacklevel=3)
+        return self.remove_taxon(taxon)
+
     def remove_taxon_label(self,
             label,
             is_case_sensitive=None,
