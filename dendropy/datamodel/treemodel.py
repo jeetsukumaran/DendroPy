@@ -203,12 +203,6 @@ class Bipartition(object):
     ##############################################################################
     ## Life-cycle
 
-    def _get_edge(self):
-        raise NotImplementedError
-    def _set_edge(self, e):
-        raise NotImplementedError
-    edge = property(_get_edge, _set_edge)
-
     def __init__(self, **kwargs):
         """
 
