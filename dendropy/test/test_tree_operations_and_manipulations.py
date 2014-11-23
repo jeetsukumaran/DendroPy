@@ -279,10 +279,12 @@ class TreeMidpointRootingTest(ExtendedTestCase):
             test_tree.reroot_at_midpoint(update_bipartitions=True)
             self.assertEqual(treecompare.symmetric_difference(test_tree, expected_tree), 0)
             for bipartition in test_tree.bipartition_encoding:
-                if bipartition.edge.head_node is test_tree.seed_node:
+                if test_tree.bipartition_edge_map[bipartition].head_node is test_tree.seed_node:
                     continue
                 # self.assertAlmostEqual(bipartition.edge.length, expected_tree.split_bitmask_edge_map[bipartition.split_bitmask].length, 3)
-                self.assertAlmostEqual(bipartition.edge.length, expected_tree.bipartition_edge_map[bipartition].length, 3)
+                self.assertAlmostEqual(test_tree.bipartition_edge_map[bipartition].length,
+                        expected_tree.bipartition_edge_map[bipartition].length,
+                        3)
 
 class TreeRerootingTests(dendropytest.ExtendedTestCase):
     #                  a
@@ -604,8 +606,11 @@ class TreeRerootingTests(dendropytest.ExtendedTestCase):
                     ):
                 for reseed_at_label in curated_tree_gen.all_labels:
 
+                    if reseed_at_label == "a":
+                        continue
+
                     # identify
-                    # print("\n### is_rooted = {}, suppress_unifurcations = {}, reseed at = {}".format(is_rooted, suppress_unifurcations, reseed_at_label))
+                    # print("\n### is_rooted = {}, suppress_unifurcations = {}, reseed_at = '{}'".format(is_rooted, suppress_unifurcations, reseed_at_label))
 
                     # get tree
                     tree, all_nodes, leaf_nodes, internal_nodes = curated_tree_gen.get_tree(
@@ -669,7 +674,16 @@ class TreeRerootingTests(dendropytest.ExtendedTestCase):
                     self.assertEqual(tree.is_rooted, is_rooted)
 
                     # check for structural integrity, including bipartitions
-                    tree._debug_check_tree(logger_obj=_LOG, check_bipartitions=True)
+                    if is_rooted and suppress_unifurcations:
+                        tree._debug_check_tree(
+                                logger_obj=_LOG,
+                                check_bipartitions=True,
+                                unique_bipartition_edge_mapping=True)
+                    else:
+                        tree._debug_check_tree(
+                                logger_obj=_LOG,
+                                check_bipartitions=True,
+                                unique_bipartition_edge_mapping=False)
 
                     # check that traversal is as expected
                     preorder_labels = [nd.label for nd in tree]

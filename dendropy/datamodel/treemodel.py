@@ -203,6 +203,12 @@ class Bipartition(object):
     ##############################################################################
     ## Life-cycle
 
+    def _get_edge(self):
+        raise NotImplementedError
+    def _set_edge(self, e):
+        raise NotImplementedError
+    edge = property(_get_edge, _set_edge)
+
     def __init__(self, **kwargs):
         """
 
@@ -238,7 +244,7 @@ class Bipartition(object):
         self._tree_leafset_bitmask = kwargs.get("tree_leafset_bitmask", None)
         self._lowest_relevant_bit = None
         self._is_rooted = kwargs.get("is_rooted", None)
-        self.edge = kwargs.get("edge", None)
+        # self.edge = kwargs.get("edge", None)
         is_mutable = kwargs.get("is_mutable", None)
         if self._leafset_bitmask and not kwargs.get("suppress_calculation", False):
             self.is_mutable = True
@@ -2457,12 +2463,9 @@ class Tree(
             taxon definitions.
         is_rooted : bool
             Specifies whether or not the tree is rooted.
-        edge_lengths : iterable or `False` or `None`
-            An iterable of edge lengths. If `False`, then no edge lengths will
-            be added. If `None`, then edge lengths will be pulled from the
-            `edge` attribute of each :class:`Bipartition` object in
-            `bipartition_encoding`. Otherwise, this should be in the same order
-            as the bipartition encoding.
+        edge_lengths : iterable or `None`
+            An iterable of edge lengths. This should be in the same order
+            as the bipartitions in the bipartition encoding.
 
         Returns
         -------
@@ -2470,11 +2473,13 @@ class Tree(
             The tree reconstructed from the given bipartition encoding.
         """
         split_bitmasks = [b.split_bitmask for b in bipartition_encoding]
-        if edge_lengths is not None:
+        if edge_lengths:
             split_edge_lengths = dict(zip(split_bitmasks, edge_lengths))
-        elif edge_lengths is not False:
-            split_edge_lengths = dict(zip(split_bitmasks,
-                [b.edge.length for b in bipartition_encoding]))
+        else:
+            split_edge_lengths = None
+        # elif edge_lengths is not False:
+        #     split_edge_lengths = dict(zip(split_bitmasks,
+        #         [b.edge.length for b in bipartition_encoding]))
         return cls.from_split_bitmasks(
                 split_bitmasks=split_bitmasks,
                 taxon_namespace=taxon_namespace,
@@ -4072,53 +4077,41 @@ class Tree(
         #     print("    Children (Node Parent, Edge Tail Node Parent): {}".format(debug_children))
 
         if self.seed_node is new_seed_node:
-            return
-
-        old_seed_node = self.seed_node
-        old_parent_node = new_seed_node._parent_node
-        if old_parent_node is None:
-            return
-
-        if new_seed_node._child_nodes:
-            new_seed_node_is_leaf = False
+            # do not just return: allow for updating of bipartitions,
+            # collapsing of unifurcations, collapsing of unrooted basal
+            # bifurcations
+            pass
         else:
-            new_seed_node_is_leaf = True
+            old_seed_node = self.seed_node
+            old_parent_node = new_seed_node._parent_node
+            if old_parent_node is None:
+                return
 
-        if update_bipartitions:
-            if self.seed_node.edge.bipartition is None or not self.bipartition_encoding:
-                full_encode = True
-                in_place_update_bipartitions = False # do not do in-place updating as we are recoding from scratch
+            if new_seed_node._child_nodes:
+                new_seed_node_is_leaf = False
             else:
-                full_encode = False
-                in_place_update_bipartitions = True
-        else:
-                full_encode = False
-                in_place_update_bipartitions = False
-        if in_place_update_bipartitions:
-            bipartition_ids_to_delete = set()
-        else:
-            bipartition_ids_to_delete = None
+                new_seed_node_is_leaf = True
 
-        edges_to_invert = []
-        current_node = new_seed_node
-        while current_node:
-            if current_node._parent_node is not None:
-                edges_to_invert.append(current_node.edge)
-            current_node = current_node._parent_node
-        while edges_to_invert:
-            edge = edges_to_invert.pop()
-            edge.invert(update_bipartitions=update_bipartitions)
+            edges_to_invert = []
+            current_node = new_seed_node
+            while current_node:
+                if current_node._parent_node is not None:
+                    edges_to_invert.append(current_node.edge)
+                current_node = current_node._parent_node
+            while edges_to_invert:
+                edge = edges_to_invert.pop()
+                edge.invert(update_bipartitions=update_bipartitions)
 
-        if new_seed_node_is_leaf and suppress_unifurcations:
-            ## Cannot just suppress_unifurcations, because wrong node will be deleted
-            ## need to remove child (i.e. new seed node's old parent, which is now its child, needs to be deleted)
-            # self.suppress_unifurcations(update_bipartitions=update_bipartitions)
-            if len(new_seed_node._child_nodes) == 1:
-                nsn_ch = new_seed_node._child_nodes[0]
-                new_seed_node.remove_child(nsn_ch)
-                for ch in nsn_ch._child_nodes:
-                    new_seed_node.add_child(ch)
-        self.seed_node = new_seed_node
+            if new_seed_node_is_leaf and suppress_unifurcations:
+                ## Cannot just suppress_unifurcations, because wrong node will be deleted
+                ## need to remove child (i.e. new seed node's old parent, which is now its child, needs to be deleted)
+                # self.suppress_unifurcations(update_bipartitions=update_bipartitions)
+                if len(new_seed_node._child_nodes) == 1:
+                    nsn_ch = new_seed_node._child_nodes[0]
+                    new_seed_node.remove_child(nsn_ch)
+                    for ch in nsn_ch._child_nodes:
+                        new_seed_node.add_child(ch)
+            self.seed_node = new_seed_node
 
         if update_bipartitions:
             self.encode_bipartitions(
@@ -4762,6 +4755,8 @@ class Tree(
             is `True`, then `None`.
 
         """
+        self._split_bitmask_edge_map = None
+        self._bipartition_edge_map = None
         taxon_namespace = self._taxon_namespace
         seed_node = self.seed_node
         if not seed_node:
@@ -4816,7 +4811,6 @@ class Tree(
                 edge.bipartition = Bipartition(suppress_calculation=True, is_mutable=True)
                 edge.bipartition._leafset_bitmask = leafset_bitmask
                 edge.bipartition._is_rooted = self._is_rooted
-                edge.bipartition.edge = edge
         # Create normalized bitmasks, where the full (self) bipartition mask is *not*
         # all the taxa, but only those found on the self; this is to handle
         # cases where we are dealing with selfs with incomplete leaf-sets.
@@ -4832,8 +4826,6 @@ class Tree(
         else:
             # self.bipartition_encoding = dict(zip(map(self._compile_bipartition_for_edge, tree_edges), tree_edges))
             self.bipartition_encoding = list(map(_compile_bipartition, tree_edges))
-        self._split_bitmask_edge_map = None
-        self._bipartition_edge_map = None
         return self.bipartition_encoding
 
     def update_bipartitions(self, *args, **kwargs):
@@ -4865,8 +4857,8 @@ class Tree(
             self._split_bitmask_edge_map = {}
             if not self.bipartition_encoding:
                 self.encode_bipartitions()
-            for b in self.bipartition_encoding:
-                self._split_bitmask_edge_map[b.split_bitmask] = b.edge
+            for edge in self.postorder_edge_iter():
+                self._split_bitmask_edge_map[edge.bipartition.split_bitmask] = edge
         return self._split_bitmask_edge_map
     split_bitmask_edge_map = property(_get_split_bitmask_edge_map)
 
@@ -4875,8 +4867,11 @@ class Tree(
             self._bipartition_edge_map = {}
             if not self.bipartition_encoding:
                 self.encode_bipartitions()
-            for b in self.bipartition_encoding:
-                self._bipartition_edge_map[b] = b.edge
+            for edge in self.postorder_edge_iter():
+                # print("{}: {}: {} => {}".format(edge.bipartition, edge, edge.tail_node, edge.head_node))
+                self._bipartition_edge_map[edge.bipartition] = edge
+            # print(self.as_string("newick"))
+            # print(self._plot_bipartitions_on_tree(is_bipartitions_updated=True))
         return self._bipartition_edge_map
     bipartition_edge_map = property(_get_bipartition_edge_map)
 
@@ -5244,6 +5239,7 @@ class Tree(
             `check_bipartitions` if True specifies that the bipartition attributes are checked.
         """
         check_bipartitions = kwargs.get('check_bipartitions', False)
+        unique_bipartition_edge_mapping = kwargs.get('unique_bipartition_edge_mapping', False)
         taxon_namespace = kwargs.get('taxon_namespace')
         if taxon_namespace is None:
             taxon_namespace = self.taxon_namespace
@@ -5285,18 +5281,18 @@ class Tree(
                 assert curr_node.taxon is not None, \
                         "Cannot check bipartitions: {} is a leaf node, but its 'taxon' attribute is 'None'".format(curr_node)
                 cm = taxon_namespace.taxon_bitmask(curr_node.taxon)
-            if check_bipartitions:
+            if check_bipartitions and unique_bipartition_edge_mapping:
                 assert (cm & taxa_mask) == curr_edge.bipartition._leafset_bitmask, \
                         "Bipartition leafset bitmask error: {} (taxa: {}, leafset: {})".format(
                                 curr_edge.bipartition.bitmask_as_bitstring(cm),
                                 curr_edge.bipartition.bitmask_as_bitstring(taxa_mask),
                                 curr_edge.bipartition.leafset_as_bitstring())
-                assert curr_edge.bipartition.edge is curr_edge, \
-                        "Expecting edge {} for bipartition {}, but instead found {}".format(curr_edge, curr_edge.bipartition, curr_edge.bipartition.edge)
+                assert self.bipartition_edge_map[curr_edge.bipartition] is curr_edge, \
+                        "Expecting edge {} for bipartition {}, but instead found {}".format(curr_edge, curr_edge.bipartition, self.bipartition_edge_map[curr_edge.bipartition])
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
-        if check_bipartitions:
+        if check_bipartitions and unique_bipartition_edge_mapping:
             for b in self.bipartition_encoding:
-                e = b.edge
+                e = self.bipartition_edge_map[b]
                 assert b is e.bipartition
                 assert e in edges, "{}: {} => {}".format(e, e.tail_node, e.head_node)
         return True
@@ -6503,7 +6499,11 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         node_ages = []
         for bipartition in tree.bipartition_encoding:
             split = bipartition.split_bitmask
-            edge = bipartition.edge
+
+            ## if edge is stored as an attribute, might be faster to:
+            # edge = bipartition.edge
+            edge = tree.bipartition_edge_map[bipartition]
+
             splits.append(split)
             self.split_counts[split] += weight_to_use
             if not self.ignore_edge_lengths:

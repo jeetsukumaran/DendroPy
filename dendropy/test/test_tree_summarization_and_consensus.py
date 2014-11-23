@@ -158,7 +158,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
         exp_tree.calc_node_ages()
         self.assertEqual(exp_tree.bipartition_encoding, obs_tree.bipartition_encoding)
         for exp_bipartition in exp_tree.bipartition_encoding:
-            exp_edge = exp_bipartition.edge
+            exp_edge = exp_tree.bipartition_edge_map[exp_bipartition]
             obs_edge = obs_tree.bipartition_edge_map[exp_bipartition]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
 
