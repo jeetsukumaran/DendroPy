@@ -1,0 +1,4 @@
+--recurse
+--exclude=.git
+--exclude=.svn
+--languages=python
