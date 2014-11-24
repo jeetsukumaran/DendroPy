@@ -4718,8 +4718,7 @@ class Tree(
             suppress_unifurcations=True,
             collapse_unrooted_basal_bifurcation=True,
             suppress_storage=False,
-            is_bipartitions_mutable=False,
-            populate_supplemental_maps=False):
+            is_bipartitions_mutable=False):
         """
         Calculates the bipartitions of this tree.
 
@@ -4741,8 +4740,6 @@ class Tree(
             or frozen, allowing their use in hashing containers such as
             dictionary (keys) and sets. To allow modification of values, the
             `is_mutable` attribute must be set to `True`.
-        populate_supplement_maps : bool
-            By default, `Tree.bipartition_edge_map`
 
         Returns
         -------
@@ -4752,7 +4749,6 @@ class Tree(
             is `True`, then `None`.
 
         """
-        self._split_bitmask_edge_map = None
         self._bipartition_edge_map = None
         taxon_namespace = self._taxon_namespace
         seed_node = self.seed_node
