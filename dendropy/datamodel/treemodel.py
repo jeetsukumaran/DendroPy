@@ -1102,17 +1102,31 @@ class Node(
         # if filter_fn is None or filter_fn(self):
         #     yield self
         # return
+
+        # stack = [(self, False)]
+        # while stack:
+        #     node, state = stack.pop(0)
+        #     if state:
+        #         if filter_fn is None or filter_fn(node):
+        #             yield node
+        #     else:
+        #         stack.insert(0, (node, True))
+        #         child_nodes = [(n, False) for n in node._child_nodes]
+        #         child_nodes.extend(stack)
+        #         stack = child_nodes
+
+        ## Prefer `pop()` to `pop(0)`.
+        ## Thanks to Mark T. Holder
+        ## From peyotl commits: d1ffef2 + 19fdea1
         stack = [(self, False)]
         while stack:
-            node, state = stack.pop(0)
+            node, state = stack.pop()
             if state:
                 if filter_fn is None or filter_fn(node):
                     yield node
             else:
-                stack.insert(0, (node, True))
-                child_nodes = [(n, False) for n in node._child_nodes]
-                child_nodes.extend(stack)
-                stack = child_nodes
+                stack.append((node, True))
+                stack.extend([(n, False) for n in reversed(node._child_nodes)])
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
@@ -3674,19 +3688,33 @@ class Tree(
             An iterator yielding the edges in `self` in post-order sequence.
 
         """
-        # NOTE: from-scratch implementation here instead of wrapping
+        # NOTE: custom implementation here instead of wrapping
         # `postorder_node_iter()`for efficiency
+
+        # stack = [(self.seed_node._edge, False)]
+        # while stack:
+        #     edge, state = stack.pop(0)
+        #     if state:
+        #         if filter_fn is None or filter_fn(edge):
+        #             yield edge
+        #     else:
+        #         stack.insert(0, (edge, True))
+        #         child_edges = [(n._edge, False) for n in edge._head_node._child_nodes]
+        #         child_edges.extend(stack)
+        #         stack = child_edges
+
+        ## Prefer `pop()` to `pop(0)`.
+        ## Thanks to Mark T. Holder
+        ## From peyotl commits: d1ffef2 + 19fdea1
         stack = [(self.seed_node._edge, False)]
         while stack:
-            edge, state = stack.pop(0)
+            edge, state = stack.pop()
             if state:
                 if filter_fn is None or filter_fn(edge):
                     yield edge
             else:
-                stack.insert(0, (edge, True))
-                child_edges = [(n._edge, False) for n in edge._head_node._child_nodes]
-                child_edges.extend(stack)
-                stack = child_edges
+                stack.append((edge, True))
+                stack.extend([(n._edge, False) for n in reversed(edge._head_node._child_nodes)])
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
