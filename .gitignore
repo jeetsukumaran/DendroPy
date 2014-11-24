@@ -11,3 +11,7 @@ setuptools-*.egg
 
 # PyCharm
 **/.idea
+
+# Ctags
+.ctags
+tags
