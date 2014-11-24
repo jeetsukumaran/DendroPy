@@ -11,3 +11,6 @@ setuptools-*.egg
 
 # PyCharm
 **/.idea
+
+# other project stuff
+tags
