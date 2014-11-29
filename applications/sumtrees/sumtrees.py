@@ -59,11 +59,11 @@ from dendropy.mathlib import statistics
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"
-_program_date = "May 05 2011"
-_program_version = "Version 3.3.1 (%s)" % _program_date
+_program_date = "Nov 24 2014"
+_program_version = "Version 4.0.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
-_program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
+_program_copyright = "Copyright (C) 2008-2014 Jeet Sukumaran and Mark T. Holder.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."

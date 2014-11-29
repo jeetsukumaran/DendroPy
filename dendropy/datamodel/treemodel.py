@@ -4317,6 +4317,12 @@ class Tree(
             old_encoding = self.bipartition_encoding
             self.bipartition_encoding = [b for b in old_encoding if id(b) not in bipartitions_to_delete]
 
+    def delete_outdegree_one_nodes(self):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'delete_outdegree_one_nodes()' has been replaced by 'suppress_unifurcations()'",
+                stacklevel=3)
+        return self.suppress_unifurcations()
+
     def collapse_unweighted_edges(self,
             threshold=0.0000001,
             update_bipartitions=False):
@@ -6767,6 +6773,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         # Storage
         self._tree_splits = []
         self._tree_edge_lengths = []
+        self._tree_leafsets = []
         self._split_distribution = SplitDistribution(
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
@@ -6823,6 +6830,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated,
                 default_edge_length_value=self.default_edge_length_value)
+        self._tree_leafsets.append(tree.seed_node.edge.bipartition.leafset_bitmask)
         return self.add_splits(splits=splits,
                 edge_lengths=edge_lengths,
                 index=index)

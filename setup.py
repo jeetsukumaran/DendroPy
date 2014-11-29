@@ -74,7 +74,7 @@ ENTRY_POINTS = {}
 # Script paths
 
 SCRIPT_SUBPATHS = [
-    # ['scripts', 'sumtrees', 'sumtrees.py'],
+    ['applications', 'sumtrees', 'sumtrees.py'],
     # ['scripts', 'sumtrees', 'cattrees.py'],
     # ['scripts', 'sumtrees', 'sumlabels.py'],
     # ['scripts', 'calculators', 'strict_consensus_merge.py'],
