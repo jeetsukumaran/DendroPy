@@ -4341,13 +4341,21 @@ class Tree(
             update_bipartitions=False,
             rng=None):
         """
-        Arbitrarily resolve polytomies using 0-length bipartitions.
+        Arbitrarily resolve polytomies using 0-length edges.
 
-        If `rng` is an object with a sample() method then the polytomy will be
-            resolved by sequentially adding (generating all tree topologies
-            equiprobably
-            rng.sample() should behave like random.sample()
-        If `rng` is not passed in, then polytomy is broken deterministically by
+        Parameters
+        ----------
+        limit : int
+            The maximum number of children a node can have before being
+            resolved.
+        update_bipartitions : bool
+            If `True`, then bipartitions will be calculated.
+        rng : :class:`random.Random` object or `None`
+            If `rng` is an object with a `sample()` method then the polytomy
+            will be resolved by sequentially adding, generating all tree
+            topologies equiprobably. `rng.sample()` should behave like
+            `random.sample()`
+            If `rng` is `None`, then polytomy is broken deterministically by
             repeatedly joining pairs of children.
         """
         polytomies = []
@@ -4884,9 +4892,9 @@ class Tree(
 
     def _get_bipartition_edge_map(self):
         if not self._bipartition_edge_map:
-            self._bipartition_edge_map = {}
             if not self.bipartition_encoding:
                 self.encode_bipartitions()
+            self._bipartition_edge_map = {}
             for edge in self.postorder_edge_iter():
                 # print("{}: {}: {} => {}".format(edge.bipartition, edge, edge.tail_node, edge.head_node))
                 self._bipartition_edge_map[edge.bipartition] = edge
@@ -5288,8 +5296,13 @@ class Tree(
                     "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node._parent_node)
             if check_bipartitions:
                 cm = 0
+                # print("{}, {}, {}".format(curr_edge.bipartition._leafset_bitmask , taxa_mask, curr_edge.bipartition._leafset_bitmask | taxa_mask))
                 assert (curr_edge.bipartition._leafset_bitmask | taxa_mask) == taxa_mask, \
-                        "Bipartition mask error: {} | {} != {}".format(curr_edge.bipartition.leafset_as_bitstring(), self.seed_node.edge.bipartition.leafset_as_bitstring(), self.seed_node.edge.bipartition.leafset_as_bitstring(), )
+                        "Bipartition mask error: {} | {} == {} (expecting: {})".format(
+                                curr_edge.bipartition.leafset_as_bitstring(),
+                                self.seed_node.edge.bipartition.leafset_as_bitstring(),
+                                self.seed_node.edge.bipartition.bitmask_as_bitstring(curr_edge.bipartition._leafset_bitmask | taxa_mask),
+                                self.seed_node.edge.bipartition.leafset_as_bitstring(), )
             c = curr_node._child_nodes
             if c:
                 for child in c:
