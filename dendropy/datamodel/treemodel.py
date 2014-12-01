@@ -4349,17 +4349,17 @@ class Tree(
         """
         polytomies = []
         for node in self.postorder_node_iter():
-            if len(node.child_nodes()) > 2:
+            if len(node._child_nodes) > 2:
                 polytomies.append(node)
         for node in polytomies:
-            children = node.child_nodes()
+            children = node._child_nodes
             nc = len(children)
             if nc > 2:
                 if rng:
-                    to_attach = children[2:]
+                    to_attach = rng.sample(children, len(children)-2)
                     for child in to_attach:
                         node.remove_child(child)
-                    attachment_points = children[:2] + [node]
+                    attachment_points = list(node._child_nodes)
                     while len(to_attach) > 0:
                         next_child = to_attach.pop()
                         next_sib = rng.sample(attachment_points, 1)[0]
@@ -4381,7 +4381,7 @@ class Tree(
                         nn1.add_child(c1)
                         nn1.add_child(c2)
                         node.add_child(nn1)
-                        children = node.child_nodes()
+                        children = node._child_nodes
         if update_bipartitions:
             self.update_bipartitions()
 
