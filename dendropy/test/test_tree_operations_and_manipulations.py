@@ -712,6 +712,10 @@ class ResolvePolytomiesTestCase(dendropytest.ExtendedTestCase):
 
     def verify_resolve_polytomies(self, tree_string, rng):
         tree = dendropy.Tree.get_from_string(tree_string, "newick")
+        if "&U" in tree_string:
+            assert not tree.is_rooted
+        else:
+            assert tree.is_rooted
         for nd in tree:
             nd.edge.length = 100
         tree.resolve_polytomies(rng=rng)
@@ -722,7 +726,7 @@ class ResolvePolytomiesTestCase(dendropytest.ExtendedTestCase):
         for nd in tree:
             if nd is tree.seed_node and not tree.is_rooted:
                 self.assertEqual(len(nd._child_nodes), 3)
-            if len(nd._child_nodes) > 0:
+            elif len(nd._child_nodes) > 0:
                 self.assertEqual(len(nd._child_nodes), 2)
         tree2 = dendropy.Tree.get_from_string(tree_string, "newick", taxon_namespace=tree.taxon_namespace)
         self.assertNotEqual(treecompare.symmetric_difference(tree, tree2), 0)
@@ -734,14 +738,14 @@ class ResolvePolytomiesTestCase(dendropytest.ExtendedTestCase):
                 "(a,b,c,d)e;",
                 ):
             for rooting in ("[&R]", "[&U]"):
-                tree_string = rooting + " " +  tree_string
+                tree_string2 = rooting + " " +  tree_string
                 # cycle through rng period
-                self.verify_resolve_polytomies(tree_string, None)
+                self.verify_resolve_polytomies(tree_string2, None)
                 for x in range(1001):
                     rng = MockRandom()
                     for i in range(x):
                         rng.uniform(0, 1)
-                    self.verify_resolve_polytomies(tree_string, rng)
+                    self.verify_resolve_polytomies(tree_string2, rng)
 
     def test_resolve_polytomies(self):
         for tree_string in (
@@ -758,9 +762,9 @@ class ResolvePolytomiesTestCase(dendropytest.ExtendedTestCase):
                 "(t35,((t60,t47,t58,t26,t9)internal3,t3,((t13,t25)internal5,t1,((t6,t32,(t53,t7,t64,t34,t18,t23,t30,t33)internal8,t55,(t48,t20,t12,t4,t38,t28,t36)internal9)internal7,t8,((t57,t40,t52,t31,t43,t39)internal11,t59,(t37,t16,t27,(t44,t41,t10)internal13,t50)internal12,t24,t63)internal10,(t5,t56,t61,t29)internal14,t21,t49)internal6)internal4,((t17,t42,t62,t15)internal16,(t19,t2,t51,(t22,t14,(t45,t54,t46)internal19)internal18)internal17,t11)internal15)internal2)internal1;",
                 ):
             for rooting in ("[&R]", "[&U]"):
-                tree_string = rooting + " " +  tree_string
+                tree_string2 = rooting + " " +  tree_string
                 for rng in (MockRandom(), None):
-                    self.verify_resolve_polytomies(tree_string, rng)
+                    self.verify_resolve_polytomies(tree_string2, rng)
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
