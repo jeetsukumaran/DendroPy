@@ -4336,7 +4336,10 @@ class Tree(
         if update_bipartitions:
             self.update_bipartitions()
 
-    def resolve_polytomies(self, update_bipartitions=False, rng=None):
+    def resolve_polytomies(self,
+            limit=2,
+            update_bipartitions=False,
+            rng=None):
         """
         Arbitrarily resolve polytomies using 0-length bipartitions.
 
@@ -4349,14 +4352,14 @@ class Tree(
         """
         polytomies = []
         for node in self.postorder_node_iter():
-            if len(node._child_nodes) > 2:
+            if len(node._child_nodes) > limit:
                 polytomies.append(node)
         for node in polytomies:
             children = node._child_nodes
             nc = len(children)
-            if nc > 2:
+            if nc > limit:
                 if rng:
-                    to_attach = rng.sample(children, len(children)-2)
+                    to_attach = rng.sample(children, len(children)-limit)
                     for child in to_attach:
                         node.remove_child(child)
                     attachment_points = list(node._child_nodes)
@@ -4371,7 +4374,7 @@ class Tree(
                         next_attachment.add_child(next_child)
                         attachment_points.append(next_attachment)
                 else:
-                    while len(children) > 2:
+                    while len(children) > limit:
                         nn1 = Node()
                         nn1.edge.length = 0
                         c1 = children[0]
