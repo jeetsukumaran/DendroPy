@@ -30,8 +30,6 @@ import locale
 ## Unicode/String Conversions
 
 ENCODING = locale.getdefaultlocale()[1]
-def normalize_stream(stream):
-    return normalize_text(stream.read())
 
 def normalize_text(text):
     text = text.decode(ENCODING)
