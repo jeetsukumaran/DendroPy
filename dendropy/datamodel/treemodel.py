@@ -199,6 +199,7 @@ class Bipartition(object):
         if 0 == (c1 & c2):
             return True
         return False
+    is_compatible_bitmasks = staticmethod(is_compatible_bitmasks)
 
     ##############################################################################
     ## Life-cycle
