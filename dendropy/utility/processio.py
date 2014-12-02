@@ -21,10 +21,10 @@ Wraps external process as a processio, i.e., allow for non-blocking
 read/writes to stdout/stderr/stdin.
 """
 
+from dendropy.utility import textprocessing
 import sys
 import subprocess
 import threading
-import locale
 
 try:
     from Queue import Queue, Empty
@@ -32,7 +32,6 @@ except ImportError:
     from queue import Queue, Empty  # python 3.x
 
 ON_POSIX = 'posix' in sys.builtin_module_names
-ENCODING = locale.getdefaultlocale()[1]
 
 ############################################################################
 ## Handling of byte/string conversion during subprocess calls
@@ -42,9 +41,9 @@ def communicate(p, commands=None):
         commands = str.encode(commands)
     stdout, stderr = p.communicate(commands)
     if stdout is not None:
-        stdout = stdout.decode(ENCODING)
+        stdout = textprocessing.normalize_text(stdout)
     if stderr is not None:
-        stderr = stderr.decode(ENCODING)
+        stderr = textprocessing.normalize_text(stderr)
     return stdout, stderr
 
 ############################################################################

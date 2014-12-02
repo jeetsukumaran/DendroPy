@@ -20,6 +20,8 @@
 Communications using web/internet protocols.
 """
 
+from dendropy.utility import textprocessing
+
 import sys
 if sys.hexversion < 0x03000000:
     from urllib2 import Request
@@ -32,16 +34,13 @@ else:
     from urllib.parse import urlencode
     from urllib.error import HTTPError
 import re
-import locale
-
-ENCODING = locale.getdefaultlocale()[1]
 
 def read_url(url, strip_markup=False):
     """
     Return contents of url as string.
     """
     s = urlopen(url)
-    text = s.read().decode(ENCODING)
+    text = textprocessing.normalize_stream(s)
     if strip_markup:
         return re.sub(r'<[^>]*?>', '', text)
     else:

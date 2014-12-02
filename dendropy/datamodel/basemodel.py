@@ -33,6 +33,7 @@ from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
 from dendropy.utility import urlio
+from dendropy.utility import error
 
 ##############################################################################
 ## DataObject
@@ -221,7 +222,8 @@ class Readable(object):
         text = urlio.read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
         try:
-            return cls._parse_from_stream(stream=ssrc,
+            return cls._parse_from_stream(
+                    stream=ssrc,
                     schema=schema,
                     **kwargs)
         except error.DataParseError:

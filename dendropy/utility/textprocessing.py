@@ -24,6 +24,20 @@ import re
 import sys
 import time
 import itertools
+import locale
+
+###############################################################################
+## Unicode/String Conversions
+
+ENCODING = locale.getdefaultlocale()[1]
+def normalize_stream(stream):
+    return normalize_text(stream.read())
+
+def normalize_text(text):
+    text = text.decode(ENCODING)
+    if sys.hexversion < 0x03000000:
+        text = text.encode("utf-8")
+    return text
 
 ###############################################################################
 ## Allows string objects to be annotated/decorated with attributes.
