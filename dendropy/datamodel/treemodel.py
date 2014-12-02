@@ -3617,12 +3617,10 @@ class Tree(
         # `preorder_node_iter()`for efficiency
         stack = [self.seed_node._edge]
         while stack:
-            edge = stack.pop(0)
+            edge = stack.pop()
             if filter_fn is None or filter_fn(edge):
                 yield edge
-            child_edges = [n._edge for n in edge._head_node._child_nodes]
-            child_edges.extend(stack)
-            stack = child_edges
+            stack.extend(n._edge for n in reversed(edge._head_node._child_nodes))
 
     def preorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
