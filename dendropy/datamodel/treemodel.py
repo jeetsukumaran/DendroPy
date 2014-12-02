@@ -1028,12 +1028,10 @@ class Node(
         """
         stack = [self]
         while stack:
-            node = stack.pop(0)
+            node = stack.pop()
             if filter_fn is None or filter_fn(node):
                 yield node
-            child_nodes = list(node._child_nodes)
-            child_nodes.extend(stack)
-            stack = child_nodes
+            stack.extend(n for n in reversed(node._child_nodes))
 
     def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
