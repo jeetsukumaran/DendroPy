@@ -1430,6 +1430,100 @@ class Node(
                 descending=descending)
 
     ###########################################################################
+    ### Node Processesor
+
+    def preorder_apply(self, before_fn=None, after_fn=None, leaf_fn=None):
+        """
+        Applies function `before_fn` and `after_fn` to all internal nodes and
+        `leaf_fn` to all terminal nodes in subtree starting with `self`, with
+        nodes visited in pre-order.
+
+        Given a tree with preorder sequence of nodes of
+        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]:
+
+                       a
+                      / \
+                     /   \
+                    /     \
+                   /       \
+                  /         \
+                 /           \
+                /             c
+               b             / \
+              / \           /   \
+             /   e         /     f
+            /   / \       /     / \
+           /   /   \     g     /   h
+          /   /     \   / \   /   / \
+         i   j       k l   m n   o   p
+
+
+        the following order of function calls results:
+
+            before_fn(a)
+            before_fn(b)
+            leaf_fn(i)
+            before_fn(e)
+            leaf_fn(j)
+            leaf_fn(k)
+            after_fn(e)
+            after_fn(b)
+            before_fn(c)
+            before_fn(g)
+            leaf_fn(l)
+            leaf_fn(m)
+            after_fn(g)
+            before_fn(f)
+            leaf_fn(n)
+            before_fn(h)
+            leaf_fn(o)
+            leaf_fn(p)
+            after_fn(h)
+            after_fn(f)
+            after_fn(c)
+            after_fn(a)
+
+        Parameters
+        ----------
+        before_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+        after_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+        leaf_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+
+        Notes
+        -----
+        Adapted from work by Mark T. Holder (the `peyotl` module of the Open
+        Tree of Life Project):
+
+            https://github.com/OpenTreeOfLife/peyotl.git
+
+        """
+        stack = [self]
+        while stack:
+            node = stack.pop()
+            if not node._child_nodes:
+                if leaf_fn:
+                    leaf_fn(node)
+                # (while node is the last child of parent ...)
+                while (
+                        (node._parent_node is None)
+                        or (node._parent_node._child_nodes[-1] is node)
+                      ):
+                    node = node._parent_node
+                    if node is not None:
+                        if after_fn is not None:
+                            after_fn(node)
+                    else:
+                        break
+            else:
+                if before_fn is not None:
+                    before_fn(node)
+                stack.extend([i for i in reversed(node._child_nodes)])
+        return
+
+    ###########################################################################
     ### Child Node Access and Manipulation
 
     def set_child_nodes(self, child_nodes):
@@ -3587,6 +3681,76 @@ class Tree(
         return self.ageorder_node_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
+
+    def preorder_apply(self, before_fn=None, after_fn=None, leaf_fn=None):
+        """
+        Applies function `before_fn` and `after_fn` to all internal nodes and
+        `leaf_fn` to all terminal nodes in subtree starting with `self`, with
+        nodes visited in pre-order.
+
+        Given a tree with preorder sequence of nodes of
+        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]:
+
+                       a
+                      / \
+                     /   \
+                    /     \
+                   /       \
+                  /         \
+                 /           \
+                /             c
+               b             / \
+              / \           /   \
+             /   e         /     f
+            /   / \       /     / \
+           /   /   \     g     /   h
+          /   /     \   / \   /   / \
+         i   j       k l   m n   o   p
+
+
+        the following order of function calls results:
+
+            before_fn(a)
+            before_fn(b)
+            leaf_fn(i)
+            before_fn(e)
+            leaf_fn(j)
+            leaf_fn(k)
+            after_fn(e)
+            after_fn(b)
+            before_fn(c)
+            before_fn(g)
+            leaf_fn(l)
+            leaf_fn(m)
+            after_fn(g)
+            before_fn(f)
+            leaf_fn(n)
+            before_fn(h)
+            leaf_fn(o)
+            leaf_fn(p)
+            after_fn(h)
+            after_fn(f)
+            after_fn(c)
+            after_fn(a)
+
+        Parameters
+        ----------
+        before_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+        after_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+        leaf_fn : function object or `None`
+            A function object that takes a :class:`Node` as its argument.
+
+        Notes
+        -----
+        Adapted from work by Mark T. Holder (the `peyotl` module of the Open
+        Tree of Life Project):
+
+            https://github.com/OpenTreeOfLife/peyotl.git
+
+        """
+        self.seed_node.preorder_apply(before_fn, after_fn, leaf_fn)
 
     ###########################################################################
     ### Edge iterators

@@ -555,5 +555,43 @@ class TreeRootingState(dendropytest.ExtendedTestCase):
     def test_is_unrooted(self):
         self.assertFalse(self.fail_incomplete_tests())
 
+class TestTreeApply(curated_test_tree.CuratedTestTree, unittest.TestCase):
+
+    def test_preorder_apply(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        observed = []
+        before_fn = lambda x: observed.append(("before", x.label))
+        after_fn = lambda x: observed.append(("after", x.label))
+        leaf_fn = lambda x: observed.append(("leaf", x.label))
+        tree.preorder_apply(
+                before_fn=before_fn,
+                after_fn=after_fn,
+                leaf_fn=leaf_fn)
+        expected = [
+            ("before", "a"),
+            ("before", "b"),
+            ("leaf", "i"),
+            ("before", "e"),
+            ("leaf", "j"),
+            ("leaf", "k"),
+            ("after", "e"),
+            ("after", "b"),
+            ("before", "c"),
+            ("before", "g"),
+            ("leaf", "l"),
+            ("leaf", "m"),
+            ("after", "g"),
+            ("before", "f"),
+            ("leaf", "n"),
+            ("before", "h"),
+            ("leaf", "o"),
+            ("leaf", "p"),
+            ("after", "h"),
+            ("after", "f"),
+            ("after", "c"),
+            ("after", "a"),
+                ]
+        self.assertEqual(observed, expected)
+
 if __name__ == "__main__":
     unittest.main()
