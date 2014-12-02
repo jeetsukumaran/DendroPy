@@ -304,12 +304,49 @@ class NewickWriter(ioservice.DataWriter):
         else:
             annotation_comments = ""
         tree_comments = self._compose_comment_string(tree)
-        stream.write("{}{}{}{}{};".format(
+        stream.write("{}{}{}{}".format(
                 rooting,
                 weight,
                 annotation_comments,
                 tree_comments,
-                self._compose_node(tree.seed_node)))
+                ))
+        tree.preorder_apply(
+                before_fn=lambda x: self._write_node_open(x, stream),
+                after_fn=lambda x: self._write_node_close(x, stream),
+                leaf_fn=lambda x: self._write_leaf(x, stream),
+                )
+        stream.write(";")
+
+    def _write_node_open(self, node, out):
+        if node._parent_node is None or node._parent_node._child_nodes[0] is node:
+            out.write("(")
+        else:
+            out.write(",(")
+
+    def _write_leaf(self, node, out):
+        if not (node._parent_node is None or node._parent_node._child_nodes[0] is node):
+            out.write(",")
+        self._write_node_body(node, out)
+
+    def _write_node_close(self, node, out):
+        out.write(")")
+        self._write_node_body(node, out)
+
+    def _write_node_body(self, node, out):
+        out.write(self._render_node_tag(node))
+        if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
+            out.write(":{}".format(self.edge_label_compose_func(node.edge)))
+        if not self.suppress_annotations:
+            node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier)
+            out.write(node_annotation_comments)
+            edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge,
+                    nhx=self.annotations_as_nhx,
+                    real_value_format_specifier=self.real_value_format_specifier)
+            out.write(edge_annotation_comments)
+        out.write(self._compose_comment_string(node))
+        out.write(self._compose_comment_string(node.edge))
 
     def _compose_comment_string(self, item):
         if not self.suppress_item_comments and item.comments:
@@ -372,32 +409,32 @@ class NewickWriter(ioservice.DataWriter):
         else:
             return ""
 
-    def _compose_node(self, node):
-        """
-        Given a DendroPy Node, this returns the Node as a NEWICK
-        statement according to the class-defined formatting rules.
-        """
-        child_nodes = node.child_nodes()
-        if child_nodes:
-            subnodes = [self._compose_node(child) for child in child_nodes]
-            statement = '(' + ','.join(subnodes) + ')'
-            if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
-                statement = statement + self._render_node_tag(node)
-            if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-                statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
-        else:
-            statement = self._render_node_tag(node)
-            if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-                statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
-        if not self.suppress_annotations:
-            node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
-                    nhx=self.annotations_as_nhx,
-                    real_value_format_specifier=self.real_value_format_specifier)
-            edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge,
-                    nhx=self.annotations_as_nhx,
-                    real_value_format_specifier=self.real_value_format_specifier)
-            statement = statement + node_annotation_comments + edge_annotation_comments
-        edge_comment_str = self._compose_comment_string(node.edge)
-        node_comment_str = self._compose_comment_string(node)
-        statement = statement + node_comment_str + edge_comment_str
-        return statement
+    # def _compose_node(self, node):
+    #     """
+    #     Given a DendroPy Node, this returns the Node as a NEWICK
+    #     statement according to the class-defined formatting rules.
+    #     """
+    #     child_nodes = node.child_nodes()
+    #     if child_nodes:
+    #         subnodes = [self._compose_node(child) for child in child_nodes]
+    #         statement = '(' + ','.join(subnodes) + ')'
+    #         if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
+    #             statement = statement + self._render_node_tag(node)
+    #         if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
+    #             statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
+    #     else:
+    #         statement = self._render_node_tag(node)
+    #         if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
+    #             statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
+    #     if not self.suppress_annotations:
+    #         node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
+    #                 nhx=self.annotations_as_nhx,
+    #                 real_value_format_specifier=self.real_value_format_specifier)
+    #         edge_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node.edge,
+    #                 nhx=self.annotations_as_nhx,
+    #                 real_value_format_specifier=self.real_value_format_specifier)
+    #         statement = statement + node_annotation_comments + edge_annotation_comments
+    #     edge_comment_str = self._compose_comment_string(node.edge)
+    #     node_comment_str = self._compose_comment_string(node)
+    #     statement = statement + node_comment_str + edge_comment_str
+    #     return statement
