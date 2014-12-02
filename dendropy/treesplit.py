@@ -210,14 +210,18 @@ def find_edge_from_split(root, split_to_find, mask=-1):
             return r
     return None
 
-def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
+def encode_splits(tree,
+        delete_outdegree_one=True,
+        collapse_unrooted_basal_bifurcation=True,
+        create_split_edge_map=True,
+        create_edge_split_map=False):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:
         - `split_bitmask` : a rooted split representation, i.e. a long/bitmask
             where bits corresponding to indices of taxa descended from this
             edge are turned on
-    If `create_dict` is True, then the following is added to the tree:
+    If `create_split_edge_map` is True, then the following is added to the tree:
         - `split_edges`:
             [if `tree.is_rooted`]: a dictionary where keys are the
             splits and values are edges.
@@ -235,7 +239,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     taxon_set = tree.taxon_set
     if taxon_set is None:
         taxon_set = tree.infer_taxa()
-    if create_dict:
+    if create_split_edge_map:
         tree.split_edges = {}
         split_map = tree.split_edges
         # if tree.is_rooted:
@@ -245,26 +249,27 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         #     d = containers.NormalizedBitmaskDict(mask=atb)
         #     tree.split_edges = d
         # split_map = tree.split_edges
-    if not tree.seed_node:
+    if create_edge_split_map:
+        tree.edge_split_map = {}
+    seed_node = tree.seed_node
+    if seed_node is None:
         return
-
-    if delete_outdegree_one:
-        sn = tree.seed_node
+    if collapse_unrooted_basal_bifurcation:
         if not tree.is_rooted:
-            if len(sn.child_nodes()) == 2:
+            if len(seed_node.child_nodes()) == 2:
                 tree.deroot()
-        while len(sn.child_nodes()) == 1:
-            c = sn.child_nodes()[0]
+    if delete_outdegree_one:
+        while len(seed_node.child_nodes()) == 1:
+            c = seed_node.child_nodes()[0]
             if len(c.child_nodes()) == 0:
                 break
             try:
-                sn.edge.length += c.edge.length
+                seed_node.edge.length += c.edge.length
             except:
                 pass
-            sn.remove_child(c)
+            seed_node.remove_child(c)
             for gc in c.child_nodes():
-                sn.add_child(gc)
-
+                seed_node.add_child(gc)
     for edge in tree.postorder_edge_iter():
         cm = 0
         h = edge.head_node
@@ -290,15 +295,21 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             if t:
                 cm = taxon_set.taxon_bitmask(t)
         edge.split_bitmask = cm
-        if create_dict:
+        if create_split_edge_map:
             split_map[cm] = edge
+        if create_edge_split_map:
+            tree.edge_split_map[edge] = cm
     # create normalized bitmasks, where the full (tree) split mask is *not*
     # all the taxa, but only those found on the tree
-    if not tree.is_rooted:
+    if not tree.is_rooted and (create_split_edge_map or create_edge_split_map):
         mask = tree.seed_node.edge.split_bitmask
         d = containers.NormalizedBitmaskDict(mask=mask)
-        for k, v in tree.split_edges.items():
-            d[k] = v
+        for edge in tree.postorder_edge_iter():
+            key = d.normalize_key(edge.split_bitmask)
+            if create_split_edge_map:
+                d[key] = edge
+            if create_edge_split_map:
+                tree.edge_split_map[edge] = key
         tree.split_edges = d
 
 def is_compatible(split1, split2, mask):
