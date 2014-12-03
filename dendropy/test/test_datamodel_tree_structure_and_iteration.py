@@ -557,13 +557,13 @@ class TreeRootingState(dendropytest.ExtendedTestCase):
 
 class TestTreeApply(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
-    def test_preorder_apply(self):
+    def test_apply(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         observed = []
         before_fn = lambda x: observed.append(("before", x.label))
         after_fn = lambda x: observed.append(("after", x.label))
         leaf_fn = lambda x: observed.append(("leaf", x.label))
-        tree.preorder_apply(
+        tree.apply(
                 before_fn=before_fn,
                 after_fn=after_fn,
                 leaf_fn=leaf_fn)

@@ -1432,7 +1432,7 @@ class Node(
     ###########################################################################
     ### Node Processesor
 
-    def preorder_apply(self, before_fn=None, after_fn=None, leaf_fn=None):
+    def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
         """
         Applies function `before_fn` and `after_fn` to all internal nodes and
         `leaf_fn` to all terminal nodes in subtree starting with `self`, with
@@ -3682,7 +3682,7 @@ class Tree(
                 filter_fn=filter_fn,
                 descending=descending)
 
-    def preorder_apply(self, before_fn=None, after_fn=None, leaf_fn=None):
+    def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
         """
         Applies function `before_fn` and `after_fn` to all internal nodes and
         `leaf_fn` to all terminal nodes in subtree starting with `self`, with
@@ -3750,7 +3750,7 @@ class Tree(
             https://github.com/OpenTreeOfLife/peyotl.git
 
         """
-        self.seed_node.preorder_apply(before_fn, after_fn, leaf_fn)
+        self.seed_node.apply(before_fn, after_fn, leaf_fn)
 
     ###########################################################################
     ### Edge iterators

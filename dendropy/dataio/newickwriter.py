@@ -310,7 +310,7 @@ class NewickWriter(ioservice.DataWriter):
                 annotation_comments,
                 tree_comments,
                 ))
-        tree.preorder_apply(
+        tree.apply(
                 before_fn=lambda x: self._write_node_open(x, stream),
                 after_fn=lambda x: self._write_node_close(x, stream),
                 leaf_fn=lambda x: self._write_leaf(x, stream),
