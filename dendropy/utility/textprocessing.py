@@ -25,17 +25,26 @@ import sys
 import time
 import itertools
 import locale
+import codecs
 
 ###############################################################################
 ## Unicode/String Conversions
 
 ENCODING = locale.getdefaultlocale()[1]
 
-def normalize_text(text):
-    text = text.decode(ENCODING)
+def bytes_to_text(s):
+    """
+    Converts a byte string (as read from, e.g., standard input)
+    to a text string.
+
+    In Python 3, this is from type `bytes` to `str`.
+    In Python 2, this is, confusingly, from type `str` to `unicode`.
+
+    """
+    s = codecs.decode(s, ENCODING)
     if sys.hexversion < 0x03000000:
-        text = text.encode("utf-8")
-    return text
+        s = codecs.encode(s, "utf-8")
+    return s
 
 ###############################################################################
 ## Allows string objects to be annotated/decorated with attributes.

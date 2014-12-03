@@ -40,7 +40,7 @@ def read_url(url, strip_markup=False):
     Return contents of url as string.
     """
     s = urlopen(url)
-    text = textprocessing.normalize_text(s.read())
+    text = textprocessing.bytes_to_text(s.read())
     if strip_markup:
         return re.sub(r'<[^>]*?>', '', text)
     else:

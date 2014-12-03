@@ -41,9 +41,9 @@ def communicate(p, commands=None):
         commands = str.encode(commands)
     stdout, stderr = p.communicate(commands)
     if stdout is not None:
-        stdout = textprocessing.normalize_text(stdout)
+        stdout = textprocessing.bytes_to_text(stdout)
     if stderr is not None:
-        stderr = textprocessing.normalize_text(stderr)
+        stderr = textprocessing.bytes_to_text(stderr)
     return stdout, stderr
 
 ############################################################################
