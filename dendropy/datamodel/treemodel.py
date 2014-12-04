@@ -4528,7 +4528,7 @@ class Tree(
             nc = len(children)
             if nc > limit:
                 if rng:
-                    to_attach = rng.sample(children, len(children)-limit)
+                    to_attach = rng.sample(children, len(children)-limit-1)
                     for child in to_attach:
                         node.remove_child(child)
                     attachment_points = list(node._child_nodes)
