@@ -1352,6 +1352,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         next_attachment.add_child(next_sib)
                         next_attachment.add_child(next_child)
                         attachment_points.append(next_attachment)
+                        attachment_points.append(next_child)
                 else:
                     while len(children) > 2:
                         nn1 = Node()
