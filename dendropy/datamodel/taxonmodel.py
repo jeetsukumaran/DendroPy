@@ -428,6 +428,8 @@ class TaxonNamespaceAssociated(object):
 ## TaxonNamespace
 
 class TaxonNamespace(
+        basemodel.Readable,
+        basemodel.Writeable,
         basemodel.DataObject,
         basemodel.Annotable):
 
@@ -1575,6 +1577,35 @@ class TaxonNamespace(
         if output is not None:
             output.write(s)
         return s
+
+    ### I/O
+
+    def write(self, stream, schema, **kwargs):
+        """
+        Writes out `self` in `schema` format to a destination given by
+        file-like object `stream`.
+
+        Parameters
+        ----------
+        stream : file or file-like object
+            Destination for data.
+        schema : string
+            Must be a recognized and tree file schema, such as "nexus",
+            "newick", etc, for which a specialized tree list writer is
+            available. If this is not implemented for the schema specified, then
+            a UnsupportedSchemaError is raised.
+
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments will be passed directly to the writer for the
+            specified schema. See documentation for details on keyword
+            arguments supported by writers of various schemas.
+
+        """
+        from dendropy import dataio
+        writer = dataio.get_writer(schema, **kwargs)
+        writer._write(
+                stream=stream,
+                taxon_namespaces=[self],)
 
 ##############################################################################
 ## TaxonSet
