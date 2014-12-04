@@ -22,9 +22,9 @@ Models of canonical tree shapes.
 
 import dendropy
 
-def star_tree(taxon_namespace):
+def star_tree(taxon_namespace, **kwargs):
     "Builds and returns a star tree from the given taxa block."
-    star_tree = dendropy.Tree(taxon_namespace=taxon_namespace)
+    star_tree = dendropy.Tree(taxon_namespace=taxon_namespace, **kwargs)
     for taxon in taxon_namespace:
         star_tree.seed_node.new_child(taxon=taxon)
     return star_tree
