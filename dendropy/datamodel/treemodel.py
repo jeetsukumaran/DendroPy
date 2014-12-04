@@ -4524,36 +4524,33 @@ class Tree(
             if len(node._child_nodes) > limit:
                 polytomies.append(node)
         for node in polytomies:
-            children = node._child_nodes
-            nc = len(children)
-            if nc > limit:
-                if rng:
-                    to_attach = rng.sample(children, len(children)-limit)
-                    for child in to_attach:
-                        node.remove_child(child)
-                    attachment_points = list(node._child_nodes)
-                    while len(to_attach) > 0:
-                        next_child = to_attach.pop()
-                        next_sib = rng.sample(attachment_points, 1)[0]
-                        next_attachment = Node()
-                        p = next_sib._parent_node
-                        p.add_child(next_attachment)
-                        p.remove_child(next_sib)
-                        next_attachment.add_child(next_sib)
-                        next_attachment.add_child(next_child)
-                        attachment_points.append(next_attachment)
-                else:
-                    while len(children) > limit:
-                        nn1 = Node()
-                        nn1.edge.length = 0
-                        c1 = children[0]
-                        c2 = children[1]
-                        node.remove_child(c1)
-                        node.remove_child(c2)
-                        nn1.add_child(c1)
-                        nn1.add_child(c2)
-                        node.add_child(nn1)
-                        children = node._child_nodes
+            if rng:
+                to_attach = rng.sample(node._child_nodes, len(node._child_nodes)-limit)
+                for child in to_attach:
+                    node.remove_child(child)
+                attachment_points = list(node._child_nodes)
+                while len(to_attach) > 0:
+                    next_child = to_attach.pop()
+                    next_sib = rng.choice(attachment_points)
+                    next_attachment = Node()
+                    p = next_sib._parent_node
+                    p.add_child(next_attachment)
+                    p.remove_child(next_sib)
+                    next_attachment.add_child(next_sib)
+                    next_attachment.add_child(next_child)
+                    attachment_points.append(next_attachment)
+                    attachment_points.append(next_child)
+            else:
+                while len(node._child_nodes) > limit:
+                    nn1 = Node()
+                    nn1.edge.length = 0
+                    c1 = node._child_nodes[0]
+                    c2 = node._child_nodes[1]
+                    node.remove_child(c1)
+                    node.remove_child(c2)
+                    nn1.add_child(c1)
+                    nn1.add_child(c2)
+                    node.add_child(nn1)
         if update_bipartitions:
             self.update_bipartitions()
 
