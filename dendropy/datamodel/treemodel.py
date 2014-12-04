@@ -4528,7 +4528,7 @@ class Tree(
             nc = len(children)
             if nc > limit:
                 if rng:
-                    to_attach = rng.sample(children, len(children)-limit-1)
+                    to_attach = rng.sample(children, len(children)-limit)
                     for child in to_attach:
                         node.remove_child(child)
                     attachment_points = list(node._child_nodes)
@@ -4995,7 +4995,7 @@ class Tree(
                     parent.insert_child(index=pos, node=child_nodes[0])
                     head_node._parent_node = None
                 else:
-                    self.seed_node = children[0]
+                    self.seed_node = child_nodes[0]
                     self.seed_node._parent_node = None
             else:
                 if num_children == 0:
