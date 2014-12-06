@@ -37,7 +37,9 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 ## Handling of byte/string conversion during subprocess calls
 
 def communicate(p, commands=None):
-    if commands is not None:
+    if isinstance(commands, list) or isinstance(commands, tuple):
+        commands = "\n".join(str.encode(c) for c in commands)
+    elif commands is not None:
         commands = str.encode(commands)
     stdout, stderr = p.communicate(commands)
     if stdout is not None:
