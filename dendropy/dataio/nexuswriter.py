@@ -269,7 +269,7 @@ class NexusWriter(ioservice.DataWriter):
         if self.translate_tree_taxa is True:
             m = {}
             for taxon_idx, t in enumerate(taxon_namespace):
-                m[t] = str(taxon_namespace.accession_index(t))
+                m[t] = str(taxon_namespace.accession_index(t)+1)
                 # m[t] = str(taxon_idx)
             self._newick_writer.taxon_token_map = m
         else:
