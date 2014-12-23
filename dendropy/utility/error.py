@@ -144,4 +144,8 @@ class TreeSimTotalExtinctionException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+class SeedNodeDeletionException(Exception):
+
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
 

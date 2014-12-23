@@ -4571,6 +4571,46 @@ class Tree(
         if update_bipartitions:
             self.update_bipartitions()
 
+    def filter_leaf_nodes(
+            self,
+            filter_fn,
+            recursive=True,
+            update_bipartitions=False,
+            suppress_unifurcations=True):
+        """
+        Removes all leaves for which `filter_fn` returns `False`. If recursive
+        is `True`, then process is repeated until all leaf nodes in the tree will
+        evaluate to `True` when passed to `filter_fn`.
+
+        Parameters
+        ----------
+        `filter_fn` : function object
+            A function that takes a :class:`Node` object and returns `True` if
+            the object is to be allowed as a leaf node, and `False` if otherwise.
+        recursive : bool
+            If `True`, then filter is repeatedly applied until all leaf nodes
+            evaluate to `True` under `filter_fn`. If `False`, then only a
+            single pass is made on the current leaf set. This may result in new
+            leaves for which the `filter_fn` is `False` (e.g., the parent node
+            of a cherry in which both children evaluated to `False`
+            under `filter_fn` now is a leaf node which may be `False`
+            under `filter_fn`).
+        """
+        while True:
+            nodes_deleted = False
+            for nd in self.leaf_node_iter():
+                if not filter_fn(nd):
+                    if nd.edge.tail_node is None:
+                        raise error.SeedNodeDeletionException("Attempting to remove seed node or node without parent")
+                    nd.edge.tail_node.remove_child(nd)
+                    nodes_deleted = True
+            if not nodes_deleted or not recursive:
+                break
+        if suppress_unifurcations:
+            self.suppress_unifurcations()
+        if update_bipartitions:
+            self.update_bipartitions()
+
     def prune_leaves_without_taxa(self,
             update_bipartitions=False,
             suppress_unifurcations=True):
