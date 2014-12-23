@@ -56,6 +56,21 @@ from dendropy.datamodel.charmatrixmodel import InfiniteSitesCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
 from dendropy.datamodel.datasetmodel import DataSet
+from dendropy.utility.error import ImmutableTaxonNamespaceError
+from dendropy.utility.error import DataError
+from dendropy.utility.error import DataParseError
+from dendropy.utility.error import UnsupportedSchemaError
+from dendropy.utility.error import UnspecifiedSchemaError
+from dendropy.utility.error import UnspecifiedSourceError
+from dendropy.utility.error import TooManyArgumentsError
+from dendropy.utility.error import InvalidArgumentValueError
+from dendropy.utility.error import MultipleInitializationSourceError
+from dendropy.utility.error import TaxonNamespaceIdentityError
+from dendropy.utility.error import TaxonNamespaceReconstructionError
+from dendropy.utility.error import UltrametricityError
+from dendropy.utility.error import TreeSimTotalExtinctionException
+from dendropy.utility.error import SeedNodeDeletionException
+
 
 ###############################################################################
 ## Legacy Support
