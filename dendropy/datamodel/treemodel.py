@@ -4595,6 +4595,11 @@ class Tree(
             of a cherry in which both children evaluated to `False`
             under `filter_fn` now is a leaf node which may be `False`
             under `filter_fn`).
+        suppress_unifurcations : bool
+            If `True`, nodes of outdegree 1 will be deleted as they are
+            encountered.
+        update_bipartitions : bool
+            If `True`, then bipartitions will be calculated.
         """
         while True:
             nodes_deleted = False
