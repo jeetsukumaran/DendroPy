@@ -500,6 +500,13 @@ def fit_pure_birth_model(**kwargs):
                 a more relaxed precision, down to 2 decimal places. Use
                 `ultrametricity_check_prec=False` to disable checking of ultrametricity precision.
 
+            ignore_likelihood_calculation_failure: bool (default: False)
+                In some cases (typically, abnormal trees, e.g., 1-tip), the
+                likelihood estimation will fail. In this case a ValueError will
+                be raised. If `ignore_likelihood_calculation_failure` is
+                `True`, then the function call will still succeed, with the
+                likelihood set to -`inf`.
+
     Returns
     -------
     m : dictionary
@@ -583,7 +590,10 @@ def fit_pure_birth_model(**kwargs):
         s3 = lo - up
         lh = s1 + s2 + s3
     except ValueError:
-        lh = float("-inf")
+        if kwargs.get("ignore_likelihood_calculation_failure", False):
+            raise ValueError("Likelihood estimation failure")
+        else:
+            lh = float("-inf")
 
     result = {
         "birth_rate" : smax,
