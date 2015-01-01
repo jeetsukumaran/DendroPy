@@ -45,6 +45,7 @@ from dendropy.datamodel.charstatemodel import PROTEIN_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import BINARY_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import RESTRICTION_SITES_STATE_ALPHABET
 from dendropy.datamodel.charstatemodel import INFINITE_SITES_STATE_ALPHABET
+from dendropy.datamodel.charstatemodel import new_standard_state_alphabet
 from dendropy.datamodel.charmatrixmodel import CharacterMatrix
 from dendropy.datamodel.charmatrixmodel import CharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import DnaCharacterMatrix

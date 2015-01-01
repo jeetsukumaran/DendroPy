@@ -300,11 +300,12 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
         self._taxon_namespaces.append(taxon_namespace)
         return taxon_namespace
 
-    def _new_char_matrix(self, data_type, taxon_namespace, label=None):
+    def _new_char_matrix(self, data_type, taxon_namespace, label=None, **kwargs):
         char_matrix = self._char_matrix_factory(
                 data_type,
                 taxon_namespace=taxon_namespace,
-                label=label)
+                label=label,
+                **kwargs)
         self._char_matrices.append(char_matrix)
         return char_matrix
 
@@ -609,6 +610,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
 
         # character matrix instantiation
         nxchartype = nxchars.parse_type()
+        extra_kwargs = {}
         if nxchartype.startswith('Dna'):
             data_type = "dna"
         elif nxchartype.startswith('Rna'):
@@ -619,6 +621,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
             data_type = "restriction"
         elif nxchartype.startswith('Standard'):
             data_type = "standard"
+            extra_kwargs["default_state_alphabet"] = None
         elif nxchartype.startswith('Continuous'):
             data_type = "continuous"
         else:
@@ -626,7 +629,8 @@ class _NexmlCharBlockParser(_AnnotationParser):
         char_matrix = self._char_matrix_factory(
                 data_type,
                 taxon_namespace=taxon_namespace,
-                label=label)
+                label=label,
+                **extra_kwargs)
 
         # annotation processing
         annotations = [i for i in nxchars.findall_annotations()]

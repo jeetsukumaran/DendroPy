@@ -1688,11 +1688,22 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
         Unnamed args are passed to clone_from.
+
+        A default state alphabet consisting of state symbols of 0-9 will
+        automatically be created unless the `default_state_alphabet=None` is
+        passed in. To specify a different default state alphabet:
+
+            default_state_alphabet=dendropy.new_standard_state_alphabet("abc")
+            default_state_alphabet=dendropy.new_standard_state_alphabet("abac")
+
         """
-        default_state_alphabet = kwargs.pop("default_state_alphabet", None)
+
+        if "default_state_alphabet" in kwargs:
+            default_state_alphabet = kwargs.pop("default_state_alphabet")
+        else:
+            default_state_alphabet = charstatemodel.new_standard_state_alphabet()
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
-        if default_state_alphabet is not None:
-            self.default_state_alphabet = default_state_alphabet
+        self._default_state_alphabet = default_state_alphabet
 
 ###############################################################################
 ## Main Character Matrix Factory Function

@@ -1400,3 +1400,26 @@ PROTEIN_STATE_ALPHABET            =  ProteinStateAlphabet()
 RESTRICTION_SITES_STATE_ALPHABET  =  RestrictionSitesStateAlphabet()
 INFINITE_SITES_STATE_ALPHABET     =  InfiniteSitesStateAlphabet()
 
+def new_standard_state_alphabet(
+        fundamental_state_symbols=None,
+        case_sensitive=False):
+    if fundamental_state_symbols is None:
+        fundamental_state_symbols = "0123456789"
+    s = StateAlphabet(
+            fundamental_states=fundamental_state_symbols,
+            no_data_symbol="?",
+            gap_symbol="-",
+            # polymorphic_states=polymorphic_states,
+            # ambiguous_states=ambiguous_states,
+            # symbol_synonyms=symbol_synonyms,
+            label="Standard",
+            case_sensitive=case_sensitive)
+    for state in s.state_iter():
+        if state.symbol == "-":
+            attr_name = "gap"
+        else:
+            attr_name = state.symbol
+        s.set_state_as_attribute(state, attr_name)
+    return s
+
+
