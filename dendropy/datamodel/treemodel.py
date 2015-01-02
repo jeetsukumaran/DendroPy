@@ -4847,9 +4847,10 @@ class Tree(
                 if not (ultrametricity_check_prec is None or ultrametricity_check_prec is False or ultrametricity_check_prec < 0):
                     for nnd in ch[1:]:
                         ocnd = nnd.age + nnd.edge.length
-                        if abs(node.age - ocnd) > ultrametricity_check_prec:
+                        d = abs(node.age - ocnd)
+                        if  d > ultrametricity_check_prec:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
-                            raise error.UltrametricityError("Tree is not ultrametric")
+                            raise error.UltrametricityError("Tree is not ultrametric within specified threshold: {} (threshold = {})".format(d, ultrametricity_check_prec))
                 ages.append(node.age)
         return ages
 
