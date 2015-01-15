@@ -1659,9 +1659,12 @@ class Taxon(
             self._lower_cased_label = None
         self.comments = []
 
+    def _get_label(self):
+        return self._label
     def _set_label(self, v):
         self._label = v
         self._lower_cased_label = None
+    label = property(_get_label, _set_label)
 
     def _get_lower_cased_label(self):
         if self._label is None:
