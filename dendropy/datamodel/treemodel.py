@@ -4631,42 +4631,6 @@ class Tree(
         if update_bipartitions:
             self.update_bipartitions()
 
-    def xprune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
-        """
-        Removes terminal nodes associated with Taxon objects given by the container
-        `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
-        """
-        nodes_to_retain = []
-        for nd in self.postorder_node_iter():
-            if nd.taxon is not None and nd.taxon not in taxa:
-                nodes_to_retain.append(nd)
-        parent_nodes = []
-        nodes_to_retain.append(self.seed_node)
-        for nd in list(nodes_to_retain):
-            parent_node = nd._parent_node
-            while parent_node is not None and parent_node not in nodes_to_retain:
-                nodes_to_retain.append(parent_node)
-                parent_node = parent_node._parent_node
-        # print ">>"
-        # for nd in sorted(nodes_to_retain):
-        #     print nd.oid
-        # print "--"
-        to_process = [self.seed_node]
-        while to_process:
-            nd = to_process.pop(0)
-            children = nd._child_nodes
-            for ch in children:
-                if ch not in nodes_to_retain:
-                    nd._child_nodes.remove(ch)
-                    # ch.edge.tail_node.remove_child(ch)
-            to_process.extend(nd._child_nodes)
-        if suppress_unifurcations:
-            self.suppress_unifurcations()
-        # print self.as_string("newick")
-        # for nd in sorted(self.postorder_node_iter()):
-        #     print nd.oid
-        # print "<<\n"
-
     def prune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
@@ -5100,10 +5064,7 @@ class Tree(
                 self.encode_bipartitions()
             self._bipartition_edge_map = {}
             for edge in self.postorder_edge_iter():
-                # print("{}: {}: {} => {}".format(edge.bipartition, edge, edge.tail_node, edge.head_node))
                 self._bipartition_edge_map[edge.bipartition] = edge
-            # print(self.as_string("newick"))
-            # print(self._plot_bipartitions_on_tree(is_bipartitions_updated=True))
         return self._bipartition_edge_map
     bipartition_edge_map = property(_get_bipartition_edge_map)
 
@@ -5172,11 +5133,8 @@ class Tree(
         Returns true if the :class:`Bipartition` `bipartition` is compatible
         with all bipartitions of this tree.
         """
-        # print(self._plot_bipartitions_on_tree())
-
         if not is_bipartitions_updated or not self.bipartitions_encoding:
             self.encode_bipartitions()
-
         if bipartition in self.bipartition_encoding:
             return True
         else:
@@ -5500,7 +5458,6 @@ class Tree(
                     "Tail node of edge of {}, {}, is {}, but parent node is {}".format(curr_node, curr_edge, curr_edge.tail_node, curr_node._parent_node)
             if check_bipartitions:
                 cm = 0
-                # print("{}, {}, {}".format(curr_edge.bipartition._leafset_bitmask , taxa_mask, curr_edge.bipartition._leafset_bitmask | taxa_mask))
                 assert (curr_edge.bipartition._leafset_bitmask | taxa_mask) == taxa_mask, \
                         "Bipartition mask error: {} | {} == {} (expecting: {})".format(
                                 curr_edge.bipartition.leafset_as_bitstring(),
@@ -6836,7 +6793,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             support = split_frequencies.get(split, 0.0)
             yield support
 
-    def product_of_split_support_on_tree(self,
+    def log_product_of_split_support_on_tree(self,
             tree,
             is_bipartitions_updated=False,
             include_external_splits=False,
@@ -6991,9 +6948,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self.default_edge_length_value = 0 # edge.length of `None` gets this value
 
         # Storage
-        self._tree_splits = []
+        self._tree_split_bitmasks = []
         self._tree_edge_lengths = []
-        self._tree_leafsets = []
+        self._tree_leafset_bitmasks = []
         self._split_distribution = SplitDistribution(
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
@@ -7050,7 +7007,11 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated,
                 default_edge_length_value=self.default_edge_length_value)
-        self._tree_leafsets.append(tree.seed_node.edge.bipartition.leafset_bitmask)
+        if index is None:
+            self._tree_leafset_bitmasks.append(tree.seed_node.edge.bipartition.leafset_bitmask)
+        else:
+            self._tree_leafset_bitmasks.insert(index,
+                    tree.seed_node.edge.bipartition.leafset_bitmask)
         return self.add_splits(splits=splits,
                 edge_lengths=edge_lengths,
                 index=index)
@@ -7077,12 +7038,12 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
             edge_lengths = tuple(edge_lengths)
         if index is None:
-            index = len(self._tree_splits)
-            self._tree_splits.append(splits)
+            index = len(self._tree_split_bitmasks)
+            self._tree_split_bitmasks.append(splits)
             self._tree_edge_lengths.append(edge_lengths)
         else:
-            self._tree_splits.insert(index, splits)
-            self._tree_edge_lengths.append(index, edge_lengths)
+            self._tree_split_bitmasks.insert(index, splits)
+            self._tree_edge_lengths.insert(index, edge_lengths)
         return index, splits, edge_lengths
 
     def add_trees(self, trees, is_bipartitions_updated=False):
@@ -7238,7 +7199,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         assert self.ignore_edge_lengths is tree_array.ignore_edge_lengths
         assert self.ignore_node_ages is tree_array.ignore_node_ages
         assert self.use_tree_weights is tree_array.use_tree_weights
-        self._tree_splits.extend(tree_array._tree_splits)
+        self._tree_split_bitmasks.extend(tree_array._tree_split_bitmasks)
         self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
         self._split_distribution.update(tree_array._split_distribution)
         return self
@@ -7281,18 +7242,18 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def __contains__(self, splits):
         # expensive!!
-        return tuple(splits) in self._tree_splits
+        return tuple(splits) in self._tree_split_bitmasks
 
     def __delitem__(self, index):
         raise NotImplementedError
         # expensive!!
-        # tree_splits = self._trees_splits[index]
+        # tree_split_bitmasks = self._trees_splits[index]
         ### TODO: remove this "tree" from underlying splits distribution
-        # for split in tree_splits:
+        # for split in tree_split_bitmasks:
         #   self._split_distribution.split_counts[split] -= 1
         # etc.
         # becomes complicated because tree weights need to be updated etc.
-        # del self._tree_splits[index]
+        # del self._tree_split_bitmasks[index]
         # del self._tree_edge_lengths[index]
         # return
 
@@ -7300,34 +7261,36 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         Yields pairs of (split, edge_length) from the store.
         """
-        for split, edge_length in zip(self._tree_splits, self._tree_edge_lengths):
+        for split, edge_length in zip(self._tree_split_bitmasks, self._tree_edge_lengths):
             yield split, edge_length
 
     def __reversed__(self):
         raise NotImplementedError
 
     def __len__(self):
-        return len(self._tree_splits)
+        return len(self._tree_split_bitmasks)
 
     def __getitem__(self, index):
-        """
-        Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
-        to the "tree" at `index`.
-        """
-        return self._tree_splits[index], self._tree_edge_lengths[index]
+        raise NotImplementedError
+        # """
+        # Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
+        # to the "tree" at `index`.
+        # """
+        # return self._tree_split_bitmasks[index], self._tree_edge_lengths[index]
 
     def __setitem__(self, index, value):
         raise NotImplementedError
 
     def clear(self):
         raise NotImplementedError
-        self._tree_list = []
-        self._edge_lengths = []
+        self._tree_split_bitmasks = []
+        self._tree_edge_lengths = []
+        self._tree_leafset_bitmasks = []
         self._split_distribution.clear()
 
     def index(self, splits):
-        return self._tree_splits.index(splits)
         raise NotImplementedError
+        return self._tree_split_bitmasks.index(splits)
 
     def pop(self, index=-1):
         raise NotImplementedError
@@ -7340,6 +7303,105 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def sort(self, key=None, reverse=False):
         raise NotImplementedError
+
+    ##############################################################################
+    ## Calculations
+
+    def calculate_log_product_of_split_supports(self,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the log product of split support for all trees in the
+        collection. The tree with the maximum log product of the split support
+        is the 'maximum credibility tree' (MCT) or the 'maximum clade
+        credibility tree' (MCCT), though sometimes one or both these terms
+        are used to refer to the tree with the highest *sum* of split support.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : tuple(list[numeric], integer)
+            Returns a tuple, with the first element being the list of scores
+            and the second being the index of the highest score. The element order
+            corresponds to the trees accessioned in the collection.
+        """
+        assert len(self._tree_leafset_bitmasks) == len(self._tree_split_bitmasks)
+        scores = []
+        max_score = None
+        max_score_tree_idx = None
+        split_frequencies = self._split_distribution.split_frequencies
+        for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
+            log_product_of_split_support = 0.0
+            for split_bitmask in split_bitmasks:
+                if include_external_splits or not Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                    split_support = split_frequencies.get(split_bitmask, 0.0)
+                    if split_support:
+                        log_product_of_split_support += math.log(split_support)
+            if max_score is None or max_score < log_product_of_split_support:
+                max_score = log_product_of_split_support
+                max_score_tree_idx = tree_idx
+            scores.append(log_product_of_split_support)
+        return scores, max_score_tree_idx
+
+    def maximum_product_of_split_support_tree(self,
+            include_external_splits=False,
+            tree_class=Tree,
+            ):
+        """
+        Return the tree with that maximizes the product of split supports.
+        The tree with the maximum log product of the split support is the
+        'maximum credibility tree' (MCT) or the 'maximum clade credibility
+        tree' (MCCT), though sometimes one or both these terms are used to
+        refer to the tree with the highest *sum* of split support.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        mct_tree : Tree
+            Tree that maximizes the product of split supports.
+        """
+        scores, max_score_tree_idx = self.calculate_log_product_of_split_supports(
+                include_external_splits=include_external_splits,
+                )
+        return self.restore_tree(
+                index=max_score_tree_idx,
+                tree_class=tree_class)
+
+    ##############################################################################
+    ## Tree Reconstructions
+
+    def restore_tree(self,
+            index,
+            tree_class=Tree,
+            ):
+        split_bitmasks = self._tree_split_bitmasks[index]
+        if self.ignore_edge_lengths:
+            split_edge_lengths = None
+        else:
+            assert len(self._tree_split_bitmasks) == len(self._tree_edge_lengths)
+            edge_lengths = self._tree_edge_lengths[index]
+            split_edge_lengths = dict(zip(split_bitmasks, edge_lengths))
+        tree = tree_class.from_split_bitmasks(
+                split_bitmasks=split_bitmasks,
+                taxon_namespace=self.taxon_namespace,
+                is_rooted=self._is_rooted_trees,
+                split_edge_lengths=split_edge_lengths,
+                )
+        return tree
 
 ###############################################################################
 ### AsciiTreePlot
