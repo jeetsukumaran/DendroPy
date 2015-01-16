@@ -68,8 +68,6 @@ _program_copyright = "Copyright (C) 2008-2014 Jeet Sukumaran and Mark T. Holder.
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-GREATER_THAN_50_PERCENT = float(Decimal(0.5).next_plus())
-
 if _MP:
     class SplitCountingWorker(multiprocessing.Process):
 
@@ -385,7 +383,7 @@ def main_cli():
     target_tree_optgroup.add_option("-f", "--min-clade-freq",
             dest="min_clade_freq",
             type="float",
-            default=GREATER_THAN_50_PERCENT,
+            default=dendropy.GREATER_THAN_HALF,
             metavar="#.##",
             help="minimum frequency or probability for a clade or a split to be "\
                     + "included in the consensus tree, if used [default: > 0.05]")

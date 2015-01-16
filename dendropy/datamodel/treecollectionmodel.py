@@ -33,6 +33,7 @@ from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
+from dendropy.utility import GREATER_THAN_HALF
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treemodel
@@ -970,6 +971,9 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
 
+    ###########################################################################
+    ### Utility
+
     def normalize_bitmask(self, bitmask):
         """
         "Normalizes" split, by ensuring that the least-significant bit is
@@ -991,8 +995,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 fill_bitmask=self.taxon_namespace.all_taxa_bitmask(),
                 lowest_relevant_bit=1)
 
-    def __len__(self):
-        return len(self.split_counts)
+    ###########################################################################
+    ### Configuration
 
     def _is_rooted_deprecation_warning(self):
         deprecate.dendropy_deprecation_warning(
@@ -1014,138 +1018,11 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self._is_rooted = not val
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
+    ###########################################################################
+    ### Split Counting and Book-Keeping
+
     def add_split_count(self, split, count=1):
         self.split_counts[split] += count
-
-    def update(self, split_dist):
-        self.total_trees_counted += split_dist.total_trees_counted
-        self.sum_of_tree_weights += split_dist.sum_of_tree_weights
-        self._split_edge_length_summaries = None
-        self._split_node_age_summaries = None
-        self._trees_counted_for_summaries = 0
-        self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
-        for split in split_dist.split_counts:
-            self.split_counts[split] += split_dist.split_counts[split]
-            self.split_edge_lengths[split] += split_dist.split_edge_lengths[split]
-            self.split_node_ages[split] += split_dist.split_node_ages[split]
-            # if split in split_dist.weighted_split_counts:
-            #     if split not in self.weighted_split_counts:
-            #         self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
-            #     else:
-            #         self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
-            # if split in self.split_edge_lengths:
-            #     self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
-            # elif split in split_dist.split_edge_lengths:
-            #     self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
-            # if split in self.split_node_ages:
-            #     self.split_node_ages[split].extend(split_dist.split_node_ages[split])
-            # elif split in split_dist.split_node_ages:
-            #     self.split_node_ages[split] = split_dist.split_node_ages[split]
-
-    def splits_considered(self):
-        """
-        Returns 4 values:
-            total number of splits counted
-            total number of unique splits counted
-            total number of non-trivial splits counted
-            total number of unique non-trivial splits counted
-        """
-        if not self.split_counts:
-            return 0, 0, 0, 0
-        num_splits = 0
-        num_unique_splits = 0
-        num_nt_splits = 0
-        num_nt_unique_splits = 0
-        taxa_mask = self.taxon_namespace.all_taxa_bitmask()
-        for s in self.split_counts:
-            num_unique_splits += 1
-            num_splits += self.split_counts[s]
-            if is_non_singleton_split(s, taxa_mask):
-                num_nt_unique_splits += 1
-                num_nt_splits += self.split_counts[s]
-        return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
-
-    def __getitem__(self, split_bitmask):
-        """
-        Returns freqency of split_bitmask.
-        """
-        return self._get_split_frequencies().get(split_bitmask, 0.0)
-
-    def calc_freqs(self):
-        "Forces recalculation of frequencies."
-        self._split_freqs = {}
-        if self.total_trees_counted == 0:
-            for split in self.split_counts:
-                self._split_freqs[split] = 1.0
-        else:
-            # total = self.total_trees_counted
-            if not self.sum_of_tree_weights:
-                total_weight = self.total_trees_counted
-            else:
-                total_weight = float(self.sum_of_tree_weights)
-            for split in self.split_counts:
-                count = self.split_counts[split]
-                self._split_freqs[split] = float(self.split_counts[split]) / total_weight
-        self._trees_counted_for_freqs = self.total_trees_counted
-        self._split_edge_length_summaries = None
-        self._split_node_age_summaries = None
-        return self._split_freqs
-
-    # def calc_weighted_freqs(self):
-    #     "Forces recalculation of weighted frequencies."
-    #     self._weighted_split_freqs = {}
-    #     if not self.sum_of_tree_weights:
-    #         total_weight = 1.0
-    #     else:
-    #         total_weight = float(self.sum_of_tree_weights)
-    #     for split in self.weighted_split_counts:
-    #         # sys.stderr.write("{}, {} = {}\n".format(self.weighted_split_counts[split], total_weight, self.weighted_split_counts[split] / total_weight))
-    #         self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
-    #     self._trees_counted_for_weighted_freqs = self.total_trees_counted
-    #     self._trees_counted_for_summaries = self.total_trees_counted
-    #     return self._weighted_split_freqs
-
-    def _get_split_frequencies(self):
-        if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
-            self.calc_freqs()
-        return self._split_freqs
-    split_frequencies = property(_get_split_frequencies)
-
-    def summarize_edge_lengths(self):
-        self._split_edge_length_summaries = {}
-        for split, elens in self.split_edge_lengths.items():
-            if not elens:
-                continue
-            try:
-                self._split_edge_length_summaries[split] = statistics.summarize(elens)
-            except ValueError:
-                pass
-        return self._split_edge_length_summaries
-
-    def summarize_node_ages(self):
-        self._split_node_age_summaries = {}
-        for split, ages in self.split_node_ages.items():
-            if not ages:
-                continue
-            try:
-                self._split_node_age_summaries[split] = statistics.summarize(ages)
-            except ValueError:
-                pass
-        return self._split_node_age_summaries
-
-    def _get_split_edge_length_summaries(self):
-        if self._split_edge_length_summaries is None \
-                or self._trees_counted_for_summaries != self.total_trees_counted:
-            self.summarize_edge_lengths()
-        return dict(self._split_edge_length_summaries)
-    split_edge_length_summaries = property(_get_split_edge_length_summaries)
-
-    def _get_split_node_age_summaries(self):
-        if self._split_node_age_summaries is None \
-                or self._trees_counted_for_summaries != self.total_trees_counted:
-            self.summarize_node_ages()
-        return dict(self._split_node_age_summaries)
-    split_node_age_summaries = property(_get_split_node_age_summaries)
 
     def count_splits_on_tree(self,
             tree,
@@ -1221,6 +1098,92 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 sna = None
         return splits, edge_lengths, node_ages
 
+    def splits_considered(self):
+        """
+        Returns 4 values:
+            total number of splits counted
+            total number of unique splits counted
+            total number of non-trivial splits counted
+            total number of unique non-trivial splits counted
+        """
+        if not self.split_counts:
+            return 0, 0, 0, 0
+        num_splits = 0
+        num_unique_splits = 0
+        num_nt_splits = 0
+        num_nt_unique_splits = 0
+        taxa_mask = self.taxon_namespace.all_taxa_bitmask()
+        for s in self.split_counts:
+            num_unique_splits += 1
+            num_splits += self.split_counts[s]
+            if is_non_singleton_split(s, taxa_mask):
+                num_nt_unique_splits += 1
+                num_nt_splits += self.split_counts[s]
+        return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
+
+    def calc_freqs(self):
+        "Forces recalculation of frequencies."
+        self._split_freqs = {}
+        if self.total_trees_counted == 0:
+            for split in self.split_counts:
+                self._split_freqs[split] = 1.0
+        else:
+            # total = self.total_trees_counted
+            if not self.sum_of_tree_weights:
+                total_weight = self.total_trees_counted
+            else:
+                total_weight = float(self.sum_of_tree_weights)
+            for split in self.split_counts:
+                count = self.split_counts[split]
+                self._split_freqs[split] = float(self.split_counts[split]) / total_weight
+        self._trees_counted_for_freqs = self.total_trees_counted
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
+        return self._split_freqs
+
+    def update(self, split_dist):
+        self.total_trees_counted += split_dist.total_trees_counted
+        self.sum_of_tree_weights += split_dist.sum_of_tree_weights
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
+        self._trees_counted_for_summaries = 0
+        self.tree_rooting_types_counted.update(split_dist.tree_rooting_types_counted)
+        for split in split_dist.split_counts:
+            self.split_counts[split] += split_dist.split_counts[split]
+            self.split_edge_lengths[split] += split_dist.split_edge_lengths[split]
+            self.split_node_ages[split] += split_dist.split_node_ages[split]
+            # if split in split_dist.weighted_split_counts:
+            #     if split not in self.weighted_split_counts:
+            #         self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
+            #     else:
+            #         self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
+            # if split in self.split_edge_lengths:
+            #     self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
+            # elif split in split_dist.split_edge_lengths:
+            #     self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
+            # if split in self.split_node_ages:
+            #     self.split_node_ages[split].extend(split_dist.split_node_ages[split])
+            # elif split in split_dist.split_node_ages:
+            #     self.split_node_ages[split] = split_dist.split_node_ages[split]
+
+    ###########################################################################
+    ### Basic Information Access
+
+    def __len__(self):
+        return len(self.split_counts)
+
+    def __getitem__(self, split_bitmask):
+        """
+        Returns freqency of split_bitmask.
+        """
+        return self._get_split_frequencies().get(split_bitmask, 0.0)
+
+    def _get_split_frequencies(self):
+        if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
+            self.calc_freqs()
+        return self._split_freqs
+    split_frequencies = property(_get_split_frequencies)
+
     def is_mixed_rootings_counted(self):
         return ( (True in self.tree_rooting_types_counted)
                 and (False in self.tree_rooting_types_counted or None in self.tree_rooting_types_counted) )
@@ -1233,6 +1196,9 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
     def is_all_counted_trees_treated_as_unrooted(self):
         return True not in self.tree_rooting_types_counted
+
+    ###########################################################################
+    ### Summarization
 
     def split_support_iter(self,
             tree,
@@ -1290,6 +1256,42 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             split = nd.edge.split_bitmask
             support = split_frequencies.get(split, 0.0)
             yield support
+
+    def summarize_edge_lengths(self):
+        self._split_edge_length_summaries = {}
+        for split, elens in self.split_edge_lengths.items():
+            if not elens:
+                continue
+            try:
+                self._split_edge_length_summaries[split] = statistics.summarize(elens)
+            except ValueError:
+                pass
+        return self._split_edge_length_summaries
+
+    def summarize_node_ages(self):
+        self._split_node_age_summaries = {}
+        for split, ages in self.split_node_ages.items():
+            if not ages:
+                continue
+            try:
+                self._split_node_age_summaries[split] = statistics.summarize(ages)
+            except ValueError:
+                pass
+        return self._split_node_age_summaries
+
+    def _get_split_edge_length_summaries(self):
+        if self._split_edge_length_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.summarize_edge_lengths()
+        return dict(self._split_edge_length_summaries)
+    split_edge_length_summaries = property(_get_split_edge_length_summaries)
+
+    def _get_split_node_age_summaries(self):
+        if self._split_node_age_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.summarize_node_ages()
+        return dict(self._split_node_age_summaries)
+    split_node_age_summaries = property(_get_split_node_age_summaries)
 
     def log_product_of_split_support_on_tree(self,
             tree,
@@ -1375,6 +1377,117 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             sum_of_split_support += split_support
         return sum_of_split_support
 
+    def consensus_tree(self,
+            min_freq=GREATER_THAN_HALF,
+            set_edge_lengths=None,
+            set_support_as_labels=False,
+            annotate_node_age_summaries=True,
+            annotate_edge_length_summaries=True,
+            annotate_support=True,
+            ):
+        """
+        Returns a consensus tree from splits in `self`.
+
+        Parameters
+        ----------
+        min_freq : real
+            The minimum frequency of a split in this distribution for it to be
+            added to the tree.
+        set_edge_lengths : string
+            For each edge, set the length based on:
+                - "support": use support values split corresponding to edge
+                - "mean-length": mean of edge lengths for split
+                - "median-length": median of edge lengths for split
+                - "mean-age": such that split age is equal to mean of ages
+                - "median-age": such that split age is equal to mean of ages
+                - None: do not set edge lengths
+        set_support_as_labels : bool
+            Add support values as tree labels.
+        annotate_node_age_summaries: bool
+            Add summarization statistics annotations for age of node.
+        annotate_edge_length_summaries: bool
+            Add summarization statistics annotations for lengths of edges.
+
+        Returns
+        -------
+        t : consensus tree
+
+        """
+        taxon_namespace = self.taxon_namespace
+
+        taxa_mask = taxon_namespace.all_taxa_bitmask()
+        split_frequencies = self._get_split_frequencies()
+        rooted = self.is_rooted
+
+        to_try_to_add = []
+        _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
+        for s in split_frequencies:
+            freq = split_frequencies[s]
+            if (min_freq is None) or (freq >= min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
+                to_try_to_add.append((freq, s))
+        to_try_to_add.sort(reverse=True)
+        splits_for_tree = [i[1] for i in to_try_to_add]
+        con_tree = treemodel.Tree.from_split_bitmasks(
+                split_bitmasks=splits_for_tree,
+                taxon_namespace=taxon_namespace,
+                is_rooted=rooted)
+        con_tree.encode_bipartitions()
+        self.summarize_split_support_on_tree(
+            tree=con_tree,
+            set_edge_lengths=set_edge_lengths,
+            set_support_as_labels=set_support_as_labels,
+            annotate_node_age_summaries=annotate_node_age_summaries,
+            annotate_edge_length_summaries=annotate_edge_length_summaries,
+            annotate_support=annotate_support,
+            )
+        return con_tree
+
+    def summarize_split_support_on_tree(self,
+            tree,
+            set_edge_lengths=None,
+            set_support_as_labels=False,
+            annotate_node_age_summaries=True,
+            annotate_edge_length_summaries=True,
+            annotate_support=True,
+            ):
+        """
+        Summarizes support of splits/edges/node on tree.
+
+        Parameters
+        ----------
+        min_freq : real
+            The minimum frequency of a split in this distribution for it to be
+            added to the tree.
+        set_edge_lengths : string
+            For each edge, set the length based on:
+                - "support": use support values split corresponding to edge
+                - "mean-length": mean of edge lengths for split
+                - "median-length": median of edge lengths for split
+                - "mean-age": such that split age is equal to mean of ages
+                - "median-age": such that split age is equal to mean of ages
+                - None: do not set edge lengths
+        annotate_node_age_summaries: bool
+            Add summarization statistics annotations for age of node.
+        annotate_edge_length_summaries: bool
+            Add summarization statistics annotations for lengths of edges.
+        """
+        return
+        raise NotImplementedError("Key field '%s' is not supported" % key_field)
+
+        if set_edge_lengths is None:
+            pass
+        elif set_edge_lengths == "support":
+            split_edge_lengths = split_frequencies
+        else:
+            if set_edge_lengths in ("mean-age", "median-age"):
+                node_ages = self.split_node_age_summaries
+                if not node_ages:
+                    raise ValueError("Node ages not available")
+                if set_edge_lengths == "mean-age":
+                    pass
+                elif set_edge_lengths == "median-age":
+                    pass
+
     ###########################################################################
     ### legacy
 
@@ -1394,8 +1507,14 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
-    ###########################################################################
-    ### Higher-level Summarization and Reconstruction
+###############################################################################
+### SplitDistributionTreeDecorator
+
+class SplitDistributionTreeDecorator(object):
+
+    def __init__(self, split_distribution):
+        self.split_distribution = self
+
 
 ###############################################################################
 ### TreeArray
@@ -1810,7 +1929,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         raise NotImplementedError
 
     ##############################################################################
-    ## Calculations
+    ## Accessors/Settors
+
     def get_split_bitmask_and_edge_tuple(self, index):
         """
         Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
@@ -1854,7 +1974,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
             log_product_of_split_support = 0.0
             for split_bitmask in split_bitmasks:
-                if include_external_splits or not Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                if include_external_splits or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
                     split_support = split_frequencies.get(split_bitmask, 0.0)
                     if split_support:
                         log_product_of_split_support += math.log(split_support)
@@ -1927,7 +2047,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
             sum_of_support = 0.0
             for split_bitmask in split_bitmasks:
-                if include_external_splits or not Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                if include_external_splits or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
                     split_support = split_frequencies.get(split_bitmask, 0.0)
                     sum_of_support += split_support
             if max_score is None or max_score < sum_of_support:
@@ -1992,4 +2112,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 split_edge_lengths=split_edge_lengths,
                 )
         return tree
+
+    def consensus_tree(self, *args, **kwargs):
+        return self._split_distribution.consensus_tree(*args, **kwargs)
+
 

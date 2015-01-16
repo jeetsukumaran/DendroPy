@@ -17,4 +17,7 @@
 ##############################################################################
 
 import random
+import decimal
+
 GLOBAL_RNG = random.Random()
+GREATER_THAN_HALF = float(decimal.Decimal(0.5).next_plus())
