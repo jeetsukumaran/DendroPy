@@ -7377,9 +7377,83 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         scores, max_score_tree_idx = self.calculate_log_product_of_split_supports(
                 include_external_splits=include_external_splits,
                 )
-        return self.restore_tree(
+        tree = self.restore_tree(
                 index=max_score_tree_idx,
                 tree_class=tree_class)
+        tree.log_product_of_split_support = scores[max_score_tree_idx]
+        return tree
+
+    def calculate_sum_of_split_supports(self,
+            include_external_splits=False,
+            ):
+        """
+        Calculates the *sum* of split support for all trees in the
+        collection.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        s : tuple(list[numeric], integer)
+            Returns a tuple, with the first element being the list of scores
+            and the second being the index of the highest score. The element order
+            corresponds to the trees accessioned in the collection.
+        """
+        assert len(self._tree_leafset_bitmasks) == len(self._tree_split_bitmasks)
+        scores = []
+        max_score = None
+        max_score_tree_idx = None
+        split_frequencies = self._split_distribution.split_frequencies
+        for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
+            sum_of_support = 0.0
+            for split_bitmask in split_bitmasks:
+                if include_external_splits or not Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                    split_support = split_frequencies.get(split_bitmask, 0.0)
+                    sum_of_support += split_support
+            if max_score is None or max_score < sum_of_support:
+                max_score = sum_of_support
+                max_score_tree_idx = tree_idx
+            scores.append(sum_of_support)
+        return scores, max_score_tree_idx
+
+    def maximum_sum_of_split_support_tree(self,
+            include_external_splits=False,
+            tree_class=Tree,
+            ):
+        """
+        Return the tree with that maximizes the sum of split supports.
+        The tree with the maximum log sum of the split support is the
+        'maximum credibility tree' (MCT) or the 'maximum clade credibility
+        tree' (MCCT), though sometimes one or both these terms are used to
+        refer to the tree with the highest *sum* of split support.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        mct_tree : Tree
+            Tree that maximizes the sum of split supports.
+        """
+        scores, max_score_tree_idx = self.calculate_sum_of_split_supports(
+                include_external_splits=include_external_splits,
+                )
+        tree = self.restore_tree(
+                index=max_score_tree_idx,
+                tree_class=tree_class)
+        tree.sum_of_split_support = scores[max_score_tree_idx]
+        return tree
 
     ##############################################################################
     ## Tree Reconstructions
