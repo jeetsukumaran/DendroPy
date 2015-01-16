@@ -1811,6 +1811,15 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     ##############################################################################
     ## Calculations
+    def get_split_bitmask_and_edge_tuple(self, index):
+        """
+        Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
+        to the "tree" at `index`.
+        """
+        return self._tree_split_bitmasks[index], self._tree_edge_lengths[index]
+
+    ##############################################################################
+    ## Calculations
 
     def calculate_log_product_of_split_supports(self,
             include_external_splits=False,

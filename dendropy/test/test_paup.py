@@ -131,7 +131,8 @@ else:
                         ref["normalized_split_bitmask"])
                 split_bitmask = paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=not is_rooted)
                 self.assertEqual(bipartition_counts[split_bitmask], ref["count"])
-                self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
+                # self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
+                self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"], 2) # PAUP* 4.10b: no very precise
 
         def test_group1(self):
             cetacean_taxon_labels = [
