@@ -358,7 +358,9 @@ class PaupService(object):
                 burnin=burnin+1,
                 mode=mode)
         for tree_filepath in tree_filepaths:
-            self.commands.append(gettree_template.format(tree_filepath=tree_filepath))
+            # self.commands.append(gettree_template.format(tree_filepath=tree_filepath))
+            # using relpath because of a bug in PAUP* 4.0b10 with long paths passed to gettrees
+            self.commands.append(gettree_template.format(tree_filepath=os.path.relpath(tree_filepath)))
         return self.commands
 
     def stage_list_taxa(self):

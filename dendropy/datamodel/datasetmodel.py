@@ -34,7 +34,7 @@ from dendropy.utility import error
 from dendropy.utility import deprecate
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
-from dendropy.datamodel import treemodel
+from dendropy.datamodel import treecollectionmodel
 from dendropy.datamodel import charmatrixmodel
 from dendropy.datamodel import charstatemodel
 from dendropy import dataio
@@ -267,7 +267,7 @@ class DataSet(
         """
         if isinstance(data_object, taxonmodel.TaxonNamespace):
             self.add_taxon_namespace(data_object)
-        elif isinstance(data_object, treemodel.TreeList):
+        elif isinstance(data_object, treecollectionmodel.TreeList):
             self.add_tree_list(data_object)
         elif isinstance(data_object, charmatrixmodel.CharacterMatrix):
             self.add_char_matrix(data_object)
@@ -484,7 +484,7 @@ class DataSet(
                     repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
             else:
                 kwargs["taxon_namespace"] = self.attached_taxon_namespace
-        tree_list = treemodel.TreeList(*args, **kwargs)
+        tree_list = treecollectionmodel.TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
     def get_tree_list(self, label):

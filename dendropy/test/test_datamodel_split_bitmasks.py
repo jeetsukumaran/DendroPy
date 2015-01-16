@@ -358,7 +358,7 @@ class TestTreeSplitSupportCredibilityScoring(unittest.TestCase):
     def test_product_of_split_support_on_tree(self):
         t1 = self.trees[70]
         self.assertAlmostEqual(
-                self.split_distribution.product_of_split_support_on_tree(t1),
+                self.split_distribution.log_product_of_split_support_on_tree(t1),
                 -33.888380488585284)
 
     def test_sum_of_split_support_on_tree(self):
