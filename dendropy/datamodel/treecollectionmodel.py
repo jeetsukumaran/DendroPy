@@ -1384,6 +1384,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             annotate_node_age_summaries=True,
             annotate_edge_length_summaries=True,
             annotate_support=True,
+            is_rooted=None,
             ):
         """
         Returns a consensus tree from splits in `self`.
@@ -1407,18 +1408,22 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             Add summarization statistics annotations for age of node.
         annotate_edge_length_summaries: bool
             Add summarization statistics annotations for lengths of edges.
+        is_rooted : bool
+            Should tree be rooted or not? If *all* trees counted for splits are
+            explicitly rooted or unrooted, then this will default to `True` or
+            `False`, respectively. Otherwise it defaults to `None`.
 
         Returns
         -------
         t : consensus tree
 
         """
-        taxon_namespace = self.taxon_namespace
-
-        taxa_mask = taxon_namespace.all_taxa_bitmask()
+        if is_rooted is None:
+            if self.is_all_counted_trees_rooted():
+                is_rooted = True
+            elif self.is_all_counted_trees_strictly_unrooted:
+                is_rooted = False
         split_frequencies = self._get_split_frequencies()
-        rooted = self.is_rooted
-
         to_try_to_add = []
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
         for s in split_frequencies:
@@ -1429,8 +1434,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         splits_for_tree = [i[1] for i in to_try_to_add]
         con_tree = treemodel.Tree.from_split_bitmasks(
                 split_bitmasks=splits_for_tree,
-                taxon_namespace=taxon_namespace,
-                is_rooted=rooted)
+                taxon_namespace=self.taxon_namespace,
+                is_rooted=is_rooted)
         con_tree.encode_bipartitions()
         self.summarize_split_support_on_tree(
             tree=con_tree,
