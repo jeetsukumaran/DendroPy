@@ -971,6 +971,9 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
 
+        # services
+        self.tree_decorator = None
+
     ###########################################################################
     ### Utility
 
@@ -1152,19 +1155,6 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             self.split_counts[split] += split_dist.split_counts[split]
             self.split_edge_lengths[split] += split_dist.split_edge_lengths[split]
             self.split_node_ages[split] += split_dist.split_node_ages[split]
-            # if split in split_dist.weighted_split_counts:
-            #     if split not in self.weighted_split_counts:
-            #         self.weighted_split_counts[split] = split_dist.weighted_split_counts[split]
-            #     else:
-            #         self.weighted_split_counts[split] += split_dist.weighted_split_counts[split]
-            # if split in self.split_edge_lengths:
-            #     self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
-            # elif split in split_dist.split_edge_lengths:
-            #     self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
-            # if split in self.split_node_ages:
-            #     self.split_node_ages[split].extend(split_dist.split_node_ages[split])
-            # elif split in split_dist.split_node_ages:
-            #     self.split_node_ages[split] = split_dist.split_node_ages[split]
 
     ###########################################################################
     ### Basic Information Access
@@ -1380,10 +1370,15 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
     def consensus_tree(self,
             min_freq=GREATER_THAN_HALF,
             set_edge_lengths=None,
-            set_support_as_labels=False,
-            annotate_node_age_summaries=True,
-            annotate_edge_length_summaries=True,
-            annotate_support=True,
+            add_support_as_node_attribute=True,
+            add_support_as_node_annotation=True,
+            set_support_as_node_label=False,
+            add_node_age_summaries_as_node_attributes=True,
+            add_node_age_summaries_as_node_annotations=True,
+            add_edge_length_summaries_as_edge_attributes=True,
+            add_edge_length_summaries_as_edge_annotations=True,
+            support_label_decimals=4,
+            support_as_percentages=False,
             is_rooted=None,
             ):
         """
@@ -1391,23 +1386,89 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
+
         min_freq : real
             The minimum frequency of a split in this distribution for it to be
             added to the tree.
+
         set_edge_lengths : string
             For each edge, set the length based on:
+
                 - "support": use support values split corresponding to edge
                 - "mean-length": mean of edge lengths for split
                 - "median-length": median of edge lengths for split
                 - "mean-age": such that split age is equal to mean of ages
                 - "median-age": such that split age is equal to mean of ages
-                - None: do not set edge lengths
-        set_support_as_labels : bool
-            Add support values as tree labels.
-        annotate_node_age_summaries: bool
-            Add summarization statistics annotations for age of node.
-        annotate_edge_length_summaries: bool
-            Add summarization statistics annotations for lengths of edges.
+                - `None`: do not set edge lengths
+
+        add_support_as_node_attribute: bool
+            Adds each node's support value as an attribute of the node,
+            "`support`".
+
+        add_support_as_node_annotation: bool
+            Adds support as a metadata annotation, "`support". If
+            `add_support_as_node_attribute` is `True`, then the value will be
+            dynamically-bound to the value of the node's "`support`" attribute.
+
+        set_support_as_node_labels : bool
+            Sets the `label` attribute of each node to the support value.
+
+        add_node_age_summaries_as_node_attributes: bool
+            Summarizes the distribution of the ages of each node in the
+            following attributes:
+
+                - `age_mean`
+                - `age_median`
+                - `age_sd`
+                - `age_hpd95`
+                - `age_range`
+
+        add_node_age_summaries_as_node_annotations: bool
+            Summarizes the distribution of the ages of each node in the
+            following metadata annotations:
+
+                - `age_mean`
+                - `age_median`
+                - `age_sd`
+                - `age_hpd95`
+                - `age_range`
+
+            If `add_node_age_summaries_as_node_attributes` is `True`, then the
+            values will be dynamically-bound to the corresponding node
+            attributes.
+
+        add_edge_length_summaries_as_edge_attributes: bool
+            Summarizes the distribution of the lengths of each edge in the
+            following attribtutes:
+
+                - `length_mean`
+                - `length_median`
+                - `length_sd`
+                - `length_hpd95`
+                - `length_range`
+
+        add_edge_length_summaries_as_edge_annotations: bool
+            Summarizes the distribution of the lengths of each edge in the
+            following metadata annotations:
+
+                - `length_mean`
+                - `length_median`
+                - `length_sd`
+                - `length_hpd95`
+                - `length_range`
+
+            If `add_edge_length_summaries_as_edge_attributes` is `True`, then the
+            values will be dynamically-bound to the corresponding edge
+            attributes.
+
+        support_label_decimals: int
+            Number of decimal places to express when rendering the support
+            value as a string for the node label.
+
+        support_as_percentages: bool
+            Whether or not to express the support value as percentages (default
+            is probability or proportion).
+
         is_rooted : bool
             Should tree be rooted or not? If *all* trees counted for splits are
             explicitly rooted or unrooted, then this will default to `True` or
@@ -1436,62 +1497,144 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 split_bitmasks=splits_for_tree,
                 taxon_namespace=self.taxon_namespace,
                 is_rooted=is_rooted)
-        con_tree.encode_bipartitions()
         self.summarize_split_support_on_tree(
             tree=con_tree,
             set_edge_lengths=set_edge_lengths,
-            set_support_as_labels=set_support_as_labels,
-            annotate_node_age_summaries=annotate_node_age_summaries,
-            annotate_edge_length_summaries=annotate_edge_length_summaries,
-            annotate_support=annotate_support,
+            add_support_as_node_attribute=add_support_as_node_attribute,
+            add_support_as_node_annotation=add_support_as_node_annotation,
+            set_support_as_node_label=set_support_as_node_label,
+            add_node_age_summaries_as_node_attributes=add_node_age_summaries_as_node_attributes,
+            add_node_age_summaries_as_node_annotations=add_node_age_summaries_as_node_annotations,
+            add_edge_length_summaries_as_edge_attributes=add_edge_length_summaries_as_edge_attributes,
+            add_edge_length_summaries_as_edge_annotations=add_edge_length_summaries_as_edge_annotations,
+            support_label_decimals=support_label_decimals,
+            support_as_percentages=support_as_percentages,
+            is_bipartitions_updated=False,
             )
         return con_tree
 
     def summarize_split_support_on_tree(self,
             tree,
             set_edge_lengths=None,
-            set_support_as_labels=False,
-            annotate_node_age_summaries=True,
-            annotate_edge_length_summaries=True,
-            annotate_support=True,
+            add_support_as_node_attribute=True,
+            add_support_as_node_annotation=True,
+            set_support_as_node_label=False,
+            add_node_age_summaries_as_node_attributes=True,
+            add_node_age_summaries_as_node_annotations=True,
+            add_edge_length_summaries_as_edge_attributes=True,
+            add_edge_length_summaries_as_edge_annotations=True,
+            support_label_decimals=4,
+            support_as_percentages=False,
+            is_bipartitions_updated=False,
             ):
         """
         Summarizes support of splits/edges/node on tree.
 
         Parameters
         ----------
-        min_freq : real
-            The minimum frequency of a split in this distribution for it to be
-            added to the tree.
+
+        tree: :class:`Tree` instance
+            Tree to be decorated with support values.
+
         set_edge_lengths : string
             For each edge, set the length based on:
+
                 - "support": use support values split corresponding to edge
                 - "mean-length": mean of edge lengths for split
                 - "median-length": median of edge lengths for split
                 - "mean-age": such that split age is equal to mean of ages
                 - "median-age": such that split age is equal to mean of ages
-                - None: do not set edge lengths
-        annotate_node_age_summaries: bool
-            Add summarization statistics annotations for age of node.
-        annotate_edge_length_summaries: bool
-            Add summarization statistics annotations for lengths of edges.
-        """
-        return
-        raise NotImplementedError("Key field '%s' is not supported" % key_field)
+                - `None`: do not set edge lengths
 
-        if set_edge_lengths is None:
-            pass
-        elif set_edge_lengths == "support":
-            split_edge_lengths = split_frequencies
-        else:
-            if set_edge_lengths in ("mean-age", "median-age"):
-                node_ages = self.split_node_age_summaries
-                if not node_ages:
-                    raise ValueError("Node ages not available")
-                if set_edge_lengths == "mean-age":
-                    pass
-                elif set_edge_lengths == "median-age":
-                    pass
+        add_support_as_node_attribute: bool
+            Adds each node's support value as an attribute of the node,
+            "`support`".
+
+        add_support_as_node_annotation: bool
+            Adds support as a metadata annotation, "`support". If
+            `add_support_as_node_attribute` is `True`, then the value will be
+            dynamically-bound to the value of the node's "`support`" attribute.
+
+        set_support_as_node_labels : bool
+            Sets the `label` attribute of each node to the support value.
+
+        add_node_age_summaries_as_node_attributes: bool
+            Summarizes the distribution of the ages of each node in the
+            following attributes:
+
+                - `age_mean`
+                - `age_median`
+                - `age_sd`
+                - `age_hpd95`
+                - `age_range`
+
+        add_node_age_summaries_as_node_annotations: bool
+            Summarizes the distribution of the ages of each node in the
+            following metadata annotations:
+
+                - `age_mean`
+                - `age_median`
+                - `age_sd`
+                - `age_hpd95`
+                - `age_range`
+
+            If `add_node_age_summaries_as_node_attributes` is `True`, then the
+            values will be dynamically-bound to the corresponding node
+            attributes.
+
+        add_edge_length_summaries_as_edge_attributes: bool
+            Summarizes the distribution of the lengths of each edge in the
+            following attribtutes:
+
+                - `length_mean`
+                - `length_median`
+                - `length_sd`
+                - `length_hpd95`
+                - `length_range`
+
+        add_edge_length_summaries_as_edge_annotations: bool
+            Summarizes the distribution of the lengths of each edge in the
+            following metadata annotations:
+
+                - `length_mean`
+                - `length_median`
+                - `length_sd`
+                - `length_hpd95`
+                - `length_range`
+
+            If `add_edge_length_summaries_as_edge_attributes` is `True`, then the
+            values will be dynamically-bound to the corresponding edge
+            attributes.
+
+        support_label_decimals: int
+            Number of decimal places to express when rendering the support
+            value as a string for the node label.
+
+        support_as_percentages: bool
+            Whether or not to express the support value as percentages (default
+            is probability or proportion).
+
+        is_bipartitions_updated: bool
+            If `True`, then bipartitions will not be recalculated.
+
+        """
+        if self.tree_decorator is None:
+            self.tree_decorator = SplitDistributionTreeDecorator()
+        self.tree_decorator.set_edge_lengths = set_edge_lengths
+        self.tree_decorator.add_support_as_node_attribute = add_support_as_node_attribute
+        self.tree_decorator.add_support_as_node_annotation = add_support_as_node_annotation
+        self.tree_decorator.set_support_as_node_label = set_support_as_node_label
+        self.tree_decorator.add_node_age_summaries_as_node_attributes = add_node_age_summaries_as_node_attributes
+        self.tree_decorator.add_node_age_summaries_as_node_annotations = add_node_age_summaries_as_node_annotations
+        self.tree_decorator.add_edge_length_summaries_as_edge_attributes = add_edge_length_summaries_as_edge_attributes
+        self.tree_decorator.add_edge_length_summaries_as_edge_annotations = add_edge_length_summaries_as_edge_annotations
+        self.tree_decorator.support_label_decimals = support_label_decimals
+        self.tree_decorator.support_as_percentages = support_as_percentages
+        self.tree_decorator.summarize_split_support_on_tree(
+                split_distribution=self,
+                tree=tree,
+                is_bipartitions_updated=is_bipartitions_updated)
+        return tree
 
     ###########################################################################
     ### legacy
@@ -1517,9 +1660,50 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
 class SplitDistributionTreeDecorator(object):
 
-    def __init__(self, split_distribution):
-        self.split_distribution = self
+    def __init__(self,
+            set_edge_lengths=None,
+            add_support_as_node_attribute=True,
+            add_support_as_node_annotation=True,
+            set_support_as_node_label=False,
+            add_node_age_summaries_as_node_attributes=True,
+            add_node_age_summaries_as_node_annotations=True,
+            add_edge_length_summaries_as_edge_attributes=True,
+            add_edge_length_summaries_as_edge_annotations=True,
+            support_label_decimals=4,
+            support_as_percentages=False,
+            ):
+        self.set_edge_lengths = set_edge_lengths
+        self.add_support_as_node_attribute = add_support_as_node_attribute
+        self.add_support_as_node_annotation = add_support_as_node_annotation
+        self.set_support_as_node_label = set_support_as_node_label
+        self.add_node_age_summaries_as_node_attributes = add_node_age_summaries_as_node_attributes
+        self.add_node_age_summaries_as_node_annotations = add_node_age_summaries_as_node_annotations
+        self.add_edge_length_summaries_as_edge_attributes = add_edge_length_summaries_as_edge_attributes
+        self.add_edge_length_summaries_as_edge_annotations = add_edge_length_summaries_as_edge_annotations
+        self.support_label_decimals = support_label_decimals
+        self.support_as_percentages = support_as_percentages
 
+    def summarize_split_support_on_tree(self,
+            split_distribution,
+            tree,
+            is_bipartitions_updated=False):
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
+        return
+
+        if set_edge_lengths is None:
+            pass
+        elif set_edge_lengths == "support":
+            split_edge_lengths = split_frequencies
+        else:
+            if set_edge_lengths in ("mean-age", "median-age"):
+                node_ages = self.split_node_age_summaries
+                if not node_ages:
+                    raise ValueError("Node ages not available")
+                if set_edge_lengths == "mean-age":
+                    pass
+                elif set_edge_lengths == "median-age":
+                    pass
 
 ###############################################################################
 ### TreeArray
