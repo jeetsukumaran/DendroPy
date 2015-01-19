@@ -83,6 +83,8 @@ def show_splash(
         citation_lines.extend(dendropy.citation_info(width=width))
         lines.extend(citation_lines)
         if additional_citations:
+            lines.append("")
+            lines.append("You should also cite the following")
             for additional_citation in additional_citations:
                 lines.append("")
                 c = textwrap.wrap(
@@ -93,7 +95,7 @@ def show_splash(
                         )
                 lines.extend(c)
         lines.append("")
-        extra = "Note that in the interests of scientific reproducibility, you should reference the exact and specific version of both the {prog_name} program as well as the DendroPy library used in the text of your publications. For your information, you are using {dendropy_desc}.".format(
+        extra = "Note that in the interests of scientific reproducibility, you should reference the exact and specific version of the {prog_name} program as well as the DendroPy library used in the text of your publications. For your information, you are using {dendropy_desc}.".format(
                 prog_name=prog_name,
                 dendropy_desc=dendropy_description)
         lines.extend(textwrap.wrap(extra))
