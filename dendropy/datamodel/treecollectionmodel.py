@@ -1585,9 +1585,9 @@ class SplitDistributionSummarizer(object):
         self.support_as_percentages = kwargs.pop("support_as_percentages", False)
         self.support_label_compose_func = kwargs.pop("support_label_compose_func", None)
         self.primary_fieldnames = ["support",]
-        self.stats_summary_fieldnames = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
-        self.node_age_summaries_fieldnames = list("age_{}".format(f) for f in self.stats_summary_fieldnames)
-        self.edge_length_summaries_fieldnames = list("length_{}".format(f) for f in self.stats_summary_fieldnames)
+        self.summary_stats_fieldnames = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
+        self.node_age_summaries_fieldnames = list("age_{}".format(f) for f in self.summary_stats_fieldnames)
+        self.edge_length_summaries_fieldnames = list("length_{}".format(f) for f in self.summary_stats_fieldnames)
         self.fieldnames = self.primary_fieldnames + self.node_age_summaries_fieldnames + self.edge_length_summaries_fieldnames
         for fieldname in self.fieldnames:
             setattr(self, "{}_attr_name".format(fieldname), kwargs.pop("{}_attr_name".format(fieldname), fieldname))
@@ -1639,7 +1639,7 @@ class SplitDistributionSummarizer(object):
         node_age_summaries = split_distribution.split_node_age_summaries
         edge_length_summaries = split_distribution.split_edge_length_summaries
         split_freqs = split_distribution.split_frequencies
-        assert len(self.node_age_summaries_fieldnames) == len(self.stats_summary_fieldnames)
+        assert len(self.node_age_summaries_fieldnames) == len(self.summary_stats_fieldnames)
         for node in tree:
             split_bitmask = node.edge.bipartition.split_bitmask
             split_support = split_freqs.get(split_bitmask, 0.0)
@@ -1655,7 +1655,7 @@ class SplitDistributionSummarizer(object):
             if self.set_support_as_node_label:
                 node.label = support_label_fn(split_support)
             if (self.add_node_age_summaries_as_node_attributes or self.add_node_age_summaries_as_node_annotations) and node_age_summaries:
-                for fieldname, stats_fieldname in zip(self.node_age_summaries_fieldnames, self.stats_summary_fieldnames):
+                for fieldname, stats_fieldname in zip(self.node_age_summaries_fieldnames, self.summary_stats_fieldnames):
                     self._decorate(
                         target=node,
                         fieldname=fieldname,
@@ -1664,7 +1664,7 @@ class SplitDistributionSummarizer(object):
                         set_annotation=self.add_node_age_summaries_as_node_annotations,
                         )
             if (self.add_edge_length_summaries_as_edge_attributes or self.add_edge_length_summaries_as_edge_annotations) and edge_length_summaries:
-                for fieldname, stats_fieldname in zip(self.edge_length_summaries_fieldnames, self.stats_summary_fieldnames):
+                for fieldname, stats_fieldname in zip(self.edge_length_summaries_fieldnames, self.summary_stats_fieldnames):
                     self._decorate(
                         target=node.edge,
                         fieldname=fieldname,
@@ -1672,20 +1672,34 @@ class SplitDistributionSummarizer(object):
                         set_attribute=self.add_edge_length_summaries_as_edge_attributes,
                         set_annotation=self.add_edge_length_summaries_as_edge_annotations,
                         )
-        return
-
-        if set_edge_lengths is None:
-            pass
-        elif set_edge_lengths == "support":
-            split_edge_lengths = split_frequencies
-        else:
-            if set_edge_lengths in ("mean-age", "median-age"):
-                if not node_age_summaries:
-                    raise ValueError("Node ages not available")
-                if set_edge_lengths == "mean-age":
-                    ages
-                elif set_edge_lengths == "median-age":
-                    pass
+            if self.set_edge_lengths is None:
+                pass
+            elif self.set_edge_lengths == "support":
+                node.edge.length = split_support
+            else:
+                if self.set_edge_lengths in ("mean-age", "median-age"):
+                    if not node_age_summaries:
+                        raise ValueError("Node ages not available")
+                    if self.set_edge_lengths == "mean-age":
+                        node.age = node_age_summaries["mean"]
+                    elif self.set_edge_lengths == "median-age":
+                        node.age = node_age_summaries["median"]
+                    else:
+                        raise ValueError(self.set_edge_lengths)
+                elif self.set_edge_lengths in ("mean-length", "median-length"):
+                    if not node_length_summaries:
+                        raise ValueError("Node lengths not available")
+                    if self.set_edge_lengths == "mean-length":
+                        edge.length = edge_length_summaries["mean"]
+                    elif self.set_edge_lengths == "median-length":
+                        edge.length = edge_length_summaries["median"]
+                    else:
+                        raise ValueError(self.set_edge_lengths)
+                else:
+                    raise ValueError(self.set_edge_lengths)
+        if self.set_edge_lengths in ("mean-age", "median-age"):
+            tree.self.set_edge_lengths_from_node_ages()
+        return tree
 
 ###############################################################################
 ### TreeArray
