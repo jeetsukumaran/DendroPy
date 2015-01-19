@@ -57,7 +57,6 @@ from dendropy.datamodel.charmatrixmodel import InfiniteSitesCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
 from dendropy.datamodel.datasetmodel import DataSet
-from dendropy.utility import GREATER_THAN_HALF
 from dendropy.utility.error import ImmutableTaxonNamespaceError
 from dendropy.utility.error import DataError
 from dendropy.utility.error import DataParseError

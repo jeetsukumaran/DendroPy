@@ -34,6 +34,7 @@ from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
+from dendropy.utility import constants
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio
@@ -4792,7 +4793,7 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def calc_node_ages(self, ultrametricity_check_prec=0.0000001, internal_only=False):
+    def calc_node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION, internal_only=False):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips. If the lengths of
@@ -4838,7 +4839,7 @@ class Tree(
                 dists.append(node.root_distance)
         return dists
 
-    def internal_node_ages(self, ultrametricity_check_prec=0.0000001):
+    def internal_node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
@@ -4846,7 +4847,7 @@ class Tree(
         ages.sort()
         return ages
 
-    def node_ages(self, ultrametricity_check_prec=0.0000001, internal_only=False):
+    def node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION, internal_only=False):
         """
         Returns list of ages of all nodes on tree.
         NOTE: Changed from DendroPy3: this function now returns the ages of

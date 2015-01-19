@@ -22,6 +22,7 @@ DEPRECATED IN DENDROPY 4: USE `dendropy.model.coalescent` instead.
 
 from dendropy.model import coalescent
 from dendropy.utility import deprecate
+from dendropy.utility import constants
 
 def discrete_time_to_coalescence(n_genes,
                                  pop_size=None,
@@ -74,7 +75,7 @@ def coalesce(nodes,
             rng=rng,
             use_expected_tmrca=use_expected_tmrca)
 
-def node_waiting_time_pairs(tree, ultrametricity_check_prec=0.0000001):
+def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
     deprecate.dendropy_deprecation_warning(
             preamble="Deprecated since DendroPy 4: The 'dendropy.coalescent' module has moved to 'dendropy.model.coalescent'.",
             old_construct="from dendropy import coalescent\ncoalescent.node_waiting_time_pairs(...)",

@@ -16,6 +16,7 @@
 ##
 ##############################################################################
 
-import random
+import decimal
 
-GLOBAL_RNG = random.Random()
+GREATER_THAN_HALF = float(decimal.Decimal(0.5).next_plus())
+DEFAULT_ULTRAMETRICITY_CHECK_PRECISION=1e-5

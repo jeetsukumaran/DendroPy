@@ -24,6 +24,7 @@ framework.
 import math
 import dendropy
 from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import constants
 from dendropy.mathlib import probability
 
 ###############################################################################
@@ -312,7 +313,7 @@ def coalesce_nodes(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def node_waiting_time_pairs(tree, ultrametricity_check_prec=0.0000001):
+def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
     """
     Returns a list of tuples of (nodes, coalescent interval time) on the tree.
     That is, each element in the list is tuple pair consisting of where: the
@@ -350,7 +351,7 @@ def node_waiting_time_pairs(tree, ultrametricity_check_prec=0.0000001):
         intervals.append( (nd, nd.age - prev_nd.age) )
     return intervals
 
-def extract_coalescent_frames(tree, ultrametricity_check_prec=0.0000001):
+def extract_coalescent_frames(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
     """
     Returns a list of tuples describing the coalescent frames on the tree. That
     is, each element in the list is tuple pair consisting of where: the first
@@ -410,7 +411,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
         lp =  lp + math.log(k2N) - (k2N * t)
     return lp
 
-def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_check_prec=0.0000001):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """

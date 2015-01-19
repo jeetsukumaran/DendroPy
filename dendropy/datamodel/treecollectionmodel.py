@@ -33,7 +33,8 @@ from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
-from dendropy.utility import GREATER_THAN_HALF
+from dendropy.utility import constants
+from dendropy.mathlib import statistics
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treemodel
@@ -942,7 +943,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_precision=0.0000001):
+            ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
 
         # Taxon Namespace
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
@@ -952,7 +953,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
-        self.ultrametricity_precision = ultrametricity_precision
+        self.ultrametricity_check_prec = ultrametricity_check_prec
         self.error_on_mixed_rooting_types = True
 
         # storage
@@ -1056,7 +1057,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
-            tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_precision)
+            tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_check_prec)
         if tree.weight is not None and self.use_tree_weights:
             weight_to_use = float(tree.weight)
         else:
@@ -1368,7 +1369,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         return sum_of_split_support
 
     def consensus_tree(self,
-            min_freq=GREATER_THAN_HALF,
+            min_freq=constants.GREATER_THAN_HALF,
             is_rooted=None,
             **split_support_summarization_kwargs
             ):
@@ -1575,26 +1576,19 @@ class SplitDistributionSummarizer(object):
         self.add_support_as_node_attribute = kwargs.pop("add_support_as_node_attribute", True)
         self.add_support_as_node_annotation = kwargs.pop("add_support_as_node_annotation", True)
         self.set_support_as_node_label = kwargs.pop("set_support_as_node_label", None)
-        self.add_node_age_summaries_as_node_attributes = kwargs.pop("add_node_age_summaries_as_node_attributes", None)
-        self.add_node_age_summaries_as_node_annotations = kwargs.pop("add_node_age_summaries_as_node_annotations", None)
-        self.add_edge_length_summaries_as_edge_attributes = kwargs.pop("add_edge_length_summaries_as_edge_attributes", None)
-        self.add_edge_length_summaries_as_edge_annotations = kwargs.pop("add_edge_length_summaries_as_edge_annotations", None)
-        self.support_label_decimals = kwargs.pop("support_label_decimals", None)
-        self.support_as_percentages = kwargs.pop("support_as_percentages", None)
+        self.add_node_age_summaries_as_node_attributes = kwargs.pop("add_node_age_summaries_as_node_attributes", True)
+        self.add_node_age_summaries_as_node_annotations = kwargs.pop("add_node_age_summaries_as_node_annotations", True)
+        self.add_edge_length_summaries_as_edge_attributes = kwargs.pop("add_edge_length_summaries_as_edge_attributes", True)
+        self.add_edge_length_summaries_as_edge_annotations = kwargs.pop("add_edge_length_summaries_as_edge_annotations", True)
+        self.support_label_decimals = kwargs.pop("support_label_decimals", 4)
+        self.support_as_percentages = kwargs.pop("support_as_percentages", False)
         self.support_label_compose_func = kwargs.pop("support_label_compose_func", None)
-        for fieldname in (
-                "support",
-                "age_mean",
-                "age_median",
-                "age_sd",
-                "age_hpd95",
-                "age_range",
-                "length_mean",
-                "length_median",
-                "length_sd",
-                "length_hpd95",
-                "length_range",
-                ):
+        self.primary_fieldnames = ["support",]
+        self.stats_summary_fieldnames = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
+        self.node_age_summaries_fieldnames = list("age_{}".format(f) for f in self.stats_summary_fieldnames)
+        self.edge_length_summaries_fieldnames = list("length_{}".format(f) for f in self.stats_summary_fieldnames)
+        self.fieldnames = self.primary_fieldnames + self.node_age_summaries_fieldnames + self.edge_length_summaries_fieldnames
+        for fieldname in self.fieldnames:
             setattr(self, "{}_attr_name".format(fieldname), kwargs.pop("{}_attr_name".format(fieldname), fieldname))
             setattr(self, "{}_annotation_name".format(fieldname), kwargs.pop("{}_annotation_name".format(fieldname), fieldname))
             setattr(self, "is_{}_annotation_dynamic".format(fieldname), kwargs.pop("is_{}_annotation_dynamic".format(fieldname), True))
@@ -1641,9 +1635,10 @@ class SplitDistributionSummarizer(object):
             support_label_fn = lambda freq: self.support_label_compose_func(freq)
         else:
             support_label_fn = lambda freq: "{:.{places}f}".format(freq, places=self.support_label_decimals)
-        # node_age_summaries = split_distribution.split_node_age_summaries
-        # edge_length_summaries = split_distribution.split_edge_length_summaries
+        node_age_summaries = split_distribution.split_node_age_summaries
+        edge_length_summaries = split_distribution.split_edge_length_summaries
         split_freqs = split_distribution.split_frequencies
+        assert len(self.node_age_summaries_fieldnames) == len(self.stats_summary_fieldnames)
         for node in tree:
             split_bitmask = node.edge.bipartition.split_bitmask
             split_support = split_freqs.get(split_bitmask, 0.0)
@@ -1658,8 +1653,15 @@ class SplitDistributionSummarizer(object):
                 )
             if self.set_support_as_node_label:
                 node.label = support_label_fn(split_support)
-
-
+            if (self.add_node_age_summaries_as_node_attributes or self.add_node_age_summaries_as_node_annotations) and node_age_summaries:
+                for fieldname, stats_fieldname in zip(self.node_age_summaries_fieldnames, self.stats_summary_fieldnames):
+                    self._decorate(
+                        target=node,
+                        fieldname=fieldname,
+                        value=node_age_summaries[split_bitmask].get(stats_fieldname, 0.0),
+                        set_attribute=self.add_node_age_summaries_as_node_attributes,
+                        set_annotation=self.add_node_age_summaries_as_node_annotations,
+                        )
 
         return
 
@@ -1699,6 +1701,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
+            ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION,
             ):
         """
         Parameters
@@ -1739,6 +1742,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
+                ultrametricity_check_prec=ultrametricity_check_prec,
                 )
 
     ##############################################################################

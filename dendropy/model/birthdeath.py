@@ -24,6 +24,7 @@ import math
 from dendropy.mathlib import probability
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import TreeSimTotalExtinctionException
+from dendropy.utility import constants
 
 import dendropy
 
@@ -601,7 +602,7 @@ def fit_pure_birth_model(**kwargs):
     }
     return result
 
-def fit_pure_birth_model_to_tree(tree, ultrametricity_check_prec=0.0000001):
+def fit_pure_birth_model_to_tree(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
     """
     Calculates the maximum-likelihood estimate of the birth rate a tree under a
     Yule (pure-birth) model.
