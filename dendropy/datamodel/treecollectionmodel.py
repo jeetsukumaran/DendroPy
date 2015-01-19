@@ -1369,17 +1369,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
     def consensus_tree(self,
             min_freq=GREATER_THAN_HALF,
-            set_edge_lengths=None,
-            add_support_as_node_attribute=True,
-            add_support_as_node_annotation=True,
-            set_support_as_node_label=False,
-            add_node_age_summaries_as_node_attributes=True,
-            add_node_age_summaries_as_node_annotations=True,
-            add_edge_length_summaries_as_edge_attributes=True,
-            add_edge_length_summaries_as_edge_annotations=True,
-            support_label_decimals=4,
-            support_as_percentages=False,
             is_rooted=None,
+            **split_support_summarization_kwargs
             ):
         """
         Returns a consensus tree from splits in `self`.
@@ -1391,88 +1382,15 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             The minimum frequency of a split in this distribution for it to be
             added to the tree.
 
-        set_edge_lengths : string
-            For each edge, set the length based on:
-
-                - "support": use support values split corresponding to edge
-                - "mean-length": mean of edge lengths for split
-                - "median-length": median of edge lengths for split
-                - "mean-age": such that split age is equal to mean of ages
-                - "median-age": such that split age is equal to mean of ages
-                - `None`: do not set edge lengths
-
-        add_support_as_node_attribute: bool
-            Adds each node's support value as an attribute of the node,
-            "`support`".
-
-        add_support_as_node_annotation: bool
-            Adds support as a metadata annotation, "`support". If
-            `add_support_as_node_attribute` is `True`, then the value will be
-            dynamically-bound to the value of the node's "`support`" attribute.
-
-        set_support_as_node_labels : bool
-            Sets the `label` attribute of each node to the support value.
-
-        add_node_age_summaries_as_node_attributes: bool
-            Summarizes the distribution of the ages of each node in the
-            following attributes:
-
-                - `age_mean`
-                - `age_median`
-                - `age_sd`
-                - `age_hpd95`
-                - `age_range`
-
-        add_node_age_summaries_as_node_annotations: bool
-            Summarizes the distribution of the ages of each node in the
-            following metadata annotations:
-
-                - `age_mean`
-                - `age_median`
-                - `age_sd`
-                - `age_hpd95`
-                - `age_range`
-
-            If `add_node_age_summaries_as_node_attributes` is `True`, then the
-            values will be dynamically-bound to the corresponding node
-            attributes.
-
-        add_edge_length_summaries_as_edge_attributes: bool
-            Summarizes the distribution of the lengths of each edge in the
-            following attribtutes:
-
-                - `length_mean`
-                - `length_median`
-                - `length_sd`
-                - `length_hpd95`
-                - `length_range`
-
-        add_edge_length_summaries_as_edge_annotations: bool
-            Summarizes the distribution of the lengths of each edge in the
-            following metadata annotations:
-
-                - `length_mean`
-                - `length_median`
-                - `length_sd`
-                - `length_hpd95`
-                - `length_range`
-
-            If `add_edge_length_summaries_as_edge_attributes` is `True`, then the
-            values will be dynamically-bound to the corresponding edge
-            attributes.
-
-        support_label_decimals: int
-            Number of decimal places to express when rendering the support
-            value as a string for the node label.
-
-        support_as_percentages: bool
-            Whether or not to express the support value as percentages (default
-            is probability or proportion).
-
         is_rooted : bool
             Should tree be rooted or not? If *all* trees counted for splits are
             explicitly rooted or unrooted, then this will default to `True` or
             `False`, respectively. Otherwise it defaults to `None`.
+
+        \*\*split_support_summarization_kwargs : keyword arguments
+            These will be passed directly to the underlying
+            :class:`SplitDistributionSummarizer` object. See
+            :meth:`SplitDistributionSummarizer.configure` for options.
 
         Returns
         -------
@@ -1499,33 +1417,15 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 is_rooted=is_rooted)
         self.summarize_split_support_on_tree(
             tree=con_tree,
-            set_edge_lengths=set_edge_lengths,
-            add_support_as_node_attribute=add_support_as_node_attribute,
-            add_support_as_node_annotation=add_support_as_node_annotation,
-            set_support_as_node_label=set_support_as_node_label,
-            add_node_age_summaries_as_node_attributes=add_node_age_summaries_as_node_attributes,
-            add_node_age_summaries_as_node_annotations=add_node_age_summaries_as_node_annotations,
-            add_edge_length_summaries_as_edge_attributes=add_edge_length_summaries_as_edge_attributes,
-            add_edge_length_summaries_as_edge_annotations=add_edge_length_summaries_as_edge_annotations,
-            support_label_decimals=support_label_decimals,
-            support_as_percentages=support_as_percentages,
             is_bipartitions_updated=False,
+            **split_support_summarization_kwargs
             )
         return con_tree
 
     def summarize_split_support_on_tree(self,
             tree,
-            set_edge_lengths=None,
-            add_support_as_node_attribute=True,
-            add_support_as_node_annotation=True,
-            set_support_as_node_label=False,
-            add_node_age_summaries_as_node_attributes=True,
-            add_node_age_summaries_as_node_annotations=True,
-            add_edge_length_summaries_as_edge_attributes=True,
-            add_edge_length_summaries_as_edge_annotations=True,
-            support_label_decimals=4,
-            support_as_percentages=False,
             is_bipartitions_updated=False,
+            **split_support_summarization_kwargs
             ):
         """
         Summarizes support of splits/edges/node on tree.
@@ -1535,6 +1435,62 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         tree: :class:`Tree` instance
             Tree to be decorated with support values.
+
+        is_bipartitions_updated: bool
+            If `True`, then bipartitions will not be recalculated.
+
+        \*\*split_support_summarization_kwargs : keyword arguments
+            These will be passed directly to the underlying
+            :class:`SplitDistributionSummarizer` object. See
+            :meth:`SplitDistributionSummarizer.configure` for options.
+
+        """
+        if self.tree_decorator is None:
+            self.tree_decorator = SplitDistributionSummarizer()
+        self.tree_decorator.configure(**split_support_summarization_kwargs)
+        self.tree_decorator.summarize_split_support_on_tree(
+                split_distribution=self,
+                tree=tree,
+                is_bipartitions_updated=is_bipartitions_updated)
+        return tree
+
+    ###########################################################################
+    ### legacy
+
+    def _get_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        return self.taxon_namespace
+
+    def _set_taxon_set(self, v):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+        self.taxon_namespace = v
+
+    def _del_taxon_set(self):
+        from dendropy import taxonmodel
+        taxon_model.taxon_set_deprecation_warning()
+
+    taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
+
+###############################################################################
+### SplitDistributionSummarizer
+
+class SplitDistributionSummarizer(object):
+
+    def __init__(self, **kwargs):
+        """
+        See :meth:`SplitDistributionSummarizer.configure` for configuration
+        options.
+        """
+        self.configure(**kwargs)
+
+    def configure(self, **kwargs):
+        """
+        Configure rendition/mark-up.
+
+        Parameters
+        ----------
 
         set_edge_lengths : string
             For each edge, set the length based on:
@@ -1555,7 +1511,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             `add_support_as_node_attribute` is `True`, then the value will be
             dynamically-bound to the value of the node's "`support`" attribute.
 
-        set_support_as_node_labels : bool
+        set_support_as_node_label : bool
             Sets the `label` attribute of each node to the support value.
 
         add_node_age_summaries_as_node_attributes: bool
@@ -1614,74 +1570,66 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             Whether or not to express the support value as percentages (default
             is probability or proportion).
 
-        is_bipartitions_updated: bool
-            If `True`, then bipartitions will not be recalculated.
-
         """
-        if self.tree_decorator is None:
-            self.tree_decorator = SplitDistributionTreeDecorator()
-        self.tree_decorator.set_edge_lengths = set_edge_lengths
-        self.tree_decorator.add_support_as_node_attribute = add_support_as_node_attribute
-        self.tree_decorator.add_support_as_node_annotation = add_support_as_node_annotation
-        self.tree_decorator.set_support_as_node_label = set_support_as_node_label
-        self.tree_decorator.add_node_age_summaries_as_node_attributes = add_node_age_summaries_as_node_attributes
-        self.tree_decorator.add_node_age_summaries_as_node_annotations = add_node_age_summaries_as_node_annotations
-        self.tree_decorator.add_edge_length_summaries_as_edge_attributes = add_edge_length_summaries_as_edge_attributes
-        self.tree_decorator.add_edge_length_summaries_as_edge_annotations = add_edge_length_summaries_as_edge_annotations
-        self.tree_decorator.support_label_decimals = support_label_decimals
-        self.tree_decorator.support_as_percentages = support_as_percentages
-        self.tree_decorator.summarize_split_support_on_tree(
-                split_distribution=self,
-                tree=tree,
-                is_bipartitions_updated=is_bipartitions_updated)
-        return tree
+        self.set_edge_lengths = kwargs.pop("set_edge_lengths", None)
+        self.add_support_as_node_attribute = kwargs.pop("add_support_as_node_attribute", True)
+        self.add_support_as_node_annotation = kwargs.pop("add_support_as_node_annotation", True)
+        self.set_support_as_node_label = kwargs.pop("set_support_as_node_label", None)
+        self.add_node_age_summaries_as_node_attributes = kwargs.pop("add_node_age_summaries_as_node_attributes", None)
+        self.add_node_age_summaries_as_node_annotations = kwargs.pop("add_node_age_summaries_as_node_annotations", None)
+        self.add_edge_length_summaries_as_edge_attributes = kwargs.pop("add_edge_length_summaries_as_edge_attributes", None)
+        self.add_edge_length_summaries_as_edge_annotations = kwargs.pop("add_edge_length_summaries_as_edge_annotations", None)
+        self.support_label_decimals = kwargs.pop("support_label_decimals", None)
+        self.support_as_percentages = kwargs.pop("support_as_percentages", None)
+        self.support_label_compose_func = kwargs.pop("support_label_compose_func", None)
+        for fieldname in (
+                "support",
+                "age_mean",
+                "age_median",
+                "age_sd",
+                "age_hpd95",
+                "age_range",
+                "length_mean",
+                "length_median",
+                "length_sd",
+                "length_hpd95",
+                "length_range",
+                ):
+            setattr(self, "{}_attr_name".format(fieldname), kwargs.pop("{}_attr_name".format(fieldname), fieldname))
+            setattr(self, "{}_annotation_name".format(fieldname), kwargs.pop("{}_annotation_name".format(fieldname), fieldname))
+            setattr(self, "is_{}_annotation_dynamic".format(fieldname), kwargs.pop("is_{}_annotation_dynamic".format(fieldname), True))
+        if kwargs:
+            TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
-    ###########################################################################
-    ### legacy
-
-    def _get_taxon_set(self):
-        from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
-        return self.taxon_namespace
-
-    def _set_taxon_set(self, v):
-        from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
-        self.taxon_namespace = v
-
-    def _del_taxon_set(self):
-        from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
-
-    taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
-
-###############################################################################
-### SplitDistributionTreeDecorator
-
-class SplitDistributionTreeDecorator(object):
-
-    def __init__(self,
-            set_edge_lengths=None,
-            add_support_as_node_attribute=True,
-            add_support_as_node_annotation=True,
-            set_support_as_node_label=False,
-            add_node_age_summaries_as_node_attributes=True,
-            add_node_age_summaries_as_node_annotations=True,
-            add_edge_length_summaries_as_edge_attributes=True,
-            add_edge_length_summaries_as_edge_annotations=True,
-            support_label_decimals=4,
-            support_as_percentages=False,
+    def _decorate(self,
+            target,
+            fieldname,
+            value,
+            set_attribute,
+            set_annotation,
             ):
-        self.set_edge_lengths = set_edge_lengths
-        self.add_support_as_node_attribute = add_support_as_node_attribute
-        self.add_support_as_node_annotation = add_support_as_node_annotation
-        self.set_support_as_node_label = set_support_as_node_label
-        self.add_node_age_summaries_as_node_attributes = add_node_age_summaries_as_node_attributes
-        self.add_node_age_summaries_as_node_annotations = add_node_age_summaries_as_node_annotations
-        self.add_edge_length_summaries_as_edge_attributes = add_edge_length_summaries_as_edge_attributes
-        self.add_edge_length_summaries_as_edge_annotations = add_edge_length_summaries_as_edge_annotations
-        self.support_label_decimals = support_label_decimals
-        self.support_as_percentages = support_as_percentages
+        attr_name = getattr(self, "{}_attr_name".format(fieldname))
+        annotation_name = getattr(self, "{}_annotation_name".format(fieldname))
+        if set_attribute:
+            setattr(target, attr_name, value)
+            if set_annotation:
+                target.annotations.drop(name=annotation_name)
+                if getattr(self, "is_{}_annotation_dynamic".format(fieldname)):
+                    target.annotations.add_bound_attribute(
+                        attr_name=attr_name,
+                        annotation_name=annotation_name,
+                        )
+                else:
+                    target.annotations.add_new(
+                            name=annotation_name,
+                            value=value,
+                            )
+        elif set_annotation:
+            target.annotations.drop(name=annotation_name)
+            target.annotations.add_new(
+                    name=annotation_name,
+                    value=value,
+                    )
 
     def summarize_split_support_on_tree(self,
             split_distribution,
@@ -1689,6 +1637,30 @@ class SplitDistributionTreeDecorator(object):
             is_bipartitions_updated=False):
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        if self.support_label_compose_func is not None:
+            support_label_fn = lambda freq: self.support_label_compose_func(freq)
+        else:
+            support_label_fn = lambda freq: "{:.{places}f}".format(freq, places=self.support_label_decimals)
+        # node_age_summaries = split_distribution.split_node_age_summaries
+        # edge_length_summaries = split_distribution.split_edge_length_summaries
+        split_freqs = split_distribution.split_frequencies
+        for node in tree:
+            split_bitmask = node.edge.bipartition.split_bitmask
+            split_support = split_freqs.get(split_bitmask, 0.0)
+            if self.support_as_percentages:
+                split_support = split_support * 100
+            self._decorate(
+                target=node,
+                fieldname="support",
+                value=split_support,
+                set_attribute=self.add_support_as_node_attribute,
+                set_annotation=self.add_support_as_node_annotation,
+                )
+            if self.set_support_as_node_label:
+                node.label = support_label_fn(split_support)
+
+
+
         return
 
         if set_edge_lengths is None:
@@ -1697,11 +1669,10 @@ class SplitDistributionTreeDecorator(object):
             split_edge_lengths = split_frequencies
         else:
             if set_edge_lengths in ("mean-age", "median-age"):
-                node_ages = self.split_node_age_summaries
-                if not node_ages:
+                if not node_age_summaries:
                     raise ValueError("Node ages not available")
                 if set_edge_lengths == "mean-age":
-                    pass
+                    ages
                 elif set_edge_lengths == "median-age":
                     pass
 
@@ -2176,6 +2147,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_product_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
+            **split_support_summarization_kwargs
             ):
         """
         Return the tree with that maximizes the product of split supports.
@@ -2202,8 +2174,10 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
         tree = self.restore_tree(
                 index=max_score_tree_idx,
-                tree_class=tree_class)
+                tree_class=tree_class,
+                **split_support_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
+
         return tree
 
     def calculate_sum_of_split_supports(self,
@@ -2248,6 +2222,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_sum_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
+            **split_support_summarization_kwargs
             ):
         """
         Return the tree with that maximizes the sum of split supports.
@@ -2274,7 +2249,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
         tree = self.restore_tree(
                 index=max_score_tree_idx,
-                tree_class=tree_class)
+                tree_class=tree_class,
+                **split_support_summarization_kwargs
+                )
         tree.sum_of_split_support = scores[max_score_tree_idx]
         return tree
 
@@ -2284,6 +2261,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def restore_tree(self,
             index,
             tree_class=None,
+            summarize_split_support_on_tree=False,
+            **split_support_summarization_kwargs
             ):
         split_bitmasks = self._tree_split_bitmasks[index]
         if self.ignore_edge_lengths:
@@ -2300,6 +2279,13 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 is_rooted=self._is_rooted_trees,
                 split_edge_lengths=split_edge_lengths,
                 )
+        # if update_bipartitions:
+        #     tree.encode_bipartitions()
+        if summarize_split_support_on_tree:
+            split_support_summarization_kwargs["is_bipartitions_updated"] = True
+            self._split_distribution.summarize_split_support_on_tree(
+                    tree=tree,
+                    **split_support_summarization_kwargs)
         return tree
 
     def consensus_tree(self, *args, **kwargs):
