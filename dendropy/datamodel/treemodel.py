@@ -4768,10 +4768,22 @@ class Tree(
             if e.length is not None:
                 e.length *= edge_len_multiplier
 
-    def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
+    def set_edge_lengths_from_node_ages(self,
+            minimum_edge_length=0.0,
+            error_on_negative_edge_lengths=False,
+            ):
         """
         Sets the edge lengths of the tree so that the path lengths from the
         tips equal the value of the `age` attribute of the nodes.
+
+        Parameters
+        ----------
+        minimum_edge_length : numeric
+            All edge lengths calculated to have a value less than this will be
+            set to this.
+        error_on_negative_edge_lengths : bool
+            If `True`, an inferred edge length that is less than 0 will result
+            in a `ValueError`.
         """
         for nd in self.preorder_node_iter():
             if nd._parent_node is not None:
@@ -4779,16 +4791,18 @@ class Tree(
                 #    nd.edge.length = 0.0
                 #else:
                 #    nd.edge.length = nd._parent_node.age - nd.age
-                if not allow_negative_edges and nd._parent_node.age < nd.age:
+                edge_length = nd._parent_node.age - nd.age
+                if minimum_edge_length is not None and edge_length < minimum_edge_length:
+                    edge_length = minimum_edge_length
+                if error_on_negative_edge_lengths and edge_length < 0.0:
                     #if nd._parent_node is self.seed_node:
                     #    # special case seed node
                     #    nd._parent_node.age = nd.age + nd.edge_length
                     #else:
                     #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
                     #            % (nd._parent_node.oid, nd._parent_node.age, nd.oid, nd.age))
-                    raise ValueError('Parent node age (%s) is younger than descendent (%s)'
-                            % (nd._parent_node.age, nd.age))
-                nd.edge.length = nd._parent_node.age - nd.age
+                    raise ValueError("Negative edge length: {}".foramt(edge_length))
+                nd.edge.length = edge_length
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
