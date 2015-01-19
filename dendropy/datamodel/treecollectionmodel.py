@@ -1087,6 +1087,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                     elen = default_edge_length_value
                 else:
                     elen = edge.length
+                sel.append(elen)
                 edge_lengths.append(elen)
             else:
                 sel = None
@@ -1662,7 +1663,15 @@ class SplitDistributionSummarizer(object):
                         set_attribute=self.add_node_age_summaries_as_node_attributes,
                         set_annotation=self.add_node_age_summaries_as_node_annotations,
                         )
-
+            if (self.add_edge_length_summaries_as_edge_attributes or self.add_edge_length_summaries_as_edge_annotations) and edge_length_summaries:
+                for fieldname, stats_fieldname in zip(self.edge_length_summaries_fieldnames, self.stats_summary_fieldnames):
+                    self._decorate(
+                        target=node.edge,
+                        fieldname=fieldname,
+                        value=edge_length_summaries[split_bitmask].get(stats_fieldname, 0.0),
+                        set_attribute=self.add_edge_length_summaries_as_edge_attributes,
+                        set_annotation=self.add_edge_length_summaries_as_edge_annotations,
+                        )
         return
 
         if set_edge_lengths is None:
