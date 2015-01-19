@@ -104,7 +104,7 @@ __project__ = "DendroPy"
 __version__ = ".".join(str(s) for s in version_info[:3])
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder."
-__citation__ = "Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
+__citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
 def revision():
@@ -124,13 +124,31 @@ def revision():
     __revision__ = vcsinfo.Revision(repo_path=__homedir__)
     return __revision__
 
-def description():
+def citation_info(width=70):
+    import textwrap
+    citation_lines = []
+    citation_preamble = "If you use any code or programs from this library, in whole or in part, directly or indirectly, as-is or derived/modified, at any stage of your work or analysis, please cite:"
+    citation_lines.extend(textwrap.wrap(citation_preamble, width=width))
+    citation_lines.append("")
+    citation = textwrap.wrap(
+            __citation__,
+            width=width,
+            initial_indent="  ",
+            subsequent_indent="    ",
+            )
+    citation_lines.extend(citation)
+    return citation_lines
+
+def revision_description():
     __revision__ = revision()
     if __revision__.is_available:
         revision_text = " ({})".format(__revision__)
     else:
         revision_text = ""
-    return "{} {}{}".format(__project__, __version__, revision_text)
+    return revision_text
+
+def description():
+    return "{} {}{}".format(__project__, __version__, revision_description())
 
 if __name__ == "__main__":
     import sys

@@ -25,6 +25,7 @@ if sys.hexversion < 0x03000000:
     input_str = raw_input
 else:
     input_str = input
+import textwrap
 
 import dendropy
 
@@ -45,28 +46,72 @@ def confirm_overwrite(filepath,
     else:
         return True
 
-def show_splash(prog_name,
+def show_splash(
+        prog_name,
         prog_subtitle,
         prog_version,
         prog_author,
         prog_copyright,
         dest=sys.stderr,
-        extended=False,
-        width=70):
-
+        include_citation=True,
+        include_copyright=False,
+        additional_citations=None,
+        width=70,
+        ):
+    wrap_width = width - 2
+    dendropy_description = dendropy.description()
     lines = []
-    lines.append("%s - %s" % (prog_name, prog_subtitle))
-    lines.append("%s" % prog_version)
-    lines.append("By %s" % prog_author)
-    lines.append("(using the DendroPy Phylogenetic Computing Library Version %s)" % (dendropy.__version__))
-    if extended:
-        lines.append('')
-        lines.extend(prog_copyright.split('\n'))
-    if width is None or width <= 0:
-        width = max([len(i) for i in lines]) + 1
-    sbars = '=' * width
-    dest.write("%s\n" % sbars)
-    dest.write("%s\n" % ('\n'.join(lines)))
-    dest.write("%s\n\n" % sbars)
+    lines.append("^"+prog_name)
+    lines.append("^"+prog_subtitle)
+    lines.append("^{}".format(prog_version))
+    lines.append("^By {}".format(prog_author))
+    lines.append("^Using: {}".format(dendropy_description))
+    if include_copyright:
+        copyright_lines = []
+        copyright_lines.append("{sub_bar1}")
+        copyright_text = textwrap.wrap(
+                prog_copyright,
+                width=wrap_width,
+                )
+        copyright_lines.extend(copyright_text)
+        lines.extend(copyright_lines)
+    if include_citation:
+        citation_lines = []
+        citation_lines.append("{sub_bar1}")
+        citation_lines.append("^Citation")
+        citation_lines.append("^~~~~~~~~")
+        citation_lines.extend(dendropy.citation_info(width=width))
+        lines.extend(citation_lines)
+        if additional_citations:
+            for additional_citation in additional_citations:
+                lines.append("")
+                c = textwrap.wrap(
+                        additional_citation,
+                        width=wrap_width,
+                        initial_indent="  ",
+                        subsequent_indent="    ",
+                        )
+                lines.extend(c)
+        lines.append("")
+        extra = "Note that in the interests of scientific reproducibility, you should reference the exact and specific version of both the {prog_name} program as well as the DendroPy library used in the text of your publications. For your information, you are using {dendropy_desc}.".format(
+                prog_name=prog_name,
+                dendropy_desc=dendropy_description)
+        lines.extend(textwrap.wrap(extra))
+    max_splash_text_width = max(len(i) for i in lines)
+    top_bar = "/{}\\".format("=" * (max_splash_text_width + 2))
+    bottom_bar = "\\{}/".format("=" * (max_splash_text_width + 2))
+    sub_bar1 = "-" * (max_splash_text_width + 2)
+    dest.write(top_bar + "\n")
+    for line in lines:
+        if line == "{sub_bar1}":
+            dest.write("+{}+\n".format(sub_bar1))
+        else:
+            if line.startswith("^"):
+                line = line[1:]
+                align_char = "^"
+            else:
+                align_char = "<"
+            dest.write("| {:{align_char}{width}} |\n".format(line, align_char=align_char, width=max_splash_text_width))
+    dest.write(bottom_bar + "\n")
 
 
