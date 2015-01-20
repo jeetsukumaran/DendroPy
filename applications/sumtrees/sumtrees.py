@@ -27,6 +27,7 @@ import os
 import sys
 import re
 import argparse
+import collections
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -38,8 +39,12 @@ except ImportError:
     import Queue as queue
 import multiprocessing
 
+import dendropy
 from dendropy.utility import cli
 from dendropy.utility import constants
+
+##############################################################################
+## Preamble
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Summarization"
@@ -56,6 +61,9 @@ There is NO WARRANTY, to the extent permitted by law."""
 _program_citation = """\
 Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Available at https://github.com/jeetsukumaran/DendroPy.
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
+
+##############################################################################
+## Front-End
 
 def citation(args):
     show_splash(dest=sys.stdout)
@@ -133,6 +141,25 @@ and saving the result to "``result.tre``"::
 
 """)
     dest.write(examples + "\n")
+
+def print_description(dest=None):
+    import site
+    if dest is None:
+        dest = sys.stdout
+    fields = collections.OrderedDict()
+    fields["DendroPy"] = dendropy.description()
+    fields["DendroPy Home Path"] = dendropy.homedir()
+    fields["Python Executable Path"] = sys.executable
+    fields["Python Site Packages Path(s)"] = site.getsitepackages()
+    max_fieldname_len = max(len(fieldname) for fieldname in fields)
+    dest.write("\n")
+    for fieldname, fieldvalue in fields.items():
+        dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
+            fieldname=fieldname,
+            fieldnamewidth=max_fieldname_len + 2,
+            fieldvalue=fieldvalue))
+    dest.write("\n")
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -406,6 +433,10 @@ def main():
             action="store_true",
             default=False,
             help="Show usage examples of program and exit.")
+    information_options.add_argument("--describe",
+            action="store_true",
+            default=False,
+            help="Show information regarding your DendroPy and Python installations and exit.")
 
     args = parser.parse_args()
 
@@ -421,6 +452,10 @@ def main():
 
     if args.usage_examples:
         print_usage_examples(sys.stdout)
+        sys.exit(0)
+
+    if args.describe:
+        print_description(sys.stdout)
         sys.exit(0)
 
 if __name__ == '__main__':

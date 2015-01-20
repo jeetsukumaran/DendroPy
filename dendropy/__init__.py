@@ -107,9 +107,8 @@ __copyright__ = "Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
-def revision():
+def homedir():
     import os
-    from dendropy.utility import vcsinfo
     try:
         try:
             __homedir__ = __path__[0]
@@ -121,19 +120,24 @@ def revision():
         __homedir__ = None
     except:
         __homedir__ = None
-    __revision__ = vcsinfo.Revision(repo_path=__homedir__)
+    return __homedir__
+
+def revision():
+    from dendropy.utility import vcsinfo
+    __revision__ = vcsinfo.Revision(repo_path=homedir())
     return __revision__
 
 def citation_info(width=70):
     import textwrap
     citation_lines = []
     citation_preamble =(
-                        "If any stage of your work or analysis uses code "
-                        "or programs from this library, either directly or "
-                        "indirectly (e.g., as part of other programs or "
-                        "toolkits or pipelines), or otherwise relies on "
-                        "code or programs directly based on or derived "
-                        "from this library, please cite:"
+                        "If any stage of your work or analyses relies"
+                        " on code or programs from this library, either"
+                        " directly or indirectly (e.g., through usage of"
+                        " your own or third-party programs, pipelines, or"
+                        " toolkits which use, rely on, incorporate, or are"
+                        " otherwise primarily derivative of code/programs"
+                        " in this library), please cite:"
                        )
     citation_lines.extend(textwrap.wrap(citation_preamble, width=width))
     citation_lines.append("")

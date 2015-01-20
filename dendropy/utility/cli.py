@@ -130,8 +130,8 @@ def compose_citation_for_program(
             citation_lines.extend(c)
     citation_lines.append("")
     extra = (
-            "Note that in the interests of scientific reproducibility, you "
-            "should note in the text of your publications not only the "
+            "Note that, in the interests of scientific reproducibility, you "
+            "should describe in the text of your publications not only the "
             "specific version of the {prog_name} program, but also the "
             "DendroPy library used in your analysis. "
             "For your information, you are running {dendropy_desc}."
