@@ -19,6 +19,9 @@
 """
 Support for CLI operations.
 """
+
+import re
+import argparse
 import os
 import sys
 if sys.hexversion < 0x03000000:
@@ -63,7 +66,7 @@ def show_splash(
     lines = []
     lines.append("^"+prog_name)
     lines.append("^"+prog_subtitle)
-    lines.append("^{}".format(prog_version))
+    lines.append("^Version {}".format(prog_version))
     lines.append("^By {}".format(prog_author))
     lines.append("^Using: {}".format(dendropy_description))
     if include_copyright:
@@ -95,9 +98,16 @@ def show_splash(
                         )
                 lines.extend(c)
         lines.append("")
-        extra = "Note that in the interests of scientific reproducibility, you should reference the exact and specific version of the {prog_name} program as well as the DendroPy library used in the text of your publications. For your information, you are using {dendropy_desc}.".format(
-                prog_name=prog_name,
-                dendropy_desc=dendropy_description)
+        extra = (
+                "Note that in the interests of scientific reproducibility, you "
+                "should note in the text of your publications not only the "
+                "specific version of the {prog_name} program, but also the "
+                "DendroPy library used in your analysis. "
+                "For your information, you are running {dendropy_desc}."
+                ).format( prog_name=prog_name,
+                        prog_version=prog_version,
+                        dendropy_desc=dendropy_description,
+                        python_version=sys.version)
         lines.extend(textwrap.wrap(extra))
     max_splash_text_width = max(len(i) for i in lines)
     top_bar = "/{}\\".format("=" * (max_splash_text_width + 2))
@@ -117,3 +127,10 @@ def show_splash(
     dest.write(bottom_bar + "\n")
 
 
+# from http://stackoverflow.com/a/22157136/268330
+class CustomFormatter(argparse.HelpFormatter):
+    def _split_lines(self, text, width):
+        # this is the RawTextHelpFormatter._split_lines
+       if text.startswith('R}'):
+           return text[2:].splitlines()
+       return argparse.HelpFormatter._split_lines(self, text, width)

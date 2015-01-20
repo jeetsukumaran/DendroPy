@@ -127,7 +127,14 @@ def revision():
 def citation_info(width=70):
     import textwrap
     citation_lines = []
-    citation_preamble = "If you use any code or programs from this library, in whole or in part, directly or indirectly, as-is or derived/modified or as a component of other programs, at *any* stage of your work or analysis, please cite:"
+    citation_preamble =(
+                        "If any stage of your work or analysis uses code "
+                        "or programs from this library, either directly or "
+                        "indirectly (e.g., as part of other programs or "
+                        "toolkits or pipelines), or otherwise relies on "
+                        "code or programs directly based on or derived "
+                        "from this library, please cite:"
+                       )
     citation_lines.extend(textwrap.wrap(citation_preamble, width=width))
     citation_lines.append("")
     citation = textwrap.wrap(
