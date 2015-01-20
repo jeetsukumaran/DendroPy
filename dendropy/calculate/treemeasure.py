@@ -262,7 +262,7 @@ def pybus_harvey_gamma(tree, prec=0.00001):
     speciation_ages = []
     n = 0
     if tree.seed_node.age is None:
-        tree.calc_node_ages(ultrametricity_check_prec=prec)
+        tree.calc_node_ages(ultrametricity_precision=prec)
     for node in tree.postorder_node_iter():
         if len(node.child_nodes()) == 2:
             speciation_ages.append(node.age)

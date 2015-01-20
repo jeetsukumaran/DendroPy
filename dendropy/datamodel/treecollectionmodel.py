@@ -943,7 +943,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
 
         # Taxon Namespace
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
@@ -953,7 +953,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
-        self.ultrametricity_check_prec = ultrametricity_check_prec
+        self.ultrametricity_precision = ultrametricity_precision
         self.error_on_mixed_rooting_types = True
 
         # storage
@@ -1057,7 +1057,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
-            tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_check_prec)
+            tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         if tree.weight is not None and self.use_tree_weights:
             weight_to_use = float(tree.weight)
         else:
@@ -1738,7 +1738,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION,
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             ):
         """
         Parameters
@@ -1779,7 +1779,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
-                ultrametricity_check_prec=ultrametricity_check_prec,
+                ultrametricity_precision=ultrametricity_precision,
                 )
 
     ##############################################################################

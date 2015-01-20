@@ -313,7 +313,7 @@ def coalesce_nodes(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
     """
     Returns a list of tuples of (nodes, coalescent interval time) on the tree.
     That is, each element in the list is tuple pair consisting of where: the
@@ -325,13 +325,13 @@ def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_UL
     ----------
     tree : :class:`Tree`
         A tree instance.
-    ultrametricity_check_prec : float
+    ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
-        by setting the `ultrametricity_check_prec` parameter. E.g., use
-        `ultrametricity_check_prec=0.01` for a more relaxed precision, down to
-        2 decimal places. Use `ultrametricity_check_prec=False` to disable
+        by setting the `ultrametricity_precision` parameter. E.g., use
+        `ultrametricity_precision=0.01` for a more relaxed precision, down to
+        2 decimal places. Use `ultrametricity_precision=False` to disable
         checking of ultrametricity.
 
     Returns
@@ -340,7 +340,7 @@ def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_UL
         Returns list of tuples of (node, coalescent interval [= time between
         last coalescent event and current node age])
     """
-    tree.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec)
+    tree.calc_node_ages(ultrametricity_precision=ultrametricity_precision)
     ages = [(n, n.age) for n in tree.internal_nodes()]
     ages.sort(key=lambda x: x[1])
     intervals = []
@@ -351,7 +351,7 @@ def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_UL
         intervals.append( (nd, nd.age - prev_nd.age) )
     return intervals
 
-def extract_coalescent_frames(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
     """
     Returns a list of tuples describing the coalescent frames on the tree. That
     is, each element in the list is tuple pair consisting of where: the first
@@ -363,13 +363,13 @@ def extract_coalescent_frames(tree, ultrametricity_check_prec=constants.DEFAULT_
     ----------
     tree : :class:`Tree`
         A tree instance.
-    ultrametricity_check_prec : float
+    ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
-        by setting the `ultrametricity_check_prec` parameter. E.g., use
-        `ultrametricity_check_prec=0.01` for a more relaxed precision, down to
-        2 decimal places. Use `ultrametricity_check_prec=False` to disable
+        by setting the `ultrametricity_precision` parameter. E.g., use
+        `ultrametricity_precision=0.01` for a more relaxed precision, down to
+        2 decimal places. Use `ultrametricity_precision=False` to disable
         checking of ultrametricity.
 
     Returns
@@ -378,7 +378,7 @@ def extract_coalescent_frames(tree, ultrametricity_check_prec=constants.DEFAULT_
         Returns dictionary, with key = number of alleles, and values = waiting
         time for coalescent for the given tree
     """
-    nwti = node_waiting_time_pairs(tree, ultrametricity_check_prec=ultrametricity_check_prec)
+    nwti = node_waiting_time_pairs(tree, ultrametricity_precision=ultrametricity_precision)
 #     num_genes = len(tree.taxon_namespace)
     num_genes = len(tree.leaf_nodes())
     num_genes_wt = {}
@@ -411,7 +411,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
         lp =  lp + math.log(k2N) - (k2N * t)
     return lp
 
-def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """

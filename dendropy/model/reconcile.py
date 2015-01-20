@@ -39,7 +39,7 @@ class ContainingTree(dendropy.Tree):
             contained_trees=None,
             fit_containing_edge_lengths=True,
             collapse_empty_edges=True,
-            ultrametricity_check_prec=False,
+            ultrametricity_precision=False,
             ignore_root_deep_coalescences=True,
             **kwargs):
         """
@@ -80,7 +80,7 @@ class ContainingTree(dendropy.Tree):
                 If ``True`` [default], after edge lengths are adjusted,
                 zero-length branches will be collapsed.
 
-            ``ultrametricity_check_prec``
+            ``ultrametricity_precision``
                 If ``False`` [default], then trees will not be checked for
                 ultrametricity. Otherwise this is the threshold within which
                 all node to tip distances for sister nodes must be equal.
@@ -109,7 +109,7 @@ class ContainingTree(dendropy.Tree):
         self._set_contained_to_containing_taxon_map(contained_to_containing_taxon_map)
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
         self.collapse_empty_edges = collapse_empty_edges
-        self.ultrametricity_check_prec = ultrametricity_check_prec
+        self.ultrametricity_precision = ultrametricity_precision
         self.ignore_root_deep_coalescences = ignore_root_deep_coalescences
         if contained_trees:
             self._set_contained_trees(contained_trees)
@@ -231,13 +231,13 @@ class ContainingTree(dendropy.Tree):
         Map edges of contained tree into containing tree (i.e., self).
         """
         if self.seed_node.age is None:
-            self.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_check_prec)
+            self.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         if contained_tree not in self.contained_trees:
             self.contained_trees.append(contained_tree)
         if self.fit_containing_edge_lengths:
             self.fit_edge_lengths(self.contained_trees)
         if contained_tree.seed_node.age is None:
-            contained_tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_check_prec)
+            contained_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         contained_leaves = contained_tree.leaf_nodes()
         taxon_to_contained = {}
         for nd in contained_leaves:
@@ -437,7 +437,7 @@ class ContainingTree(dendropy.Tree):
         if starting_min_age is None:
             starting_min_age = float('inf')
         if contained_tree.seed_node.age is None:
-            contained_tree.calc_node_ages(ultrametricity_check_prec=self.ultrametricity_check_prec)
+            contained_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         for nd in contained_tree.ageorder_node_iter(include_leaves=False):
             if nd.age > starting_min_age:
                 break

@@ -65,6 +65,80 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
 
 ##############################################################################
+## Primary Processing
+
+def process_sources(
+        tree_sources,
+        schema,
+        tree_offset,
+        is_source_trees_rooted,
+        ignore_edge_lengths,
+        ignore_node_ages,
+        use_tree_weights,
+        ultrametricity_precision,
+        num_processes,
+        log_frequency,
+        messenger,
+        ):
+    if tree_sources is None or len(tree_sources) == 0:
+        srcs = [sys.stdin]
+        messenger.info("Reading trees from standard input.")
+    else:
+        messenger.info("{} source(s) to be processed.".format(len(tree_sources)))
+        srcs = tree_sources
+
+    if is_source_trees_rooted is True:
+        rooting_interpretation = "force-rooted"
+    elif is_source_trees_rooted is False:
+        rooting_interpretation = "force-unrooted"
+    else:
+        rooting_interpretation = "default-unrooted"
+    if schema in ("nexus/newick", "nexus", "newick"):
+        messenger.info("Rooting intepretation: '{}'".format(rooting_interpretation))
+
+    if num_processes is None:
+        ## Serial processing
+        messenger.info("Running in serial mode")
+        tree_array = dendropy.TreeArray(
+                is_rooted_trees=is_source_trees_rooted,
+                ignore_edge_lengths=ignore_edge_lengths,
+                ignore_node_ages=ignore_node_ages,
+                use_tree_weights=use_tree_weights,
+                ultrametricity_precision=ultrametricity_precision,
+                )
+        tree_array.read_from_files(
+            files=srcs,
+            schema=schema,
+            rooting=rooting_interpretation,
+            ignore_unrecognized_keyword_arguments=True,
+            )
+    else:
+        raise NotImplementedError()
+
+    # current_index = None
+    # for tidx, tree in enumerate(tree_yielder):
+    #     current_yielder_index = tree_yielder.current_file_index
+    #     if current_yielder_index != current_index:
+    #         current_index = current_yielder_index
+    #         name = tree_yielder.current_file_name
+    #         if name is None:
+    #             name = "<stdin>"
+    #         messenger.info("Processing %d of %d: '%s'" % (current_index+1, len(srcs), name), wrap=False)
+    #     if tidx >= tree_offset:
+    #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+    #             messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
+    #         split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
+    #         if len(split_distribution.tree_rooting_types_counted) > 1:
+    #             mixed_tree_rootings_in_source_error(messenger)
+    #         topology_counter.count(tree, is_splits_encoded=True)
+    #     else:
+    #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+    #             messenger.info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
+
+    # messenger.info("Serial processing of %d source(s) completed." % len(srcs))
+    # return split_distribution, topology_counter
+
+##############################################################################
 ## Preprocessing
 
 def preprocess_tree_sources(args, messenger):
@@ -77,7 +151,9 @@ def preprocess_tree_sources(args, messenger):
             elif args.source_format.lower() == "nexus/newick":
                 messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input.")
                 sys.exit(1)
-            tree_sources.append(sys.stdin)
+            if len(args.tree_sources) > 1:
+                messenger.error("Cannot specify multiple sources when reading from standard input.")
+            return []
         else:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
@@ -226,7 +302,7 @@ def main():
             help="Assume source trees are ultrametric (implies '--rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
     source_options.add_argument("-y", "--ultrametricity-precision",
             action="store_true",
-            default=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION,
+            default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
     source_options.add_argument("--weighted-trees",
             action="store_true",
@@ -361,7 +437,7 @@ def main():
             const=0,
             help=("Do not indicate support with internal node labels or edge"
                   " lengths. Support will still be indicated as node metadata "
-                  " annotations unless '--no-summary-metadata' is specified "
+                  " annotations unless '--no-annotations' is specified "
                  ))
     support_summarization_options.add_argument("-p", "--percentages",
             action="store_true",
@@ -393,12 +469,17 @@ def main():
             metavar="FILEPATH",
             help=("if specified, a tab-delimited file of splits and their edge "
                   "lengths across input trees will be saved to FILEPATH"))
-    other_summarization_options.add_argument("--no-node-ages",
+    other_summarization_options.add_argument("--no-summarize-node-ages",
             action="store_false",
             dest="summarize_node_ages",
             default=None,
-            help="Do not calculate/summarize node ages, even if '--ultrametric' is specified")
-    other_summarization_options.add_argument("--no-summary-metadata",
+            help="Do not calculate/summarize node ages, even if '--ultrametric' is specified.")
+    other_summarization_options.add_argument("--no-summarize-edge-lengths",
+            action="store_false",
+            dest="summarize_edge_lengths",
+            default=None,
+            help="Do not summarize edge lengths.")
+    other_summarization_options.add_argument("--no-annotations",
             action="store_true",
             default=False,
             help="Do NOT annotate nodes and edges with any summarization information metadata.")
@@ -551,9 +632,13 @@ def main():
             messenger.error("Edge summarization strategy '{}' requires ultrametric source trees, but source trees are specified as non-ultrametric".format(args.edge_summarization))
             sys.exit(1)
         if args.summarize_node_ages is False:
-            messenger.error("Edge summarization strategy '{}' requires node ages to be summarized, but '--no-node-ages' specified".format(args.edge_summarization))
+            messenger.error("Edge summarization strategy '{}' requires node ages to be summarized, but '--no-summarize-node-ages' specified".format(args.edge_summarization))
             sys.exit(1)
         args.summarize_node_ages = True
+    if args.edge_summarization == "mean-lengths" or args.edge_summarization == "median-lengths":
+        if args.summarize_edge_lengths is False:
+            messenger.error("Edge summarization strategy '{}' requires edge lengths to be summarized, but '--no-summarize-edge-lengths' specified".format(args.edge_summarization))
+            sys.exit(1)
 
     if args.is_source_trees_ultrametric:
         if args.is_source_trees_rooted is False:
@@ -576,13 +661,6 @@ def main():
                 sys.exit(1)
         else:
             args.sumamrize_node_ages = False
-
-    if args.is_source_trees_rooted is True:
-        rooting_interpretation = "force-rooted"
-    elif args.is_source_trees_rooted is False:
-        rooting_interpretation = "force-unrooted"
-    else:
-        rooting_interpretation = "default-unrooted"
 
     ######################################################################
     ## Output File Setup
@@ -638,16 +716,34 @@ def main():
     else:
         if args.multiprocess > 1:
             messenger.info("Number of valid sources is less than 2: forcing serial processing")
-        num_processes = 1
+        num_processes = None
+
+    ######################################################################
+    ## Format
+
+    if args.source_format is None:
+        schema = "nexus/newick"
+    else:
+        schema = args.source_format.lower()
 
     ######################################################################
     ## Main Work Loop
 
     start_time = datetime.datetime.now()
-    if num_processes == 1:
-        raise NotImplementedError()
-    else:
-        raise NotImplementedError()
+    master_tree_array = process_sources(
+            tree_sources=tree_sources,
+            schema=schema,
+            tree_offset=args.burnin,
+            is_source_trees_rooted=args.is_source_trees_rooted,
+            ignore_edge_lengths=not args.summarize_edge_lengths,
+            ignore_node_ages=not args.summarize_node_ages,
+            use_tree_weights=args.weighted_trees,
+            ultrametricity_precision=args.ultrametricity_precision,
+            num_processes=num_processes,
+            log_frequency=args.log_frequency,
+            messenger=messenger,
+            )
+
 
 if __name__ == '__main__':
     main()

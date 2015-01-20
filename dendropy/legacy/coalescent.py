@@ -75,13 +75,13 @@ def coalesce(nodes,
             rng=rng,
             use_expected_tmrca=use_expected_tmrca)
 
-def node_waiting_time_pairs(tree, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
     deprecate.dendropy_deprecation_warning(
             preamble="Deprecated since DendroPy 4: The 'dendropy.coalescent' module has moved to 'dendropy.model.coalescent'.",
             old_construct="from dendropy import coalescent\ncoalescent.node_waiting_time_pairs(...)",
             new_construct="from dendropy.model import coalescent\ncoalescent.node_waiting_time_pairs(...)")
     return coalescent.node_waiting_time_pairs(tree=tree,
-            ultrametricity_check_prec=ultrametricity_check_prec)
+            ultrametricity_precision=ultrametricity_precision)
 
 def extract_coalescent_frames(*args, **kwargs):
     deprecate.dendropy_deprecation_warning(

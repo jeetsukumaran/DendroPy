@@ -4807,13 +4807,13 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def calc_node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION, internal_only=False):
+    def calc_node_ages(self, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION, internal_only=False):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips. If the lengths of
-        different paths to the node differ by more than `ultrametricity_check_prec`, then a
+        different paths to the node differ by more than `ultrametricity_precision`, then a
         ValueError exception will be raised indicating deviation from
-        ultrametricity. If `ultrametricity_check_prec` is negative or False, then this check
+        ultrametricity. If `ultrametricity_precision` is negative or False, then this check
         will be skipped.
         """
         ages = []
@@ -4826,13 +4826,13 @@ class Tree(
             else:
                 first_child = ch[0]
                 node.age = first_child.age + first_child.edge.length
-                if not (ultrametricity_check_prec is None or ultrametricity_check_prec is False or ultrametricity_check_prec < 0):
+                if not (ultrametricity_precision is None or ultrametricity_precision is False or ultrametricity_precision < 0):
                     for nnd in ch[1:]:
                         ocnd = nnd.age + nnd.edge.length
                         d = abs(node.age - ocnd)
-                        if  d > ultrametricity_check_prec:
+                        if  d > ultrametricity_precision:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
-                            raise error.UltrametricityError("Tree is not ultrametric within specified threshold: {} (threshold = {})".format(d, ultrametricity_check_prec))
+                            raise error.UltrametricityError("Tree is not ultrametric within specified threshold: {} (threshold = {})".format(d, ultrametricity_precision))
                 ages.append(node.age)
         return ages
 
@@ -4853,22 +4853,22 @@ class Tree(
                 dists.append(node.root_distance)
         return dists
 
-    def internal_node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION):
+    def internal_node_ages(self, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
-        ages = self.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec, internal_only=True)
+        ages = self.calc_node_ages(ultrametricity_precision=ultrametricity_precision, internal_only=True)
         ages.sort()
         return ages
 
-    def node_ages(self, ultrametricity_check_prec=constants.DEFAULT_ULTRAMETRICITY_CHECK_PRECISION, internal_only=False):
+    def node_ages(self, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION, internal_only=False):
         """
         Returns list of ages of all nodes on tree.
         NOTE: Changed from DendroPy3: this function now returns the ages of
         *ALL* nodes. To get only internal node ages, use
         `Tree.internal_node_ages`.
         """
-        ages = self.calc_node_ages(ultrametricity_check_prec=ultrametricity_check_prec, internal_only=internal_only)
+        ages = self.calc_node_ages(ultrametricity_precision=ultrametricity_precision, internal_only=internal_only)
         ages.sort()
         return ages
 
