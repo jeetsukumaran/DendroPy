@@ -42,6 +42,7 @@ import multiprocessing
 import dendropy
 from dendropy.utility import cli
 from dendropy.utility import constants
+from dendropy.utility import messaging
 
 ##############################################################################
 ## Preamble
@@ -61,6 +62,38 @@ There is NO WARRANTY, to the extent permitted by law."""
 _program_citation = """\
 Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Available at https://github.com/jeetsukumaran/DendroPy.
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
+
+##############################################################################
+## Preprocessing
+
+def preprocess_support_sources(args, messenger):
+    support_sources = []
+    for fpath in args.support_sources:
+        if fpath == "-":
+            if args.source_format is None:
+                messenger.error("Format of source trees must be specified using '-i' or '--source-format' flags when reading trees from standard input.")
+                sys.exit(1)
+            elif args.source_format.lower() == "nexus/newick":
+                messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input.")
+                sys.exit(1)
+            support_sources.append(sys.stdin)
+        else:
+            fpath = os.path.expanduser(os.path.expandvars(fpath))
+            if not os.path.exists(fpath):
+                if args.ignore_missing_support:
+                    messenger.warning("Support file not found: '{}'".format(fpath))
+                else:
+                    messenger.error("Terminating due to missing support files. "
+                            "Use the '--ignore-missing-support' option to continue even "
+                            "if some files are missing.")
+                    sys.exit(1)
+            else:
+                support_sources.append(fpath)
+    if len(support_filepaths) == 0:
+        messenger.error("No valid sources of input trees specified. "
+                + "Please provide the path to at least one (valid and existing) file "
+                + "containing tree samples to summarize.")
+        sys.exit(1)
 
 ##############################################################################
 ## Front-End
@@ -83,12 +116,12 @@ def show_splash(dest=None):
             additional_citations=[_program_citation],
             dest=dest,
             )
+    dest.write("\n")
 
 def print_usage_examples(dest=None):
     if dest is None:
         dest = sys.stdout
     examples = ("""\
-
 Summarize a set of tree files using a 95% rule consensus tree, with support for
 clades expressed as proportions (posterior probabilities) on internal node
 labels and branch lengths the mean across all trees, dropping the first 200
@@ -152,14 +185,11 @@ def print_description(dest=None):
     fields["Python Executable Path"] = sys.executable
     fields["Python Site Packages Path(s)"] = site.getsitepackages()
     max_fieldname_len = max(len(fieldname) for fieldname in fields)
-    dest.write("\n")
     for fieldname, fieldvalue in fields.items():
         dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
             fieldname=fieldname,
             fieldnamewidth=max_fieldname_len + 2,
             fieldvalue=fieldvalue))
-    dest.write("\n")
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -170,24 +200,27 @@ def main():
     source_options = parser.add_argument_group("Source Options")
     source_options.add_argument("-i","--source-format",
             metavar="FORMAT",
-            default="nexus/newick",
-            choices=["nexus", "newick", "phylip", "nexml"],
+            default=None,
+            choices=["nexus/newick", "nexus", "newick", "phylip", "nexml"],
             help="Format of the source trees (defaults to handling either NEXUS or NEWICK through inspection; it is more efficient to explicitly specify the format if it is known).")
     source_options.add_argument("-b", "--burnin",
             type=int,
             default=0,
             help="Number of trees to skip from the beginning of *each* tree file when counting support (default: %(default)s).")
     source_options.add_argument("--rooted",
+            dest="is_source_trees_rooted",
             action="store_true",
             default=None,
             help="Treat source trees as rooted.")
     source_options.add_argument("--unrooted",
+            dest="is_source_trees_rooted",
             action="store_false",
             default=None,
             help="Treat source trees as unrooted.")
     source_options.add_argument("-u", "--ultrametric",
+            dest="is_source_trees_ultrametric",
             action="store_true",
-            default=False,
+            default=None,
             help="Assume source trees are ultrametric (implies '--rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
     source_options.add_argument("-y", "--ultrametricity-precision",
             action="store_true",
@@ -200,7 +233,7 @@ def main():
 
     summary_tree_options = parser.add_argument_group("Target Tree Topology Options")
     summary_tree_options.add_argument(
-            "-s", "--summary-tree",
+            "-s", "--summary-tree-target",
             default=None,
             metavar="{consensus,mct,msct}",
             help="\n".join((
@@ -220,7 +253,8 @@ def main():
                 "                maximizes the *sum* of clade ",
                 "                posterior probabilities.",
                 )))
-    summary_tree_options.add_argument("-t", "--target-trees-filepath",
+    summary_tree_options.add_argument(
+            "-t", "--target-tree-filepath",
             default=None,
             metavar="FILE",
             help=(
@@ -342,7 +376,7 @@ def main():
     other_summarization_options = parser.add_argument_group("Other Summarization Options")
     #other_summarization_options.add_argument("--with-node-ages",
     #        action="store_true",
-    #        dest="calc_node_ages",
+    #        dest="summarize_node_ages",
     #        default=None,
     #        help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
     other_summarization_options.add_argument("--trprobs", "--calc-tree-probabilities",
@@ -359,6 +393,7 @@ def main():
                   "lengths across input trees will be saved to FILEPATH"))
     other_summarization_options.add_argument("--no-node-ages",
             action="store_false",
+            dest="summarize_node_ages",
             default=None,
             help="Do not calculate/summarize node ages, even if '--ultrametric' is specified")
     other_summarization_options.add_argument("--no-summary-metadata",
@@ -438,6 +473,17 @@ def main():
             default=False,
             help="Show information regarding your DendroPy and Python installations and exit.")
 
+    parser.add_argument("support_sources",
+            nargs="*",
+            metavar="TREE-FILEPATH",
+            help= (
+                "Source(s) of trees to summarize. At least one valid"
+                " source of trees must be provided. Use '-' to specify"
+                " reading from standard input (note that this requires"
+                " the input file format to be explicitly set using"
+                " the '-i' or '--source-format' option)."
+            ))
+
     args = parser.parse_args()
 
     if args.citation:
@@ -457,6 +503,113 @@ def main():
     if args.describe:
         print_description(sys.stdout)
         sys.exit(0)
+
+    ######################################################################
+    ## Set up messenger
+
+    if args.quiet:
+        messaging_level = messaging.ConsoleMessenger.ERROR_MESSAGING_LEVEL
+    else:
+        messaging_level = messaging.ConsoleMessenger.INFO_MESSAGING_LEVEL
+    messenger = messaging.ConsoleMessenger(name="SumTrees", messaging_level=messaging_level)
+
+    ######################################################################
+    ## Support File Validation
+
+    if len(args.support_sources) > 0:
+        support_sources = preprocess_support_sources(args, messenger)
+    else:
+        parser.print_usage()
+        sys.exit(0)
+
+    ######################################################################
+    ## Target Validation
+
+    if args.summary_tree is not None and args.target_trees_filepath is not None:
+        messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simulataneously")
+    elif args.target_trees_filepath is not None:
+        target_tree_filepath = os.path.expanduser(os.path.expandvars(args.target_tree_filepath))
+        if not os.path.exists(target_tree_filepath):
+            messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
+            sys.exit(1)
+    elif args.summary_tree is not None:
+        target_tree_filepath = None
+
+    ######################################################################
+    ## Tree Ultrametricity and Rooting State
+
+    if args.edge_summarization == "mean-age" or args.edge_summarization == "median-age":
+        if args.is_source_trees_ultrametric is None:
+            messenger.info("Edge summarization strategy '{}' requires ultrametric source trees: assuming source trees are ultrametric".format(args.edge_summarization))
+            args.is_source_trees_ultrametric = True
+        elif args.is_source_trees_ultrametric is False:
+            messenger.error("Edge summarization strategy '{}' requires ultrametric source trees, but source trees are specified as non-ultrametric".format(args.edge_summarization))
+            sys.exit(1)
+        if args.summarize_node_ages is False:
+            messenger.error("Edge summarization strategy '{}' requires node ages to be summarized, but '--no-node-ages' specified".format(args.edge_summarization))
+            sys.exit(1)
+        args.summarize_node_ages = True
+
+    if args.is_source_trees_ultrametric:
+        if args.is_source_trees_rooted is False:
+            messenger.error("Ultrametric source trees imply rooted trees, but source trees are explicitly specified as unrooted".format(args.edge_summarization))
+            sys.exit(1)
+        args.is_source_trees_rooted = True
+        if args.summarize_node_ages is None:
+            args.summarize_node_ages = True
+    else:
+        if args.summarize_node_ages is True:
+            if args.is_source_trees_ultrametric is None:
+                messenger.info("Summarization of node ages ('--summarize-node-ages') require ultrametric trees: assuming source trees are ultrametric")
+                args.is_source_trees_ultrametric = True
+                if args.is_source_trees_rooted is False:
+                    messenger.error("Ultrametric source trees imply rooted trees, but source trees are explicitly specified as unrooted".format(args.edge_summarization))
+                    sys.exit(1)
+                args.is_source_trees_rooted = True
+            elif args.is_source_trees_ultrametric is False:
+                messenger.error("Summarization of node ages ('--summarize-node-ages') require ultrametric trees, but source trees are specified as non-ultrametric")
+                sys.exit(1)
+        else:
+            args.sumamrize_node_ages = False
+
+    if args.is_source_trees_rooted is True:
+        rooting_interpretation = "force-rooted"
+    elif args.is_source_trees_rooted is False:
+        rooting_interpretation = "force-unrooted"
+    else:
+        rooting_interpretation = "default-unrooted"
+
+    ######################################################################
+    ## Output File Setup
+
+    if args.output_filepath is None:
+        output_dest = sys.stdout
+    else:
+        output_fpath = os.path.expanduser(os.path.expandvars(args.output_filepath))
+        if cli.confirm_overwrite(filepath=output_fpath, replace_without_asking=args.replace):
+            output_dest = open(output_fpath, "w")
+        else:
+            sys.exit(1)
+
+    if args.trprobs_filepath:
+        trprobs_filepath = os.path.expanduser(os.path.expandvars(args.trprobs_filepath))
+        if cli.confirm_overwrite(filepath=trprobs_filepath, replace_without_asking=args.replace):
+            trprobs_dest = open(trprobs_filepath, "w")
+        else:
+            sys.exit(1)
+        args.calc_tree_probs = True
+    else:
+        trprobs_dest = None
+        args.calc_tree_probs = False
+
+    if args.split_edge_map_filepath:
+        split_edge_map_filepath = os.path.expanduser(os.path.expandvars(args.split_edge_map_filepath))
+        if confirm_overwrite(filepath=split_edge_map_filepath, replace_without_asking=args.replace):
+            cli.split_edge_map_dest = open(split_edge_map_filepath, "w")
+        else:
+            sys.exit(1)
+    else:
+        split_edge_map_dest = None
 
 if __name__ == '__main__':
     main()
