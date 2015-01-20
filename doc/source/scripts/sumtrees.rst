@@ -120,6 +120,13 @@ Full help on program usage and options is given by using the "``--help``" option
 Quick Recipes
 =============
 
+Summarization of Posterior Probabilities of Clades with a Consensus Tree
+------------------------------------------------------------------------
+Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
+
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+
 Non-parametric Bootstrap Support of a Model Tree
 ------------------------------------------------
 Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``result.tre``"::
@@ -127,12 +134,6 @@ Calculate support for nodes on a specific tree, "``best.tre``" as given by a set
     $ sumtrees.py --decimals=0 --percentages --output=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
-Summarization of Posterior Probabilities of Clades with a Consensus Tree
-------------------------------------------------------------------------
-Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
-
-    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tree
 ----------------------------------------------------------------------------------
@@ -141,12 +142,12 @@ Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tr
 
 Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --edges=mean-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=mean-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
 
 To use the median age instead::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --edges=median-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=median-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre -l -e median-age treefile1.tre treefile2.tre treefile3.tre
 
 Running in Parallel Mode
@@ -165,7 +166,7 @@ For example, if your machine has two cores, and you want to run the previous ana
 
     $ sumtrees.py --multiprocessing=2 --decimals=0 --percentages --output=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 You can specify as many processes as you want, up to the total number of tree support files passed as input sources.

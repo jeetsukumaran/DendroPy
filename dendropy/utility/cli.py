@@ -55,11 +55,11 @@ def show_splash(
         prog_version,
         prog_author,
         prog_copyright,
-        dest=sys.stderr,
         include_citation=True,
         include_copyright=False,
         additional_citations=None,
         width=70,
+        dest=sys.stderr,
         ):
     wrap_width = width - 2
     dendropy_description = dendropy.description()
@@ -79,36 +79,16 @@ def show_splash(
         copyright_lines.extend(copyright_text)
         lines.extend(copyright_lines)
     if include_citation:
-        citation_lines = []
-        citation_lines.append("{sub_bar1}")
-        citation_lines.append("^Citation")
-        citation_lines.append("^~~~~~~~~")
-        citation_lines.extend(dendropy.citation_info(width=width))
-        lines.extend(citation_lines)
-        if additional_citations:
-            lines.append("")
-            lines.append("You should also cite the following")
-            for additional_citation in additional_citations:
-                lines.append("")
-                c = textwrap.wrap(
-                        additional_citation,
-                        width=wrap_width,
-                        initial_indent="  ",
-                        subsequent_indent="    ",
-                        )
-                lines.extend(c)
-        lines.append("")
-        extra = (
-                "Note that in the interests of scientific reproducibility, you "
-                "should note in the text of your publications not only the "
-                "specific version of the {prog_name} program, but also the "
-                "DendroPy library used in your analysis. "
-                "For your information, you are running {dendropy_desc}."
-                ).format( prog_name=prog_name,
-                        prog_version=prog_version,
-                        dendropy_desc=dendropy_description,
-                        python_version=sys.version)
-        lines.extend(textwrap.wrap(extra))
+        lines.append("{sub_bar1}")
+        lines.append("^Citation")
+        lines.append("^~~~~~~~~")
+        lines.extend(compose_citation_for_program(
+            prog_name=prog_name,
+            prog_version=prog_version,
+            additional_citations=additional_citations,
+            dendropy_description=dendropy_description,
+            width=wrap_width-2,
+            ))
     max_splash_text_width = max(len(i) for i in lines)
     top_bar = "/{}\\".format("=" * (max_splash_text_width + 2))
     bottom_bar = "\\{}/".format("=" * (max_splash_text_width + 2))
@@ -126,6 +106,41 @@ def show_splash(
             dest.write("| {:{align_char}{width}} |\n".format(line, align_char=align_char, width=max_splash_text_width))
     dest.write(bottom_bar + "\n")
 
+def compose_citation_for_program(
+        prog_name,
+        prog_version,
+        additional_citations=None,
+        dendropy_description=None,
+        width=70):
+    if dendropy_description is None:
+        dendropy_description = dendropy.description()
+    citation_lines = []
+    citation_lines.extend(dendropy.citation_info(width=width))
+    if additional_citations:
+        citation_lines.append("")
+        citation_lines.append("You should also cite the following")
+        for additional_citation in additional_citations:
+            citation_lines.append("")
+            c = textwrap.wrap(
+                    additional_citation,
+                    width=width,
+                    initial_indent="  ",
+                    subsequent_indent="    ",
+                    )
+            citation_lines.extend(c)
+    citation_lines.append("")
+    extra = (
+            "Note that in the interests of scientific reproducibility, you "
+            "should note in the text of your publications not only the "
+            "specific version of the {prog_name} program, but also the "
+            "DendroPy library used in your analysis. "
+            "For your information, you are running {dendropy_desc}."
+            ).format( prog_name=prog_name,
+                    prog_version=prog_version,
+                    dendropy_desc=dendropy_description,
+                    python_version=sys.version)
+    citation_lines.extend(textwrap.wrap(extra))
+    return citation_lines
 
 # from http://stackoverflow.com/a/22157136/268330
 class CustomFormatter(argparse.HelpFormatter):

@@ -57,11 +57,88 @@ _program_citation = """\
 Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Available at https://github.com/jeetsukumaran/DendroPy.
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
 
+def citation(args):
+    show_splash(dest=sys.stdout)
+    sys.exit(0)
+
+def show_splash(dest=None):
+    if dest is None:
+        dest = sys.stderr
+    cli.show_splash(
+            prog_name=_program_name,
+            prog_subtitle=_program_subtitle,
+            prog_version=_program_version,
+            prog_author=_program_author,
+            prog_copyright=_program_copyright,
+            include_citation=True,
+            include_copyright=False,
+            additional_citations=[_program_citation],
+            dest=dest,
+            )
+
+def print_usage_examples(dest=None):
+    if dest is None:
+        dest = sys.stdout
+    examples = ("""\
+
+Summarize a set of tree files using a 95% rule consensus tree, with support for
+clades expressed as proportions (posterior probabilities) on internal node
+labels and branch lengths the mean across all trees, dropping the first 200
+trees in each file as a burn-in, and saving the result to "``result.tre``"::
+
+    $ sumtrees.py \\
+            --summary-tree consensus \\
+            --min-clade-freq=0.95 \\
+            --edges mean-length \\
+            --burnin=200 \\
+            --support-as-labels \\
+            --output=result.tre \\
+            treefile1.tre treefile2.tre treefile3.tre
+
+To use a different type of summary tree, e.g., the tree that maximizes the
+product of posterior probabilities, you can specify 'mct' for the
+'--summary-tree' option:
+
+    $ sumtrees.py \\
+            --summary-tree mct \\
+            --min-clade-freq=0.95 \\
+            --edges mean-length \\
+            --burnin=200 \\
+            --support-as-labels \\
+            --output=result.tre \\
+            treefile1.tre treefile2.tre treefile3.tre
+
+If the input trees are ultrametric and you want to set the node ages to the
+median node age, specify the '--ultrametic' option and set the '--edges'
+argument to 'median-age':
+
+    $ sumtrees.py \\
+            --ultrametric \\
+            --summary-tree mct \\
+            --edges median-age \\
+            --burnin=200 \\
+            --output=result.tre \\
+            treefile1.tre treefile2.tre treefile3.tre
+
+Calculate support for nodes on a specific tree, "``best.tre``" as given by a
+set of tree files, with support reported as percentages rounded to integers,
+and saving the result to "``result.tre``"::
+
+    $ sumtrees.py \\
+            --target=best.tre \\
+            --decimals=0 \\
+            --percentages \\
+            --output=result.tre \\
+            treefile1.tre treefile2.tre treefile3.tre
+
+""")
+    dest.write(examples + "\n")
+
 def main():
     parser = argparse.ArgumentParser(
             description=__doc__,
-            # formatter_class=argparse.HelpFormatter,
             formatter_class=cli.CustomFormatter,
+            add_help=False,
             )
     source_options = parser.add_argument_group("Source Options")
     source_options.add_argument("-i","--source-format",
@@ -100,10 +177,9 @@ def main():
             default=None,
             metavar="{consensus,mct,msct}",
             help="\n".join((
-                "R}Use a topology summarized or calculated from the ",
-                "source trees as the target onto which support and other ",
-                "information from the source trees will be mapped. ",
-                "Summarization strategy can be one of the following:",
+                "R}Map support and other information from the ",
+                "source trees to a topology summarized from ",
+                "the source trees under different criteria:  ",
                 "- 'consensus' : consensus tree [DEFAULT];",
                 "                The minimum frequency threshold can",
                 "                be specified using the '-f' or",
@@ -121,9 +197,9 @@ def main():
             default=None,
             metavar="FILE",
             help=(
-                 "Use the topology (or topologies) in the file specified by "
-                 "FILE as target(s) to which to map support and "
-                 "other information in the trees of the source set."
+                  "Map support and other information from the "
+                  "source trees to a topology or topologies "
+                  "given by the tree(s) described in FILE."
                  ))
 
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
@@ -177,8 +253,8 @@ def main():
                 "                     is the default option.",
                 "- 'keep'           : Do not change the existing edge lengths.",
                 "                     This is the default if target tree(s) are",
-                "                     sourced from an external file using the '-t'",
-                "                     or '--target' option",
+                "                     sourced from an external file using the",
+                "                     '-t' or '--target' option",
                 "- 'median-age'     : Edge lengths will be adjusted so that",
                 "                     the age of subtended nodes will be equal",
                 "                     to the median age of the corresponding",
@@ -317,19 +393,35 @@ def main():
             default=False,
             help="Ignore missing support tree files (note that at least one must exist).")
 
+    information_options = parser.add_argument_group("Program Information Options")
+    information_options.add_argument("-h", "--help",
+            action="store_true",
+            default=False,
+            help="Show help information for program and exit.")
+    information_options.add_argument("--citation",
+            action="store_true",
+            default=False,
+            help="Show citation information for program and exit.")
+    information_options.add_argument("--usage-examples",
+            action="store_true",
+            default=False,
+            help="Show usage examples of program and exit.")
+
     args = parser.parse_args()
 
+    if args.citation:
+        citation(args)
+
     if not args.quiet:
-        cli.show_splash(prog_name=_program_name,
-                prog_subtitle=_program_subtitle,
-                prog_version=_program_version,
-                prog_author=_program_author,
-                prog_copyright=_program_copyright,
-                dest=sys.stderr,
-                include_citation=True,
-                include_copyright=False,
-                additional_citations=[_program_citation],
-                )
+        show_splash()
+
+    if args.help:
+        parser.print_help(sys.stdout)
+        sys.exit(0)
+
+    if args.usage_examples:
+        print_usage_examples(sys.stdout)
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()
