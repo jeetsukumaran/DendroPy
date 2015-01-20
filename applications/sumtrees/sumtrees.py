@@ -94,16 +94,17 @@ def main():
             default=False,
             help="Use weights of trees (as indicated by '[&W m/n]' comment token) to weight contribution of splits found on each tree to overall split frequencies.")
 
-    summary_tree_options = parser.add_argument_group("Summary Target Tree Options")
+    summary_tree_options = parser.add_argument_group("Target Tree Topology Options")
     summary_tree_options.add_argument(
-            "-s", "--summary-tree-type",
+            "-s", "--summary-tree",
             default=None,
             metavar="{consensus,mct,msct}",
             help="\n".join((
-                "R}The summary tree to construct or select as a target ",
-                "for mapping support and other information from the ",
-                "source trees:",
-                "- 'consensus' : consensus tree;",
+                "R}Use a topology summarized or calculated from the ",
+                "source trees as the target onto which support and other ",
+                "information from the source trees will be mapped. ",
+                "Summarization strategy can be one of the following:",
+                "- 'consensus' : consensus tree [DEFAULT];",
                 "                The minimum frequency threshold can",
                 "                be specified using the '-f' or",
                 "                '--min-clade-freq' flags.",
@@ -120,12 +121,13 @@ def main():
             default=None,
             metavar="FILE",
             help=(
-                 "Instead of constructing a summary tree as a target, use the "
-                 "tree or trees in the file specified by FILE as target(s) "
-                 "to which to map support and other information summarized "
-                 "by trees in the source set."
+                 "Use the topology (or topologies) in the file specified by "
+                 "FILE as target(s) to which to map support and "
+                 "other information in the trees of the source set."
                  ))
-    summary_tree_options.add_argument("-f", "--min-consensus-freq",
+
+    target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
+    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq",
             type=float,
             default=constants.GREATER_THAN_HALF,
             metavar="#.##",
@@ -133,54 +135,22 @@ def main():
                 "If using a consensus tree summarization strategy, then "
                 "this is the minimum frequency or probability for a clade "
                 "or a split to be included in the resulting tree "
-                "(default: > 0.05)."
+                "(default: > 0.5)."
                 ))
-    summary_tree_options.add_argument("--root-target-at-midpoint",
-            action="store_true",
-            default=None,
-            help="Root target tree(s) at midpoint.")
-    summary_tree_options.add_argument("--root-target-outgroup",
+
+    target_tree_rooting_options = parser.add_argument_group("Target Tree Rooting Options")
+    target_tree_rooting_options.add_argument("--root-target-at-outgroup",
             metavar="TAXON-LABEL",
             default=None,
             help="Root target tree(s) using specified taxon as outgroup.")
-
-    support_summarization_optgroup = parser.add_argument_group("Support Summarization Options")
-    support_summarization_optgroup.add_argument("-l","--support-as-labels",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=1,
-            help="Indicate split/clade/branch support as internal node labels.")
-    support_summarization_optgroup.add_argument("-v","--support-as-lengths",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=2,
-            help="Indicate split/clade/branch support as branch lengths.")
-    support_summarization_optgroup.add_argument("-x","--no-support",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=0,
-            help=("Do not indicate support with internal node labels or edge"
-                  " lengths. Support will still be indicated as node metadata "
-                  " annotations unless '--no-summary-metadata' is specified "
-                 ))
-    support_summarization_optgroup.add_argument("-p", "--percentages",
+    target_tree_rooting_options.add_argument("--root-target-at-midpoint",
             action="store_true",
-            dest="support_as_percentages",
-            default=False,
-            help="Indicate branch support as percentages (otherwise, will report as proportions by default).")
-    support_summarization_optgroup.add_argument("-d", "--decimals",
-            dest="support_label_decimals",
-            type=int,
-            metavar="#",
-            default=8,
-            help="Number of decimal places in indication of support values (default: %(default)s).")
+            default=None,
+            help="Root target tree(s) at midpoint.")
 
-    edge_summarization_optgroup = parser.add_argument_group("Edge Length Summarization Options")
+    edge_summarization_options = parser.add_argument_group("Target Tree Edge Options")
     edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep", "clear"]
-    edge_summarization_optgroup.add_argument("-e", "--edges",
+    edge_summarization_options.add_argument("-e", "--edges",
             dest="edge_summarization",
             # metavar="<%s>" % ("".join(edge_summarization_choices)),
             choices=edge_summarization_choices,
@@ -226,39 +196,74 @@ def main():
                 "- 'clear'          : Edge lengths will be cleared from the",
                 "                     target trees if they are present.",
                 )))
-    edge_summarization_optgroup.add_argument("--collapse-negative-edges",
+    edge_summarization_options.add_argument("--collapse-negative-edges",
             action="store_true",
             default=False,
             help="(If setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages.")
 
-    other_summarization_optgroup = parser.add_argument_group("Other Summarization Options")
-    #other_summarization_optgroup.add_argument("--with-node-ages",
+
+    support_summarization_options = parser.add_argument_group("Support Summarization Options")
+    support_summarization_options.add_argument("-l","--support-as-labels",
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=1,
+            help="Indicate split/clade/branch support as internal node labels.")
+    support_summarization_options.add_argument("-v","--support-as-lengths",
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=2,
+            help="Indicate split/clade/branch support as branch lengths.")
+    support_summarization_options.add_argument("-x","--no-support-labels",
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=0,
+            help=("Do not indicate support with internal node labels or edge"
+                  " lengths. Support will still be indicated as node metadata "
+                  " annotations unless '--no-summary-metadata' is specified "
+                 ))
+    support_summarization_options.add_argument("-p", "--percentages",
+            action="store_true",
+            dest="support_as_percentages",
+            default=False,
+            help="Indicate branch support as percentages (otherwise, will report as proportions by default).")
+    support_summarization_options.add_argument("-d", "--decimals",
+            dest="support_label_decimals",
+            type=int,
+            metavar="#",
+            default=8,
+            help="Number of decimal places in indication of support values (default: %(default)s).")
+
+    other_summarization_options = parser.add_argument_group("Other Summarization Options")
+    #other_summarization_options.add_argument("--with-node-ages",
     #        action="store_true",
     #        dest="calc_node_ages",
     #        default=None,
     #        help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
-    other_summarization_optgroup.add_argument("--trprobs", "--calc-tree-probabilities",
+    other_summarization_options.add_argument("--trprobs", "--calc-tree-probabilities",
             dest="trprobs_filepath",
             default=None,
             metavar="FILEPATH",
             help=("If specified, a file listing tree (topologies) and the "
                  "frequencies of their occurrences will be saved to FILEPATH."))
-    other_summarization_optgroup.add_argument("--extract-edges",
+    other_summarization_options.add_argument("--extract-edges",
             dest="split_edge_map_filepath",
             default=None,
             metavar="FILEPATH",
             help=("if specified, a tab-delimited file of splits and their edge "
                   "lengths across input trees will be saved to FILEPATH"))
-    other_summarization_optgroup.add_argument("--no-node-ages",
+    other_summarization_options.add_argument("--no-node-ages",
             action="store_false",
             default=None,
             help="Do not calculate/summarize node ages, even if '--ultrametric' is specified")
-    other_summarization_optgroup.add_argument("--no-summary-metadata",
+    other_summarization_options.add_argument("--no-summary-metadata",
             action="store_true",
             default=False,
-            help="Do not annotate nodes and edges with any summarization information.")
+            help="Do NOT annotate nodes and edges with any summarization information metadata.")
 
-    output_options = parser.add_argument_group("Output File Options")
+    output_options = parser.add_argument_group("Output Options")
     output_options.add_argument("-o","--output-tree-filepath",
             metavar="FILEPATH",
             default=None,
@@ -286,29 +291,31 @@ def main():
             action="store_true",
             dest="replace",
             default=False,
-            help="replace/overwrite output file without asking if it already exists ")
+            help="Replace/overwrite output file without asking if it already exists.")
 
-    run_optgroup = parser.add_argument_group("Program Run Options")
-    run_optgroup.add_argument("-m", "--multiprocessing",
+    run_options = parser.add_argument_group("Program Run Options")
+    run_options.add_argument("-m", "--multiprocessing",
             dest="multiprocess",
             metavar="NUM-PROCESSES",
             default=None,
-            help="Run in parallel mode with up to a maximum of NUM-PROCESSES processes " \
-                 "(specify '*' to run in as many processes as there are cores on the "\
-                 "local machine).")
-    run_optgroup.add_argument("-g", "--log-frequency",
+            help=(
+                 "Run in parallel mode with up to a maximum of NUM-PROCESSES processes "
+                 "(specify '*' to run in as many processes as there are cores on the "
+                 "local machine)."
+                 ))
+    run_options.add_argument("-g", "--log-frequency",
             type=int,
             metavar="LOG-FREQUENCY",
             default=500,
             help="Tree processing progress logging frequency (default: %(default)s; set to 0 to suppress).")
-    run_optgroup.add_argument("-q", "--quiet",
+    run_options.add_argument("-q", "--quiet",
             action="store_true",
             default=False,
             help="Suppress ALL logging, progress and feedback messages.")
-    run_optgroup.add_argument("--ignore-missing-support",
+    run_options.add_argument("--ignore-missing-support",
             action="store_true",
             default=False,
-            help="Ignore missing support tree files (at least one must exist!).")
+            help="Ignore missing support tree files (note that at least one must exist).")
 
     args = parser.parse_args()
 
