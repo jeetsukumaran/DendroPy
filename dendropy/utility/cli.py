@@ -58,7 +58,7 @@ def show_splash(
         include_citation=True,
         include_copyright=False,
         additional_citations=None,
-        width=70,
+        width=76,
         dest=sys.stderr,
         ):
     wrap_width = width - 2

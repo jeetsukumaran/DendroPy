@@ -28,6 +28,7 @@ import sys
 import re
 import argparse
 import collections
+import datetime
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -66,9 +67,9 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 ##############################################################################
 ## Preprocessing
 
-def preprocess_support_sources(args, messenger):
-    support_sources = []
-    for fpath in args.support_sources:
+def preprocess_tree_sources(args, messenger):
+    tree_sources = []
+    for fpath in args.tree_sources:
         if fpath == "-":
             if args.source_format is None:
                 messenger.error("Format of source trees must be specified using '-i' or '--source-format' flags when reading trees from standard input.")
@@ -76,7 +77,7 @@ def preprocess_support_sources(args, messenger):
             elif args.source_format.lower() == "nexus/newick":
                 messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input.")
                 sys.exit(1)
-            support_sources.append(sys.stdin)
+            tree_sources.append(sys.stdin)
         else:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
@@ -88,12 +89,13 @@ def preprocess_support_sources(args, messenger):
                             "if some files are missing.")
                     sys.exit(1)
             else:
-                support_sources.append(fpath)
-    if len(support_filepaths) == 0:
+                tree_sources.append(fpath)
+    if len(tree_sources) == 0:
         messenger.error("No valid sources of input trees specified. "
                 + "Please provide the path to at least one (valid and existing) file "
                 + "containing tree samples to summarize.")
         sys.exit(1)
+    return tree_sources
 
 ##############################################################################
 ## Front-End
@@ -473,7 +475,7 @@ def main():
             default=False,
             help="Show information regarding your DendroPy and Python installations and exit.")
 
-    parser.add_argument("support_sources",
+    parser.add_argument("tree_sources",
             nargs="*",
             metavar="TREE-FILEPATH",
             help= (
@@ -516,23 +518,26 @@ def main():
     ######################################################################
     ## Support File Validation
 
-    if len(args.support_sources) > 0:
-        support_sources = preprocess_support_sources(args, messenger)
-    else:
+    if len(args.tree_sources) == 0:
         parser.print_usage()
+        sys.stdout.write("\n")
+        sys.stdout.write("Type 'sumtrees.py --help' for details on usage.\n")
+        sys.stdout.write("Type 'sumtrees.py --usage-examples' for examples of usage.\n")
         sys.exit(0)
+
+    tree_sources = preprocess_tree_sources(args, messenger)
 
     ######################################################################
     ## Target Validation
 
-    if args.summary_tree is not None and args.target_trees_filepath is not None:
+    if args.summary_tree_target is not None and args.target_tree_filepath is not None:
         messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simulataneously")
-    elif args.target_trees_filepath is not None:
+    elif args.target_tree_filepath is not None:
         target_tree_filepath = os.path.expanduser(os.path.expandvars(args.target_tree_filepath))
         if not os.path.exists(target_tree_filepath):
             messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
             sys.exit(1)
-    elif args.summary_tree is not None:
+    elif args.summary_tree_target is not None:
         target_tree_filepath = None
 
     ######################################################################
@@ -582,10 +587,10 @@ def main():
     ######################################################################
     ## Output File Setup
 
-    if args.output_filepath is None:
+    if args.output_tree_filepath is None:
         output_dest = sys.stdout
     else:
-        output_fpath = os.path.expanduser(os.path.expandvars(args.output_filepath))
+        output_fpath = os.path.expanduser(os.path.expandvars(args.output_tree_filepath))
         if cli.confirm_overwrite(filepath=output_fpath, replace_without_asking=args.replace):
             output_dest = open(output_fpath, "w")
         else:
@@ -610,6 +615,39 @@ def main():
             sys.exit(1)
     else:
         split_edge_map_dest = None
+
+    ######################################################################
+    ## Multiprocessing Setup
+
+    if len(tree_sources) > 1 and args.multiprocess is not None:
+        if args.multiprocess == "*":
+            num_processes = multiprocessing.cpu_count()
+        elif  args.multiprocess == "@":
+            num_processes = len(tree_sources)
+        else:
+            try:
+                num_processes = int(args.multiprocess)
+            except ValueError:
+                messenger.error("'%s' is not a valid number of processes (must be a positive integer)." % args.multiprocess)
+                sys.exit(1)
+        if num_processes <= 0:
+            messenger.error("Maximum number of processes set to %d: cannot run SumTrees with less than 1 process" % num_processes)
+            sys.exit(1)
+        if num_processes == 1:
+            messenger.warning("Running in parallel processing mode but limited to only 1 process: probably more efficient to run in serial mode!")
+    else:
+        if args.multiprocess > 1:
+            messenger.info("Number of valid sources is less than 2: forcing serial processing")
+        num_processes = 1
+
+    ######################################################################
+    ## Main Work Loop
+
+    start_time = datetime.datetime.now()
+    if num_processes == 1:
+        raise NotImplementedError()
+    else:
+        raise NotImplementedError()
 
 if __name__ == '__main__':
     main()

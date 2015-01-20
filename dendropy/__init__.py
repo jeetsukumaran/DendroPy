@@ -127,7 +127,7 @@ def revision():
     __revision__ = vcsinfo.Revision(repo_path=homedir())
     return __revision__
 
-def citation_info(width=70):
+def citation_info(width=76):
     import textwrap
     citation_lines = []
     citation_preamble =(
