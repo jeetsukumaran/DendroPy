@@ -132,7 +132,7 @@ def _read_into_tree_array(
             if current_tree_offset >= tree_offset:
                 tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
                 _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
-                # if len(tree_array._split_distribution.tree_rooting_types_counted) > 1:
+                # if len(tree_array.split_distribution.tree_rooting_types_counted) > 1:
                 #     mixed_tree_rootings_in_source_error(messenger)
             else:
                 _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
@@ -148,7 +148,6 @@ class TreeProcessingWorker(multiprocessing.Process):
             tree_offset,
             process_idx,
             is_source_trees_rooted,
-            rooting_interpretation,
             preserve_underscores,
             ignore_edge_lengths,
             ignore_node_ages,
@@ -169,7 +168,7 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.tree_offset = tree_offset
         self.process_idx = process_idx
         self.is_source_trees_rooted = is_source_trees_rooted
-        self.rooting_interpretation =rooting_interpretation
+        self.rooting_interpretation = dendropy.get_rooting_argument(is_rooted=self.is_source_trees_rooted)
         self.preserve_underscores = preserve_underscores
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
@@ -258,9 +257,8 @@ class SumTrees(object):
             log_frequency,
             messenger,
             ):
-        self._is_source_trees_rooted = None
-        self._rooting_interpretation = None
         self.is_source_trees_rooted = is_source_trees_rooted
+        self.rooting_interpretation = dendropy.get_rooting_argument(is_rooted=self.is_source_trees_rooted)
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
@@ -268,18 +266,6 @@ class SumTrees(object):
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
-
-    def _get_is_source_trees_rooted(self):
-        return self._is_source_trees_rooted
-    def _set_is_source_trees_rooted(self, is_source_trees_rooted):
-        self._is_source_trees_rooted = is_source_trees_rooted
-        if self._is_source_trees_rooted is True:
-            self._rooting_interpretation = "force-rooted"
-        elif self._is_source_trees_rooted is False:
-            self._rooting_interpretation = "force-unrooted"
-        else:
-            self._rooting_interpretation = "default-unrooted"
-    is_source_trees_rooted = property(_get_is_source_trees_rooted, _set_is_source_trees_rooted)
 
     def info_message(self, msg, wrap=True):
         if self.messenger:
@@ -341,7 +327,7 @@ class SumTrees(object):
                 tree_sources=tree_sources,
                 schema=schema,
                 taxon_namespace=taxon_namespace,
-                rooting=self._rooting_interpretation,
+                rooting=self.rooting_interpretation,
                 tree_offset=tree_offset,
                 use_tree_weights=self.use_tree_weights,
                 preserve_underscores=preserve_underscores,
@@ -391,7 +377,6 @@ class SumTrees(object):
                     tree_offset=tree_offset,
                     process_idx=idx,
                     is_source_trees_rooted=self.is_source_trees_rooted,
-                    rooting_interpretation=self._rooting_interpretation,
                     preserve_underscores=preserve_underscores,
                     ignore_edge_lengths=self.ignore_edge_lengths,
                     ignore_node_ages=self.ignore_node_ages,
@@ -439,14 +424,22 @@ class SumTrees(object):
 ##############################################################################
 ## Preprocessing
 
+def mixed_tree_rootings_in_source_error(messenger):
+    messenger.error(
+            "Both rooted as well as unrooted trees found in input trees."
+            " Support values are meaningless. Rerun SumTrees using the"
+            " '--rooted' or the '--unrooted' option to force a consistent"
+            " rooting state for the source trees.")
+    sys.exit(1)
+
 def preprocess_tree_sources(args, messenger):
     tree_sources = []
     for fpath in args.tree_sources:
         if fpath == "-":
-            if args.source_format is None:
-                messenger.error("Format of source trees must be specified using '-i' or '--source-format' flags when reading trees from standard input")
+            if args.input_format is None:
+                messenger.error("Format of source trees must be specified using '--source-format' flag when reading trees from standard input")
                 sys.exit(1)
-            elif args.source_format.lower() == "nexus/newick":
+            elif args.input_format.lower() == "nexus/newick":
                 messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input")
                 sys.exit(1)
             if len(args.tree_sources) > 1:
@@ -577,11 +570,21 @@ def main():
             add_help=False,
             )
     source_options = parser.add_argument_group("Source Options")
-    source_options.add_argument("-i","--source-format",
+    source_options.add_argument("tree_sources",
+            nargs="*",
+            metavar="TREE-FILEPATH",
+            help= (
+                "Source(s) of trees to summarize. At least one valid"
+                " source of trees must be provided. Use '-' to specify"
+                " reading from standard input (note that this requires"
+                " the input file format to be explicitly set using"
+                " the '--source-format' option)."
+            ))
+    source_options.add_argument("-i", "--input-format", "--source-format",
             metavar="FORMAT",
             default=None,
             choices=["nexus/newick", "nexus", "newick", "phylip", "nexml"],
-            help="Format of the source trees (defaults to handling either NEXUS or NEWICK through inspection; it is more efficient to explicitly specify the format if it is known).")
+            help="Format of all input trees (defaults to handling either NEXUS or NEWICK through inspection; it is more efficient to explicitly specify the format if it is known).")
     source_options.add_argument("-b", "--burnin",
             type=int,
             default=0,
@@ -890,17 +893,6 @@ def main():
             default=False,
             help="Show information regarding your DendroPy and Python installations and exit.")
 
-    parser.add_argument("tree_sources",
-            nargs="*",
-            metavar="TREE-FILEPATH",
-            help= (
-                "Source(s) of trees to summarize. At least one valid"
-                " source of trees must be provided. Use '-' to specify"
-                " reading from standard input (note that this requires"
-                " the input file format to be explicitly set using"
-                " the '-i' or '--source-format' option)."
-            ))
-
     args = parser.parse_args()
 
     if args.citation:
@@ -957,8 +949,14 @@ def main():
         if not os.path.exists(target_tree_filepath):
             messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
             sys.exit(1)
+        target_trees = dendropy.TreeList.get_from_path(
+                target_tree_filepath,
+                args.input_format,
+                rooting=dendropy.get_rooting_argument(args.is_source_trees_rooted),
+                preserve_underscores=args.preserve_underscores,
+                )
     elif args.summary_tree_target is not None:
-        target_tree_filepath = None
+        target_trees = None
 
     ######################################################################
     ## Tree Ultrametricity and Rooting State
@@ -1065,10 +1063,10 @@ def main():
     ######################################################################
     ## Format
 
-    if args.source_format is None:
+    if args.input_format is None:
         schema = "nexus/newick"
     else:
-        schema = args.source_format.lower()
+        schema = args.input_format.lower()
 
     ######################################################################
     ## Taxon Discovery
@@ -1084,7 +1082,6 @@ def main():
     ######################################################################
     ## Main Work
 
-    start_time = datetime.datetime.now()
     sumtrees = SumTrees(
             is_source_trees_rooted=args.is_source_trees_rooted,
             ignore_edge_lengths=not args.summarize_edge_lengths,
@@ -1095,6 +1092,7 @@ def main():
             log_frequency=args.log_frequency if not args.quiet else 0,
             messenger=messenger,
             )
+    processing_time_start = datetime.datetime.now()
     tree_array = sumtrees.process_trees(
             tree_sources=tree_sources,
             schema=schema,
@@ -1102,9 +1100,42 @@ def main():
             tree_offset=args.burnin,
             preserve_underscores=args.preserve_underscores,
             )
+    processing_time_end = datetime.datetime.now()
 
     ######################################################################
     ## Post-Processing
+
+    report = []
+    report.append("{} trees considered in total for summarization".format(len(tree_array)))
+    if tree_array.split_distribution.is_mixed_rootings_counted():
+        mixed_tree_rootings_in_source_error(messenger)
+    if args.is_source_trees_rooted is None:
+        if tree_array.split_distribution.is_all_counted_trees_rooted():
+            report.append("All trees were rooted")
+        elif tree_array.split_distribution.is_all_counted_trees_strictly_unrooted():
+            report.append("All trees were unrooted")
+        elif tree_array.split_distribution.is_all_counted_trees_treated_as_unrooted():
+            report.append("All trees were treated as unrooted")
+    elif args.is_source_trees_rooted is True:
+        report.append("All trees were were treated as rooted")
+    else:
+        report.append("All trees were were treated as unrooted")
+    if args.is_source_trees_ultrametric and args.ultrametricity_precision:
+        report.append("Trees are ultrametric within an error of {}".format(args.ultrametricity_precision))
+    elif args.is_source_trees_ultrametric:
+        report.append("Trees are expected to be ultrametric (not verified)")
+    if args.weighted_trees:
+        report.append("Trees treated as weighted (default weight = 1.0).")
+    else:
+        report.append("Trees treated as unweighted.")
+    report.append("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
+    num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
+    report.append("{} unique splits out of {} total splits counted".format(num_unique_splits, num_splits))
+    report.append("{} unique non-trivial splits out of {} total non-trivial splits counted".format(num_nt_unique_splits, num_nt_splits))
+    print("\n".join(report))
+
+
+    split_support_summarization_kwargs = {}
 
     t = tree_array.consensus_tree()
     # print(t.as_string("nexus"))

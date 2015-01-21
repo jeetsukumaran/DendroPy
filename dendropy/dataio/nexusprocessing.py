@@ -518,4 +518,16 @@ def group_ranges(L):
         grouped = list(z)
         yield (x for x in [grouped[0], grouped[-1]][:len(grouped)])
 
-
+def get_rooting_argument(**kwargs):
+    if "is_rooted" in kwargs and "is_unrooted" in kwargs:
+        raise ValueError("Must specify exactly one of 'is_rooted' or 'is_unrooted'")
+    elif "is_rooted":
+        is_rooted = kwargs["is_rooted"]
+    elif "is_unrooted":
+        is_rooted = not kwargs["is_unrooted"]
+    if is_rooted is True:
+        return "force-rooted"
+    elif is_rooted is False:
+        return "force-unrooted"
+    else:
+        return "default-unrooted"

@@ -954,7 +954,6 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
-        self.error_on_mixed_rooting_types = True
 
         # storage
         self.total_trees_counted = 0
@@ -1121,7 +1120,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         for s in self.split_counts:
             num_unique_splits += 1
             num_splits += self.split_counts[s]
-            if is_non_singleton_split(s, taxa_mask):
+            if treemodel.Bipartition.is_trivial_bitmask(s, taxa_mask):
                 num_nt_unique_splits += 1
                 num_nt_splits += self.split_counts[s]
         return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
@@ -1417,14 +1416,14 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 split_bitmasks=splits_for_tree,
                 taxon_namespace=self.taxon_namespace,
                 is_rooted=is_rooted)
-        self.summarize_split_support_on_tree(
+        self.summarize_splits_on_tree(
             tree=con_tree,
             is_bipartitions_updated=False,
             **split_support_summarization_kwargs
             )
         return con_tree
 
-    def summarize_split_support_on_tree(self,
+    def summarize_splits_on_tree(self,
             tree,
             is_bipartitions_updated=False,
             **split_support_summarization_kwargs
@@ -1450,7 +1449,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         if self.tree_decorator is None:
             self.tree_decorator = SplitDistributionSummarizer()
         self.tree_decorator.configure(**split_support_summarization_kwargs)
-        self.tree_decorator.summarize_split_support_on_tree(
+        self.tree_decorator.summarize_splits_on_tree(
                 split_distribution=self,
                 tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
@@ -1636,7 +1635,7 @@ class SplitDistributionSummarizer(object):
                     value=value,
                     )
 
-    def summarize_split_support_on_tree(self,
+    def summarize_splits_on_tree(self,
             split_distribution,
             tree,
             is_bipartitions_updated=False):
@@ -1789,14 +1788,23 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         return self._rooted_trees
     is_rooted_trees = property(_get_is_rooted_trees)
 
+    def _get_split_distribution(self):
+        return self._split_distribution
+    split_distribution = property(_get_split_distribution)
+
     ##############################################################################
     ## Updating from Another TreeArray
 
     def update(self, other):
-        assert self._is_rooted_trees is None or self._is_rooted_trees is other._is_rooted_trees, "{} is not {}".format(self._is_rooted_trees, other._is_rooted_trees)
-        assert self.ignore_edge_lengths is other.ignore_edge_lengths, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
-        assert self.ignore_node_ages is other.ignore_node_ages, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
-        assert self.use_tree_weights is other.use_tree_weights, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
+        if len(self) > 0:
+            assert self._is_rooted_trees is other._is_rooted_trees, "Updating from incompatible TreeArray: 'is_rooted_trees': {} is not {}".format(self._is_rooted_trees, other._is_rooted_trees)
+            assert self.ignore_edge_lengths is other.ignore_edge_lengths, "Updating from incompatible TreeArray: 'ignore_edge_lengths': {} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
+            assert self.ignore_node_ages is other.ignore_node_ages, "Updating from incompatible TreeArray: 'ignore_node_ages': {} is not {}".format(self.ignore_node_ages, other.ignore_node_ages)
+            assert self.use_tree_weights is other.use_tree_weights, "Updating from incompatible TreeArray: 'use_tree_weights': {} is not {}".format(self.use_tree_weights, other.use_tree_weights)
+        else:
+            self.ignore_edge_lengths = other.ignore_edge_lengths
+            self.ignore_node_ages = other.ignore_node_ages
+            self.use_tree_weights = other.use_tree_weights
         self._tree_split_bitmasks.extend(other._tree_split_bitmasks)
         self._tree_edge_lengths.extend(other._tree_edge_lengths)
         self._tree_leafset_bitmasks.extend(other._tree_leafset_bitmasks)
@@ -2240,7 +2248,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree_class=tree_class,
                 **split_support_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
-        self._split_distribution.summarize_split_support_on_tree(
+        self._split_distribution.summarize_splits_on_tree(
             tree=tree,
             is_bipartitions_updated=True,
             **split_support_summarization_kwargs
@@ -2320,7 +2328,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 **split_support_summarization_kwargs
                 )
         tree.sum_of_split_support = scores[max_score_tree_idx]
-        self._split_distribution.summarize_split_support_on_tree(
+        self._split_distribution.summarize_splits_on_tree(
             tree=tree,
             is_bipartitions_updated=True,
             **split_support_summarization_kwargs
@@ -2368,7 +2376,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def restore_tree(self,
             index,
             tree_class=None,
-            summarize_split_support_on_tree=False,
+            summarize_splits_on_tree=False,
             **split_support_summarization_kwargs
             ):
         split_bitmasks = self._tree_split_bitmasks[index]
@@ -2388,9 +2396,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
         # if update_bipartitions:
         #     tree.encode_bipartitions()
-        if summarize_split_support_on_tree:
+        if summarize_splits_on_tree:
             split_support_summarization_kwargs["is_bipartitions_updated"] = True
-            self._split_distribution.summarize_split_support_on_tree(
+            self._split_distribution.summarize_splits_on_tree(
                     tree=tree,
                     **split_support_summarization_kwargs)
         return tree
