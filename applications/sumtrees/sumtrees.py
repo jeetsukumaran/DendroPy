@@ -153,6 +153,7 @@ class TreeProcessingWorker(multiprocessing.Process):
                 rooting=self.rooting_interpretation,
                 tree_offset=self.tree_offset,
                 preserve_underscores=self.preserve_underscores,
+                store_tree_weights=self.use_tree_weights,
                 ignore_unrecognized_keyword_arguments=True,
                 )
 
@@ -195,7 +196,6 @@ class SumTrees(object):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
-            taxon_namespace,
             num_processes,
             log_frequency,
             messenger,
@@ -207,7 +207,6 @@ class SumTrees(object):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
-        self.taxon_namespace = taxon_namespace
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
@@ -239,6 +238,7 @@ class SumTrees(object):
     def process_trees(self,
             tree_sources,
             schema,
+            taxon_namespace=None,
             tree_offset=0,
             preserve_underscores=False,
             ):
@@ -246,6 +246,7 @@ class SumTrees(object):
             tree_array = self.serial_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
+                    taxon_namespace=taxon_namespace,
                     tree_offset=tree_offset,
                     preserve_underscores=preserve_underscores,
                     )
@@ -253,6 +254,7 @@ class SumTrees(object):
             tree_array = self.parallel_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
+                    taxon_namespace=taxon_namespace,
                     tree_offset=tree_offset,
                     preserve_underscores=preserve_underscores,
                     )
@@ -261,41 +263,79 @@ class SumTrees(object):
     def serial_process_trees(self,
             tree_sources,
             schema,
+            taxon_namespace=None,
             tree_offset=0,
             preserve_underscores=False,
-            tree_array=None):
+            ):
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
         self.info_message("Running in serial mode")
-        if tree_array is None:
-            tree_array = dendropy.TreeArray(
-                    taxon_namespace=self.taxon_namespace,
-                    is_rooted_trees=self.is_source_trees_rooted,
-                    ignore_edge_lengths=self.ignore_edge_lengths,
-                    ignore_node_ages=self.ignore_node_ages,
-                    use_tree_weights=self.use_tree_weights,
-                    ultrametricity_precision=self.ultrametricity_precision,
-                    )
-        # tree_array.read_from_files(
-        #     files=tree_sources,
-        #     schema=schema,
-        #     rooting=self._rooting_interpretation,
-        #     ignore_unrecognized_keyword_arguments=True,
-        #     )
-        for src_idx, tree_source in enumerate(tree_sources):
-            if isinstance(tree_source, str):
-                name = tree_source
-            else:
-                name = tree_source.name
-                if name is None:
-                    name = "<stdin>"
-            self.info_message("Processing {} of {}: '{}'".format(src_idx+1, len(tree_sources), name), wrap=False)
+        tree_array = dendropy.TreeArray(
+                taxon_namespace=taxon_namespace,
+                is_rooted_trees=self.is_source_trees_rooted,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                use_tree_weights=self.use_tree_weights,
+                ultrametricity_precision=self.ultrametricity_precision,
+                )
+        if not self.log_frequency:
             tree_array.read_from_files(
-                files=[tree_source],
+                files=tree_sources,
                 schema=schema,
                 rooting=self._rooting_interpretation,
-                tree_offset=tree_offset,
+                store_tree_weights=self.use_tree_weights,
                 preserve_underscores=preserve_underscores,
                 ignore_unrecognized_keyword_arguments=True,
                 )
+        else:
+            def _log_progress(current_tree_offset, aggregate_tree_idx):
+                if (
+                        self.messenger is not None
+                        and self.log_frequency == 1
+                        or current_tree_offset == tree_offset
+                        or (aggregate_tree_idx > 0 and self.log_frequency > 0 and aggregate_tree_idx % self.log_frequency == 0)
+                        ):
+                    if current_tree_offset >= tree_offset:
+                        # coda = " (processing: {trees_stored} trees processed out of {trees_read} trees read]".format(
+                        #         trees_read=aggregate_tree_idx,
+                        #         trees_stored=len(tree_array),
+                        #         )
+                        coda = " (processing)"
+                    else:
+                        coda = " (skipping)"
+                    self.info_message("'{source_name}': tree at offset {tree_offset}{coda}".format(
+                        source_name=source_name,
+                        tree_offset=current_tree_offset,
+                        coda=coda,
+                        ), wrap=False)
+            tree_yielder = dendropy.Tree.yield_from_files(
+                    tree_sources,
+                    schema=schema,
+                    taxon_namespace=taxon_namespace,
+                    store_tree_weights=self.use_tree_weights,
+                    preserve_underscores=preserve_underscores,
+                    rooting=self._rooting_interpretation,
+                    ignore_unrecognized_keyword_arguments=True,
+                    )
+            current_source_index = None
+            current_tree_offset = None
+            for aggregate_tree_idx, tree in enumerate(tree_yielder):
+                current_yielder_index = tree_yielder.current_file_index
+                if current_yielder_index != current_source_index:
+                    current_source_index = current_yielder_index
+                    current_tree_offset = 0
+                    source_name = tree_yielder.current_file_name
+                    if source_name is None:
+                        source_name = "<stdin>"
+                    self.info_message("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+                if current_tree_offset >= tree_offset:
+                    tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
+                    _log_progress(current_tree_offset, aggregate_tree_idx)
+                    # if len(tree_array._split_distribution.tree_rooting_types_counted) > 1:
+                    #     mixed_tree_rootings_in_source_error(messenger)
+                else:
+                    _log_progress(current_tree_offset, aggregate_tree_idx)
+                current_tree_offset += 1
         return tree_array
 
     def parallel_process_trees(self,
@@ -303,17 +343,18 @@ class SumTrees(object):
             schema,
             tree_offset=0,
             preserve_underscores=False,
-            tree_array=None):
+            taxon_namespace=None,
+            ):
         # describe
         self.info_message("Running in multiprocessing mode (up to {} processes)".format(self.num_processes))
         # taxon definition
-        if self.taxon_namespace is not None:
+        if taxon_namespace is not None:
             self.info_message("Using taxon names provided by user")
         else:
             tdfpath = tree_sources[0]
             self.info_message("Pre-loading taxon names based on first tree in source '{}'".format(tdfpath))
-            self.taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
-        taxon_labels = [t.label for t in self.taxon_namespace]
+            taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
+        taxon_labels = [t.label for t in taxon_namespace]
         self.info_message("{} taxa defined: [{}]".format(
                 len(taxon_labels),
                 ', '.join(["'{}'".format(t) for t in taxon_labels]),
@@ -352,7 +393,7 @@ class SumTrees(object):
         # collate results
         result_count = 0
         master_tree_array = dendropy.TreeArray(
-                taxon_namespace=self.taxon_namespace,
+                taxon_namespace=taxon_namespace,
                 is_rooted_trees=self.is_source_trees_rooted,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
@@ -1026,14 +1067,14 @@ def main():
             ignore_node_ages=not args.summarize_node_ages,
             use_tree_weights=args.weighted_trees,
             ultrametricity_precision=args.ultrametricity_precision,
-            taxon_namespace = taxon_namespace,
             num_processes=num_processes,
-            log_frequency=args.log_frequency,
+            log_frequency=args.log_frequency if not args.quiet else 0,
             messenger=messenger,
             )
     tree_array = sumtrees.process_trees(
             tree_sources=tree_sources,
             schema=schema,
+            taxon_namespace=taxon_namespace,
             tree_offset=args.burnin,
             preserve_underscores=args.preserve_underscores,
             )
@@ -1041,9 +1082,9 @@ def main():
     ######################################################################
     ## Post-Processing
 
-    print(len(tree_array))
     t = tree_array.consensus_tree()
-    print(t.as_string("nexus"))
+    # print(t.as_string("nexus"))
+    print(len(tree_array))
 
 if __name__ == '__main__':
     main()
