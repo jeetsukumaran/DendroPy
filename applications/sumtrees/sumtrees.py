@@ -117,7 +117,9 @@ class SumTrees(object):
     def process_trees(self,
             tree_sources,
             schema,
-            tree_offset=0):
+            tree_offset=0,
+            taxon_filepath=None,
+            ):
         if self.num_processes is None or self.num_processes <= 1:
             self.serial_process_trees(
                     tree_sources=tree_sources,
@@ -127,43 +129,38 @@ class SumTrees(object):
     def serial_process_trees(self,
             tree_sources,
             schema,
-            tree_offset=0):
+            tree_offset=0,
+            tree_array=None):
         self.info_message("Running in serial mode")
-        tree_array = dendropy.TreeArray(
-                is_rooted_trees=self.is_source_trees_rooted,
-                ignore_edge_lengths=self.ignore_edge_lengths,
-                ignore_node_ages=self.ignore_node_ages,
-                use_tree_weights=self.use_tree_weights,
-                ultrametricity_precision=self.ultrametricity_precision,
+        if tree_array is None:
+            tree_array = dendropy.TreeArray(
+                    is_rooted_trees=self.is_source_trees_rooted,
+                    ignore_edge_lengths=self.ignore_edge_lengths,
+                    ignore_node_ages=self.ignore_node_ages,
+                    use_tree_weights=self.use_tree_weights,
+                    ultrametricity_precision=self.ultrametricity_precision,
+                    )
+        # tree_array.read_from_files(
+        #     files=tree_sources,
+        #     schema=schema,
+        #     rooting=self._rooting_interpretation,
+        #     ignore_unrecognized_keyword_arguments=True,
+        #     )
+        for src_idx, tree_source in enumerate(tree_sources):
+            if isinstance(tree_source, str):
+                name = tree_source
+            else:
+                name = tree_source.name
+                if name is None:
+                    name = "<stdin>"
+            self.info_message("Processing {} of {}: '{}'".format(src_idx+1, len(tree_sources), name), wrap=False)
+            tree_array.read_from_files(
+                files=[tree_source],
+                schema=schema,
+                rooting=self._rooting_interpretation,
+                ignore_unrecognized_keyword_arguments=True,
                 )
-        tree_array.read_from_files(
-            files=tree_sources,
-            schema=schema,
-            rooting=self._rooting_interpretation,
-            ignore_unrecognized_keyword_arguments=True,
-            )
-        # current_index = None
-        # for tidx, tree in enumerate(tree_yielder):
-        #     current_yielder_index = tree_yielder.current_file_index
-        #     if current_yielder_index != current_index:
-        #         current_index = current_yielder_index
-        #         name = tree_yielder.current_file_name
-        #         if name is None:
-        #             name = "<stdin>"
-        #         messenger.info("Processing %d of %d: '%s'" % (current_index+1, len(srcs), name), wrap=False)
-        #     if tidx >= tree_offset:
-        #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-        #             messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
-        #         split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
-        #         if len(split_distribution.tree_rooting_types_counted) > 1:
-        #             mixed_tree_rootings_in_source_error(messenger)
-        #         topology_counter.count(tree, is_splits_encoded=True)
-        #     else:
-        #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-        #             messenger.info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
-
-        # messenger.info("Serial processing of %d source(s) completed" % len(srcs))
-        # return split_distribution, topology_counter
+        return tree_array
 
 ##############################################################################
 ## Preprocessing
@@ -301,10 +298,11 @@ def print_description(dest=None):
     if dest is None:
         dest = sys.stdout
     fields = collections.OrderedDict()
-    fields["DendroPy"] = dendropy.description()
-    fields["DendroPy Home Path"] = dendropy.homedir()
-    fields["Python Executable Path"] = sys.executable
-    fields["Python Site Packages Path(s)"] = site.getsitepackages()
+    fields["DendroPy version"] = dendropy.description()
+    fields["DendroPy location"] = dendropy.homedir()
+    fields["Python version"] = sys.version.replace("\n", "")
+    fields["Python executable"] = sys.executable
+    fields["Python site packages"] = site.getsitepackages()
     max_fieldname_len = max(len(fieldname) for fieldname in fields)
     for fieldname, fieldvalue in fields.items():
         dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
@@ -351,6 +349,10 @@ def main():
             action="store_true",
             default=False,
             help="Use weights of trees (as indicated by '[&W m/n]' comment token) to weight contribution of splits found on each tree to overall split frequencies.")
+    source_options.add_argument("--taxa-file",
+            metavar="FILEPATH",
+            default=None,
+            help="Path to file listing taxon names (to avoid expensive taxon discovery when parallel processing).")
 
     summary_tree_options = parser.add_argument_group("Target Tree Topology Options")
     summary_tree_options.add_argument(
