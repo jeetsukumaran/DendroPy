@@ -76,7 +76,9 @@ class TreeProcessingWorker(multiprocessing.Process):
             taxon_labels,
             tree_offset,
             process_idx,
+            is_source_trees_rooted,
             rooting_interpretation,
+            preserve_underscores,
             ignore_edge_lengths,
             ignore_node_ages,
             use_tree_weights,
@@ -91,9 +93,13 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.results_queue = results_queue
         self.source_schema = source_schema
         self.taxon_labels = taxon_labels
+        self.taxon_namespace = dendropy.TaxonNamespace(self.taxon_labels)
+        self.taxon_namespace.is_mutable = False
         self.tree_offset = tree_offset
         self.process_idx = process_idx
+        self.is_source_trees_rooted = is_source_trees_rooted
         self.rooting_interpretation =rooting_interpretation
+        self.preserve_underscores = preserve_underscores
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
@@ -103,6 +109,14 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.messenger = messenger
         self.messenger_lock = messenger_lock
         self.kill_received = False
+        self.tree_array = dendropy.TreeArray(
+                taxon_namespace=self.taxon_namespace,
+                is_rooted_trees=self.is_source_trees_rooted,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                use_tree_weights=self.use_tree_weights,
+                ultrametricity_precision=self.ultrametricity_precision,
+                )
 
     def send_message(self, msg, level, wrap=True):
         if self.messenger is None:
@@ -128,12 +142,21 @@ class TreeProcessingWorker(multiprocessing.Process):
     def run(self):
         while not self.kill_received:
             try:
-                source = self.work_queue.get_nowait()
+                tree_source = self.work_queue.get_nowait()
             except queue.Empty:
                 break
-            self.send_info("Received task: '{}'".format(source), wrap=False)
-            with open(source, "rU") as fsrc:
-                pass
+            self.send_info("Received task: '{}'".format(tree_source), wrap=False)
+            self.tree_array.read_from_files(
+                files=[tree_source],
+                schema=self.source_schema,
+                rooting=self.rooting_interpretation,
+                tree_offset=self.tree_offset,
+                preserve_underscores=self.preserve_underscores,
+                ignore_unrecognized_keyword_arguments=True,
+                )
+
+            # with open(source, "rU") as fsrc:
+            #     pass
             # for tidx, tree in enumerate(dendropy.Tree.yield_from_files(
             #         [fsrc],
             #         schema=self.schema,
@@ -153,14 +176,14 @@ class TreeProcessingWorker(multiprocessing.Process):
             #             self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
             #     if self.kill_received:
             #         break
+
             if self.kill_received:
                 break
-            self.send_info("Completed task: '{}'".format(source), wrap=False)
+            self.send_info("Completed task: '{}'".format(tree_source), wrap=False)
         if self.kill_received:
             self.send_warning("Terminating in response to kill request")
         else:
-            pass
-            # self.result_split_dist_queue.put(self.split_distribution)
+            self.results_queue.put(self.tree_array)
             # self.result_topology_hash_map_queue.put(self.topology_counter.topology_hash_map)
 
 class SumTrees(object):
@@ -287,7 +310,7 @@ class SumTrees(object):
         else:
             tdfpath = tree_sources[0]
             self.info_message("Pre-loading taxon names based on first tree in source '{}'".format(tdfpath))
-            taxon_namespace = self.discover_taxa(tdfpath, schema)
+            taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
             taxon_labels = [t.label for t in taxon_namespace]
         self.info_message("{} taxa defined: [{}]".format(
                 len(taxon_labels),
@@ -305,15 +328,17 @@ class SumTrees(object):
         messenger_lock = multiprocessing.Lock()
         for idx in range(self.num_processes):
             tree_processing_worker = TreeProcessingWorker(
-                    work_queue,
+                    work_queue=work_queue,
                     results_queue=tree_array_queue,
                     source_schema=schema,
                     taxon_labels=taxon_labels,
                     tree_offset=tree_offset,
                     process_idx=idx,
+                    is_source_trees_rooted=self.is_source_trees_rooted,
                     rooting_interpretation=self._rooting_interpretation,
-                    ignore_edge_lengths=not self.ignore_edge_lengths,
-                    ignore_node_ages=not self.ignore_node_ages,
+                    preserve_underscores=preserve_underscores,
+                    ignore_edge_lengths=self.ignore_edge_lengths,
+                    ignore_node_ages=self.ignore_node_ages,
                     use_tree_weights=self.use_tree_weights,
                     ultrametricity_precision=self.ultrametricity_precision,
                     num_processes=self.num_processes,
@@ -322,12 +347,19 @@ class SumTrees(object):
                     log_frequency=self.log_frequency)
             tree_processing_worker.start()
 
-    def discover_taxa(self, treefile, schema):
+    def discover_taxa(self,
+            treefile,
+            schema,
+            preserve_underscores):
         """
         Reads first tree in treefile, and assumes that is sufficient to populate a
         taxon set object fully, which it then returns.
         """
-        for tree in dendropy.Tree.yield_from_files([treefile], schema=schema):
+        for tree in dendropy.Tree.yield_from_files([treefile],
+                schema=schema,
+                preserve_underscores=preserve_underscores,
+                ignore_unrecognized_keyword_arguments=True,
+                ):
             return tree.taxon_namespace
 
 ##############################################################################
@@ -942,7 +974,7 @@ def main():
             messenger.error("Maximum number of processes set to {}: cannot run SumTrees with less than 1 process".format(num_processes))
             sys.exit(1)
     else:
-        if args.multiprocess > 1:
+        if args.multiprocess is not None and args.multiprocess > 1:
             messenger.info("Number of valid sources is less than 2: forcing serial processing")
         num_processes = 1
 
