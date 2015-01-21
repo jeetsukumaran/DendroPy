@@ -93,9 +93,11 @@ def _read_into_tree_array(
         def _log_progress(source_name, current_tree_offset, aggregate_tree_idx):
             if (
                     send_message_func is not None
-                    and log_frequency == 1
-                    or current_tree_offset == tree_offset
-                    or (aggregate_tree_idx > 0 and log_frequency > 0 and (aggregate_tree_idx % log_frequency) == 0)
+                    and (
+                        (log_frequency == 1)
+                        or (tree_offset > 0 and current_tree_offset == tree_offset)
+                        or (aggregate_tree_idx > 0 and log_frequency > 0 and (aggregate_tree_idx % log_frequency) == 0)
+                        )
                     ):
                 if current_tree_offset >= tree_offset:
                     coda = " (processing)"
