@@ -67,76 +67,103 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 ##############################################################################
 ## Primary Processing
 
-def process_sources(
-        tree_sources,
-        schema,
-        tree_offset,
-        is_source_trees_rooted,
-        ignore_edge_lengths,
-        ignore_node_ages,
-        use_tree_weights,
-        ultrametricity_precision,
-        num_processes,
-        log_frequency,
-        messenger,
-        ):
-    if tree_sources is None or len(tree_sources) == 0:
-        srcs = [sys.stdin]
-        messenger.info("Reading trees from standard input.")
-    else:
-        messenger.info("{} source(s) to be processed.".format(len(tree_sources)))
-        srcs = tree_sources
+class SumTrees(object):
 
-    if is_source_trees_rooted is True:
-        rooting_interpretation = "force-rooted"
-    elif is_source_trees_rooted is False:
-        rooting_interpretation = "force-unrooted"
-    else:
-        rooting_interpretation = "default-unrooted"
-    if schema in ("nexus/newick", "nexus", "newick"):
-        messenger.info("Rooting intepretation: '{}'".format(rooting_interpretation))
+    def __init__(self,
+            is_source_trees_rooted,
+            ignore_edge_lengths,
+            ignore_node_ages,
+            use_tree_weights,
+            ultrametricity_precision,
+            num_processes,
+            log_frequency,
+            messenger,
+            ):
+        self._is_source_trees_rooted = None
+        self._rooting_interpretation = None
+        self.is_source_trees_rooted = is_source_trees_rooted
+        self.ignore_edge_lengths = ignore_edge_lengths
+        self.ignore_node_ages = ignore_node_ages
+        self.use_tree_weights = use_tree_weights
+        self.ultrametricity_precision = ultrametricity_precision
+        self.num_processes = num_processes
+        self.log_frequency = log_frequency
+        self.messenger = messenger
 
-    if num_processes is None:
-        ## Serial processing
-        messenger.info("Running in serial mode")
+    def _get_is_source_trees_rooted(self):
+        return self._is_source_trees_rooted
+    def _set_is_source_trees_rooted(self, is_source_trees_rooted):
+        self._is_source_trees_rooted = is_source_trees_rooted
+        if self._is_source_trees_rooted is True:
+            self._rooting_interpretation = "force-rooted"
+        elif self._is_source_trees_rooted is False:
+            self._rooting_interpretation = "force-unrooted"
+        else:
+            self._rooting_interpretation = "default-unrooted"
+    is_source_trees_rooted = property(_get_is_source_trees_rooted, _set_is_source_trees_rooted)
+
+    def info_message(self, msg, wrap=True):
+        if self.messenger:
+            self.messenger.info(msg, wrap=wrap)
+
+    def warning_message(self, msg, wrap=True):
+        if self.messenger:
+            self.messenger.warning(msg, wrap=wrap)
+
+    def error_message(self, msg, wrap=True):
+        if self.messenger:
+            self.messenger.error(msg, wrap=wrap)
+
+    def process_trees(self,
+            tree_sources,
+            schema,
+            tree_offset=0):
+        if self.num_processes is None or self.num_processes <= 1:
+            self.serial_process_trees(
+                    tree_sources=tree_sources,
+                    schema=schema,
+                    tree_offset=tree_offset)
+
+    def serial_process_trees(self,
+            tree_sources,
+            schema,
+            tree_offset=0):
+        self.info_message("Running in serial mode")
         tree_array = dendropy.TreeArray(
-                is_rooted_trees=is_source_trees_rooted,
-                ignore_edge_lengths=ignore_edge_lengths,
-                ignore_node_ages=ignore_node_ages,
-                use_tree_weights=use_tree_weights,
-                ultrametricity_precision=ultrametricity_precision,
+                is_rooted_trees=self.is_source_trees_rooted,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                use_tree_weights=self.use_tree_weights,
+                ultrametricity_precision=self.ultrametricity_precision,
                 )
         tree_array.read_from_files(
-            files=srcs,
+            files=tree_sources,
             schema=schema,
-            rooting=rooting_interpretation,
+            rooting=self._rooting_interpretation,
             ignore_unrecognized_keyword_arguments=True,
             )
-    else:
-        raise NotImplementedError()
+        # current_index = None
+        # for tidx, tree in enumerate(tree_yielder):
+        #     current_yielder_index = tree_yielder.current_file_index
+        #     if current_yielder_index != current_index:
+        #         current_index = current_yielder_index
+        #         name = tree_yielder.current_file_name
+        #         if name is None:
+        #             name = "<stdin>"
+        #         messenger.info("Processing %d of %d: '%s'" % (current_index+1, len(srcs), name), wrap=False)
+        #     if tidx >= tree_offset:
+        #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+        #             messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
+        #         split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
+        #         if len(split_distribution.tree_rooting_types_counted) > 1:
+        #             mixed_tree_rootings_in_source_error(messenger)
+        #         topology_counter.count(tree, is_splits_encoded=True)
+        #     else:
+        #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+        #             messenger.info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
 
-    # current_index = None
-    # for tidx, tree in enumerate(tree_yielder):
-    #     current_yielder_index = tree_yielder.current_file_index
-    #     if current_yielder_index != current_index:
-    #         current_index = current_yielder_index
-    #         name = tree_yielder.current_file_name
-    #         if name is None:
-    #             name = "<stdin>"
-    #         messenger.info("Processing %d of %d: '%s'" % (current_index+1, len(srcs), name), wrap=False)
-    #     if tidx >= tree_offset:
-    #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-    #             messenger.info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
-    #         split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
-    #         if len(split_distribution.tree_rooting_types_counted) > 1:
-    #             mixed_tree_rootings_in_source_error(messenger)
-    #         topology_counter.count(tree, is_splits_encoded=True)
-    #     else:
-    #         if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-    #             messenger.info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
-
-    # messenger.info("Serial processing of %d source(s) completed." % len(srcs))
-    # return split_distribution, topology_counter
+        # messenger.info("Serial processing of %d source(s) completed" % len(srcs))
+        # return split_distribution, topology_counter
 
 ##############################################################################
 ## Preprocessing
@@ -146,13 +173,13 @@ def preprocess_tree_sources(args, messenger):
     for fpath in args.tree_sources:
         if fpath == "-":
             if args.source_format is None:
-                messenger.error("Format of source trees must be specified using '-i' or '--source-format' flags when reading trees from standard input.")
+                messenger.error("Format of source trees must be specified using '-i' or '--source-format' flags when reading trees from standard input")
                 sys.exit(1)
             elif args.source_format.lower() == "nexus/newick":
-                messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input.")
+                messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input")
                 sys.exit(1)
             if len(args.tree_sources) > 1:
-                messenger.error("Cannot specify multiple sources when reading from standard input.")
+                messenger.error("Cannot specify multiple sources when reading from standard input")
             return []
         else:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
@@ -172,6 +199,22 @@ def preprocess_tree_sources(args, messenger):
                 + "containing tree samples to summarize.")
         sys.exit(1)
     return tree_sources
+
+def discover_taxa(treefile, schema):
+    """
+    Reads first tree in treefile, and assumes that is sufficient to populate a
+    taxon set object fully, which it then returns.
+    """
+    if isinstance(treefile, str):
+        tdf = open(treefile, "rU")
+    else:
+        tdf = treefile
+    tt = None
+    for tree in dendropy.Tree.yield_from_files([tdf], schema=schema):
+        tt = tree
+        break
+    taxon_namespace = tt.taxon_namespace
+    return taxon_namespace
 
 ##############################################################################
 ## Front-End
@@ -521,7 +564,7 @@ def main():
             default=None,
             help=(
                  "Run in parallel mode with up to a maximum of NUM-PROCESSES processes "
-                 "(specify '*' to run in as many processes as there are cores on the "
+                 "(specify 'max' or '#' to run in as many processes as there are cores on the "
                  "local machine)."
                  ))
     run_options.add_argument("-g", "--log-frequency",
@@ -597,7 +640,7 @@ def main():
     messenger = messaging.ConsoleMessenger(name="SumTrees", messaging_level=messaging_level)
 
     ######################################################################
-    ## Support File Validation
+    ## Support Files
 
     if len(args.tree_sources) == 0:
         parser.print_usage()
@@ -607,12 +650,17 @@ def main():
         sys.exit(0)
 
     tree_sources = preprocess_tree_sources(args, messenger)
+    if tree_sources is None or len(tree_sources) == 0:
+        tree_sources = [sys.stdin]
+        messenger.info("Reading trees from standard input")
+    else:
+        messenger.info("{} source(s) to be processed".format(len(tree_sources)))
 
     ######################################################################
     ## Target Validation
 
     if args.summary_tree_target is not None and args.target_tree_filepath is not None:
-        messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simulataneously")
+        messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simultaneously")
     elif args.target_tree_filepath is not None:
         target_tree_filepath = os.path.expanduser(os.path.expandvars(args.target_tree_filepath))
         if not os.path.exists(target_tree_filepath):
@@ -698,25 +746,30 @@ def main():
     ## Multiprocessing Setup
 
     if len(tree_sources) > 1 and args.multiprocess is not None:
-        if args.multiprocess == "*":
-            num_processes = multiprocessing.cpu_count()
-        elif  args.multiprocess == "@":
+        num_cpus = multiprocessing.cpu_count()
+        if (
+                args.multiprocess.lower() == "max"
+                or args.multiprocess == "#"
+                or args.multiprocess == "*"
+            ):
+            num_processes = num_cpus
+        elif args.multiprocess == "@":
             num_processes = len(tree_sources)
         else:
             try:
                 num_processes = int(args.multiprocess)
             except ValueError:
-                messenger.error("'%s' is not a valid number of processes (must be a positive integer)." % args.multiprocess)
+                messenger.error("'{}' is not a valid number of processes (must be a positive integer)".format(args.multiprocess))
                 sys.exit(1)
+            if num_processes > num_cpus:
+                messenger.warning("Number of requested processes ({}) exceeds number of CPU's ({})".format(num_processes, num_cpus))
         if num_processes <= 0:
-            messenger.error("Maximum number of processes set to %d: cannot run SumTrees with less than 1 process" % num_processes)
+            messenger.error("Maximum number of processes set to {}: cannot run SumTrees with less than 1 process".format(num_processes))
             sys.exit(1)
-        if num_processes == 1:
-            messenger.warning("Running in parallel processing mode but limited to only 1 process: probably more efficient to run in serial mode!")
     else:
         if args.multiprocess > 1:
             messenger.info("Number of valid sources is less than 2: forcing serial processing")
-        num_processes = None
+        num_processes = 1
 
     ######################################################################
     ## Format
@@ -730,10 +783,7 @@ def main():
     ## Main Work Loop
 
     start_time = datetime.datetime.now()
-    master_tree_array = process_sources(
-            tree_sources=tree_sources,
-            schema=schema,
-            tree_offset=args.burnin,
+    sumtrees = SumTrees(
             is_source_trees_rooted=args.is_source_trees_rooted,
             ignore_edge_lengths=not args.summarize_edge_lengths,
             ignore_node_ages=not args.summarize_node_ages,
@@ -743,6 +793,10 @@ def main():
             log_frequency=args.log_frequency,
             messenger=messenger,
             )
+    master_tree_array = sumtrees.process_trees(
+            tree_sources=tree_sources,
+            schema=schema,
+            tree_offset=args.burnin)
 
 
 if __name__ == '__main__':
