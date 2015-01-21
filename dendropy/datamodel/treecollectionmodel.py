@@ -1930,13 +1930,22 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             if kwargs["taxon_namespace"] is not self.taxon_namespace:
                 raise ValueError("TaxonNamespace object passed as keyword argument is not the same as self's TaxonNamespace reference")
             kwargs.pop("taxon_namespace")
-        for tree in self.tree_type.yield_from_files(
+        target_tree_offset = kwargs.pop("tree_offset", 0)
+        tree_yielder = self.tree_type.yield_from_files(
                 files=files,
                 schema=schema,
                 taxon_namespace=self.taxon_namespace,
-                **kwargs):
-            self.add_tree(tree=tree,
-                    is_bipartitions_updated=False)
+                **kwargs)
+        current_source_index = None
+        current_tree_offset = None
+        for tree_idx, tree in enumerate(tree_yielder):
+            current_yielder_index = tree_yielder.current_file_index
+            if current_source_index != current_yielder_index:
+                current_source_index = current_yielder_index
+                current_tree_offset = 0
+            if current_tree_offset >= target_tree_offset:
+                self.add_tree(tree=tree, is_bipartitions_updated=False)
+            current_tree_offset += 1
 
     ##############################################################################
     ## Convenient I/O

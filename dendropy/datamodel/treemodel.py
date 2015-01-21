@@ -2484,7 +2484,7 @@ class Tree(
             raise ValueError("No trees available at requested location in data source")
         tree = tree_list[tree_offset]
         tree.label = label
-        return tree_list[tree_offset]
+        return tree
     _parse_from_stream = classmethod(_parse_from_stream)
 
     def yield_from_files(cls,
