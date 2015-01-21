@@ -67,6 +67,101 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 ##############################################################################
 ## Primary Processing
 
+class TreeProcessingWorker(multiprocessing.Process):
+
+    def __init__(self,
+            work_queue,
+            results_queue,
+            source_schema,
+            taxon_labels,
+            tree_offset,
+            process_idx,
+            rooting_interpretation,
+            ignore_edge_lengths,
+            ignore_node_ages,
+            use_tree_weights,
+            ultrametricity_precision,
+            num_processes,
+            log_frequency,
+            messenger,
+            messenger_lock,
+            ):
+        multiprocessing.Process.__init__(self)
+        self.work_queue = work_queue
+        self.results_queue = results_queue
+        self.source_schema = source_schema
+        self.taxon_labels = taxon_labels
+        self.tree_offset = tree_offset
+        self.process_idx = process_idx
+        self.rooting_interpretation =rooting_interpretation
+        self.ignore_edge_lengths = ignore_edge_lengths
+        self.ignore_node_ages = ignore_node_ages
+        self.use_tree_weights = use_tree_weights
+        self.ultrametricity_precision = ultrametricity_precision
+        self.num_processes = num_processes
+        self.log_frequency = log_frequency
+        self.messenger = messenger
+        self.messenger_lock = messenger_lock
+        self.kill_received = False
+
+    def send_message(self, msg, level, wrap=True):
+        if self.messenger is None:
+            return
+        if self.messenger.messaging_level > level or self.messenger.silent:
+            return
+        msg = "Thread %d: %s" % (self.process_idx+1, msg)
+        self.messenger_lock.acquire()
+        try:
+            self.messenger.log(msg, level=level, wrap=wrap)
+        finally:
+            self.messenger_lock.release()
+
+    def send_info(self, msg, wrap=True):
+        self.send_message(msg, messaging.ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+
+    def send_warning(self, msg, wrap=True):
+        self.send_message(msg, messaging.ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+
+    def send_error(self, msg, wrap=True):
+        self.send_message(msg, messaging.ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+
+    def run(self):
+        while not self.kill_received:
+            try:
+                source = self.work_queue.get_nowait()
+            except queue.Empty:
+                break
+            self.send_info("Received task: '{}'".format(source), wrap=False)
+            fsrc = open(source, "rU")
+            # for tidx, tree in enumerate(dendropy.Tree.yield_from_files(
+            #         [fsrc],
+            #         schema=self.schema,
+            #         taxon_namespace=self.taxon_namespace,
+            #         rooting=self.rooting_interpretation,
+            #         store_tree_weights=self.weighted_trees)):
+            #     assert tree.taxon_namespace is self.taxon_namespace
+            #     if tidx >= self.tree_offset:
+            #         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+            #             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
+            #         self.split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
+            #         if self.calc_tree_probs:
+            #             self.topology_counter.count(tree,
+            #                     is_splits_encoded=True)
+            #     else:
+            #         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+            #             self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
+            #     if self.kill_received:
+            #         break
+            if self.kill_received:
+                break
+            self.send_info("Completed task: '{}'".format(source), wrap=False)
+        if self.kill_received:
+            self.send_warning("Terminating in response to kill request")
+        else:
+            pass
+            # self.result_split_dist_queue.put(self.split_distribution)
+            # self.result_topology_hash_map_queue.put(self.topology_counter.topology_hash_map)
+
 class SumTrees(object):
 
     def __init__(self,
@@ -118,24 +213,30 @@ class SumTrees(object):
             tree_sources,
             schema,
             tree_offset=0,
+            preserve_underscores=False,
             taxon_labels=None,
             ):
         if self.num_processes is None or self.num_processes <= 1:
             self.serial_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
-                    tree_offset=tree_offset)
+                    tree_offset=tree_offset,
+                    preserve_underscores=preserve_underscores,
+                    )
         else:
             self.parallel_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     tree_offset=tree_offset,
-                    taxon_labels=taxon_labels)
+                    preserve_underscores=preserve_underscores,
+                    taxon_labels=taxon_labels,
+                    )
 
     def serial_process_trees(self,
             tree_sources,
             schema,
             tree_offset=0,
+            preserve_underscores=False,
             tree_array=None):
         self.info_message("Running in serial mode")
         if tree_array is None:
@@ -165,6 +266,7 @@ class SumTrees(object):
                 schema=schema,
                 rooting=self._rooting_interpretation,
                 tree_offset=tree_offset,
+                preserve_underscores=preserve_underscores,
                 ignore_unrecognized_keyword_arguments=True,
                 )
         return tree_array
@@ -173,9 +275,67 @@ class SumTrees(object):
             tree_sources,
             schema,
             tree_offset=0,
+            preserve_underscores=False,
             taxon_labels=None,
             tree_array=None):
-        pass
+        # describe
+        self.info_message("Running in multiprocessing mode (up to {} processes)".format(self.num_processes))
+        # taxon definition
+        if taxon_labels:
+            self.info_message("Using taxon names provided by user")
+        else:
+            tdfpath = tree_sources[0]
+            self.info_message("Pre-loading taxon names based on first tree in source '{}'".format(tdfpath))
+            taxon_namespace = self.discover_taxa(tdfpath, schema)
+            taxon_labels = [t.label for t in taxon_namespace]
+        self.info_message("{} taxa defined: [{}]".format(
+                len(taxon_labels),
+                ', '.join(["'{}'".format(t) for t in taxon_labels]),
+                ))
+        # load up queue
+        self.info_message("Creating work queue")
+        work_queue = multiprocessing.Queue()
+        for f in tree_sources:
+            work_queue.put(f)
+
+        # launch processes
+        self.info_message("Launching worker processes")
+        tree_array_queue = multiprocessing.Queue()
+        messenger_lock = multiprocessing.Lock()
+        for idx in range(self.num_processes):
+            tree_processing_worker = TreeProcessingWorker(
+                    work_queue,
+                    results_queue=tree_array_queue,
+                    source_schema=schema,
+                    taxon_labels=taxon_labels,
+                    tree_offset=tree_offset,
+                    process_idx=idx,
+                    rooting_interpretation=self._rooting_interpretation,
+                    ignore_edge_lengths=not self.ignore_edge_lengths,
+                    ignore_node_ages=not self.ignore_node_ages,
+                    use_tree_weights=self.use_tree_weights,
+                    ultrametricity_precision=self.ultrametricity_precision,
+                    num_processes=self.num_processes,
+                    messenger=self.messenger,
+                    messenger_lock=messenger_lock,
+                    log_frequency=self.log_frequency)
+            tree_processing_worker.start()
+
+    def discover_taxa(self, treefile, schema):
+        """
+        Reads first tree in treefile, and assumes that is sufficient to populate a
+        taxon set object fully, which it then returns.
+        """
+        if isinstance(treefile, str):
+            tdf = open(treefile, "rU")
+        else:
+            tdf = treefile
+        tt = None
+        for tree in dendropy.Tree.yield_from_files([tdf], schema=schema):
+            tt = tree
+            break
+        taxon_namespace = tt.taxon_namespace
+        return taxon_namespace
 
 ##############################################################################
 ## Preprocessing
@@ -213,22 +373,6 @@ def preprocess_tree_sources(args, messenger):
                 + "containing tree samples to summarize.")
         sys.exit(1)
     return tree_sources
-
-def discover_taxa(treefile, schema):
-    """
-    Reads first tree in treefile, and assumes that is sufficient to populate a
-    taxon set object fully, which it then returns.
-    """
-    if isinstance(treefile, str):
-        tdf = open(treefile, "rU")
-    else:
-        tdf = treefile
-    tt = None
-    for tree in dendropy.Tree.yield_from_files([tdf], schema=schema):
-        tt = tree
-        break
-    taxon_namespace = tt.taxon_namespace
-    return taxon_namespace
 
 ##############################################################################
 ## Front-End
@@ -366,6 +510,10 @@ def main():
             action="store_true",
             default=False,
             help="Use weights of trees (as indicated by '[&W m/n]' comment token) to weight contribution of splits found on each tree to overall split frequencies.")
+    source_options.add_argument("--preserve-underscores",
+            action="store_true",
+            default=False,
+            help="Do not convert unquoted/unprotected underscores to spaces when reading NEXUS/NEWICK format trees.")
     source_options.add_argument("--taxon-name-file",
             metavar="FILEPATH",
             default=None,
@@ -817,7 +965,7 @@ def main():
     ## Taxon Discovery
 
     if args.taxon_name_file is not None:
-        tnf = open(os.expandvars(os.expanduser(args.taxon_name_file)), "r")
+        tnf = open(os.path.expanduser(os.path.expandvars(args.taxon_name_file)), "r").read()
         taxon_labels = [name.strip() for name in tnf.split("\n") if name]
         taxon_labels = [name for name in taxon_labels if name]
     else:
@@ -841,6 +989,7 @@ def main():
             tree_sources=tree_sources,
             schema=schema,
             tree_offset=args.burnin,
+            preserve_underscores=args.preserve_underscores,
             taxon_labels=taxon_labels)
 
 if __name__ == '__main__':
