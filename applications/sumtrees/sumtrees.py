@@ -146,6 +146,7 @@ class TreeProcessingWorker(multiprocessing.Process):
             except queue.Empty:
                 break
             self.send_info("Received task: '{}'".format(tree_source), wrap=False)
+
             self.tree_array.read_from_files(
                 files=[tree_source],
                 schema=self.source_schema,
@@ -194,6 +195,7 @@ class SumTrees(object):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
+            taxon_namespace,
             num_processes,
             log_frequency,
             messenger,
@@ -205,6 +207,7 @@ class SumTrees(object):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
+        self.taxon_namespace = taxon_namespace
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
@@ -238,23 +241,22 @@ class SumTrees(object):
             schema,
             tree_offset=0,
             preserve_underscores=False,
-            taxon_labels=None,
             ):
         if self.num_processes is None or self.num_processes <= 1:
-            self.serial_process_trees(
+            tree_array = self.serial_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     tree_offset=tree_offset,
                     preserve_underscores=preserve_underscores,
                     )
         else:
-            self.parallel_process_trees(
+            tree_array = self.parallel_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     tree_offset=tree_offset,
                     preserve_underscores=preserve_underscores,
-                    taxon_labels=taxon_labels,
                     )
+        return tree_array
 
     def serial_process_trees(self,
             tree_sources,
@@ -265,6 +267,7 @@ class SumTrees(object):
         self.info_message("Running in serial mode")
         if tree_array is None:
             tree_array = dendropy.TreeArray(
+                    taxon_namespace=self.taxon_namespace,
                     is_rooted_trees=self.is_source_trees_rooted,
                     ignore_edge_lengths=self.ignore_edge_lengths,
                     ignore_node_ages=self.ignore_node_ages,
@@ -300,18 +303,17 @@ class SumTrees(object):
             schema,
             tree_offset=0,
             preserve_underscores=False,
-            taxon_labels=None,
             tree_array=None):
         # describe
         self.info_message("Running in multiprocessing mode (up to {} processes)".format(self.num_processes))
         # taxon definition
-        if taxon_labels:
+        if self.taxon_namespace is not None:
             self.info_message("Using taxon names provided by user")
         else:
             tdfpath = tree_sources[0]
             self.info_message("Pre-loading taxon names based on first tree in source '{}'".format(tdfpath))
-            taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
-            taxon_labels = [t.label for t in taxon_namespace]
+            self.taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
+        taxon_labels = [t.label for t in self.taxon_namespace]
         self.info_message("{} taxa defined: [{}]".format(
                 len(taxon_labels),
                 ', '.join(["'{}'".format(t) for t in taxon_labels]),
@@ -346,6 +348,23 @@ class SumTrees(object):
                     messenger_lock=messenger_lock,
                     log_frequency=self.log_frequency)
             tree_processing_worker.start()
+
+        # collate results
+        result_count = 0
+        master_tree_array = dendropy.TreeArray(
+                taxon_namespace=self.taxon_namespace,
+                is_rooted_trees=self.is_source_trees_rooted,
+                ignore_edge_lengths=self.ignore_edge_lengths,
+                ignore_node_ages=self.ignore_node_ages,
+                use_tree_weights=self.use_tree_weights,
+                ultrametricity_precision=self.ultrametricity_precision,
+                )
+        while result_count < self.num_processes:
+            worker_tree_array = tree_array_queue.get()
+            master_tree_array.update(worker_tree_array)
+            result_count += 1
+        self.info_message("Recovered results from all worker processes")
+        return master_tree_array
 
     def discover_taxa(self,
             treefile,
@@ -993,11 +1012,12 @@ def main():
         with open(os.path.expanduser(os.path.expandvars(args.taxon_name_file)), "r") as tnf:
             taxon_labels = [name.strip() for name in tnf.read().split("\n") if name]
             taxon_labels = [name for name in taxon_labels if name]
+        taxon_namespace = dendropy.TaxonNamespace(taxon_labels)
     else:
-        taxon_labels = None
+        taxon_namespace = None
 
     ######################################################################
-    ## Main Work Loop
+    ## Main Work
 
     start_time = datetime.datetime.now()
     sumtrees = SumTrees(
@@ -1006,16 +1026,24 @@ def main():
             ignore_node_ages=not args.summarize_node_ages,
             use_tree_weights=args.weighted_trees,
             ultrametricity_precision=args.ultrametricity_precision,
+            taxon_namespace = taxon_namespace,
             num_processes=num_processes,
             log_frequency=args.log_frequency,
             messenger=messenger,
             )
-    master_tree_array = sumtrees.process_trees(
+    tree_array = sumtrees.process_trees(
             tree_sources=tree_sources,
             schema=schema,
             tree_offset=args.burnin,
             preserve_underscores=args.preserve_underscores,
-            taxon_labels=taxon_labels)
+            )
+
+    ######################################################################
+    ## Post-Processing
+
+    print(len(tree_array))
+    t = tree_array.maximum_product_of_split_support_tree()
+    print(t.as_string("nexus"))
 
 if __name__ == '__main__':
     main()

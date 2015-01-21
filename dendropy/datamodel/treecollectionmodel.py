@@ -1790,6 +1790,19 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     is_rooted_trees = property(_get_is_rooted_trees)
 
     ##############################################################################
+    ## Updating from Another TreeArray
+
+    def update(self, other):
+        assert self._is_rooted_trees is None or self._is_rooted_trees is other._is_rooted_trees, "{} is not {}".format(self._is_rooted_trees, other._is_rooted_trees)
+        assert self.ignore_edge_lengths is other.ignore_edge_lengths, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
+        assert self.ignore_node_ages is other.ignore_node_ages, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
+        assert self.use_tree_weights is other.use_tree_weights, "{} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
+        self._tree_split_bitmasks.extend(other._tree_split_bitmasks)
+        self._tree_edge_lengths.extend(other._tree_edge_lengths)
+        self._tree_leafset_bitmasks.extend(other._tree_leafset_bitmasks)
+        self._split_distribution.update(other._split_distribution)
+
+    ##############################################################################
     ## Fundamental Tree Accession
 
     def add_tree(self,
