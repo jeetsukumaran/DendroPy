@@ -621,9 +621,9 @@ def main():
                 " will be found across the entire set of source trees."
                 " This file should be a plain text file with a single"
                 " name list on each line. This file is only read when the"
-                " '-m' or '--multiprocessing' operation is specific. When"
-                " parallel processing using the '-m'/'--multiprocessing'"
-                " option, all taxon names need to be defined in advance"
+                " multiprocessing ('-M' or '-m') is requested. When"
+                " parallel processing using the '-M' or '-m'"
+                " options, all taxon names need to be defined in advance"
                 " of any actual tree processing. By default this is done"
                 " by reading the first tree in the first tree source,"
                 " extracting the taxon names. At best, this is wasteful,"
@@ -838,32 +838,36 @@ def main():
             default=False,
             help="Replace/overwrite output file without asking if it already exists.")
 
-    run_options = parser.add_argument_group("Program Run Options")
-    run_options.add_argument("-M", "--maximum-multiprocessing",
+    multiprocessing_options = parser.add_argument_group("Parallel Processing Options")
+    multiprocessing_options.add_argument("-M", "--maximum-multiprocessing",
             action="store_const",
             const="max",
             dest="multiprocess",
             help=(
                  "Run in parallel mode using as many processors as available, up to the number of sources."
                  ))
-    run_options.add_argument("-m", "--multiprocessing",
+    multiprocessing_options.add_argument("-m", "--multiprocessing",
             dest="multiprocess",
             metavar="NUM-PROCESSES",
             help=(
                  "Run in parallel mode with up to a maximum of NUM-PROCESSES processes "
-                 "(specify 'max' or '#' to run in as many processes as there are cores on the "
-                 "local machine)."
+                 "('max' or '#' means to run in as many processes as there are cores on the "
+                 "local machine; i.e., same as specifying '-M' or '--maximum-multiprocessing')."
                  ))
-    run_options.add_argument("-g", "--log-frequency",
+
+    logging_options = parser.add_argument_group("Program Logging Options")
+    logging_options.add_argument("-g", "--log-frequency",
             type=int,
             metavar="LOG-FREQUENCY",
             default=500,
             help="Tree processing progress logging frequency (default: %(default)s; set to 0 to suppress).")
-    run_options.add_argument("-q", "--quiet",
+    logging_options.add_argument("-q", "--quiet",
             action="store_true",
             default=False,
             help="Suppress ALL logging, progress and feedback messages.")
-    run_options.add_argument("--ignore-missing-support",
+
+    error_options = parser.add_argument_group("Program Error Options")
+    error_options.add_argument("--ignore-missing-support",
             action="store_true",
             default=False,
             help="Ignore missing support tree files (note that at least one must exist).")
