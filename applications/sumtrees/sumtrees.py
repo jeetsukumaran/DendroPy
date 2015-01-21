@@ -283,6 +283,7 @@ class SumTrees(object):
                 files=tree_sources,
                 schema=schema,
                 rooting=self._rooting_interpretation,
+                tree_offset=tree_offset,
                 store_tree_weights=self.use_tree_weights,
                 preserve_underscores=preserve_underscores,
                 ignore_unrecognized_keyword_arguments=True,
@@ -303,9 +304,9 @@ class SumTrees(object):
                         coda = " (processing)"
                     else:
                         coda = " (skipping)"
-                    self.info_message("'{source_name}': tree at offset {tree_offset}{coda}".format(
+                    self.info_message("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
                         source_name=source_name,
-                        tree_offset=current_tree_offset,
+                        current_tree_offset=current_tree_offset,
                         coda=coda,
                         ), wrap=False)
             tree_yielder = dendropy.Tree.yield_from_files(
