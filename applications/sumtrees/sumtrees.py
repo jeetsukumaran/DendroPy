@@ -118,13 +118,19 @@ class SumTrees(object):
             tree_sources,
             schema,
             tree_offset=0,
-            taxon_filepath=None,
+            taxon_labels=None,
             ):
         if self.num_processes is None or self.num_processes <= 1:
             self.serial_process_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     tree_offset=tree_offset)
+        else:
+            self.parallel_process_trees(
+                    tree_sources=tree_sources,
+                    schema=schema,
+                    tree_offset=tree_offset,
+                    taxon_labels=taxon_labels)
 
     def serial_process_trees(self,
             tree_sources,
@@ -158,9 +164,18 @@ class SumTrees(object):
                 files=[tree_source],
                 schema=schema,
                 rooting=self._rooting_interpretation,
+                tree_offset=tree_offset,
                 ignore_unrecognized_keyword_arguments=True,
                 )
         return tree_array
+
+    def parallel_process_trees(self,
+            tree_sources,
+            schema,
+            tree_offset=0,
+            taxon_labels=None,
+            tree_array=None):
+        pass
 
 ##############################################################################
 ## Preprocessing
@@ -181,9 +196,11 @@ def preprocess_tree_sources(args, messenger):
         else:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
+                missing_msg = "Support file not found: '{}'".format(fpath)
                 if args.ignore_missing_support:
-                    messenger.warning("Support file not found: '{}'".format(fpath))
+                    messenger.warning(missing_msg)
                 else:
+                    messenger.error(missing_msg )
                     messenger.error("Terminating due to missing support files. "
                             "Use the '--ignore-missing-support' option to continue even "
                             "if some files are missing.")
@@ -349,10 +366,25 @@ def main():
             action="store_true",
             default=False,
             help="Use weights of trees (as indicated by '[&W m/n]' comment token) to weight contribution of splits found on each tree to overall split frequencies.")
-    source_options.add_argument("--taxa-file",
+    source_options.add_argument("--taxon-name-file",
             metavar="FILEPATH",
             default=None,
-            help="Path to file listing taxon names (to avoid expensive taxon discovery when parallel processing).")
+            help=(
+                "Path to file listing all the taxon names or labels that"
+                " will be found across the entire set of source trees."
+                " This file should be a plain text file with a single"
+                " name list on each line. This file is only read when the"
+                " '-m' or '--multiprocessing' operation is specific. When"
+                " parallel processing using the '-m'/'--multiprocessing'"
+                " option, all taxon names need to be defined in advance"
+                " of any actual tree processing. By default this is done"
+                " by reading the first tree in the first tree source,"
+                " extracting the taxon names. At best, this is wasteful,"
+                " as it involves an extraneous reading of the tree."
+                " At worst, this can be wasteful AND errorneous, if the"
+                " first tree does not contain all the taxa. Explicitly"
+                " specifying the taxon names can avoid these issues."
+                ))
 
     summary_tree_options = parser.add_argument_group("Target Tree Topology Options")
     summary_tree_options.add_argument(
@@ -782,6 +814,16 @@ def main():
         schema = args.source_format.lower()
 
     ######################################################################
+    ## Taxon Discovery
+
+    if args.taxon_name_file is not None:
+        tnf = open(os.expandvars(os.expanduser(args.taxon_name_file)), "r")
+        taxon_labels = [name.strip() for name in tnf.split("\n") if name]
+        taxon_labels = [name for name in taxon_labels if name]
+    else:
+        taxon_labels = None
+
+    ######################################################################
     ## Main Work Loop
 
     start_time = datetime.datetime.now()
@@ -798,8 +840,8 @@ def main():
     master_tree_array = sumtrees.process_trees(
             tree_sources=tree_sources,
             schema=schema,
-            tree_offset=args.burnin)
-
+            tree_offset=args.burnin,
+            taxon_labels=taxon_labels)
 
 if __name__ == '__main__':
     main()
