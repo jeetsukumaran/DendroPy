@@ -1120,7 +1120,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         for s in self.split_counts:
             num_unique_splits += 1
             num_splits += self.split_counts[s]
-            if treemodel.Bipartition.is_trivial_bitmask(s, taxa_mask):
+            if not treemodel.Bipartition.is_trivial_bitmask(s, taxa_mask):
                 num_nt_unique_splits += 1
                 num_nt_splits += self.split_counts[s]
         return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits
