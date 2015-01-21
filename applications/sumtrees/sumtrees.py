@@ -132,7 +132,8 @@ class TreeProcessingWorker(multiprocessing.Process):
             except queue.Empty:
                 break
             self.send_info("Received task: '{}'".format(source), wrap=False)
-            fsrc = open(source, "rU")
+            with open(source, "rU") as fsrc:
+                pass
             # for tidx, tree in enumerate(dendropy.Tree.yield_from_files(
             #         [fsrc],
             #         schema=self.schema,
@@ -326,16 +327,8 @@ class SumTrees(object):
         Reads first tree in treefile, and assumes that is sufficient to populate a
         taxon set object fully, which it then returns.
         """
-        if isinstance(treefile, str):
-            tdf = open(treefile, "rU")
-        else:
-            tdf = treefile
-        tt = None
-        for tree in dendropy.Tree.yield_from_files([tdf], schema=schema):
-            tt = tree
-            break
-        taxon_namespace = tt.taxon_namespace
-        return taxon_namespace
+        for tree in dendropy.Tree.yield_from_files([treefile], schema=schema):
+            return tree.taxon_namespace
 
 ##############################################################################
 ## Preprocessing
@@ -965,9 +958,9 @@ def main():
     ## Taxon Discovery
 
     if args.taxon_name_file is not None:
-        tnf = open(os.path.expanduser(os.path.expandvars(args.taxon_name_file)), "r").read()
-        taxon_labels = [name.strip() for name in tnf.split("\n") if name]
-        taxon_labels = [name for name in taxon_labels if name]
+        with open(os.path.expanduser(os.path.expandvars(args.taxon_name_file)), "r") as tnf:
+            taxon_labels = [name.strip() for name in tnf.read().split("\n") if name]
+            taxon_labels = [name for name in taxon_labels if name]
     else:
         taxon_labels = None
 
