@@ -1042,7 +1042,7 @@ def main():
     ## Post-Processing
 
     print(len(tree_array))
-    t = tree_array.maximum_product_of_split_support_tree()
+    t = tree_array.consensus_tree()
     print(t.as_string("nexus"))
 
 if __name__ == '__main__':

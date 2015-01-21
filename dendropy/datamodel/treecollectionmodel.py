@@ -2231,7 +2231,11 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree_class=tree_class,
                 **split_support_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
-
+        self._split_distribution.summarize_split_support_on_tree(
+            tree=tree,
+            is_bipartitions_updated=True,
+            **split_support_summarization_kwargs
+            )
         return tree
 
     def calculate_sum_of_split_supports(self,
@@ -2307,7 +2311,47 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 **split_support_summarization_kwargs
                 )
         tree.sum_of_split_support = scores[max_score_tree_idx]
+        self._split_distribution.summarize_split_support_on_tree(
+            tree=tree,
+            is_bipartitions_updated=True,
+            **split_support_summarization_kwargs
+            )
         return tree
+
+    def consensus_tree(self,
+            min_freq=constants.GREATER_THAN_HALF,
+            **split_support_summarization_kwargs
+            ):
+        """
+        Returns a consensus tree from splits in `self`.
+
+        Parameters
+        ----------
+
+        min_freq : real
+            The minimum frequency of a split in this distribution for it to be
+            added to the tree.
+
+        is_rooted : bool
+            Should tree be rooted or not? If *all* trees counted for splits are
+            explicitly rooted or unrooted, then this will default to `True` or
+            `False`, respectively. Otherwise it defaults to `None`.
+
+        \*\*split_support_summarization_kwargs : keyword arguments
+            These will be passed directly to the underlying
+            :class:`SplitDistributionSummarizer` object. See
+            :meth:`SplitDistributionSummarizer.configure` for options.
+
+        Returns
+        -------
+        t : consensus tree
+
+        """
+        return self._split_distribution.consensus_tree(
+                min_freq=min_freq,
+                is_rooted=self.is_rooted,
+                **split_support_summarization_kwargs
+                )
 
     ##############################################################################
     ## Tree Reconstructions
