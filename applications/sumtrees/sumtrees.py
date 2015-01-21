@@ -125,7 +125,8 @@ def _read_into_tree_array(
                 source_name = tree_yielder.current_file_name
                 if source_name is None:
                     source_name = "<stdin>"
-                send_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+                if len(tree_sources) > 1:
+                    send_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
             if current_tree_offset >= tree_offset:
                 tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
                 _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
@@ -214,6 +215,15 @@ class TreeProcessingWorker(multiprocessing.Process):
             except queue.Empty:
                 break
             self.send_info("Received task: '{}'".format(tree_source), wrap=False)
+            # self.tree_array.read_from_files(
+            #     files=[tree_source],
+            #     schema=self.source_schema,
+            #     rooting=self.rooting_interpretation,
+            #     tree_offset=self.tree_offset,
+            #     preserve_underscores=self.preserve_underscores,
+            #     store_tree_weights=self.use_tree_weights,
+            #     ignore_unrecognized_keyword_arguments=True,
+            #     )
             _read_into_tree_array(
                     tree_array=self.tree_array,
                     tree_sources=[tree_source],
@@ -366,10 +376,11 @@ class SumTrees(object):
             work_queue.put(f)
 
         # launch processes
-        self.info_message("Launching worker processes")
+        self.info_message("Launching {} worker processes".format(self.num_processes))
         tree_array_queue = multiprocessing.Queue()
         messenger_lock = multiprocessing.Lock()
         for idx in range(self.num_processes):
+            # self.info_message("Launching {} of {} worker processes".format(idx+1, self.num_processes))
             tree_processing_worker = TreeProcessingWorker(
                     work_queue=work_queue,
                     results_queue=tree_array_queue,
@@ -404,7 +415,8 @@ class SumTrees(object):
             worker_tree_array = tree_array_queue.get()
             master_tree_array.update(worker_tree_array)
             result_count += 1
-        self.info_message("Recovered results from all worker processes")
+            # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
+        self.info_message("All {} worker processes terminated".format(self.num_processes))
         return master_tree_array
 
     def discover_taxa(self,
@@ -825,10 +837,16 @@ def main():
             help="Replace/overwrite output file without asking if it already exists.")
 
     run_options = parser.add_argument_group("Program Run Options")
+    run_options.add_argument("-M", "--maximum-multiprocessing",
+            action="store_const",
+            const="max",
+            dest="multiprocess",
+            help=(
+                 "Run in parallel mode using as many processors as available, up to the number of sources."
+                 ))
     run_options.add_argument("-m", "--multiprocessing",
             dest="multiprocess",
             metavar="NUM-PROCESSES",
-            default=None,
             help=(
                  "Run in parallel mode with up to a maximum of NUM-PROCESSES processes "
                  "(specify 'max' or '#' to run in as many processes as there are cores on the "
@@ -1019,9 +1037,9 @@ def main():
                 or args.multiprocess == "#"
                 or args.multiprocess == "*"
             ):
-            num_processes = num_cpus
-        elif args.multiprocess == "@":
-            num_processes = len(tree_sources)
+            num_processes = min(num_cpus, len(tree_sources))
+        # elif args.multiprocess == "@":
+        #     num_processes = len(tree_sources)
         else:
             try:
                 num_processes = int(args.multiprocess)
