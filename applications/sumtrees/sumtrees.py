@@ -67,6 +67,74 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 ##############################################################################
 ## Primary Processing
 
+def _read_into_tree_array(
+        tree_array,
+        tree_sources,
+        schema,
+        taxon_namespace,
+        rooting,
+        tree_offset,
+        use_tree_weights,
+        preserve_underscores,
+        send_message_func,
+        log_frequency,
+        ):
+    if not log_frequency:
+        tree_array.read_from_files(
+            files=tree_sources,
+            schema=schema,
+            rooting=rooting,
+            tree_offset=tree_offset,
+            store_tree_weights=use_tree_weights,
+            preserve_underscores=preserve_underscores,
+            ignore_unrecognized_keyword_arguments=True,
+            )
+    else:
+        def _log_progress(source_name, current_tree_offset, aggregate_tree_idx):
+            if (
+                    send_message_func is not None
+                    and log_frequency == 1
+                    or current_tree_offset == tree_offset
+                    or (aggregate_tree_idx > 0 and log_frequency > 0 and (aggregate_tree_idx % log_frequency) == 0)
+                    ):
+                if current_tree_offset >= tree_offset:
+                    coda = " (processing)"
+                else:
+                    coda = " (skipping)"
+                send_message_func("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
+                    source_name=source_name,
+                    current_tree_offset=current_tree_offset,
+                    coda=coda,
+                    ), wrap=False)
+        tree_yielder = dendropy.Tree.yield_from_files(
+                tree_sources,
+                schema=schema,
+                taxon_namespace=taxon_namespace,
+                store_tree_weights=use_tree_weights,
+                preserve_underscores=preserve_underscores,
+                rooting=rooting,
+                ignore_unrecognized_keyword_arguments=True,
+                )
+        current_source_index = None
+        current_tree_offset = None
+        for aggregate_tree_idx, tree in enumerate(tree_yielder):
+            current_yielder_index = tree_yielder.current_file_index
+            if current_yielder_index != current_source_index:
+                current_source_index = current_yielder_index
+                current_tree_offset = 0
+                source_name = tree_yielder.current_file_name
+                if source_name is None:
+                    source_name = "<stdin>"
+                send_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+            if current_tree_offset >= tree_offset:
+                tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
+                _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+                # if len(tree_array._split_distribution.tree_rooting_types_counted) > 1:
+                #     mixed_tree_rootings_in_source_error(messenger)
+            else:
+                _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+            current_tree_offset += 1
+
 class TreeProcessingWorker(multiprocessing.Process):
 
     def __init__(self,
@@ -146,39 +214,18 @@ class TreeProcessingWorker(multiprocessing.Process):
             except queue.Empty:
                 break
             self.send_info("Received task: '{}'".format(tree_source), wrap=False)
-
-            self.tree_array.read_from_files(
-                files=[tree_source],
-                schema=self.source_schema,
-                rooting=self.rooting_interpretation,
-                tree_offset=self.tree_offset,
-                preserve_underscores=self.preserve_underscores,
-                store_tree_weights=self.use_tree_weights,
-                ignore_unrecognized_keyword_arguments=True,
-                )
-
-            # with open(source, "rU") as fsrc:
-            #     pass
-            # for tidx, tree in enumerate(dendropy.Tree.yield_from_files(
-            #         [fsrc],
-            #         schema=self.schema,
-            #         taxon_namespace=self.taxon_namespace,
-            #         rooting=self.rooting_interpretation,
-            #         store_tree_weights=self.weighted_trees)):
-            #     assert tree.taxon_namespace is self.taxon_namespace
-            #     if tidx >= self.tree_offset:
-            #         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-            #             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
-            #         self.split_distribution.count_splits_on_tree(tree, is_splits_encoded=False)
-            #         if self.calc_tree_probs:
-            #             self.topology_counter.count(tree,
-            #                     is_splits_encoded=True)
-            #     else:
-            #         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-            #             self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
-            #     if self.kill_received:
-            #         break
-
+            _read_into_tree_array(
+                    tree_array=self.tree_array,
+                    tree_sources=[tree_source],
+                    schema=self.source_schema,
+                    taxon_namespace=self.taxon_namespace,
+                    rooting=self.rooting_interpretation,
+                    tree_offset=self.tree_offset,
+                    use_tree_weights=self.use_tree_weights,
+                    preserve_underscores=self.preserve_underscores,
+                    send_message_func=self.send_info,
+                    log_frequency=self.log_frequency,
+                    )
             if self.kill_received:
                 break
             self.send_info("Completed task: '{}'".format(tree_source), wrap=False)
@@ -186,7 +233,6 @@ class TreeProcessingWorker(multiprocessing.Process):
             self.send_warning("Terminating in response to kill request")
         else:
             self.results_queue.put(self.tree_array)
-            # self.result_topology_hash_map_queue.put(self.topology_counter.topology_hash_map)
 
 class SumTrees(object):
 
@@ -278,65 +324,18 @@ class SumTrees(object):
                 use_tree_weights=self.use_tree_weights,
                 ultrametricity_precision=self.ultrametricity_precision,
                 )
-        if not self.log_frequency:
-            tree_array.read_from_files(
-                files=tree_sources,
+        _read_into_tree_array(
+                tree_array=tree_array,
+                tree_sources=tree_sources,
                 schema=schema,
+                taxon_namespace=taxon_namespace,
                 rooting=self._rooting_interpretation,
                 tree_offset=tree_offset,
-                store_tree_weights=self.use_tree_weights,
+                use_tree_weights=self.use_tree_weights,
                 preserve_underscores=preserve_underscores,
-                ignore_unrecognized_keyword_arguments=True,
+                send_message_func=self.info_message,
+                log_frequency=self.log_frequency,
                 )
-        else:
-            def _log_progress(current_tree_offset, aggregate_tree_idx):
-                if (
-                        self.messenger is not None
-                        and self.log_frequency == 1
-                        or current_tree_offset == tree_offset
-                        or (aggregate_tree_idx > 0 and self.log_frequency > 0 and aggregate_tree_idx % self.log_frequency == 0)
-                        ):
-                    if current_tree_offset >= tree_offset:
-                        # coda = " (processing: {trees_stored} trees processed out of {trees_read} trees read]".format(
-                        #         trees_read=aggregate_tree_idx,
-                        #         trees_stored=len(tree_array),
-                        #         )
-                        coda = " (processing)"
-                    else:
-                        coda = " (skipping)"
-                    self.info_message("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
-                        source_name=source_name,
-                        current_tree_offset=current_tree_offset,
-                        coda=coda,
-                        ), wrap=False)
-            tree_yielder = dendropy.Tree.yield_from_files(
-                    tree_sources,
-                    schema=schema,
-                    taxon_namespace=taxon_namespace,
-                    store_tree_weights=self.use_tree_weights,
-                    preserve_underscores=preserve_underscores,
-                    rooting=self._rooting_interpretation,
-                    ignore_unrecognized_keyword_arguments=True,
-                    )
-            current_source_index = None
-            current_tree_offset = None
-            for aggregate_tree_idx, tree in enumerate(tree_yielder):
-                current_yielder_index = tree_yielder.current_file_index
-                if current_yielder_index != current_source_index:
-                    current_source_index = current_yielder_index
-                    current_tree_offset = 0
-                    source_name = tree_yielder.current_file_name
-                    if source_name is None:
-                        source_name = "<stdin>"
-                    self.info_message("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
-                if current_tree_offset >= tree_offset:
-                    tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
-                    _log_progress(current_tree_offset, aggregate_tree_idx)
-                    # if len(tree_array._split_distribution.tree_rooting_types_counted) > 1:
-                    #     mixed_tree_rootings_in_source_error(messenger)
-                else:
-                    _log_progress(current_tree_offset, aggregate_tree_idx)
-                current_tree_offset += 1
         return tree_array
 
     def parallel_process_trees(self,
