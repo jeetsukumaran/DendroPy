@@ -109,9 +109,25 @@ def pretty_timestamp(t=None, style=0):
     else:
         return time.strftime("%Y%m%d%H%M%S", t)
 
-def pretty_timedelta(timedelta):
-    hours, mins, secs = str(timedelta).split(":")
-    return("{} hour(s), {} minute(s), {} second(s)".format(hours, mins, secs))
+def pretty_timedelta(timedelta, restrict_to_filled_units=True):
+    hours, minutes, seconds = str(timedelta).split(":")
+    parts = []
+    if not restrict_to_filled_units or hours != "0":
+        if hours == "1":
+            parts.append("1 hour")
+        else:
+            parts.append("{} hours".format(hours))
+    if not restrict_to_filled_units or minutes != "00":
+        if minutes == "01":
+            parts.append("1 minute")
+        else:
+            parts.append("{} minutes".format(minutes))
+    if not restrict_to_filled_units or set(seconds) != set("0."):
+        if seconds == "01":
+            parts.append("1 second")
+        else:
+            parts.append("{} seconds".format(seconds))
+    return ", ".join(parts)
 
 def format_dict_table(rows, column_names=None, max_column_width=None, border_style=2):
     """

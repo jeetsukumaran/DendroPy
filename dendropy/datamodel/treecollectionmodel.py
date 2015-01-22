@@ -1106,9 +1106,9 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         """
         Returns 4 values:
             total number of splits counted
-            total number of unique splits counted
+            total *weighted* number of unique splits counted
             total number of non-trivial splits counted
-            total number of unique non-trivial splits counted
+            total *weighted* number of unique non-trivial splits counted
         """
         if not self.split_counts:
             return 0, 0, 0, 0
@@ -1371,7 +1371,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,
             is_rooted=None,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         """
         Returns a consensus tree from splits in `self`.
@@ -1388,7 +1388,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             explicitly rooted or unrooted, then this will default to `True` or
             `False`, respectively. Otherwise it defaults to `None`.
 
-        \*\*split_support_summarization_kwargs : keyword arguments
+        \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             :class:`SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
@@ -1419,14 +1419,14 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.summarize_splits_on_tree(
             tree=con_tree,
             is_bipartitions_updated=False,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             )
         return con_tree
 
     def summarize_splits_on_tree(self,
             tree,
             is_bipartitions_updated=False,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         """
         Summarizes support of splits/edges/node on tree.
@@ -1440,7 +1440,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         is_bipartitions_updated: bool
             If `True`, then bipartitions will not be recalculated.
 
-        \*\*split_support_summarization_kwargs : keyword arguments
+        \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             :class:`SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
@@ -1448,7 +1448,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         """
         if self.tree_decorator is None:
             self.tree_decorator = SplitDistributionSummarizer()
-        self.tree_decorator.configure(**split_support_summarization_kwargs)
+        self.tree_decorator.configure(**split_summarization_kwargs)
         self.tree_decorator.summarize_splits_on_tree(
                 split_distribution=self,
                 tree=tree,
@@ -2218,7 +2218,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_product_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         """
         Return the tree with that maximizes the product of split supports.
@@ -2246,12 +2246,12 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         tree = self.restore_tree(
                 index=max_score_tree_idx,
                 tree_class=tree_class,
-                **split_support_summarization_kwargs)
+                **split_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
         self._split_distribution.summarize_splits_on_tree(
             tree=tree,
             is_bipartitions_updated=True,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             )
         return tree
 
@@ -2297,7 +2297,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_sum_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         """
         Return the tree with that maximizes the sum of split supports.
@@ -2325,19 +2325,19 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         tree = self.restore_tree(
                 index=max_score_tree_idx,
                 tree_class=tree_class,
-                **split_support_summarization_kwargs
+                **split_summarization_kwargs
                 )
         tree.sum_of_split_support = scores[max_score_tree_idx]
         self._split_distribution.summarize_splits_on_tree(
             tree=tree,
             is_bipartitions_updated=True,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             )
         return tree
 
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         """
         Returns a consensus tree from splits in `self`.
@@ -2354,7 +2354,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             explicitly rooted or unrooted, then this will default to `True` or
             `False`, respectively. Otherwise it defaults to `None`.
 
-        \*\*split_support_summarization_kwargs : keyword arguments
+        \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             :class:`SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
@@ -2367,7 +2367,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         return self._split_distribution.consensus_tree(
                 min_freq=min_freq,
                 is_rooted=self.is_rooted,
-                **split_support_summarization_kwargs
+                **split_summarization_kwargs
                 )
 
     ##############################################################################
@@ -2377,7 +2377,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             index,
             tree_class=None,
             summarize_splits_on_tree=False,
-            **split_support_summarization_kwargs
+            **split_summarization_kwargs
             ):
         split_bitmasks = self._tree_split_bitmasks[index]
         if self.ignore_edge_lengths:
@@ -2397,10 +2397,10 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         # if update_bipartitions:
         #     tree.encode_bipartitions()
         if summarize_splits_on_tree:
-            split_support_summarization_kwargs["is_bipartitions_updated"] = True
+            split_summarization_kwargs["is_bipartitions_updated"] = True
             self._split_distribution.summarize_splits_on_tree(
                     tree=tree,
-                    **split_support_summarization_kwargs)
+                    **split_summarization_kwargs)
         return tree
 
     def consensus_tree(self, *args, **kwargs):

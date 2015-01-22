@@ -44,6 +44,7 @@ import dendropy
 from dendropy.utility import cli
 from dendropy.utility import constants
 from dendropy.utility import messaging
+from dendropy.utility import textprocessing
 
 ##############################################################################
 ## Preamble
@@ -428,7 +429,7 @@ def mixed_tree_rootings_in_source_error(messenger):
     messenger.error(
             "Both rooted as well as unrooted trees found in input trees."
             " Support values are meaningless. Rerun SumTrees using the"
-            " '--rooted' or the '--unrooted' option to force a consistent"
+            " '--force-rooted' or the '--force-unrooted' option to force a consistent"
             " rooting state for the source trees.")
     sys.exit(1)
 
@@ -564,6 +565,15 @@ def print_description(dest=None):
             fieldvalue=fieldvalue))
 
 def main():
+
+    ######################################################################
+    ## Start Recording Total Job Time
+
+    sumtrees_start = datetime.datetime.now()
+
+    ######################################################################
+    ## CLI
+
     parser = argparse.ArgumentParser(
             description=__doc__,
             formatter_class=cli.CustomFormatter,
@@ -589,12 +599,12 @@ def main():
             type=int,
             default=0,
             help="Number of trees to skip from the beginning of *each* tree file when counting support (default: %(default)s).")
-    source_options.add_argument("--rooted",
+    source_options.add_argument("--force-rooted", "--rooted",
             dest="is_source_trees_rooted",
             action="store_true",
             default=None,
             help="Treat source trees as rooted.")
-    source_options.add_argument("--unrooted",
+    source_options.add_argument("--force-unrooted", "--unrooted",
             dest="is_source_trees_rooted",
             action="store_false",
             default=None,
@@ -603,7 +613,7 @@ def main():
             dest="is_source_trees_ultrametric",
             action="store_true",
             default=None,
-            help="Assume source trees are ultrametric (implies '--rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
+            help="Assume source trees are ultrametric (implies '--force-rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
     source_options.add_argument("-y", "--ultrametricity-precision",
             action="store_true",
             default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
@@ -895,6 +905,9 @@ def main():
 
     args = parser.parse_args()
 
+    ######################################################################
+    ## Information (Only) Operations
+
     if args.citation:
         citation(args)
 
@@ -1093,6 +1106,9 @@ def main():
             messenger=messenger,
             )
     processing_time_start = datetime.datetime.now()
+    # messenger.info("Processing of source trees starting at {}".format(
+    #     processing_time_start,
+    #     ))
     tree_array = sumtrees.process_trees(
             tree_sources=tree_sources,
             schema=schema,
@@ -1101,12 +1117,21 @@ def main():
             preserve_underscores=args.preserve_underscores,
             )
     processing_time_end = datetime.datetime.now()
+    messenger.info("Processing of source trees completed in {}".format(
+        textprocessing.pretty_timedelta(processing_time_end-processing_time_start),
+        ))
 
     ######################################################################
     ## Post-Processing
 
+    # post-analysis reports
     report = []
     report.append("{} trees considered in total for summarization".format(len(tree_array)))
+    if args.weighted_trees:
+        report.append("Trees were treated as weighted (default weight = 1.0).")
+    else:
+        report.append("Trees were treated as unweighted")
+    report.append("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
     if tree_array.split_distribution.is_mixed_rootings_counted():
         mixed_tree_rootings_in_source_error(messenger)
     if args.is_source_trees_rooted is None:
@@ -1115,27 +1140,60 @@ def main():
         elif tree_array.split_distribution.is_all_counted_trees_strictly_unrooted():
             report.append("All trees were unrooted")
         elif tree_array.split_distribution.is_all_counted_trees_treated_as_unrooted():
-            report.append("All trees were treated as unrooted")
+            report.append("All trees were assumed to be unrooted")
     elif args.is_source_trees_rooted is True:
-        report.append("All trees were were treated as rooted")
+        report.append("All trees were treated as rooted")
     else:
-        report.append("All trees were were treated as unrooted")
+        report.append("All trees were treated as unrooted")
     if args.is_source_trees_ultrametric and args.ultrametricity_precision:
-        report.append("Trees are ultrametric within an error of {}".format(args.ultrametricity_precision))
+        report.append("Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
     elif args.is_source_trees_ultrametric:
-        report.append("Trees are expected to be ultrametric (not verified)")
-    if args.weighted_trees:
-        report.append("Trees treated as weighted (default weight = 1.0).")
-    else:
-        report.append("Trees treated as unweighted.")
-    report.append("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
+        report.append("Trees were expected to be ultrametric (not verified)")
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
-    report.append("{} unique splits out of {} total splits counted".format(num_unique_splits, num_splits))
-    report.append("{} unique non-trivial splits out of {} total non-trivial splits counted".format(num_nt_unique_splits, num_nt_splits))
-    print("\n".join(report))
+    report.append("{} unique splits counted".format(num_unique_splits))
+    report.append("{} unique non-trivial splits counted".format(num_nt_unique_splits))
+
+    # build target tree
+
+    # root target tree(s)
+    # decorate target tree(s)
+    # other stuff
 
 
-    split_support_summarization_kwargs = {}
+
+    # if not args.support_as_percentages and args.support_label_decimals < 2:
+    #     messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
+    #     args.support_label_decimals = 2
+
+    # split_summarization_kwargs = {}
+    # split_summarization_kwargs["set_edge_lengths"] = None
+    # split_summarization_kwargs["add_support_as_node_attribute"] = None
+    # split_summarization_kwargs["add_support_as_node_annotation"] = None
+    # split_summarization_kwargs["set_support_as_node_label"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
+    # split_summarization_kwargs["support_label_decimals"] = None
+    # split_summarization_kwargs["support_as_percentages"] = None
+    # split_summarization_kwargs["support_label_compose_func"] = None
+    # split_summarization_kwargs["primary_fieldnames"] = None
+    # split_summarization_kwargs["summary_stats_fieldnames"] = None
+    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
+    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
+    # split_summarization_kwargs["fieldnames"] = None
+
+
+    # comments = []
+    # comments.extend(report)
+    # messenger.info("Split counting completed:")
+    # messenger.info_lines(report, prefix="  ~ ")
+
+
+
+
+
+    real_value_format_specifier = None
 
     t = tree_array.consensus_tree()
     # print(t.as_string("nexus"))
