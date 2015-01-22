@@ -257,7 +257,7 @@ class ContainingTree(dendropy.Tree):
                     target_age =  containing_edge.head_node.age + containing_edge.length
                 else:
                     # assume all coalesce?
-                    containing_edge.tail_contained_edges[contained_tree] = set(contained_tree.seed_node.edge)
+                    containing_edge.tail_contained_edges[contained_tree] = set([contained_tree.seed_node.edge])
                     continue
             else:
                 target_age = containing_edge.tail_node.age
