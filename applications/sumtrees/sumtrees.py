@@ -43,6 +43,7 @@ import multiprocessing
 import dendropy
 from dendropy.utility import cli
 from dendropy.utility import constants
+from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import textprocessing
 
@@ -77,7 +78,8 @@ def _read_into_tree_array(
         tree_offset,
         use_tree_weights,
         preserve_underscores,
-        send_message_func,
+        info_message_func,
+        error_message_func,
         log_frequency,
         ):
     if not log_frequency:
@@ -93,7 +95,7 @@ def _read_into_tree_array(
     else:
         def _log_progress(source_name, current_tree_offset, aggregate_tree_idx):
             if (
-                    send_message_func is not None
+                    info_message_func is not None
                     and (
                         (log_frequency == 1)
                         or (tree_offset > 0 and current_tree_offset == tree_offset)
@@ -104,7 +106,7 @@ def _read_into_tree_array(
                     coda = " (processing)"
                 else:
                     coda = " (skipping)"
-                send_message_func("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
+                info_message_func("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
                     source_name=source_name,
                     current_tree_offset=current_tree_offset,
                     coda=coda,
@@ -129,12 +131,10 @@ def _read_into_tree_array(
                 if source_name is None:
                     source_name = "<stdin>"
                 if len(tree_sources) > 1:
-                    send_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+                    info_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
             if current_tree_offset >= tree_offset:
                 tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
                 _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
-                # if len(tree_array.split_distribution.tree_rooting_types_counted) > 1:
-                #     mixed_tree_rootings_in_source_error(messenger)
             else:
                 _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
             current_tree_offset += 1
@@ -159,7 +159,7 @@ class TreeProcessingWorker(multiprocessing.Process):
             messenger,
             messenger_lock,
             ):
-        multiprocessing.Process.__init__(self)
+        multiprocessing.Process.__init__(self, name="Thread {}".format(process_idx + 1))
         self.work_queue = work_queue
         self.results_queue = results_queue
         self.source_schema = source_schema
@@ -167,7 +167,6 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.taxon_namespace = dendropy.TaxonNamespace(self.taxon_labels)
         self.taxon_namespace.is_mutable = False
         self.tree_offset = tree_offset
-        self.process_idx = process_idx
         self.is_source_trees_rooted = is_source_trees_rooted
         self.rooting_interpretation = dendropy.get_rooting_argument(is_rooted=self.is_source_trees_rooted)
         self.preserve_underscores = preserve_underscores
@@ -194,7 +193,7 @@ class TreeProcessingWorker(multiprocessing.Process):
             return
         if self.messenger.messaging_level > level or self.messenger.silent:
             return
-        msg = "Thread %d: %s" % (self.process_idx+1, msg)
+        msg = "{}: {}".format(self.name, msg)
         self.messenger_lock.acquire()
         try:
             self.messenger.log(msg, level=level, wrap=wrap)
@@ -226,18 +225,23 @@ class TreeProcessingWorker(multiprocessing.Process):
             #     store_tree_weights=self.use_tree_weights,
             #     ignore_unrecognized_keyword_arguments=True,
             #     )
-            _read_into_tree_array(
-                    tree_array=self.tree_array,
-                    tree_sources=[tree_source],
-                    schema=self.source_schema,
-                    taxon_namespace=self.taxon_namespace,
-                    rooting=self.rooting_interpretation,
-                    tree_offset=self.tree_offset,
-                    use_tree_weights=self.use_tree_weights,
-                    preserve_underscores=self.preserve_underscores,
-                    send_message_func=self.send_info,
-                    log_frequency=self.log_frequency,
-                    )
+            try:
+                _read_into_tree_array(
+                        tree_array=self.tree_array,
+                        tree_sources=[tree_source],
+                        schema=self.source_schema,
+                        taxon_namespace=self.taxon_namespace,
+                        rooting=self.rooting_interpretation,
+                        tree_offset=self.tree_offset,
+                        use_tree_weights=self.use_tree_weights,
+                        preserve_underscores=self.preserve_underscores,
+                        info_message_func=self.send_info,
+                        error_message_func=self.send_error,
+                        log_frequency=self.log_frequency,
+                        )
+            except Exception as e:
+                self.results_queue.put(e)
+                break
             if self.kill_received:
                 break
             self.send_info("Completed task: '{}'".format(tree_source), wrap=False)
@@ -332,7 +336,8 @@ class SumTrees(object):
                 tree_offset=tree_offset,
                 use_tree_weights=self.use_tree_weights,
                 preserve_underscores=preserve_underscores,
-                send_message_func=self.info_message,
+                info_message_func=self.info_message,
+                error_message_func=self.error_message,
                 log_frequency=self.log_frequency,
                 )
         return tree_array
@@ -368,6 +373,7 @@ class SumTrees(object):
         self.info_message("Launching {} worker processes".format(self.num_processes))
         tree_array_queue = multiprocessing.Queue()
         messenger_lock = multiprocessing.Lock()
+        workers = []
         for idx in range(self.num_processes):
             # self.info_message("Launching {} of {} worker processes".format(idx+1, self.num_processes))
             tree_processing_worker = TreeProcessingWorker(
@@ -388,6 +394,7 @@ class SumTrees(object):
                     messenger_lock=messenger_lock,
                     log_frequency=self.log_frequency)
             tree_processing_worker.start()
+            workers.append(tree_processing_worker)
 
         # collate results
         result_count = 0
@@ -400,12 +407,23 @@ class SumTrees(object):
                 ultrametricity_precision=self.ultrametricity_precision,
                 )
         while result_count < self.num_processes:
-            worker_tree_array = tree_array_queue.get()
-            master_tree_array.update(worker_tree_array)
+            tree_array_result = tree_array_queue.get()
+            if isinstance(tree_array_result, Exception):
+                self.multiprocessing_error(tree_array_result, workers=workers)
+            try:
+                master_tree_array.update(tree_array_result)
+            except Exception as e:
+                self.multiprocessing_error(e, workers=workers)
             result_count += 1
             # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
         self.info_message("All {} worker processes terminated".format(self.num_processes))
         return master_tree_array
+
+    def multiprocessing_error(self, exception_object, workers):
+        for worker in workers:
+            worker.terminate()
+        raise exception_object
+        sys.exit(1)
 
     def discover_taxa(self,
             treefile,
@@ -424,14 +442,6 @@ class SumTrees(object):
 
 ##############################################################################
 ## Preprocessing
-
-def mixed_tree_rootings_in_source_error(messenger):
-    messenger.error(
-            "Both rooted as well as unrooted trees found in input trees."
-            " Support values are meaningless. Rerun SumTrees using the"
-            " '--force-rooted' or the '--force-unrooted' option to force a consistent"
-            " rooting state for the source trees.")
-    sys.exit(1)
 
 def preprocess_tree_sources(args, messenger):
     tree_sources = []
@@ -1109,13 +1119,25 @@ def main():
     # messenger.info("Processing of source trees starting at {}".format(
     #     processing_time_start,
     #     ))
-    tree_array = sumtrees.process_trees(
-            tree_sources=tree_sources,
-            schema=schema,
-            taxon_namespace=taxon_namespace,
-            tree_offset=args.burnin,
-            preserve_underscores=args.preserve_underscores,
-            )
+    try:
+        tree_array = sumtrees.process_trees(
+                tree_sources=tree_sources,
+                schema=schema,
+                taxon_namespace=taxon_namespace,
+                tree_offset=args.burnin,
+                preserve_underscores=args.preserve_underscores,
+                )
+        assert not tree_array.split_distribution.is_mixed_rootings_counted()
+    except Exception as exception_object:
+        if isinstance(exception_object, error.MixedRootingError) or isinstance(exception_object, dendropy.TreeArray.IncompatibleRootingTreeArrayUpdate):
+            messenger.error(
+            "Both rooted as well as unrooted trees found in input trees."
+            " Support values are meaningless. Re-run SumTrees using the"
+            " '--force-rooted' or the '--force-unrooted' option to force a consistent"
+            " rooting state for the source trees.")
+        else:
+            messenger.error(str(exception_object))
+        sys.exit(1)
     processing_time_end = datetime.datetime.now()
     messenger.info("Processing of source trees completed in {}".format(
         textprocessing.pretty_timedelta(processing_time_end-processing_time_start),
@@ -1132,8 +1154,6 @@ def main():
     else:
         report.append("Trees were treated as unweighted")
     report.append("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
-    if tree_array.split_distribution.is_mixed_rootings_counted():
-        mixed_tree_rootings_in_source_error(messenger)
     if args.is_source_trees_rooted is None:
         if tree_array.split_distribution.is_all_counted_trees_rooted():
             report.append("All trees were rooted")

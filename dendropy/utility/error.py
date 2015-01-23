@@ -131,6 +131,10 @@ class TaxonNamespaceIdentityError(ValueError):
                 )
         ValueError.__init__(self, message)
 
+class MixedRootingError(ValueError):
+    def __init__(self, message=None):
+        ValueError.__init__(self, message)
+
 class TaxonNamespaceReconstructionError(ValueError):
     def __init__(self, message=None):
         ValueError.__init__(self, message)

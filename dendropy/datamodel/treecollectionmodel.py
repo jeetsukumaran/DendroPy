@@ -1728,6 +1728,17 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     from the structural information stored by this class.
     """
 
+    class IncompatibleTreeArrayUpdate(Exception):
+        pass
+    class IncompatibleRootingTreeArrayUpdate(IncompatibleTreeArrayUpdate):
+        pass
+    class IncompatibleEdgeLengthsTreeArrayUpdate(IncompatibleTreeArrayUpdate):
+        pass
+    class IncompatibleNodeAgesTreeArrayUpdate(IncompatibleTreeArrayUpdate):
+        pass
+    class IncompatibleTreeWeightsTreeArrayUpdate(IncompatibleTreeArrayUpdate):
+        pass
+
     ##############################################################################
     ## Life-Cycle
 
@@ -1792,16 +1803,36 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         return self._split_distribution
     split_distribution = property(_get_split_distribution)
 
+    def validate_rooting(self, rooting_of_other):
+        if self._is_rooted_trees is None:
+            self._is_rooted_trees = rooting_of_other
+        elif self._is_rooted_trees != rooting_of_other:
+            if self._is_rooted_trees:
+                ta = "rooted"
+                t = "unrooted"
+            else:
+                ta = "unrooted"
+                t = "rooted"
+            raise error.MixedRootingError("Cannot add {tree_rooting} tree to TreeArray with {tree_array_rooting} trees".format(
+                tree_rooting=t,
+                tree_array_rooting=ta))
+
     ##############################################################################
     ## Updating from Another TreeArray
 
     def update(self, other):
         if len(self) > 0:
-            assert self._is_rooted_trees is other._is_rooted_trees, "Updating from incompatible TreeArray: 'is_rooted_trees': {} is not {}".format(self._is_rooted_trees, other._is_rooted_trees)
-            assert self.ignore_edge_lengths is other.ignore_edge_lengths, "Updating from incompatible TreeArray: 'ignore_edge_lengths': {} is not {}".format(self.ignore_edge_lengths, other.ignore_edge_lengths)
-            assert self.ignore_node_ages is other.ignore_node_ages, "Updating from incompatible TreeArray: 'ignore_node_ages': {} is not {}".format(self.ignore_node_ages, other.ignore_node_ages)
-            assert self.use_tree_weights is other.use_tree_weights, "Updating from incompatible TreeArray: 'use_tree_weights': {} is not {}".format(self.use_tree_weights, other.use_tree_weights)
+            # self.validate_rooting(other._is_rooted_trees)
+            if self._is_rooted_trees is not other._is_rooted_trees:
+                raise TreeArray.IncompatibleRootingTreeArrayUpdate("Updating from incompatible TreeArray: 'is_rooted_trees' should be '{}', but is instead '{}'".format(other._is_rooted_trees, self._is_rooted_trees, ))
+            if self.ignore_edge_lengths is not other.ignore_edge_lengths:
+                raise TreeArray.IncompatibleEdgeLengthsTreeArrayUpdate("Updating from incompatible TreeArray: 'ignore_edge_lengths' is not: {} ".format(other.ignore_edge_lengths, self.ignore_edge_lengths, ))
+            if self.ignore_node_ages is not other.ignore_node_ages:
+                raise TreeArray.IncompatibleNodeAgesTreeArrayUpdate("Updating from incompatible TreeArray: 'ignore_node_ages' should be '{}', but is instead '{}'".format(other.ignore_node_ages, self.ignore_node_ages))
+            if self.use_tree_weights is not other.use_tree_weights:
+                raise TreeArray.IncompatibleTreeWeightsTreeArrayUpdate("Updating from incompatible TreeArray: 'use_tree_weights' should be '{}', but is instead '{}'".format(other.use_tree_weights, self.use_tree_weights))
         else:
+            self._is_rooted_trees = other._is_rooted_trees
             self.ignore_edge_lengths = other.ignore_edge_lengths
             self.ignore_node_ages = other.ignore_node_ages
             self.use_tree_weights = other.use_tree_weights
@@ -1845,10 +1876,20 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         if self.taxon_namespace is not tree.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, tree)
-        if self._is_rooted_trees is None:
-            self._is_rooted_trees = tree.is_rooted
-        else:
-            assert self._is_rooted_trees == tree.is_rooted
+        self.validate_rooting(tree.is_rooted)
+        # if self._is_rooted_trees is None:
+        #     self._is_rooted_trees = tree.is_rooted
+        # else:
+        #     if self._is_rooted_trees != tree.is_rooted:
+        #         if self._is_rooted_trees:
+        #             ta = "rooted"
+        #             t = "unrooted"
+        #         else:
+        #             ta = "unrooted"
+        #             t = "rooted"
+        #         raise error.MixedRootingError("Cannot add {tree_rooting} tree to TreeArray of {tree_array_rooting} trees '{}'".format(
+        #             tree_rooting=t,
+        #             tree_array_rootin=ta))
         splits, edge_lengths, node_ages = self._split_distribution.count_splits_on_tree(
                 tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated,
