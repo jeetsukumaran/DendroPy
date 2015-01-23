@@ -406,24 +406,26 @@ class SumTrees(object):
                 use_tree_weights=self.use_tree_weights,
                 ultrametricity_precision=self.ultrametricity_precision,
                 )
-        while result_count < self.num_processes:
-            tree_array_result = tree_array_queue.get()
-            if isinstance(tree_array_result, Exception):
-                self.multiprocessing_error(tree_array_result, workers=workers)
-            try:
-                master_tree_array.update(tree_array_result)
-            except Exception as e:
-                self.multiprocessing_error(e, workers=workers)
-            result_count += 1
-            # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
+        try:
+            while result_count < self.num_processes:
+                tree_array_result = tree_array_queue.get()
+                if isinstance(tree_array_result, Exception):
+                    self.handle_error_during_multiprocessing(tree_array_result, workers=workers)
+                try:
+                    master_tree_array.update(tree_array_result)
+                except Exception as e:
+                    self.handle_error_during_multiprocessing(e, workers=workers)
+                result_count += 1
+                # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
+        except KeyboardInterrupt as e:
+            self.handle_error_during_multiprocessing(e, workers)
         self.info_message("All {} worker processes terminated".format(self.num_processes))
         return master_tree_array
 
-    def multiprocessing_error(self, exception_object, workers):
+    def handle_error_during_multiprocessing(self, exception_object, workers):
         for worker in workers:
             worker.terminate()
         raise exception_object
-        sys.exit(1)
 
     def discover_taxa(self,
             treefile,
@@ -1220,4 +1222,7 @@ def main():
     print(len(tree_array))
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit("\n(Terminating due to user interrupt signal)")
