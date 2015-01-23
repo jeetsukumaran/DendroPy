@@ -45,7 +45,7 @@ from dendropy.utility import cli
 from dendropy.utility import constants
 from dendropy.utility import error
 from dendropy.utility import messaging
-from dendropy.utility import textprocessing
+from dendropy.utility import timeprocessing
 
 ##############################################################################
 ## Preamble
@@ -1141,8 +1141,9 @@ def main():
             messenger.error(str(exception_object))
         sys.exit(1)
     processing_time_end = datetime.datetime.now()
-    messenger.info("Processing of source trees completed in {}".format(
-        textprocessing.pretty_timedelta(processing_time_end-processing_time_start),
+    messenger.info("Processing of source trees completed in: {}".format(
+        timeprocessing.pretty_timedelta(processing_time_end-processing_time_start),
+        wrap=False,
         ))
 
     ######################################################################

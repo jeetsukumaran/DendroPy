@@ -47,14 +47,6 @@ def bytes_to_text(s):
     return s
 
 ###############################################################################
-## Allows string objects to be annotated/decorated with attributes.
-
-class RichString(str):
-
-    def __new__(cls, *args):
-        return str.__new__(cls, *args)
-
-###############################################################################
 ##
 
 def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
@@ -63,7 +55,7 @@ def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
     return prefixed_name.split(":", 1)
 
 ###############################################################################
-## Various formatters and pretty-printers
+##
 
 def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=None):
     """
@@ -99,35 +91,7 @@ def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=N
     return taxon_label_map
 
 ###############################################################################
-## Various formatters and pretty-printer
-
-def pretty_timestamp(t=None, style=0):
-    if t is None:
-        t = time.localtime()
-    if style == 0:
-        return time.strftime("%Y-%m-%d", t)
-    else:
-        return time.strftime("%Y%m%d%H%M%S", t)
-
-def pretty_timedelta(timedelta, restrict_to_filled_units=True):
-    hours, minutes, seconds = str(timedelta).split(":")
-    parts = []
-    if not restrict_to_filled_units or hours != "0":
-        if hours == "1":
-            parts.append("1 hour")
-        else:
-            parts.append("{} hours".format(hours))
-    if not restrict_to_filled_units or minutes != "00":
-        if minutes == "01":
-            parts.append("1 minute")
-        else:
-            parts.append("{} minutes".format(minutes))
-    if not restrict_to_filled_units or set(seconds) != set("0."):
-        if seconds == "01":
-            parts.append("1 second")
-        else:
-            parts.append("{} seconds".format(seconds))
-    return ", ".join(parts)
+##
 
 def format_dict_table(rows, column_names=None, max_column_width=None, border_style=2):
     """
