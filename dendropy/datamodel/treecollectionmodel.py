@@ -877,19 +877,23 @@ class TreeList(
    ##############################################################################
    ## Special Calculations and Operations on Entire Collection
 
+    def as_tree_array(self, is_bipartitions_updated=False, **kwargs):
+        ta = TreeArray(taxon_namespace=self.taxon_namespace, **kwargs)
+        ta.add_trees(trees=self, is_bipartitions_updated=is_bipartitions_updated)
+        return ta
+
     def consensus(self,
             min_freq=constants.GREATER_THAN_HALF,
+            is_bipartitions_updated=False,
             summarize_splits=True,
             **kwargs):
         """
         Returns a consensus tree of all trees in self, with minumum frequency
         of bipartition to be added to the consensus tree given by `min_freq`.
         """
-
-        ta = TreeArray(
-                taxon_namespace=self.taxon_namespace,
-                **kwargs,
-                )
+        ta = self.as_tree_array(
+                is_bipartitions_updated=is_bipartitions_updated,
+                **kwargs)
         return ta.consensus_tree(min_freq=min_freq,
                 summarize_splits=summarize_splits,
                 **kwargs)
