@@ -139,7 +139,7 @@ def _read_into_tree_array(
                 else:
                     _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
                 current_tree_offset += 1
-        except Exception as e:
+        except (Exception, KeyboardInterrupt) as e:
             e.exception_tree_source_name = tree_yielder.current_file_name
             e.exception_tree_offset = current_tree_offset
             raise e
@@ -251,7 +251,7 @@ class TreeProcessingWorker(multiprocessing.Process):
                         error_message_func=self.send_error,
                         log_frequency=self.log_frequency,
                         )
-            except Exception as e:
+            except (KeyboardInterrupt, Exception) as e:
                 e.worker_name = self.name
                 self.results_queue.put(e)
                 break
@@ -394,7 +394,7 @@ class SumTrees(object):
         for idx in range(self.num_processes):
             # self.info_message("Launching {} of {} worker processes".format(idx+1, self.num_processes))
             tree_processing_worker = TreeProcessingWorker(
-                    name="Process {}".format(idx+1),
+                    name="Process-{}".format(idx+1),
                     work_queue=work_queue,
                     results_queue=results_queue,
                     source_schema=schema,
@@ -426,14 +426,14 @@ class SumTrees(object):
         try:
             while result_count < self.num_processes:
                 result = results_queue.get()
-                if isinstance(result, Exception):
+                if isinstance(result, Exception) or isinstance(result, KeyboardInterrupt):
                     self.info_message("Exception raised in worker process '{}'".format(result.worker_name))
                     raise result
                 master_tree_array.update(result)
                 self.info_message("Recovered results from worker process '{}'".format(result.worker_name))
                 result_count += 1
                 # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
-        except Exception as e:
+        except (Exception, KeyboardInterrupt) as e:
             for worker in workers:
                 worker.terminate()
             raise
