@@ -110,7 +110,7 @@ class ConsoleMessenger(object):
         else:
             self.messaging_level = messaging_level
         self.primary_out = dest
-        self.text_wrapper = textwrap.TextWrapper(width=78, subsequent_indent=" " * (len(self.name) + 2))
+        self.text_wrapper = textwrap.TextWrapper(width=78, initial_indent= "", subsequent_indent=" " * (len(self.name) + 2))
         self.message_leader = {
                 ConsoleMessenger.ERROR_MESSAGING_LEVEL : self.error_leader,
                 ConsoleMessenger.WARNING_MESSAGING_LEVEL : self.warning_leader,
@@ -127,37 +127,46 @@ class ConsoleMessenger(object):
     def info_leader(self):
         return self.name + ": "
 
-    def format_message(self, msg, level, wrap=True):
-        msg = self.message_leader[level]() + msg
-        if wrap:
-            msg = self.text_wrapper.fill(msg)
+    def format_message(self, msg, level, wrap=True, prefix=""):
+        if not wrap:
+            msg = self.message_leader[level]() + prefix + msg
+        else:
+            if prefix:
+                full_leader = self.message_leader[level]() + prefix
+                msg = textwrap.fill(
+                    msg,
+                    width=self.text_wrapper.width,
+                    initial_indent=full_leader,
+                    subsequent_indent=" " * len(full_leader))
+            else:
+                msg = self.text_wrapper.fill(self.message_leader[level]() + msg)
         return msg
 
-    def log(self, msg, level=0, wrap=True, newline=True):
+    def log(self, msg, level=0, wrap=True, prefix="", newline=True):
         if self.silent:
             return
         if level >= self.messaging_level:
-            msg = self.format_message(msg, level, wrap=wrap)
+            msg = self.format_message(msg, level, wrap=wrap, prefix=prefix)
             self.primary_out.write(msg)
             if newline:
                 self.primary_out.write("\n")
 
     def log_lines(self, msg, level=None, wrap=True, prefix=""):
         for line in msg:
-            self.log(msg=prefix+line, level=level, wrap=wrap)
+            self.log(msg=line, level=level, wrap=wrap, prefix=prefix)
 
-    def error(self, msg, wrap=True):
-        self.log(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+    def error(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def warning(self, msg, wrap=True):
-        self.log(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+    def warning(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def info(self, msg, wrap=True):
-        self.log(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+    def info(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
     def info_lines(self, msg, wrap=True, prefix=""):
         for line in msg:
-            self.log(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+            self.log(msg=line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
     def info_raw(self, msg):
         if self.messaging_level <= ConsoleMessenger.INFO_MESSAGING_LEVEL:

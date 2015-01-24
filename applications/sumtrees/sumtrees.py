@@ -29,6 +29,7 @@ import re
 import argparse
 import collections
 import datetime
+import math
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -289,17 +290,17 @@ class TreeProcessor(object):
         self.log_frequency = log_frequency
         self.messenger = messenger
 
-    def info_message(self, msg, wrap=True):
+    def info_message(self, msg, wrap=True, prefix=""):
         if self.messenger:
-            self.messenger.info(msg, wrap=wrap)
+            self.messenger.info(msg, wrap=wrap, prefix=prefix)
 
-    def warning_message(self, msg, wrap=True):
+    def warning_message(self, msg, wrap=True, prefix=""):
         if self.messenger:
-            self.messenger.warning(msg, wrap=wrap)
+            self.messenger.warning(msg, wrap=wrap, prefix=prefix)
 
-    def error_message(self, msg, wrap=True):
+    def error_message(self, msg, wrap=True, prefix=""):
         if self.messenger:
-            self.messenger.error(msg, wrap=wrap)
+            self.messenger.error(msg, wrap=wrap, prefix=prefix)
 
     def analyze_trees(self,
             tree_sources,
@@ -376,10 +377,17 @@ class TreeProcessor(object):
             self.info_message("Pre-loading taxon names based on first tree in source '{}'".format(tdfpath))
             taxon_namespace = self.discover_taxa(tdfpath, schema, preserve_underscores=preserve_underscores)
         taxon_labels = [t.label for t in taxon_namespace]
-        self.info_message("{} taxa defined: [{}]".format(
-                len(taxon_labels),
-                ', '.join(["'{}'".format(t) for t in taxon_labels]),
-                ))
+        self.info_message("{} taxa defined: {}".format( len(taxon_labels), taxon_labels))
+        # max_idx_width = int(math.floor(math.log(len(taxon_labels), 10))) + 1
+        # idx_col_width = (2 * max_idx_width) + 6
+        # for tidx, taxon_label in enumerate(taxon_labels):
+        #     index_col = "{idx:>{idx_col_width}}".format(
+        #         idx=" ({}/{}): ".format(tidx+1, len(taxon_labels)),
+        #         idx_col_width=idx_col_width,
+        #         )
+        #     self.info_message(taxon_label, prefix=index_col)
+
+
         # load up queue
         self.info_message("Creating work queue")
         work_queue = multiprocessing.Queue()
@@ -936,6 +944,14 @@ def main():
         messaging_level = messaging.ConsoleMessenger.INFO_MESSAGING_LEVEL
     messenger = messaging.ConsoleMessenger(name="SumTrees", messaging_level=messaging_level)
 
+    processing_report_lines = []
+    def _message_and_log(msg, wrap=True, prefix=""):
+        messenger.info(msg, wrap=wrap, prefix=prefix)
+        processing_report_lines.append(msg)
+    def _bulleted_message_and_log(msg, prefix="- "):
+        messenger.info(msg, wrap=True, prefix=prefix)
+        processing_report_lines.append(prefix + msg)
+
     ######################################################################
     ## Set up some common messages
 
@@ -958,6 +974,7 @@ def main():
         sys.exit(0)
 
     tree_sources = []
+    ignored_sources = []
     for fpath in args.tree_sources:
         if fpath == "-":
             if args.input_format is None:
@@ -977,7 +994,7 @@ def main():
                 args.input_format = args.input_format.lower()
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
-                missing_msg = "Support file not found: '{}'".format(fpath)
+                missing_msg = "Ignoring missing source file: '{}'".format(fpath)
                 if args.ignore_missing_support:
                     messenger.warning(missing_msg)
                 else:
@@ -991,13 +1008,36 @@ def main():
     if tree_sources is None:
         tree_sources = [sys.stdin]
         messenger.info("Reading trees from standard input")
+        processing_report_lines.append("Trees read from standard input source")
     elif len(tree_sources) == 0:
             messenger.error("No valid sources of input trees specified. "
                     + "Please provide the path to at least one (valid and existing) file "
                     + "containing tree samples to summarize.")
             sys.exit(1)
     else:
-        messenger.info("{} source(s) to be processed".format(len(tree_sources)))
+        # messenger.info("{} source(s) to be analyzed and summarized: {}".format(
+        #     len(tree_sources),
+        #     tree_sources))
+        messenger.info("Trees to be read from {} source(s):".format(len(tree_sources)))
+        processing_report_lines.append("Trees read from {} source(s):".format(len(tree_sources)))
+        max_idx_width = int(math.floor(math.log(len(tree_sources), 10))) + 1
+        idx_col_width = (2 * max_idx_width) + 6
+        for tidx, tree_source in enumerate(tree_sources):
+            # index_col = "{idx:>{idx_col_width}}".format(
+            #     idx=" ({}/{}): ".format(tidx+1, len(tree_sources)),
+            #     idx_col_width=idx_col_width,
+            #     )
+            # if tree_source is sys.stdin:
+            #     _bulleted_message_and_log("<standard input>", prefix=index_col)
+            # else:
+            #     _bulleted_message_and_log("'" + tree_source + "'", prefix=index_col)
+            if tree_source is sys.stdin:
+                _bulleted_message_and_log("<standard input>")
+            else:
+                _bulleted_message_and_log("'" + tree_source + "'")
+    if args.burnin:
+        messenger.info("{} initial trees to be discarded/ignored as burn-in from *each* source".format(args.burnin))
+        processing_report_lines.append("{} initial trees discarded/ignored as burn-in from *each* source".format(args.burnin))
 
     ######################################################################
     ## Target Validation
@@ -1200,35 +1240,35 @@ def main():
     ## Post-Processing
 
     ### post-analysis reports
-    processing_report_lines = []
-    def _report(msg):
-        messenger.info(msg)
-        processing_report_lines.append(msg)
 
-    _report("-  {} trees considered in total for summarization".format(len(tree_array)))
+    _message_and_log("Total of {} trees analyzed for summarization:".format(len(tree_array)))
     if args.weighted_trees:
-        _report("-  Trees were treated as weighted (default weight = 1.0).")
+        _bulleted_message_and_log("All trees were treated as weighted (default weight = 1.0).")
     else:
-        _report("-  Trees were treated as unweighted")
-    _report("-  {} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
+        _bulleted_message_and_log("All trees were treated as unweighted")
     if args.is_source_trees_rooted is None:
         if tree_array.split_distribution.is_all_counted_trees_rooted():
-            _report("-  All trees were rooted")
+            _bulleted_message_and_log("All trees were rooted")
         elif tree_array.split_distribution.is_all_counted_trees_strictly_unrooted():
-            _report("-  All trees were unrooted")
+            _bulleted_message_and_log("All trees were unrooted")
         elif tree_array.split_distribution.is_all_counted_trees_treated_as_unrooted():
-            _report("-  All trees were assumed to be unrooted")
+            _bulleted_message_and_log("All trees were assumed to be unrooted")
     elif args.is_source_trees_rooted is True:
-        _report("-  All trees were treated as rooted")
+        _bulleted_message_and_log("All trees were treated as rooted")
     else:
-        _report("-  All trees were treated as unrooted")
+        _bulleted_message_and_log("All trees were treated as unrooted")
     if args.is_source_trees_ultrametric and args.ultrametricity_precision:
-        _report("-  Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
+        _bulleted_message_and_log("Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
     elif args.is_source_trees_ultrametric:
-        _report("-  Trees were expected to be ultrametric (not verified)")
+        _bulleted_message_and_log("Trees were expected to be ultrametric (not verified)")
+    _bulleted_message_and_log("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
-    _report("-  {} unique splits counted".format(num_unique_splits))
-    _report("-  {} unique non-trivial splits counted".format(num_nt_unique_splits))
+    if args.weighted_trees:
+        _bulleted_message_and_log("{} unique splits counted out of a total weight of {} splits".format(num_unique_splits, num_splits))
+        _bulleted_message_and_log("{} unique non-trivial splits counted out of a total weight of {} splits".format(num_nt_unique_splits, num_nt_splits))
+    else:
+        _bulleted_message_and_log("{} unique splits counted out of a total of {} splits".format(num_unique_splits, int(num_splits)))
+        _bulleted_message_and_log("{} unique non-trivial splits counted out of a total of {} splits".format(num_nt_unique_splits, int(num_nt_splits)))
 
     ### build target tree
     if target_tree_filepath is None:
@@ -1277,12 +1317,12 @@ def main():
 
     split_summarization_kwargs = {}
     if not args.support_as_percentages:
-        _report("Support values expressed as percentages")
+        _message_and_log("Support values expressed as percentages")
         if args.support_label_decimals < 2:
             messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
             args.support_label_decimals = 2
     else:
-        _report("Support values expressed as proportions or probabilities")
+        _message_and_log("Support values expressed as proportions or probabilities")
     split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
 
@@ -1294,19 +1334,19 @@ def main():
         else:
             args.edge_summarization = "mean-length"
     if args.edge_summarization == "mean-length":
-        _report("Edge lengths on target trees set to mean of edge lengths in sources")
+        _message_and_log("Edge lengths on target trees set to mean of edge lengths in sources")
     elif args.edge_summarization == "median-length":
-        _report("Edge lengths on target trees set to median of edge lengths in sources")
+        _message_and_log("Edge lengths on target trees set to median of edge lengths in sources")
     elif args.edge_summarization == "mean-age":
-        _report("Node ages on target trees set to mean of node ages in sources")
+        _message_and_log("Node ages on target trees set to mean of node ages in sources")
     elif args.edge_summarization == "median-age":
-        _report("Node ages on target trees set to median of node ages in sources")
+        _message_and_log("Node ages on target trees set to median of node ages in sources")
     elif args.edge_summarization == "support":
-        _report("Edge lengths on target trees set to support values of corresponding split")
+        _message_and_log("Edge lengths on target trees set to support values of corresponding split")
     elif args.edge_summarization == "keep":
-        _report("Edge lengths on target trees are not modified")
+        _message_and_log("Edge lengths on target trees are not modified")
     elif args.edge_summarization == "clear":
-        _report("Edge lengths on target trees are cleared")
+        _message_and_log("Edge lengths on target trees are cleared")
     else:
         raise ValueError(args.edge_summarization)
     split_summarization_kwargs["set_edge_lengths"] = args.edge_summarization
@@ -1344,11 +1384,16 @@ def main():
 
 
 
-    real_value_format_specifier = None
+    # real_value_format_specifier = None
 
-    t = tree_array.consensus_tree()
+    # t = tree_array.consensus_tree()
     # print(t.as_string("nexus"))
-    print(len(tree_array))
+    # print(len(tree_array))
+
+    print("--")
+    max_width = max(len(line) for line in processing_report_lines) + 2
+    for line in processing_report_lines:
+        print("[ {:{width}} ]".format(line, width=max_width))
 
 if __name__ == '__main__':
     try:
