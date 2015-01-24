@@ -122,32 +122,37 @@ def _read_into_tree_array(
                 )
         current_source_index = None
         current_tree_offset = None
-        for aggregate_tree_idx, tree in enumerate(tree_yielder):
-            current_yielder_index = tree_yielder.current_file_index
-            if current_yielder_index != current_source_index:
-                current_source_index = current_yielder_index
-                current_tree_offset = 0
-                source_name = tree_yielder.current_file_name
-                if source_name is None:
-                    source_name = "<stdin>"
-                if len(tree_sources) > 1:
-                    info_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
-            if current_tree_offset >= tree_offset:
-                tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
-                _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
-            else:
-                _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
-            current_tree_offset += 1
+        try:
+            for aggregate_tree_idx, tree in enumerate(tree_yielder):
+                current_yielder_index = tree_yielder.current_file_index
+                if current_yielder_index != current_source_index:
+                    current_source_index = current_yielder_index
+                    current_tree_offset = 0
+                    source_name = tree_yielder.current_file_name
+                    if source_name is None:
+                        source_name = "<stdin>"
+                    if len(tree_sources) > 1:
+                        info_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+                if current_tree_offset >= tree_offset:
+                    tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
+                    _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+                else:
+                    _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+                current_tree_offset += 1
+        except Exception as e:
+            e.exception_tree_source_name = tree_yielder.current_file_name
+            e.exception_tree_offset = current_tree_offset
+            raise e
 
 class TreeProcessingWorker(multiprocessing.Process):
 
     def __init__(self,
+            name,
             work_queue,
             results_queue,
             source_schema,
             taxon_labels,
             tree_offset,
-            process_idx,
             is_source_trees_rooted,
             preserve_underscores,
             ignore_edge_lengths,
@@ -159,7 +164,7 @@ class TreeProcessingWorker(multiprocessing.Process):
             messenger,
             messenger_lock,
             ):
-        multiprocessing.Process.__init__(self, name="Thread {}".format(process_idx + 1))
+        multiprocessing.Process.__init__(self, name=name)
         self.work_queue = work_queue
         self.results_queue = results_queue
         self.source_schema = source_schema
@@ -187,6 +192,9 @@ class TreeProcessingWorker(multiprocessing.Process):
                 use_tree_weights=self.use_tree_weights,
                 ultrametricity_precision=self.ultrametricity_precision,
                 )
+        self.tree_array.worker_name = self.name
+        self.num_tasks_received = 0
+        self.num_tasks_completed = 0
 
     def send_message(self, msg, level, wrap=True):
         if self.messenger is None:
@@ -215,7 +223,11 @@ class TreeProcessingWorker(multiprocessing.Process):
                 tree_source = self.work_queue.get_nowait()
             except queue.Empty:
                 break
-            self.send_info("Received task: '{}'".format(tree_source), wrap=False)
+            self.num_tasks_received += 1
+            # self.send_info("Received task {task_count}: '{task_name}'".format(
+            self.send_info("Received task: '{task_name}'".format(
+                task_count=self.num_tasks_received,
+                task_name=tree_source), wrap=False)
             # self.tree_array.read_from_files(
             #     files=[tree_source],
             #     schema=self.source_schema,
@@ -240,11 +252,16 @@ class TreeProcessingWorker(multiprocessing.Process):
                         log_frequency=self.log_frequency,
                         )
             except Exception as e:
+                e.worker_name = self.name
                 self.results_queue.put(e)
                 break
             if self.kill_received:
                 break
-            self.send_info("Completed task: '{}'".format(tree_source), wrap=False)
+            self.num_tasks_completed += 1
+            # self.send_info("Completed task {task_count}: '{task_name}'".format(
+            self.send_info("Completed task: '{task_name}'".format(
+                task_count=self.num_tasks_received,
+                task_name=tree_source), wrap=False)
         if self.kill_received:
             self.send_warning("Terminating in response to kill request")
         else:
@@ -371,18 +388,18 @@ class SumTrees(object):
 
         # launch processes
         self.info_message("Launching {} worker processes".format(self.num_processes))
-        tree_array_queue = multiprocessing.Queue()
+        results_queue = multiprocessing.Queue()
         messenger_lock = multiprocessing.Lock()
         workers = []
         for idx in range(self.num_processes):
             # self.info_message("Launching {} of {} worker processes".format(idx+1, self.num_processes))
             tree_processing_worker = TreeProcessingWorker(
+                    name="Process {}".format(idx+1),
                     work_queue=work_queue,
-                    results_queue=tree_array_queue,
+                    results_queue=results_queue,
                     source_schema=schema,
                     taxon_labels=taxon_labels,
                     tree_offset=tree_offset,
-                    process_idx=idx,
                     is_source_trees_rooted=self.is_source_trees_rooted,
                     preserve_underscores=preserve_underscores,
                     ignore_edge_lengths=self.ignore_edge_lengths,
@@ -408,24 +425,20 @@ class SumTrees(object):
                 )
         try:
             while result_count < self.num_processes:
-                tree_array_result = tree_array_queue.get()
-                if isinstance(tree_array_result, Exception):
-                    self.handle_error_during_multiprocessing(tree_array_result, workers=workers)
-                try:
-                    master_tree_array.update(tree_array_result)
-                except Exception as e:
-                    self.handle_error_during_multiprocessing(e, workers=workers)
+                result = results_queue.get()
+                if isinstance(result, Exception):
+                    self.info_message("Exception raised in worker process '{}'".format(result.worker_name))
+                    raise result
+                master_tree_array.update(result)
+                self.info_message("Recovered results from worker process '{}'".format(result.worker_name))
                 result_count += 1
                 # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))
-        except KeyboardInterrupt as e:
-            self.handle_error_during_multiprocessing(e, workers)
+        except Exception as e:
+            for worker in workers:
+                worker.terminate()
+            raise
         self.info_message("All {} worker processes terminated".format(self.num_processes))
         return master_tree_array
-
-    def handle_error_during_multiprocessing(self, exception_object, workers):
-        for worker in workers:
-            worker.terminate()
-        raise exception_object
 
     def discover_taxa(self,
             treefile,
@@ -915,6 +928,8 @@ def main():
             default=False,
             help="Show information regarding your DendroPy and Python installations and exit.")
 
+    parser.add_argument('--debug-mode', action="store_true", help=argparse.SUPPRESS)
+
     args = parser.parse_args()
 
     ######################################################################
@@ -1059,8 +1074,8 @@ def main():
     ######################################################################
     ## Multiprocessing Setup
 
+    num_cpus = multiprocessing.cpu_count()
     if len(tree_sources) > 1 and args.multiprocess is not None:
-        num_cpus = multiprocessing.cpu_count()
         if (
                 args.multiprocess.lower() == "max"
                 or args.multiprocess == "#"
@@ -1083,6 +1098,12 @@ def main():
     else:
         if args.multiprocess is not None and args.multiprocess > 1:
             messenger.info("Number of valid sources is less than 2: forcing serial processing")
+        if len(tree_sources) > 1 and num_cpus > 1:
+            messenger.info(
+                    ("Multiple processors ({num_cpus}) available:"
+                    " consider using the '-M' or '-m' options to"
+                    " parallelize processing of trees"
+                    ).format(num_cpus=num_cpus))
         num_processes = 1
 
     ######################################################################
@@ -1129,16 +1150,43 @@ def main():
                 tree_offset=args.burnin,
                 preserve_underscores=args.preserve_underscores,
                 )
-        assert not tree_array.split_distribution.is_mixed_rootings_counted()
+        if tree_array.split_distribution.is_mixed_rootings_counted():
+            raise TreeArray.IncompatibleRootingTreeArrayUpdate("Mixed rooting states detected in source trees")
+    except KeyboardInterrupt as e:
+        raise e
     except Exception as exception_object:
         if isinstance(exception_object, error.MixedRootingError) or isinstance(exception_object, dendropy.TreeArray.IncompatibleRootingTreeArrayUpdate):
-            messenger.error(
-            "Both rooted as well as unrooted trees found in input trees."
-            " Support values are meaningless. Re-run SumTrees using the"
-            " '--force-rooted' or the '--force-unrooted' option to force a consistent"
-            " rooting state for the source trees.")
+            error_message_epilog = (
+                                    "Re-run SumTrees using the"
+                                    " '--force-rooted' or the"
+                                    " '--force-unrooted' option to force a"
+                                    " consistent rooting state for the source"
+                                    " trees."
+                                    )
         else:
-            messenger.error(str(exception_object))
+            error_message_epilog = ""
+        message = []
+        if hasattr(exception_object, "exception_tree_source_name"):
+            source_name = exception_object.exception_tree_source_name
+            source_offset = exception_object.exception_tree_offset
+            subparts = []
+            if source_name is not None:
+                subparts.append("'{}'".format(source_name))
+                if source_offset is not None:
+                    subparts.append(", tree at offset {}".format(source_offset))
+            else:
+                if source_offset is not None:
+                    subparts.append("Tree at offset {}".format(source_offset))
+            message.append("".join(subparts) + ":")
+        message.append(str(exception_object))
+        if error_message_epilog:
+            if not message[-1].endswith("."):
+                message[-1] = message[-1] + "."
+            message.append(error_message_epilog)
+        message = " ".join(message)
+        messenger.error(message)
+        if args.debug_mode:
+            raise
         sys.exit(1)
     processing_time_end = datetime.datetime.now()
     messenger.info("Processing of source trees completed in: {}".format(

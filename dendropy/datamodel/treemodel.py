@@ -4832,7 +4832,10 @@ class Tree(
                         d = abs(node.age - ocnd)
                         if  d > ultrametricity_precision:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
-                            raise error.UltrametricityError("Tree is not ultrametric within specified threshold: {} (threshold = {})".format(d, ultrametricity_precision))
+                            raise error.UltrametricityError("Tree is not ultrametric within threshold of {threshold}: {deviance}".format(
+                                threshold=ultrametricity_precision,
+                                deviance=d,
+                                ))
                 ages.append(node.age)
         return ages
 
