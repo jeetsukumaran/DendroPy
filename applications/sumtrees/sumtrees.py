@@ -739,14 +739,24 @@ def main():
             help="Root target tree(s) at midpoint.")
 
     edge_summarization_options = parser.add_argument_group("Target Tree Edge Options")
-    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep", "clear"]
+    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "support", "keep", "clear",]
     edge_summarization_options.add_argument("-e", "--edges",
             dest="edge_summarization",
             # metavar="<%s>" % ("".join(edge_summarization_choices)),
             choices=edge_summarization_choices,
             default=None,
             help="\n".join((
-                "R} Set the edge lengths of the summary target tree(s):",
+                "R}Set the edge lengths of the summary/target tree(s):",
+                "- 'mean-length'    : Edge lengths will be set to the mean",
+                "                     of the lengths of the corresponding",
+                "                     split or clade in the source trees.",
+                "                     If no external summary tree targets",
+                "                     are specified and the input source",
+                "                     trees are not ultrametric, then this",
+                "                     is the DEFAULT option.",
+                "- 'median-length'  : Edge lengths will be set to the median",
+                "                     of the lengths of the corresponding",
+                "                     split or clade in the source trees.",
                 "- 'mean-age'       : Edge lengths will be adjusted so that",
                 "                     the age of subtended nodes will be equal",
                 "                     to the mean age of the corresponding",
@@ -757,18 +767,7 @@ def main():
                 "                     If no external summary tree targets",
                 "                     are specified and the input source",
                 "                     trees are specified as ultrametric,",
-                "                     then this is the default option.",
-                "- 'mean-length'    : Edge lengths will be set to the mean",
-                "                     of the lengths of the corresponding",
-                "                     split or clade in the source trees.",
-                "                     If no external summary tree targets",
-                "                     are specified and the input source",
-                "                     trees are not ultrametric, then this",
-                "                     is the default option.",
-                "- 'keep'           : Do not change the existing edge lengths.",
-                "                     This is the default if target tree(s) are",
-                "                     sourced from an external file using the",
-                "                     '-t' or '--target' option",
+                "                     then this is the DEFAULT option.",
                 "- 'median-age'     : Edge lengths will be adjusted so that",
                 "                     the age of subtended nodes will be equal",
                 "                     to the median age of the corresponding",
@@ -776,44 +775,54 @@ def main():
                 "                     option requires that the source trees",
                 "                     are ultrametric (i.e., '-u' or",
                 "                     '--ultrametric' must be specified).",
-                "- 'median-length'  : Edge lengths will be set to the median",
-                "                     of the lengths of the corresponding",
-                "                     split or clade in the source trees.",
-                "                     If no external summary tree targets",
-                "                     are specified and the input source",
-                "                     trees are not ultrametric, then this",
-                "                     is the default option.",
+                "- 'support'        : Edge lengths will be set to the support",
+                "                     value for the split represented by the ",
+                "                     edge.",
+                "- 'keep'           : Do not change the existing edge lengths.",
+                "                     This is the DEFAULT if target tree(s) are",
+                "                     sourced from an external file using the",
+                "                     '-t' or '--target' option",
                 "- 'clear'          : Edge lengths will be cleared from the",
                 "                     target trees if they are present.",
+                "Note the default settings varies depending according to the",
+                "following, in order of preference:",
+                "(1) If target trees are specified using the '-t' or '--target'",
+                "    option, then the default is: 'keep'.",
+                "(2) If no target trees are specified, but the source trees ",
+                "    are specified to be ultrametric using the '-u' or ",
+                "    '--ultrametric' option, then the default is: 'mean-age'.",
+                "(3) If no target trees are specified and the source trees ",
+                "    are NOT specified to be ultrametric then the default ",
+                "    is: 'mean-length'.",
                 )))
     edge_summarization_options.add_argument("--collapse-negative-edges",
             action="store_true",
             default=False,
             help="(If setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages.")
 
+    node_summarization_options = parser.add_argument_group("Target Tree Node Options")
+    node_summarization_options.add_argument("-l","--labels",
+            dest="node_labels",
+            default="support",
+            choices=["support", "keep", "clear",],
+            help="\n".join((
+                "R}Set the node labels of the summary target tree(s):",
+                "- 'support'        : Node labels will be set to the support",
+                "                     value for the clade represented by the ",
+                "                     node. This is the DEFAULT.",
+                "- 'keep'           : Do not change the existing node labels.",
+                "- 'clear'          : Node labels will be cleared from the",
+                "                     target trees if they are present.",
+                )))
+    node_summarization_options.add_argument("--no-node-annotations",
+            action="store_true",
+            default=False,
+            help=(
+                "Do NOT annotate nodes and edges with any summarization information metadata such as."
+                "support values, edge length and/or node age summary statistcs, etc."
+                ))
 
     support_summarization_options = parser.add_argument_group("Support Summarization Options")
-    support_summarization_options.add_argument("-l","--support-as-labels",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=1,
-            help="Indicate split/clade/branch support as internal node labels.")
-    support_summarization_options.add_argument("-v","--support-as-lengths",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=2,
-            help="Indicate split/clade/branch support as branch lengths.")
-    support_summarization_options.add_argument("-x","--no-support-labels",
-            action="store_const",
-            dest="support_annotation_target",
-            default=1,
-            const=0,
-            help=("Do not indicate support with internal node labels or edge"
-                  " lengths. Support will still be indicated as node metadata "
-                  " annotations unless '--no-annotations' is specified "
-                 ))
     support_summarization_options.add_argument("-p", "--percentages",
             action="store_true",
             dest="support_as_percentages",
@@ -854,10 +863,6 @@ def main():
             dest="summarize_edge_lengths",
             default=None,
             help="Do not summarize edge lengths.")
-    other_summarization_options.add_argument("--no-annotations",
-            action="store_true",
-            default=False,
-            help="Do NOT annotate nodes and edges with any summarization information metadata.")
 
     output_options = parser.add_argument_group("Output Options")
     output_options.add_argument("-o","--output-tree-filepath",
@@ -1203,12 +1208,11 @@ def main():
     ######################################################################
     ## Post-Processing
 
-    # post-analysis reports
+    ### post-analysis reports
     report_lines = []
     def _report(msg):
         messenger.info(msg)
         report_lines.append(msg)
-
 
     _report("{} trees considered in total for summarization".format(len(tree_array)))
     if args.weighted_trees:
@@ -1234,6 +1238,34 @@ def main():
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
     _report("{} unique splits counted".format(num_unique_splits))
     _report("{} unique non-trivial splits counted".format(num_nt_unique_splits))
+
+    ###  set up summarization regime
+
+    split_summarization_kwargs = {}
+
+    if not args.support_as_percentages and args.support_label_decimals < 2:
+        messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
+        args.support_label_decimals = 2
+
+    if edge_summarization_options == "mean_length":
+        _report
+    # split_summarization_kwargs["set_edge_lengths"] = None
+    # split_summarization_kwargs["add_support_as_node_attribute"] = None
+    # split_summarization_kwargs["add_support_as_node_annotation"] = None
+    # split_summarization_kwargs["set_support_as_node_label"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
+    # split_summarization_kwargs["support_label_decimals"] = None
+    # split_summarization_kwargs["support_as_percentages"] = None
+    # split_summarization_kwargs["support_label_compose_func"] = None
+    # split_summarization_kwargs["primary_fieldnames"] = None
+    # split_summarization_kwargs["summary_stats_fieldnames"] = None
+    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
+    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
+    # split_summarization_kwargs["fieldnames"] = None
+
 
     # build target tree
     if target_tree_filepath is None:
@@ -1284,29 +1316,6 @@ def main():
     # decorate target tree(s)
     # other stuff
 
-
-
-    # if not args.support_as_percentages and args.support_label_decimals < 2:
-    #     messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
-    #     args.support_label_decimals = 2
-
-    # split_summarization_kwargs = {}
-    # split_summarization_kwargs["set_edge_lengths"] = None
-    # split_summarization_kwargs["add_support_as_node_attribute"] = None
-    # split_summarization_kwargs["add_support_as_node_annotation"] = None
-    # split_summarization_kwargs["set_support_as_node_label"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
-    # split_summarization_kwargs["support_label_decimals"] = None
-    # split_summarization_kwargs["support_as_percentages"] = None
-    # split_summarization_kwargs["support_label_compose_func"] = None
-    # split_summarization_kwargs["primary_fieldnames"] = None
-    # split_summarization_kwargs["summary_stats_fieldnames"] = None
-    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
-    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
-    # split_summarization_kwargs["fieldnames"] = None
 
 
     # comments = []
