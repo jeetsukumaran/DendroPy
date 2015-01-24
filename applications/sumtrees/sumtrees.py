@@ -718,7 +718,14 @@ def main():
                 "If using a consensus tree summarization strategy, then "
                 "this is the minimum frequency or probability for a clade "
                 "or a split to be included in the resulting tree "
-                "(default: > 0.5)."
+                "(default: > 0.5)."))
+    target_tree_supplemental_options.add_argument("--allow-unknown-target-tree-taxa",
+            action="store_true",
+            default=False,
+            help=(
+                "Do not fail with error if target tree(s) have taxa not"
+                " previously encountered in source trees or defined in"
+                " the taxon discovery file."
                 ))
 
     target_tree_rooting_options = parser.add_argument_group("Target Tree Rooting Options")
@@ -1233,8 +1240,8 @@ def main():
         pass
     else:
         try:
-            # from now on, no more new taxa
-            tree_array.taxon_namespace.is_mutable = False
+            if not args.allow_unknown_target_tree_taxa:
+                tree_array.taxon_namespace.is_mutable = False
             # we go through the yielder because it can handle the 'nexus/newick'
             # schema; TreeList.get_from_*() etc. does not (yet)
             target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
