@@ -1232,27 +1232,38 @@ def main():
     if target_tree_filepath is None:
         pass
     else:
-        # we go through the yielder because it can handle the 'nexus/newick'
-        # schema; TreeList.get_from_*() etc. does not (yet)
-        target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
-        is_target_trees_rooted = None
-        for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
-                files=[target_tree_filepath],
-                schema=args.input_format,
-                rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
-                preserve_underscores=args.preserve_underscores,
-                taxon_namespace=target_trees.taxon_namespace,
-                )):
-            if tree.is_rooted is not tree_array.is_rooted_trees:
-                messenger.error("Target trees rooting state do not match source trees rooting state. " + mixed_rooting_solution)
-                sys.exit(1)
-            if tree_idx > 0:
-                if tree.is_rooted is not is_target_trees_rooted:
-                    messenger.error("Mixed rooting states detected in target trees. " + mixed_rooting_solution)
+        try:
+            # from now on, no more new taxa
+            tree_array.taxon_namespace.is_mutable = False
+            # we go through the yielder because it can handle the 'nexus/newick'
+            # schema; TreeList.get_from_*() etc. does not (yet)
+            target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
+            is_target_trees_rooted = None
+            for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
+                    files=[target_tree_filepath],
+                    schema=args.input_format,
+                    rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
+                    preserve_underscores=args.preserve_underscores,
+                    taxon_namespace=target_trees.taxon_namespace,
+                    )):
+                if tree.is_rooted is not tree_array.is_rooted_trees:
+                    messenger.error("Target trees rooting state do not match source trees rooting state. " + mixed_rooting_solution)
                     sys.exit(1)
-            is_target_trees_rooted = tree.is_rooted
-            target_trees.append(tree)
-
+                if tree_idx > 0:
+                    if tree.is_rooted is not is_target_trees_rooted:
+                        messenger.error("Mixed rooting states detected in target trees. " + mixed_rooting_solution)
+                        sys.exit(1)
+                is_target_trees_rooted = tree.is_rooted
+                target_trees.append(tree)
+        except (Exception, KeyboardInterrupt) as e:
+            if isinstance(e, dendropy.utility.error.ImmutableTaxonNamespaceError):
+                message = "Target trees have one or more taxon names not seen in sources: {}".format(e)
+            else:
+                message = str(e)
+            messenger.error(message)
+            if args.debug_mode:
+                raise
+            sys.exit(1)
         if len(target_trees) > 1:
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
