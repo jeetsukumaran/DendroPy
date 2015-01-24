@@ -3048,7 +3048,7 @@ class Tree(
             If no valid trees matching criteria found in source.
 
         """
-        if "taxon_namespace" in kwargs or "taxon_namespace" in kwargs:
+        if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
             raise TypeError("Cannot change `taxon_namespace` when reading an existing Tree")
         kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree._parse_from_stream(stream, schema, **kwargs)

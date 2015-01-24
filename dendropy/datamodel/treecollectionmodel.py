@@ -514,7 +514,7 @@ class TreeList(
             The number of :class:`Tree` objects read.
 
         """
-        if "taxon_namespace" in kwargs or "taxon_namespace" in kwargs:
+        if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
             raise TypeError("Cannot change `taxon_namespace` when reading into an existing TreeList")
         kwargs["taxon_namespace"] = self.taxon_namespace
         kwargs["tree_list"] = self
@@ -877,10 +877,24 @@ class TreeList(
    ##############################################################################
    ## Special Calculations and Operations on Entire Collection
 
-    def as_tree_array(self, is_bipartitions_updated=False, **kwargs):
-        ta = TreeArray(taxon_namespace=self.taxon_namespace, **kwargs)
-        ta.add_trees(trees=self, is_bipartitions_updated=is_bipartitions_updated)
-        return ta
+    def _get_tree_array(self,
+            kwargs_dict,
+            ):
+        """
+        Return TreeArray containing information of trees currently
+        in self. Processes `kwargs_dict` intelligently: removing
+        and passing on keyword arguments pertaining to TreeArray
+        construction, and leaving everything else.
+        """
+        # TODO: maybe ignore_node_ages defaults to `False` but `ultrametricity_precision` defaults to 0?
+        ta = self.as_tree_array(
+                is_rooted_trees=kwargs_dict.pop("is_rooted_trees", None),
+                ignore_edge_lengths=kwargs_dict.pop("ignore_edge_lengths", False),
+                ignore_node_ages=kwargs_dict.pop("ignore_node_ages", True),
+                use_tree_weights=kwargs_dict.pop("use_tree_weights", True),
+                ultrametricity_precision=kwargs_dict.pop("ultrametricity_precision",
+                    constants.DEFAULT_ULTRAMETRICITY_PRECISION),
+                )
 
     def consensus(self,
             min_freq=constants.GREATER_THAN_HALF,
@@ -891,10 +905,9 @@ class TreeList(
         Returns a consensus tree of all trees in self, with minumum frequency
         of bipartition to be added to the consensus tree given by `min_freq`.
         """
-        ta = self.as_tree_array(
-                is_bipartitions_updated=is_bipartitions_updated,
-                **kwargs)
+        ta = self._get_tree_array(kwargs)
         return ta.consensus_tree(min_freq=min_freq,
+                is_bipartitions_updated=is_bipartitions_updated,
                 summarize_splits=summarize_splits,
                 **kwargs)
 
@@ -1749,6 +1762,33 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         pass
     class IncompatibleTreeWeightsTreeArrayUpdate(IncompatibleTreeArrayUpdate):
         pass
+
+    ##############################################################################
+    ## Factory Function
+
+    @classmethod
+    def from_tree_list(cls,
+            trees,
+            is_rooted_trees=None,
+            ignore_edge_lengths=False,
+            ignore_node_ages=True,
+            use_tree_weights=True,
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            is_bipartitions_updated=False,
+            ):
+        taxon_namespace = trees.taxon_namespace
+        ta = cls(
+            taxon_namespace=taxon_namespace,
+            is_rooted_trees=is_rooted_trees,
+            ignore_edge_lengths=ignore_edge_lengths,
+            ignore_node_ages=ignore_node_ages,
+            use_tree_weights=use_tree_weights,
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            )
+        ta.add_trees(
+                trees=trees,
+                is_bipartitions_updated=is_bipartitions_updated)
+        return ta
 
     ##############################################################################
     ## Life-Cycle
