@@ -1796,7 +1796,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     ## Book-Keeping
 
     def _get_is_rooted_trees(self):
-        return self._rooted_trees
+        return self._is_rooted_trees
     is_rooted_trees = property(_get_is_rooted_trees)
 
     def _get_split_distribution(self):

@@ -78,8 +78,6 @@ def _read_into_tree_array(
         tree_offset,
         use_tree_weights,
         preserve_underscores,
-        is_enforce_rooting,
-        rooting_to_enforce,
         info_message_func,
         error_message_func,
         log_frequency,
@@ -137,9 +135,6 @@ def _read_into_tree_array(
                         info_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
                     else:
                         info_message_func("Processing: '{}'".format(source_name), wrap=False)
-                if is_enforce_rooting:
-                    if tree.is_rooted is not rooting_to_enforce:
-                        raise error.MixedRootingError("Expecting rooting state of '{}' (for compatibility with target trees), but found: '{}'".format(rooting_to_enforce, tree.is_rooted))
                 if current_tree_offset >= tree_offset:
                     tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
                     _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
@@ -166,8 +161,6 @@ class TreeProcessingWorker(multiprocessing.Process):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
-            is_enforce_rooting,
-            rooting_to_enforce,
             num_processes,
             log_frequency,
             messenger,
@@ -188,8 +181,6 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
-        self.is_enforce_rooting = is_enforce_rooting
-        self.rooting_to_enforce = rooting_to_enforce
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
@@ -258,8 +249,6 @@ class TreeProcessingWorker(multiprocessing.Process):
                         tree_offset=self.tree_offset,
                         use_tree_weights=self.use_tree_weights,
                         preserve_underscores=self.preserve_underscores,
-                        is_enforce_rooting=self.is_enforce_rooting,
-                        rooting_to_enforce=self.rooting_to_enforce,
                         info_message_func=self.send_info,
                         error_message_func=self.send_error,
                         log_frequency=self.log_frequency,
@@ -284,8 +273,6 @@ class TreeProcessor(object):
 
     def __init__(self,
             is_source_trees_rooted,
-            target_trees,
-            is_target_trees_rooted,
             ignore_edge_lengths,
             ignore_node_ages,
             use_tree_weights,
@@ -295,8 +282,6 @@ class TreeProcessor(object):
             messenger,
             ):
         self.is_source_trees_rooted = is_source_trees_rooted
-        self.target_trees = target_trees
-        self.is_target_trees_rooted = is_target_trees_rooted
         self.rooting_interpretation = dendropy.get_rooting_argument(is_rooted=self.is_source_trees_rooted)
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
@@ -305,8 +290,6 @@ class TreeProcessor(object):
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
-        self.is_enforce_rooting = True if self.target_trees is not None else False
-        self.rooting_to_enforce = self.is_target_trees_rooted if self.target_trees is not None else None
 
     def info_message(self, msg, wrap=True):
         if self.messenger:
@@ -375,8 +358,6 @@ class TreeProcessor(object):
                 info_message_func=self.info_message,
                 error_message_func=self.error_message,
                 log_frequency=self.log_frequency,
-                is_enforce_rooting=self.is_enforce_rooting,
-                rooting_to_enforce=self.rooting_to_enforce,
                 )
         return tree_array
 
@@ -427,8 +408,6 @@ class TreeProcessor(object):
                     ignore_node_ages=self.ignore_node_ages,
                     use_tree_weights=self.use_tree_weights,
                     ultrametricity_precision=self.ultrametricity_precision,
-                    is_enforce_rooting=self.is_enforce_rooting,
-                    rooting_to_enforce=self.rooting_to_enforce,
                     num_processes=self.num_processes,
                     messenger=self.messenger,
                     messenger_lock=messenger_lock,
@@ -1027,29 +1006,8 @@ def main():
         if not os.path.exists(target_tree_filepath):
             messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
             sys.exit(1)
-
-        # we go through the yielder because it can handle the 'nexus/newick'
-        # schema; TreeList.get_from_*() etc. does not (yet)
-        target_trees = dendropy.TreeList()
-        is_target_trees_rooted = None
-        for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
-                files=[args.target_tree_filepath],
-                schema=args.input_format,
-                rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
-                preserve_underscores=args.preserve_underscores,
-                taxon_namespace=target_trees.taxon_namespace,
-                )):
-            if tree_idx > 0:
-                if tree.is_rooted is not is_target_trees_rooted:
-                    messenger.error("Mixed rooting states detected in source trees. " + mixed_rooting_solution)
-                    sys.exit(1)
-            is_target_trees_rooted = tree.is_rooted
-            target_trees.append(tree)
-
-        target_trees.source_name = args.target_tree_filepath
     else:
-        target_trees = None
-        is_target_trees_rooted = None
+        target_tree_filepath = None
         if args.summary_tree_target is None:
             args.summary_tree_target = "consensus"
 
@@ -1177,8 +1135,6 @@ def main():
 
     tree_processor = TreeProcessor(
             is_source_trees_rooted=args.is_source_trees_rooted,
-            target_trees=target_trees,
-            is_target_trees_rooted=is_target_trees_rooted,
             ignore_edge_lengths=not args.summarize_edge_lengths,
             ignore_node_ages=not args.summarize_node_ages,
             use_tree_weights=args.weighted_trees,
@@ -1273,14 +1229,35 @@ def main():
     _report("{} unique non-trivial splits counted".format(num_nt_unique_splits))
 
     # build target tree
-    if target_trees is None:
+    if target_tree_filepath is None:
         pass
     else:
+        # we go through the yielder because it can handle the 'nexus/newick'
+        # schema; TreeList.get_from_*() etc. does not (yet)
+        target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
+        is_target_trees_rooted = None
+        for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
+                files=[target_tree_filepath],
+                schema=args.input_format,
+                rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
+                preserve_underscores=args.preserve_underscores,
+                taxon_namespace=target_trees.taxon_namespace,
+                )):
+            if tree.is_rooted is not tree_array.is_rooted_trees:
+                messenger.error("Target trees rooting state do not match source trees rooting state. " + mixed_rooting_solution)
+                sys.exit(1)
+            if tree_idx > 0:
+                if tree.is_rooted is not is_target_trees_rooted:
+                    messenger.error("Mixed rooting states detected in target trees. " + mixed_rooting_solution)
+                    sys.exit(1)
+            is_target_trees_rooted = tree.is_rooted
+            target_trees.append(tree)
+
         if len(target_trees) > 1:
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
-        msg += " defined in: '{}'".format(target_trees.source_name)
+        msg += " defined in: '{}'".format(target_tree_filepath)
         messenger.info(msg, wrap=False)
         for tt_idx, target_tree in enumerate(target_trees):
             pass
