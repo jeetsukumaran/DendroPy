@@ -67,7 +67,7 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
 
 ##############################################################################
-## Primary Processing
+## Primary Analyzing
 
 def _read_into_tree_array(
         tree_array,
@@ -103,9 +103,9 @@ def _read_into_tree_array(
                         )
                     ):
                 if current_tree_offset >= tree_offset:
-                    coda = " (processing)"
+                    coda = " (analyzing)"
                 else:
-                    coda = " (skipping)"
+                    coda = " (burning-in)"
                 info_message_func("'{source_name}': tree at offset {current_tree_offset}{coda}".format(
                     source_name=source_name,
                     current_tree_offset=current_tree_offset,
@@ -132,9 +132,9 @@ def _read_into_tree_array(
                     if source_name is None:
                         source_name = "<stdin>"
                     if len(tree_sources) > 1:
-                        info_message_func("Processing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
+                        info_message_func("Analyzing {} of {}: '{}'".format(current_source_index+1, len(tree_sources), source_name), wrap=False)
                     else:
-                        info_message_func("Processing: '{}'".format(source_name), wrap=False)
+                        info_message_func("Analyzing: '{}'".format(source_name), wrap=False)
                 if current_tree_offset >= tree_offset:
                     tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
                     _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
@@ -146,7 +146,7 @@ def _read_into_tree_array(
             e.exception_tree_offset = current_tree_offset
             raise e
 
-class TreeProcessingWorker(multiprocessing.Process):
+class TreeAnalysisWorker(multiprocessing.Process):
 
     def __init__(self,
             name,
@@ -161,7 +161,6 @@ class TreeProcessingWorker(multiprocessing.Process):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
-            num_processes,
             log_frequency,
             messenger,
             messenger_lock,
@@ -181,7 +180,6 @@ class TreeProcessingWorker(multiprocessing.Process):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
-        self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
         self.messenger_lock = messenger_lock
@@ -303,7 +301,7 @@ class TreeProcessor(object):
         if self.messenger:
             self.messenger.error(msg, wrap=wrap)
 
-    def process_trees(self,
+    def analyze_trees(self,
             tree_sources,
             schema,
             taxon_namespace=None,
@@ -311,7 +309,7 @@ class TreeProcessor(object):
             preserve_underscores=False,
             ):
         if self.num_processes is None or self.num_processes <= 1:
-            tree_array = self.serial_process_trees(
+            tree_array = self.serial_analyze_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     taxon_namespace=taxon_namespace,
@@ -319,7 +317,7 @@ class TreeProcessor(object):
                     preserve_underscores=preserve_underscores,
                     )
         else:
-            tree_array = self.parallel_process_trees(
+            tree_array = self.parallel_analyze_trees(
                     tree_sources=tree_sources,
                     schema=schema,
                     taxon_namespace=taxon_namespace,
@@ -328,7 +326,7 @@ class TreeProcessor(object):
                     )
         return tree_array
 
-    def serial_process_trees(self,
+    def serial_analyze_trees(self,
             tree_sources,
             schema,
             taxon_namespace=None,
@@ -361,7 +359,7 @@ class TreeProcessor(object):
                 )
         return tree_array
 
-    def parallel_process_trees(self,
+    def parallel_analyze_trees(self,
             tree_sources,
             schema,
             tree_offset=0,
@@ -395,7 +393,7 @@ class TreeProcessor(object):
         workers = []
         for idx in range(self.num_processes):
             # self.info_message("Launching {} of {} worker processes".format(idx+1, self.num_processes))
-            tree_processing_worker = TreeProcessingWorker(
+            tree_analysis_worker = TreeAnalysisWorker(
                     name="Process-{}".format(idx+1),
                     work_queue=work_queue,
                     results_queue=results_queue,
@@ -408,12 +406,11 @@ class TreeProcessor(object):
                     ignore_node_ages=self.ignore_node_ages,
                     use_tree_weights=self.use_tree_weights,
                     ultrametricity_precision=self.ultrametricity_precision,
-                    num_processes=self.num_processes,
                     messenger=self.messenger,
                     messenger_lock=messenger_lock,
                     log_frequency=self.log_frequency)
-            tree_processing_worker.start()
-            workers.append(tree_processing_worker)
+            tree_analysis_worker.start()
+            workers.append(tree_analysis_worker)
 
         # collate results
         result_count = 0
@@ -456,47 +453,6 @@ class TreeProcessor(object):
                 ignore_unrecognized_keyword_arguments=True,
                 ):
             return tree.taxon_namespace
-
-##############################################################################
-## Preprocessing
-
-def preprocess_tree_sources(args, messenger):
-    tree_sources = []
-    for fpath in args.tree_sources:
-        if fpath == "-":
-            if args.input_format is None:
-                messenger.error("Format of source trees must be specified using '--source-format' flag when reading trees from standard input")
-                sys.exit(1)
-            elif args.input_format.lower() == "nexus/newick":
-                messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input")
-                sys.exit(1)
-            if len(args.tree_sources) > 1:
-                messenger.error("Cannot specify multiple sources when reading from standard input")
-            return []
-        else:
-            if args.input_format is None:
-                args.input_format = "nexus/newick"
-            else:
-                args.input_format = args.input_format.lower()
-            fpath = os.path.expanduser(os.path.expandvars(fpath))
-            if not os.path.exists(fpath):
-                missing_msg = "Support file not found: '{}'".format(fpath)
-                if args.ignore_missing_support:
-                    messenger.warning(missing_msg)
-                else:
-                    messenger.error(missing_msg )
-                    messenger.error("Terminating due to missing support files. "
-                            "Use the '--ignore-missing-support' option to continue even "
-                            "if some files are missing.")
-                    sys.exit(1)
-            else:
-                tree_sources.append(fpath)
-    if len(tree_sources) == 0:
-        messenger.error("No valid sources of input trees specified. "
-                + "Please provide the path to at least one (valid and existing) file "
-                + "containing tree samples to summarize.")
-        sys.exit(1)
-    return tree_sources
 
 ##############################################################################
 ## Front-End
@@ -645,7 +601,7 @@ def main():
             action="store_true",
             default=None,
             help="Assume source trees are ultrametric (implies '--force-rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
-    source_options.add_argument("-y", "--ultrametricity-precision",
+    source_options.add_argument("-v", "--ultrametricity-precision", "--branch-length-epsilon",
             action="store_true",
             default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
@@ -684,8 +640,8 @@ def main():
             metavar="{consensus,mct,msct}",
             help="\n".join((
                 "R}Map support and other information from the ",
-                "source trees to a topology summarized from ",
-                "the source trees under different criteria:  ",
+                "source trees to one of the following summary ",
+                "topologies:"
                 "- 'consensus' : consensus tree [DEFAULT];",
                 "                The minimum frequency threshold can",
                 "                be specified using the '-f' or",
@@ -1001,10 +957,45 @@ def main():
         sys.stdout.write("Type 'sumtrees.py --usage-examples' for examples of usage.\n")
         sys.exit(0)
 
-    tree_sources = preprocess_tree_sources(args, messenger)
-    if tree_sources is None or len(tree_sources) == 0:
+    tree_sources = []
+    for fpath in args.tree_sources:
+        if fpath == "-":
+            if args.input_format is None:
+                messenger.error("Format of source trees must be specified using '--source-format' flag when reading trees from standard input")
+                sys.exit(1)
+            elif args.input_format.lower() == "nexus/newick":
+                messenger.error("The 'nexus/newick' format is not supported when reading trees from standard input")
+                sys.exit(1)
+            if len(args.tree_sources) > 1:
+                messenger.error("Cannot specify multiple sources when reading from standard input")
+            tree_sources = None
+            break
+        else:
+            if args.input_format is None:
+                args.input_format = "nexus/newick"
+            else:
+                args.input_format = args.input_format.lower()
+            fpath = os.path.expanduser(os.path.expandvars(fpath))
+            if not os.path.exists(fpath):
+                missing_msg = "Support file not found: '{}'".format(fpath)
+                if args.ignore_missing_support:
+                    messenger.warning(missing_msg)
+                else:
+                    messenger.error(missing_msg )
+                    messenger.error("Terminating due to missing support files. "
+                            "Use the '--ignore-missing-support' option to continue even "
+                            "if some files are missing.")
+                    sys.exit(1)
+            else:
+                tree_sources.append(fpath)
+    if tree_sources is None:
         tree_sources = [sys.stdin]
         messenger.info("Reading trees from standard input")
+    elif len(tree_sources) == 0:
+            messenger.error("No valid sources of input trees specified. "
+                    + "Please provide the path to at least one (valid and existing) file "
+                    + "containing tree samples to summarize.")
+            sys.exit(1)
     else:
         messenger.info("{} source(s) to be processed".format(len(tree_sources)))
 
@@ -1160,7 +1151,7 @@ def main():
     #     processing_time_start,
     #     ))
     try:
-        tree_array = tree_processor.process_trees(
+        tree_array = tree_processor.analyze_trees(
                 tree_sources=tree_sources,
                 schema=args.input_format,
                 taxon_namespace=taxon_namespace,
@@ -1200,7 +1191,7 @@ def main():
             raise
         sys.exit(1)
     processing_time_end = datetime.datetime.now()
-    messenger.info("Processing of source trees completed in: {}".format(
+    messenger.info("Analysis of source trees completed in: {}".format(
         timeprocessing.pretty_timedelta(processing_time_end-processing_time_start),
         wrap=False,
         ))
@@ -1209,35 +1200,35 @@ def main():
     ## Post-Processing
 
     ### post-analysis reports
-    report_lines = []
+    processing_report_lines = []
     def _report(msg):
         messenger.info(msg)
-        report_lines.append(msg)
+        processing_report_lines.append(msg)
 
-    _report("{} trees considered in total for summarization".format(len(tree_array)))
+    _report("-  {} trees considered in total for summarization".format(len(tree_array)))
     if args.weighted_trees:
-        _report("Trees were treated as weighted (default weight = 1.0).")
+        _report("-  Trees were treated as weighted (default weight = 1.0).")
     else:
-        _report("Trees were treated as unweighted")
-    _report("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
+        _report("-  Trees were treated as unweighted")
+    _report("-  {} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
     if args.is_source_trees_rooted is None:
         if tree_array.split_distribution.is_all_counted_trees_rooted():
-            _report("All trees were rooted")
+            _report("-  All trees were rooted")
         elif tree_array.split_distribution.is_all_counted_trees_strictly_unrooted():
-            _report("All trees were unrooted")
+            _report("-  All trees were unrooted")
         elif tree_array.split_distribution.is_all_counted_trees_treated_as_unrooted():
-            _report("All trees were assumed to be unrooted")
+            _report("-  All trees were assumed to be unrooted")
     elif args.is_source_trees_rooted is True:
-        _report("All trees were treated as rooted")
+        _report("-  All trees were treated as rooted")
     else:
-        _report("All trees were treated as unrooted")
+        _report("-  All trees were treated as unrooted")
     if args.is_source_trees_ultrametric and args.ultrametricity_precision:
-        _report("Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
+        _report("-  Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
     elif args.is_source_trees_ultrametric:
-        _report("Trees were expected to be ultrametric (not verified)")
+        _report("-  Trees were expected to be ultrametric (not verified)")
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
-    _report("{} unique splits counted".format(num_unique_splits))
-    _report("{} unique non-trivial splits counted".format(num_nt_unique_splits))
+    _report("-  {} unique splits counted".format(num_unique_splits))
+    _report("-  {} unique non-trivial splits counted".format(num_nt_unique_splits))
 
     ### build target tree
     if target_tree_filepath is None:
@@ -1296,14 +1287,19 @@ def main():
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
 
     if args.edge_summarization is None:
-        pass
-    if args.edge_summarization == "mean_length":
+        if target_tree_filepath:
+            args.edge_summarization = "keep"
+        elif args.is_source_trees_ultrametric and args.summarize_node_ages is not False:
+            args.edge_summarization = "mean-age"
+        else:
+            args.edge_summarization = "mean-length"
+    if args.edge_summarization == "mean-length":
         _report("Edge lengths on target trees set to mean of edge lengths in sources")
-    elif args.edge_summarization == "median_length":
+    elif args.edge_summarization == "median-length":
         _report("Edge lengths on target trees set to median of edge lengths in sources")
-    elif args.edge_summarization == "mean_age":
+    elif args.edge_summarization == "mean-age":
         _report("Node ages on target trees set to mean of node ages in sources")
-    elif args.edge_summarization == "median_age":
+    elif args.edge_summarization == "median-age":
         _report("Node ages on target trees set to median of node ages in sources")
     elif args.edge_summarization == "support":
         _report("Edge lengths on target trees set to support values of corresponding split")
