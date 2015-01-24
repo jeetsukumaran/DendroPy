@@ -1239,35 +1239,7 @@ def main():
     _report("{} unique splits counted".format(num_unique_splits))
     _report("{} unique non-trivial splits counted".format(num_nt_unique_splits))
 
-    ###  set up summarization regime
-
-    split_summarization_kwargs = {}
-
-    if not args.support_as_percentages and args.support_label_decimals < 2:
-        messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
-        args.support_label_decimals = 2
-
-    if edge_summarization_options == "mean_length":
-        _report
-    # split_summarization_kwargs["set_edge_lengths"] = None
-    # split_summarization_kwargs["add_support_as_node_attribute"] = None
-    # split_summarization_kwargs["add_support_as_node_annotation"] = None
-    # split_summarization_kwargs["set_support_as_node_label"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
-    # split_summarization_kwargs["support_label_decimals"] = None
-    # split_summarization_kwargs["support_as_percentages"] = None
-    # split_summarization_kwargs["support_label_compose_func"] = None
-    # split_summarization_kwargs["primary_fieldnames"] = None
-    # split_summarization_kwargs["summary_stats_fieldnames"] = None
-    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
-    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
-    # split_summarization_kwargs["fieldnames"] = None
-
-
-    # build target tree
+    ### build target tree
     if target_tree_filepath is None:
         pass
     else:
@@ -1309,8 +1281,57 @@ def main():
             msg = "Summarizing onto target tree".format(len(target_trees))
         msg += " defined in: '{}'".format(target_tree_filepath)
         messenger.info(msg, wrap=False)
-        for tt_idx, target_tree in enumerate(target_trees):
-            pass
+
+    ###  set up summarization regime
+
+    split_summarization_kwargs = {}
+    if not args.support_as_percentages:
+        _report("Support values expressed as percentages")
+        if args.support_label_decimals < 2:
+            messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
+            args.support_label_decimals = 2
+    else:
+        _report("Support values expressed as proportions or probabilities")
+    split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
+    split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
+
+    if args.edge_summarization is None:
+        pass
+    if args.edge_summarization == "mean_length":
+        _report("Edge lengths on target trees set to mean of edge lengths in sources")
+    elif args.edge_summarization == "median_length":
+        _report("Edge lengths on target trees set to median of edge lengths in sources")
+    elif args.edge_summarization == "mean_age":
+        _report("Node ages on target trees set to mean of node ages in sources")
+    elif args.edge_summarization == "median_age":
+        _report("Node ages on target trees set to median of node ages in sources")
+    elif args.edge_summarization == "support":
+        _report("Edge lengths on target trees set to support values of corresponding split")
+    elif args.edge_summarization == "keep":
+        _report("Edge lengths on target trees are not modified")
+    elif args.edge_summarization == "clear":
+        _report("Edge lengths on target trees are cleared")
+    else:
+        raise ValueError(args.edge_summarization)
+    split_summarization_kwargs["set_edge_lengths"] = args.edge_summarization
+
+    # split_summarization_kwargs["set_edge_lengths"] = None
+    # split_summarization_kwargs["add_support_as_node_attribute"] = None
+    # split_summarization_kwargs["add_support_as_node_annotation"] = None
+    # split_summarization_kwargs["set_support_as_node_label"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
+    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
+    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
+    # split_summarization_kwargs["support_label_decimals"] = None
+    # split_summarization_kwargs["support_as_percentages"] = None
+    # split_summarization_kwargs["support_label_compose_func"] = None
+    # split_summarization_kwargs["primary_fieldnames"] = None
+    # split_summarization_kwargs["summary_stats_fieldnames"] = None
+    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
+    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
+    # split_summarization_kwargs["fieldnames"] = None
+
 
     # root target tree(s)
     # decorate target tree(s)

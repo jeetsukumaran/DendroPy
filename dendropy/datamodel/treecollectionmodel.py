@@ -877,16 +877,21 @@ class TreeList(
    ##############################################################################
    ## Special Calculations and Operations on Entire Collection
 
-    def consensus(self, min_freq=0.5, is_bipartitions_updated=False, **kwargs):
+    def consensus(self,
+            min_freq=constants.GREATER_THAN_HALF,
+            summarize_splits=True,
+            **kwargs):
         """
         Returns a consensus tree of all trees in self, with minumum frequency
         of bipartition to be added to the consensus tree given by `min_freq`.
         """
-        from dendropy.calculate import treesum
-        return treesum.consensus_tree(
-                self,
-                min_freq=min_freq,
-                is_bipartitions_updated=is_bipartitions_updated,
+
+        ta = TreeArray(
+                taxon_namespace=self.taxon_namespace,
+                **kwargs,
+                )
+        return ta.consensus_tree(min_freq=min_freq,
+                summarize_splits=summarize_splits,
                 **kwargs)
 
     def frequency_of_bipartition(self, **kwargs):
@@ -1371,6 +1376,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,
             is_rooted=None,
+            summarize_splits=True,
             **split_summarization_kwargs
             ):
         """
@@ -1416,11 +1422,12 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 split_bitmasks=splits_for_tree,
                 taxon_namespace=self.taxon_namespace,
                 is_rooted=is_rooted)
-        self.summarize_splits_on_tree(
-            tree=con_tree,
-            is_bipartitions_updated=False,
-            **split_summarization_kwargs
-            )
+        if summarize_splits:
+            self.summarize_splits_on_tree(
+                tree=con_tree,
+                is_bipartitions_updated=False,
+                **split_summarization_kwargs
+                )
         return con_tree
 
     def summarize_splits_on_tree(self,
@@ -2259,6 +2266,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_product_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
+            summarize_splits=True,
             **split_summarization_kwargs
             ):
         """
@@ -2289,11 +2297,12 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 tree_class=tree_class,
                 **split_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
-        self._split_distribution.summarize_splits_on_tree(
-            tree=tree,
-            is_bipartitions_updated=True,
-            **split_summarization_kwargs
-            )
+        if summarize_splits:
+            self._split_distribution.summarize_splits_on_tree(
+                tree=tree,
+                is_bipartitions_updated=True,
+                **split_summarization_kwargs
+                )
         return tree
 
     def calculate_sum_of_split_supports(self,
@@ -2338,6 +2347,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def maximum_sum_of_split_support_tree(self,
             include_external_splits=False,
             tree_class=None,
+            summarize_splits=True,
             **split_summarization_kwargs
             ):
         """
@@ -2369,15 +2379,17 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 **split_summarization_kwargs
                 )
         tree.sum_of_split_support = scores[max_score_tree_idx]
-        self._split_distribution.summarize_splits_on_tree(
-            tree=tree,
-            is_bipartitions_updated=True,
-            **split_summarization_kwargs
-            )
+        if summarize_splits:
+            self._split_distribution.summarize_splits_on_tree(
+                tree=tree,
+                is_bipartitions_updated=True,
+                **split_summarization_kwargs
+                )
         return tree
 
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,
+            summarize_splits=True,
             **split_summarization_kwargs
             ):
         """
@@ -2405,11 +2417,25 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         t : consensus tree
 
         """
-        return self._split_distribution.consensus_tree(
+        tree = self._split_distribution.consensus_tree(
                 min_freq=min_freq,
                 is_rooted=self.is_rooted,
+                summarize_splits=summarize_splits,
                 **split_summarization_kwargs
                 )
+
+    ##############################################################################
+    ## Summarization
+
+    def summarize_splits_on_tree(self,
+            tree,
+            is_bipartitions_updated=False,
+            **kwargs):
+        self._split_distribution.summarize_splits_on_tree(
+            tree=tree,
+            is_bipartitions_updated=is_bipartitions_updated,
+            **kwargs
+            )
 
     ##############################################################################
     ## Tree Reconstructions
