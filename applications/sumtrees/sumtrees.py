@@ -768,7 +768,7 @@ def main():
             default=False,
             help="(If setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages.")
 
-    node_summarization_options = parser.add_argument_group("Target Tree Node Options")
+    node_summarization_options = parser.add_argument_group("Target Tree Annotation Options")
     node_summarization_options.add_argument("-l","--labels",
             dest="node_labels",
             default="support",
@@ -782,7 +782,7 @@ def main():
                 "- 'clear'          : Node labels will be cleared from the",
                 "                     target trees if they are present.",
                 )))
-    node_summarization_options.add_argument("--no-node-annotations",
+    node_summarization_options.add_argument("--suppress-annotations", "--no-annotations",
             action="store_true",
             default=False,
             help=(
@@ -790,13 +790,13 @@ def main():
                 "support values, edge length and/or node age summary statistcs, etc."
                 ))
 
-    support_summarization_options = parser.add_argument_group("Support Summarization Options")
-    support_summarization_options.add_argument("-p", "--percentages",
+    support_expression_options = parser.add_argument_group("Support Expression Options")
+    support_expression_options.add_argument("-p", "--percentages",
             action="store_true",
             dest="support_as_percentages",
             default=False,
             help="Indicate branch support as percentages (otherwise, will report as proportions by default).")
-    support_summarization_options.add_argument("-d", "--decimals",
+    support_expression_options.add_argument("-d", "--decimals",
             dest="support_label_decimals",
             type=int,
             metavar="#",
@@ -1340,6 +1340,13 @@ def main():
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
 
+    ###  rooting
+
+    if args.root_target_at_outgroup:
+        pass
+    elif args.root_target_at_midpoint:
+        pass
+
     ###  set up summarization regime
 
     split_summarization_kwargs = {}
@@ -1373,27 +1380,39 @@ def main():
     elif args.edge_summarization == "keep":
         _bulleted_message_and_log("Edge lengths as given on target trees")
     elif args.edge_summarization == "clear":
-        _bulleted_message_and_log("Edge lengths on cleared from target trees")
+        _bulleted_message_and_log("Edge lengths cleared from target trees")
     else:
         raise ValueError(args.edge_summarization)
     split_summarization_kwargs["set_edge_lengths"] = args.edge_summarization
 
-    # split_summarization_kwargs["set_edge_lengths"] = None
-    # split_summarization_kwargs["add_support_as_node_attribute"] = None
-    # split_summarization_kwargs["add_support_as_node_annotation"] = None
+    split_summarization_kwargs["error_on_negative_edge_lengths"] = False
+    if args.collapse_negative_edges:
+        split_summarization_kwargs["minimum_edge_length"] = 0.0
+        _bulleted_message_and_log("Negative edge lengths collapsed to 0.0 (may result in non-ultrametric trees)")
+    elif args.force_minimum_edge_length:
+        split_summarization_kwargs["minimum_edge_length"] = args.force_minimum_edge_length
+        _bulleted_message_and_log("Minimum edge length allowed is: {} (may result in non-ultrametric trees)".format())
+
+    if args.suppress_annotations:
+        split_summarization_kwargs["add_support_as_node_attribute"] = False
+        split_summarization_kwargs["add_support_as_node_annotation"] = False
+        split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = False
+        split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = False
+        split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = False
+        split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = False
+        _bulleted_message_and_log("Metadata annotations NOT added to target trees as metadata".format())
+    else:
+        split_summarization_kwargs["add_support_as_node_attribute"] = True
+        split_summarization_kwargs["add_support_as_node_annotation"] = True
+        split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = True
+        split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = True
+        split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = True
+        split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = True
+        _bulleted_message_and_log("Support and other summarization annotations added to target trees as metadata".format())
+
+
     # split_summarization_kwargs["set_support_as_node_label"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_attributes"] = None
-    # split_summarization_kwargs["add_node_age_summaries_as_node_annotations"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_attributes"] = None
-    # split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = None
-    # split_summarization_kwargs["support_label_decimals"] = None
-    # split_summarization_kwargs["support_as_percentages"] = None
     # split_summarization_kwargs["support_label_compose_func"] = None
-    # split_summarization_kwargs["primary_fieldnames"] = None
-    # split_summarization_kwargs["summary_stats_fieldnames"] = None
-    # split_summarization_kwargs["node_age_summaries_fieldnames"] = None
-    # split_summarization_kwargs["edge_length_summaries_fieldnames"] = None
-    # split_summarization_kwargs["fieldnames"] = None
 
 
     # root target tree(s)
