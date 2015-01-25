@@ -694,6 +694,7 @@ def main():
 
     target_tree_rooting_options = parser.add_argument_group("Target Tree Rooting Options")
     target_tree_rooting_options.add_argument("--root-target-at-outgroup",
+            dest="root_target_at_outgroup",
             metavar="TAXON-LABEL",
             default=None,
             help="Root target tree(s) using specified taxon as outgroup.")
@@ -701,6 +702,11 @@ def main():
             action="store_true",
             default=None,
             help="Root target tree(s) at midpoint.")
+    target_tree_rooting_options.add_argument("--set-outgroup",
+            dest="set_outgroup",
+            metavar="TAXON-LABEL",
+            default=None,
+            help="Rotate the target trees such the specified taxon is in the outgroup position, but do not explicitly change the target tree rooting.")
 
     edge_summarization_options = parser.add_argument_group("Target Tree Edge Options")
     edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "support", "keep", "clear",]
@@ -1061,6 +1067,11 @@ def main():
     ######################################################################
     ## Tree Ultrametricity and Rooting State
 
+    if args.root_target_at_outgroup is not None or args.root_target_at_midpoint:
+        if not args.is_source_trees_rooted and not args.is_source_trees_ultrametric:
+            messenger.info("Rooting directive specified for target tree(s): source trees will also be treated as rooted")
+            args.is_source_trees_rooted = True
+
     if args.edge_summarization == "mean-age" or args.edge_summarization == "median-age":
         if args.is_source_trees_ultrametric is None:
             messenger.info("Edge summarization strategy '{}' requires ultrametric source trees: assuming source trees are ultrametric".format(args.edge_summarization))
@@ -1098,6 +1109,17 @@ def main():
                 sys.exit(1)
         else:
             args.sumamrize_node_ages = False
+
+        num_target_rooting_directives = 0
+        if args.root_target_at_outgroup is not None:
+            num_target_rooting_directives += 1
+        if args.set_outgroup is not None:
+            num_target_rooting_directives += 1
+        if args.root_target_at_midpoint:
+            num_target_rooting_directives += 1
+        if num_target_rooting_directives > 1:
+            messenger.error("Only one target tree rooting directive can be specified")
+            sys.exit(1)
 
     ######################################################################
     ## Output File Setup
@@ -1315,6 +1337,8 @@ def main():
                     preserve_underscores=args.preserve_underscores,
                     taxon_namespace=target_trees.taxon_namespace,
                     )):
+                if args.root_target_at_outgroup is not None or args.root_target_at_midpoint:
+                    tree.is_rooted = True
                 if tree.is_rooted is not tree_array.is_rooted_trees:
                     messenger.error("Target trees rooting state do not match source trees rooting state. " + mixed_rooting_solution)
                     sys.exit(1)
@@ -1323,6 +1347,7 @@ def main():
                         messenger.error("Mixed rooting states detected in target trees. " + mixed_rooting_solution)
                         sys.exit(1)
                 is_target_trees_rooted = tree.is_rooted
+                tree.encode_bipartitions()
                 target_trees.append(tree)
         except (Exception, KeyboardInterrupt) as e:
             if isinstance(e, dendropy.utility.error.ImmutableTaxonNamespaceError):
@@ -1342,10 +1367,35 @@ def main():
 
     ###  rooting
 
-    if args.root_target_at_outgroup:
-        pass
+    if args.root_target_at_outgroup is not None or args.set_outgroup is not None:
+        if args.root_target_at_outgroup is not None:
+            outgroup_label = args.root_target_at_outgroup
+        elif args.set_outgroup is not None:
+            outgroup_label = args.set_outgroup
+        if args.input_format in ("nexus/newick", "nexus", "newick"):
+            if not args.preserve_underscores:
+                outgroup_label = outgroup_label.replace("_", " ")
+        for tree in target_trees:
+            outgroup_node = tree.find_node_with_taxon_label(outgroup_label)
+            if outgroup_node is None:
+                messenger.error("Cannot locate node with outgroup taxon '{}' on target tree".format(outgroup_label))
+                sys.exit(1)
+            tree.to_outgroup_position(
+                    outgroup_node=outgroup_node,
+                    update_bipartitions=True,
+                    suppress_unifurcations=True)
+            if args.root_target_at_outgroup is not None:
+                tree.is_rooted = True
+        if args.root_target_at_outgroup is not None:
+            _bulleted_message_and_log("Target tree(s) rerooted using outgroup: '{}'".format(outgroup_label))
+        elif args.set_outgroup is not None:
+            _bulleted_message_and_log("Target tree(s) rotated to set outgroup: '{}'".format(outgroup_label))
     elif args.root_target_at_midpoint:
-        pass
+        for tree in target_trees:
+            tree.reroot_at_midpoint(
+                    update_bipartitions=True,
+                    suppress_unifurcations=True)
+        _bulleted_message_and_log("Target tree(s) rerooted at midpoint")
 
     ###  set up summarization regime
 
@@ -1389,9 +1439,9 @@ def main():
     if args.collapse_negative_edges:
         split_summarization_kwargs["minimum_edge_length"] = 0.0
         _bulleted_message_and_log("Negative edge lengths collapsed to 0.0 (may result in non-ultrametric trees)")
-    elif args.force_minimum_edge_length:
+    elif args.force_minimum_edge_length is not None:
         split_summarization_kwargs["minimum_edge_length"] = args.force_minimum_edge_length
-        _bulleted_message_and_log("Minimum edge length allowed is: {} (may result in non-ultrametric trees)".format())
+        _bulleted_message_and_log("Edge lengths less than {val} set to {val} (may result in non-ultrametric trees)".format(val=args.force_minimum_edge_length))
 
     if args.suppress_annotations:
         split_summarization_kwargs["add_support_as_node_attribute"] = False
@@ -1410,14 +1460,15 @@ def main():
         split_summarization_kwargs["add_edge_length_summaries_as_edge_annotations"] = True
         _bulleted_message_and_log("Support and other summarization annotations added to target trees as metadata".format())
 
+    for tree in target_trees:
+        tree_array.summarize_splits_on_tree(
+                tree=tree,
+                is_bipartitions_updated=True,
+                **split_summarization_kwargs)
+
 
     # split_summarization_kwargs["set_support_as_node_label"] = None
     # split_summarization_kwargs["support_label_compose_func"] = None
-
-
-    # root target tree(s)
-    # decorate target tree(s)
-    # other stuff
 
 
 

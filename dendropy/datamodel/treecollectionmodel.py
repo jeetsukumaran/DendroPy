@@ -1707,35 +1707,44 @@ class SplitDistributionSummarizer(object):
                         )
             if self.set_edge_lengths is None:
                 pass
+            elif self.set_edge_lengths == "keep":
+                pass
             elif self.set_edge_lengths == "support":
                 node.edge.length = split_support
-            else:
-                if self.set_edge_lengths in ("mean-age", "median-age"):
-                    if not node_age_summaries:
-                        raise ValueError("Node ages not available")
-                    if self.set_edge_lengths == "mean-age":
-                        node.age = node_age_summaries[split_bitmask]["mean"]
-                    elif self.set_edge_lengths == "median-age":
-                        node.age = node_age_summaries[split_bitmask]["median"]
-                    else:
-                        raise ValueError(self.set_edge_lengths)
-                elif self.set_edge_lengths in ("mean-length", "median-length"):
-                    if not edge_length_summaries:
-                        raise ValueError("Edge lengths not available")
-                    if self.set_edge_lengths == "mean-length":
-                        node.edge.length = edge_length_summaries[split_bitmask]["mean"]
-                    elif self.set_edge_lengths == "median-length":
-                        node.edge.length = edge_length_summaries[split_bitmask]["median"]
-                    else:
-                        raise ValueError(self.set_edge_lengths)
-                    if self.minimum_edge_length is not None and edge.length < self.minimum_edge_length:
-                        edge.length = self.minimum_edge_length
+            elif self.set_edge_lengths == "clear":
+                edge.length = None
+            elif self.set_edge_lengths in ("mean-age", "median-age"):
+                if not node_age_summaries:
+                    raise ValueError("Node ages not available")
+                if self.set_edge_lengths == "mean-age":
+                    node.age = node_age_summaries[split_bitmask]["mean"]
+                elif self.set_edge_lengths == "median-age":
+                    node.age = node_age_summaries[split_bitmask]["median"]
                 else:
                     raise ValueError(self.set_edge_lengths)
+            elif self.set_edge_lengths in ("mean-length", "median-length"):
+                if not edge_length_summaries:
+                    raise ValueError("Edge lengths not available")
+                if self.set_edge_lengths == "mean-length":
+                    node.edge.length = edge_length_summaries[split_bitmask]["mean"]
+                elif self.set_edge_lengths == "median-length":
+                    node.edge.length = edge_length_summaries[split_bitmask]["median"]
+                else:
+                    raise ValueError(self.set_edge_lengths)
+                if self.minimum_edge_length is not None and edge.length < self.minimum_edge_length:
+                    edge.length = self.minimum_edge_length
+            else:
+                raise ValueError(self.set_edge_lengths)
         if self.set_edge_lengths in ("mean-age", "median-age"):
             tree.set_edge_lengths_from_node_ages(
                     minimum_edge_length=self.minimum_edge_length,
                     error_on_negative_edge_lengths=self.error_on_negative_edge_lengths)
+        elif self.set_edge_lengths not in ("keep", "clear", None) and self.minimum_edge_length is not None:
+            for node in tree:
+                if node.edge.length is None:
+                    node.edge.length = self.minimum_edge_length
+                elif node.edge.length < self.minimum_edge_length:
+                    node.edge.length = self.minimum_edge_length
         return tree
 
 ###############################################################################
