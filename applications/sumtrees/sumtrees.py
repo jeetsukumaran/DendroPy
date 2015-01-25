@@ -1290,11 +1290,11 @@ def main():
     _bulleted_message_and_log("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
     if args.weighted_trees:
-        _bulleted_message_and_log("{} unique splits counted out of a total weight of {} splits".format(num_unique_splits, num_splits))
-        _bulleted_message_and_log("{} unique non-trivial splits counted out of a total weight of {} splits".format(num_nt_unique_splits, num_nt_splits))
+        _bulleted_message_and_log("{} unique splits with a total weight of {}".format(num_unique_splits, num_splits))
+        _bulleted_message_and_log("{} unique non-trivial splits with a total weight of {}".format(num_nt_unique_splits, num_nt_splits))
     else:
-        _bulleted_message_and_log("{} unique splits counted out of a total of {} splits".format(num_unique_splits, int(num_splits)))
-        _bulleted_message_and_log("{} unique non-trivial splits counted out of a total of {} splits".format(num_nt_unique_splits, int(num_nt_splits)))
+        _bulleted_message_and_log("{} unique splits out of a total of {} splits".format(num_unique_splits, int(num_splits)))
+        _bulleted_message_and_log("{} unique non-trivial splits counted out of a total of non-trivial {} splits".format(num_nt_unique_splits, int(num_nt_splits)))
 
     ### build target tree(s)
     target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)

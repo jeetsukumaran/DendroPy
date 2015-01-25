@@ -887,14 +887,17 @@ class TreeList(
         construction, and leaving everything else.
         """
         # TODO: maybe ignore_node_ages defaults to `False` but `ultrametricity_precision` defaults to 0?
-        ta = self.as_tree_array(
+        ta = TreeArray.from_tree_list(
+                trees=self,
+                # taxon_namespace=self.taxon_namespace,
                 is_rooted_trees=kwargs_dict.pop("is_rooted_trees", None),
                 ignore_edge_lengths=kwargs_dict.pop("ignore_edge_lengths", False),
                 ignore_node_ages=kwargs_dict.pop("ignore_node_ages", True),
                 use_tree_weights=kwargs_dict.pop("use_tree_weights", True),
-                ultrametricity_precision=kwargs_dict.pop("ultrametricity_precision",
-                    constants.DEFAULT_ULTRAMETRICITY_PRECISION),
+                ultrametricity_precision=kwargs_dict.pop("ultrametricity_precision", constants.DEFAULT_ULTRAMETRICITY_PRECISION),
+                is_bipartitions_updated=kwargs_dict.pop("is_bipartitions_updated", False)
                 )
+        return ta
 
     def consensus(self,
             min_freq=constants.GREATER_THAN_HALF,
@@ -907,7 +910,6 @@ class TreeList(
         """
         ta = self._get_tree_array(kwargs)
         return ta.consensus_tree(min_freq=min_freq,
-                is_bipartitions_updated=is_bipartitions_updated,
                 summarize_splits=summarize_splits,
                 **kwargs)
 

@@ -22,7 +22,6 @@ Tests of summarization.
 
 import unittest
 import dendropy
-from dendropy.calculate import treesum
 from dendropy.calculate import treecompare
 from dendropy.test.support import pathmap
 from dendropy.mathlib import statistics
@@ -45,7 +44,10 @@ class TestConsensusTree(unittest.TestCase):
         self.mb_con_tree.encode_bipartitions()
 
     def testConsensus(self):
-        con_tree = self.tree_list.consensus(min_freq=0.50, is_bipartitions_updated=False, support_label_decimals=2)
+        con_tree = self.tree_list.consensus(
+                min_freq=0.50,
+                is_bipartitions_updated=False,
+                support_label_decimals=2)
         con_tree.encode_bipartitions()
         self.assertEqual(treecompare.symmetric_difference(self.mb_con_tree, con_tree), 0)
         self.assertEqual(len(con_tree.bipartition_encoding), len(self.mb_con_tree.bipartition_encoding))
@@ -128,38 +130,39 @@ class TestConsensusTree(unittest.TestCase):
 class TestTreeEdgeSummarization(unittest.TestCase):
 
     def setUp(self):
-        self.taxon_namespace = dendropy.TaxonNamespace()
-        self.support_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path("primates.beast.mcmc.trees"),
-                "nexus",
-                taxon_namespace=self.taxon_namespace,
-                collection_offset=0,
-                tree_offset=40)
-        self.split_distribution = dendropy.SplitDistribution(taxon_namespace=self.taxon_namespace)
-        self.split_distribution.ignore_node_ages = False
-        for tree in self.support_trees:
-            self.split_distribution.count_splits_on_tree(tree, is_bipartitions_updated=False)
+        self.support_trees_path = pathmap.tree_source_path("primates.beast.mcmc.trees")
+        self.target_tree_path = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
+        self.expected_tree_path = pathmap.tree_source_path("primates.beast.mcct.medianh.tre")
+        self.burnin = 40
 
     def testMeanNodeAgeSummarizationOnMCCT(self):
-        path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
-        obs_tree = dendropy.Tree.get_from_path(path_to_target, "nexus")
-        obs_tree.encode_bipartitions()
-        ts = treesum.TreeSummarizer(support_as_labels=True,
-                support_as_percentages=False,
-                support_label_decimals=4)
-        ts.summarize_node_ages_on_tree(tree=obs_tree,
-                split_distribution=self.split_distribution,
-                set_edge_lengths=True,
-                summarization_func=statistics.median)
-        obs_tree.calc_node_ages()
-        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.medianh.tre"),
+        tree_array = dendropy.TreeArray(ignore_node_ages=False)
+        tree_array.read_from_path(
+                self.support_trees_path,
                 "nexus",
-                taxon_namespace=self.taxon_namespace)
-        exp_tree.encode_bipartitions()
-        exp_tree.calc_node_ages()
-        self.assertEqual(exp_tree.bipartition_encoding, obs_tree.bipartition_encoding)
-        for exp_bipartition in exp_tree.bipartition_encoding:
-            exp_edge = exp_tree.bipartition_edge_map[exp_bipartition]
-            obs_edge = obs_tree.bipartition_edge_map[exp_bipartition]
+                # colleciton_offset=0,
+                tree_offset=self.burnin,
+                )
+        target_tree = dendropy.Tree.get_from_path(
+                self.target_tree_path,
+                schema="nexus",
+                taxon_namespace=tree_array.taxon_namespace,
+                )
+        tree_array.summarize_splits_on_tree(
+                tree=target_tree,
+                is_bipartitions_updated=False,
+                set_edge_lengths="median-age",
+                )
+        expected_tree = dendropy.Tree.get_from_path(
+                self.expected_tree_path,
+                "nexus",
+                taxon_namespace=tree_array.taxon_namespace)
+        expected_tree.encode_bipartitions()
+        expected_tree.calc_node_ages()
+        self.assertEqual(expected_tree.bipartition_encoding, target_tree.bipartition_encoding)
+        for exp_bipartition in expected_tree.bipartition_encoding:
+            exp_edge = expected_tree.bipartition_edge_map[exp_bipartition]
+            obs_edge = target_tree.bipartition_edge_map[exp_bipartition]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
