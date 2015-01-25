@@ -674,7 +674,7 @@ def main():
                  ))
 
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
-    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq",
+    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq",
             type=float,
             default=constants.GREATER_THAN_HALF,
             metavar="#.##",
@@ -759,6 +759,10 @@ def main():
                 "    are NOT specified to be ultrametric then the default ",
                 "    is: 'mean-length'.",
                 )))
+    edge_summarization_options.add_argument("--force-minimum-edge-length",
+            default=None,
+            type=float,
+            help="(If setting edge lengths) force all edges to be at least this length.")
     edge_summarization_options.add_argument("--collapse-negative-edges",
             action="store_true",
             default=False,
@@ -1270,16 +1274,39 @@ def main():
         _bulleted_message_and_log("{} unique splits counted out of a total of {} splits".format(num_unique_splits, int(num_splits)))
         _bulleted_message_and_log("{} unique non-trivial splits counted out of a total of {} splits".format(num_nt_unique_splits, int(num_nt_splits)))
 
-    ### build target tree
+    ### build target tree(s)
+    target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
     if target_tree_filepath is None:
-        pass
+        args.include_external_splits_when_scoring_clade_credibility_tree = False
+        if args.include_external_splits_when_scoring_clade_credibility_tree:
+            coda = ", including tip clades"
+        else:
+            coda = ""
+        if args.summary_tree_target is None:
+            args.summary_tree_target = "consensus"
+        if args.summary_tree_target == "consensus":
+            tree = tree_array.consensus_tree(min_consensus_freq=args.min_consensus_freq, summarize_splits=False)
+            msg = "Summarized onto target consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
+        elif args.summary_tree_target == "mct":
+            tree = tree_array.maximum_product_of_split_support_tree(
+                    include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
+                    summarize_splits=False)
+            msg = "Summarized onto target Maximum Credibility Tree (i.e., tree given in sources that maximizes the product of clade credibilities{}):".format(coda)
+        elif args.summary_tree_target == "msct":
+            tree = tree_array.maximum_sum_of_split_support_tree(
+                    include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
+                    summarize_splits=False)
+            msg = "Summarized onto target Maximum Sum of Credibilities Tree (i.e., tree given in sources that maximizes the sum of clade credibilities{}):".format(coda)
+        else:
+            raise ValueError(args.summary_tree_target)
+        target_trees.append(tree)
+        _message_and_log(msg, wrap=True)
     else:
         try:
             if not args.allow_unknown_target_tree_taxa:
                 tree_array.taxon_namespace.is_mutable = False
             # we go through the yielder because it can handle the 'nexus/newick'
             # schema; TreeList.get_from_*() etc. does not (yet)
-            target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
             is_target_trees_rooted = None
             for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
                     files=[target_tree_filepath],
@@ -1310,19 +1337,19 @@ def main():
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
-        msg += " defined in: '{}'".format(target_tree_filepath)
-        messenger.info(msg, wrap=False)
+        msg += " defined in '{}':".format(target_tree_filepath)
+        _message_and_log(msg, wrap=False)
 
     ###  set up summarization regime
 
     split_summarization_kwargs = {}
     if not args.support_as_percentages:
-        _message_and_log("Support values expressed as percentages")
+        _bulleted_message_and_log("Support values expressed as percentages")
         if args.support_label_decimals < 2:
             messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
             args.support_label_decimals = 2
     else:
-        _message_and_log("Support values expressed as proportions or probabilities")
+        _bulleted_message_and_log("Support values expressed as proportions or probabilities")
     split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
 
@@ -1334,19 +1361,19 @@ def main():
         else:
             args.edge_summarization = "mean-length"
     if args.edge_summarization == "mean-length":
-        _message_and_log("Edge lengths on target trees set to mean of edge lengths in sources")
+        _bulleted_message_and_log("Edge lengths on target trees set to mean of edge lengths in sources")
     elif args.edge_summarization == "median-length":
-        _message_and_log("Edge lengths on target trees set to median of edge lengths in sources")
+        _bulleted_message_and_log("Edge lengths on target trees set to median of edge lengths in sources")
     elif args.edge_summarization == "mean-age":
-        _message_and_log("Node ages on target trees set to mean of node ages in sources")
+        _bulleted_message_and_log("Node ages on target trees set to mean of node ages in sources")
     elif args.edge_summarization == "median-age":
-        _message_and_log("Node ages on target trees set to median of node ages in sources")
+        _bulleted_message_and_log("Node ages on target trees set to median of node ages in sources")
     elif args.edge_summarization == "support":
-        _message_and_log("Edge lengths on target trees set to support values of corresponding split")
+        _bulleted_message_and_log("Edge lengths on target trees set to support values of corresponding split")
     elif args.edge_summarization == "keep":
-        _message_and_log("Edge lengths on target trees are not modified")
+        _bulleted_message_and_log("Edge lengths as given on target trees")
     elif args.edge_summarization == "clear":
-        _message_and_log("Edge lengths on target trees are cleared")
+        _bulleted_message_and_log("Edge lengths on cleared from target trees")
     else:
         raise ValueError(args.edge_summarization)
     split_summarization_kwargs["set_edge_lengths"] = args.edge_summarization
