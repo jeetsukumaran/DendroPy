@@ -517,11 +517,9 @@ product of posterior probabilities, you can specify 'mct' for the
             treefile1.tre treefile2.tre treefile3.tre
 
 If the input trees are ultrametric and you want to set the node ages to the
-median node age, specify the '--ultrametic' option and set the '--edges'
-argument to 'median-age':
+median node age, set the '--edges' argument to 'median-age':
 
     $ sumtrees.py \\
-            --ultrametric \\
             --summary-tree mct \\
             --edges median-age \\
             --burnin=200 \\
@@ -604,11 +602,6 @@ def main():
             action="store_false",
             default=None,
             help="Treat source trees as unrooted.")
-    source_options.add_argument("-u", "--ultrametric",
-            dest="is_source_trees_ultrametric",
-            action="store_true",
-            default=None,
-            help="Assume source trees are ultrametric (implies '--force-rooted'; will result in node ages being summarized; will result in error if trees are not ultrametric).")
     source_options.add_argument("-v", "--ultrametricity-precision", "--branch-length-epsilon",
             action="store_true",
             default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
@@ -641,19 +634,35 @@ def main():
                 " specifying the taxon names can avoid these issues."
                 ))
 
-    summary_tree_options = parser.add_argument_group("Target Tree Topology Options")
-    summary_tree_options.add_argument(
-            "-s", "--summary-tree-target",
+    target_tree_options = parser.add_argument_group("Target Tree Topology Options")
+    target_tree_options.add_argument(
+            "-t", "--target-treefile",
+            default=None,
+            metavar="FILE",
+            help=(
+                    "Summarize support and other information from the source"
+                    " trees to topology or topologies given by the tree(s)"
+                    " described in FILE. If no use-specified target topologies"
+                    " are given, then a summary topology will be used as the"
+                    " target. Use the '-s' or '--summary-target' to specify the"
+                    " type of summary tree to use."
+                 ))
+    target_tree_options.add_argument(
+            "-s", "--summary-target",
             default=None,
             metavar="{consensus,mct,msct}",
             help="\n".join((
-                "R}Map support and other information from the ",
-                "source trees to one of the following summary ",
-                "topologies:"
-                "- 'consensus' : consensus tree [DEFAULT];",
+                "R}Construct and summarize support and other information",
+                "from the source trees to one of the following summary",
+                "topologies:",
+                "- 'consensus' : consensus tree;",
                 "                The minimum frequency threshold can",
                 "                be specified using the '-f' or",
                 "                '--min-clade-freq' flags.",
+                "                This is the DEFAULT if a user-",
+                "                specified target tree is not",
+                "                given through the '-t' or",
+                "                '--target-treefile' options.",
                 "- 'mct'       : maximum clade credibility tree;",
                 "                Tree from the source set that ",
                 "                maximizes the *product* of clade",
@@ -663,15 +672,6 @@ def main():
                 "                maximizes the *sum* of clade ",
                 "                posterior probabilities.",
                 )))
-    summary_tree_options.add_argument(
-            "-t", "--target-tree-filepath",
-            default=None,
-            metavar="FILE",
-            help=(
-                  "Map support and other information from the "
-                  "source trees to a topology or topologies "
-                  "given by the tree(s) described in FILE."
-                 ))
 
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
     target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq",
@@ -708,68 +708,59 @@ def main():
             default=None,
             help="Rotate the target trees such the specified taxon is in the outgroup position, but do not explicitly change the target tree rooting.")
 
-    edge_summarization_options = parser.add_argument_group("Target Tree Edge Options")
-    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "support", "keep", "clear",]
-    edge_summarization_options.add_argument("-e", "--edges",
-            dest="edge_summarization",
-            # metavar="<%s>" % ("".join(edge_summarization_choices)),
-            choices=edge_summarization_choices,
+    edge_length_summarization_options = parser.add_argument_group("Target Tree Edge Options")
+    edge_length_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "support", "keep", "clear",]
+    edge_length_summarization_options.add_argument("-e", "--edge-length-summarization", "--edges",
+            dest="edge_length_summarization",
+            # metavar="<%s>" % ("".join(edge_length_summarization_choices)),
+            choices=edge_length_summarization_choices,
             default=None,
             help="\n".join((
                 "R}Set the edge lengths of the summary/target tree(s):",
                 "- 'mean-length'    : Edge lengths will be set to the mean",
                 "                     of the lengths of the corresponding",
                 "                     split or clade in the source trees.",
-                "                     If no external summary tree targets",
-                "                     are specified and the input source",
-                "                     trees are not ultrametric, then this",
-                "                     is the DEFAULT option.",
                 "- 'median-length'  : Edge lengths will be set to the median",
                 "                     of the lengths of the corresponding",
                 "                     split or clade in the source trees.",
                 "- 'mean-age'       : Edge lengths will be adjusted so that",
                 "                     the age of subtended nodes will be equal",
                 "                     to the mean age of the corresponding",
-                "                     split or clade in the source trees. This",
-                "                     option requires that the source trees",
-                "                     are ultrametric (i.e., '-u' or",
-                "                     '--ultrametric' must be specified).",
-                "                     If no external summary tree targets",
-                "                     are specified and the input source",
-                "                     trees are specified as ultrametric,",
-                "                     then this is the DEFAULT option.",
+                "                     split or clade in the source trees.",
+                "                     Source trees will need to to be ",
+                "                     ultrametric for this option.",
                 "- 'median-age'     : Edge lengths will be adjusted so that",
                 "                     the age of subtended nodes will be equal",
                 "                     to the median age of the corresponding",
-                "                     split or clade in the source trees. This",
-                "                     option requires that the source trees",
-                "                     are ultrametric (i.e., '-u' or",
-                "                     '--ultrametric' must be specified).",
+                "                     split or clade in the source trees.",
+                "                     Source trees will need to to be ",
+                "                     ultrametric for this option.",
                 "- 'support'        : Edge lengths will be set to the support",
                 "                     value for the split represented by the ",
                 "                     edge.",
                 "- 'keep'           : Do not change the existing edge lengths.",
                 "                     This is the DEFAULT if target tree(s) are",
                 "                     sourced from an external file using the",
-                "                     '-t' or '--target' option",
+                "                     '-t' or '--target-treefile' option",
                 "- 'clear'          : Edge lengths will be cleared from the",
                 "                     target trees if they are present.",
                 "Note the default settings varies depending according to the",
                 "following, in order of preference:",
-                "(1) If target trees are specified using the '-t' or '--target'",
-                "    option, then the default is: 'keep'.",
-                "(2) If no target trees are specified, but the source trees ",
-                "    are specified to be ultrametric using the '-u' or ",
-                "    '--ultrametric' option, then the default is: 'mean-age'.",
-                "(3) If no target trees are specified and the source trees ",
-                "    are NOT specified to be ultrametric then the default ",
-                "    is: 'mean-length'.",
+                "(1) If target trees are specified using the '-t' or",
+                "    '--target-treefile' option, then the default edge",
+                "    summarization strategy is: 'keep'.",
+                "(2) If target trees are not specified, but the",
+                "    '--summarize-node-ages' option is specified, then the",
+                "    default edge summarization strategy is: 'mean-age'.",
+                "(3) If no target trees are specified and the node ages ",
+                "    are NOT specified to be summarized, then the default ",
+                "    edge summarization strategy is: 'mean-length'.",
                 )))
-    edge_summarization_options.add_argument("--force-minimum-edge-length",
+    edge_length_summarization_options.add_argument("--force-minimum-edge-length",
             default=None,
             type=float,
             help="(If setting edge lengths) force all edges to be at least this length.")
-    edge_summarization_options.add_argument("--collapse-negative-edges",
+    edge_length_summarization_options.add_argument("--collapse-negative-edges",
             action="store_true",
             default=False,
             help="(If setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages.")
@@ -810,11 +801,6 @@ def main():
             help="Number of decimal places in indication of support values (default: %(default)s).")
 
     other_summarization_options = parser.add_argument_group("Other Summarization Options")
-    #other_summarization_options.add_argument("--with-node-ages",
-    #        action="store_true",
-    #        dest="summarize_node_ages",
-    #        default=None,
-    #        help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
     other_summarization_options.add_argument("--trprobs", "--calc-tree-probabilities",
             dest="trprobs_filepath",
             default=None,
@@ -827,16 +813,17 @@ def main():
             metavar="FILEPATH",
             help=("if specified, a tab-delimited file of splits and their edge "
                   "lengths across input trees will be saved to FILEPATH"))
-    other_summarization_options.add_argument("--no-summarize-node-ages",
-            action="store_false",
+    other_summarization_options.add_argument(
+            "--summarize-node-ages", "--ultrametric", "--node-ages",
+            action="store_true",
             dest="summarize_node_ages",
             default=None,
-            help="Do not calculate/summarize node ages, even if '--ultrametric' is specified.")
-    other_summarization_options.add_argument("--no-summarize-edge-lengths",
-            action="store_false",
-            dest="summarize_edge_lengths",
-            default=None,
-            help="Do not summarize edge lengths.")
+            help="Assume that source trees are ultrametic and summarize node ages (distances from tips).")
+    # other_summarization_options.add_argument("--no-summarize-edge-lengths",
+    #         action="store_false",
+    #         dest="summarize_edge_lengths",
+    #         default=None,
+    #         help="Do not summarize edge lengths.")
 
     output_options = parser.add_argument_group("Output Options")
     output_options.add_argument("-o","--output-tree-filepath",
@@ -1052,74 +1039,42 @@ def main():
     ######################################################################
     ## Target Validation
 
-    if args.summary_tree_target is not None and args.target_tree_filepath is not None:
+    if args.summary_target is not None and args.target_treefile is not None:
         messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simultaneously")
-    elif args.target_tree_filepath is not None:
-        target_tree_filepath = os.path.expanduser(os.path.expandvars(args.target_tree_filepath))
-        if not os.path.exists(target_tree_filepath):
-            messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
+    elif args.target_treefile is not None:
+        target_treefile = os.path.expanduser(os.path.expandvars(args.target_treefile))
+        if not os.path.exists(target_treefile):
+            messenger.error("Target tree file not found: '{}'".format(target_treefile))
             sys.exit(1)
     else:
-        target_tree_filepath = None
-        if args.summary_tree_target is None:
-            args.summary_tree_target = "consensus"
+        target_treefile = None
+        if args.summary_target is None:
+            args.summary_target = "consensus"
 
     ######################################################################
-    ## Tree Ultrametricity and Rooting State
+    ## Tree Rooting
 
     if args.root_target_at_outgroup is not None or args.root_target_at_midpoint:
-        if not args.is_source_trees_rooted and not args.is_source_trees_ultrametric:
+        if not args.is_source_trees_rooted:
             messenger.info("Rooting directive specified for target tree(s): source trees will also be treated as rooted")
             args.is_source_trees_rooted = True
 
-    if args.edge_summarization == "mean-age" or args.edge_summarization == "median-age":
-        if args.is_source_trees_ultrametric is None:
-            messenger.info("Edge summarization strategy '{}' requires ultrametric source trees: assuming source trees are ultrametric".format(args.edge_summarization))
-            args.is_source_trees_ultrametric = True
-        elif args.is_source_trees_ultrametric is False:
-            messenger.error("Edge summarization strategy '{}' requires ultrametric source trees, but source trees are specified as non-ultrametric".format(args.edge_summarization))
-            sys.exit(1)
-        if args.summarize_node_ages is False:
-            messenger.error("Edge summarization strategy '{}' requires node ages to be summarized, but '--no-summarize-node-ages' specified".format(args.edge_summarization))
-            sys.exit(1)
+    num_target_rooting_directives = 0
+    if args.root_target_at_outgroup is not None:
+        num_target_rooting_directives += 1
+    if args.set_outgroup is not None:
+        num_target_rooting_directives += 1
+    if args.root_target_at_midpoint:
+        num_target_rooting_directives += 1
+    if num_target_rooting_directives > 1:
+        messenger.error("Only one target tree rooting directive can be specified")
+        sys.exit(1)
+
+    ######################################################################
+    ## Node Age Summarization
+
+    if args.edge_length_summarization in ("mean-age", "median-age"):
         args.summarize_node_ages = True
-    if args.edge_summarization == "mean-lengths" or args.edge_summarization == "median-lengths":
-        if args.summarize_edge_lengths is False:
-            messenger.error("Edge summarization strategy '{}' requires edge lengths to be summarized, but '--no-summarize-edge-lengths' specified".format(args.edge_summarization))
-            sys.exit(1)
-
-    if args.is_source_trees_ultrametric:
-        if args.is_source_trees_rooted is False:
-            messenger.error("Ultrametric source trees imply rooted trees, but source trees are explicitly specified as unrooted".format(args.edge_summarization))
-            sys.exit(1)
-        args.is_source_trees_rooted = True
-        if args.summarize_node_ages is None:
-            args.summarize_node_ages = True
-    else:
-        if args.summarize_node_ages is True:
-            if args.is_source_trees_ultrametric is None:
-                messenger.info("Summarization of node ages ('--summarize-node-ages') require ultrametric trees: assuming source trees are ultrametric")
-                args.is_source_trees_ultrametric = True
-                if args.is_source_trees_rooted is False:
-                    messenger.error("Ultrametric source trees imply rooted trees, but source trees are explicitly specified as unrooted".format(args.edge_summarization))
-                    sys.exit(1)
-                args.is_source_trees_rooted = True
-            elif args.is_source_trees_ultrametric is False:
-                messenger.error("Summarization of node ages ('--summarize-node-ages') require ultrametric trees, but source trees are specified as non-ultrametric")
-                sys.exit(1)
-        else:
-            args.sumamrize_node_ages = False
-
-        num_target_rooting_directives = 0
-        if args.root_target_at_outgroup is not None:
-            num_target_rooting_directives += 1
-        if args.set_outgroup is not None:
-            num_target_rooting_directives += 1
-        if args.root_target_at_midpoint:
-            num_target_rooting_directives += 1
-        if num_target_rooting_directives > 1:
-            messenger.error("Only one target tree rooting directive can be specified")
-            sys.exit(1)
 
     ######################################################################
     ## Output File Setup
@@ -1204,7 +1159,7 @@ def main():
 
     tree_processor = TreeProcessor(
             is_source_trees_rooted=args.is_source_trees_rooted,
-            ignore_edge_lengths=not args.summarize_edge_lengths,
+            ignore_edge_lengths=False,
             ignore_node_ages=not args.summarize_node_ages,
             use_tree_weights=args.weighted_trees,
             ultrametricity_precision=args.ultrametricity_precision,
@@ -1283,10 +1238,10 @@ def main():
         _bulleted_message_and_log("All trees were treated as rooted")
     else:
         _bulleted_message_and_log("All trees were treated as unrooted")
-    if args.is_source_trees_ultrametric and args.ultrametricity_precision:
-        _bulleted_message_and_log("Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
-    elif args.is_source_trees_ultrametric:
-        _bulleted_message_and_log("Trees were expected to be ultrametric (not verified)")
+    # if args.is_source_trees_ultrametric and args.ultrametricity_precision:
+    #     _bulleted_message_and_log("Trees were ultrametric within an error of {}".format(args.ultrametricity_precision))
+    # elif args.is_source_trees_ultrametric:
+    #     _bulleted_message_and_log("Trees were expected to be ultrametric (not verified)")
     _bulleted_message_and_log("{} unique taxa across all trees".format(len(tree_array.taxon_namespace)))
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = tree_array.split_distribution.splits_considered()
     if args.weighted_trees:
@@ -1298,29 +1253,29 @@ def main():
 
     ### build target tree(s)
     target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
-    if target_tree_filepath is None:
+    if target_treefile is None:
         args.include_external_splits_when_scoring_clade_credibility_tree = False
         if args.include_external_splits_when_scoring_clade_credibility_tree:
             coda = ", including tip clades"
         else:
             coda = ""
-        if args.summary_tree_target is None:
-            args.summary_tree_target = "consensus"
-        if args.summary_tree_target == "consensus":
+        if args.summary_target is None:
+            args.summary_target = "consensus"
+        if args.summary_target == "consensus":
             tree = tree_array.consensus_tree(min_consensus_freq=args.min_consensus_freq, summarize_splits=False)
             msg = "Summarized onto target consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
-        elif args.summary_tree_target == "mct":
+        elif args.summary_target == "mct":
             tree = tree_array.maximum_product_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
                     summarize_splits=False)
             msg = "Summarized onto target Maximum Credibility Tree (i.e., tree given in sources that maximizes the product of clade credibilities{}):".format(coda)
-        elif args.summary_tree_target == "msct":
+        elif args.summary_target == "msct":
             tree = tree_array.maximum_sum_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
                     summarize_splits=False)
             msg = "Summarized onto target Maximum Sum of Credibilities Tree (i.e., tree given in sources that maximizes the sum of clade credibilities{}):".format(coda)
         else:
-            raise ValueError(args.summary_tree_target)
+            raise ValueError(args.summary_target)
         target_trees.append(tree)
         _message_and_log(msg, wrap=True)
     else:
@@ -1331,7 +1286,7 @@ def main():
             # schema; TreeList.get_from_*() etc. does not (yet)
             is_target_trees_rooted = None
             for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
-                    files=[target_tree_filepath],
+                    files=[target_treefile],
                     schema=args.input_format,
                     rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
                     preserve_underscores=args.preserve_underscores,
@@ -1362,7 +1317,7 @@ def main():
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
-        msg += " defined in '{}':".format(target_tree_filepath)
+        msg += " defined in '{}':".format(target_treefile)
         _message_and_log(msg, wrap=False)
 
     ###  rooting
@@ -1410,30 +1365,30 @@ def main():
     split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
 
-    if args.edge_summarization is None:
-        if target_tree_filepath:
-            args.edge_summarization = "keep"
-        elif args.is_source_trees_ultrametric and args.summarize_node_ages is not False:
-            args.edge_summarization = "mean-age"
+    if args.edge_length_summarization is None:
+        if target_treefile:
+            args.edge_length_summarization = "keep"
+        elif args.summarize_node_ages:
+            args.edge_length_summarization = "mean-age"
         else:
-            args.edge_summarization = "mean-length"
-    if args.edge_summarization == "mean-length":
+            args.edge_length_summarization = "mean-length"
+    if args.edge_length_summarization == "mean-length":
         _bulleted_message_and_log("Edge lengths on target trees set to mean of edge lengths in sources")
-    elif args.edge_summarization == "median-length":
+    elif args.edge_length_summarization == "median-length":
         _bulleted_message_and_log("Edge lengths on target trees set to median of edge lengths in sources")
-    elif args.edge_summarization == "mean-age":
+    elif args.edge_length_summarization == "mean-age":
         _bulleted_message_and_log("Node ages on target trees set to mean of node ages in sources")
-    elif args.edge_summarization == "median-age":
+    elif args.edge_length_summarization == "median-age":
         _bulleted_message_and_log("Node ages on target trees set to median of node ages in sources")
-    elif args.edge_summarization == "support":
+    elif args.edge_length_summarization == "support":
         _bulleted_message_and_log("Edge lengths on target trees set to support values of corresponding split")
-    elif args.edge_summarization == "keep":
+    elif args.edge_length_summarization == "keep":
         _bulleted_message_and_log("Edge lengths as given on target trees")
-    elif args.edge_summarization == "clear":
+    elif args.edge_length_summarization == "clear":
         _bulleted_message_and_log("Edge lengths cleared from target trees")
     else:
-        raise ValueError(args.edge_summarization)
-    split_summarization_kwargs["set_edge_lengths"] = args.edge_summarization
+        raise ValueError(args.edge_length_summarization)
+    split_summarization_kwargs["set_edge_lengths"] = args.edge_length_summarization
 
     split_summarization_kwargs["error_on_negative_edge_lengths"] = False
     if args.collapse_negative_edges:
