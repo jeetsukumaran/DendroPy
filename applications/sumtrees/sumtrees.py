@@ -587,11 +587,18 @@ def main():
             metavar="FORMAT",
             default=None,
             choices=["nexus/newick", "nexus", "newick", "phylip", "nexml"],
-            help="Format of all input trees (defaults to handling either NEXUS or NEWICK through inspection; it is more efficient to explicitly specify the format if it is known).")
+            help=(
+                 "Format of all input trees (defaults to handling either NEXUS"
+                 " or NEWICK through inspection; it is more efficient to"
+                 " explicitly specify the format if it is known)."
+                 ))
     source_options.add_argument("-b", "--burnin",
             type=int,
             default=0,
-            help="Number of trees to skip from the beginning of *each* tree file when counting support (default: %(default)s).")
+            help=(
+                 "Number of trees to skip from the beginning of *each* tree "
+                 "file when counting support (default: %(default)s)."
+                 ))
     source_options.add_argument("--force-rooted", "--rooted",
             dest="is_source_trees_rooted",
             action="store_true",
@@ -609,11 +616,18 @@ def main():
     source_options.add_argument("--weighted-trees",
             action="store_true",
             default=False,
-            help="Use weights of trees (as indicated by '[&W m/n]' comment token) to weight contribution of splits found on each tree to overall split frequencies.")
+            help=(
+                "Use weights of trees (as indicated by '[&W m/n]' comment token) "
+                "to weight contribution of splits found on each tree to overall "
+                "split frequencies."
+                ))
     source_options.add_argument("--preserve-underscores",
             action="store_true",
             default=False,
-            help="Do not convert unquoted/unprotected underscores to spaces when reading NEXUS/NEWICK format trees.")
+            help=(
+                "Do not convert unprotected (unquoted) underscores to spaces"
+                " when reading NEXUS/NEWICK format trees."
+                ))
     source_options.add_argument("--taxon-name-file",
             metavar="FILEPATH",
             default=None,
@@ -621,17 +635,18 @@ def main():
                 "Path to file listing all the taxon names or labels that"
                 " will be found across the entire set of source trees."
                 " This file should be a plain text file with a single"
-                " name list on each line. This file is only read when the"
+                " name list on each line. This file is only read when"
                 " multiprocessing ('-M' or '-m') is requested. When"
-                " parallel processing using the '-M' or '-m'"
-                " options, all taxon names need to be defined in advance"
-                " of any actual tree processing. By default this is done"
-                " by reading the first tree in the first tree source,"
-                " extracting the taxon names. At best, this is wasteful,"
-                " as it involves an extraneous reading of the tree."
-                " At worst, this can be wasteful AND errorneous, if the"
+                " multiprocessing using the '-M' or '-m' options,"
+                " all taxon names need to be defined in advance"
+                " of any actual tree analysis. By default this is done"
+                " by reading the first tree in the first tree source"
+                " and extracting the taxon names. At best, this is,"
+                " inefficient, as it involves an extraneous reading of"
+                " the tree. At worst, this can be errorneous, if the"
                 " first tree does not contain all the taxa. Explicitly"
-                " specifying the taxon names can avoid these issues."
+                " providing the taxon names via this option can avoid"
+                " these issues."
                 ))
 
     target_tree_options = parser.add_argument_group("Target Tree Topology Options")
@@ -650,7 +665,8 @@ def main():
     target_tree_options.add_argument(
             "-s", "--summary-target",
             default=None,
-            metavar="{consensus,mct,msct}",
+            choices=["consensus", "mct", "msct"],
+            metavar="SUMMARY-TYPE",
             help="\n".join((
                 "R}Construct and summarize support and other information",
                 "from the source trees to one of the following summary",
@@ -710,13 +726,17 @@ def main():
 
     edge_length_summarization_options = parser.add_argument_group("Target Tree Edge Options")
     edge_length_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "support", "keep", "clear",]
-    edge_length_summarization_options.add_argument("-e", "--edge-length-summarization", "--edges",
+    edge_length_summarization_options.add_argument(
+            "-e",
+            "--set-edges",
+            "--edges",
             dest="edge_length_summarization",
-            # metavar="<%s>" % ("".join(edge_length_summarization_choices)),
+            metavar="STRATEGY",
             choices=edge_length_summarization_choices,
             default=None,
             help="\n".join((
-                "R}Set the edge lengths of the summary/target tree(s):",
+                "R}Set the edge lengths of the target or summary trees based ",
+                "on the specified summarization STRATEGY:",
                 "- 'mean-length'    : Edge lengths will be set to the mean",
                 "                     of the lengths of the corresponding",
                 "                     split or clade in the source trees.",
@@ -771,7 +791,7 @@ def main():
             default="support",
             choices=["support", "keep", "clear",],
             help="\n".join((
-                "R}Set the node labels of the summary target tree(s):",
+                "R}Set the node labels of the summary or target tree(s):",
                 "- 'support'        : Node labels will be set to the support",
                 "                     value for the clade represented by the ",
                 "                     node. This is the DEFAULT.",

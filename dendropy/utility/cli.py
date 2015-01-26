@@ -144,8 +144,23 @@ def compose_citation_for_program(
 
 # from http://stackoverflow.com/a/22157136/268330
 class CustomFormatter(argparse.HelpFormatter):
+
     def _split_lines(self, text, width):
         # this is the RawTextHelpFormatter._split_lines
        if text.startswith('R}'):
            return text[2:].splitlines()
        return argparse.HelpFormatter._split_lines(self, text, width)
+
+    # for debugging: prints the name of the argument being processed
+    # def _format_action_invocation(self, *args, **kwargs):
+    #     s = argparse.HelpFormatter._format_action_invocation(self, *args, **kwargs)
+    #     print(s)
+    #     return s
+
+    # Wrap long invocation
+    # def _format_action_invocation(self, *args, **kwargs):
+    #     s = argparse.HelpFormatter._format_action_invocation(self, *args, **kwargs)
+    #     if len(s) > 72:
+    #         parts = s.split(", -")
+    #         s = "\n  -".join(parts)
+    #     return s
