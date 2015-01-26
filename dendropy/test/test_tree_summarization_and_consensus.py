@@ -240,9 +240,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
         return source_trees, bipartition_encoding_freqs, test_trees_string
 
     def testVariants(self):
-        # for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (True, False), (True, False), (True, False), (0, 100) ):
-        for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (True, False), (True, False), (True, False), (0, ) ):
-        # for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (False,), (False,), (False,), (0,) ):
+        for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (0, 100), (False, True), (False, True), (False, True),  ):
             print("is_rooted: {is_rooted}, is_multifurcating: {is_multifurcating}, is_weighted: {is_weighted}, tree_offset: {tree_offset}".format(
                 is_rooted=is_rooted,
                 is_multifurcating=is_multifurcating,
