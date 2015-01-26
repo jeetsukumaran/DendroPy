@@ -2157,6 +2157,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         assert self.use_tree_weights is tree_array.use_tree_weights
         self._tree_split_bitmasks.extend(tree_array._tree_split_bitmasks)
         self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
+        self._tree_weights.extend(other._tree_weights)
         self._split_distribution.update(tree_array._split_distribution)
         return self
 
@@ -2191,7 +2192,11 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 is_rooted_trees=self._is_rooted_trees,
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
-                use_tree_weights=self.use_tree_weights)
+                use_tree_weights=self.use_tree_weights,
+                ultrametricity_precision=self._split_distribution.ultrametricity_precision,
+                )
+        ta.default_edge_length_value = self.default_edge_length_value
+        ta.tree_type = self.tree_type
         ta += self
         ta += other
         return ta
@@ -2468,7 +2473,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         tree = self._split_distribution.consensus_tree(
                 min_freq=min_freq,
-                is_rooted=self.is_rooted,
+                is_rooted=self.is_rooted_trees,
                 summarize_splits=summarize_splits,
                 **split_summarization_kwargs
                 )
