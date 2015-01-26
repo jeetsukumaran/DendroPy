@@ -1162,18 +1162,22 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             for split in self.split_counts:
                 self._split_freqs[split] = 1.0
         else:
-            # total = self.total_trees_counted
-            if not self.sum_of_tree_weights:
-                total_weight = self.total_trees_counted
-            else:
-                total_weight = float(self.sum_of_tree_weights)
+            normalization_weight = self.calc_normalization_weight()
             for split in self.split_counts:
                 count = self.split_counts[split]
-                self._split_freqs[split] = float(self.split_counts[split]) / total_weight
+                self._split_freqs[split] = float(self.split_counts[split]) / normalization_weight
         self._trees_counted_for_freqs = self.total_trees_counted
         self._split_edge_length_summaries = None
         self._split_node_age_summaries = None
         return self._split_freqs
+
+    def calc_normalization_weight(self):
+        # total = self.total_trees_counted
+        if not self.sum_of_tree_weights:
+            total_weight = self.total_trees_counted
+        else:
+            total_weight = float(self.sum_of_tree_weights)
+        return total_weight
 
     def update(self, split_dist):
         self.total_trees_counted += split_dist.total_trees_counted
@@ -1912,6 +1916,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self._tree_split_bitmasks.extend(other._tree_split_bitmasks)
         self._tree_edge_lengths.extend(other._tree_edge_lengths)
         self._tree_leafset_bitmasks.extend(other._tree_leafset_bitmasks)
+        self._tree_weights.extend(other._tree_weights)
         self._split_distribution.update(other._split_distribution)
 
     ##############################################################################
@@ -2313,7 +2318,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def maximum_product_of_split_support_tree(self,
             include_external_splits=False,
-            tree_class=None,
             summarize_splits=True,
             **split_summarization_kwargs
             ):
@@ -2342,7 +2346,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
         tree = self.restore_tree(
                 index=max_score_tree_idx,
-                tree_class=tree_class,
                 **split_summarization_kwargs)
         tree.log_product_of_split_support = scores[max_score_tree_idx]
         if summarize_splits:
@@ -2394,7 +2397,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def maximum_sum_of_split_support_tree(self,
             include_external_splits=False,
-            tree_class=None,
             summarize_splits=True,
             **split_summarization_kwargs
             ):
@@ -2423,7 +2425,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
         tree = self.restore_tree(
                 index=max_score_tree_idx,
-                tree_class=tree_class,
                 **split_summarization_kwargs
                 )
         tree.sum_of_split_support = scores[max_score_tree_idx]
@@ -2471,6 +2472,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 summarize_splits=summarize_splits,
                 **split_summarization_kwargs
                 )
+        # return self._split_distribution.consensus_tree(*args, **kwargs)
+        return tree
 
     ##############################################################################
     ## Mapping of Split Support
@@ -2492,7 +2495,6 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def restore_tree(self,
             index,
-            tree_class=None,
             summarize_splits_on_tree=False,
             **split_summarization_kwargs
             ):
@@ -2503,9 +2505,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             assert len(self._tree_split_bitmasks) == len(self._tree_edge_lengths)
             edge_lengths = self._tree_edge_lengths[index]
             split_edge_lengths = dict(zip(split_bitmasks, edge_lengths))
-        if tree_class is None:
-            tree_class = self.tree_type
-        tree = tree_class.from_split_bitmasks(
+        tree = self.tree_type.from_split_bitmasks(
                 split_bitmasks=split_bitmasks,
                 taxon_namespace=self.taxon_namespace,
                 is_rooted=self._is_rooted_trees,
@@ -2520,22 +2520,41 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                     **split_summarization_kwargs)
         return tree
 
-    def consensus_tree(self, *args, **kwargs):
-        return self._split_distribution.consensus_tree(*args, **kwargs)
-
     ##############################################################################
     ## Topology Frequencies
 
-    def split_set_frequency_map():
+    def calc_split_set_frequencies(self):
         """
         Returns a dictionary with keys being sets of split bitmasks and values
         being the frequency of occurrence of trees represented by those split
         bitmask sets in the collection.
         """
         split_set_count_map = collections.Counter()
-        for split_set in self._tree_split_bitmasks:
-            split_set_count_map[set(split_set)] += 1
+        assert len(self._tree_split_bitmasks) == len(self._tree_weights)
+        for split_set, weight in zip(self._tree_split_bitmasks, self._tree_weights):
+            split_set_count_map[frozenset(split_set)] += (1.0 * weight)
+        split_set_freqs = {}
+        normalization_weight = self._split_distribution.calc_normalization_weight()
+        for split_set in split_set_count_map:
+            split_set_freqs[split_set] = split_set_count_map[split_set] / normalization_weight
+        return split_set_freqs
 
-        self._tree_split_bitmasks = []
-        self._tree_edge_lengths = []
-        self._tree_leafset_bitmasks = []
+    def topology_frequency_map(self):
+        """
+        Returns a dictionary with keys being (reconstructed) tree
+        topologies and values the frequency of that topology in
+        the collection.
+        """
+        split_set_freqs = self.calc_split_set_frequencies()
+        topology_freqs = {}
+        for split_set, freq in split_set_freqs.items():
+            tree = self.tree_type.from_split_bitmasks(
+                    split_bitmasks=split_set,
+                    taxon_namespace=self.taxon_namespace,
+                    is_rooted=self._is_rooted_trees,
+                    )
+            topology_freqs[tree] = freq
+        return topology_freqs
+
+
+
