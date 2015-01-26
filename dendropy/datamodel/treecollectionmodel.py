@@ -1472,6 +1472,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             :meth:`SplitDistributionSummarizer.configure` for options.
 
         """
+        if self.taxon_namespace is not tree.taxon_namespace:
+            raise error.TaxonNamespaceIdentityError(self, tree)
         if self.tree_decorator is None:
             self.tree_decorator = SplitDistributionSummarizer()
         self.tree_decorator.configure(**split_summarization_kwargs)
@@ -1665,6 +1667,8 @@ class SplitDistributionSummarizer(object):
             split_distribution,
             tree,
             is_bipartitions_updated=False):
+        if split_distribution.taxon_namespace is not tree.taxon_namespace:
+            raise error.TaxonNamespaceIdentityError(split_distribution, tree)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
         if self.support_label_compose_func is not None:
@@ -2486,6 +2490,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             tree,
             is_bipartitions_updated=False,
             **kwargs):
+        if self.taxon_namespace is not tree.taxon_namespace:
+            raise error.TaxonNamespaceIdentityError(self, tree)
         self._split_distribution.summarize_splits_on_tree(
             tree=tree,
             is_bipartitions_updated=is_bipartitions_updated,
