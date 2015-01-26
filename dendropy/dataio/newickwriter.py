@@ -102,7 +102,7 @@ class NewickWriter(ioservice.DataWriter):
             If both `suppress_leaf_taxon_labels` and
             `suppress_leaf_node_labels` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
-        node_label_compose_func : function object or `None`, default: `None`
+        node_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes a :class:`Node`
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
@@ -111,13 +111,13 @@ class NewickWriter(ioservice.DataWriter):
             labelling function, ignoring `suppress_leaf_taxon_labels`,
             `suppress_leaf_node_labels=True`, `suppress_internal_taxon_labels`,
             `suppress_internal_node_labels`, etc. Defaults to `None`.
-        edge_label_compose_func : function object or `None`, default: `None`
+        edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
         real_value_format_specifier : string, default: ''
             Format specification for real/float values. Will be applied to edge
-            lengths (if `edge_label_compose_func` is not given) as well as
+            lengths (if `edge_label_compose_fn` is not given) as well as
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
@@ -142,8 +142,8 @@ class NewickWriter(ioservice.DataWriter):
                     annotations_as_nhx=False,
                     suppress_item_comments=True,
                     node_label_element_separator=' ',
-                    node_label_compose_func=None,
-                    edge_label_compose_func=None,
+                    node_label_compose_fn=None,
+                    edge_label_compose_fn=None,
                     real_value_format_specifier='.8f',
                     )
         Notes
@@ -166,7 +166,7 @@ class NewickWriter(ioservice.DataWriter):
         its entirety. These defaults can all be overridden using the
         various keywords, or a custom label can be composed for the
         node by passing an appropriate function object via the
-        `node_label_compose_func` argument.
+        `node_label_compose_fn` argument.
 
         Note that, in typical NEWICK usage, labels of leaf nodes represent
         operational taxonomic unit concepts, and thus the default setting to
@@ -210,13 +210,13 @@ class NewickWriter(ioservice.DataWriter):
         self.suppress_item_comments = kwargs.pop("suppress_item_comments", True)
         self.suppress_item_comments = not kwargs.pop("write_item_comments", not self.suppress_item_comments)
         self.node_label_element_separator = kwargs.pop("node_label_element_separator", ' ')
-        self.node_label_compose_func = kwargs.pop("node_label_compose_func", None)
-        self.edge_label_compose_func = kwargs.pop("edge_label_compose_func", None)
+        self.node_label_compose_fn = kwargs.pop("node_label_compose_fn", None)
+        self.edge_label_compose_fn = kwargs.pop("edge_label_compose_fn", None)
         self._real_value_format_specifier = ""
         self._real_value_formatter = None
         self.real_value_format_specifier = kwargs.pop("real_value_format_specifier", self._real_value_format_specifier)
-        if self.edge_label_compose_func is None:
-            self.edge_label_compose_func = self._format_edge_length
+        if self.edge_label_compose_fn is None:
+            self.edge_label_compose_fn = self._format_edge_length
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _get_taxon_tree_token(self, taxon):
@@ -335,7 +335,7 @@ class NewickWriter(ioservice.DataWriter):
     def _write_node_body(self, node, out):
         out.write(self._render_node_tag(node))
         if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-            out.write(":{}".format(self.edge_label_compose_func(node.edge)))
+            out.write(":{}".format(self.edge_label_compose_fn(node.edge)))
         if not self.suppress_annotations:
             node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
                     nhx=self.annotations_as_nhx,
@@ -366,8 +366,8 @@ class NewickWriter(ioservice.DataWriter):
         whether or not the node is a leaf, returns an appropriate tag.
         """
         tag = None
-        if self.node_label_compose_func:
-            tag = self.node_label_compose_func(node)
+        if self.node_label_compose_fn:
+            tag = self.node_label_compose_fn(node)
         else:
             tag_parts = []
             is_leaf = len(node.child_nodes()) == 0
@@ -421,11 +421,11 @@ class NewickWriter(ioservice.DataWriter):
     #         if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
     #             statement = statement + self._render_node_tag(node)
     #         if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-    #             statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
+    #             statement =  "{}:{}".format(statement, self.edge_label_compose_fn(node.edge))
     #     else:
     #         statement = self._render_node_tag(node)
     #         if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-    #             statement =  "{}:{}".format(statement, self.edge_label_compose_func(node.edge))
+    #             statement =  "{}:{}".format(statement, self.edge_label_compose_fn(node.edge))
     #     if not self.suppress_annotations:
     #         node_annotation_comments = nexusprocessing.format_item_annotations_as_comments(node,
     #                 nhx=self.annotations_as_nhx,

@@ -255,7 +255,7 @@ class GenBankResourceStore(object):
             label_components=None,
             label_component_separator=" ",
             taxon_namespace=None,
-            gb_to_taxon_func=None,
+            gb_to_taxon_fn=None,
             add_full_annotation_to_taxa=False,
             add_ref_annotation_to_taxa=False,
             add_full_annotation_to_seqs=False,
@@ -269,7 +269,7 @@ class GenBankResourceStore(object):
             - ``label_components``: list of strings giving names of GenBankAccessionRecord attributes to be used to compose label.
             - ``label_component_separator``: a string used to separate label components.
             - ``taxon_namespace``: TaxonNamespace object to be used as the ``taxon_namespace`` of the resulting CharacterMatrix.
-            - ``gb_to_taxon_func``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
+            - ``gb_to_taxon_fn``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
             - ``add_full_annotation_to_taxa``: If True, add link to record as metadata annotation to Taxon objects.
             - ``add_ref_annotation_to_taxa``: If True, add full GenBank record as metadata annotations to Taxon objects.
             - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataSequence) objects.
@@ -279,8 +279,8 @@ class GenBankResourceStore(object):
             - ``matrix_label``: Label of character matrix.
 
         """
-        if gb_to_taxon_func is not None and taxon_namespace is None:
-            raise TypeError("Cannot specify 'gb_to_taxon_func' without 'taxon_namespace'")
+        if gb_to_taxon_fn is not None and taxon_namespace is None:
+            raise TypeError("Cannot specify 'gb_to_taxon_fn' without 'taxon_namespace'")
         if taxon_namespace is None:
             taxon_namespace = dendropy.TaxonNamespace()
         data_str = []
@@ -289,8 +289,8 @@ class GenBankResourceStore(object):
             taxon = None
             # if gb_rec.request_key in id_to_taxon_map:
             #     taxon = id_to_taxon_map[gb_rec.request_key]
-            if gb_to_taxon_func is not None:
-                taxon = gb_to_taxon_func(gb_rec)
+            if gb_to_taxon_fn is not None:
+                taxon = gb_to_taxon_fn(gb_rec)
             else:
                 if label_components is not None:
                     label = gb_rec.compose_taxon_label(

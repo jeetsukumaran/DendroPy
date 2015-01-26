@@ -116,8 +116,8 @@ class NewickTreeWriterDefaultTest(
             "annotations_as_nhx"             :  False , # default: False ,
             "suppress_item_comments"         :  False , # default: True  ,
             "node_label_element_separator"   :  ' '   , # default: ' '   ,
-            "node_label_compose_func"        :  None  , # default: None  ,
-            "edge_label_compose_func"        :  None  , # default: None  ,
+            "node_label_compose_fn"        :  None  , # default: None  ,
+            "edge_label_compose_fn"        :  None  , # default: None  ,
         }
         s = self.write_out_validate_equal_and_return(
                 tree1, "newick", kwargs)
@@ -397,7 +397,7 @@ class NewickTreeWriterGeneralOptionsTests(
                 for nd in tree2:
                     self.assertEqual(nd.comments, ["n1", "e1"])
 
-    def test_node_label_compose_func(self):
+    def test_node_label_compose_fn(self):
         tree1 = dendropy.Tree()
         a1 = tree1.seed_node.new_child(label="a1")
         a1.taxon = tree1.taxon_namespace.require_taxon("hula")
@@ -409,7 +409,7 @@ class NewickTreeWriterGeneralOptionsTests(
                 "suppress_leaf_node_labels"      :  False ,
                 "suppress_internal_taxon_labels" :  False ,
                 "suppress_internal_node_labels"  :  False ,
-                "node_label_compose_func"   :  f,
+                "node_label_compose_fn"   :  f,
         }
         s = self.write_out_validate_equal_and_return(
                 tree1, "newick", kwargs)
@@ -421,14 +421,14 @@ class NewickTreeWriterGeneralOptionsTests(
         for nd in tree2:
             self.assertEqual(nd.label, "zzz")
 
-    def test_edge_label_compose_func(self):
+    def test_edge_label_compose_fn(self):
         tree1 = dendropy.Tree()
         tree1.seed_node.edge.length = 1
         a1 = tree1.seed_node.new_child(label="a1", edge_length=1)
         a2 = tree1.seed_node.new_child(label="a1", edge_length=1)
         f = lambda x: 1000
         kwargs = {
-                "edge_label_compose_func"   :  f,
+                "edge_label_compose_fn"   :  f,
         }
         s = self.write_out_validate_equal_and_return(
                 tree1, "newick", kwargs)

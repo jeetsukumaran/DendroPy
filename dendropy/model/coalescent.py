@@ -561,7 +561,7 @@ def mean_kingman_tree(taxon_namespace, pop_size=1, rng=None):
 def constrained_kingman_tree(pop_tree,
                         gene_tree_list=None,
                         rng=None,
-                        gene_node_label_func=None,
+                        gene_node_label_fn=None,
                         num_genes_attr='num_genes',
                         pop_size_attr='pop_size',
                         decorate_original_tree=False):
@@ -594,7 +594,7 @@ def constrained_kingman_tree(pop_tree,
     tree block, and the tree block's taxa block will be used to manage
     the gene tree's `taxa`.
 
-    `gene_node_label_func` is a function that takes two arguments (a string
+    `gene_node_label_fn` is a function that takes two arguments (a string
     and an integer, respectively, where the string is the containing species
     taxon label and the integer is the gene index) and returns a label for
     the corresponding the gene node.
@@ -616,8 +616,8 @@ def constrained_kingman_tree(pop_tree,
     else:
         gtaxa = dendropy.TaxonNamespace()
 
-    if gene_node_label_func is None:
-        gene_node_label_func = lambda x, y: "%s_%02d" % (x, y)
+    if gene_node_label_fn is None:
+        gene_node_label_fn = lambda x, y: "%s_%02d" % (x, y)
 
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
@@ -626,7 +626,7 @@ def constrained_kingman_tree(pop_tree,
         gene_nodes = []
         for gene_count in range(getattr(leaf, num_genes_attr)):
             gene_node = dendropy.Node()
-            gene_node.taxon = gtaxa.require_taxon(label=gene_node_label_func(leaf.taxon.label, gene_count+1))
+            gene_node.taxon = gtaxa.require_taxon(label=gene_node_label_fn(leaf.taxon.label, gene_count+1))
             gene_nodes.append(gene_node)
         leaf.gene_nodes = gene_nodes
 

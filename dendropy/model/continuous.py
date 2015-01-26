@@ -183,11 +183,11 @@ class PhylogeneticIndependentConstrasts(object):
                     else:
                         corrected_edge_lens.append(cnd.edge.length)
                 n = len(state_vals)
-                numerator_func = lambda i : (1.0/corrected_edge_lens[i]) * state_vals[i]
-                denominator_func = lambda i  : 1.0/corrected_edge_lens[i]
+                numerator_fn = lambda i : (1.0/corrected_edge_lens[i]) * state_vals[i]
+                denominator_fn = lambda i  : 1.0/corrected_edge_lens[i]
                 nd_results['pic_state_value'] = \
-                        sum(numerator_func(i) for i in range(n)) \
-                        / sum(denominator_func(i) for i in range(n))
+                        sum(numerator_fn(i) for i in range(n)) \
+                        / sum(denominator_fn(i) for i in range(n))
 
                 sum_of_child_edges = sum(corrected_edge_lens)
                 prod_of_child_edges = reduce(operator.mul, corrected_edge_lens)
@@ -351,13 +351,13 @@ def evolve_continuous_char(node, rng=None, **kwargs):
         raise ValueError("rate for the incoming node is > max_rate")
 
     if constrain_rate_mode == "crop":
-        rate_func = _calc_KTB_rates_crop
+        rate_fn = _calc_KTB_rates_crop
     else:
-        rate_func = _calc_KTB_rates_linear_bounce
+        rate_fn = _calc_KTB_rates_linear_bounce
     for nd in nd_iter:
         starting_rate = getattr(nd.parent_node, val_attr)
         duration = getattr(nd, time_attr)
-        r, mr  = rate_func(starting_rate, duration, roeotroe, rng, min_rate, max_rate)
+        r, mr  = rate_fn(starting_rate, duration, roeotroe, rng, min_rate, max_rate)
         setattr(nd, val_attr, r)
         if mean_val_attr:
             setattr(nd, mean_val_attr, mr)

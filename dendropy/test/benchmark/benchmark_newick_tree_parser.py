@@ -43,7 +43,7 @@ TREE_FILENAMES = [
     "Smith_2001_angiosperms.newick",
         ]
 
-def tree_parsing_func_factory(src_paths, verbose=False):
+def tree_parsing_fn_factory(src_paths, verbose=False):
     def f():
         trees = dendropy.TreeList()
         for src_path in src_paths:
@@ -94,7 +94,7 @@ def main():
 
     for src_path, src_desc in zip(src_paths, src_descs):
         messenger.info("Processing: '{}'".format(src_desc[1]))
-        t = timeit.Timer(tree_parsing_func_factory([src_path]))
+        t = timeit.Timer(tree_parsing_fn_factory([src_path]))
         result = min(t.repeat(args.repeat, 1))
         messenger.info("Best time (of {} repetions): {:.10f} seconds".format(args.repeat, result))
         results.append(result)

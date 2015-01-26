@@ -149,7 +149,7 @@ def weighted_robinson_foulds_distance(
     df = lambda length_diffs: sum([abs(i[0] - i[1]) for i in length_diffs])
     return _bipartition_difference(tree1,
                            tree2,
-                           dist_func=df,
+                           dist_fn=df,
                            edge_weight_attr=edge_weight_attr,
                            value_type=float,
                            is_bipartitions_updated=is_bipartitions_updated)
@@ -288,7 +288,7 @@ def euclidean_distance(
     df = lambda length_diffs: sqrt(sum([pow(i[0] - i[1], 2) for i in length_diffs]))
     return _bipartition_difference(tree1,
                            tree2,
-                           dist_func=df,
+                           dist_fn=df,
                            edge_weight_attr=edge_weight_attr,
                            value_type=value_type,
                            is_bipartitions_updated=is_bipartitions_updated)
@@ -473,14 +473,14 @@ def _get_length_diffs(
 def _bipartition_difference(
         tree1,
         tree2,
-        dist_func,
+        dist_fn,
         edge_weight_attr="length",
         value_type=float,
         is_bipartitions_updated=False):
     """
     Returns distance between two trees, each represented by a dictionary of
-    bipartitions (as bipartition_mask strings) to edges, using `dist_func` to calculate the
-    distance based on `edge_weight_attr` of the edges. `dist_func` is a function
+    bipartitions (as bipartition_mask strings) to edges, using `dist_fn` to calculate the
+    distance based on `edge_weight_attr` of the edges. `dist_fn` is a function
     that takes a list of pairs of values, where the values correspond to the edge
     lengths of a given bipartition on tree1 and tree2 respectively.
     """
@@ -490,5 +490,5 @@ def _bipartition_difference(
             edge_weight_attr=edge_weight_attr,
             value_type=value_type,
             is_bipartitions_updated=is_bipartitions_updated)
-    return dist_func(length_diffs)
+    return dist_fn(length_diffs)
 

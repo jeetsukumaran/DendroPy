@@ -1334,19 +1334,19 @@ class AnnotationSet(container.OrderedSet):
         key_attr : string
             String specifying an Annotation object attribute name to be used
             as keys for the dictionary.
-        key_func : string
+        key_fn : string
             Function that takes an Annotation object as an argument and returns
             the value to be used as a key for the dictionary.
         value_attr : string
             String specifying an Annotation object attribute name to be used
             as values for the dictionary.
-        value_func : string
+        value_fn : string
             Function that takes an Annotation object as an argument and returns
             the value to be used as a value for the dictionary.
 
-        At most one of ``key_attr`` or ``key_func`` can be specified. If neither
+        At most one of ``key_attr`` or ``key_fn`` can be specified. If neither
         is specified, then by default the keys are generated from Annotation.name.
-        At most one of ``value_attr`` or ``value_func`` can be specified. If neither
+        At most one of ``value_attr`` or ``value_fn`` can be specified. If neither
         is specified, then by default the values are generated from Annotation.value.
         Key collisions will result in the dictionary entry for that key being
         overwritten.
@@ -1355,26 +1355,26 @@ class AnnotationSet(container.OrderedSet):
         -------
         values : dict
         """
-        if "key_attr" in kwargs and "key_func" in kwargs:
-            raise TypeError("Cannot specify both 'key_attr' and 'key_func'")
+        if "key_attr" in kwargs and "key_fn" in kwargs:
+            raise TypeError("Cannot specify both 'key_attr' and 'key_fn'")
         elif "key_attr" in kwargs:
             key_attr = kwargs["key_attr"]
-            key_func = lambda a: getattr(a, key_attr)
-        elif "key_func" in kwargs:
-            key_func = kwargs["key_func"]
+            key_fn = lambda a: getattr(a, key_attr)
+        elif "key_fn" in kwargs:
+            key_fn = kwargs["key_fn"]
         else:
-            key_func = lambda a: a.name
-        if "value_attr" in kwargs and "value_func" in kwargs:
-            raise TypeError("Cannot specify both 'value_attr' and 'value_func'")
+            key_fn = lambda a: a.name
+        if "value_attr" in kwargs and "value_fn" in kwargs:
+            raise TypeError("Cannot specify both 'value_attr' and 'value_fn'")
         elif "value_attr" in kwargs:
             value_attr = kwargs["value_attr"]
-            value_func = lambda a: getattr(a, value_attr)
-        elif "value_func" in kwargs:
-            value_func = kwargs["value_func"]
+            value_fn = lambda a: getattr(a, value_attr)
+        elif "value_fn" in kwargs:
+            value_fn = kwargs["value_fn"]
         else:
-            value_func = lambda a: a.value
+            value_fn = lambda a: a.value
         d = {}
         for a in self:
-            d[key_func(a)] = value_func(a)
+            d[key_fn(a)] = value_fn(a)
         return d
 

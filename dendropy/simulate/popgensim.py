@@ -127,7 +127,7 @@ class FragmentedPopulations(object):
             leaf.edge.pop_size = self.desc_pop_size
             leaf.num_genes = samples_per_pop
         self.gene_tree, self.pop_tree = coalescent.constrained_kingman_tree(self.pop_tree,
-                                                          gene_node_label_func=lambda x,y: "%sX%d" % (x,y),
+                                                          gene_node_label_fn=lambda x,y: "%sX%d" % (x,y),
                                                           rng=self.rng)
 
         self.mutation_tree = copy.deepcopy(self.gene_tree)

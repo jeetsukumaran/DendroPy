@@ -43,7 +43,7 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
         self.gene_taxon_to_population_taxon_map = dendropy.TaxonNamespaceMapping(
                 domain_taxon_namespace=self.gene_trees.taxon_namespace,
                 range_taxon_namespace=self.species_tree.taxon_namespace,
-                mapping_func=lambda t: self.species_tree.taxon_namespace.require_taxon(label=t.label[0].upper()))
+                mapping_fn=lambda t: self.species_tree.taxon_namespace.require_taxon(label=t.label[0].upper()))
         self.expected_under_original_brlens = [4, 6, 4, 2, 4, 3, 3, 4, 5, 4]
 
     def testFixedEdgesDeepCoalCount(self):
@@ -149,7 +149,7 @@ class DeepCoalTest(unittest.TestCase):
             for src_tree, expected in zip(src_trees, scores):
                 tree = dendropy.Tree.get_from_string(src_tree, "NEWICK")
                 groups = dendropy.TaxonNamespacePartition(tree.taxon_namespace,
-                    membership_func=lambda x: x.label[0])
+                    membership_fn=lambda x: x.label[0])
                 dc = reconcile.monophyletic_partition_discordance(tree, groups)
             assert dc == expected, \
                 "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)

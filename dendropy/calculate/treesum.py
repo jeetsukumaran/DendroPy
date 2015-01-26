@@ -226,22 +226,22 @@ class TreeSummarizer(object):
             set_edge_lengths=True,
             collapse_negative_edges=False,
             allow_negative_edges=False,
-            summarization_func=None,
+            summarization_fn=None,
             is_bipartitions_updated=False):
         """
         Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
-        result of `summarization_func` applied to the vector of ages of the
+        result of `summarization_fn` applied to the vector of ages of the
         same node on the input trees (in `split_distribution`, a
         `SplitDistribution` object) being summarized.
-        `summarization_func` should take an iterable of floats, and return a float. If `None`, it
+        `summarization_fn` should take an iterable of floats, and return a float. If `None`, it
         defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
         If `set_edge_lengths` is `True`, then edge lengths will be set to so that the actual node ages
         correspond to the `age` attribute value.
         If `collapse_negative_edges` is True, then edge lengths with negative values will be set to 0.
         If `allow_negative_edges` is True, then no error will be raised if edges have negative lengths.
         """
-        if summarization_func is None:
-            summarization_func = lambda x: float(sum(x))/len(x)
+        if summarization_fn is None:
+            summarization_fn = lambda x: float(sum(x))/len(x)
         if is_bipartitions_updated:
             tree.encode_splits()
         #'height',
@@ -257,7 +257,7 @@ class TreeSummarizer(object):
             nd = edge.head_node
             if split in split_distribution.split_node_ages:
                 ages = split_distribution.split_node_ages[split]
-                nd.age = summarization_func(ages)
+                nd.age = summarization_fn(ages)
             else:
                 # default to age of parent if split not found
                 nd.age = nd.parent_node.age
@@ -273,18 +273,18 @@ class TreeSummarizer(object):
     def summarize_edge_lengths_on_tree(self,
             tree,
             split_distribution,
-            summarization_func=None,
+            summarization_fn=None,
             is_bipartitions_updated=False):
         """
         Sets the lengths of edges on `tree` (a `Tree` object) to the mean
         lengths of the corresponding edges on the input trees (in
         `split_distribution`, a `SplitDistribution` object) being
         summarized.
-        `summarization_func` should take an iterable of floats, and return a float. If `None`, it
+        `summarization_fn` should take an iterable of floats, and return a float. If `None`, it
         defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
         """
-        if summarization_func is None:
-            summarization_func = lambda x: float(sum(x))/len(x)
+        if summarization_fn is None:
+            summarization_fn = lambda x: float(sum(x))/len(x)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
         for edge in tree.postorder_edge_iter():
@@ -292,7 +292,7 @@ class TreeSummarizer(object):
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
-                edge.length = summarization_func(lengths)
+                edge.length = summarization_fn(lengths)
             elif (split in split_distribution.split_edge_lengths
                     and not split_distribution.split_edge_lengths[split]):
                 # no input trees had any edge lengths for this split
@@ -324,7 +324,7 @@ class TreeSummarizer(object):
         #if include_edge_lengths:
             #self.map_edge_lengths_to_tree(tree=con_tree,
             #        split_distribution=split_distribution,
-            #        summarization_func=summarization_func,
+            #        summarization_fn=summarization_fn,
             #        include_edge_length_var=False)
         return con_tree
 

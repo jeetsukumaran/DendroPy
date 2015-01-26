@@ -234,7 +234,7 @@ class NexusReader(ioservice.DataReader):
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
             the edges.
-        finish_node_func : function object, default: `None`
+        finish_node_fn : function object, default: `None`
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
@@ -987,7 +987,7 @@ class NexusReader(ioservice.DataReader):
         tree = self.newick_reader._parse_tree_statement(
                 nexus_tokenizer=self._nexus_tokenizer,
                 tree_factory=tree_factory,
-                taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
+                taxon_symbol_map_fn=taxon_symbol_mapper.require_taxon_for_symbol)
         return tree
 
     def _parse_translate_statement(self, taxon_namespace, taxon_symbol_mapper=None):

@@ -69,7 +69,7 @@ class NewickTreeDataYielder(ioservice.TreeDataYielder):
             tree = self.newick_reader._parse_tree_statement(
                     nexus_tokenizer=nexus_tokenizer,
                     tree_factory=self.tree_factory,
-                    taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
+                    taxon_symbol_map_fn=taxon_symbol_mapper.require_taxon_for_symbol)
             if tree is None:
                 break
             yield tree

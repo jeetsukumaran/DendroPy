@@ -1745,7 +1745,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         """
         __init__ uses one of the following keyword arguments:
 
-            - `membership_func`
+            - `membership_fn`
                 A function that takes a ``Taxon`` object as an argument and
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer) .
@@ -1804,7 +1804,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         Builds the subsets of the linked TaxonNamespace resulting from the
         partitioning scheme specified by one of the following keyword arguments:
 
-            ``membership_func``
+            ``membership_fn``
                 A function that takes a ``Taxon`` object as an argument and
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer).
@@ -1823,8 +1823,8 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
                 ``Taxon`` object in ``taxon_namespace`` represented once and only
                 once in the sub-containers.
         """
-        if "membership_func" in kwargs:
-            self.apply_membership_func(kwargs["membership_func"])
+        if "membership_fn" in kwargs:
+            self.apply_membership_fn(kwargs["membership_fn"])
         elif  "membership_attr_name" in kwargs:
             self.apply_membership_attr_name(kwargs["membership_attr_name"])
         elif  "membership_dict" in kwargs:
@@ -1833,9 +1833,9 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
             self.apply_membership_lists(kwargs["membership_lists"])
         else:
             raise TypeError("Must specify partitioning scheme using one of: " \
-                + "'membership_func', 'membership_dict', or 'membership_lists'")
+                + "'membership_fn', 'membership_dict', or 'membership_lists'")
 
-    def apply_membership_func(self, mfunc):
+    def apply_membership_fn(self, mfunc):
         """
         Constructs subsets based on function ``mfunc``, which should take a
         ``Taxon`` object as an argument and return a population membership
@@ -1854,7 +1854,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         Constructs subsets based on attribute ``attr_name`` of each
         ``Taxon`` object.
         """
-        return self.apply_membership_func(lambda x: getattr(x, attr_name))
+        return self.apply_membership_fn(lambda x: getattr(x, attr_name))
 
     def apply_membership_dict(self, mdict):
         """
@@ -1862,7 +1862,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         dictionary with ``Taxon`` objects as keys and population membership
         identifier or flag as values (e.g., a string, an integer).
         """
-        return self.apply_membership_func(lambda x: mdict[x])
+        return self.apply_membership_fn(lambda x: mdict[x])
 
     def apply_membership_lists(self, mlists, subset_labels=None):
         """
@@ -1898,7 +1898,7 @@ class TaxonNamespaceMapping(
             num_contained,
             contained_taxon_label_prefix=None,
             contained_taxon_label_separator=' ',
-            contained_taxon_label_func=None):
+            contained_taxon_label_fn=None):
         """
         Creates and returns a TaxonNamespaceMapping object that maps multiple
         "contained" Taxon objects (e.g., genes) to Taxon objects in
@@ -1926,7 +1926,7 @@ class TaxonNamespaceMapping(
             `contained_taxon_label_separator`
                 String used to separate gene Taxon label prefix from its index.
 
-            `contained_taxon_label_func`
+            `contained_taxon_label_fn`
                 If specified, should be a function that takes two arguments: a
                 Taxon object from `containing_taxon_namespace` and an integer
                 specifying the contained gene index. It should return a string
@@ -1945,8 +1945,8 @@ class TaxonNamespaceMapping(
             num_new = _num_contained[cidx]
             for new_idx in range(num_new):
 
-                if contained_taxon_label_func is not None:
-                    label = contained_taxon_label_func(containing_taxon,
+                if contained_taxon_label_fn is not None:
+                    label = contained_taxon_label_fn(containing_taxon,
                             new_idx)
                 else:
                     label = "%s%s%d" % (containing_taxon.label,
@@ -1964,7 +1964,7 @@ class TaxonNamespaceMapping(
         """
         __init__ uses one of the following keyword arguments:
 
-            - `mapping_func`
+            - `mapping_fn`
                 A function that takes a ``Taxon`` object from the domain taxa
                 as an argument and returns the corresponding ``Taxon`` object
                 from the range taxa. If this argument is given, then a
@@ -1984,10 +1984,10 @@ class TaxonNamespaceMapping(
         basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
         self.forward = {}
         self.reverse = {}
-        if "mapping_func" in kwargs:
+        if "mapping_fn" in kwargs:
             if "domain_taxon_namespace" not in kwargs:
                 raise TypeError("Must specify 'domain_taxon_namespace'")
-            self.apply_mapping_func(kwargs["mapping_func"],
+            self.apply_mapping_fn(kwargs["mapping_fn"],
                     domain_taxon_namespace=kwargs["domain_taxon_namespace"],
                     range_taxon_namespace=kwargs.get("range_taxon_namespace", None))
         elif "mapping_attr_name" in kwargs:
@@ -2001,7 +2001,7 @@ class TaxonNamespaceMapping(
                     domain_taxon_namespace=kwargs.get("domain_taxon_namespace", None),
                     range_taxon_namespace=kwargs.get("range_taxon_namespace", None))
         else:
-            raise TypeError("Must specify at least one of: 'mapping_func', 'mapping_attr_name', or 'mapping_dict'")
+            raise TypeError("Must specify at least one of: 'mapping_fn', 'mapping_attr_name', or 'mapping_dict'")
 
     def __len__(self):
         """
@@ -2050,7 +2050,7 @@ class TaxonNamespaceMapping(
 
     range_taxon_namespace = property(_get_range_taxon_namespace, _set_range_taxon_namespace)
 
-    def apply_mapping_func(self, mfunc, domain_taxon_namespace, range_taxon_namespace=None):
+    def apply_mapping_fn(self, mfunc, domain_taxon_namespace, range_taxon_namespace=None):
         """
         Constructs forward and reverse mapping dictionaries based on ``mfunc``,
         which should take a ``Taxon`` object in ``domain_taxon_namespace`` as an argument
@@ -2078,7 +2078,7 @@ class TaxonNamespaceMapping(
         Constructs mapping based on attribute ``attr_name`` of each
         ``Taxon`` object in ``domain_taxon_namespace``.
         """
-        return self.apply_mapping_func(lambda x: getattr(x, attr_name), domain_taxon_namespace=domain_taxon_namespace, range_taxon_namespace=range_taxon_namespace)
+        return self.apply_mapping_fn(lambda x: getattr(x, attr_name), domain_taxon_namespace=domain_taxon_namespace, range_taxon_namespace=range_taxon_namespace)
 
     def apply_mapping_dict(self, mdict, domain_taxon_namespace=None, range_taxon_namespace=None):
         """
@@ -2087,7 +2087,7 @@ class TaxonNamespaceMapping(
         """
         if domain_taxon_namespace is None:
             domain_taxon_namespace = TaxonNamespace(mdict.keys())
-        return self.apply_mapping_func(lambda x: mdict[x], domain_taxon_namespace=domain_taxon_namespace, range_taxon_namespace=range_taxon_namespace)
+        return self.apply_mapping_fn(lambda x: mdict[x], domain_taxon_namespace=domain_taxon_namespace, range_taxon_namespace=range_taxon_namespace)
 
     def mesquite_association_rows(self):
         from dendropy.dataio import nexusprocessing

@@ -1264,20 +1264,20 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         """
         if traversal_strategy == "preorder":
             if include_external_splits:
-                iter_func = tree.preorder_node_iter
+                iter_fn = tree.preorder_node_iter
             else:
-                iter_func = tree.preorder_internal_node_iter
+                iter_fn = tree.preorder_internal_node_iter
         elif traversal_strategy == "postorder":
             if include_external_splits:
-                iter_func = tree.postorder_node_iter
+                iter_fn = tree.postorder_node_iter
             else:
-                iter_func = tree.postorder_internal_node_iter
+                iter_fn = tree.postorder_internal_node_iter
         else:
             raise ValueError("Traversal strategy not supported: '{}'".format(traversal_strategy))
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
         split_frequencies = self._get_split_frequencies()
-        for nd in iter_func():
+        for nd in iter_fn():
             split = nd.edge.split_bitmask
             support = split_frequencies.get(split, 0.0)
             yield support
@@ -1628,7 +1628,7 @@ class SplitDistributionSummarizer(object):
         self.add_edge_length_summaries_as_edge_annotations = kwargs.pop("add_edge_length_summaries_as_edge_annotations", True)
         self.support_label_decimals = kwargs.pop("support_label_decimals", 4)
         self.support_as_percentages = kwargs.pop("support_as_percentages", False)
-        self.support_label_compose_func = kwargs.pop("support_label_compose_func", None)
+        self.support_label_compose_fn = kwargs.pop("support_label_compose_fn", None)
         self.primary_fieldnames = ["support",]
         self.summary_stats_fieldnames = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
         self.node_age_summaries_fieldnames = list("age_{}".format(f) for f in self.summary_stats_fieldnames)
@@ -1681,8 +1681,8 @@ class SplitDistributionSummarizer(object):
             raise error.TaxonNamespaceIdentityError(split_distribution, tree)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
-        if self.support_label_compose_func is not None:
-            support_label_fn = lambda freq: self.support_label_compose_func(freq)
+        if self.support_label_compose_fn is not None:
+            support_label_fn = lambda freq: self.support_label_compose_fn(freq)
         else:
             support_label_fn = lambda freq: "{:.{places}f}".format(freq, places=self.support_label_decimals)
         node_age_summaries = split_distribution.split_node_age_summaries

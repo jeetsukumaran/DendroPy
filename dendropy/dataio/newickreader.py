@@ -161,7 +161,7 @@ class NewickReader(ioservice.DataReader):
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
             the edges.
-        finish_node_func : function object, default: `None`
+        finish_node_fn : function object, default: `None`
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
@@ -246,7 +246,7 @@ class NewickReader(ioservice.DataReader):
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
         self.default_tree_weight = kwargs.pop("default_tree_weight", self.__class__._default_tree_weight)
-        self.finish_node_func = kwargs.pop("finish_node_func", None)
+        self.finish_node_fn = kwargs.pop("finish_node_fn", None)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
         self.preserve_unquoted_underscores = kwargs.pop('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
@@ -289,7 +289,7 @@ class NewickReader(ioservice.DataReader):
             tree = self._parse_tree_statement(
                     nexus_tokenizer=nexus_tokenizer,
                     tree_factory=tree_factory,
-                    taxon_symbol_map_func=taxon_symbol_mapper.require_taxon_for_symbol)
+                    taxon_symbol_map_fn=taxon_symbol_mapper.require_taxon_for_symbol)
             yield tree
             if tree is None:
                 raise StopIteration
@@ -335,7 +335,7 @@ class NewickReader(ioservice.DataReader):
     def _parse_tree_statement(self,
             nexus_tokenizer,
             tree_factory,
-            taxon_symbol_map_func):
+            taxon_symbol_map_fn):
         """
         Parses a single tree statement from a token stream and constructs a
         corresponding Tree object. Expects that the first non-comment and
@@ -369,7 +369,7 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer=nexus_tokenizer,
                 tree=tree,
                 current_node=tree.seed_node,
-                taxon_symbol_map_func=taxon_symbol_map_func,
+                taxon_symbol_map_fn=taxon_symbol_map_fn,
                 is_internal_node=None)
         current_token = nexus_tokenizer.current_token
         if not self._tree_statement_complete:
@@ -475,7 +475,7 @@ class NewickReader(ioservice.DataReader):
             nexus_tokenizer,
             tree,
             current_node,
-            taxon_symbol_map_func,
+            taxon_symbol_map_fn,
             is_internal_node=None):
         """
         Assuming that the iterator is currently sitting on a parenthesis that
@@ -545,7 +545,7 @@ class NewickReader(ioservice.DataReader):
                             nexus_tokenizer=nexus_tokenizer,
                             tree=tree,
                             current_node=new_node,
-                            taxon_symbol_map_func=taxon_symbol_map_func,
+                            taxon_symbol_map_fn=taxon_symbol_map_fn,
                             is_internal_node=is_new_internal_node,
                             )
                     current_node.add_child(new_node);
@@ -623,7 +623,7 @@ class NewickReader(ioservice.DataReader):
                             or ((not is_internal_node) and self.suppress_leaf_node_taxa) ):
                         current_node.label = label
                     else:
-                        node_taxon = taxon_symbol_map_func(label)
+                        node_taxon = taxon_symbol_map_fn(label)
                         if node_taxon in self._seen_taxa:
                             raise NewickReader.NewickReaderDuplicateTaxonError(
                                     message=node_taxon.label,
@@ -655,5 +655,5 @@ class NewickReader(ioservice.DataReader):
         return current_node
 
     def _finish_node(self, node):
-        if self.finish_node_func is not None:
-            self.finish_node_func(node)
+        if self.finish_node_fn is not None:
+            self.finish_node_fn(node)

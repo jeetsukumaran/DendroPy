@@ -796,30 +796,30 @@ class RecastingIterator(object):
     iterator on X. The 'function' given can be a class if the class's
     constructor takes a single argument of type X.
     """
-    def __init__(self, source_iter, casting_func=None, filter_func=None):
+    def __init__(self, source_iter, casting_fn=None, filter_fn=None):
         """
-        `source_iter` is an iterator. `casting_func` is a function
+        `source_iter` is an iterator. `casting_fn` is a function
         that takes objects returned by `source_iter` and returns other
-        objects. `filter_func` is what will be applied to the SOURCE object
+        objects. `filter_fn` is what will be applied to the SOURCE object
         to decide if it will be returned.
         """
         self.source_iter = iter(source_iter)
-        self.casting_func = casting_func
-        self.filter_func = filter_func
+        self.casting_fn = casting_fn
+        self.filter_fn = filter_fn
     def __iter__(self):
         "Returns self."
         return self
     def next(self):
         """
         Gets next item from the underlying iterator, and if
-        filter_func returns True on it, applies casting_func to it and
+        filter_fn returns True on it, applies casting_fn to it and
         returns it.
         """
         while True:
             source_next = self.source_iter.next()
-            if self.filter_func is None or self.filter_func(source_next):
-                if self.casting_func is not None:
-                    return self.casting_func(source_next)
+            if self.filter_fn is None or self.filter_fn(source_next):
+                if self.casting_fn is not None:
+                    return self.casting_fn(source_next)
                 else:
                     return source_next
 

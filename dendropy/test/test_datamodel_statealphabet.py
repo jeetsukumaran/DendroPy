@@ -365,8 +365,8 @@ class StateAlphabetTester(object):
 
     def test_match_state(self):
         multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
-        match_funcs = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
-        for multistate_states, match_func in zip(multistate_states, match_funcs):
+        match_fns = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
+        for multistate_states, match_fn in zip(multistate_states, match_fns):
             for multistate in multistate_states:
                 member_states = list(multistate.member_states)
                 potential_symbols = []
@@ -380,16 +380,16 @@ class StateAlphabetTester(object):
                     self.rng.shuffle(selected_symbols)
                     if self.rng.uniform(0, 1) < 0.5:
                         selected_symbols = "".join(selected_symbols)
-                    matched_state = match_func(selected_symbols)
+                    matched_state = match_fn(selected_symbols)
                     self.assertIs(matched_state, multistate, "random seed: {}".format(self.random_seed))
 
     def test_on_the_fly_creation_of_multistate(self):
         multistate_states = [list(self.sa.ambiguous_state_iter()), list(self.sa.polymorphic_state_iter())]
-        match_funcs = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
-        add_funcs = [self.sa.new_ambiguous_state, self.sa.new_polymorphic_state]
+        match_fns = [self.sa.match_ambiguous_state, self.sa.match_polymorphic_state]
+        add_fns = [self.sa.new_ambiguous_state, self.sa.new_polymorphic_state]
         state_collections = [self.sa._ambiguous_states, self.sa._polymorphic_states]
         symbol_pool = list(self.sa.fundamental_symbol_iter())
-        for multistate_states, match_func, add_func, state_collection in zip(multistate_states, match_funcs, add_funcs, state_collections):
+        for multistate_states, match_fn, add_fn, state_collection in zip(multistate_states, match_fns, add_fns, state_collections):
             pre_existing_symbol_combinations = []
             new_symbol_combinations = []
             nreps = 0
@@ -399,13 +399,13 @@ class StateAlphabetTester(object):
                 n = self.rng.randint(2, max_sample_size)
                 selected_symbols = self.rng.sample(symbol_pool, n)
                 try:
-                    matched_state = match_func(selected_symbols)
+                    matched_state = match_fn(selected_symbols)
                 except KeyError:
                     new_symbol_combinations.append(selected_symbols)
-                    new_state = add_func(symbol=None, member_state_symbols=selected_symbols)
+                    new_state = add_fn(symbol=None, member_state_symbols=selected_symbols)
                     # self.sa.compile_lookup_mappings()
                     try:
-                        m2 = match_func(selected_symbols)
+                        m2 = match_fn(selected_symbols)
                     except KeyError:
                         raise
                     else:

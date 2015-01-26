@@ -401,7 +401,7 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
             self._parse_annotations(tree_list, annotation)
         tree_parser = _NexmlTreeParser(
                 id_taxon_map=self._id_taxon_map,
-                annotations_processor_func=self._parse_annotations,
+                annotations_processor_fn=self._parse_annotations,
                 )
         for tree_element in nxtrees.findall_tree():
             tree_obj = tree_list.new_tree()
@@ -416,10 +416,10 @@ class _NexmlTreeParser(object):
 
     def __init__(self,
             id_taxon_map,
-            annotations_processor_func,
+            annotations_processor_fn,
             ):
         self._id_taxon_map = id_taxon_map
-        self._process_annotations = annotations_processor_func
+        self._process_annotations = annotations_processor_fn
 
     def build_tree(self, tree_obj, tree_element, otus_id):
         tree_obj.label = tree_element.get('label', '')

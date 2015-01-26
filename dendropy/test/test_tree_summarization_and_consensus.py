@@ -167,8 +167,31 @@ class TestTreeEdgeSummarization(unittest.TestCase):
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
 
+    def get_regime(self, is_rooted, weights):
+        tree_strings = [
+            "(A,(B,(C,(D,E))));",
+            "(B,(C,(D,(A,E))));",
+            "(D,(A,(B,(C,E))));",
+            "(C,(D,(A,(B,E))));",
+            "(A,(E,(B,(C,D))));",
+            ]
+        if is_rooted is None:
+            rooting = ""
+        if is_rooted:
+            rooting = " [&R] "
+        else:
+            rooting = " [&U] "
+        if weights is None:
+            weightings = ["" for w in len(tree_strings)]
+        else:
+            assert len(weights) == len(tree_strings)
+            weightings = [" [&W {}] ".format(weight) for w in weights]
+        for idx, (tree_string, weight) in zip(tree_strings, weightings):
+            tree_strings[idx] = "{}{}{}".format(rooting, weight, tree_string)
+        self.taxon_namespace = dendropy.TaxonNamespace()
+
     def testSimple(self):
-        taxa = dendropy.TaxonNamespace()
+        self.taxon_namespace = dendropy.TaxonNamespace()
         tree1_str = "[&U] (A,(B,(C,(D,E))));"
         tree2_str = "[&U] (B,(C,(D,(A,E))));"
         tree3_str = "[&U] (D,(A,(B,(C,E))));"
@@ -182,12 +205,12 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
         test_trees = dendropy.TreeList.get_from_string(
                 "\n".join(test_tree_strs),
                 'newick',
-                taxon_namespace=taxa)
+                taxon_namespace=self.taxon_namespace)
         # expected_freq_values = [float(i)/sum(weights) for i in weights]
         expected_trees = dendropy.TreeList.get_from_string(
                 "\n".join(all_tree_strs),
                 'newick',
-                taxon_namespace=taxa)
+                taxon_namespace=self.taxon_namespace)
         expected_freqs = {}
         for idx, tree in enumerate(expected_trees):
             b = frozenset(tree.encode_bipartitions())

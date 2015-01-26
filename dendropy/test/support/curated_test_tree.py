@@ -330,20 +330,20 @@ class CuratedTestTree(object):
     def get_newick_string(self,
             suppress_edge_lengths=False,
             node_taxon_label_map=None,
-            edge_label_compose_func=None,
+            edge_label_compose_fn=None,
             tree_preamble_tokens=None):
         node_tag = {}
         if node_taxon_label_map is None:
             node_taxon_label_map = {}
-        if edge_label_compose_func is None:
-            edge_label_compose_func = lambda e: "{:6.5E}".format(e)
+        if edge_label_compose_fn is None:
+            edge_label_compose_fn = lambda e: "{:6.5E}".format(e)
         node_tag = {}
         for nd in self.preorder_sequence:
             label = node_taxon_label_map.get(nd, nd) # default to same label as node
             if suppress_edge_lengths:
                 node_tag[nd] = label
             else:
-                node_tag[nd] = "{}:{}".format(label, edge_label_compose_func(self.node_edge_lengths[nd]))
+                node_tag[nd] = "{}:{}".format(label, edge_label_compose_fn(self.node_edge_lengths[nd]))
         if tree_preamble_tokens is None:
             node_tag["preamble"] = ""
         else:

@@ -72,7 +72,7 @@ class NexmlTreeDataYielder(
         self._parse_taxon_namespaces(xml_root)
         tree_parser = nexmlreader._NexmlTreeParser(
                 id_taxon_map=self._id_taxon_map,
-                annotations_processor_func=self._parse_annotations,
+                annotations_processor_fn=self._parse_annotations,
                 )
         for trees_idx, trees_element in enumerate(xml_root.iter_trees()):
             trees_id = trees_element.get('id', "Trees" + str(trees_idx))

@@ -120,7 +120,7 @@ class NexusWriter(ioservice.DataWriter):
             If both `suppress_leaf_taxon_labels` and
             `suppress_leaf_node_labels` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
-        node_label_compose_func : function object or `None`, default: `None`
+        node_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes a :class:`Node`
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
@@ -129,7 +129,7 @@ class NexusWriter(ioservice.DataWriter):
             labelling function, ignoring `suppress_leaf_taxon_labels`,
             `suppress_leaf_node_labels=True`, `suppress_internal_taxon_labels`,
             `suppress_internal_node_labels`, etc. Defaults to `None`.
-        edge_label_compose_func : function object or `None`, default: `None`
+        edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
@@ -148,8 +148,8 @@ class NexusWriter(ioservice.DataWriter):
         self.supplemental_blocks = kwargs.pop("supplemental_blocks", [])
         self.allow_multiline_comments = kwargs.pop("allow_multiline_comments", True)
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
-        self.continuous_character_state_value_format_func = kwargs.pop("continuous_character_state_value_format_func", self._format_continuous_character_value)
-        self.discrete_character_state_value_format_func = kwargs.pop("discrete_character_state_value_format_func", self._format_discrete_character_value)
+        self.continuous_character_state_value_format_fn = kwargs.pop("continuous_character_state_value_format_fn", self._format_continuous_character_value)
+        self.discrete_character_state_value_format_fn = kwargs.pop("discrete_character_state_value_format_fn", self._format_discrete_character_value)
         self.translate_tree_taxa = kwargs.pop("translate_tree_taxa", None)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
@@ -326,9 +326,9 @@ class NexusWriter(ioservice.DataWriter):
         stream.write("    FORMAT {};\n".format(self._compose_format_terms(char_matrix)))
         stream.write("    MATRIX\n")
         if char_matrix.data_type == "continuous":
-            state_value_writer = lambda x : stream.write("{} ".format(self.continuous_character_state_value_format_func(x)))
+            state_value_writer = lambda x : stream.write("{} ".format(self.continuous_character_state_value_format_fn(x)))
         else:
-            state_value_writer = lambda x : stream.write("{}".format(self.discrete_character_state_value_format_func(x)))
+            state_value_writer = lambda x : stream.write("{}".format(self.discrete_character_state_value_format_fn(x)))
         max_label_len = max(len(v) for v in taxon_label_map.values())
         for taxon in char_matrix:
             stream.write("        {taxon_label:{field_len}}    ".format(taxon_label=taxon_label_map[taxon],

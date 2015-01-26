@@ -5586,7 +5586,7 @@ class Tree(
             return s
         return self.as_ascii_plot(
                 show_internal_node_labels=True,
-                node_label_compose_func=_print_node,
+                node_label_compose_fn=_print_node,
                 width=width,
                 )
 
@@ -5616,7 +5616,7 @@ class AsciiTreePlot(object):
             Positive integer: number of rows between each leaf.
         width : int
             Force a particular display width, in terms of number of columns.
-        node_label_compose_func : function object
+        node_label_compose_fn : function object
             A function that takes a :class:Node object as an argument and returns
             the string to be used to display it.
 
@@ -5628,7 +5628,7 @@ class AsciiTreePlot(object):
 #        self.null_edge_length = kwargs.pop('null_edge_length', 0)
         self.width = kwargs.pop('width', None)
         self.display_width = kwargs.pop('display_width', self.width) # legacy
-        self.compose_node = kwargs.pop("node_label_compose_func", None)
+        self.compose_node = kwargs.pop("node_label_compose_fn", None)
         if self.compose_node is None:
             self.compose_node = self.default_compose_node
         if kwargs:
