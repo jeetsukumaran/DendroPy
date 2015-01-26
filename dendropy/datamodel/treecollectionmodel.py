@@ -2523,33 +2523,57 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     ##############################################################################
     ## Topology Frequencies
 
-    def calc_split_set_frequencies(self):
+    def split_bitmask_set_frequencies(self):
         """
         Returns a dictionary with keys being sets of split bitmasks and values
         being the frequency of occurrence of trees represented by those split
         bitmask sets in the collection.
         """
-        split_set_count_map = collections.Counter()
+        split_bitmask_set_count_map = collections.Counter()
         assert len(self._tree_split_bitmasks) == len(self._tree_weights)
-        for split_set, weight in zip(self._tree_split_bitmasks, self._tree_weights):
-            split_set_count_map[frozenset(split_set)] += (1.0 * weight)
-        split_set_freqs = {}
+        for split_bitmask_set, weight in zip(self._tree_split_bitmasks, self._tree_weights):
+            split_bitmask_set_count_map[frozenset(split_bitmask_set)] += (1.0 * weight)
+        split_bitmask_set_freqs = {}
         normalization_weight = self._split_distribution.calc_normalization_weight()
-        for split_set in split_set_count_map:
-            split_set_freqs[split_set] = split_set_count_map[split_set] / normalization_weight
-        return split_set_freqs
+        for split_bitmask_set in split_bitmask_set_count_map:
+            split_bitmask_set_freqs[split_bitmask_set] = split_bitmask_set_count_map[split_bitmask_set] / normalization_weight
+        return split_bitmask_set_freqs
 
-    def topology_frequency_map(self):
+    def bipartition_encoding_frequencies(self):
+        """
+        Returns a dictionary with keys being bipartition encodings of trees
+        (as `frozenset` collections of :class:`Bipartiton` objects) and
+        values the frequency of occurrence of trees represented by that
+        encoding in the collection.
+        """
+        split_bitmask_set_freqs = self.split_bitmask_set_frequencies()
+        bipartition_encoding_freqs = {}
+        for split_bitmask_set, freq in split_bitmask_set_freqs.items():
+            bipartition_encoding = []
+            inferred_leafset = max(split_bitmask_set)
+            for split_bitmask in split_bitmask_set:
+                bipartition = treemodel.Bipartition(
+                        bitmask=split_bitmask,
+                        tree_leafset_bitmask=inferred_leafset,
+                        is_rooted=self._is_rooted_trees,
+                        is_mutable=False,
+                        compile_bipartition=True,
+                        )
+                bipartition_encoding.append(bipartition)
+            bipartition_encoding_freqs[tuple(bipartition_encoding)] = freq
+        return bipartition_encoding_freqs
+
+    def topology_frequencies(self):
         """
         Returns a dictionary with keys being (reconstructed) tree
         topologies and values the frequency of that topology in
         the collection.
         """
-        split_set_freqs = self.calc_split_set_frequencies()
+        split_bitmask_set_freqs = self.split_bitmask_set_frequencies()
         topology_freqs = {}
-        for split_set, freq in split_set_freqs.items():
+        for split_bitmask_set, freq in split_bitmask_set_freqs.items():
             tree = self.tree_type.from_split_bitmasks(
-                    split_bitmasks=split_set,
+                    split_bitmasks=split_bitmask_set,
                     taxon_namespace=self.taxon_namespace,
                     is_rooted=self._is_rooted_trees,
                     )

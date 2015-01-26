@@ -189,8 +189,10 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
                 'newick',
                 taxon_namespace=taxa)
         ta = test_trees.as_tree_array()
-        result_tree_freqs = ta.topology_frequency_map()
+        result_tree_freqs = ta.topology_frequencies()
         print(result_tree_freqs)
+        bipartition_encoding_freqs = ta.bipartition_encoding_frequencies()
+        print(bipartition_encoding_freqs)
         # for idx, (result_tree, result_freq) in enumerate(result_tree_freqs.items()):
         #     expected_tree = expected_trees[idx]
         #     expected_tree.encode_bipartitions()

@@ -242,7 +242,7 @@ class Bipartition(object):
         self._is_rooted = kwargs.get("is_rooted", None)
         # self.edge = kwargs.get("edge", None)
         is_mutable = kwargs.get("is_mutable", None)
-        if self._leafset_bitmask and not kwargs.get("suppress_calculation", False):
+        if kwargs.get("compile_bipartition", True):
             self.is_mutable = True
             self.compile_split_bitmask(
                     leafset_bitmask=self._leafset_bitmask,
@@ -474,6 +474,30 @@ class Bipartition(object):
         if is_mutable is not None:
             self.is_mutable = is_mutable
         return self._split_bitmask
+
+    def compile_bipartition(self, is_mutable=None):
+        """
+        Updates the values of the various masks specified and calculates the
+        normalized bipartition bitmask.
+
+        If a rooted bipartition, then this is set to the value of the leafset
+        bitmask.
+        If an unrooted bipartition, then the leafset bitmask is normalized such that
+        the lowest-significant bit (i.e., the group to which the first taxon
+        belongs) is set to '0'.
+
+        Also makes this bipartition immutable (unless `is_mutable` is `False`),
+        which facilitates it being used in dictionaries and sets.
+
+        Note that this requires full population of the following fields:
+            - self._leafset_bitmask
+            - self._tree_leafset_bitmask
+        """
+        self.compile_split_bitmask(self,
+            leafset_bitmask=self._leafset_bitmask,
+            tree_leafset_bitmask=self._tree_leafset_bitmask,
+            is_rooted=self._is_rooted,
+            is_mutable=is_mutable)
 
     ##############################################################################
     ## Operations
@@ -2688,7 +2712,8 @@ class Tree(
                     new_edge.bipartition = Bipartition(
                             leafset_bitmask=new_mask,
                             tree_leafset_bitmask=all_taxa_bitmask,
-                            is_mutable=False)
+                            is_mutable=False,
+                            compile_bipartition=True)
                     reconstructed_tree.bipartition_encoding.append(new_edge.bipartition)
             # Check to see if we have accumulated all of the bits that we
             #   needed, but none that we don't need.
@@ -5035,7 +5060,7 @@ class Tree(
                     tree_edges.append(edge)
                     for child in child_nodes:
                         leafset_bitmask |= child.edge.bipartition._leafset_bitmask
-                edge.bipartition = Bipartition(suppress_calculation=True, is_mutable=True)
+                edge.bipartition = Bipartition(compile_bipartition=False, is_mutable=True)
                 edge.bipartition._leafset_bitmask = leafset_bitmask
                 edge.bipartition._is_rooted = self._is_rooted
         # Create normalized bitmasks, where the full (self) bipartition mask is *not*

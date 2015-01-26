@@ -132,7 +132,8 @@ class CollapseConflictingTest(unittest.TestCase):
         tree_leafset_bitmask = tree.seed_node.edge.bipartition._leafset_bitmask
         bipartition_to_target = dendropy.Bipartition(
                 bitmask=0xA,
-                tree_leafset_bitmask=tree_leafset_bitmask)
+                tree_leafset_bitmask=tree_leafset_bitmask,
+                compule_bitmasks=True)
         assert bipartition_to_target._lowest_relevant_bit is not None
         tree.seed_node.collapse_conflicting(bipartition_to_target)
         tree.encode_bipartitions()
@@ -144,7 +145,8 @@ class CollapseConflictingTest(unittest.TestCase):
         tree.encode_bipartitions()
         tree_leafset_bitmask = tree.seed_node.edge.bipartition._leafset_bitmask
         bipartition_to_target = dendropy.Bipartition(bitmask=0x3,
-                tree_leafset_bitmask=tree_leafset_bitmask)
+                tree_leafset_bitmask=tree_leafset_bitmask,
+                compile_bipartition=True)
         tree.seed_node.collapse_conflicting(bipartition_to_target)
         tree.encode_bipartitions()
         expected_tree.encode_bipartitions()
@@ -155,7 +157,8 @@ class CollapseConflictingTest(unittest.TestCase):
         tree.encode_bipartitions()
         tree_leafset_bitmask = tree.seed_node.edge.bipartition._leafset_bitmask
         bipartition_to_target = dendropy.Bipartition(bitmask=0x5,
-                tree_leafset_bitmask=tree_leafset_bitmask)
+                tree_leafset_bitmask=tree_leafset_bitmask,
+                compile_bipartition=True)
         tree.seed_node.collapse_conflicting(bipartition_to_target)
         tree.encode_bipartitions()
         expected_tree.encode_bipartitions()

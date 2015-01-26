@@ -1453,7 +1453,7 @@ class TaxonNamespace(
             objects.
         """
         from dendropy.treemodel import Bipartition
-        return Bipartition(bitmask=bitmask)
+        return Bipartition(bitmask=bitmask, compile_bipartition=True)
 
     def get_taxa_bitmask(self, **kwargs):
         """

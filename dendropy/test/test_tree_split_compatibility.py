@@ -35,7 +35,8 @@ def generate_bipartitions(
             b = dendropy.Bipartition(
                     leafset_bitmask=s,
                     tree_leafset_bitmask=all_taxa_bitmask,
-                    is_rooted=is_rooted)
+                    is_rooted=is_rooted,
+                    compile_bipartition=True)
             bipartitions.append(b)
     elif generation_mode == "from-trees":
         bipartitions = []
