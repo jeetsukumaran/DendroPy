@@ -899,6 +899,12 @@ class TreeList(
                 )
         return ta
 
+    def as_tree_array(self, **kwargs):
+        ta = TreeArray.from_tree_list(
+                trees=self,
+                **kwargs)
+        return ta
+
     def consensus(self,
             min_freq=constants.GREATER_THAN_HALF,
             is_bipartitions_updated=False,
@@ -1851,6 +1857,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         self._tree_split_bitmasks = []
         self._tree_edge_lengths = []
         self._tree_leafset_bitmasks = []
+        self._tree_weights = []
         self._split_distribution = SplitDistribution(
                 taxon_namespace=self.taxon_namespace,
                 ignore_edge_lengths=self.ignore_edge_lengths,
@@ -1943,61 +1950,43 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         if self.taxon_namespace is not tree.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, tree)
         self.validate_rooting(tree.is_rooted)
-        # if self._is_rooted_trees is None:
-        #     self._is_rooted_trees = tree.is_rooted
-        # else:
-        #     if self._is_rooted_trees != tree.is_rooted:
-        #         if self._is_rooted_trees:
-        #             ta = "rooted"
-        #             t = "unrooted"
-        #         else:
-        #             ta = "unrooted"
-        #             t = "rooted"
-        #         raise error.MixedRootingError("Cannot add {tree_rooting} tree to TreeArray of {tree_array_rooting} trees '{}'".format(
-        #             tree_rooting=t,
-        #             tree_array_rootin=ta))
         splits, edge_lengths, node_ages = self._split_distribution.count_splits_on_tree(
                 tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated,
                 default_edge_length_value=self.default_edge_length_value)
-        if index is None:
-            self._tree_leafset_bitmasks.append(tree.seed_node.edge.bipartition.leafset_bitmask)
-        else:
-            self._tree_leafset_bitmasks.insert(index,
-                    tree.seed_node.edge.bipartition.leafset_bitmask)
-        return self.add_splits(splits=splits,
-                edge_lengths=edge_lengths,
-                index=index)
 
-    def add_splits(self, splits, edge_lengths, index=None):
-        """
-        Adds a "tree" as represented by a list of splits and edge lengths.
-
-        Parameters
-        ----------
-        splits : iterable of ints
-            An iterable of split bitmasks.
-        edge_lengths : iterable of values
-            An iterable of (usually numeric) values for each split listed in ``splits``.
-        index : integer
-            Insert before index.
-
-        """
+        # pre-process splits
         splits = tuple(splits)
+
+        # pre-process edge lengths
         if self.ignore_edge_lengths:
             # edge_lengths = tuple( [None] * len(splits) )
             edge_lengths = tuple( None for x in range(len(splits)) )
         else:
             assert len(splits) == len(edge_lengths), "Unequal vectors:\n    Splits: {}\n    Edges: {}\n".format(splits, edge_lengths)
             edge_lengths = tuple(edge_lengths)
+
+        # pre-process weights
+        if tree.weight is not None and self.use_tree_weights:
+            weight_to_use = float(tree.weight)
+        else:
+            weight_to_use = 1.0
+
+        # accession info
         if index is None:
             index = len(self._tree_split_bitmasks)
             self._tree_split_bitmasks.append(splits)
+            self._tree_leafset_bitmasks.append(tree.seed_node.edge.bipartition.leafset_bitmask)
             self._tree_edge_lengths.append(edge_lengths)
+            self._tree_weights.append(weight_to_use)
         else:
             self._tree_split_bitmasks.insert(index, splits)
+            self._tree_leafset_bitmasks.insert(index,
+                    tree.seed_node.edge.bipartition.leafset_bitmask)
             self._tree_edge_lengths.insert(index, edge_lengths)
-        return index, splits, edge_lengths
+            self._tree_weights.insert(index, weight_to_use)
+        return index, splits, edge_lengths, weight_to_use
+
 
     def add_trees(self, trees, is_bipartitions_updated=False):
         """
@@ -2484,7 +2473,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 )
 
     ##############################################################################
-    ## Summarization
+    ## Mapping of Split Support
 
     def summarize_splits_on_tree(self,
             tree,
@@ -2534,4 +2523,19 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def consensus_tree(self, *args, **kwargs):
         return self._split_distribution.consensus_tree(*args, **kwargs)
 
+    ##############################################################################
+    ## Topology Frequencies
 
+    def split_set_frequency_map():
+        """
+        Returns a dictionary with keys being sets of split bitmasks and values
+        being the frequency of occurrence of trees represented by those split
+        bitmask sets in the collection.
+        """
+        split_set_count_map = collections.Counter()
+        for split_set in self._tree_split_bitmasks:
+            split_set_count_map[set(split_set)] += 1
+
+        self._tree_split_bitmasks = []
+        self._tree_edge_lengths = []
+        self._tree_leafset_bitmasks = []

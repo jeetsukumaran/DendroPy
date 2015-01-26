@@ -1283,17 +1283,17 @@ def main():
             args.summary_target = "consensus"
         if args.summary_target == "consensus":
             tree = tree_array.consensus_tree(min_consensus_freq=args.min_consensus_freq, summarize_splits=False)
-            msg = "Summarized onto target consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
+            msg = "Summarized onto consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
         elif args.summary_target == "mct":
             tree = tree_array.maximum_product_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
                     summarize_splits=False)
-            msg = "Summarized onto target Maximum Credibility Tree (i.e., tree given in sources that maximizes the product of clade credibilities{}):".format(coda)
+            msg = "Summarized onto Maximum Credibility Tree (i.e., tree given in sources that maximizes the product of clade credibilities{}):".format(coda)
         elif args.summary_target == "msct":
             tree = tree_array.maximum_sum_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
                     summarize_splits=False)
-            msg = "Summarized onto target Maximum Sum of Credibilities Tree (i.e., tree given in sources that maximizes the sum of clade credibilities{}):".format(coda)
+            msg = "Summarized onto Maximum Sum of Credibilities Tree (i.e., tree given in sources that maximizes the sum of clade credibilities{}):".format(coda)
         else:
             raise ValueError(args.summary_target)
         target_trees.append(tree)
@@ -1376,12 +1376,12 @@ def main():
 
     split_summarization_kwargs = {}
     if not args.support_as_percentages:
-        _bulleted_message_and_log("Support values expressed as percentages")
+        _bulleted_message_and_log("Support values expressed as proportions or probabilities")
         if args.support_label_decimals < 2:
             messenger.warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
             args.support_label_decimals = 2
     else:
-        _bulleted_message_and_log("Support values expressed as proportions or probabilities")
+        _bulleted_message_and_log("Support values expressed as percentages")
     split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
 
