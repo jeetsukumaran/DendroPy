@@ -20,8 +20,11 @@
 Tests of summarization.
 """
 
+import collections
 import unittest
 import dendropy
+import random
+import itertools
 from dendropy.calculate import treecompare
 from dendropy.test.support import pathmap
 from dendropy.mathlib import statistics
@@ -167,28 +170,121 @@ class TestTreeEdgeSummarization(unittest.TestCase):
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
 
-    def get_regime(self, is_rooted, weights):
-        tree_strings = [
-            "(A,(B,(C,(D,E))));",
-            "(B,(C,(D,(A,E))));",
-            "(D,(A,(B,(C,E))));",
-            "(C,(D,(A,(B,E))));",
-            "(A,(E,(B,(C,D))));",
-            ]
-        if is_rooted is None:
-            rooting = ""
-        if is_rooted:
-            rooting = " [&R] "
+    def get_regime(self,
+            is_rooted,
+            is_multifurcating,
+            is_weighted,
+            tree_offset=0,
+            taxon_namespace=None,
+            num_trees=500):
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
+        if is_multifurcating:
+            if is_rooted:
+                tree_filename = "dendropy-test-trees-multifurcating-rooted.nexus"
+            else:
+                tree_filename = "dendropy-test-trees-multifurcating-unrooted.nexus"
         else:
-            rooting = " [&U] "
-        if weights is None:
-            weightings = ["" for w in len(tree_strings)]
-        else:
-            assert len(weights) == len(tree_strings)
-            weightings = [" [&W {}] ".format(weight) for w in weights]
-        for idx, (tree_string, weight) in zip(tree_strings, weightings):
-            tree_strings[idx] = "{}{}{}".format(rooting, weight, tree_string)
-        self.taxon_namespace = dendropy.TaxonNamespace()
+            if is_rooted:
+                tree_filename = "dendropy-test-trees-n10-rooted-treeshapes.nexus"
+            else:
+                tree_filename = "dendropy-test-trees-n14-unrooted-treeshapes.nexus"
+        source_trees = dendropy.TreeList.get_from_path(
+                pathmap.tree_source_path(tree_filename),
+                "nexus",
+                taxon_namespace=taxon_namespace)
+        for tree in source_trees:
+            tree.encode_bipartitions()
+            tree.key = frozenset(tree.bipartition_encoding)
+            tree.total_weighted_count = 0.0
+            tree.actual_count = 0
+        # if is_weighted:
+        #     weights = []
+        #     for tree in source_trees:
+        #         w = random.uniform(0.1, 10)
+        #         tree.weight = w
+        #         weights.append(w)
+        # else:
+        #     weights = [1.0 for i in len(source_trees)]
+        test_tree_strings = []
+        total_weight = 0.0
+        while len(test_tree_strings) < num_trees:
+            tree = random.choice(source_trees)
+            if len(test_tree_strings) >= tree_offset:
+                tree.actual_count += 1
+            if is_weighted:
+                weight = random.choice([0.25, 1.0, 2.8, 5.6, 11.0,])
+                tree.weight = weight
+                if len(test_tree_strings) >= tree_offset:
+                    tree.total_weighted_count += weight
+                    total_weight += weight
+            else:
+                tree.weight = None
+                if len(test_tree_strings) >= tree_offset:
+                    tree.total_weighted_count += 1.0
+                    total_weight += 1.0
+            for nd in tree:
+                nd.edge.length = random.uniform(0, 100)
+            test_tree_strings.append(tree.as_string(
+                schema="newick",
+                store_tree_weights=is_weighted,
+                suppress_edge_lengths=False,
+                suppress_internal_node_labels=True,
+                suppress_internal_taxon_labels=True,
+                ))
+        test_trees_string = "\n".join(test_tree_strings)
+        bipartition_encoding_freqs = {}
+        for tree in source_trees:
+            tree.frequency = float(tree.total_weighted_count) / total_weight
+            bipartition_encoding_freqs[tree.key] = tree.frequency
+        return source_trees, bipartition_encoding_freqs, test_trees_string
+
+    def testVariants(self):
+        # for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (True, False), (True, False), (True, False), (0, 100) ):
+        for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (True, False), (True, False), (True, False), (0) ):
+        # for is_rooted, is_multifurcating, is_weighted, tree_offset in itertools.product( (False,), (False,), (False,), (0,) ):
+            print("is_rooted: {is_rooted}, is_multifurcating: {is_multifurcating}, is_weighted: {is_weighted}, tree_offset: {tree_offset}".format(
+                is_rooted=is_rooted,
+                is_multifurcating=is_multifurcating,
+                is_weighted=is_weighted,
+                tree_offset=tree_offset))
+            source_trees, bipartition_encoding_freqs, test_trees_string = self.get_regime(
+                    is_rooted=is_rooted,
+                    is_multifurcating=is_multifurcating,
+                    is_weighted=is_weighted)
+            ta = dendropy.TreeArray(
+                    is_rooted_trees=is_rooted,
+                    use_tree_weights=not is_weighted,
+                    taxon_namespace=source_trees.taxon_namespace,
+                    )
+            ta.read_from_string(
+                    test_trees_string,
+                    "newick",
+                    tree_offset=tree_offset)
+            calculated_topology_freqs = ta.topology_frequencies()
+            for tree in calculated_topology_freqs:
+                b = frozenset(tree.encode_bipartitions())
+                self.assertAlmostEqual(
+                        calculated_topology_freqs[tree],
+                        bipartition_encoding_freqs[b])
+
+            calculated_bipartition_encoding_freqs = ta.bipartition_encoding_frequencies()
+            for tree in source_trees:
+                # if tree.key not in calculated_bipartition_encoding_freqs:
+                #     print(tree.actual_count)
+                #     print(tree.total_weighted_count)
+                #     print(tree.frequency)
+                # f1 = bipartition_encoding_freqs[tree.key]
+                # f2 = calculated_bipartition_encoding_freqs[tree.key]
+                # self.assertAlmostEqual(f1,f2)
+                if tree.actual_count == 0:
+                    if tree.key in calculated_bipartition_encoding_freqs:
+                        self.assertAlmostEqual(calculated_bipartition_encoding_freqs[tree.key], 0)
+                else:
+                    # self.assertIn(tree.key, calculated_bipartition_encoding_freqs)
+                    f1 = bipartition_encoding_freqs[tree.key]
+                    f2 = calculated_bipartition_encoding_freqs[tree.key]
+                    self.assertAlmostEqual(f1,f2)
 
     def testSimple(self):
         self.taxon_namespace = dendropy.TaxonNamespace()

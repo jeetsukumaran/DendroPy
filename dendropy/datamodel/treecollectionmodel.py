@@ -2551,21 +2551,26 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         values the frequency of occurrence of trees represented by that
         encoding in the collection.
         """
-        split_bitmask_set_freqs = self.split_bitmask_set_frequencies()
+        # split_bitmask_set_freqs = self.split_bitmask_set_frequencies()
+        # bipartition_encoding_freqs = {}
+        # for split_bitmask_set, freq in split_bitmask_set_freqs.items():
+        #     bipartition_encoding = []
+        #     inferred_leafset = max(split_bitmask_set)
+        #     for split_bitmask in split_bitmask_set:
+        #         bipartition = treemodel.Bipartition(
+        #                 bitmask=split_bitmask,
+        #                 tree_leafset_bitmask=inferred_leafset,
+        #                 is_rooted=self._is_rooted_trees,
+        #                 is_mutable=False,
+        #                 compile_bipartition=True,
+        #                 )
+        #         bipartition_encoding.append(bipartition)
+        #     bipartition_encoding_freqs[frozenset(bipartition_encoding)] = freq
+        # return bipartition_encoding_freqs
         bipartition_encoding_freqs = {}
-        for split_bitmask_set, freq in split_bitmask_set_freqs.items():
-            bipartition_encoding = []
-            inferred_leafset = max(split_bitmask_set)
-            for split_bitmask in split_bitmask_set:
-                bipartition = treemodel.Bipartition(
-                        bitmask=split_bitmask,
-                        tree_leafset_bitmask=inferred_leafset,
-                        is_rooted=self._is_rooted_trees,
-                        is_mutable=False,
-                        compile_bipartition=True,
-                        )
-                bipartition_encoding.append(bipartition)
-            bipartition_encoding_freqs[tuple(bipartition_encoding)] = freq
+        topology_frequencies = self.topology_frequencies()
+        for tree, freq in topology_frequencies.items():
+            bipartition_encoding_freqs[ frozenset(tree.encode_bipartitions()) ] = freq
         return bipartition_encoding_freqs
 
     def topology_frequencies(self):

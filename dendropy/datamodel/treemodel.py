@@ -464,6 +464,8 @@ class Bipartition(object):
             self.compile_leafset_bitmask(leafset_bitmask=leafset_bitmask)
         if self._leafset_bitmask is None:
             return
+        if self._tree_leafset_bitmask is None:
+            return
         if self._is_rooted:
             self._split_bitmask = self._leafset_bitmask
         else:

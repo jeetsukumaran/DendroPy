@@ -538,7 +538,12 @@ class DataYielder(IOService):
                 self._current_file_name = self.current_file.name
             except AttributeError:
                 self._current_file_name = None
-        with self._current_file:
+        if hasattr(self._current_file, "__exit__"):
+            with self._current_file:
+                for item in self._yield_items_from_stream(stream=self._current_file):
+                    yield item
+        else:
+            # StringIO does not support `with`
             for item in self._yield_items_from_stream(stream=self._current_file):
                 yield item
         self._current_file = None

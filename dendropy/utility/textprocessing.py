@@ -46,9 +46,6 @@ def bytes_to_text(s):
         s = codecs.encode(s, "utf-8")
     return s
 
-###############################################################################
-##
-
 def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
     if sep not in prefixed_name:
         raise ValueError("'{}' is not a valid CURIE-standard qualified name".format(prefixed_name))
