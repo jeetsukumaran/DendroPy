@@ -241,17 +241,18 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
         return source_trees, bipartition_encoding_freqs, test_trees_string
 
     def testVariants(self):
-        for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (0, 100), (False, True), (False, True), (False, True),  ):
+        for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (100,), (False, True, ), (False, True, ), (False, True, ),  ):
         # for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (0, 100), (True,), (False,), (False,),  ):
-            print("is_rooted: {is_rooted}, is_multifurcating: {is_multifurcating}, is_weighted: {is_weighted}, tree_offset: {tree_offset}".format(
-                is_rooted=is_rooted,
-                is_multifurcating=is_multifurcating,
-                is_weighted=is_weighted,
-                tree_offset=tree_offset))
+            # print("is_rooted: {is_rooted}, is_multifurcating: {is_multifurcating}, is_weighted: {is_weighted}, tree_offset: {tree_offset}".format(
+            #     is_rooted=is_rooted,
+            #     is_multifurcating=is_multifurcating,
+            #     is_weighted=is_weighted,
+            #     tree_offset=tree_offset))
             source_trees, bipartition_encoding_freqs, test_trees_string = self.get_regime(
                     is_rooted=is_rooted,
                     is_multifurcating=is_multifurcating,
-                    is_weighted=is_weighted)
+                    is_weighted=is_weighted,
+                    tree_offset=tree_offset)
             ta = dendropy.TreeArray(
                     is_rooted_trees=is_rooted,
                     use_tree_weights=is_weighted,
@@ -269,7 +270,9 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
             for tree in calculated_topology_freqs:
                 b = frozenset(tree.encode_bipartitions())
                 # stree = be_to_tree[b]
-                # print("{}: {}".format(calculated_topology_freqs[tree],
+                # print("{} ({}): {}".format(
+                #     calculated_topology_freqs[tree],
+                #     ta._split_distribution.calc_normalization_weight(),
                 #     (   bipartition_encoding_freqs[b],
                 #         stree.actual_count,
                 #         stree.total_weighted_count,
