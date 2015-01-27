@@ -1172,12 +1172,10 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         return self._split_freqs
 
     def calc_normalization_weight(self):
-        # total = self.total_trees_counted
         if not self.sum_of_tree_weights:
-            total_weight = self.total_trees_counted
+            return self.total_trees_counted
         else:
-            total_weight = float(self.sum_of_tree_weights)
-        return total_weight
+            return float(self.sum_of_tree_weights)
 
     def update(self, split_dist):
         self.total_trees_counted += split_dist.total_trees_counted
@@ -2540,6 +2538,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             split_bitmask_set_count_map[frozenset(split_bitmask_set)] += (1.0 * weight)
         split_bitmask_set_freqs = {}
         normalization_weight = self._split_distribution.calc_normalization_weight()
+        # print("===> {}".format(normalization_weight))
         for split_bitmask_set in split_bitmask_set_count_map:
             split_bitmask_set_freqs[split_bitmask_set] = split_bitmask_set_count_map[split_bitmask_set] / normalization_weight
         return split_bitmask_set_freqs

@@ -234,6 +234,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
                 ))
         test_trees_string = "\n".join(test_tree_strings)
         bipartition_encoding_freqs = {}
+        source_trees.total_weight = total_weight
         for tree in source_trees:
             tree.frequency = float(tree.total_weighted_count) / total_weight
             bipartition_encoding_freqs[tree.key] = tree.frequency
@@ -241,6 +242,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
 
     def testVariants(self):
         for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (0, 100), (False, True), (False, True), (False, True),  ):
+        # for tree_offset, is_weighted, is_multifurcating, is_rooted in itertools.product( (0, 100), (True,), (False,), (False,),  ):
             print("is_rooted: {is_rooted}, is_multifurcating: {is_multifurcating}, is_weighted: {is_weighted}, tree_offset: {tree_offset}".format(
                 is_rooted=is_rooted,
                 is_multifurcating=is_multifurcating,
@@ -252,16 +254,29 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
                     is_weighted=is_weighted)
             ta = dendropy.TreeArray(
                     is_rooted_trees=is_rooted,
-                    use_tree_weights=not is_weighted,
+                    use_tree_weights=is_weighted,
                     taxon_namespace=source_trees.taxon_namespace,
                     )
             ta.read_from_string(
                     test_trees_string,
                     "newick",
-                    tree_offset=tree_offset)
+                    tree_offset=tree_offset,
+                    store_tree_weights=is_weighted)
             calculated_topology_freqs = ta.topology_frequencies()
+            be_to_tree = {}
+            for tree in source_trees:
+                be_to_tree[tree.key] = tree
             for tree in calculated_topology_freqs:
                 b = frozenset(tree.encode_bipartitions())
+                # stree = be_to_tree[b]
+                # print("{}: {}".format(calculated_topology_freqs[tree],
+                #     (   bipartition_encoding_freqs[b],
+                #         stree.actual_count,
+                #         stree.total_weighted_count,
+                #         source_trees.total_weight,
+                #         stree.frequency,
+                #         stree.total_weighted_count / source_trees.total_weight,
+                #     )))
                 self.assertAlmostEqual(
                         calculated_topology_freqs[tree],
                         bipartition_encoding_freqs[b])
