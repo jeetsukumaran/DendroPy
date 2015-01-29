@@ -899,7 +899,31 @@ class TreeList(
                 )
         return ta
 
+    def split_distribution(self,
+            is_bipartitions_updated=False,
+            default_edge_length_value=None,
+            **kwargs):
+        """
+        Return :class:`SplitDistribution` collecting information on splits in
+        contained trees. Keyword arguments get passed directly to
+        :class:`SplitDistribution` constructor.
+        """
+        assert "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is self.taxon_namespace
+        kwargs["taxon_namespace"] = self.taxon_namespace
+        sd = SplitDistribution(**kwargs)
+        for tree in self:
+            sd.count_splits_on_tree(
+                    tree=tree,
+                    is_bipartitions_updated=is_bipartitions_updated,
+                    default_edge_length_value=default_edge_length_value)
+        return sd
+
     def as_tree_array(self, **kwargs):
+        """
+        Return :class:`TreeArray` collecting information on splits in contained
+        trees. Keyword arguments get passed directly to :class:`TreeArray`
+        constructor.
+        """
         ta = TreeArray.from_tree_list(
                 trees=self,
                 **kwargs)
