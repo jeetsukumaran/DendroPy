@@ -1727,19 +1727,27 @@ class SplitDistributionSummarizer(object):
                 node.label = support_label_fn(split_support)
             if (self.add_node_age_summaries_as_node_attributes or self.add_node_age_summaries_as_node_annotations) and node_age_summaries:
                 for fieldname, stats_fieldname in zip(self.node_age_summaries_fieldnames, self.summary_stats_fieldnames):
+                    if split_bitmask not in node_age_summaries:
+                        value = 0.0
+                    else:
+                        value = node_age_summaries[split_bitmask].get(stats_fieldname, 0.0)
                     self._decorate(
                         target=node,
                         fieldname=fieldname,
-                        value=node_age_summaries[split_bitmask].get(stats_fieldname, 0.0),
+                        value=value,
                         set_attribute=self.add_node_age_summaries_as_node_attributes,
                         set_annotation=self.add_node_age_summaries_as_node_annotations,
                         )
             if (self.add_edge_length_summaries_as_edge_attributes or self.add_edge_length_summaries_as_edge_annotations) and edge_length_summaries:
                 for fieldname, stats_fieldname in zip(self.edge_length_summaries_fieldnames, self.summary_stats_fieldnames):
+                    if split_bitmask not in edge_length_summaries:
+                        value = 0.0
+                    else:
+                        value = edge_length_summaries[split_bitmask].get(stats_fieldname, 0.0)
                     self._decorate(
                         target=node.edge,
                         fieldname=fieldname,
-                        value=edge_length_summaries[split_bitmask].get(stats_fieldname, 0.0),
+                        value=value,
                         set_attribute=self.add_edge_length_summaries_as_edge_attributes,
                         set_annotation=self.add_edge_length_summaries_as_edge_annotations,
                         )
