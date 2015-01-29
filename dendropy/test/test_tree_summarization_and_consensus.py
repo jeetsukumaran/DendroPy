@@ -94,7 +94,6 @@ class TestBasicCredibilityScoring(unittest.TestCase):
         for score, tree in zip(scores, self.trees):
             self.assertAlmostEqual(score, sd.sum_of_split_support_on_tree(tree))
         self.assertEqual(max_idx, 73)
-        print(scores)
         self.assertAlmostEqual(scores[max_idx], 30.89)
         t0 = self.trees[73]
         t1 = ta.maximum_sum_of_split_support_tree()

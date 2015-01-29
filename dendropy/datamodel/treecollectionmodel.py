@@ -2330,10 +2330,13 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         max_score = None
         max_score_tree_idx = None
         split_frequencies = self._split_distribution.split_frequencies
-        for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
+        for tree_idx, (tree_leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
             log_product_of_split_support = 0.0
             for split_bitmask in split_bitmasks:
-                if include_external_splits or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                if (include_external_splits
+                        or split_bitmask == tree_leafset_bitmask # count root edge (following BEAST)
+                        or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, tree_leafset_bitmask)
+                        ):
                     split_support = split_frequencies.get(split_bitmask, 0.0)
                     if split_support:
                         log_product_of_split_support += math.log(split_support)
@@ -2410,10 +2413,13 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         max_score = None
         max_score_tree_idx = None
         split_frequencies = self._split_distribution.split_frequencies
-        for tree_idx, (leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
+        for tree_idx, (tree_leafset_bitmask, split_bitmasks) in enumerate(zip(self._tree_leafset_bitmasks, self._tree_split_bitmasks)):
             sum_of_support = 0.0
             for split_bitmask in split_bitmasks:
-                if include_external_splits or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, leafset_bitmask):
+                if (include_external_splits
+                        or split_bitmask == tree_leafset_bitmask # count root edge (following BEAST)
+                        or not treemodel.Bipartition.is_trivial_bitmask(split_bitmask, tree_leafset_bitmask)
+                        ):
                     split_support = split_frequencies.get(split_bitmask, 0.0)
                     sum_of_support += split_support
             if max_score is None or max_score < sum_of_support:
