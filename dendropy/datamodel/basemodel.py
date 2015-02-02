@@ -1276,6 +1276,29 @@ class AnnotationSet(container.OrderedSet):
                 return a.value
         return default
 
+    def require_value(self, name):
+        """
+        Returns the *value* of the *first* Annotation associated with
+        self.target which has `name` in the name field.
+
+        If no match is found, then `KeyError` is raised.
+
+        Parameters
+        ----------
+        name : string
+            Name of :class:`Annotation` object whose value is to be returned.
+
+        Returns
+        -------
+        results : :class:`Annotation` or `None`
+            `value` of first :class:`Annotation` object found that matches
+            criteria.
+        """
+        v = self.get_value(name, default=None)
+        if v is None:
+            raise KeyError(name)
+        return v
+
     def drop(self, **kwargs):
         """
         Removes Annotation objects that match based on *all* criteria specified
