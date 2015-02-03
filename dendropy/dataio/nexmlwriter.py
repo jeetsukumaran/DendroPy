@@ -198,7 +198,7 @@ class NexmlWriter(ioservice.DataWriter):
             parts.append('id="%s"' % self._taxon_id_map[taxon])
             if taxon.label:
                 parts.append('label=%s' % _protect_attr(taxon.label))
-            if taxon.has_annotations:
+            if taxon.has_annotations or (hasattr(taxon, "comments") and taxon.comments):
                 dest.write("<%s>\n" % ' '.join(parts))
                 # self.write_extensions(taxon, dest, indent_level=indent_level+2)
                 self._write_annotations_and_comments(taxon, dest, indent_level=indent_level+2)
@@ -218,7 +218,7 @@ class NexmlWriter(ioservice.DataWriter):
             parts.append('label=%s' % _protect_attr(tree_list.label))
         parts.append('otus="%s"' % self._taxon_namespace_id_map[tree_list.taxon_namespace])
         dest.write("<%s>\n" % ' '.join(parts))
-        if tree_list.has_annotations:
+        if tree_list.has_annotations or (hasattr(tree_list, "comments") and tree_list.comments):
             self._write_annotations_and_comments(tree_list, dest,
                     indent_level=indent_level+1)
         for tree in tree_list:
@@ -280,7 +280,7 @@ class NexmlWriter(ioservice.DataWriter):
         parts.append('xsi:type="%s"' % xsi_type)
         dest.write("<%s>\n" % ' '.join(parts))
 
-        if char_matrix.has_annotations:
+        if char_matrix.has_annotations or (hasattr(char_matrix, "comments") and char_matrix.comments):
             self._write_annotations_and_comments(char_matrix, dest, indent_level=indent_level+1)
 
         cell_char_type_id_map = self._write_format_section(char_matrix, dest, indent_level=indent_level+1)
@@ -301,7 +301,7 @@ class NexmlWriter(ioservice.DataWriter):
             if taxon is not None:
                 parts.append('otu="%s"' % self._taxon_id_map[taxon])
             dest.write("<%s>\n" % ' '.join(parts))
-            if char_vector.has_annotations:
+            if char_vector.has_annotations or (hasattr(char_vector, "comments") and char_vector.comments):
                 self._write_annotations_and_comments(char_vector, dest, indent_level=indent_level+3)
             if self.markup_as_sequences:
                 if char_matrix.data_type in ("dna", "rna", "protein", "restriction", "aa", "amino-acid"):
@@ -366,7 +366,7 @@ class NexmlWriter(ioservice.DataWriter):
         parts = ' '.join(parts)
         dest.write('%s<%s>\n'
                    % (self.indent * indent_level, parts))
-        if tree.has_annotations:
+        if tree.has_annotations or (hasattr(tree, "comments") and tree.comments):
             self._write_annotations_and_comments(tree, dest,
                     indent_level=indent_level+1)
         for node in tree.preorder_node_iter():
@@ -448,7 +448,7 @@ class NexmlWriter(ioservice.DataWriter):
             parts.append('root="true"')
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
-        if node.has_annotations:
+        if node.has_annotations or (hasattr(node, "comments") and node.comments):
             dest.write('>\n')
             self._write_annotations_and_comments(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
@@ -482,7 +482,7 @@ class NexmlWriter(ioservice.DataWriter):
             if len(parts) > 2:
                 parts = ' '.join(parts)
                 dest.write('%s%s' % ((self.indent * indent_level), parts))
-                if edge.has_annotations:
+                if edge.has_annotations or (hasattr(edge, "comments") and edge.comments):
                     dest.write('>\n')
                     self._write_annotations_and_comments(edge, dest, indent_level=indent_level+1)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
