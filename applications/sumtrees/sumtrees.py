@@ -1472,11 +1472,16 @@ def main():
         summarization_metainfo.append("Using {}, located at: '{}'".format(dendropy.description(), dendropy.homedir()))
         python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
         summarization_metainfo.append("Running under Python {}, located at: '{}'".format(python_version, sys.executable))
+
+        summarization_metainfo.append("")
+        summarization_metainfo.append("Execution Information")
+        summarization_metainfo.append("---------------------")
         try:
             username = getpass.getuser()
         except:
             username = "<user>"
-        summarization_metainfo.append("Executed on {} by {}@{} in working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
+        summarization_metainfo.append("Executed on {} by {}@{}".format(platform.node(), username, socket.gethostname()))
+        summarization_metainfo.append("Working directory: '{}'".format(os.getcwd()))
         summarization_metainfo.extend(final_run_report)
 
         summarization_metainfo.append("")
@@ -1499,9 +1504,17 @@ def main():
                 )
         summarization_metainfo.extend(citation)
         summarization_metainfo.append("")
-
     else:
         summarization_metainfo = []
+
+    ### PRIMARY OUTPUT
+    if not args.no_extended_metainformation:
+        primary_output_metainfo = []
+        primary_output_metainfo.append("=============")
+        primary_output_metainfo.append("Summary Trees")
+        primary_output_metainfo.append("=============")
+    else:
+        primary_output_metainfo = []
     if args.output_format is None:
         if args.input_format is None or args.input_format == "nexus/newick":
             args.output_format = "nexus"
@@ -1531,11 +1544,11 @@ def main():
                 suppress_annotations=args.suppress_annotations,
                 suppress_item_comments=args.clear_item_comments,
                 simple=args.no_taxa_block,
-                file_comments=summarization_metainfo,
+                file_comments=primary_output_metainfo,
                 )
     elif args.output_format == "nexml":
-        if summarization_metainfo:
-            target_trees.comments = summarization_metainfo
+        if primary_output_metainfo:
+            target_trees.comments = primary_output_metainfo
         target_trees.write_to_stream(
                 output_dest,
                 "nexml",
