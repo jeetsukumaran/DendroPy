@@ -44,15 +44,15 @@ def pretty_elapsed_datetime(t, fill=False):
             parts.append(s)
     return ", ".join(parts)
 
-def parse_timedelta(t):
-    hours, minutes, seconds = str(t).split(":")
-    hours = int(hours)
-    minutes = int(minutes)
-    seconds = float(seconds)
+def parse_timedelta(td):
+    hours = (td.days * 24) + td.seconds // 3600
+    minutes = (td.seconds % 3600) // 60
+    # seconds = ((td.seconds % 3600) % 60) + float(td.microseconds)/1000000
+    seconds = ((td.seconds % 3600) % 60) + float(td.microseconds)/1000000
     return hours, minutes, seconds
 
-def pretty_timedelta(t, fill=False):
-    hours, minutes, seconds = parse_timedelta(t)
+def pretty_timedelta(td, fill=False):
+    hours, minutes, seconds = parse_timedelta(td)
     parts = []
     _render = lambda f, value: "{} {}{}".format(value, f, "" if value == 1 else "s")
     if hours or fill:
@@ -65,4 +65,6 @@ def pretty_timedelta(t, fill=False):
             parts.append("and {}".format(s))
         else:
             parts.append(s)
+    if not parts:
+        return "0 seconds"
     return ", ".join(parts)
