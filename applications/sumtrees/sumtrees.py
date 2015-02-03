@@ -848,10 +848,10 @@ def main():
             action="store_true",
             default=False,
             help="When writing NEXUS format output, do not include a taxa block in the output treefile (otherwise will create taxa block by default).")
-    output_options.add_argument("--no-meta-comments",
+    output_options.add_argument("--no-extended-metainformation", "--no-meta-comments",
             action="store_true",
             default=False,
-            help="Do not include initial file comment annotating details of scoring operation")
+            help="Do not include meta-information describing the summarization parameters and execution details.")
     output_options.add_argument("-c", "--additional-comments",
             action="store",
             dest="additional_comments",
@@ -1463,33 +1463,33 @@ def main():
         ))
 
     messenger.info("Writing results ...")
-    if not args.no_meta_comments:
-        meta_comments = []
-        meta_comments.append("")
-        meta_comments.append("Program Information")
-        meta_comments.append("-------------------")
-        meta_comments.append("{} {} by {}".format(_program_name, _program_version, _program_author))
-        meta_comments.append("Using {}, located at: '{}'".format(dendropy.description(), dendropy.homedir()))
+    if not args.no_extended_metainformation:
+        summarization_metainfo = []
+        summarization_metainfo.append("")
+        summarization_metainfo.append("Program Information")
+        summarization_metainfo.append("-------------------")
+        summarization_metainfo.append("{} {} by {}".format(_program_name, _program_version, _program_author))
+        summarization_metainfo.append("Using {}, located at: '{}'".format(dendropy.description(), dendropy.homedir()))
         python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
-        meta_comments.append("Running under Python {}, located at: '{}'".format(python_version, sys.executable))
+        summarization_metainfo.append("Running under Python {}, located at: '{}'".format(python_version, sys.executable))
         try:
             username = getpass.getuser()
         except:
             username = "<user>"
-        meta_comments.append("Executed on {} by {}@{} in current working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
-        meta_comments.extend(final_run_report)
+        summarization_metainfo.append("Executed on {} by {}@{} in current working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
+        summarization_metainfo.extend(final_run_report)
 
-        meta_comments.append("")
-        meta_comments.append("Summarization Information")
-        meta_comments.append("-------------------------")
-        meta_comments.extend(processing_report_lines)
+        summarization_metainfo.append("")
+        summarization_metainfo.append("Summarization Information")
+        summarization_metainfo.append("-------------------------")
+        summarization_metainfo.extend(processing_report_lines)
         if args.additional_comments:
-            meta_comments.append("\n")
-            meta_comments.append(args.additional_comments)
+            summarization_metainfo.append("\n")
+            summarization_metainfo.append(args.additional_comments)
 
-        meta_comments.append("")
-        meta_comments.append("Citation Information")
-        meta_comments.append("--------------------")
+        summarization_metainfo.append("")
+        summarization_metainfo.append("Citation Information")
+        summarization_metainfo.append("--------------------")
         citation = cli.compose_citation_for_program(
                 prog_name=_program_name,
                 prog_version=_program_version,
@@ -1497,11 +1497,11 @@ def main():
                 include_preamble=False,
                 include_epilog=False,
                 )
-        meta_comments.extend(citation)
-        meta_comments.append("")
+        summarization_metainfo.extend(citation)
+        summarization_metainfo.append("")
 
     else:
-        meta_comments = []
+        summarization_metainfo = []
     if args.output_format is None:
         if args.input_format is None or args.input_format == "nexus/newick":
             args.output_format = "nexus"
@@ -1531,11 +1531,11 @@ def main():
                 suppress_annotations=args.suppress_annotations,
                 suppress_item_comments=args.clear_item_comments,
                 simple=args.no_taxa_block,
-                file_comments=meta_comments,
+                file_comments=summarization_metainfo,
                 )
     elif args.output_format == "nexml":
-        if meta_comments:
-            target_trees.comments = meta_comments
+        if summarization_metainfo:
+            target_trees.comments = summarization_metainfo
         target_trees.write_to_stream(
                 output_dest,
                 "nexml",
