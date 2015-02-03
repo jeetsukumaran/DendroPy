@@ -26,6 +26,7 @@ set of trees onto a target tree.
 import os
 import sys
 import re
+import getpass
 import argparse
 import collections
 import datetime
@@ -1452,31 +1453,53 @@ def main():
     #  Primary Output
 
     final_run_report = []
-    final_run_report.append("Began at: {}".format(main_time_start.isoformat(' ')))
+    final_run_report.append("Started at: {}".format(main_time_start.isoformat(' ')))
     final_run_report.append("Ended at: {}".format(main_time_end.isoformat(' ')))
-    final_run_report.append("Analysis time: {}".format(
-        timeprocessing.pretty_timedelta(analysis_time_delta),
-        ))
-    final_run_report.append("Total run time: {}".format(
+    final_run_report.append("Total elapsed time: {}".format(
         timeprocessing.pretty_timedelta(main_time_end-main_time_start),
+        ))
+    final_run_report.append("Actual analysis time: {}".format(
+        timeprocessing.pretty_timedelta(analysis_time_delta),
         ))
 
     messenger.info("Writing results ...")
     if not args.no_meta_comments:
         meta_comments = []
+        meta_comments.append("")
+        meta_comments.append("Program Information")
+        meta_comments.append("-------------------")
         meta_comments.append("{} {} by {}".format(_program_name, _program_version, _program_author))
-        meta_comments.append("Using {} located at: {}".format(dendropy.description(), dendropy.homedir()))
-        meta_comments.append("Running under Python {} located at: {}".format(sys.version.replace("\n", ""), sys.executable))
+        meta_comments.append("Using {}, located at: '{}'".format(dendropy.description(), dendropy.homedir()))
+        python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
+        meta_comments.append("Running under Python {}, located at: '{}'".format(python_version, sys.executable))
         try:
             username = getpass.getuser()
         except:
             username = "<user>"
-        meta_comments.append("Executed on {} by {}@{}.".format(platform.node(), username, socket.gethostname()))
-        meta_comments.extend(processing_report_lines)
+        meta_comments.append("Executed on {} by {}@{} in current working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
         meta_comments.extend(final_run_report)
+
+        meta_comments.append("")
+        meta_comments.append("Summarization Information")
+        meta_comments.append("-------------------------")
+        meta_comments.extend(processing_report_lines)
         if args.additional_comments:
             meta_comments.append("\n")
             meta_comments.append(args.additional_comments)
+
+        meta_comments.append("")
+        meta_comments.append("Citation Information")
+        meta_comments.append("--------------------")
+        citation = cli.compose_citation_for_program(
+                prog_name=_program_name,
+                prog_version=_program_version,
+                additional_citations=[_program_citation],
+                include_preamble=False,
+                include_epilog=False,
+                )
+        meta_comments.extend(citation)
+        meta_comments.append("")
+
     else:
         meta_comments = []
     if args.output_format is None:
@@ -1521,13 +1544,12 @@ def main():
         raise ValueError(args.output_format)
 
 
+    ###################################################
+    #  WRAP UP
 
-    # print("--")
-    # max_width = max(len(line) for line in processing_report_lines) + 2
-    # for line in processing_report_lines:
-    #     print("[ {:{width}} ]".format(line, width=max_width))
-    # for line in final_run_report:
-    #     print("{}".format(line))
+    messenger.info("Summarization completed")
+    messenger.info_lines(final_run_report)
+    messenger.silent = True
 
 if __name__ == '__main__':
     try:

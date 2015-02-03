@@ -128,20 +128,21 @@ def revision():
     __revision__ = vcsinfo.Revision(repo_path=homedir())
     return __revision__
 
-def citation_info(width=76):
+def citation_info(include_preamble=True, width=76):
     import textwrap
     citation_lines = []
-    citation_preamble =(
-                        "If any stage of your work or analyses relies"
-                        " on code or programs from this library, either"
-                        " directly or indirectly (e.g., through usage of"
-                        " your own or third-party programs, pipelines, or"
-                        " toolkits which use, rely on, incorporate, or are"
-                        " otherwise primarily derivative of code/programs"
-                        " in this library), please cite:"
-                       )
-    citation_lines.extend(textwrap.wrap(citation_preamble, width=width))
-    citation_lines.append("")
+    if include_preamble:
+        citation_preamble =(
+                            "If any stage of your work or analyses relies"
+                            " on code or programs from this library, either"
+                            " directly or indirectly (e.g., through usage of"
+                            " your own or third-party programs, pipelines, or"
+                            " toolkits which use, rely on, incorporate, or are"
+                            " otherwise primarily derivative of code/programs"
+                            " in this library), please cite:"
+                        )
+        citation_lines.extend(textwrap.wrap(citation_preamble, width=width))
+        citation_lines.append("")
     citation = textwrap.wrap(
             __citation__,
             width=width,

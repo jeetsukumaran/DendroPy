@@ -111,14 +111,16 @@ def compose_citation_for_program(
         prog_version,
         additional_citations=None,
         dendropy_description=None,
-        width=70):
+        width=70,
+        include_preamble=True,
+        include_epilog=True):
     if dendropy_description is None:
         dendropy_description = dendropy.description()
     citation_lines = []
-    citation_lines.extend(dendropy.citation_info(width=width))
+    citation_lines.extend(dendropy.citation_info(include_preamble=include_preamble, width=width))
     if additional_citations:
-        citation_lines.append("")
-        citation_lines.append("You should also cite the following")
+        # citation_lines.append("")
+        # citation_lines.append("You should also cite the following")
         for additional_citation in additional_citations:
             citation_lines.append("")
             c = textwrap.wrap(
@@ -128,18 +130,19 @@ def compose_citation_for_program(
                     subsequent_indent="    ",
                     )
             citation_lines.extend(c)
-    citation_lines.append("")
-    extra = (
-            "Note that, in the interests of scientific reproducibility, you "
-            "should describe in the text of your publications not only the "
-            "specific version of the {prog_name} program, but also the "
-            "DendroPy library used in your analysis. "
-            "For your information, you are running {dendropy_desc}."
-            ).format( prog_name=prog_name,
-                    prog_version=prog_version,
-                    dendropy_desc=dendropy_description,
-                    python_version=sys.version)
-    citation_lines.extend(textwrap.wrap(extra))
+    if include_epilog:
+        citation_lines.append("")
+        extra = (
+                "Note that, in the interests of scientific reproducibility, you "
+                "should describe in the text of your publications not only the "
+                "specific version of the {prog_name} program, but also the "
+                "DendroPy library used in your analysis. "
+                "For your information, you are running {dendropy_desc}."
+                ).format( prog_name=prog_name,
+                        prog_version=prog_version,
+                        dendropy_desc=dendropy_description,
+                        python_version=sys.version)
+        citation_lines.extend(textwrap.wrap(extra))
     return citation_lines
 
 # from http://stackoverflow.com/a/22157136/268330
