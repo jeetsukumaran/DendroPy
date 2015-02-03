@@ -29,6 +29,8 @@ import re
 import argparse
 import collections
 import datetime
+import platform
+import socket
 import math
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
@@ -54,7 +56,8 @@ from dendropy.utility import timeprocessing
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Summarization"
 _program_date = "Jan 31 2015"
-_program_version = "4.0.0 (%s)" % _program_date
+# _program_version = "{} ({})".format(dendropy.__version__, _program_date)
+_program_version = "4.0.0 ({})".format(_program_date)
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = """\
@@ -562,7 +565,7 @@ def main():
     ######################################################################
     ## Start Recording Total Job Time
 
-    main_start = datetime.datetime.now()
+    main_time_start = datetime.datetime.now()
 
     ######################################################################
     ## CLI
@@ -786,6 +789,12 @@ def main():
             help="(If setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages.")
 
     node_summarization_options = parser.add_argument_group("Target Tree Annotation Options")
+    node_summarization_options.add_argument(
+            "--summarize-node-ages", "--ultrametric", "--node-ages",
+            action="store_true",
+            dest="summarize_node_ages",
+            default=None,
+            help="Assume that source trees are ultrametic and summarize node ages (distances from tips).")
     node_summarization_options.add_argument("-l","--labels",
             dest="node_labels",
             default="support",
@@ -819,50 +828,28 @@ def main():
             metavar="#",
             default=8,
             help="Number of decimal places in indication of support values (default: %(default)s).")
-
-    other_summarization_options = parser.add_argument_group("Other Summarization Options")
-    other_summarization_options.add_argument("--trprobs", "--calc-tree-probabilities",
-            dest="trprobs_filepath",
-            default=None,
-            metavar="FILEPATH",
-            help=("If specified, a file listing tree (topologies) and the "
-                 "frequencies of their occurrences will be saved to FILEPATH."))
-    other_summarization_options.add_argument("--extract-edges",
-            dest="split_edge_map_filepath",
-            default=None,
-            metavar="FILEPATH",
-            help=("if specified, a tab-delimited file of splits and their edge "
-                  "lengths across input trees will be saved to FILEPATH"))
-    other_summarization_options.add_argument(
-            "--summarize-node-ages", "--ultrametric", "--node-ages",
-            action="store_true",
-            dest="summarize_node_ages",
-            default=None,
-            help="Assume that source trees are ultrametic and summarize node ages (distances from tips).")
     # other_summarization_options.add_argument("--no-summarize-edge-lengths",
     #         action="store_false",
     #         dest="summarize_edge_lengths",
     #         default=None,
     #         help="Do not summarize edge lengths.")
 
-    output_options = parser.add_argument_group("Output Options")
+    output_options = parser.add_argument_group("Primary Output Options")
     output_options.add_argument("-o","--output-tree-filepath",
             metavar="FILEPATH",
             default=None,
             help="Path to output file (if not given, will print to standard output).")
     output_options.add_argument("-F","--output-format",
-            metavar="FORMAT",
-            default="nexus",
+            default=None,
             choices=["nexus", "newick", "phylip", "nexml"],
-            help="Format of the output tree file (default: '%(default)s').")
+            help="Format of the output tree file (if not specifed, defaults to input format, if this has been explicitly specified, or 'nexus' otherwise).")
     output_options.add_argument("--no-taxa-block",
-            action="store_false",
-            default=True,
+            action="store_true",
+            default=False,
             help="When writing NEXUS format output, do not include a taxa block in the output treefile (otherwise will create taxa block by default).")
     output_options.add_argument("--no-meta-comments",
-            action="store_false",
-            dest="include_meta_comments",
-            default=True,
+            action="store_true",
+            default=False,
             help="Do not include initial file comment annotating details of scoring operation")
     output_options.add_argument("-c", "--additional-comments",
             action="store",
@@ -874,6 +861,20 @@ def main():
             dest="replace",
             default=False,
             help="Replace/overwrite output file without asking if it already exists.")
+
+    secondary_output_options = parser.add_argument_group("Secondary Output Options")
+    secondary_output_options.add_argument("--trprobs", "--calc-tree-probabilities",
+            dest="trprobs_filepath",
+            default=None,
+            metavar="FILEPATH",
+            help=("If specified, a file listing tree (topologies) and the "
+                 "frequencies of their occurrences will be saved to FILEPATH."))
+    secondary_output_options.add_argument("--extract-edges",
+            dest="split_edge_map_filepath",
+            default=None,
+            metavar="FILEPATH",
+            help=("if specified, a tab-delimited file of splits and their edge "
+                  "lengths across input trees will be saved to FILEPATH"))
 
     multiprocessing_options = parser.add_argument_group("Parallel Processing Options")
     multiprocessing_options.add_argument("-M", "--maximum-multiprocessing",
@@ -930,6 +931,10 @@ def main():
     parser.add_argument('--debug-mode', action="store_true", help=argparse.SUPPRESS)
 
     args = parser.parse_args()
+
+    ######################################################################
+    ## add stuff here: incorporate into CLI later
+    args.clear_item_comments = False
 
     ######################################################################
     ## Information (Only) Operations
@@ -1187,9 +1192,9 @@ def main():
             log_frequency=args.log_frequency if not args.quiet else 0,
             messenger=messenger,
             )
-    processing_time_start = datetime.datetime.now()
+    analysis_time_start = datetime.datetime.now()
     # messenger.info("Processing of source trees starting at {}".format(
-    #     processing_time_start,
+    #     analysis_time_start,
     #     ))
     try:
         tree_array = tree_processor.analyze_trees(
@@ -1231,9 +1236,9 @@ def main():
         if args.debug_mode:
             raise
         sys.exit(1)
-    processing_time_end = datetime.datetime.now()
-    messenger.info("Analysis of source trees completed in: {}".format(
-        timeprocessing.pretty_timedelta(processing_time_end-processing_time_start),
+    analysis_time_end = datetime.datetime.now()
+    analysis_time_delta =  analysis_time_end-analysis_time_start
+    messenger.info("Analysis of source trees completed in: {}".format(timeprocessing.pretty_timedelta(analysis_time_delta),
         wrap=False,
         ))
 
@@ -1441,31 +1446,88 @@ def main():
                 is_bipartitions_updated=True,
                 **split_summarization_kwargs)
 
+    main_time_end = datetime.datetime.now()
 
-    # split_summarization_kwargs["set_support_as_node_label"] = None
-    # split_summarization_kwargs["support_label_compose_func"] = None
+    ###################################################
+    #  Primary Output
+
+    final_run_report = []
+    final_run_report.append("Began at: {}".format(main_time_start.isoformat(' ')))
+    final_run_report.append("Ended at: {}".format(main_time_end.isoformat(' ')))
+    final_run_report.append("Analysis time: {}".format(
+        timeprocessing.pretty_timedelta(analysis_time_delta),
+        ))
+    final_run_report.append("Total run time: {}".format(
+        timeprocessing.pretty_timedelta(main_time_end-main_time_start),
+        ))
+
+    messenger.info("Writing results ...")
+    if not args.no_meta_comments:
+        meta_comments = []
+        meta_comments.append("{} {} by {}".format(_program_name, _program_version, _program_author))
+        meta_comments.append("Using {} located at: {}".format(dendropy.description(), dendropy.homedir()))
+        meta_comments.append("Running under Python {} located at: {}".format(sys.version.replace("\n", ""), sys.executable))
+        try:
+            username = getpass.getuser()
+        except:
+            username = "<user>"
+        meta_comments.append("Executed on {} by {}@{}.".format(platform.node(), username, socket.gethostname()))
+        meta_comments.extend(processing_report_lines)
+        meta_comments.extend(final_run_report)
+        if args.additional_comments:
+            meta_comments.append("\n")
+            meta_comments.append(args.additional_comments)
+    else:
+        meta_comments = []
+    if args.output_format is None:
+        if args.input_format is None or args.input_format == "nexus/newick":
+            args.output_format = "nexus"
+        else:
+            args.output_format = args.input_format
+    if args.output_format == "newick" or args.output_format == "phylip":
+        target_trees.write_to_stream(
+                output_dest,
+                "newick",
+                suppress_rooting=False,
+                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
+                unquoted_underscores=True if args.preserve_underscores else False,
+                preserve_spaces=True if args.preserve_underscores else False,
+                store_tree_weights=True,
+                suppress_annotations=args.suppress_annotations,
+                suppress_item_comments=args.clear_item_comments,
+                )
+    elif args.output_format == "nexus":
+        target_trees.write_to_stream(
+                output_dest,
+                "nexus",
+                suppress_rooting=False,
+                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
+                unquoted_underscores=True if args.preserve_underscores else False,
+                preserve_spaces=True if args.preserve_underscores else False,
+                store_tree_weights=True,
+                suppress_annotations=args.suppress_annotations,
+                suppress_item_comments=args.clear_item_comments,
+                simple=args.no_taxa_block,
+                file_comments=meta_comments,
+                )
+    elif args.output_format == "nexml":
+        if meta_comments:
+            target_trees.comments = meta_comments
+        target_trees.write_to_stream(
+                output_dest,
+                "nexml",
+                )
+    else:
+        raise ValueError(args.output_format)
 
 
 
-    # comments = []
-    # comments.extend(report)
-    # messenger.info("Split counting completed:")
-    # messenger.info_lines(report, prefix="  ~ ")
-
-
-
-
-
-    # real_value_format_specifier = None
-
-    # t = tree_array.consensus_tree()
-    # print(t.as_string("nexus"))
-    # print(len(tree_array))
-
-    print("--")
-    max_width = max(len(line) for line in processing_report_lines) + 2
-    for line in processing_report_lines:
-        print("[ {:{width}} ]".format(line, width=max_width))
+    # print("--")
+    # max_width = max(len(line) for line in processing_report_lines) + 2
+    # for line in processing_report_lines:
+    #     print("[ {:{width}} ]".format(line, width=max_width))
+    # for line in final_run_report:
+    #     print("{}".format(line))
 
 if __name__ == '__main__':
     try:
