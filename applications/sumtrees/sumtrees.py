@@ -1476,7 +1476,7 @@ def main():
             username = getpass.getuser()
         except:
             username = "<user>"
-        summarization_metainfo.append("Executed on {} by {}@{} in current working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
+        summarization_metainfo.append("Executed on {} by {}@{} in working directory: '{}'".format(platform.node(), username, socket.gethostname(), os.getcwd()))
         summarization_metainfo.extend(final_run_report)
 
         summarization_metainfo.append("")
