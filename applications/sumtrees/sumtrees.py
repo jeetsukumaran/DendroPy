@@ -50,6 +50,7 @@ from dendropy.utility import constants
 from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
+from dendropy.utility import bitprocessing
 
 ##############################################################################
 ## Preamble
@@ -1685,6 +1686,71 @@ def main():
 
     ### EXTENDED OUTPUT
     if extended_output_paths:
+
+        messenger.info("Calculating extended summarization results")
+
+        #### get data: topologies
+        topologies = tree_array.topologies(
+                sort_descending=True,
+                frequency_attr_name="frequency",
+                frequency_annotation_name="frequency",
+                )
+
+        #### get data: bipartitions
+        all_taxa_bitmask = tree_array.taxon_namespace.all_taxa_bitmask()
+        split_bitmask_bipartition_map = collections.OrderedDict()
+        bipartitions_as_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
+        def _add_split_bitmask_data(split_bitmask):
+            bipartition = dendropy.Bipartition(
+                    leafset_bitmask=split_bitmask,
+                    tree_leafset_bitmask=all_taxa_bitmask,
+                    is_rooted=tree_array.is_rooted_trees,
+                    is_mutable=False,
+                    compile_bipartition=True)
+            bipartition.frequency = tree_array.split_distribution[split_bitmask]
+            bipartition.newick_string = bipartition.leafset_as_newick_string(
+                    tree_array.taxon_namespace,
+                    preserve_spaces=True if args.preserve_underscores else False,
+                    quote_underscores=False if args.preserve_underscores else True,
+                    )
+            bipartition.tree = dendropy.Tree.get_from_string(
+                    bipartition.newick_string,
+                    "newick",
+                    taxon_namespace=tree_array.taxon_namespace)
+            bipartition.group_pattern = bipartition.leafset_as_bitstring(
+                    symbol0=".",
+                    symbol1="*",
+                    reverse=True,
+                    )
+
+            #############################################
+
+            # TODO: add data of interest
+
+            #############################################
+
+
+            bipartition.tree.source_bipartition = bipartition
+            bipartitions_as_trees.append(bipartition.tree)
+            split_bitmask_bipartition_map[split_bitmask] = bipartition
+            return bipartition
+
+        # this is to preserve order seen in Mr. Bayes
+        _add_split_bitmask_data(all_taxa_bitmask)
+        for taxon in tree_array.taxon_namespace:
+            split_bitmask = tree_array.taxon_namespace.taxon_bitmask(taxon)
+            _add_split_bitmask_data(split_bitmask)
+
+        # add the rest in order
+        sd_split_bitmasks = list(tree_array.split_distribution.split_counts.keys())
+        sd_split_bitmasks.sort(key=lambda x: tree_array.split_distribution.split_counts[x], reverse=True)
+        for split_bitmask in sd_split_bitmasks:
+            if split_bitmask in split_bitmask_bipartition_map:
+                continue
+            _add_split_bitmask_data(split_bitmask)
+        # for s, b in split_bitmask_bipartition_map.items():
+        #     print("{}   {}".format(b.group_pattern, b.frequency))
+
         #### EXTENDED OUTPUT: summary trees
 
         #### EXTENDED OUTPUT: topologies / trprobs
@@ -1705,11 +1771,6 @@ def main():
             metainfo = []
         output_path = extended_output_paths["topologies"]
         messenger.info("Writing topologies to: '{}'".format(output_path))
-        topologies = tree_array.topologies(
-                sort_descending=True,
-                frequency_attr_name="frequency",
-                frequency_annotation_name="frequency",
-                )
         cumulative_frequency = 0.0
         for tree in topologies:
             tree.weight = tree.frequency

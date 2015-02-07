@@ -1219,6 +1219,10 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
     def __len__(self):
         return len(self.split_counts)
 
+    def __iter__(self):
+        for s in self.split_counts:
+            yield s
+
     def __getitem__(self, split_bitmask):
         """
         Returns freqency of split_bitmask.

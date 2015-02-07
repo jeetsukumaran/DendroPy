@@ -491,7 +491,7 @@ def bitmask_as_newick_string(split, taxon_set, preserve_spaces=False, quote_unde
 
     # do not do the root
     if split == 0 or (split == taxon_set.all_taxa_bitmask()):
-        return "({})".format(",".join(taxlabels))
+        return "({});".format(",".join(taxlabels))
 
     idx = 0
     left = []
@@ -504,7 +504,7 @@ def bitmask_as_newick_string(split, taxon_set, preserve_spaces=False, quote_unde
         idx += 1
         split = split >> 1
     assert ( len(left) + len(right) ) == len(taxlabels)
-    return "(({}), ({}))".format(", ".join(left), ", ".join(right))
+    return "(({}), ({}));".format(", ".join(left), ", ".join(right))
 
 def group_ranges(L):
     """
