@@ -671,28 +671,38 @@ def main():
             default=None,
             choices=["consensus", "mct", "msct"],
             metavar="SUMMARY-TYPE",
-            help="\n".join((
-                "R}Construct and summarize support and other information",
-                "from the source trees to one of the following summary",
-                "topologies:",
-                "- 'consensus' : consensus tree;",
-                "                The minimum frequency threshold can",
-                "                be specified using the '-f' or",
-                "                '--min-clade-freq' flags.",
-                "                This is the DEFAULT if a user-",
-                "                specified target tree is not",
-                "                given through the '-t' or",
-                "                '--target-treefile' options.",
-                "- 'mct'       : maximum clade credibility tree;",
-                "                Tree from the source set that ",
-                "                maximizes the *product* of clade",
-                "                posterior probabilities.",
-                "- 'msct'      : maximum *sum* clade credibility tree;",
-                "                Tree from the source set that ",
-                "                maximizes the *sum* of clade ",
-                "                posterior probabilities.",
-                )))
-
+            help=cli.CustomFormatter.format_definition_list_help(
+                    header=
+                        (
+                        "Construct and summarize support and other information "
+                        "from the source trees to one of the following summary "
+                        "topologies: "
+                        ),
+                    definitions=
+                        (
+                            ("'consensus'",
+                                "A consensus tree. The minimum frequency       "
+                                "threshold of clades to be included            "
+                                "can be specified using the '-f' or            "
+                                "'--min-clade-freq' flags. This is the DEFAULT "
+                                "if a user- specified target tree is not given "
+                                "through the '-t' or '--target-treefile'       "
+                                "options.                                      "
+                            ),
+                            ("'mct'",
+                                "The maximum clade credibility tree.   "
+                                "The tree from the source set that     "
+                                "maximizes the *product* of clade      "
+                                "posterior probabilities.              "
+                            ),
+                            ("'msct'",
+                                "The maximum clade credibility tree.   "
+                                "The tree from the source set that     "
+                                "maximizes the *product* of clade      "
+                                "posterior probabilities.              "
+                            ),
+                        )
+                ))
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
     target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq",
             type=float,
@@ -738,48 +748,75 @@ def main():
             metavar="STRATEGY",
             choices=edge_length_summarization_choices,
             default=None,
-            help="\n".join((
-                "R}Set the edge lengths of the target or summary trees based ",
-                "on the specified summarization STRATEGY:",
-                "- 'mean-length'    : Edge lengths will be set to the mean",
-                "                     of the lengths of the corresponding",
-                "                     split or clade in the source trees.",
-                "- 'median-length'  : Edge lengths will be set to the median",
-                "                     of the lengths of the corresponding",
-                "                     split or clade in the source trees.",
-                "- 'mean-age'       : Edge lengths will be adjusted so that",
-                "                     the age of subtended nodes will be equal",
-                "                     to the mean age of the corresponding",
-                "                     split or clade in the source trees.",
-                "                     Source trees will need to to be ",
-                "                     ultrametric for this option.",
-                "- 'median-age'     : Edge lengths will be adjusted so that",
-                "                     the age of subtended nodes will be equal",
-                "                     to the median age of the corresponding",
-                "                     split or clade in the source trees.",
-                "                     Source trees will need to to be ",
-                "                     ultrametric for this option.",
-                "- 'support'        : Edge lengths will be set to the support",
-                "                     value for the split represented by the ",
-                "                     edge.",
-                "- 'keep'           : Do not change the existing edge lengths.",
-                "                     This is the DEFAULT if target tree(s) are",
-                "                     sourced from an external file using the",
-                "                     '-t' or '--target-treefile' option",
-                "- 'clear'          : Edge lengths will be cleared from the",
-                "                     target trees if they are present.",
-                "Note the default settings varies depending according to the",
-                "following, in order of preference:",
-                "(1) If target trees are specified using the '-t' or",
-                "    '--target-treefile' option, then the default edge",
-                "    summarization strategy is: 'keep'.",
-                "(2) If target trees are not specified, but the",
-                "    '--summarize-node-ages' option is specified, then the",
-                "    default edge summarization strategy is: 'mean-age'.",
-                "(3) If no target trees are specified and the node ages ",
-                "    are NOT specified to be summarized, then the default ",
-                "    edge summarization strategy is: 'mean-length'.",
-                )))
+            help=cli.CustomFormatter.format_definition_list_help(
+                    header=
+                        (
+                        "Set the edge lengths of the target or        "
+                        "summary trees based on the specified         "
+                        "summarization STRATEGY:                      "
+                        ),
+                    definitions=
+                        (
+                            ("'mean-length'",
+                                "Edge lengths will be set to the mean  "
+                                "of the lengths of the corresponding   "
+                                "split or clade in the source trees.   "
+                            ),
+                            ("'median-length'",
+                                " Edge lengths will be set to the      "
+                                " median of the lengths of the         "
+                                " corresponding split or clade in the  "
+                                " source trees.                        "
+                            ),
+                            ("'mean-age'",
+                                "Edge lengths will be adjusted so      "
+                                "that the age of subtended nodes will  "
+                                "be equal to the mean age of the       "
+                                "corresponding split or clade in the   "
+                                "source trees. Source trees will need  "
+                                "to to be ultrametric for this option. "
+                            ),
+                            ("'median-age'",
+                                "Edge lengths will be adjusted so     "
+                                "that the age of subtended nodes will "
+                                "be equal to the median age of the    "
+                                "corresponding split or clade in the  "
+                                "source trees. Source trees will need "
+                                "to to be ultrametric for this option."
+                                            ),
+                            ("support",
+                                "Edge lengths will be set to the       "
+                                "support value for the split           "
+                                "represented by the edge.              "
+                            ),
+                            ("'keep'",
+                                "Do not change the existing edge       "
+                                "lengths. This is the DEFAULT if       "
+                                "target tree(s) are sourced from an    "
+                                "external file using the '-t' or       "
+                                "'--target-treefile' option            "
+                            ),
+                            ("'clear'",
+                                "Edge lengths will be cleared from the "
+                                "target trees if they are present.     "
+                            ),
+                        ),
+                    tail="\n".join((
+                            "R}Note the default settings varies according to the ",
+                            "following, in order of preference:                  ",
+                            "(1) If target trees are specified using the '-t' or ",
+                            "    '--target-treefile' option, then the default edge ",
+                            "    summarization strategy is: 'keep'. ",
+                            "(2) If target trees are not specified, but the ",
+                            "    '--summarize-node-ages' option is specified, ",
+                            "    then the default edge summarization strategy is: ",
+                            "    'mean-age'. ",
+                            "(3) If no target trees are specified and the ",
+                            "    node ages are NOT specified to be summarized, ",
+                            "    then the default edge summarization strategy is: ",
+                            "    'mean-length'. ",
+                        ))
+                ))
     edge_length_summarization_options.add_argument("--force-minimum-edge-length",
             default=None,
             type=float,
@@ -800,15 +837,23 @@ def main():
             dest="node_labels",
             default="support",
             choices=["support", "keep", "clear",],
-            help="\n".join((
-                "R}Set the node labels of the summary or target tree(s):",
-                "- 'support'        : Node labels will be set to the support",
-                "                     value for the clade represented by the ",
-                "                     node. This is the DEFAULT.",
-                "- 'keep'           : Do not change the existing node labels.",
-                "- 'clear'          : Node labels will be cleared from the",
-                "                     target trees if they are present.",
-                )))
+            help=cli.CustomFormatter.format_definition_list_help(
+                header="Set the node labels of the summary or target tree(s):",
+                definitions=(
+                    ("'support'",
+                        "Node labels will be set to the support value  "
+                        "for the clade represented by the node. This is "
+                        "the DEFAULT.                                  "
+                    ),
+                    ("'keep'",
+                        "Do not change the existing node labels."
+                    ),
+                    ("'clear'",
+                        "Node labels will be cleared from the target   "
+                        "trees if they are present.                    "
+                    )
+                )
+                ))
     node_summarization_options.add_argument("--suppress-annotations", "--no-annotations",
             action="store_true",
             default=False,
@@ -835,11 +880,40 @@ def main():
     #         default=None,
     #         help="Do not summarize edge lengths.")
 
-    output_options = parser.add_argument_group("Primary Output Options")
+    output_options = parser.add_argument_group("Output Options")
     output_options.add_argument("-o","--output-tree-filepath",
             metavar="FILEPATH",
             default=None,
-            help="Path to output file (if not given, will print to standard output).")
+            help="Path to output file (if not specified and '-O'/'--extended-output-prefix' is also not specified, will print to standard output).")
+    # output_options.add_argument("-O", "--extended-output-prefix",
+    #         default=None,
+    #         metavar="PREFIX",
+    #         help="\n".join((
+    #             "R}If specified, multiple output files will be generated",
+    #             "with filepaths prefixed with PREFIX:",
+    #             "- 'PREFIX.summary.trees'",
+    #             "    The primary output: tree or trees summarizing the",
+    #             "    source trees.",
+    #             "- 'PREFIX.trprobs.trees'",
+    #             "    A collection of topologies found in the sources,",
+    #             "    reported with their associated posterior,",
+    #             "    probabilities as metadata annotations.",
+    #             "- 'PREFIX.bipartitions.trees'",
+    #             "   A collection of bipartitions, each represented as",
+    #             "   a tree, with associated frequencies as metadata",
+    #             "   annotations",
+    #             "- 'PREFIX.bipartitions.txt'",
+    #             "   A collection of bipartitions, each represented as",
+    #             "   a group pattern, with associated frequencies (",
+    #             ############################################################################
+    #             ##                                                                        ##
+    #             ##                                TODO                                    ##
+    #             ##                                                                        ##
+    #             ############################################################################
+    #             )))
+    #         help=(
+    #             ""
+    #             )
     output_options.add_argument("-F","--output-format",
             default=None,
             choices=["nexus", "newick", "phylip", "nexml"],

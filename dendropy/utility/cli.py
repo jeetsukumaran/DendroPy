@@ -149,10 +149,45 @@ def compose_citation_for_program(
 class CustomFormatter(argparse.HelpFormatter):
 
     def _split_lines(self, text, width):
-        # this is the RawTextHelpFormatter._split_lines
+       # this is the RawTextHelpFormatter._split_lines
        if text.startswith('R}'):
            return text[2:].splitlines()
        return argparse.HelpFormatter._split_lines(self, text, width)
+
+    @staticmethod
+    def format_definition_list_help(
+           header,
+           definitions,
+           tail=None):
+        parts = []
+        if header:
+            if header.startswith("R}"):
+                header = header
+            else:
+                header = re.sub(r'\s+', ' ', header)
+                header = "R}" + textwrap.fill(header, width=54)
+            parts.append(header)
+        else:
+            parts.append("R}")
+        for term, term_definition in definitions:
+            parts.append("- {}".format(term))
+            body = textwrap.fill(
+                    re.sub(r'\s+', ' ', term_definition),
+                    width=54,
+                    initial_indent="      ",
+                    subsequent_indent="      ",
+                    replace_whitespace=True,
+                    drop_whitespace=True,
+                    )
+            parts.append(body)
+        if tail:
+            if tail.startswith("R}"):
+                tail = tail[2:]
+            else:
+                tail = re.sub(r'\s+', ' ', tail)
+                tail = textwrap.fill(tail, width=54)
+            parts.append(tail)
+        return "\n".join(parts)
 
     # for debugging: prints the name of the argument being processed
     # def _format_action_invocation(self, *args, **kwargs):
