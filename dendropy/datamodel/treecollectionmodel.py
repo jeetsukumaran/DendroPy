@@ -2617,27 +2617,66 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         #     bipartition_encoding_freqs[frozenset(bipartition_encoding)] = freq
         # return bipartition_encoding_freqs
         bipartition_encoding_freqs = {}
-        topology_frequencies = self.topology_frequencies()
-        for tree, freq in topology_frequencies.items():
-            bipartition_encoding_freqs[ frozenset(tree.encode_bipartitions()) ] = freq
+        topologies = self.topologies()
+        for tree in topologies:
+            bipartition_encoding_freqs[ frozenset(tree.encode_bipartitions()) ] = tree.frequency
         return bipartition_encoding_freqs
 
-    def topology_frequencies(self):
+    def topologies(self,
+            sort_descending=None,
+            frequency_attr_name="frequency",
+            frequency_annotation_name="frequency",
+            ):
         """
-        Returns a dictionary with keys being (reconstructed) tree
-        topologies and values the frequency of that topology in
-        the collection.
+        Returns a :class:`TreeList` instance containing the reconstructed tree
+        topologies (i.e. :class:`Tree` instances with no edge weights) in the
+        collection, with the frequency added as an attributed.
+
+        Parameters
+        ----------
+        sort_descending : bool
+            If `True`, then topologies will be sorted in *descending* frequency
+            order (i.e., topologies with the highest frequencies will be listed
+            first). If `False`, then they will be sorted in *ascending*
+            frequency. If `None` (default), then they will not be sorted.
+        frequency_attr_name : str
+            Name of attribute to add to each :class:`Tree` representing
+            the frequency of that topology in the collection. If `None`
+            then the attribute will not be added.
+        frequency_annotation_name : str
+            Name of annotation to add to the annotations of each :class:`Tree`,
+            representing the frequency of that topology in the collection. The
+            value of this annotation will be dynamically-bound to the attribute
+            specified by `frequency_attr_name` unless that is `None`. If
+            `frequency_annotation_name` is `None` then the annotation will not
+            be added.
         """
+        if sort_descending is not None and frequency_attr_name is None:
+                raise ValueError("Attribute needs to be set on topologies to enable sorting")
         split_bitmask_set_freqs = self.split_bitmask_set_frequencies()
-        topology_freqs = {}
+        topologies = TreeList(taxon_namespace=self.taxon_namespace)
         for split_bitmask_set, freq in split_bitmask_set_freqs.items():
             tree = self.tree_type.from_split_bitmasks(
                     split_bitmasks=split_bitmask_set,
                     taxon_namespace=self.taxon_namespace,
                     is_rooted=self._is_rooted_trees,
                     )
-            topology_freqs[tree] = freq
-        return topology_freqs
+            if frequency_attr_name is not None:
+                setattr(tree, frequency_attr_name, freq)
+                if frequency_annotation_name is not None:
+                    tree.annotations.add_bound_attribute(
+                        attr_name=frequency_attr_name,
+                        annotation_name=frequency_annotation_name,
+                        )
+            else:
+                tree.annotations.add_new(
+                    frequency_annotation_name,
+                    freq,
+                    )
+            topologies.append(tree)
+        if sort_descending is not None:
+            topologies.sort(key=lambda t: getattr(t, frequency_attr_name), reverse=not sort_descending)
+        return topologies
 
 
 

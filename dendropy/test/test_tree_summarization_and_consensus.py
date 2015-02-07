@@ -309,11 +309,11 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
                     "newick",
                     tree_offset=tree_offset,
                     store_tree_weights=is_weighted)
-            calculated_topology_freqs = ta.topology_frequencies()
             be_to_tree = {}
             for tree in source_trees:
                 be_to_tree[tree.key] = tree
-            for tree in calculated_topology_freqs:
+            topologies = ta.topologies()
+            for tree in topologies:
                 b = frozenset(tree.encode_bipartitions())
                 # stree = be_to_tree[b]
                 # print("{} ({}): {}".format(
@@ -327,7 +327,7 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
                 #         stree.total_weighted_count / source_trees.total_weight,
                 #     )))
                 self.assertAlmostEqual(
-                        calculated_topology_freqs[tree],
+                        tree.frequency,
                         bipartition_encoding_freqs[b])
 
             calculated_bipartition_encoding_freqs = ta.bipartition_encoding_frequencies()
@@ -374,11 +374,11 @@ class TestTopologyCounter(dendropytest.ExtendedTestCase):
             b = frozenset(tree.encode_bipartitions())
             expected_freqs[b] = float(weights[idx])/sum(weights)
         ta = test_trees.as_tree_array()
-        result_tree_freqs = ta.topology_frequencies()
-        self.assertEqual(len(result_tree_freqs), len(expected_freqs))
-        for tree in result_tree_freqs:
+        topologies = ta.topologies()
+        self.assertEqual(len(topologies), len(expected_freqs))
+        for tree in topologies:
             b = frozenset(tree.encode_bipartitions())
-            self.assertAlmostEqual(result_tree_freqs[tree], expected_freqs[b])
+            self.assertAlmostEqual(tree.frequency, expected_freqs[b])
 
 if __name__ == "__main__":
     unittest.main()
