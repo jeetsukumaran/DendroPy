@@ -1741,6 +1741,11 @@ def main():
                     reverse=True,
                     )
             bipartition_data["bipartitionId"] = bipartition.split_bitmask
+            bipartition_data["bipartitionBitmask"] = bipartition.leafset_as_bitstring(
+                    symbol0="0",
+                    symbol1="1",
+                    reverse=False,
+                    )
             bipartition_data["frequency"] = tree_array.split_distribution[split_bitmask]
             for summary_stat_prefix, summary_source in (
                     ("edge_length", tree_array.split_distribution.split_edge_length_summaries),
@@ -1780,22 +1785,22 @@ def main():
             tree.label = "Bipartition{}".format(bipartition_data["bipartitionId"])
             # tree.label = "Bipartition{}".format(bipartition.split_as_bitstring())
             tree.weight = bipartition_data["frequency"]
-            tree.seed_node.annotations.add_new("bipartitionId",
-                    '"{}"'.format(bipartition_data["bipartitionId"]))
-            tree_array.summarize_splits_on_tree(
-                    tree=tree,
-                    is_bipartitions_updated=True,
-                    **split_summarization_kwargs)
-            # for key in bipartition_data:
-            #     if key in ("newick", "bipartitionGroup"):
-            #         continue
-            #     value = bipartition_data[key]
-            #     if key == "bipartitionId":
-            #         # FigTree cannot cast bigger integers values to float
-            #         value = '"{}"'.format(value)
-            #     tree.seed_node.annotations.add_new(
-            #             textprocessing.snake_case(key),
-            #             value)
+            # tree.seed_node.annotations.add_new("bipartitionId",
+            #         '"{}"'.format(bipartition_data["bipartitionId"]))
+            # tree_array.summarize_splits_on_tree(
+            #         tree=tree,
+            #         is_bipartitions_updated=False,
+            #         **split_summarization_kwargs)
+            for key in bipartition_data:
+                if key in ("newick", ):
+                    continue
+                value = bipartition_data[key]
+                if key in ("bipartitionId", "bipartitionBitmask"):
+                    # FigTree cannot cast bigger integers values to float
+                    value = '"{}"'.format(value)
+                tree.seed_node.annotations.add_new(
+                        textprocessing.snake_case(key),
+                        value)
             bipartitions_as_trees.append(tree)
             return bipartition
 
