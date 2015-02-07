@@ -935,7 +935,7 @@ def main():
             default=None,
             choices=["nexus", "newick", "phylip", "nexml"],
             help="Format of the output tree file (if not specifed, defaults to input format, if this has been explicitly specified, or 'nexus' otherwise).")
-    output_options.add_argument("-O", "--extended-output",
+    output_options.add_argument("-x", "--extended-output",
             dest="extended_output_prefix",
             default=None,
             metavar="PREFIX",
@@ -1236,7 +1236,7 @@ def main():
     if args.trprobs_filepath:
         messenger.error(
                 "The '--trprobs' or '--calc-tree-probabilities' "
-                "option is no longer supported directly. Use '-O' or "
+                "option is no longer supported directly. Use '-x' or "
                 "'--extended-output' to specify an extended suite of "
                 "output, which includes the topology probabilities. "
                 )
@@ -1244,7 +1244,7 @@ def main():
     if args.split_edge_map_filepath:
         messenger.error(
                 "The '--extract-edges' option is no longer supported. "
-                "Use '-O' or '--extended-output' to specify an "
+                "Use '-x' or '--extended-output' to specify an "
                 "extended suite of output which includes this "
                 "information. "
                 )
@@ -1746,6 +1746,7 @@ def main():
                     symbol1="1",
                     reverse=False,
                     )
+            bipartition_data["count"] = tree_array.split_distribution.split_counts[split_bitmask]
             bipartition_data["frequency"] = tree_array.split_distribution[split_bitmask]
             for summary_stat_prefix, summary_source in (
                     ("edge_length", tree_array.split_distribution.split_edge_length_summaries),
@@ -1825,12 +1826,12 @@ def main():
             metainfo.append("Topology Probabilities")
             metainfo.append("======================")
             metainfo.append("")
-            metainfo.append(
-                    "Topologies in the source set of trees, listing in "
-                    "descending order of frequency with an indication  "
-                    "of their individual frequencies ('frequency') and "
-                    "cumulative frequencies ('cumulative_frequency').  "
-                    )
+            metainfo.append("\n".join((
+                    "Topologies in the source set of trees, listing in",
+                    "descending order of frequency with an indication ",
+                    "of their individual frequencies ('frequency') and",
+                    "cumulative frequencies ('cumulative_frequency'). ",
+                    )))
             metainfo.extend(summarization_metainfo)
         else:
             metainfo = []
@@ -1866,11 +1867,11 @@ def main():
             metainfo.append("Bipartitions")
             metainfo.append("============")
             metainfo.append("")
-            metainfo.append(
-                    "Bipartitions in the source set of trees, represented "
-                    "as trees, with information summarized from the source "
-                    "set of trees annotated as metadata."
-                    )
+            metainfo.append("\n".join((
+                    "Bipartitions in the source set of trees, represented ",
+                    "as trees, with information summarized from the source ",
+                    "set of trees annotated as metadata.",
+                    )))
             metainfo.extend(summarization_metainfo)
         else:
             metainfo = []
