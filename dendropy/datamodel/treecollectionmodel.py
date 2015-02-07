@@ -1646,6 +1646,10 @@ class SplitDistributionSummarizer(object):
             If `True`, an inferred edge length that is less than 0 will result
             in a `ValueError`.
 
+        no_data_value : str or float
+            Value to substitute in for node ages, edge lengths and associated
+            summary statistics if a split is not found. Defaults to 0.0.
+
         """
         self.set_edge_lengths = kwargs.pop("set_edge_lengths", None)
         self.add_support_as_node_attribute = kwargs.pop("add_support_as_node_attribute", True)
@@ -1669,6 +1673,7 @@ class SplitDistributionSummarizer(object):
             setattr(self, "is_{}_annotation_dynamic".format(fieldname), kwargs.pop("is_{}_annotation_dynamic".format(fieldname), True))
         self.minimum_edge_length = kwargs.pop("minimum_edge_length", None)
         self.error_on_negative_edge_lengths = kwargs.pop("error_on_negative_edge_lengths", False)
+        self.no_data_value = kwargs.pop("no_data_value", 0.0)
         if kwargs:
             TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -1735,7 +1740,7 @@ class SplitDistributionSummarizer(object):
             if (self.add_node_age_summaries_as_node_attributes or self.add_node_age_summaries_as_node_annotations) and node_age_summaries:
                 for fieldname, stats_fieldname in zip(self.node_age_summaries_fieldnames, self.summary_stats_fieldnames):
                     if not node_age_summaries or split_bitmask not in node_age_summaries:
-                        value = 0.0
+                        value = self.no_data_value
                     else:
                         value = node_age_summaries[split_bitmask].get(stats_fieldname, 0.0)
                     self._decorate(
@@ -1748,7 +1753,7 @@ class SplitDistributionSummarizer(object):
             if (self.add_edge_length_summaries_as_edge_attributes or self.add_edge_length_summaries_as_edge_annotations) and edge_length_summaries:
                 for fieldname, stats_fieldname in zip(self.edge_length_summaries_fieldnames, self.summary_stats_fieldnames):
                     if not edge_length_summaries or split_bitmask not in edge_length_summaries:
-                        value = 0.0
+                        value = self.no_data_value
                     else:
                         value = edge_length_summaries[split_bitmask].get(stats_fieldname, 0.0)
                     self._decorate(
@@ -1773,12 +1778,12 @@ class SplitDistributionSummarizer(object):
                     try:
                         node.age = node_age_summaries[split_bitmask]["mean"]
                     except KeyError:
-                        node.age = 0.0
+                        node.age = self.no_data_value
                 elif self.set_edge_lengths == "median-age":
                     try:
                         node.age = node_age_summaries[split_bitmask]["median"]
                     except KeyError:
-                        node.age = 0.0
+                        node.age = self.no_data_value
                 else:
                     raise ValueError(self.set_edge_lengths)
             elif self.set_edge_lengths in ("mean-length", "median-length"):
@@ -1788,12 +1793,12 @@ class SplitDistributionSummarizer(object):
                     try:
                         node.edge.length = edge_length_summaries[split_bitmask]["mean"]
                     except KeyError:
-                        node.edge.length = 0.0
+                        node.edge.length = self.no_data_value
                 elif self.set_edge_lengths == "median-length":
                     try:
                         node.edge.length = edge_length_summaries[split_bitmask]["median"]
                     except KeyError:
-                        node.edge.length = 0.0
+                        node.edge.length = self.no_data_value
                 else:
                     raise ValueError(self.set_edge_lengths)
                 if self.minimum_edge_length is not None and edge.length < self.minimum_edge_length:

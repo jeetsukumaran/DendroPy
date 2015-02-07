@@ -1712,6 +1712,7 @@ def main():
         # for stat_fieldname in SplitDistribution.SUMMARY_STATS_FIELDNAMES:
         #     f = textprocessing.camel_case("{}_{}".format(summary_stat_prefix, stat_fieldname))
         #     bipartition_table_fieldnames.append(f)
+        _inf = float("inf")
         def _add_split_bitmask_data(split_bitmask):
 
             # do not add if already accessioned
@@ -1745,21 +1746,56 @@ def main():
                     ("edge_length", tree_array.split_distribution.split_edge_length_summaries),
                     ("node_age", tree_array.split_distribution.split_node_age_summaries),
                     ):
+                if not summary_source:
+                    continue
                 for stat_fieldname in dendropy.SplitDistribution.SUMMARY_STATS_FIELDNAMES:
                     f = textprocessing.camel_case("{}_{}".format(summary_stat_prefix, stat_fieldname))
                     if split_bitmask in summary_source:
-                        bipartition_data[f] = summary_source[split_bitmask].get(stat_fieldname, 0.0)
+                        value = summary_source[split_bitmask].get(stat_fieldname, 0.0)
                     else:
-                        bipartition_data[f] = 0.0
-            bipartition_data["newick"] = "'{}'".format(bipartition_newick_str)
+                        value is None
+                    if value is None:
+                        if stat_fieldname in ("hpd95", "quant_5_95", "range"):
+                            value = (0.0, 0.0)
+                        else:
+                            value = 0.0
+                    elif value == _inf:
+                        value = 0.0
+                    if isinstance(value, list) or isinstance(value, tuple):
+                        for sub_f, sub_value in zip(("Min", "Max"), sorted(value)):
+                            bipartition_data[f+sub_f] = sub_value
+                    else:
+                        bipartition_data[f] = value
+            bipartition_data["newick"] = '"{}"'.format(bipartition_newick_str)
             bipartition_table.append(bipartition_data)
 
             # bipartition as tree
             tree = dendropy.Tree.get_from_string(
                     bipartition_newick_str,
                     "newick",
-                    taxon_namespace=tree_array.taxon_namespace)
-            tree.bipartition_data = bipartition_data
+                    taxon_namespace=tree_array.taxon_namespace,
+                    rooting=dendropy.get_rooting_argument(is_rooted=tree_array.is_rooted_trees),
+                    extract_comment_metadata=False,
+                    )
+            tree.label = "Bipartition{}".format(bipartition_data["bipartitionId"])
+            # tree.label = "Bipartition{}".format(bipartition.split_as_bitstring())
+            tree.weight = bipartition_data["frequency"]
+            tree.seed_node.annotations.add_new("bipartitionId",
+                    '"{}"'.format(bipartition_data["bipartitionId"]))
+            tree_array.summarize_splits_on_tree(
+                    tree=tree,
+                    is_bipartitions_updated=True,
+                    **split_summarization_kwargs)
+            # for key in bipartition_data:
+            #     if key in ("newick", "bipartitionGroup"):
+            #         continue
+            #     value = bipartition_data[key]
+            #     if key == "bipartitionId":
+            #         # FigTree cannot cast bigger integers values to float
+            #         value = '"{}"'.format(value)
+            #     tree.seed_node.annotations.add_new(
+            #             textprocessing.snake_case(key),
+            #             value)
             bipartitions_as_trees.append(tree)
             return bipartition
 
@@ -1819,6 +1855,20 @@ def main():
                     file_comments=metainfo)
 
         #### EXTENDED OUTPUT: bipartition trees
+        if not args.suppress_analysis_metainformation:
+            metainfo = []
+            metainfo.append("============")
+            metainfo.append("Bipartitions")
+            metainfo.append("============")
+            metainfo.append("")
+            metainfo.append(
+                    "Bipartitions in the source set of trees, represented "
+                    "as trees, with information summarized from the source "
+                    "set of trees annotated as metadata."
+                    )
+            metainfo.extend(summarization_metainfo)
+        else:
+            metainfo = []
         output_path = extended_output_paths["bipartition-trees"]
         messenger.info("Writing bipartition trees to: '{}'".format(output_path))
         with open(output_path, "w") as out:
