@@ -1684,11 +1684,59 @@ def main():
             file_comments=primary_output_metainfo)
 
     ### EXTENDED OUTPUT
+    if extended_output_paths:
+        #### EXTENDED OUTPUT: summary trees
 
-    #### EXTENDED OUTPUT: summary trees
-    #### EXTENDED OUTPUT: topologies / trprobs
-    #### EXTENDED OUTPUT: bipartition trees
-    #### EXTENDED OUTPUT: bipartition table
+        #### EXTENDED OUTPUT: topologies / trprobs
+        if not args.suppress_analysis_metainformation:
+            metainfo = []
+            metainfo.append("======================")
+            metainfo.append("Topology Probabilities")
+            metainfo.append("======================")
+            metainfo.append("")
+            metainfo.append(
+                    "Topologies in the source set of trees, listing in "
+                    "descending order of frequency with an indication  "
+                    "of their individual frequencies ('frequency') and "
+                    "cumulative frequencies ('cumulative_frequency').  "
+                    )
+            metainfo.extend(summarization_metainfo)
+        else:
+            metainfo = []
+        output_path = extended_output_paths["topologies"]
+        messenger.info("Writing topologies to: '{}'".format(output_path))
+        topologies = tree_array.topologies(
+                sort_descending=True,
+                frequency_attr_name="frequency",
+                frequency_annotation_name="frequency",
+                )
+        cumulative_frequency = 0.0
+        for tree in topologies:
+            tree.weight = tree.frequency
+            cumulative_frequency += tree.frequency
+            tree.cumulative_frequency = cumulative_frequency
+            tree.annotations.add_bound_attribute("cumulative_frequency")
+            # tree_array.summarize_splits_on_tree(
+            #         tree=tree,
+            #         is_bipartitions_updated=True,
+            #         support_as_percentages=args.support_as_percentages,
+            #         support_label_decimals=args.support_as_percentages,
+            #         add_support_as_node_annotation=not args.suppress_annotations,
+            #         add_node_age_summaries_as_node_attributes=False,
+            #         add_node_age_summaries_as_node_annotations=False,
+            #         add_edge_length_summaries_as_edge_attributes=False,
+            #         add_edge_length_summaries_as_edge_annotations=False,
+            #         )
+        with open(output_path, "w") as out:
+            _write_trees(trees=topologies,
+                    output_dest=out,
+                    args=args,
+                    file_comments=metainfo)
+
+
+        #### EXTENDED OUTPUT: bipartition trees
+
+        #### EXTENDED OUTPUT: bipartition table
 
     ###################################################
     #  WRAP UP

@@ -1304,7 +1304,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             support = split_frequencies.get(split, 0.0)
             yield support
 
-    def split_edge_length_summaries(self):
+    def calc_split_edge_length_summaries(self):
         self._split_edge_length_summaries = {}
         for split, elens in self.split_edge_lengths.items():
             if not elens:
@@ -1315,7 +1315,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 pass
         return self._split_edge_length_summaries
 
-    def split_node_age_summaries(self):
+    def calc_split_node_age_summaries(self):
         self._split_node_age_summaries = {}
         for split, ages in self.split_node_ages.items():
             if not ages:
@@ -1326,19 +1326,19 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 pass
         return self._split_node_age_summaries
 
-    # def _get_split_edge_length_summaries(self):
-    #     if self._split_edge_length_summaries is None \
-    #             or self._trees_counted_for_summaries != self.total_trees_counted:
-    #         self.split_edge_length_summaries()
-    #     return dict(self._split_edge_length_summaries)
-    # split_edge_length_summaries = property(_get_split_edge_length_summaries)
+    def _get_split_edge_length_summaries(self):
+        if self._split_edge_length_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.calc_split_edge_length_summaries()
+        return self._split_edge_length_summaries
+    split_edge_length_summaries = property(_get_split_edge_length_summaries)
 
-    # def _get_split_node_age_summaries(self):
-    #     if self._split_node_age_summaries is None \
-    #             or self._trees_counted_for_summaries != self.total_trees_counted:
-    #         self.split_node_age_summaries()
-    #     return dict(self._split_node_age_summaries)
-    # split_node_age_summaries = property(_get_split_node_age_summaries)
+    def _get_split_node_age_summaries(self):
+        if self._split_node_age_summaries is None \
+                or self._trees_counted_for_summaries != self.total_trees_counted:
+            self.calc_split_node_age_summaries()
+        return self._split_node_age_summaries
+    split_node_age_summaries = property(_get_split_node_age_summaries)
 
     def log_product_of_split_support_on_tree(self,
             tree,
@@ -1707,8 +1707,8 @@ class SplitDistributionSummarizer(object):
             support_label_fn = lambda freq: self.support_label_compose_fn(freq)
         else:
             support_label_fn = lambda freq: "{:.{places}f}".format(freq, places=self.support_label_decimals)
-        node_age_summaries = split_distribution.split_node_age_summaries()
-        edge_length_summaries = split_distribution.split_edge_length_summaries()
+        node_age_summaries = split_distribution.split_node_age_summaries
+        edge_length_summaries = split_distribution.split_edge_length_summaries
         split_freqs = split_distribution.split_frequencies
         assert len(self.node_age_summaries_fieldnames) == len(self.summary_stats_fieldnames)
         for node in tree:
@@ -2675,7 +2675,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                     )
             topologies.append(tree)
         if sort_descending is not None:
-            topologies.sort(key=lambda t: getattr(t, frequency_attr_name), reverse=not sort_descending)
+            topologies.sort(key=lambda t: getattr(t, frequency_attr_name), reverse=sort_descending)
         return topologies
 
 
