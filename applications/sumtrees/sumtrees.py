@@ -467,6 +467,49 @@ class TreeProcessor(object):
             return tree.taxon_namespace
 
 ##############################################################################
+## Output
+
+def _write_trees(trees,
+        output_dest,
+        args,
+        file_comments):
+    if args.output_tree_format == "newick" or args.output_tree_format == "phylip":
+        trees.write_to_stream(
+                output_dest,
+                "newick",
+                suppress_rooting=False,
+                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
+                unquoted_underscores=True if args.preserve_underscores else False,
+                preserve_spaces=True if args.preserve_underscores else False,
+                store_tree_weights=True,
+                suppress_annotations=args.suppress_annotations,
+                suppress_item_comments=args.clear_item_comments,
+                )
+    elif args.output_tree_format == "nexus":
+        trees.write_to_stream(
+                output_dest,
+                "nexus",
+                suppress_rooting=False,
+                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
+                unquoted_underscores=True if args.preserve_underscores else False,
+                preserve_spaces=True if args.preserve_underscores else False,
+                store_tree_weights=True,
+                suppress_annotations=args.suppress_annotations,
+                suppress_item_comments=args.clear_item_comments,
+                simple=args.no_taxa_block,
+                file_comments=file_comments,
+                )
+    elif args.output_tree_format == "nexml":
+        if file_comments:
+            trees.comments = file_comments
+        trees.write_to_stream(
+                output_dest,
+                "nexml",
+                )
+    else:
+        raise ValueError(args.output_tree_format)
+
+##############################################################################
 ## Front-End
 
 def citation(args):
@@ -884,40 +927,46 @@ def main():
     output_options.add_argument("-o","--output-tree-filepath",
             metavar="FILEPATH",
             default=None,
-            help="Path to output file (if not specified and '-O'/'--extended-output-prefix' is also not specified, will print to standard output).")
-    # output_options.add_argument("-O", "--extended-output-prefix",
-    #         default=None,
-    #         metavar="PREFIX",
-    #         help="\n".join((
-    #             "R}If specified, multiple output files will be generated",
-    #             "with filepaths prefixed with PREFIX:",
-    #             "- 'PREFIX.summary.trees'",
-    #             "    The primary output: tree or trees summarizing the",
-    #             "    source trees.",
-    #             "- 'PREFIX.trprobs.trees'",
-    #             "    A collection of topologies found in the sources,",
-    #             "    reported with their associated posterior,",
-    #             "    probabilities as metadata annotations.",
-    #             "- 'PREFIX.bipartitions.trees'",
-    #             "   A collection of bipartitions, each represented as",
-    #             "   a tree, with associated frequencies as metadata",
-    #             "   annotations",
-    #             "- 'PREFIX.bipartitions.txt'",
-    #             "   A collection of bipartitions, each represented as",
-    #             "   a group pattern, with associated frequencies (",
-    #             ############################################################################
-    #             ##                                                                        ##
-    #             ##                                TODO                                    ##
-    #             ##                                                                        ##
-    #             ############################################################################
-    #             )))
-    #         help=(
-    #             ""
-    #             )
-    output_options.add_argument("-F","--output-format",
+            help="Path to output file (if not specified, will print to standard output).")
+    output_options.add_argument("-F","--output-tree-format",
             default=None,
             choices=["nexus", "newick", "phylip", "nexml"],
             help="Format of the output tree file (if not specifed, defaults to input format, if this has been explicitly specified, or 'nexus' otherwise).")
+    output_options.add_argument("-O", "--extended-output",
+            dest="extended_output_prefix",
+            default=None,
+            metavar="PREFIX",
+            help=cli.CustomFormatter.format_definition_list_help(
+                    header=
+                        (
+                        "If specified, extended summarization information "
+                        "will be generated, consisting of the following "
+                        "files:"
+                        ),
+                    definitions=
+                        (
+                            # ("'<PREFIX>.summary.trees'",
+                            #     "Summary or target trees onto which the "
+                            #     "summarization information from the source set "
+                            #     "has been mapped."
+                            # ),
+                            ("'<PREFIX>.topologies.trees'",
+                                "A collection of topologies found in the sources "
+                                "reported with their associated posterior "
+                                "probabilities as metadata annotations."
+                            ),
+                            ("'<PREFIX>.bipartitions.trees'",
+                                "A collection of bipartitions, each represented as "
+                                "a tree, with associated information as metadata"
+                                "annotations."
+                            ),
+                            ("'<PREFIX>.bipartitions.tsv'",
+                                "Table listing bipartitions as a group pattern as "
+                                "the key column, and information regarding each "
+                                "the bipartitions as the remaining columns."
+                            ),
+                        )
+                        ))
     output_options.add_argument("--no-taxa-block",
             action="store_true",
             default=False,
@@ -938,19 +987,19 @@ def main():
             default=False,
             help="Replace/overwrite output file without asking if it already exists.")
 
-    secondary_output_options = parser.add_argument_group("Secondary Output Options")
-    secondary_output_options.add_argument("--trprobs", "--calc-tree-probabilities",
+    deprecated_output_options = parser.add_argument_group("Deprecated Output Options")
+    deprecated_output_options.add_argument("--trprobs", "--calc-tree-probabilities",
             dest="trprobs_filepath",
             default=None,
             metavar="FILEPATH",
-            help=("If specified, a file listing tree (topologies) and the "
-                 "frequencies of their occurrences will be saved to FILEPATH."))
-    secondary_output_options.add_argument("--extract-edges",
+            help=argparse.SUPPRESS,
+            )
+    deprecated_output_options.add_argument("--extract-edges",
             dest="split_edge_map_filepath",
             default=None,
             metavar="FILEPATH",
-            help=("if specified, a tab-delimited file of splits and their edge "
-                  "lengths across input trees will be saved to FILEPATH"))
+            help=argparse.SUPPRESS,
+            )
 
     multiprocessing_options = parser.add_argument_group("Parallel Processing Options")
     multiprocessing_options.add_argument("-M", "--maximum-multiprocessing",
@@ -1180,6 +1229,32 @@ def main():
     ######################################################################
     ## Output File Setup
 
+    # legacy
+    if args.trprobs_filepath:
+        messenger.error(
+                "The '--trprobs' or '--calc-tree-probabilities' "
+                "option is no longer supported directly. Use '-O' or "
+                "'--extended-output' to specify an extended suite of "
+                "output, which includes the topology probabilities. "
+                )
+        sys.exit(1)
+    if args.split_edge_map_filepath:
+        messenger.error(
+                "The '--extract-edges' option is no longer supported. "
+                "Use '-O' or '--extended-output' to specify an "
+                "extended suite of output which includes this "
+                "information. "
+                )
+        sys.exit(1)
+
+    # output format
+    if args.output_tree_format is None:
+        if args.input_format is None or args.input_format == "nexus/newick":
+            args.output_tree_format = "nexus"
+        else:
+            args.output_tree_format = args.input_format
+
+    # primary output
     if args.output_tree_filepath is None:
         output_dest = sys.stdout
     else:
@@ -1189,25 +1264,26 @@ def main():
         else:
             sys.exit(1)
 
-    if args.trprobs_filepath:
-        trprobs_filepath = os.path.expanduser(os.path.expandvars(args.trprobs_filepath))
-        if cli.confirm_overwrite(filepath=trprobs_filepath, replace_without_asking=args.replace):
-            trprobs_dest = open(trprobs_filepath, "w")
-        else:
-            sys.exit(1)
-        args.calc_tree_probs = True
-    else:
-        trprobs_dest = None
-        args.calc_tree_probs = False
-
-    if args.split_edge_map_filepath:
-        split_edge_map_filepath = os.path.expanduser(os.path.expandvars(args.split_edge_map_filepath))
-        if confirm_overwrite(filepath=split_edge_map_filepath, replace_without_asking=args.replace):
-            cli.split_edge_map_dest = open(split_edge_map_filepath, "w")
-        else:
-            sys.exit(1)
-    else:
-        split_edge_map_dest = None
+    # extended output
+    extended_output_paths = {}
+    if args.extended_output_prefix is not None:
+        if not args.extended_output_prefix.endswith("."):
+            args.extended_output_prefix += "."
+        for results_key, suffix in (
+                    ("summary-trees", "summary.trees"),
+                    ("topologies", "topologies.trees"),
+                    ("bipartition-trees", "bipartitions.trees"),
+                    ("bipartition-table", "bipartitions.tsv"),
+                ):
+            full_path = args.extended_output_prefix + suffix
+            # if full_path.endswith("trees") and args.output_tree_format == "nexml":
+            #     full_path += ".nexml"
+            if cli.confirm_overwrite(
+                    filepath=full_path,
+                    replace_without_asking=args.replace):
+                extended_output_paths[results_key] = full_path
+            else:
+                sys.exit(1)
 
     ######################################################################
     ## Multiprocessing Setup
@@ -1527,6 +1603,7 @@ def main():
     ###################################################
     #  Primary Output
 
+    ## set up file-level annotations
     final_run_report = []
     final_run_report.append("Started at: {}".format(main_time_start.isoformat(' ')))
     final_run_report.append("Ended at: {}".format(main_time_end.isoformat(' ')))
@@ -1537,7 +1614,6 @@ def main():
         timeprocessing.pretty_timedelta(analysis_time_delta),
         ))
 
-    messenger.info("Writing results ...")
     if not args.suppress_analysis_metainformation:
         summarization_metainfo = []
 
@@ -1545,9 +1621,6 @@ def main():
         summarization_metainfo.append("Summarization Information")
         summarization_metainfo.append("-------------------------")
         summarization_metainfo.extend(processing_report_lines)
-        if args.additional_comments:
-            summarization_metainfo.append("\n")
-            summarization_metainfo.append(args.additional_comments)
 
         summarization_metainfo.append("")
         summarization_metainfo.append("Program Information")
@@ -1581,6 +1654,12 @@ def main():
                 )
         summarization_metainfo.extend(citation)
         summarization_metainfo.append("")
+
+        if args.additional_comments:
+            summarization_metainfo.append("")
+            summarization_metainfo.append("Additional Remarks")
+            summarization_metainfo.append("------------------")
+            summarization_metainfo.append(args.additional_comments)
     else:
         summarization_metainfo = []
 
@@ -1595,47 +1674,21 @@ def main():
         primary_output_metainfo.extend(summarization_metainfo)
     else:
         primary_output_metainfo = []
-    if args.output_format is None:
-        if args.input_format is None or args.input_format == "nexus/newick":
-            args.output_format = "nexus"
-        else:
-            args.output_format = args.input_format
-    if args.output_format == "newick" or args.output_format == "phylip":
-        target_trees.write_to_stream(
-                output_dest,
-                "newick",
-                suppress_rooting=False,
-                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
-                unquoted_underscores=True if args.preserve_underscores else False,
-                preserve_spaces=True if args.preserve_underscores else False,
-                store_tree_weights=True,
-                suppress_annotations=args.suppress_annotations,
-                suppress_item_comments=args.clear_item_comments,
-                )
-    elif args.output_format == "nexus":
-        target_trees.write_to_stream(
-                output_dest,
-                "nexus",
-                suppress_rooting=False,
-                suppress_edge_lengths=True if args.edge_length_summarization == "clear" else False,
-                unquoted_underscores=True if args.preserve_underscores else False,
-                preserve_spaces=True if args.preserve_underscores else False,
-                store_tree_weights=True,
-                suppress_annotations=args.suppress_annotations,
-                suppress_item_comments=args.clear_item_comments,
-                simple=args.no_taxa_block,
-                file_comments=primary_output_metainfo,
-                )
-    elif args.output_format == "nexml":
-        if primary_output_metainfo:
-            target_trees.comments = primary_output_metainfo
-        target_trees.write_to_stream(
-                output_dest,
-                "nexml",
-                )
+    if hasattr(output_dest, "name"):
+        messenger.info("Writing primary results to: '{}'".format(output_dest.name))
     else:
-        raise ValueError(args.output_format)
+        messenger.info("Writing primary results to standard output".format(output_dest.name))
+    _write_trees(trees=target_trees,
+            output_dest=output_dest,
+            args=args,
+            file_comments=primary_output_metainfo)
 
+    ### EXTENDED OUTPUT
+
+    #### EXTENDED OUTPUT: summary trees
+    #### EXTENDED OUTPUT: topologies / trprobs
+    #### EXTENDED OUTPUT: bipartition trees
+    #### EXTENDED OUTPUT: bipartition table
 
     ###################################################
     #  WRAP UP

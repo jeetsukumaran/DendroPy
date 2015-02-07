@@ -36,6 +36,8 @@ def confirm_overwrite(filepath,
                       replace_without_asking=False,
                       file_desc="Output",
                       out=sys.stdout):
+    if os.path.realpath(filepath) == os.devnull:
+        return True
     if os.path.exists(filepath):
         if replace_without_asking:
             overwrite = 'y'
