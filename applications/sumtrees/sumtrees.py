@@ -33,6 +33,7 @@ import datetime
 import platform
 import socket
 import math
+import csv
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -51,6 +52,7 @@ from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
 from dendropy.utility import bitprocessing
+from dendropy.utility import textprocessing
 
 ##############################################################################
 ## Preamble
@@ -1698,41 +1700,67 @@ def main():
 
         #### get data: bipartitions
         all_taxa_bitmask = tree_array.taxon_namespace.all_taxa_bitmask()
-        split_bitmask_bipartition_map = collections.OrderedDict()
+        seen_split_bitmasks = set()
+        bipartition_table = []
         bipartitions_as_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
+        # bipartition_stats_fieldname_map
+        # biparitition_table_fieldnames = [
+        #         "bipartitionId",
+        #         "bipartitionGroup",
+        #         "frequency",
+        # ]
+        # for stat_fieldname in SplitDistribution.SUMMARY_STATS_FIELDNAMES:
+        #     f = textprocessing.camel_case("{}_{}".format(summary_stat_prefix, stat_fieldname))
+        #     bipartition_table_fieldnames.append(f)
         def _add_split_bitmask_data(split_bitmask):
+
+            # do not add if already accessioned
+            if split_bitmask in seen_split_bitmasks:
+                return
+            seen_split_bitmasks.add(split_bitmask)
+
+            # create bipartition from split
             bipartition = dendropy.Bipartition(
                     leafset_bitmask=split_bitmask,
                     tree_leafset_bitmask=all_taxa_bitmask,
                     is_rooted=tree_array.is_rooted_trees,
                     is_mutable=False,
                     compile_bipartition=True)
-            bipartition.frequency = tree_array.split_distribution[split_bitmask]
-            bipartition.newick_string = bipartition.leafset_as_newick_string(
+            bipartition_newick_str = bipartition.leafset_as_newick_string(
                     tree_array.taxon_namespace,
                     preserve_spaces=True if args.preserve_underscores else False,
                     quote_underscores=False if args.preserve_underscores else True,
                     )
-            bipartition.tree = dendropy.Tree.get_from_string(
-                    bipartition.newick_string,
-                    "newick",
-                    taxon_namespace=tree_array.taxon_namespace)
-            bipartition.group_pattern = bipartition.leafset_as_bitstring(
+
+            # bipartition table
+            bipartition_data = collections.OrderedDict()
+            bipartition_data["bipartitionGroup"] = bipartition.leafset_as_bitstring(
                     symbol0=".",
                     symbol1="*",
                     reverse=True,
                     )
+            bipartition_data["bipartitionId"] = bipartition.split_bitmask
+            bipartition_data["frequency"] = tree_array.split_distribution[split_bitmask]
+            for summary_stat_prefix, summary_source in (
+                    ("edge_length", tree_array.split_distribution.split_edge_length_summaries),
+                    ("node_age", tree_array.split_distribution.split_node_age_summaries),
+                    ):
+                for stat_fieldname in dendropy.SplitDistribution.SUMMARY_STATS_FIELDNAMES:
+                    f = textprocessing.camel_case("{}_{}".format(summary_stat_prefix, stat_fieldname))
+                    if split_bitmask in summary_source:
+                        bipartition_data[f] = summary_source[split_bitmask].get(stat_fieldname, 0.0)
+                    else:
+                        bipartition_data[f] = 0.0
+            bipartition_data["newick"] = "'{}'".format(bipartition_newick_str)
+            bipartition_table.append(bipartition_data)
 
-            #############################################
-
-            # TODO: add data of interest
-
-            #############################################
-
-
-            bipartition.tree.source_bipartition = bipartition
-            bipartitions_as_trees.append(bipartition.tree)
-            split_bitmask_bipartition_map[split_bitmask] = bipartition
+            # bipartition as tree
+            tree = dendropy.Tree.get_from_string(
+                    bipartition_newick_str,
+                    "newick",
+                    taxon_namespace=tree_array.taxon_namespace)
+            tree.bipartition_data = bipartition_data
+            bipartitions_as_trees.append(tree)
             return bipartition
 
         # this is to preserve order seen in Mr. Bayes
@@ -1745,11 +1773,7 @@ def main():
         sd_split_bitmasks = list(tree_array.split_distribution.split_counts.keys())
         sd_split_bitmasks.sort(key=lambda x: tree_array.split_distribution.split_counts[x], reverse=True)
         for split_bitmask in sd_split_bitmasks:
-            if split_bitmask in split_bitmask_bipartition_map:
-                continue
             _add_split_bitmask_data(split_bitmask)
-        # for s, b in split_bitmask_bipartition_map.items():
-        #     print("{}   {}".format(b.group_pattern, b.frequency))
 
         #### EXTENDED OUTPUT: summary trees
 
@@ -1794,10 +1818,28 @@ def main():
                     args=args,
                     file_comments=metainfo)
 
-
         #### EXTENDED OUTPUT: bipartition trees
+        output_path = extended_output_paths["bipartition-trees"]
+        messenger.info("Writing bipartition trees to: '{}'".format(output_path))
+        with open(output_path, "w") as out:
+            _write_trees(trees=bipartitions_as_trees,
+                    output_dest=out,
+                    args=args,
+                    file_comments=metainfo)
 
         #### EXTENDED OUTPUT: bipartition table
+        output_path = extended_output_paths["bipartition-table"]
+        messenger.info("Writing bipartition table to: '{}'".format(output_path))
+        sample_row = list(bipartition_table[0].keys())
+        with open(output_path, "w") as out:
+            writer = csv.DictWriter(
+                    out,
+                    fieldnames=sample_row,
+                    lineterminator=os.linesep,
+                    delimiter="\t",
+                    )
+            writer.writeheader()
+            writer.writerows(bipartition_table)
 
     ###################################################
     #  WRAP UP

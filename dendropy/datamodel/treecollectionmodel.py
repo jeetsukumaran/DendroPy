@@ -992,6 +992,9 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
     Collects information regarding splits over multiple trees.
     """
 
+    SUMMARY_STATS_FIELDNAMES = ('mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range')
+
+
     def __init__(self,
             taxon_namespace=None,
             ignore_edge_lengths=False,
@@ -1656,7 +1659,7 @@ class SplitDistributionSummarizer(object):
         self.support_as_percentages = kwargs.pop("support_as_percentages", False)
         self.support_label_compose_fn = kwargs.pop("support_label_compose_fn", None)
         self.primary_fieldnames = ["support",]
-        self.summary_stats_fieldnames = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
+        self.summary_stats_fieldnames = SplitDistribution.SUMMARY_STATS_FIELDNAMES
         self.node_age_summaries_fieldnames = list("age_{}".format(f) for f in self.summary_stats_fieldnames)
         self.edge_length_summaries_fieldnames = list("length_{}".format(f) for f in self.summary_stats_fieldnames)
         self.fieldnames = self.primary_fieldnames + self.node_age_summaries_fieldnames + self.edge_length_summaries_fieldnames

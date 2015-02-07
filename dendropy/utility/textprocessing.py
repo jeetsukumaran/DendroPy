@@ -54,6 +54,13 @@ def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
 ###############################################################################
 ##
 
+def camel_case(s):
+    components = s.split('_')
+    return components[0] + "".join(x.title() for x in components[1:])
+
+###############################################################################
+##
+
 def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=None):
     """
     Given a list of taxa, returns a dictionary with the Taxon objects as
