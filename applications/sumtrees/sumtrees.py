@@ -968,6 +968,17 @@ def main():
                                 "the key column, and information regarding each "
                                 "the bipartitions as the remaining columns."
                             ),
+                            ("'<PREFIX>.edge-lengths.tsv'",
+                                "List of bipartitions and "
+                                "corresponding edge lengths. Only "
+                                "generated if edge lengths are "
+                                "summarized. "
+                            ),
+                            ("'<PREFIX>.node-ages.tsv'",
+                                "List of bipartitions and corresponding "
+                                "ages. Only generated if node ages are "
+                                "summarized. "
+                            ),
                         )
                         ))
     output_options.add_argument("--no-taxa-block",
@@ -1277,6 +1288,8 @@ def main():
                     ("topologies", "topologies.trees"),
                     ("bipartition-trees", "bipartitions.trees"),
                     ("bipartition-table", "bipartitions.tsv"),
+                    ("edge-lengths", "edge-lengths.tsv"),
+                    ("node-ages", "node-ages.tsv"),
                 ):
             full_path = args.extended_output_prefix + suffix
             # if full_path.endswith("trees") and args.output_tree_format == "nexml":
@@ -1741,7 +1754,12 @@ def main():
                     reverse=True,
                     )
             bipartition_data["bipartitionId"] = bipartition.split_bitmask
-            bipartition_data["bipartitionBitmask"] = bipartition.leafset_as_bitstring(
+            bipartition_data["bipartitionBitmask"] = bipartition.split_as_bitstring(
+                    symbol0="0",
+                    symbol1="1",
+                    reverse=False,
+                    )
+            bipartition_data["bipartitionLeafset"] = bipartition.leafset_as_bitstring(
                     symbol0="0",
                     symbol1="1",
                     reverse=False,
@@ -1759,7 +1777,7 @@ def main():
                     if split_bitmask in summary_source:
                         value = summary_source[split_bitmask].get(stat_fieldname, 0.0)
                     else:
-                        value is None
+                        value = None
                     if value is None:
                         if stat_fieldname in ("hpd95", "quant_5_95", "range"):
                             value = (0.0, 0.0)
@@ -1796,7 +1814,7 @@ def main():
                 if key in ("newick", ):
                     continue
                 value = bipartition_data[key]
-                if key in ("bipartitionId", "bipartitionBitmask"):
+                if key in ("bipartitionId", "bipartitionBitmask", "bitpartitionLeafset"):
                     # FigTree cannot cast bigger integers values to float
                     value = '"{}"'.format(value)
                 tree.seed_node.annotations.add_new(
@@ -1816,8 +1834,6 @@ def main():
         sd_split_bitmasks.sort(key=lambda x: tree_array.split_distribution.split_counts[x], reverse=True)
         for split_bitmask in sd_split_bitmasks:
             _add_split_bitmask_data(split_bitmask)
-
-        #### EXTENDED OUTPUT: summary trees
 
         #### EXTENDED OUTPUT: topologies / trprobs
         if not args.suppress_analysis_metainformation:
@@ -1896,6 +1912,9 @@ def main():
                     )
             writer.writeheader()
             writer.writerows(bipartition_table)
+
+        #### EXTENDED OUTPUT: edge lengths
+
 
     ###################################################
     #  WRAP UP
