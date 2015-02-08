@@ -1714,6 +1714,7 @@ def main():
         #### get data: bipartitions
         all_taxa_bitmask = tree_array.taxon_namespace.all_taxa_bitmask()
         seen_split_bitmasks = set()
+        all_bipartitions = collections.OrderedDict()
         bipartition_table = []
         bipartitions_as_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
         # bipartition_stats_fieldname_map
@@ -1821,6 +1822,8 @@ def main():
                         textprocessing.snake_case(key),
                         value)
             bipartitions_as_trees.append(tree)
+
+            all_bipartitions[bipartition] = bipartition_data
             return bipartition
 
         # this is to preserve order seen in Mr. Bayes
@@ -1914,7 +1917,28 @@ def main():
             writer.writerows(bipartition_table)
 
         #### EXTENDED OUTPUT: edge lengths
-
+        if tree_array.split_distribution.split_edge_lengths:
+            rows = []
+            for b in all_bipartitions:
+                entry = collections.OrderedDict()
+                entry["bipartitionId"] = all_bipartitions[b]["bipartitionId"]
+                try:
+                    value_list = tree_array.split_distribution.split_edge_lengths[b.split_bitmask]
+                except KeyError:
+                    value_list = []
+                entry["edgeLengths"] = ",".join(str(v) for v in value_list)
+                rows.append(entry)
+            output_path = extended_output_paths["edge-lengths"]
+            messenger.info("Writing edge set to: '{}'".format(output_path))
+            with open(output_path, "w") as out:
+                writer = csv.DictWriter(
+                        out,
+                        fieldnames=["bipartitionId", "edgeLengths"],
+                        lineterminator=os.linesep,
+                        delimiter="\t",
+                        )
+                writer.writeheader()
+                writer.writerows(rows)
 
     ###################################################
     #  WRAP UP
