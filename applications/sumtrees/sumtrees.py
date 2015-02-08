@@ -1916,16 +1916,28 @@ def main():
             writer.writeheader()
             writer.writerows(bipartition_table)
 
+        #### EXTENDED OUTPUT: edge lengths and node ages
+        bipartition_table_keys_to_import = [
+                "bipartitionGroup",
+                "bipartitionId",
+                "bipartitionBitmask",
+                "bipartitionLeafset",
+                "frequency",
+                ]
+
         #### EXTENDED OUTPUT: edge lengths
         if tree_array.split_distribution.split_edge_lengths:
             rows = []
             for b in all_bipartitions:
                 entry = collections.OrderedDict()
-                entry["bipartitionId"] = all_bipartitions[b]["bipartitionId"]
+                for key in bipartition_table_keys_to_import:
+                    entry[key] = all_bipartitions[b][key]
+                # entry["bipartitionId"] = all_bipartitions[b]["bipartitionId"]
                 try:
                     value_list = tree_array.split_distribution.split_edge_lengths[b.split_bitmask]
                 except KeyError:
                     value_list = []
+                entry["edgeCount"] = len(value_list)
                 entry["edgeLengths"] = ",".join(str(v) for v in value_list)
                 rows.append(entry)
             output_path = extended_output_paths["edge-lengths"]
@@ -1933,7 +1945,33 @@ def main():
             with open(output_path, "w") as out:
                 writer = csv.DictWriter(
                         out,
-                        fieldnames=["bipartitionId", "edgeLengths"],
+                        fieldnames=bipartition_table_keys_to_import + ["edgeCount", "edgeLengths"],
+                        lineterminator=os.linesep,
+                        delimiter="\t",
+                        )
+                writer.writeheader()
+                writer.writerows(rows)
+
+        #### EXTENDED OUTPUT: node ages
+        if tree_array.split_distribution.split_node_ages:
+            rows = []
+            for b in all_bipartitions:
+                entry = collections.OrderedDict()
+                for key in bipartition_table_keys_to_import:
+                    entry[key] = all_bipartitions[b][key]
+                try:
+                    value_list = tree_array.split_distribution.split_node_ages[b.split_bitmask]
+                except KeyError:
+                    value_list = []
+                entry["nodeCount"] = len(value_list)
+                entry["nodeAges"] = ",".join(str(v) for v in value_list)
+                rows.append(entry)
+            output_path = extended_output_paths["node-ages"]
+            messenger.info("Writing edge set to: '{}'".format(output_path))
+            with open(output_path, "w") as out:
+                writer = csv.DictWriter(
+                        out,
+                        fieldnames=bipartition_table_keys_to_import + ["nodeCount", "nodeAges"],
                         lineterminator=os.linesep,
                         delimiter="\t",
                         )
