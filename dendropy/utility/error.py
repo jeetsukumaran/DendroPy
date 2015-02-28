@@ -28,6 +28,7 @@ import sys
 import re
 import warnings
 import inspect
+import subprocess
 
 class ImmutableTaxonNamespaceError(TypeError):
     def __init__(self, message):
@@ -153,3 +154,38 @@ class SeedNodeDeletionException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+class ExternalServiceError(Exception):
+
+    def __init__(self,
+            service_name,
+            invocation_command,
+            service_input,
+            returncode,
+            stdout,
+            stderr):
+        self.service_name = service_name
+        self.invocation_command = invocation_command
+        self.service_input = service_input
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+        self.message = self.compose_message()
+
+    def __str__(self):
+        return self.compose_message()
+
+    def compose_message(self):
+        parts = []
+        parts.append("- Service process {} exited with return code: {}".format(self.service_name, self.returncode))
+        parts.append("- Service invoked with command:")
+        parts.append("   {}".format(self.invocation_command))
+        parts.append("<<<<<<< (SERVICE STANDARD INPUT)")
+        parts.append(self.service_input)
+        parts.append(">>>>>>>")
+        parts.append("<<<<<<< (SERVICE STANDARD OUTPUT)")
+        parts.append(self.stdout)
+        parts.append(">>>>>>>")
+        parts.append("<<<<<<< (SERVICE STANDARD ERROR)")
+        parts.append(self.stderr)
+        parts.append(">>>>>>>")
+        return "\n".join(parts)

@@ -32,6 +32,7 @@ except ImportError:
     from io import StringIO # Python 3
 
 import dendropy
+from dendropy.utility import error
 from dendropy.utility import metavar
 from dendropy.utility import container
 from dendropy.utility import messaging
@@ -110,15 +111,18 @@ class PaupService(object):
             commands.insert(0, STANDARD_PREAMBLE)
         commands.append("quit")
         paup_block = ";\n".join(commands) + ";\n"
+        invocation_command = [paup_path, "-n", "-u"]
         p = subprocess.Popen(
-                [paup_path, "-n", "-u"],
+                invocation_command,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=cwd,
                 env=env,
                 )
-        stdout, stderr = processio.communicate(p, paup_block)
+        raw_stdout, raw_stderr = processio.communicate(p, paup_block)
+        stdout = raw_stdout
+        stderr = raw_stderr
         if strip_extraneous_prompts_from_stdout:
             # weird dev/paup error ... lots or prompts spring up
             stdout = stdout.replace("paup>", "")
@@ -129,13 +133,13 @@ class PaupService(object):
         else:
             chk_stderr = stderr.replace("paup>", "")
         if (p.returncode != 0 and not ignore_error_returncode) or (chk_stderr != "" and not ignore_nonempty_stderr):
-            if p.returncode != 0:
-                _LOG.error("[Non-zero return code: {}]".format(p.returncode))
-            _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
-            _LOG.error(paup_block)
-            _LOG.error("\n*** ERROR FROM PAUP ***")
-            _LOG.error(stderr)
-            sys.exit(1)
+            raise error.ExternalServiceError(
+                    service_name="PAUP*",
+                    invocation_command=invocation_command,
+                    service_input=paup_block,
+                    returncode = p.returncode,
+                    stdout=raw_stdout,
+                    stderr=raw_stderr)
         return p.returncode, stdout, stderr
 
     @staticmethod

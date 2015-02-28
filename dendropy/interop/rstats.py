@@ -18,6 +18,7 @@ class RService(object):
 
     @staticmethod
     def call(r_commands,
+            ignore_error_returncode=False,
             cwd=None,
             env=None,
             rscript_path=RSCRIPT_EXECUTABLE,
@@ -29,6 +30,9 @@ class RService(object):
         ----------
         r_commands : iterable of strings
             A list or some other iterable of strings of R commands.
+        ignore_error_returncode : bool
+            If `True`, then a non-0 return code from the PAUP process will not
+            result in an exception being raised.
         cwd : string
             Set the working directory of the PAUP* process to this directory.
         env : dictionary
@@ -47,7 +51,9 @@ class RService(object):
         if not isinstance(r_commands, str):
             r_commands = "\n".join(r_commands)
         r_commands += "\n"
+        invocation_command = [RSCRIPT_EXECUTABLE, rsubprocess_pipe_path]
         p = subprocess.Popen(
+                invocation_command
                 [RSCRIPT_EXECUTABLE, rsubprocess_pipe_path],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -56,6 +62,14 @@ class RService(object):
                 env=env,
                 )
         stdout, stderr = processio.communicate(p, r_commands)
+        if (p.returncode != 0 and not ignore_error_returncode):
+            raise error.ExternalServiceError(
+                    service_name="Rscript",
+                    invocation_command=invocation_command,
+                    service_input=r_commands,
+                    returncode = p.returncode,
+                    stdout=stdout,
+                    stderr=stderr)
         return p.returncode, stdout, stderr
 
 def call(*args, **kwargs):
