@@ -53,7 +53,17 @@ except ImportError as e:
     from distutils.core import setup
     sys.stderr.write("-setup.py: using canned package list\n")
     PACKAGES = [
-            'dendropy',
+            "dendropy",
+            "dendropy.calculate",
+            "dendropy.dataio",
+            "dendropy.datamodel",
+            "dendropy.interop",
+            "dendropy.legacy",
+            "dendropy.mathlib",
+            "dendropy.model",
+            "dendropy.simulate",
+            "dendropy.test",
+            "dendropy.utility",
             ]
 else:
     sys.stderr.write("-setup.py: searching for packages\n")
@@ -136,15 +146,9 @@ setup(name='DendroPy',
       license='BSD',
       packages=PACKAGES,
       package_dir=dict(zip(PACKAGES, PACKAGE_DIRS)),
-      # For some reason, following does not work in 2.5 (not tried in 2.6),
-      # so this packaging is now implemented through processing of MANIFEST.in
-#      package_data={
-#        "" : ['doc/Makefile',
-#              '/doc/source',
-#              'extras'
-#             ],
-#        "dendropy.test" : ["data/trees"],
-#      },
+      package_data={
+          "dendropy.utility" : ["libexec/*"],
+          },
       scripts = SCRIPTS,
       long_description=long_description,
       entry_points = ENTRY_POINTS,
