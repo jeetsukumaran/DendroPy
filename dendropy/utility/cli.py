@@ -150,27 +150,61 @@ def compose_citation_for_program(
 # from http://stackoverflow.com/a/22157136/268330
 class CustomFormatter(argparse.HelpFormatter):
 
+    """
+    Provides special help formatting:
+
+        (1) Any format help text that begins with the token '<pre>' (for
+            'pre-formatted') will not be reformatted, e.g.::
+
+            parser.add_argument("-f", "--frobble",
+                help="\n".join([
+                "<pre>Sets the frobble specification:",
+                "",
+                "(1) 'foo bar'",
+                "        bar foo bar foo bar foo bar foo bar",
+                "        bar foo bar foo bar foo bar foo bar",
+                "(1) 'foo baz'",
+                "        baz foo baz foo baz foo baz foo baz",
+                "        baz foo baz foo baz foo baz foo baz",
+                "(1) 'foo boo'",
+                "        boo foo boo foo boo foo boo foo boo",
+                "        boo foo boo foo boo foo boo foo boo",
+                ]))
+
+        (2) A definition list:
+
+            parser.add_argument("-f", "--frobble",
+                help=CustomFormatter.format_definition_list_help(
+                    preamble="Sets the frobble specification:"
+                    definitions=(
+                        ('foo-bar', "bar foo bar foo bar foo bar foo bar"),
+                        ('foo-baz', "baz foo baz foo baz foo baz foo baz"),
+                        ('foo-boo', "boo foo boo foo boo foo boo foo boo"),
+                        )
+                    coda="And so, have a nice day."))
+    """
+
     def _split_lines(self, text, width):
        # this is the RawTextHelpFormatter._split_lines
-       if text.startswith('R}'):
-           return text[2:].splitlines()
+       if text.startswith('<pre>'):
+           return text[5:].splitlines()
        return argparse.HelpFormatter._split_lines(self, text, width)
 
     @staticmethod
     def format_definition_list_help(
-           header,
+           preamble,
            definitions,
-           tail=None):
+           coda=None):
         parts = []
-        if header:
-            if header.startswith("R}"):
-                header = header
+        if preamble:
+            if preamble.startswith("<pre>"):
+                preamble = preamble
             else:
-                header = re.sub(r'\s+', ' ', header)
-                header = "R}" + textwrap.fill(header, width=54)
-            parts.append(header)
+                preamble = re.sub(r'\s+', ' ', preamble)
+                preamble = "<pre>" + textwrap.fill(preamble, width=54)
+            parts.append(preamble)
         else:
-            parts.append("R}")
+            parts.append("<pre>")
         for term, term_definition in definitions:
             parts.append("- {}".format(term))
             body = textwrap.fill(
@@ -182,13 +216,13 @@ class CustomFormatter(argparse.HelpFormatter):
                     drop_whitespace=True,
                     )
             parts.append(body)
-        if tail:
-            if tail.startswith("R}"):
-                tail = tail[2:]
+        if coda:
+            if coda.startswith("<pre>"):
+                coda = coda[5:]
             else:
-                tail = re.sub(r'\s+', ' ', tail)
-                tail = textwrap.fill(tail, width=54)
-            parts.append(tail)
+                coda = re.sub(r'\s+', ' ', coda)
+                coda = textwrap.fill(coda, width=54)
+            parts.append(coda)
         return "\n".join(parts)
 
     # for debugging: prints the name of the argument being processed

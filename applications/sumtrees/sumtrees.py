@@ -718,7 +718,7 @@ def main():
             choices=["consensus", "mct", "msct"],
             metavar="SUMMARY-TYPE",
             help=cli.CustomFormatter.format_definition_list_help(
-                    header=
+                    preamble=
                         (
                         "Construct and summarize support and other information "
                         "from the source trees to one of the following summary "
@@ -795,7 +795,7 @@ def main():
             choices=edge_length_summarization_choices,
             default=None,
             help=cli.CustomFormatter.format_definition_list_help(
-                    header=
+                    preamble=
                         (
                         "Set the edge lengths of the target or        "
                         "summary trees based on the specified         "
@@ -847,8 +847,8 @@ def main():
                                 "target trees if they are present.     "
                             ),
                         ),
-                    tail="\n".join((
-                            "R}Note the default settings varies according to the ",
+                    coda="\n".join((
+                            "<pre>Note the default settings varies according to the ",
                             "following, in order of preference:                  ",
                             "(1) If target trees are specified using the '-t' or ",
                             "    '--target-treefile' option, then the default edge ",
@@ -884,7 +884,7 @@ def main():
             default="support",
             choices=["support", "keep", "clear",],
             help=cli.CustomFormatter.format_definition_list_help(
-                header="Set the node labels of the summary or target tree(s):",
+                preamble="Set the node labels of the summary or target tree(s):",
                 definitions=(
                     ("'support'",
                         "Node labels will be set to the support value  "
@@ -940,7 +940,7 @@ def main():
             default=None,
             metavar="PREFIX",
             help=cli.CustomFormatter.format_definition_list_help(
-                    header=
+                    preamble=
                         (
                         "If specified, extended summarization information "
                         "will be generated, consisting of the following "
