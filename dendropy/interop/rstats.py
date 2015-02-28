@@ -25,15 +25,10 @@ class RService(object):
         """
         Executes a sequence of commans in R and returns the results.
 
-        Note that the command strings should be appropriately escaped
-        or added as raw strings (e.g., "cat('hello, world\\n')" or
-        "cat(r'hello, world\n')".
-
         Parameters
         ----------
         r_commands : iterable of strings
-            A list or some other iterable of strings of R commands. Set remark
-            above about special characters.
+            A list or some other iterable of strings of R commands.
         cwd : string
             Set the working directory of the PAUP* process to this directory.
         env : dictionary
@@ -62,4 +57,7 @@ class RService(object):
                 )
         stdout, stderr = p.communicate(r_commands)
         return p.returncode, stdout, stderr
+
+def call(*args, **kwargs):
+    return RService.call(*args, **kwargs)
 

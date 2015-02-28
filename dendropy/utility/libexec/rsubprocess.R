@@ -1,11 +1,6 @@
 #!/usr/bin/env Rscript
-
 f <- file("stdin")
 open(f)
-.rsubprocess.verbose = F
-while(length(line <- readLines(f,n=1)) > 0) {
-    if (.rsubprocess.verbose) {
-        write(paste(">", line), stderr())
-    }
+while(length(line<-readLines(f))> 0) {
     eval(parse(text=line))
 }
