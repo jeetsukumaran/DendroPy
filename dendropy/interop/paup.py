@@ -96,6 +96,7 @@ class PaupService(object):
 
         Returns
         -------
+        returncode : exit value of PAUP process.
         stdout : string
             Contents of the PAUP process standard output.
         stderr : string
@@ -135,7 +136,7 @@ class PaupService(object):
             _LOG.error("\n*** ERROR FROM PAUP ***")
             _LOG.error(stderr)
             sys.exit(1)
-        return stdout, stderr
+        return p.returncode, stdout, stderr
 
     @staticmethod
     def bipartition_groups_to_split_bitmask(group_string, normalized=None):
@@ -237,7 +238,7 @@ class PaupService(object):
         self.stage_tree_info()
         self.stage_count_splits(use_tree_weights=use_tree_weights)
         # print("\n".join(self.commands))
-        stdout, stderr = self._execute_command_sequence()
+        returncode, stdout, stderr = self._execute_command_sequence()
         # print("\n".join(stdout))
         taxon_namespace = self.parse_taxon_namespace(stdout,
                 taxon_namespace=taxon_namespace)
@@ -522,11 +523,11 @@ class PaupService(object):
     ## Support
 
     def _execute_command_sequence(self):
-        stdout, stderr = PaupService.call(self.commands)
+        returncode, stdout, stderr = PaupService.call(self.commands)
         self.commands = []
         stdout = stdout.split("\n")
         stderr = stderr.split("\n")
-        return stdout, stderr
+        return returncode, stdout, stderr
 
 ##############################################################################
 ## Wrappers for PAUP* Services

@@ -43,11 +43,11 @@ class RService(object):
 
         Returns
         -------
+        returncode : exit value of the R process
         stdout : string
             Contents of the R process standard output.
         stderr : string
             Contents of the R process standard error.
-        returncode : exit value of the R process
         """
         if not isinstance(r_commands, str):
             r_commands = "\n".join(r_commands)
@@ -61,5 +61,5 @@ class RService(object):
                 env=env,
                 )
         stdout, stderr = p.communicate(r_commands)
-        return stdout, stderr, p.returncode
+        return p.returncode, stdout, stderr
 
