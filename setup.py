@@ -64,6 +64,7 @@ except ImportError as e:
             "dendropy.simulate",
             "dendropy.test",
             "dendropy.utility",
+            "dendropy.utility.libexec",
             ]
 else:
     sys.stderr.write("-setup.py: searching for packages\n")
@@ -146,9 +147,10 @@ setup(name='DendroPy',
       license='BSD',
       packages=PACKAGES,
       package_dir=dict(zip(PACKAGES, PACKAGE_DIRS)),
-      package_data={
-          "dendropy.utility" : ["libexec/*"],
-          },
+      # not needed?
+      # package_data={
+      #     # "dendropy.utility" : ["libexec/*"],
+      #     },
       scripts = SCRIPTS,
       long_description=long_description,
       entry_points = ENTRY_POINTS,

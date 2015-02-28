@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 
 ##############################################################################
@@ -16,8 +17,17 @@
 ##
 ##############################################################################
 
-import random
-import os
+"""
+Scripts and other files that executed, sourced, invoked, or otherwise used by
+various DendroPy entities.
+"""
 
-GLOBAL_RNG = random.Random()
+def filepath(filename):
+    try:
+        import pkg_resources
+        # note that this creates a temporary file with the contents of the filename
+        filepath = pkg_resources.resource_filename("dendropy", "utility/libexec/{}".format(filename))
+    except:
+        filepath = os.path.normpath(os.path.join(os.path.dirname(__file__), filename))
+    return filepath
 

@@ -32,6 +32,7 @@ except ImportError:
     from io import StringIO # Python 3
 
 import dendropy
+from dendropy.utility import metavar
 from dendropy.utility import container
 from dendropy.utility import messaging
 from dendropy.utility import filesys
@@ -41,17 +42,9 @@ _LOG = messaging.get_logger(__name__)
 
 import dendropy
 
-DENDROPY_PAUP_INTEROPERABILITY = False
-if "PAUP_PATH" in os.environ:
-    PAUP_PATH = os.environ["PAUP_PATH"]
-else:
-    PAUP_PATH = filesys.find_executable('paup')
-if PAUP_PATH is None:
-    _LOG.warn("PAUP not found: PAUP interoperability not available.")
-    _LOG.warn("Set environmental variable 'PAUP_PATH' to correct path to enable.")
-elif not os.path.exists(PAUP_PATH):
-    _LOG.warn("PAUP not found at '%s': PAUP interoperability not available." % PAUP_PATH)
-    _LOG.warn("Set environmental variable 'PAUP_PATH' to correct path to enable.")
+PAUP_PATH = os.environ.get(metavar.DENDROPY_PAUP_PATH_ENVAR, "paup")
+if PAUP_PATH == "NONE":
+    DENDROPY_PAUP_INTEROPERABILITY = False
 else:
     DENDROPY_PAUP_INTEROPERABILITY = True
 
@@ -69,7 +62,7 @@ class PaupService(object):
             strip_extraneous_prompts_from_stderr=True,
             cwd=None,
             env=None,
-            paup_path="paup"
+            paup_path=PAUP_PATH
             ):
         """
         Executes a sequence of commands in PAUP* and returns the results.
@@ -96,7 +89,7 @@ class PaupService(object):
             standard error contents.
         cwd : string
             Set the working directory of the PAUP* process to this directory.
-        cwd : dictionary
+        env : dictionary
             Environmental variables to set for the PAUP* process.
         paup_path : string
             Path to the PAUP* executable.
@@ -172,7 +165,7 @@ class PaupService(object):
             strip_extraneous_prompts_from_stdout=True,
             cwd=None,
             env=None,
-            paup_path="paup"):
+            paup_path=PAUP_PATH):
         self.suppress_standard_preamble = suppress_standard_preamble
         self.ignore_error_returncode = ignore_error_returncode
         self.strip_extraneous_prompts_from_stderr = strip_extraneous_prompts_from_stderr
@@ -568,7 +561,7 @@ def pscore_trees(
         char_matrix,
         pset_option_list=None,
         pscore_option_list=None,
-        paup_path="paup"):
+        paup_path=PAUP_PATH):
 
     if pset_option_list is not None:
         pset = "pset " + " ".join(pset_option_list)
@@ -629,7 +622,7 @@ def pscore_trees(
 def estimate_ultrametric_tree(
         char_matrix,
         topology_tree=None,
-        paup_path="paup"):
+        paup_path=PAUP_PATH):
     post_est_commands = """\
     set crit=likelihood;
     root rootmethod=midpoint;

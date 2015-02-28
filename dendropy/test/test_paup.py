@@ -38,7 +38,6 @@ from dendropy.utility import bitprocessing
 from dendropy.interop import paup
 from dendropy import Bipartition
 
-
 if not paup.DENDROPY_PAUP_INTEROPERABILITY:
     _LOG.warn("PAUP interoperability not available: skipping PAUP tests")
 else:

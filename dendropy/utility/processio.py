@@ -108,4 +108,3 @@ class Session(object):
         self.process.stdin.write(command)
         self.process.stdin.flush()
 
-
