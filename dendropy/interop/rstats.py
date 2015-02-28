@@ -55,7 +55,7 @@ class RService(object):
                 cwd=cwd,
                 env=env,
                 )
-        stdout, stderr = p.communicate(r_commands)
+        stdout, stderr = processio.communicate(p, r_commands)
         return p.returncode, stdout, stderr
 
 def call(*args, **kwargs):
