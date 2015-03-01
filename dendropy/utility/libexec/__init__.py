@@ -22,11 +22,15 @@ Scripts and other files that executed, sourced, invoked, or otherwise used by
 various DendroPy entities.
 """
 
+import os
+
 def filepath(filename):
     try:
         import pkg_resources
-        # note that this creates a temporary file with the contents of the filename
+        # note that this creates a temporary file with the contents of the
+        # filename if the package is in an egg
         filepath = pkg_resources.resource_filename("dendropy", "utility/libexec/{}".format(filename))
+        # print("-->{}".format(filepath))
     except:
         filepath = os.path.normpath(os.path.join(os.path.dirname(__file__), filename))
     return filepath

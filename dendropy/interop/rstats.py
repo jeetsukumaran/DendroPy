@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+from dendropy.utility import error
 from dendropy.utility import metavar
 from dendropy.utility import libexec
 from dendropy.utility import processio
@@ -25,6 +26,28 @@ class RService(object):
             ):
         """
         Executes a sequence of commans in R and returns the results.
+
+        Note that newlines ('\n') and other special characters will be
+        converted before being passed to the R interpreter, so need to
+        be escaped or entered as raw string expressions.
+
+        That is, instead of, e.g.:
+
+            returncode, stdout, stderr = RService.call([
+                "cat('hello, world\n')",
+            ])
+
+        use this:
+
+            returncode, stdout, stderr = RService.call([
+                "cat('hello, world\\n')",
+            ])
+
+        or:
+
+            returncode, stdout, stderr = RService.call([
+                r"cat('hello, world\n')",
+            ])
 
         Parameters
         ----------
@@ -53,8 +76,7 @@ class RService(object):
         r_commands += "\n"
         invocation_command = [RSCRIPT_EXECUTABLE, rsubprocess_pipe_path]
         p = subprocess.Popen(
-                invocation_command
-                [RSCRIPT_EXECUTABLE, rsubprocess_pipe_path],
+                invocation_command,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
