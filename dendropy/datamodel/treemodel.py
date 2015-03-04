@@ -917,9 +917,9 @@ class Edge(
             return
         output_strio = StringIO()
         if self.label is None:
-            label = " (%s, Length=%s)" % (self.oid, str(self.length))
+            label = " (%s, Length=%s)" % (id(self), str(self.length))
         else:
-            label = " (%s: '%s', Length=%s)" % (self.oid, self.label, str(self.length))
+            label = " (%s: '%s', Length=%s)" % (id(self), self.label, str(self.length))
         output_strio.write('%s%sEdge object at %s%s'
                 % (indent*' ',
                    itemize,
@@ -4822,12 +4822,6 @@ class Tree(
                 if minimum_edge_length is not None and edge_length < minimum_edge_length:
                     edge_length = minimum_edge_length
                 if error_on_negative_edge_lengths and edge_length < 0.0:
-                    #if nd._parent_node is self.seed_node:
-                    #    # special case seed node
-                    #    nd._parent_node.age = nd.age + nd.edge_length
-                    #else:
-                    #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                    #            % (nd._parent_node.oid, nd._parent_node.age, nd.oid, nd.age))
                     raise ValueError("Negative edge length: {}".foramt(edge_length))
                 nd.edge.length = edge_length
 
@@ -5269,9 +5263,9 @@ class Tree(
             return
         output_strio = StringIO()
         if self.label is None:
-            label = " (%s)" % self.oid
+            label = " (%s)" % id(self)
         else:
-            label = " (%s: '%s')" % (self.oid, self.label)
+            label = " (%s: '%s')" % (id(self), self.label)
         output_strio.write('%s%sTree object at %s%s'
                 % (indent*' ',
                    itemize,
@@ -5319,10 +5313,6 @@ class Tree(
             label = "'" + self.label + "'"
         else:
             label = "None"
-        if oids:
-            oid_str = ', oid="%s"' % self.oid
-        else:
-            oid_str = ""
         if tree_args is None:
             tree_args = ""
         else:
@@ -5332,8 +5322,6 @@ class Tree(
                label,
                oid_str,
                tree_args))
-        if oids:
-            p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, self.seed_node.oid))
 
         taxon_obj_namer = lambda x: "tax_%s" % id(x)
         for taxon in self.taxon_namespace:
@@ -5342,10 +5330,6 @@ class Tree(
                 label = "'" + taxon.label + "'"
             else:
                 label = "None"
-            if oids:
-                oid_str = ', oid="%s"' % taxon.oid
-            else:
-                oid_str = ""
             p.append("%s = %s.taxon_namespace.require_taxon(label=%s%s)" \
                 % (tobj_name,
                    tree_obj_name,
@@ -5367,10 +5351,6 @@ class Tree(
                     ct = taxon_obj_namer(child.taxon)
                 else:
                     ct = "None"
-                if oids:
-                    oid_str = ', oid="%s"' % child.oid
-                else:
-                    oid_str = ""
                 p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
                         (node_obj_namer(child),
                          nn,
@@ -5378,8 +5358,6 @@ class Tree(
                          ct,
                          child.edge.length,
                          oid_str))
-                if oids:
-                    p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
 
         return "\n".join(p)
 
