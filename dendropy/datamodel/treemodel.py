@@ -4081,17 +4081,6 @@ class Tree(
                 self.taxon_namespace.add_taxon(nd.taxon)
         return self.taxon_namespace
 
-    def update_taxon_namespace(self):
-        """
-        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
-        not associated with `self` or any item in `self`.
-        """
-        taxa_to_keep = set()
-        for nd in self:
-            if nd.taxon is not None:
-                self.taxon_namespace.add_taxon(nd.taxon)
-        return self.taxon_namespace
-
     def poll_taxa(self, taxa=None):
         """
         Returns a set populated with all of :class:`Taxon` instances associated
