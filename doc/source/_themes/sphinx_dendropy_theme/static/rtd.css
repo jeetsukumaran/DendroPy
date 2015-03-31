@@ -250,8 +250,8 @@ div.sphinxsidebar {
     top: 3em;
     left: 0;
     padding: 0 1em;
-    width: 14em;
-    font-size: 1em;
+    width: 20em;
+    font-size: 0.75em;
     text-align: left;
     background-color: #e8ecef;
 }
@@ -283,7 +283,7 @@ div.sphinxsidebar p {
 /* No bullets for nested lists, but a little extra indentation */
 div.sphinxsidebar ul ul {
     list-style-type: none;
-    margin-left: 1.5em;
+    margin-left: 1em;
     padding: 0;
 }
 

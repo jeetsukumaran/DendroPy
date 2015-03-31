@@ -199,6 +199,8 @@ rst_epilog = """
 .. _dendropy_announce: http://groups.google.com/group/dendropy-announce
 .. |dendropy_users| replace:: DendroPy Users
 .. _dendropy_users: http://groups.google.com/group/dendropy-users
+.. |dendropy_issues| replace:: DendroPy Issues
+.. _dendropy_issues: https://github.com/jeetsukumaran/DendroPy/issues
 
 .. |Taxon| replace:: :class:`~dendropy.datamodel.taxonmodel.Taxon`
 .. |TaxonNamespace| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace`
