@@ -1466,23 +1466,23 @@ class Node(
         nodes visited in pre-order.
 
         Given a tree with preorder sequence of nodes of
-        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]:
+        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]::
 
-                       a
-                      / \
-                     /   \
-                    /     \
-                   /       \
-                  /         \
-                 /           \
-                /             c
-               b             / \
-              / \           /   \
-             /   e         /     f
-            /   / \       /     / \
-           /   /   \     g     /   h
-          /   /     \   / \   /   / \
-         i   j       k l   m n   o   p
+                           a
+                          / \
+                         /   \
+                        /     \
+                       /       \
+                      /         \
+                     /           \
+                    /             c
+                   b             / \
+                  / \           /   \
+                 /   e         /     f
+                /   / \       /     / \
+               /   /   \     g     /   h
+              /   /     \   / \   /   / \
+             i   j       k l   m n   o   p
 
 
         the following order of function calls results:
@@ -3720,23 +3720,23 @@ class Tree(
         nodes visited in pre-order.
 
         Given a tree with preorder sequence of nodes of
-        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]:
+        [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]::
 
-                       a
-                      / \
-                     /   \
-                    /     \
-                   /       \
-                  /         \
-                 /           \
-                /             c
-               b             / \
-              / \           /   \
-             /   e         /     f
-            /   / \       /     / \
-           /   /   \     g     /   h
-          /   /     \   / \   /   / \
-         i   j       k l   m n   o   p
+                           a
+                          / \
+                         /   \
+                        /     \
+                       /       \
+                      /         \
+                     /           \
+                    /             c
+                   b             / \
+                  / \           /   \
+                 /   e         /     f
+                /   / \       /     / \
+               /   /   \     g     /   h
+              /   /     \   / \   /   / \
+             i   j       k l   m n   o   p
 
 
         the following order of function calls results:

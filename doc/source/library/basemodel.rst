@@ -1,5 +1,5 @@
 ****************************************************************************************
-:mod:`dendropy.datamodel.basemodel` -- Core Infrastructure for Phylogenetic Data Objects
+Core Infrastructure for Phylogenetic Data Objects -- :mod:`dendropy.datamodel.basemodel`
 ****************************************************************************************
 
 .. module:: dendropy.datamodel.basemodel
