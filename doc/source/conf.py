@@ -264,7 +264,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/dendropy_logo.png"
+# html_logo = "_static/dendropy_logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -291,7 +291,7 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    "**" : ["searchbox.html", "localtoc.html", "relations.html", "side_supplemental.html"],
+    "**" : ["logo.html", "searchbox.html", "localtoc.html", "relations.html", "side_supplemental.html"],
 }
 
 # Additional templates that should be rendered to pages, maps page names to
