@@ -8,5 +8,6 @@ DendroPy Library Reference
     basemodel.rst
     taxonmodel.rst
     treemodel.rst
+    treecollectionmodel.rst
     charstatemodel.rst
     charmatrixmodel.rst
