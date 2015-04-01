@@ -204,14 +204,15 @@ rst_epilog = """
 
 .. |Taxon| replace:: :class:`~dendropy.datamodel.taxonmodel.Taxon`
 .. |TaxonNamespace| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace`
+.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
 .. |Tree| replace:: :class:`~dendropy.datamodel.treemodel.Tree`
-.. |TreeList| replace:: :class:`~dendropy.datamodel.treemodel.TreeList`
-.. |TreeArray| replace:: :class:`~dendropy.datamodel.treemodel.TreeArray`
-.. |SplitsDistribution| replace:: :class:`~dendropy.datamodel.treemodel.SplitsDistribution`
 .. |Node| replace:: :class:`~dendropy.datamodel.treemodel.Node`
 .. |Edge| replace:: :class:`~dendropy.datamodel.treemodel.Edge`
 .. |Bipartition| replace:: :class:`~dendropy.datamodel.treemodel.Bipartition`
-.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
+.. |TreeList| replace:: :class:`~dendropy.datamodel.treecollectionmodel.TreeList`
+.. |TreeArray| replace:: :class:`~dendropy.datamodel.treecollectionmodel.TreeArray`
+.. |SplitDistribution| replace:: :class:`~dendropy.datamodel.treecollectionmodel.SplitDistribution`
+.. |SplitDistributionSummarizer| replace:: :class:`~dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer`
 .. |DataSet| replace:: :class:`~dendropy.datamodel.datasetmodel.DataSet`
 .. |StateIdentity| replace:: :class:`~dendropy.datamodel.charstatemodel.StateIdentity`
 .. |StateAlphabet| replace:: :class:`~dendropy.datamodel.charstatemodel.StateAlphabet`

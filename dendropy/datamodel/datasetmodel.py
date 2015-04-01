@@ -303,7 +303,7 @@ class DataSet(
         """
         Forces all read() calls of this DataSet to use the same |TaxonNamespace|. If
         ``taxon_namespace`` If ``taxon_namespace`` is None, then a new |TaxonNamespace| will be
-        created, added to ``self.taxa``, and that is the |TaxonNamespace| that will be
+        created, added to ``self.taxon_namespaces``, and that is the |TaxonNamespace| that will be
         attached.
         """
         if taxon_namespace is None:

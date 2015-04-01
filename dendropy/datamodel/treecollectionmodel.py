@@ -586,13 +586,13 @@ class TreeList(
         according to ``taxon_import_strategy``:
 
             - 'migrate'
-                |Taxon| objects associated with ``tree`` that are not
-                already in ``self.taxon_nameaspace`` will be remapped based on
-                their labels, with new :class|Taxon| objects being
-                reconstructed if none with matching labels are found.
-                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
-                be called on ``tree``, where ``kwargs`` is as passed to this
-                function.
+                |Taxon| objects associated with ``tree`` that are not already
+                in ``self.taxon_nameaspace`` will be remapped based on their
+                labels, with new :class|Taxon| objects being reconstructed if
+                none with matching labels are found. Specifically,
+                :meth:`dendropy.datamodel.treemodel.Tree.migrate_taxon_namespace()`
+                will be called on ``tree``, where ``kwargs`` is as passed to
+                this function.
             - 'add'
                 |Taxon| objects associated with ``tree`` that are not already
                 in ``self.taxon_namespace`` will be added. Note that this might
@@ -639,12 +639,12 @@ class TreeList(
         according to ``taxon_import_strategy``:
 
             - 'migrate'
-                |Taxon| objects associated with ``tree`` that are not
-                already in ``self.taxon_nameaspace`` will be remapped based on
-                their labels, with new :class|Taxon| objects being
-                reconstructed if none with matching labels are found.
-                Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
-                be called on ``tree``, where ``kwargs`` is as passed to this
+                |Taxon| objects associated with ``tree`` that are not already
+                in ``self.taxon_nameaspace`` will be remapped based on their
+                labels, with new :class|Taxon| objects being reconstructed if
+                none with matching labels are found. Specifically,
+                :meth:`dendropy.datamodel.treemodel.Tree.migrate_taxon_namespace()`
+                will be called on ``tree``, where ``kwargs`` is as passed to this
                 function.
             - 'add'
                 |Taxon| objects associated with ``tree`` that are not already
@@ -947,7 +947,7 @@ class TreeList(
         """
         Given a bipartition specified as:
 
-            - a `Bipartition` instance given the keyword 'bipartition'
+            - a |Bipartition| instance given the keyword 'bipartition'
             - a split bitmask given the keyword 'split_bitmask'
             - a list of |Taxon| objects given with the keyword ``taxa``
             - a list of taxon labels given with the keyword ``labels``
@@ -1575,7 +1575,7 @@ class SplitDistributionSummarizer(object):
             "``support``".
 
         add_support_as_node_annotation: bool
-            Adds support as a metadata annotation, "`support". If
+            Adds support as a metadata annotation, "``support``". If
             ``add_support_as_node_attribute`` is `True`, then the value will be
             dynamically-bound to the value of the node's "``support``" attribute.
 
@@ -1644,7 +1644,7 @@ class SplitDistributionSummarizer(object):
 
         error_on_negative_edge_lengths : bool
             If `True`, an inferred edge length that is less than 0 will result
-            in a `ValueError`.
+            in a ValueError.
 
         no_data_value : str or float
             Value to substitute in for node ages, edge lengths and associated
@@ -2610,7 +2610,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def bipartition_encoding_frequencies(self):
         """
         Returns a dictionary with keys being bipartition encodings of trees
-        (as ``frozenset`` collections of `Bipartiton` objects) and
+        (as ``frozenset`` collections of |Bipartition| objects) and
         values the frequency of occurrence of trees represented by that
         encoding in the collection.
         """

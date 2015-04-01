@@ -8,18 +8,23 @@ Collections of Trees -- :mod:`dendropy.datamodel.treecollectionmodel`
 .. toctree::
     :maxdepth: 2
 
-The :class:`TreeList` Class
-===========================
+The |TreeList| Class
+====================
 .. autoclass:: dendropy.datamodel.treecollectionmodel.TreeList
     :members:
 
-The :class:`TreeArray` Class
-============================
+The |TreeArray| Class
+=====================
 .. autoclass:: dendropy.datamodel.treecollectionmodel.TreeArray
     :members:
 
-The :class:`SplitDistribution` Class
-====================================
+The |SplitDistribution| Class
+=============================
 .. autoclass:: dendropy.datamodel.treecollectionmodel.SplitDistribution
+    :members:
+
+The |SplitDistributionSummarizer| Class
+=======================================
+.. autoclass:: dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer
     :members:
 

@@ -68,7 +68,7 @@ class Bipartition(object):
 
     The normalization of the bitmask loses information about the actual
     descendents of a particular edge. Thus in addition to the
-    :attr:`Bipartition.bitmask` attribute, each `Bipartition` object
+    :attr:`Bipartition.bitmask` attribute, each |Bipartition| object
     also maintains a :attr:`Bipartition.leafset_bitmask` attribute which is
     *unnormalized*. This is a bit array representing the presence or absence of
     taxa in the subtree descending from the child node of the edge of which
@@ -93,21 +93,21 @@ class Bipartition(object):
     node in a given tree, or if a particular node is a common ancestor of
     two taxa in a given tree.
 
-    The `Bipartition` object might be used in keys in dictionaries and
+    The |Bipartition| object might be used in keys in dictionaries and
     look-up tables implemented as sets to allow for, e.g., calculation of
     support in terms of the number times a particular bipartition is observed.
     The :attr:`Bipartition.bitmask` is used as hash value for this purpose. As
     such, it is crucial that this value does not change once a particular
-    `Bipartition` object is stored in a dictionary or set. To this end,
-    we impose the constraint that `Bipartition` objects are immutable
+    |Bipartition| object is stored in a dictionary or set. To this end,
+    we impose the constraint that |Bipartition| objects are immutable
     unless the ``is_mutable`` attribute is explicitly set to `True` as a sort
     of waiver signed by the client code. Client code does this at its risk,
     with the warning that anything up to and including the implosion of the
-    universe may occur if the `Bipartition` object is a member of an set
+    universe may occur if the |Bipartition| object is a member of an set
     of dictionary at the time (or, at the very least, the modified
-    `Bipartition` object may not be accessible from dictionaries
+    |Bipartition| object may not be accessible from dictionaries
     and sets in which it is stored, or may occlude other
-    `Bipartition` objects in the container).
+    |Bipartition| objects in the container).
 
     Note
     ----
@@ -528,7 +528,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        other : `Bipartition`
+        other : |Bipartition|
             The bipartition to check for compatibility.
 
         Returns
@@ -549,7 +549,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        other : `Bipartition`
+        other : |Bipartition|
             The bipartition to check for conflicts.
 
         Returns
@@ -566,7 +566,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        other : `Bipartition`
+        other : |Bipartition|
             The bipartition to check.
 
         Returns
@@ -591,7 +591,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        other : `Bipartition`
+        other : |Bipartition|
             The bipartition to check for compatibility.
 
         Returns
@@ -1557,7 +1557,7 @@ class Node(
         """
         Assigns the set of child nodes for this node.
 
-        Results in the ``parent_node`` attribute of each |Node| in `nodes
+        Results in the ``parent_node`` attribute of each |Node| in ``nodes``
         as well as the ``tail_node`` attribute of corresponding |Edge|
         objects being assigned to ``self``.
 
@@ -1755,7 +1755,7 @@ class Node(
 
         Returns a list of tuples.  The first element of each tuple is the
         node removed, the other elements are the information needed by
-        `reinsert_nodes' in order to restore the tree to the same topology as
+        ``reinsert_nodes`` in order to restore the tree to the same topology as
         it was before the call to ``remove_child.`` If ``suppress_unifurcations`` is False
         then the returned list will contain only one item.
 
@@ -2536,7 +2536,7 @@ class Tree(
         files : iterable of file paths or file-like objects.
             Iterable of sources, which can either be strings specifying file
             paths or file-like objects open for reading. If a source element is
-            a string (````isinstance(i,str) == True````), then it is assumed to be
+            a string (``isinstance(i,str) == True``), then it is assumed to be
             a path to a file. Otherwise, the source is assumed to be a file-like
             object.
         schema : string
@@ -2580,8 +2580,8 @@ class Tree(
 
         Parameters
         ----------
-        bipartition_encoding : iterable[`Bipartition`]
-            An iterable of `Bipartition` instances representing a tree.
+        bipartition_encoding : iterable[|Bipartition|]
+            An iterable of |Bipartition| instances representing a tree.
             Bipartitions will be added to the tree in the order given by
             iterating over this. Bipartitions that are incompatible with the
             tree will be skipped. So if not all bipartitions are compatible
@@ -3219,7 +3219,7 @@ class Tree(
 
     def find_node(self, filter_fn):
         """
-        Finds the first node for which `filter_fn(node) == True`.
+        Finds the first node for which ``filter_fn(node) == True``.
 
         For example, if::
 
@@ -4531,11 +4531,11 @@ class Tree(
             resolved.
         update_bipartitions : bool
             If `True`, then bipartitions will be calculated.
-        rng : `random.Random` object or `None`
-            If ``rng`` is an object with a `sample()` method then the polytomy
+        rng : ``random.Random`` object or `None`
+            If ``rng`` is an object with a ``sample()`` method then the polytomy
             will be resolved by sequentially adding, generating all tree
-            topologies equiprobably. `rng.sample()` should behave like
-            `random.sample()`
+            topologies equiprobably. ``rng.sample()`` should behave like
+            ``random.sample()``
             If ``rng`` is `None`, then polytomy is broken deterministically by
             repeatedly joining pairs of children.
         """
@@ -4799,7 +4799,7 @@ class Tree(
             set to this.
         error_on_negative_edge_lengths : bool
             If `True`, an inferred edge length that is less than 0 will result
-            in a `ValueError`.
+            in a ValueError.
         """
         for nd in self.preorder_node_iter():
             if nd._parent_node is not None:
@@ -4980,15 +4980,15 @@ class Tree(
             to ``self.bipartition_encoding``) and returned. If ``suppress_storage``
             is `True`, then the list is not created.
         is_bipartitions_mutable : bool
-            By default, the `Bipartition` instances coded will be locked
+            By default, the |Bipartition| instances coded will be locked
             or frozen, allowing their use in hashing containers such as
             dictionary (keys) and sets. To allow modification of values, the
             ``is_mutable`` attribute must be set to `True`.
 
         Returns
         -------
-        b : list[`Bipartition`] or `None`
-            A list of `Bipartition` objects of this |Tree|
+        b : list[|Bipartition|] or `None`
+            A list of |Bipartition| objects of this |Tree|
             representing the structure of this tree, or, if ``suppress_storage``
             is `True`, then `None`.
 
@@ -5161,7 +5161,7 @@ class Tree(
 
     def is_compatible_with_bipartition(self, bipartition, is_bipartitions_updated=False):
         """
-        Returns true if the `Bipartition` ``bipartition`` is compatible
+        Returns true if the |Bipartition| ``bipartition`` is compatible
         with all bipartitions of this tree.
         """
         if not is_bipartitions_updated or not self.bipartitions_encoding:

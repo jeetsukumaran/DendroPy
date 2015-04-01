@@ -322,7 +322,7 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
 
     Returns
     -------
-    s : list[`Bipartition`]
+    s : list[|Bipartition|]
         A list of bipartitions that are in the first tree but not in the second.
 
     """
