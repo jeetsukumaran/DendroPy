@@ -2,6 +2,14 @@
 DendroPy Library Reference
 ##########################
 
+
+.. contents::
+    :local:
+    :backlinks: none
+
+Data Model
+==========
+
 .. toctree::
     :maxdepth: 2
 
