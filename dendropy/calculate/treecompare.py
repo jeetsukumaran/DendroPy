@@ -30,33 +30,33 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
     """
     Returns *unweighted* Robinson-Foulds distance between two trees.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The
+    Trees need to share the same `TaxonNamespace` reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    `is_bipartitions_updated` argument must be `False` to force recalculation
+    ``is_bipartitions_updated`` argument must be `False` to force recalculation
     of bipartitions.
 
     Parameters
     ----------
-    tree1 : :class:`dendropy.datamodel.Tree` object
+    tree1 : `Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have
+        same `TaxonNamespace` reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : :class:`dendropy.datamodel.Tree` object
+    tree2 : `Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have
+        same `TaxonNamespace` reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `False`, then the bipartitions on *both* trees will be updated
         before comparison. If `True` then the bipartitions will only be
-        calculated for a :class:`Tree` object if they have not been calculated
+        calculated for a `Tree` object if they have not been calculated
         before, either explicitly or implicitly.
 
     Returns
     -------
     d : int
         The symmetric difference (a.k.a. the unweighted Robinson-Foulds
-        distance) between `tree1` and `tree2`.
+        distance) between ``tree1`` and ``tree2``.
 
     Examples
     --------
@@ -85,7 +85,7 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 
 def unweighted_robinson_foulds_distance(tree1, tree2, is_bipartitions_updated=False):
     """
-    Alias for :func:`symmetric_difference()`.
+    Alias for `symmetric_difference()`.
     """
     return symmetric_difference(tree1, tree2, is_bipartitions_updated)
 
@@ -96,36 +96,36 @@ def weighted_robinson_foulds_distance(
         is_bipartitions_updated=False):
     """
     Returns *weighted* Robinson-Foulds distance between two trees based on
-    `edge_weight_attr`.
+    ``edge_weight_attr``.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The
+    Trees need to share the same `TaxonNamespace` reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
     bipartitions.
 
     Parameters
     ----------
-    tree1 : :class:`dendropy.datamodel.Tree` object
+    tree1 : `Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have
+        same `TaxonNamespace` reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : :class:`dendropy.datamodel.Tree` object
+    tree2 : `Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have
+        same `TaxonNamespace` reference as ``tree1`` and must have
         bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated before
         comparison. If `False` (default) then the bipartitions will only be
-        calculated for a :class:`Tree` object if they have not been calculated
+        calculated for a `Tree` object if they have not been calculated
         before, either explicitly or implicitly.
 
     Returns
     -------
     d : float
-        The edge-weighted Robinson-Foulds distance between `tree1` and `tree2`.
+        The edge-weighted Robinson-Foulds distance between ``tree1`` and ``tree2``.
 
     Examples
     --------
@@ -160,30 +160,30 @@ def false_positives_and_negatives(
         is_bipartitions_updated=False):
     """
     Counts and returns number of false positive bipar (bipartitions found in
-    `comparison_tree` but not in `reference_tree`) and false negative
-    bipartitions (bipartitions found in `reference_tree` but not in
-    `comparison_tree`).
+    ``comparison_tree`` but not in ``reference_tree``) and false negative
+    bipartitions (bipartitions found in ``reference_tree`` but not in
+    ``comparison_tree``).
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The
+    Trees need to share the same `TaxonNamespace` reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
     bipartitions.
 
     Parameters
     ----------
-    reference_tree : :class:`dendropy.datamodel.Tree` object
+    reference_tree : `Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have
+        same `TaxonNamespace` reference as ``tree2`` and must have
         bipartitions encoded.
-    comparison_tree : :class:`dendropy.datamodel.Tree` object
+    comparison_tree : `Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have
+        same `TaxonNamespace` reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a :class:`Tree` object if they have not been
+        will only be calculated for a `Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
@@ -235,36 +235,36 @@ def euclidean_distance(
         is_bipartitions_updated=False):
     """
     Returns the Euclidean distance (a.k.a. Felsenstein's 2004 "branch length
-    distance") between two trees based on `edge_weight_attr`.
+    distance") between two trees based on ``edge_weight_attr``.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The
+    Trees need to share the same `TaxonNamespace` reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
     bipartitions.
 
     Parameters
     ----------
-    tree1 : :class:`dendropy.datamodel.Tree` object
+    tree1 : `Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have
+        same `TaxonNamespace` reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : :class:`dendropy.datamodel.Tree` object
+    tree2 : `Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have
+        same `TaxonNamespace` reference as ``tree1`` and must have
         bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a :class:`Tree` object if they have not been
+        will only be calculated for a `Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
     -------
     d : int
-        The Euclidean distance between `tree1` and `tree2`.
+        The Euclidean distance between ``tree1`` and ``tree2``.
 
     Examples
     --------
@@ -295,34 +295,34 @@ def euclidean_distance(
 
 def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_updated=False):
     """
-    Returns a list of bipartitions that are in `reference_tree`, but
-    not in `comparison_tree`.
+    Returns a list of bipartitions that are in ``reference_tree``, but
+    not in ``comparison_tree``.
 
-    Trees need to share the same :class:`TaxonNamespace` reference. The
+    Trees need to share the same `TaxonNamespace` reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    `is_bipartitions_updated` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
     bipartitions.
 
     Parameters
     ----------
-    reference_tree : :class:`dendropy.datamodel.Tree` object
+    reference_tree : `Tree` object
         The first tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree2` and must have
+        same `TaxonNamespace` reference as ``tree2`` and must have
         bipartitions encoded.
-    comparison_tree : :class:`dendropy.datamodel.Tree` object
+    comparison_tree : `Tree` object
         The second tree of the two trees being compared. This must share the
-        same :class:`TaxonNamespace` reference as `tree1` and must have
+        same `TaxonNamespace` reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a :class:`Tree` object if they have not been
+        will only be calculated for a `Tree` object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
     -------
-    s : list[:class:`Bipartition`]
+    s : list[`Bipartition`]
         A list of bipartitions that are in the first tree but not in the second.
 
     """
@@ -349,9 +349,9 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
 
 def robinson_foulds_distance(tree1, tree2, edge_weight_attr="length"):
     """
-    DEPRECATED: Use :func:`symmetric_difference` for the common
+    DEPRECATED: Use :func:``symmetric_difference`` for the common
     unweighged Robinson-Fould's distance metric (i.e., the symmetric difference between two trees)
-    :func:`weighted_robinson_foulds_distance` or for the RF distance as defined by Felsenstein, 2004.
+    :func:``weighted_robinson_foulds_distance`` or for the RF distance as defined by Felsenstein, 2004.
     """
     return weighted_robinson_foulds_distance(tree1, tree2, edge_weight_attr)
 
@@ -479,8 +479,8 @@ def _bipartition_difference(
         is_bipartitions_updated=False):
     """
     Returns distance between two trees, each represented by a dictionary of
-    bipartitions (as bipartition_mask strings) to edges, using `dist_fn` to calculate the
-    distance based on `edge_weight_attr` of the edges. `dist_fn` is a function
+    bipartitions (as bipartition_mask strings) to edges, using ``dist_fn`` to calculate the
+    distance based on ``edge_weight_attr`` of the edges. ``dist_fn`` is a function
     that takes a list of pairs of values, where the values correspond to the edge
     lengths of a given bipartition on tree1 and tree2 respectively.
     """

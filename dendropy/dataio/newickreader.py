@@ -128,35 +128,35 @@ class NewickReader(ioservice.DataReader):
             Specifies how trees in the data source should be intepreted with
             respect to their rooting:
 
-                '``default-unrooted``' [default]:
-                    All trees are interpreted as unrooted unless a '``[&R]``'
+                '````default-unrooted````' [default]:
+                    All trees are interpreted as unrooted unless a '````[&R]````'
                     comment token explicitly specifies them as rooted.
-                '``default-rooted``'
-                    All trees are interpreted as rooted unless a '``[&U]``'
+                '````default-rooted````'
+                    All trees are interpreted as rooted unless a '````[&U]````'
                     comment token explicitly specifies them as unrooted.
-                '``force-unrooted``'
+                '````force-unrooted````'
                     All trees are unconditionally interpreted as unrooted.
-                '``force-rooted``'
+                '````force-rooted````'
                     All trees are unconditionally interpreted as rooted.
 
-        edge_len_type : type, default: `float`
-            Specifies the type of the edge lengths (`int` or `float`). Tokens
+        edge_len_type : type, default: ``float``
+            Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
-            Defaults to `float`.
+            Defaults to ``float``.
         suppress_edge_lengths : boolean, default: `False`
             If `True`, edge length values will not be processed. If `False`,
             edge length values will be processed.
         extract_comment_metadata : boolean, default: `True`
             If `True` (default), any comments that begin with '&' or '&&' will
             be parsed and stored as part of the annotation set of the
-            corresponding object (accessible through the `annotations`
+            corresponding object (accessible through the ``annotations``
             attribute of the object). This requires that the comment
             contents conform to a particular format (NHX or BEAST: 'field =
             value'). If `False`, then the comments will not be parsed,
-            but will be instead stored directly as elements of the `comments`
+            but will be instead stored directly as elements of the ``comments``
             list attribute of the associated object.
         store_tree_weights : boolean, default: `False`
-            If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
+            If `True`, process the tree weight (e.g. "````[&W 1/2]````") comment
             associated with each tree, if any. Defaults to `False`.
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
@@ -165,8 +165,8 @@ class NewickReader(ioservice.DataReader):
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels are case sensitive (e.g., "``P.regius``"
-            and "``P.REGIUS``" wil be treated as different operation taxonomic
+            If `True`, then taxon labels are case sensitive (e.g., "````P.regius````"
+            and "````P.REGIUS````" wil be treated as different operation taxonomic
             unit concepts). Otherwise, taxon label intepretation will be made
             without regard for case.
         preserve_underscores : boolean, default: `False`
@@ -175,11 +175,11 @@ class NewickReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiated into
-            :class:`Taxon` objects. If `True`, internal node labels
+            `Taxon` objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: `False`
             If `False`, leaf (external) node labels will be instantantiated
-            into :class:`Taxon` objects. If `True`, leaff (external) node
+            into `Taxon` objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
         terminating_semicolon_required : boolean, default: `True`
             If `True` [default], then a tree statement that does not end in a
@@ -271,17 +271,17 @@ class NewickReader(ioservice.DataReader):
         ----------
         stream : file or file-like object
             A file or file-like object opened for reading.
-        taxon_namespace : :class:`TaxonNamespace`
+        taxon_namespace : `TaxonNamespace`
             Operational taxonomic unit namespace to use for taxon management.
         tree_factory : function object
-            A function that returns a new :class:`Tree` object when called
+            A function that returns a new `Tree` object when called
             without arguments.
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Tree`]
-            An iterator yielding :class:`Tree` objects constructed based on
-            data in `stream`.
+        iter : :py`collections.Iterator` [`Tree`]
+            An iterator yielding `Tree` objects constructed based on
+            data in ``stream``.
         """
         nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,
                 preserve_unquoted_underscores=self.preserve_unquoted_underscores)
@@ -451,7 +451,7 @@ class NewickReader(ioservice.DataReader):
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """
         Returns rooting state for tree with given rooting comment token, taking
-        into account `rooting` configuration.
+        into account ``rooting`` configuration.
         """
         if self._rooting == "force-unrooted":
             return False
@@ -553,7 +553,7 @@ class NewickReader(ioservice.DataReader):
         label_parsed = False
         self._tree_statement_complete = False
         if is_internal_node is None:
-            # Initial call using `seed_node` does not set `is_internal_node` to
+            # Initial call using ``seed_node`` does not set ``is_internal_node`` to
             # `True` or `False`, explicitly, but rather `None`. If this is the
             # case, the rest of the tree has be constructed, and we simply look
             # at whether there are children or not to determine if it is an

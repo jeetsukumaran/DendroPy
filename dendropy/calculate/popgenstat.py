@@ -224,7 +224,7 @@ class PopulationPairSummaryStatistics(object):
     def calc(self):
         """
         Returns a summary of a set of sequences that can be partitioned into
-        the list of lists of taxa given by `taxon_groups`.
+        the list of lists of taxa given by ``taxon_groups``.
         """
         diffs_x, mean_diffs_x, sq_diff_x = _count_differences(self.pop1_seqs, self.state_alphabet, self.ignore_uncertain)
         diffs_y, mean_diffs_y, sq_diff_y = _count_differences(self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)

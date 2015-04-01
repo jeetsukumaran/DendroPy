@@ -36,9 +36,9 @@ class PhylipWriter(ioservice.DataWriter):
         """
         __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
-            - `strict` (boolean)
-            - `spaces_to_underscores` (boolean)
-            - `force_unique_taxon_labels` (boolean)
+            - ``strict`` (boolean)
+            - ``spaces_to_underscores`` (boolean)
+            - ``force_unique_taxon_labels`` (boolean)
         """
         ioservice.DataWriter.__init__(self, **kwargs)
         self.strict = kwargs.pop("strict", False)

@@ -29,7 +29,7 @@ _LOG = messaging.get_logger(__name__)
 
 class HpdCalculationTests(dendropytest.ExtendedTestCase):
     """
-    Test reference values as given by `hpd.emp`, in the "TeachingDemos" package
+    Test reference values as given by ``hpd.emp``, in the "TeachingDemos" package
     of R.
     """
 

@@ -27,7 +27,7 @@ EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 class PatristicDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
-    `max_dist_taxa` and `max_dist_nodes` will return a tuple of taxon objects
+    ``max_dist_taxa`` and ``max_dist_nodes`` will return a tuple of taxon objects
     and corresponding nodes, respectively, that span the greatest path distance
     in the tree. The mid-point between the two is *guaranteed* to be on the
     closer to the first item of each pair.
@@ -231,7 +231,7 @@ def colless_tree_imbalance(tree, normalize="max"):
         ## 2/((num_leaves - 1) * (num_leaves -2))
         colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
     elif normalize is not None and normalize is not False:
-        raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
+        raise TypeError("``normalization`` accepts only None, True, False, 'yule' or 'pda' as argument values")
     return colless
 
 def pybus_harvey_gamma(tree, prec=0.00001):
@@ -240,13 +240,13 @@ def pybus_harvey_gamma(tree, prec=0.00001):
     a phylogeny.  Under the pure-birth process, the statistic should follow
     a standard Normal distibution: a Normal(mean=0, variance=1).
 
-    If the lengths of different paths to the node differ by more than `prec`,
+    If the lengths of different paths to the node differ by more than ``prec``,
         then a ValueError exception will be raised indicating deviation from
         ultrametricty.
     Raises a Value Error if the tree is not ultrametric, is non-binary, or has
         only 2 leaves.
 
-    As a side effect a `age` attribute is added to the nodes of the tree.
+    As a side effect a ``age`` attribute is added to the nodes of the tree.
 
     Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
     molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
@@ -340,7 +340,7 @@ def sackin_index(tree, normalize=True):
     elif normalize is None or normalize is False:
         s = float(num_anc)
     elif normalize is not None and normalize is not False:
-        raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
+        raise TypeError("``normalization`` accepts only None, True, False, 'yule' or 'pda' as argument values")
     return s
 
 def treeness(tree):

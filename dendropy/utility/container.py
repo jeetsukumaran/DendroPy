@@ -71,14 +71,14 @@ class OrderedSet(object):
 
     def __getitem__(self, index):
         """
-        Returns value at `index`.
+        Returns value at ``index``.
         Note takes *index* of than value as key.
         """
         return self._item_list[index]
 
     def __setitem__(self, index, value):
         """
-        Sets value at `index`.
+        Sets value at ``index``.
         Note takes *index* of than value as key.
         """
         item = self._item_list[index]
@@ -88,7 +88,7 @@ class OrderedSet(object):
 
     def __delitem__(self, index):
         """
-        Deletes value at `index`.
+        Deletes value at ``index``.
         Note takes *index* of than value as key.
         """
         self._item_set.remove(self._item_list[index])
@@ -96,8 +96,8 @@ class OrderedSet(object):
 
     def discard(self, key):
         """
-        Deletes value of `key` from `self`.
-        No error if no value of `key` is not in `self`.
+        Deletes value of ``key`` from ``self``.
+        No error if no value of ``key`` is not in ``self``.
         """
         if key in self._item_set:
             self._item_set.remove(key)
@@ -105,54 +105,54 @@ class OrderedSet(object):
 
     def remove(self, key):
         """
-        Deletes value of `key` from `self`.
-        `KeyError`if no value of `key` is not in `self`.
+        Deletes value of ``key`` from ``self``.
+        KeyErrorif no value of ``key`` is not in ``self``.
         """
         self._item_set.remove(key)
         self._item_list.remove(key)
 
     def __iter__(self):
         """
-        Returns iterator over values in `self`.
+        Returns iterator over values in ``self``.
         """
         return iter(self._item_list)
 
     def next(self):
         """
-        Returns iterator over values in `self`.
+        Returns iterator over values in ``self``.
         """
         return self.__iter__()
 
     def __reversed__(self):
         """
-        Returns :class:`OrderedSet` with values in reversed order.
+        Returns `OrderedSet` with values in reversed order.
         """
         return OrderedSet(reversed(self._item_list))
 
     def __add__(self, other):
         """
-        Returns :class:`OrderedSet` consisting of union of values in `self`
-        and `other`.
+        Returns `OrderedSet` consisting of union of values in ``self``
+        and ``other``.
         """
         v = self._item_list + other._item_list
         return OrderedSet(v)
 
     def index(self, value):
         """
-        Returns index of element with value of `value`.
+        Returns index of element with value of ``value``.
         """
         return self._item_list.index(value)
 
     def __contains__(self, value):
         """
-        Returns `True` if `value` is in `self` or `False` otherwise.
+        Returns `True` if ``value`` is in ``self`` or `False` otherwise.
         """
         return value in self._item_set
 
     def add(self, value):
         """
-        Adds a new element, `value`, to `self` if `value` is not already in
-        `self`.
+        Adds a new element, ``value``, to ``self`` if ``value`` is not already in
+        ``self``.
         """
         if value not in self._item_set:
             self._item_set.add(value)
@@ -163,8 +163,8 @@ class OrderedSet(object):
 
     def update(self, other):
         """
-        Updates `self` with values in `other` for each value in `other` that is
-        not already in `self`.
+        Updates ``self`` with values in ``other`` for each value in ``other`` that is
+        not already in ``self``.
         """
         for i in other:
             if i not in self._item_set:
@@ -190,7 +190,7 @@ class OrderedSet(object):
 
     def pop(self, last=True):
         """
-        Removes and return value in `self`.
+        Removes and return value in ``self``.
         By default, removes last value.
         """
         if not self._item_set:
@@ -211,7 +211,7 @@ class OrderedSet(object):
 
 class NormalizedBitmaskDict(collections.OrderedDict):
     """
-    Keys, {K_i}, are longs. `fill_bitmask` must be provided before elements can be
+    Keys, {K_i}, are longs. ``fill_bitmask`` must be provided before elements can be
     added removed from dictionary. All keys are normalized such that the
     least- significant bit is '0'. That is, if the key's least-significant bit
     is '0', it is added as-is, otherwise it is complemented by XOR'ing it with
@@ -252,7 +252,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
             When representing a taxon namespaces, with 8 taxa, for example,
             this would be 0b11111111. Incomplete leaf-sets on trees need to
             having the missing taxa bits set to 0. For example, for a tree
-            missing taxa 2, 3, and 5, `fill_bitmask` would be 0b11101001.
+            missing taxa 2, 3, and 5, ``fill_bitmask`` would be 0b11101001.
 
         """
         collections.OrderedDict.__init__(self)
@@ -357,12 +357,12 @@ class CaseInsensitiveDict(collections.MutableMapping):
     A case-insensitive ``dict``-like object.
 
     Implements all methods and operations of
-    ``collections.MutableMapping`` as well as dict's ``copy``. Also
+    ````collections.MutableMapping```` as well as dict's ``copy``. Also
     provides ``lower_items``.
 
     All keys are expected to be strings. The structure remembers the
-    case of the last key to be set, and ``iter(instance)``,
-    ``keys()``, ``items()``, ``iterkeys()``, and ``iteritems()``
+    case of the last key to be set, and ````iter(instance)````,
+    ````keys()````, ````items()````, ````iterkeys()````, and ````iteritems()````
     will contain case-sensitive keys. However, querying and contains
     testing is case insensitive:
 
@@ -371,12 +371,12 @@ class CaseInsensitiveDict(collections.MutableMapping):
         cid['aCCEPT'] == 'application/json'  # True
         list(cid) == ['Accept']  # True
 
-    For example, ``headers['content-encoding']`` will return the
-    value of a ``'Content-Encoding'`` response header, regardless
+    For example, ````headers['content-encoding']```` will return the
+    value of a ````'Content-Encoding'```` response header, regardless
     of how the header name was originally stored.
 
-    If the constructor, ``.update``, or equality comparison
-    operations are given keys that have equal ``.lower()``s, the
+    If the constructor, ````.update````, or equality comparison
+    operations are given keys that have equal ````.lower()````s, the
     behavior is undefined.
 
     """
@@ -798,9 +798,9 @@ class RecastingIterator(object):
     """
     def __init__(self, source_iter, casting_fn=None, filter_fn=None):
         """
-        `source_iter` is an iterator. `casting_fn` is a function
-        that takes objects returned by `source_iter` and returns other
-        objects. `filter_fn` is what will be applied to the SOURCE object
+        ``source_iter`` is an iterator. ``casting_fn`` is a function
+        that takes objects returned by ``source_iter`` and returns other
+        objects. ``filter_fn`` is what will be applied to the SOURCE object
         to decide if it will be returned.
         """
         self.source_iter = iter(source_iter)
@@ -836,7 +836,7 @@ class ItemAttributeProxyList(list):
         """
         __init__ calls the list.__init__ with all unnamed args.
 
-        `attr_name` is the name of the attribute or property that should be
+        ``attr_name`` is the name of the attribute or property that should be
         returned.
         """
         self.bound_attr_name = attr_name
@@ -875,7 +875,7 @@ class ItemSublistProxyList(list):
         """
        __init__ calls the list.__init__ with all unnamed args.
 
-        `attr_name` is the name of the attribute or property that should be
+        ``attr_name`` is the name of the attribute or property that should be
         returned.
         """
         self.bound_attr_name = attr_name

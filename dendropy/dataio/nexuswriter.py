@@ -51,15 +51,15 @@ class NexusWriter(ioservice.DataWriter):
         suppress_taxa_block: boolean, default: `False`
             If `True`, do not write a "TAXA" block.
         suppress_unreferenced_taxon_namespaces: boolean, default: `False`
-            If `True`, then when writing :class:`DataSet` objects, any :class:`TaxonNamespace`
-            object in the DataSet's `taxon_namespaces` collection will *not* be written
+            If `True`, then when writing `DataSet` objects, any `TaxonNamespace`
+            object in the DataSet's ``taxon_namespaces`` collection will *not* be written
             as a "TAXA" block
-        file_comments: iterable [`str`]
+        file_comments: iterable [``str``]
             List of lines of text to be added as comments to the file.
-        preamble_blocks: iterable [`str`]
+        preamble_blocks: iterable [``str``]
             List of strings to be written before data (e.g., PAUP blocks
             suppressing warnings etc.).
-        supplemental_blocks: iterable [`str`]
+        supplemental_blocks: iterable [``str``]
             List of strings to be written after data (e.g., PAUP blocks,
             MrBayes blocks etc.).
         suppress_leaf_taxon_labels : boolean, default: `False`
@@ -103,13 +103,13 @@ class NexusWriter(ioservice.DataWriter):
             and referenced in tree statements (instead of using the taxon
             labels). If `True`, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be :class:`Taxon` objects and the
+            given, then the keys should be `Taxon` objects and the
             values should be the token (strings).
         suppress_annotations : boolean, default: `False`
             If `True`, metadata annotations will be ignored.
             Defaults to `False`: metadata annotations will be written.
         annotations_as_nhx : boolean, default: `False`
-            If `True`, and if `suppress_annotations` is `False`, will write
+            If `True`, and if ``suppress_annotations`` is `False`, will write
             annotations as NHX statements. Default is `False`: annotations
             will not be written as NHX statements.
         suppress_item_comments : boolean, default: `False`
@@ -117,18 +117,18 @@ class NexusWriter(ioservice.DataWriter):
             additional comments associated with trees, nodes, edges, etc. will
             be written.
         node_label_element_separator : string, default: ' '
-            If both `suppress_leaf_taxon_labels` and
-            `suppress_leaf_node_labels` are `False`, then this will be the
+            If both ``suppress_leaf_taxon_labels`` and
+            ``suppress_leaf_node_labels`` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
         node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a :class:`Node`
+            If not `None`, should be a function that takes a `Node`
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
-            labelling function, ignoring `suppress_leaf_taxon_labels`,
-            `suppress_leaf_node_labels=True`, `suppress_internal_taxon_labels`,
-            `suppress_internal_node_labels`, etc. Defaults to `None`.
+            labelling function, ignoring ``suppress_leaf_taxon_labels``,
+            `suppress_leaf_node_labels=True`, ``suppress_internal_taxon_labels``,
+            ``suppress_internal_node_labels``, etc. Defaults to `None`.
         edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the

@@ -27,51 +27,51 @@ unit concepts, and provide the semantic context in which operational taxonomic
 units from across various data sources of different formats and provenances can
 be related through correct interpretation of their taxon labels.
 
-    * Operational taxonomic units are modeled by a :class:`Taxon` object.
+    * Operational taxonomic units are modeled by a `Taxon` object.
 
     * Taxonomic namespaces, in which operational taxonomic units are organized,
-      are modeled by a :class:`TaxonNamespace` object.
+      are modeled by a `TaxonNamespace` object.
 
-    * A :class:`TaxonNamespace` manages a collection of :class:`Taxon` objects, where each
+    * A `TaxonNamespace` manages a collection of `Taxon` objects, where each
       object represents a distinct operational taxonomic unit concept within
-      the taxonomic namespace represented by that :class:`TaxonNamespace` object.
+      the taxonomic namespace represented by that `TaxonNamespace` object.
 
-    * Each :class:`Taxon` object can belong to one and only one :class:`TaxonNamespace`:
-      :class:`Taxon` objects are not shared across :class:`TaxonNamespace` objects.
+    * Each `Taxon` object can belong to one and only one `TaxonNamespace`:
+      `Taxon` objects are not shared across `TaxonNamespace` objects.
 
-    * Each :class:`Taxon` object has an attribute, `label`, whose (string) value
+    * Each `Taxon` object has an attribute, ``label``, whose (string) value
       is the name of the operational taxon unit concept that it represents.
 
-    * Different :class:`Taxon` objects represent different operational taxonomic
+    * Different `Taxon` objects represent different operational taxonomic
       unit concepts, even if they have the same label value.
 
-    * All client objects (:class:`TaxonNamespaceAssociated` objects) that reference
-      the same :class:`TaxonNamespace` reference the same "universe" or domain of
+    * All client objects (`TaxonNamespaceAssociated` objects) that reference
+      the same `TaxonNamespace` reference the same "universe" or domain of
       operational taxonomic unit concepts.
 
     * Operational taxonomic units from across different data sources are mapped
-      to distinct :class:`Taxon` objects within a particular :class:`TaxonNamespace` based on
-      matching the string values of labels of the :class:`Taxon` object.
+      to distinct `Taxon` objects within a particular `TaxonNamespace` based on
+      matching the string values of labels of the `Taxon` object.
 
     * A particular taxonomic unit concept in one data source will only be
       correctly related to the same taxonomic unit concept (i.e, the same
-      :class:`Taxon` object) in another data source only if they have both
+      `Taxon` object) in another data source only if they have both
       been parsed with reference to the same taxonomic namespace (i.e., the
-      same :class:`TaxonNamespace` has been used).
+      same `TaxonNamespace` has been used).
 
-    * A :class:`TaxonNamespace` assigned an "accession index" to every :class:`Taxon` object
+    * A `TaxonNamespace` assigned an "accession index" to every `Taxon` object
       added to it. This is a stable and unique number within the context of any
-      given :class:`TaxonNamespace` object (though a :class:`Taxon` object may have different
-      accession indexes in different :class:`TaxonNamespace` objects if it
+      given `TaxonNamespace` object (though a `Taxon` object may have different
+      accession indexes in different `TaxonNamespace` objects if it
       belongs to multiple namespaces). This number is will be used to
       calculate the "split bitmask" hash of the trivial split or external edge
-      subtending the node to which this :class:`Taxon` object is assigned on a tree.
+      subtending the node to which this `Taxon` object is assigned on a tree.
       The concept of a "split bitmask" hash is fundamental to DendroPy's tree
       operations. The split bitmask is a hash that uniquely identifies every
       split on a tree.  It is calculated by OR'ing the split bitmask of all the
       child splits of the given split. Terminal edges, of course, do not have
       child edges, and their split bitmask is given by the accession index of
-      the :class:`Taxon` object at their head or target nodes.
+      the `Taxon` object at their head or target nodes.
 """
 
 
@@ -112,16 +112,16 @@ def process_attached_taxon_namespace_directives(kwargs_dict):
     The following idioms are supported:
 
         `taxon_namespace=tns`
-            Attach `tns` as the bound (single, unified) taxonomic namespace
+            Attach ``tns`` as the bound (single, unified) taxonomic namespace
             reference for all objects.
         `attached_taxon_namespace=tns`
-            Attach `tns` as the bound (single, unified) taxonomic namespace
+            Attach ``tns`` as the bound (single, unified) taxonomic namespace
             reference for all objects.
         `attach_taxon_namespace=True, attached_taxon_namespace=tns`
-            Attach `tns` as the bound (single, unified) taxonomic namespace
+            Attach ``tns`` as the bound (single, unified) taxonomic namespace
             reference for all objects.
         `attach_taxon_namespace=True`
-            Create a *new* :class:`TaxonNamespace` and set it as the bound
+            Create a *new* `TaxonNamespace` and set it as the bound
             (single, unified) taxonomic namespace reference for all
             objects.
     """
@@ -226,50 +226,50 @@ class TaxonNamespaceAssociated(object):
         Move this object and all members to a new operational taxonomic unit
         concept namespace scope.
 
-        Current :attr:`self.taxon_namespace` value will be replaced with value
-        given in `taxon_namespace` if this is not `None`, or a new
-        :class:`TaxonNamespace` object. Following this,
+        Current :attr:``self.taxon_namespace`` value will be replaced with value
+        given in ``taxon_namespace`` if this is not `None`, or a new
+        `TaxonNamespace` object. Following this,
         `reconstruct_taxon_namespace()` will be called: each distinct
-        :class:`Taxon` object associated with `self` or members of `self` that
-        is not alread in `taxon_namespace` will be replaced with a new
-        :class:`Taxon` object that will be created with the same label and
-        added to :attr:`self.taxon_namespace`.  Calling this method results in
+        `Taxon` object associated with ``self`` or members of ``self`` that
+        is not alread in ``taxon_namespace`` will be replaced with a new
+        `Taxon` object that will be created with the same label and
+        added to :attr:``self.taxon_namespace``.  Calling this method results in
         the object (and all its member objects) being associated with a new,
         independent taxon namespace.
 
         Label mapping case sensitivity follows the
-        `self.taxon_namespace.is_case_sensitive` setting. If
-        `False` and `unify_taxa_by_label` is also `True`, then the
-        establishment of correspondence between :class:`Taxon` objects in the
+        ``self.taxon_namespace.is_case_sensitive`` setting. If
+        `False` and ``unify_taxa_by_label`` is also `True`, then the
+        establishment of correspondence between `Taxon` objects in the
         old and new namespaces with be based on case-insensitive matching of
-        labels. E.g., if there are four :class:`Taxon` objects with labels
+        labels. E.g., if there are four `Taxon` objects with labels
         'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
-        that reference these will reference a single new :class:`Taxon` object
+        that reference these will reference a single new `Taxon` object
         in the new namespace (with a label some existing casing variant of
-        'foo'). If `True`: if `unify_taxa_by_label` is `True`,
-        :class:`Taxon` objects with labels identical except in case will be
+        'foo'). If `True`: if ``unify_taxa_by_label`` is `True`,
+        `Taxon` objects with labels identical except in case will be
         considered distinct.
 
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace`
-            The :class:`TaxonNamespace` into the scope of which this object
+        taxon_namespace : `TaxonNamespace`
+            The `TaxonNamespace` into the scope of which this object
             will be moved.
 
         unify_taxa_by_label : boolean, optional
-            If `True`, then references to distinct :class:`Taxon` objects with
+            If `True`, then references to distinct `Taxon` objects with
             identical labels in the current namespace will be replaced with a
-            reference to a single :class:`Taxon` object in the new namespace.
-            If `False`: references to distinct :class:`Taxon` objects will
+            reference to a single `Taxon` object in the new namespace.
+            If `False`: references to distinct `Taxon` objects will
             remain distinct, even if the labels are the same.
 
         taxon_mapping_memo : dictionary
-            Similar to `memo` of deepcopy, this is a dictionary that maps
-            :class:`Taxon` objects in the old namespace to corresponding
-            :class:`Taxon` objects in the new namespace. Mostly for interal
+            Similar to ``memo`` of deepcopy, this is a dictionary that maps
+            `Taxon` objects in the old namespace to corresponding
+            `Taxon` objects in the new namespace. Mostly for interal
             use when migrating complex data to a new namespace. Note that
             any mappings here take precedence over all other options: if a
-            :class:`Taxon` object in the old namespace is found in this
+            `Taxon` object in the old namespace is found in this
             dictionary, the counterpart in the new namespace will be whatever
             value is mapped, regardless of, e.g. label values.
 
@@ -317,62 +317,62 @@ class TaxonNamespaceAssociated(object):
             taxon_mapping_memo=None):
         """
         Repopulates the current taxon namespace with new taxon objects,
-        preserving labels. Each distinct :class:`Taxon` object associated with
-        `self` or members of `self` that is not already in
-        `self.taxon_namespace` will be replaced with a new :class:`Taxon`
+        preserving labels. Each distinct `Taxon` object associated with
+        ``self`` or members of ``self`` that is not already in
+        ``self.taxon_namespace`` will be replaced with a new `Taxon`
         object that will be created with the same label and added to
-        :attr:`self.taxon_namespace`.
+        :attr:``self.taxon_namespace``.
 
         Label mapping case sensitivity follows the
-        `self.taxon_namespace.is_case_sensitive` setting. If
-        `False` and `unify_taxa_by_label` is also `True`, then the
-        establishment of correspondence between :class:`Taxon` objects in the
+        ``self.taxon_namespace.is_case_sensitive`` setting. If
+        `False` and ``unify_taxa_by_label`` is also `True`, then the
+        establishment of correspondence between `Taxon` objects in the
         old and new namespaces with be based on case-insensitive matching of
-        labels. E.g., if there are four :class:`Taxon` objects with labels
+        labels. E.g., if there are four `Taxon` objects with labels
         'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
-        that reference these will reference a single new :class:`Taxon` object
+        that reference these will reference a single new `Taxon` object
         in the new namespace (with a label some existing casing variant of
-        'foo'). If `True`: if `unify_taxa_by_label` is `True`,
-        :class:`Taxon` objects with labels identical except in case will be
+        'foo'). If `True`: if ``unify_taxa_by_label`` is `True`,
+        `Taxon` objects with labels identical except in case will be
         considered distinct.
 
         Note
         ----
-        Existing :class:`Taxon` objects in `self.taxon_namespace` are *not*
+        Existing `Taxon` objects in ``self.taxon_namespace`` are *not*
         removed. This method should thus only be called *only* when
-        `self.taxon_namespace` has been changed. In fact, typical usage would
+        ``self.taxon_namespace`` has been changed. In fact, typical usage would
         not involve calling this method directly, but rather through
 
         Parameters
         ----------
         unify_taxa_by_label : boolean, optional
-            If `True`, then references to distinct :class:`Taxon` objects with
+            If `True`, then references to distinct `Taxon` objects with
             identical labels in the current namespace will be replaced with a
-            reference to a single :class:`Taxon` object in the new namespace.
-            If `False`: references to distinct :class:`Taxon` objects will
+            reference to a single `Taxon` object in the new namespace.
+            If `False`: references to distinct `Taxon` objects will
             remain distinct, even if the labels are the same.
 
         taxon_mapping_memo : dictionary
-            Similar to `memo` of deepcopy, this is a dictionary that maps
-            :class:`Taxon` objects in the old namespace to corresponding
-            :class:`Taxon` objects in the new namespace. Mostly for interal
+            Similar to ``memo`` of deepcopy, this is a dictionary that maps
+            `Taxon` objects in the old namespace to corresponding
+            `Taxon` objects in the new namespace. Mostly for interal
             use when migrating complex data to a new namespace.
         """
         raise NotImplementedError()
 
     def update_taxon_namespace(self):
         """
-        All :class:`Taxon` objects associated with `self` or members of `self`
-        that are not in `self.taxon_namespace` will be added. Note that, unlike
-        :class:`reconstruct_taxon_namespace`, no new :class:`Taxon` objects
+        All `Taxon` objects associated with ``self`` or members of ``self``
+        that are not in ``self.taxon_namespace`` will be added. Note that, unlike
+        ``reconstruct_taxon_namespace``, no new `Taxon` objects
         will be created.
         """
         raise NotImplementedError()
 
     def purge_taxon_namespace(self):
         """
-        Remove all :class:`Taxon` instances in `self.taxon_namespace` that are
-        not associated with `self` or any item in `self`.
+        Remove all `Taxon` instances in ``self.taxon_namespace`` that are
+        not associated with ``self`` or any item in ``self``.
         """
         taxa = self.poll_taxa()
         to_remove = [t for t in self.taxon_namespace if t not in taxa]
@@ -381,8 +381,8 @@ class TaxonNamespaceAssociated(object):
 
     def poll_taxa(self, taxa=None):
         """
-        Returns a set populated with all of :class:`Taxon` instances associated
-        with `self`.
+        Returns a set populated with all of `Taxon` instances associated
+        with ``self``.
 
         Parameters
         ----------
@@ -391,16 +391,16 @@ class TaxonNamespaceAssociated(object):
 
         Returns
         -------
-        taxa : set[:class:`Taxon`]
-            Set of taxa associated with `self`.
+        taxa : set[`Taxon`]
+            Set of taxa associated with ``self``.
         """
         raise NotImplementedError()
 
     def reindex_taxa(self, taxon_namespace=None, clear=False):
         """
         DEPRECATED: Use `migrate_taxon_namespace()` instead.
-        Rebuilds `taxon_namespace` from scratch, or assigns :class:`Taxon` objects from
-        given :class:`TaxonNamespace` object `taxon_namespace` based on label values. Calls
+        Rebuilds ``taxon_namespace`` from scratch, or assigns `Taxon` objects from
+        given `TaxonNamespace` object ``taxon_namespace`` based on label values. Calls
         on `self.reindex_member_taxa()` to synchronize taxa.
         """
         deprecate.dendropy_deprecation_warning(
@@ -417,9 +417,9 @@ class TaxonNamespaceAssociated(object):
         """
         DEPRECATED: Use :meth:`reconstruct_taxon_namespace()` instead.
         Derived classes should override this to ensure that their various
-        components, attributes and members all refer to the same :class:`TaxonNamespace`
-        object as `self.taxon_namespace`, and that `self.taxon_namespace` has all
-        the :class:`Taxon` objects in the various members.
+        components, attributes and members all refer to the same `TaxonNamespace`
+        object as ``self.taxon_namespace``, and that ``self.taxon_namespace`` has all
+        the `Taxon` objects in the various members.
         """
         raise NotImplementedError()
 
@@ -434,7 +434,7 @@ class TaxonNamespace(
         basemodel.Annotable):
 
     """
-    A collection of :class:`Taxon` objects representing a self-contained and complete
+    A collection of `Taxon` objects representing a self-contained and complete
     domain of distinct operational taxonomic unit definitions.
     Provides the common semantic context in which operational taxonomic units
     referenced by various phylogenetic data objects (e.g., trees or alignments)
@@ -450,11 +450,11 @@ class TaxonNamespace(
 
         \*args : positional arguments, optional
             Accepts a single iterable as an optional positional argument.  If a
-            :class:`TaxonNamespace` object is passed as the positional argument, then
-            clones or deep-copies of its member :class:`Taxon` objects will be added
+            `TaxonNamespace` object is passed as the positional argument, then
+            clones or deep-copies of its member `Taxon` objects will be added
             to this one.  If any other iterable is passed as the positional
             argument, then each string in the iterable will result in a new
-            :class:`Taxon` object being constructed and added to the namespace with
+            `Taxon` object being constructed and added to the namespace with
             the string as its label (name), while each Taxon object in the
             iterable will be added to the namespace directly.
 
@@ -462,8 +462,8 @@ class TaxonNamespace(
             label : string
                 The label or name for this namespace.
             is_mutable : boolean, optional (default = `True`)
-                If `True` (default), then :class:`Taxon` objects can be added to this
-                namespace. If `False`, then adding :class:`Taxon` objects will result
+                If `True` (default), then `Taxon` objects can be added to this
+                namespace. If `False`, then adding `Taxon` objects will result
                 in an error.
             is_case_sensitive : boolean, optional (default = `False`)
                 Whether or not taxon names are considered case sensitive or
@@ -471,7 +471,7 @@ class TaxonNamespace(
 
         Notes
         -----
-        An empty :class:`TaxonNamespace` can be created (with optional) label and :class:`Taxon`
+        An empty `TaxonNamespace` can be created (with optional) label and `Taxon`
         objects added later:
 
         >>> tns = dendropy.TaxonNamespace(label="taxa")
@@ -484,8 +484,8 @@ class TaxonNamespace(
         <TaxonNamespace 0x106509090 'taxa': [<Taxon 0x10661f050 'a'>, <Taxon 0x10651c590 'b'>, <Taxon 0x106642a90 'c'>]>
 
         Alternatively, an iterable can be passed in as an initializer, and all
-        :class:`Taxon` objects will be added directly while, for each string, a new
-        :class:`Taxon` object will be created and added. So, the below are all equivalent
+        `Taxon` objects will be added directly while, for each string, a new
+        `Taxon` object will be created and added. So, the below are all equivalent
         to the above:
 
         >>> tns = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa")
@@ -498,7 +498,7 @@ class TaxonNamespace(
         >>> taxa = [t1, t2, "c"]
         >>> tns = dendropy.TaxonNamespace(taxa, label="taxa")
 
-        If a :class:`TaxonNamespace` object is passed as the
+        If a `TaxonNamespace` object is passed as the
         initializer argument, a *shallow* copy of the object is constructed:
 
         >>> tns1 = dendropy.TaxonNamespace(["a", "b", "c"], label="taxa1")
@@ -508,9 +508,9 @@ class TaxonNamespace(
         >>> tns2
         <TaxonNamespace 0x109727d50 'taxa1': [<Taxon 0x109727610 'a'>, <Taxon 0x109727e10 'b'>, <Taxon 0x109727e90 'c'>]>
 
-        Thus, while "`tns1`" and "`tns2`" are independent collections, and
-        addition/deletion of :class:`Taxon` instances to one will not effect
-        the other, the label of a :class:`Taxon` instance that is an element in
+        Thus, while "``tns1``" and "``tns2``" are independent collections, and
+        addition/deletion of `Taxon` instances to one will not effect
+        the other, the label of a `Taxon` instance that is an element in
         one will of course effect the same instance if it is in the other:
 
         >>> print(tns1[0].label)
@@ -523,14 +523,14 @@ class TaxonNamespace(
         >>> print(tns2[0].label)
         >>> Z
 
-        In contrast to actual data (i.e., the :class:`Taxon` objects), alll
-        metadata associated with "`tns2`" (i.e., the :class:`AnnotationSet` object,
+        In contrast to actual data (i.e., the `Taxon` objects), alll
+        metadata associated with "``tns2``" (i.e., the `AnnotationSet` object,
         in the :attr:`TaxonNamespace.annotations` attribute), will be a full,
         independent deep-copy.
 
         If what is needed is a true deep-copy of the data of a particular
-        :class:`TaxonNamespace` object, including copies of the member
-        :class:`Taxon` instances, then this can be achieved using
+        `TaxonNamespace` object, including copies of the member
+        `Taxon` instances, then this can be achieved using
         :func:`copy.deepcopy()`.
 
         >>> import copy
@@ -641,7 +641,7 @@ class TaxonNamespace(
 
     def __len__(self):
         """
-        Returns number of :class:`Taxon` objects in this :class:`TaxonNamespace`.
+        Returns number of `Taxon` objects in this `TaxonNamespace`.
         """
         return len(self._taxa)
 
@@ -649,7 +649,7 @@ class TaxonNamespace(
 
     def __getitem__(self, key):
         """
-        Returns :class:`Taxon` object with index or slice given by `key`.
+        Returns `Taxon` object with index or slice given by ``key``.
         """
         if isinstance(key, int) or isinstance(key, slice):
             return self._taxa[key]
@@ -663,7 +663,7 @@ class TaxonNamespace(
 
     def __contains__(self, taxon):
         """
-        Returns `True` if Taxon object `taxon` is in self.
+        Returns `True` if Taxon object ``taxon`` is in self.
         """
         # look-up in dictionary for O(1) instead of O(n) in list
         return taxon in self._taxon_accession_index_map
@@ -675,7 +675,7 @@ class TaxonNamespace(
             error_if_not_found=False,
             ):
         """
-        Return :class:`Taxon` object(s) with label matching `label`.
+        Return `Taxon` object(s) with label matching ``label``.
 
         Parameters
         ----------
@@ -683,17 +683,17 @@ class TaxonNamespace(
             The label for which to search.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
         first_match_only : bool
             If `False`, then the entire namespace will be searched and *all*
-            :class:`Taxon` objects with the matching labels will be returned
+            `Taxon` objects with the matching labels will be returned
             as a list. If `True` then the function will return after
-            processing the first :class:`Taxon` object with a matching label
+            processing the first `Taxon` object with a matching label
             (i.e., the entire namespace is not searched). Setting this
             argument to `True` will be more efficient and should be preferred
             if there are no redundant or duplicate labels.
@@ -702,13 +702,13 @@ class TaxonNamespace(
 
         Returns
         -------
-        t : `None` or :class:`Taxon` instance or list[:class:`Taxon`]
-            If no :class:`Taxon` instances have `label` attributes that match
-            the `label` argument, then `None`. Otherise, if
-            `first_match_only==True`, then a :class:`Taxon` instance with
-            `label` attribute matching the value of the `label` argument; if
-            `first_match_only==False`, a list of one or more :class:`Taxon`
-            instances with a `label` attribute matching the `label` argument.
+        t : `None` or `Taxon` instance or list[`Taxon`]
+            If no `Taxon` instances have ``label`` attributes that match
+            the ``label`` argument, then `None`. Otherise, if
+            `first_match_only==True`, then a `Taxon` instance with
+            ``label`` attribute matching the value of the ``label`` argument; if
+            `first_match_only==False`, a list of one or more `Taxon`
+            instances with a ``label`` attribute matching the ``label`` argument.
         """
         taxa = []
         if is_case_sensitive is True or (is_case_sensitive is None and self.is_case_sensitive):
@@ -737,18 +737,18 @@ class TaxonNamespace(
 
     def add_taxon(self, taxon):
         """
-        Adds a new :class:`Taxon` object to `self`.
+        Adds a new `Taxon` object to ``self``.
 
-        If `taxon` is not already in the collection of :class:`Taxon` objects in this
+        If ``taxon`` is not already in the collection of `Taxon` objects in this
         namespace, and this namespace is mutable, it is added to the
         collection. If it is already in the collection, then nothing happens.
         If it is not already in the collection, but the namespace is not
-        mutable, then `TypeError` is raised.
+        mutable, then TypeError is raised.
 
         Parameters
         ----------
-        taxon : :class:`Taxon`
-            The :class:`Taxon` object to be accessioned or registered in this
+        taxon : `Taxon`
+            The `Taxon` object to be accessioned or registered in this
             collection.
 
         Raises
@@ -782,18 +782,18 @@ class TaxonNamespace(
 
     def add_taxa(self, taxa):
         """
-        Adds multiple :class:`Taxon` objects to self.
+        Adds multiple `Taxon` objects to self.
 
-        Each :class:`Taxon` object in `taxa` that is not already in the collection of
-        :class:`Taxon` objects in this namespace is added to it. If any of the :class:`Taxon`
+        Each `Taxon` object in ``taxa`` that is not already in the collection of
+        `Taxon` objects in this namespace is added to it. If any of the `Taxon`
         objects are already in the collection, then nothing happens. If the
-        namespace is immutable, then :class:`TypeError` is raised when trying
-        to add :class:`Taxon` objects.
+        namespace is immutable, then TypeError is raised when trying
+        to add `Taxon` objects.
 
         Parameters
         ----------
-        taxa : collections.Iterable [:class:`Taxon`]
-            A list of :class:`Taxon` objects to be accessioned or registered in this
+        taxa : collections.Iterable [`Taxon`]
+            A list of `Taxon` objects to be accessioned or registered in this
             collection.
 
         Raises
@@ -807,7 +807,7 @@ class TaxonNamespace(
 
     def new_taxon(self, label):
         """
-        Creates, adds, and returns a new :class:`Taxon` object with corresponding
+        Creates, adds, and returns a new `Taxon` object with corresponding
         label.
 
         Parameters
@@ -817,8 +817,8 @@ class TaxonNamespace(
 
         Returns
         -------
-        taxon: :class:`Taxon`
-            The new :class:`Taxon` object,
+        taxon: `Taxon`
+            The new `Taxon` object,
 
         """
         if not self.is_mutable:
@@ -829,19 +829,19 @@ class TaxonNamespace(
 
     def new_taxa(self, labels):
         """
-        Creates and add a new :class:`Taxon` with corresponding label for each label
-        in `labels`. Returns list of :class:`Taxon` objects created.
+        Creates and add a new `Taxon` with corresponding label for each label
+        in ``labels``. Returns list of `Taxon` objects created.
 
         Parameters
         ----------
-        labels : :py:class:`collections.Iterable` [string]
-            The values of the `label` attributes of the new :class:`Taxon` objects to
+        labels : :py`collections.Iterable` [string]
+            The values of the ``label`` attributes of the new `Taxon` objects to
             be created, added to this namespace collection, and returned.
 
         Returns
         -------
-        taxa : :py:class:`collections.Iterable` [:class:`Taxon`]
-            A list of :class:`Taxon` objects created and added.
+        taxa : :py`collections.Iterable` [`Taxon`]
+            A list of `Taxon` objects created and added.
 
         Raises
         ------
@@ -861,17 +861,17 @@ class TaxonNamespace(
 
     def remove_taxon(self, taxon):
         """
-        Removes specified :class:`Taxon` object from the collection in this namespace.
+        Removes specified `Taxon` object from the collection in this namespace.
 
         Parameters
         ----------
-        taxon : a :class:`Taxon` object
-            The :class:`Taxon` object to be removed.
+        taxon : a `Taxon` object
+            The `Taxon` object to be removed.
 
         Raises
         ------
         ValueError
-            If `taxon` is not in the collection of this namespace.
+            If ``taxon`` is not in the collection of this namespace.
         """
         if taxon not in self._taxa:
             raise ValueError(taxon)
@@ -900,25 +900,25 @@ class TaxonNamespace(
             first_match_only=False,
             ):
         """
-        Removes :class:`Taxon` objects with label matching `label` from the
+        Removes `Taxon` objects with label matching ``label`` from the
         collection in this namespace.
 
         Parameters
         ----------
         label : string or string-like
-            The value of the :class:`Taxon` object label to remove.
+            The value of the `Taxon` object label to remove.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
         first_match_only : bool
             If `False`, then the entire namespace will be searched and *all*
-            :class:`Taxon` objects with the matching labels will be remove. If
-            `True` then only the first :class:`Taxon` object with a matching
+            `Taxon` objects with the matching labels will be remove. If
+            `True` then only the first `Taxon` object with a matching
             label will be removed (i.e., the entire namespace is not searched).
             Setting this argument to `True` will be more efficient and should
             be preferred if there are no redundant or duplicate labels.
@@ -926,12 +926,12 @@ class TaxonNamespace(
         Raises
         ------
         LookupError
-            If no :class:`Taxon` objects are found with matching label(s).
+            If no `Taxon` objects are found with matching label(s).
 
         See Also
         --------
         :meth:`TaxonNamespace.discard_taxon_labels`
-            Similar, but does not raise an error if no matching :class:`Taxon`
+            Similar, but does not raise an error if no matching `Taxon`
             objects are found.
         """
         taxa = self._lookup_label(label,
@@ -948,25 +948,25 @@ class TaxonNamespace(
             first_match_only=False,
             ):
         """
-        Removes :class:`Taxon` objects with label matching `label` from the
+        Removes `Taxon` objects with label matching ``label`` from the
         collection in this namespace.
 
         Parameters
         ----------
         label : string or string-like
-            The value of the :class:`Taxon` object label to remove.
+            The value of the `Taxon` object label to remove.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
         first_match_only : bool
             If `False`, then the entire namespace will be searched and *all*
-            :class:`Taxon` objects with the matching labels will be remove. If
-            `True` then only the first :class:`Taxon` object with a matching
+            `Taxon` objects with the matching labels will be remove. If
+            `True` then only the first `Taxon` object with a matching
             label will be removed (i.e., the entire namespace is not searched).
             Setting this argument to `True` will be more efficient and should
             be preferred if there are no redundant or duplicate labels.
@@ -974,7 +974,7 @@ class TaxonNamespace(
         See Also
         --------
         :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not
-            raise an error if no matching :class:`Taxon` objects are found.
+            raise an error if no matching `Taxon` objects are found.
         """
         taxa = self._lookup_label(label,
                 is_case_sensitive=is_case_sensitive,
@@ -988,9 +988,9 @@ class TaxonNamespace(
 
     def clear(self):
         """
-        Removes all :class:`Taxon` objects from this namespace.
+        Removes all `Taxon` objects from this namespace.
         """
-        # self._taxa.clear() # Python 2 `list` class does not have `clear()` method
+        # self._taxa.clear() # Python 2 ``list`` class does not have `clear()` method
         del self._taxa[:]
         self._accession_index_taxon_map.clear()
         self._taxon_accession_index_map.clear()
@@ -1001,27 +1001,27 @@ class TaxonNamespace(
 
     def findall(self, label, is_case_sensitive=None):
         """
-        Return list of :class:`Taxon` object(s) with label matching `label`.
+        Return list of `Taxon` object(s) with label matching ``label``.
 
         Parameters
         ----------
         label : string or string-like
-            The value which the `label` attribute of the :class:`Taxon` object(s)
+            The value which the ``label`` attribute of the `Taxon` object(s)
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
 
         Returns
         -------
-        taxa : :py:class:`list` [:class:`Taxon`]
-            A list containing zero or more :class:`Taxon` objects with labels
-            matching `label`.
+        taxa : :py``list`` [`Taxon`]
+            A list containing zero or more `Taxon` objects with labels
+            matching ``label``.
 
         """
         taxa = self._lookup_label(label=label,
@@ -1036,26 +1036,26 @@ class TaxonNamespace(
 
     def has_taxon_label(self, label, is_case_sensitive=None):
         """
-        Checks for presence of a :class:`Taxon` object with the given label.
+        Checks for presence of a `Taxon` object with the given label.
 
         Parameters
         ----------
         label : string or string-like
-            The value of the :class:`Taxon` object label to match.
+            The value of the `Taxon` object label to match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
 
         Returns
         -------
         b : boolean
-            `True` if there is at least one :class:`Taxon` object in this namespace
-            with a label matching the value of `label`. Otherwise, `False`.
+            `True` if there is at least one `Taxon` object in this namespace
+            with a label matching the value of ``label``. Otherwise, `False`.
         """
         t = self._lookup_label(
                 label=label,
@@ -1067,26 +1067,26 @@ class TaxonNamespace(
 
     def has_taxa_labels(self, labels, is_case_sensitive=None):
         """
-        Checks for presence of :class:`Taxon` objects with the given labels.
+        Checks for presence of `Taxon` objects with the given labels.
 
         Parameters
         ----------
-        labels : :py:class:`collections.Iterable` [string]
-            The values of the :class:`Taxon` object labels to match.
+        labels : :py`collections.Iterable` [string]
+            The values of the `Taxon` object labels to match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
 
         Returns
         -------
         b : boolean
-            Returns `True` if, for every element in the iterable `labels`,
-            there is at least one :class:`Taxon` object that has a label attribute
+            Returns `True` if, for every element in the iterable ``labels``,
+            there is at least one `Taxon` object that has a label attribute
             that matches this. `False` otherwise.
         """
         for label in labels:
@@ -1101,32 +1101,32 @@ class TaxonNamespace(
 
     def get_taxon(self, label, is_case_sensitive=None):
         """
-        Retrieves a :class:`Taxon` object with the given label.
+        Retrieves a `Taxon` object with the given label.
 
-        If multiple :class:`Taxon` objects exist with labels that match
-        `label`, then only the first one is returned.  If no :class:`Taxon`
+        If multiple `Taxon` objects exist with labels that match
+        ``label``, then only the first one is returned.  If no `Taxon`
         object is found in this namespace with the specified critieria,
         `None` is returned.
 
         Parameters
         ----------
         label : string or string-like
-            The value which the `label` attribute of the :class:`Taxon` object
+            The value which the ``label`` attribute of the `Taxon` object
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
 
         Returns
         -------
-        taxon : :class:`Taxon` object or `None`
-            The first :class:`Taxon` object in this namespace collection with a label
-            matching `label`, or `None` if no such :class:`Taxon` object exists.
+        taxon : `Taxon` object or `None`
+            The first `Taxon` object in this namespace collection with a label
+            matching ``label``, or `None` if no such `Taxon` object exists.
         """
         return self._lookup_label(label=label,
                 is_case_sensitive=is_case_sensitive,
@@ -1136,27 +1136,27 @@ class TaxonNamespace(
 
     def get_taxa(self, labels, is_case_sensitive=None, first_match_only=False):
         """
-        Retrieves list of :class:`Taxon` objects with given labels.
+        Retrieves list of `Taxon` objects with given labels.
 
         Parameters
         ----------
-        labels : :py:class:`collections.Iterable` [string]
-            Any :class:`Taxon` object in this namespace collection that has a label
-            attribute that matches any value in `labels` will be included in
+        labels : :py`collections.Iterable` [string]
+            Any `Taxon` object in this namespace collection that has a label
+            attribute that matches any value in ``labels`` will be included in
             the list returned.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
         first_match_only : bool
-            If `False`, then for *each* label in `labels`, the entire namespace
-            will be searched and *all* :class:`Taxon` objects with the matches
+            If `False`, then for *each* label in ``labels``, the entire namespace
+            will be searched and *all* `Taxon` objects with the matches
             will be added to the lest. If `True` then, for each label in
-            `labels`, only the first :class:`Taxon` object with a matching
+            ``labels``, only the first `Taxon` object with a matching
             label will be added to the list (i.e., the entire namespace is not
             searched). Setting this argument to `True` will be more
             efficient and should be preferred if there are no redundant or
@@ -1164,9 +1164,9 @@ class TaxonNamespace(
 
         Returns
         -------
-        taxa : :py:class:`list` [:class:`Taxon`]
-            A list containing zero or more :class:`Taxon` objects with labels
-            matching `label`.
+        taxa : :py``list`` [`Taxon`]
+            A list containing zero or more `Taxon` objects with labels
+            matching ``label``.
         """
         taxa = []
         for label in labels:
@@ -1187,43 +1187,43 @@ class TaxonNamespace(
 
     def require_taxon(self, label, is_case_sensitive=None):
         """
-        Retrieves a :class:`Taxon` object with the given label, creating it if
+        Retrieves a `Taxon` object with the given label, creating it if
         necessary.
 
-        Retrieves a Taxon object with the label, `label`.
-        If multiple :class:`Taxon` objects exist with labels that match
-        `label`, then only the first one is returned.  If no such
-        :class:`Taxon` object exists in the current namespace and the
-        :class:`TaxonNamespace` is NOT mutable, an exception is raised.  If no
-        such :class:`Taxon` object exists in the current namespace and
-        :class:`TaxonNamespace` is mutable, then a new :class:`Taxon` is
+        Retrieves a Taxon object with the label, ``label``.
+        If multiple `Taxon` objects exist with labels that match
+        ``label``, then only the first one is returned.  If no such
+        `Taxon` object exists in the current namespace and the
+        `TaxonNamespace` is NOT mutable, an exception is raised.  If no
+        such `Taxon` object exists in the current namespace and
+        `TaxonNamespace` is mutable, then a new `Taxon` is
         created, added, and returned.
 
         Parameters
         ----------
         label : string or string-like
-            The value which the `label` attribute of the :class:`Taxon` object
+            The value which the ``label`` attribute of the `Taxon` object
             to be returned must match.
         is_case_sensitive : `None` or bool
             By default, label lookup will use the
-            `is_case_sensitive` attribute of `self` to decide
+            ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
-            operational taxonomic unit names represented by :class:`Taxon`
+            operational taxonomic unit names represented by `Taxon`
             instances. This can be over-ridden by specifying
-            `is_case_sensitive` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
             (forcing case-insensitivity).
 
         Returns
         -------
-        taxon : :class:`Taxon` object or `None`
-            A :class:`Taxon` object in this namespace collection with a label
-            matching `label`.
+        taxon : `Taxon` object or `None`
+            A `Taxon` object in this namespace collection with a label
+            matching ``label``.
 
         Raises
         ------
         TypeError
-            If no :class:`Taxon` object is currently in the collection with a label
-            matching the input `label` and the `is_mutable` attribute of self
+            If no `Taxon` object is currently in the collection with a label
+            matching the input ``label`` and the ``is_mutable`` attribute of self
             is `False`.
         """
         taxon = self._lookup_label(label=label,
@@ -1242,13 +1242,13 @@ class TaxonNamespace(
 
     def sort(self, key=None, reverse=False):
         """
-        Sorts :class:`Taxon` objects in collection. If `key` is not given, defaults
+        Sorts `Taxon` objects in collection. If ``key`` is not given, defaults
         to sorting by label (i.e., `key = lambda x: x.label`).
 
         Parameters
         ----------
         key : key function object, optional
-            Function that takes a :class:`Taxon` object as an argument and
+            Function that takes a `Taxon` object as an argument and
             returns the value that determines its sort order. Defaults to
             sorting by label.
         reverse : boolean, optional
@@ -1260,7 +1260,7 @@ class TaxonNamespace(
 
     def reverse(self):
         """
-        Reverses order of :class:`Taxon` objects in collection.
+        Reverses order of `Taxon` objects in collection.
         """
         self._taxa.reverse()
 
@@ -1268,33 +1268,33 @@ class TaxonNamespace(
 
     def labels(self):
         """
-        Returns list of labels of all :class:`Taxon` objects in `self`.
+        Returns list of labels of all `Taxon` objects in ``self``.
 
         Returns
         -------
-        labels : :py:class:`list` [string]
-            List of :attr:`Taxon.label` values of :class:`Taxon` objects in
-            `self`.
+        labels : :py``list`` [string]
+            List of :attr:`Taxon.label` values of `Taxon` objects in
+            ``self``.
         """
         return [t.label for t in self._taxa]
 
     def label_taxon_map(self, is_case_sensitive=None):
         """
-        Returns dictionary with taxon labels as keys and corresponding :class:`Taxon`
+        Returns dictionary with taxon labels as keys and corresponding `Taxon`
         objects as values.
 
-        If the :class:`TaxonNamespace` is currently case-insensitive, then the
+        If the `TaxonNamespace` is currently case-insensitive, then the
         dictionary returned will have case-insensitive keys, other the
         dictionary will be case-sensitive. You can override this by explicitly
-        specifying `is_case_sensitive` to `False` or `True`.
+        specifying ``is_case_sensitive`` to `False` or `True`.
 
         No attempt is made to handle collisions.
 
         Returns
         -------
-        d : :py:class:`dict` or :class:`CaseInsensitiveDict`
-            Dictionary with :attr:`Taxon.label` values of :class:`Taxon` objects in
-            `self` as keys and corresponding :class:`Taxon` objects as values.
+        d : :py``dict`` or `CaseInsensitiveDict`
+            Dictionary with :attr:`Taxon.label` values of `Taxon` objects in
+            ``self`` as keys and corresponding `Taxon` objects as values.
         """
         if is_case_sensitive is True or (is_case_sensitive is None and self.is_case_sensitive):
             d = {}
@@ -1318,7 +1318,7 @@ class TaxonNamespace(
     #     Returns
     #     -------
     #     h : integer
-    #         Complement of `bitmask`.
+    #         Complement of ``bitmask``.
     #     """
     #     return (~bitmask) & self.all_taxa_bitmask()
 
@@ -1347,7 +1347,7 @@ class TaxonNamespace(
         Returns
         -------
         h : integer
-            Bitmask spanning all :class:`Taxon` objects in self.
+            Bitmask spanning all `Taxon` objects in self.
         """
         #return pow(2, len(self)) - 1
         b = 1 << self._current_accession_count
@@ -1356,17 +1356,17 @@ class TaxonNamespace(
     def taxon_bitmask(self, taxon):
         """
         Returns bitmask value of split hash for split subtending node with
-        `taxon`.
+        ``taxon``.
 
         Parameters
         ----------
-        taxon : :class:`Taxon`
-            :class:`Taxon` object for which to calculate split hash bitmask.
+        taxon : `Taxon`
+            `Taxon` object for which to calculate split hash bitmask.
 
         Returns
         -------
         h : integer
-            Split hash bitmask value for node associated with :class:`Taxon` object `taxon`.
+            Split hash bitmask value for node associated with `Taxon` object ``taxon``.
         """
         # i = self._taxa.index(taxon)
         # m = 1 << i
@@ -1383,14 +1383,14 @@ class TaxonNamespace(
 
     def accession_index(self, taxon):
         """
-        Returns the accession index of `taxon`. Note that this may not be the
+        Returns the accession index of ``taxon``. Note that this may not be the
         same as the list index of the taxon if taxa have been deleted from the
         namespace.
 
         Parameters
         ----------
-        taxon : :class:`Taxon`
-            :class:`Taxon` object for which to return the accession index.
+        taxon : `Taxon`
+            `Taxon` object for which to return the accession index.
 
         Returns
         -------
@@ -1410,15 +1410,15 @@ class TaxonNamespace(
         \*\*kwargs : keyword arguments
             Requires one of:
 
-                taxa : :py:class:`collections.Iterable` [:class:`Taxon`]
-                    Iterable of :class:`Taxon` objects.
-                labels : :py:class:`collections.Iterable` [string]
-                    Iterable of :class:`Taxon` label values.
+                taxa : :py`collections.Iterable` [`Taxon`]
+                    Iterable of `Taxon` objects.
+                labels : :py`collections.Iterable` [string]
+                    Iterable of `Taxon` label values.
 
         Returns
         -------
-        b : :py:class:`list` [integer]
-            List of split hash bitmask values for specified :class:`Taxon`
+        b : :py``list`` [integer]
+            List of split hash bitmask values for specified `Taxon`
             objects.
         """
         if "taxa" in kwargs:
@@ -1441,15 +1441,15 @@ class TaxonNamespace(
         \*\*kwargs : keyword arguments
             Requires one of:
 
-                taxa : :py:class:`collections.Iterable` [:class:`Taxon`]
-                    Iterable of :class:`Taxon` objects.
-                labels : :py:class:`collections.Iterable` [string]
-                    Iterable of :class:`Taxon` label values.
+                taxa : :py`collections.Iterable` [`Taxon`]
+                    Iterable of `Taxon` objects.
+                labels : :py`collections.Iterable` [string]
+                    Iterable of `Taxon` label values.
 
         Returns
         -------
-        b : :py:class:`list` [integer]
-            List of split hash bitmask values for specified :class:`Taxon`
+        b : :py``list`` [integer]
+            List of split hash bitmask values for specified `Taxon`
             objects.
         """
         from dendropy.treemodel import Bipartition
@@ -1463,22 +1463,22 @@ class TaxonNamespace(
 
     def bitmask_taxa_list(self, bitmask, index=0):
         """
-        Returns list of :class:`Taxon` objects represented by split
-        `bitmask`.
+        Returns list of `Taxon` objects represented by split
+        ``bitmask``.
 
         Parameters
         ----------
         bitmask : integer
             Split hash bitmask value.
         index : integer, optional
-            Start from this :class:`Taxon` object instead of the first
-            :class:`Taxon` object in the collection.
+            Start from this `Taxon` object instead of the first
+            `Taxon` object in the collection.
 
         Returns
         -------
-        taxa : :py:class:`list` [:class:`Taxon`]
-            List of :class:`Taxon` objects specified or spanned by
-            `bitmask`.
+        taxa : :py``list`` [`Taxon`]
+            List of `Taxon` objects specified or spanned by
+            ``bitmask``.
         """
         taxa = []
         while bitmask:
@@ -1511,7 +1511,7 @@ class TaxonNamespace(
         Returns
         -------
         s : string
-            NEWICK representation of split specified by `bitmask`.
+            NEWICK representation of split specified by ``bitmask``.
         """
         from dendropy.dataio import nexusprocessing
         return nexusprocessing.bitmask_as_newick_string(
@@ -1543,7 +1543,7 @@ class TaxonNamespace(
         Returns
         -------
         s : string
-            NEWICK representation of split specified by `bitmask`.
+            NEWICK representation of split specified by ``bitmask``.
         """
         return self.bitmask_as_newick_string(
                 bitmask=split,
@@ -1555,7 +1555,7 @@ class TaxonNamespace(
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return ""
@@ -1582,8 +1582,8 @@ class TaxonNamespace(
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out `self` in `schema` format to a destination given by
-        file-like object `stream`.
+        Writes out ``self`` in ``schema`` format to a destination given by
+        file-like object ``stream``.
 
         Parameters
         ----------
@@ -1614,8 +1614,8 @@ class TaxonSet(TaxonNamespace):
     """
     This class is present for (temporary!) legacy support of code written under
     DendroPy 3.x.  It will be removed in future versions. All new code should
-    be written using :class:`TaxonNamespace`. Old code needs to be updated to use
-    :class:`TaxonNamespace`.
+    be written using `TaxonNamespace`. Old code needs to be updated to use
+    `TaxonNamespace`.
     """
 
     def __init__(self, *args, **kwargs):
@@ -1638,12 +1638,12 @@ class Taxon(
         """
         Parameters
         ----------
-        label : string or :class:`Taxon` object
+        label : string or `Taxon` object
             Label or name of this operational taxonomic unit concept. If a
-            string, then the `label` attribute of `self` is set to this value.
-            If a :class:`Taxon` object, then the `label` attribute of `self` is
-            set to the same value as the `label` attribute the other
-            :class:`Taxon` object and all annotations/metadata are copied.
+            string, then the ``label`` attribute of ``self`` is set to this value.
+            If a `Taxon` object, then the ``label`` attribute of ``self`` is
+            set to the same value as the ``label`` attribute the other
+            `Taxon` object and all annotations/metadata are copied.
         """
         if isinstance(label, Taxon):
             other_taxon = label
@@ -1717,7 +1717,7 @@ class Taxon(
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return ""
@@ -1745,20 +1745,20 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         """
         __init__ uses one of the following keyword arguments:
 
-            - `membership_fn`
-                A function that takes a ``Taxon`` object as an argument and
+            - ``membership_fn``
+                A function that takes a `Taxon` object as an argument and
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer) .
-            - `membership_attr_name`
-                Name of an attribute of ``Taxon`` objects that serves as an
+            - ``membership_attr_name``
+                Name of an attribute of `Taxon` objects that serves as an
                 identifier for subset membership.
-            - `membership_dict`
-                A dictionary with ``Taxon`` objects as keys and population
+            - ``membership_dict``
+                A dictionary with `Taxon` objects as keys and population
                 membership identifier or flag as values (e.g., a string,
                 an integer).
-            - `membership_lists`
-                A container of containers of ``Taxon`` objects, with every
-                ``Taxon`` object in ``taxon_namespace`` represented once and only
+            - ``membership_lists``
+                A container of containers of `Taxon` objects, with every
+                `Taxon` object in ``taxon_namespace`` represented once and only
                 once in the sub-containers.
 
         If none of these are specified, defaults to a partition consisting of
@@ -1805,22 +1805,22 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
         partitioning scheme specified by one of the following keyword arguments:
 
             ``membership_fn``
-                A function that takes a ``Taxon`` object as an argument and
+                A function that takes a `Taxon` object as an argument and
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer).
 
             ``membership_attr_name``
-                Name of an attribute of ``Taxon`` objects that serves as an
+                Name of an attribute of `Taxon` objects that serves as an
                 identifier for subset membership.
 
             ``membership_dict``
-                A dictionary with ``Taxon`` objects as keys and population
+                A dictionary with `Taxon` objects as keys and population
                 membership identifier or flag as values (e.g., a string,
                 an integer).
 
             ``membership_lists``
-                A container of containers of ``Taxon`` objects, with every
-                ``Taxon`` object in ``taxon_namespace`` represented once and only
+                A container of containers of `Taxon` objects, with every
+                `Taxon` object in ``taxon_namespace`` represented once and only
                 once in the sub-containers.
         """
         if "membership_fn" in kwargs:
@@ -1838,7 +1838,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
     def apply_membership_fn(self, mfunc):
         """
         Constructs subsets based on function ``mfunc``, which should take a
-        ``Taxon`` object as an argument and return a population membership
+        `Taxon` object as an argument and return a population membership
         identifier or flag (e.g., a string, an integer).
         """
         self.subset_map = {}
@@ -1852,14 +1852,14 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
     def apply_membership_attr_name(self, attr_name):
         """
         Constructs subsets based on attribute ``attr_name`` of each
-        ``Taxon`` object.
+        `Taxon` object.
         """
         return self.apply_membership_fn(lambda x: getattr(x, attr_name))
 
     def apply_membership_dict(self, mdict):
         """
         Constructs subsets based on dictionary ``mdict``, which should be
-        dictionary with ``Taxon`` objects as keys and population membership
+        dictionary with `Taxon` objects as keys and population membership
         identifier or flag as values (e.g., a string, an integer).
         """
         return self.apply_membership_fn(lambda x: mdict[x])
@@ -1867,7 +1867,7 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
     def apply_membership_lists(self, mlists, subset_labels=None):
         """
         Constructs subsets based on list ``mlists``, which should be an interable
-        of iterables of ``Taxon`` objects, with every ``Taxon`` object in
+        of iterables of `Taxon` objects, with every `Taxon` object in
         ``taxon_namespace`` represented once and only once in the sub-containers.
         """
         if subset_labels is not None:
@@ -1890,7 +1890,7 @@ class TaxonNamespaceMapping(
         basemodel.DataObject,
         basemodel.Annotable):
     """
-    A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
+    A many-to-one mapping of `Taxon` objects (e.g., gene taxa to population/species taxa).
     """
 
     @staticmethod
@@ -1902,38 +1902,38 @@ class TaxonNamespaceMapping(
         """
         Creates and returns a TaxonNamespaceMapping object that maps multiple
         "contained" Taxon objects (e.g., genes) to Taxon objects in
-        `containing_taxon_namespace` (e.g., populations or species).
+        ``containing_taxon_namespace`` (e.g., populations or species).
 
-            `containing_taxon_namespace`
+            ``containing_taxon_namespace``
                 A TaxonNamespace object that defines a Taxon for each population or
                 species.
 
-            `num_contained`
+            ``num_contained``
                 The number of genes per population of species. The value of
                 this attribute can be a scalar integer, in which case each
                 species or population taxon will get the same fixed number
                 of genes. Or it can be a list, in which case the list has
                 to have as many elements as there are members in
-                `containing_taxon_namespace`, and each element will specify the
+                ``containing_taxon_namespace``, and each element will specify the
                 number of genes that the corresponding species or population
                 Taxon will get.
 
-            `contained_taxon_label_prefix`
+            ``contained_taxon_label_prefix``
                 If specified, then each gene Taxon label will begin with this.
                 Otherwise, each gene Taxon label will begin with the same label
                 as its corresponding species/population taxon label.
 
-            `contained_taxon_label_separator`
+            ``contained_taxon_label_separator``
                 String used to separate gene Taxon label prefix from its index.
 
-            `contained_taxon_label_fn`
+            ``contained_taxon_label_fn``
                 If specified, should be a function that takes two arguments: a
-                Taxon object from `containing_taxon_namespace` and an integer
+                Taxon object from ``containing_taxon_namespace`` and an integer
                 specifying the contained gene index. It should return a string
                 which will be used as the label for the corresponding gene
                 taxon. If not None, this will bypass the
-                `contained_taxon_label_prefix` and
-                `contained_taxon_label_separator` arguments.
+                ``contained_taxon_label_prefix`` and
+                ``contained_taxon_label_separator`` arguments.
         """
         if isinstance(num_contained, int):
             _num_contained = [num_contained] * len(containing_taxon_namespace)
@@ -1964,21 +1964,21 @@ class TaxonNamespaceMapping(
         """
         __init__ uses one of the following keyword arguments:
 
-            - `mapping_fn`
-                A function that takes a ``Taxon`` object from the domain taxa
-                as an argument and returns the corresponding ``Taxon`` object
+            - ``mapping_fn``
+                A function that takes a `Taxon` object from the domain taxa
+                as an argument and returns the corresponding `Taxon` object
                 from the range taxa. If this argument is given, then a
-                ``TaxonNamespace`` or some other container of ``Taxon`` objects needs
+                `TaxonNamespace` or some other container of `Taxon` objects needs
                 to be passed using the ``taxon_namespace`` argument.
-            - `mapping_attr_name`
-                Name of an attribute of ``Taxon`` object of the domain taxa
-                that references the corresponding ``Taxon`` object from the
-                range taxa. If this argument is given, then a ``TaxonNamespace`` or
-                some other container of ``Taxon`` objects needs to be passed
+            - ``mapping_attr_name``
+                Name of an attribute of `Taxon` object of the domain taxa
+                that references the corresponding `Taxon` object from the
+                range taxa. If this argument is given, then a `TaxonNamespace` or
+                some other container of `Taxon` objects needs to be passed
                 using the ``taxon_namespace`` argument.
-            - `mapping_dict`
-                A dictionary with ``Taxon`` objects from the domain taxa as
-                keys, and the corresponding ``Taxon`` object from the range
+            - ``mapping_dict``
+                A dictionary with `Taxon` objects from the domain taxa as
+                keys, and the corresponding `Taxon` object from the range
                 taxa as values.
         """
         basemodel.DataObject.__init__(self, label=kwargs.pop("label", None))
@@ -2053,8 +2053,8 @@ class TaxonNamespaceMapping(
     def apply_mapping_fn(self, mfunc, domain_taxon_namespace, range_taxon_namespace=None):
         """
         Constructs forward and reverse mapping dictionaries based on ``mfunc``,
-        which should take a ``Taxon`` object in ``domain_taxon_namespace`` as an argument
-        and return another ``Taxon`` object.
+        which should take a `Taxon` object in ``domain_taxon_namespace`` as an argument
+        and return another `Taxon` object.
         """
         self.forward = {}
         self.reverse = {}
@@ -2076,7 +2076,7 @@ class TaxonNamespaceMapping(
     def apply_mapping_attr_name(self, attr_name, domain_taxon_namespace, range_taxon_namespace=None):
         """
         Constructs mapping based on attribute ``attr_name`` of each
-        ``Taxon`` object in ``domain_taxon_namespace``.
+        `Taxon` object in ``domain_taxon_namespace``.
         """
         return self.apply_mapping_fn(lambda x: getattr(x, attr_name), domain_taxon_namespace=domain_taxon_namespace, range_taxon_namespace=range_taxon_namespace)
 

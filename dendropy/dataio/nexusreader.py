@@ -201,35 +201,35 @@ class NexusReader(ioservice.DataReader):
             Specifies how trees in the data source should be intepreted with
             respect to their rooting:
 
-                '``default-unrooted``' [default]:
-                    All trees are interpreted as unrooted unless a '``[&R]``'
+                '````default-unrooted````' [default]:
+                    All trees are interpreted as unrooted unless a '````[&R]````'
                     comment token explicitly specifies them as rooted.
-                '``default-rooted``'
-                    All trees are interpreted as rooted unless a '``[&U]``'
+                '````default-rooted````'
+                    All trees are interpreted as rooted unless a '````[&U]````'
                     comment token explicitly specifies them as unrooted.
-                '``force-unrooted``'
+                '````force-unrooted````'
                     All trees are unconditionally interpreted as unrooted.
-                '``force-rooted``'
+                '````force-rooted````'
                     All trees are unconditionally interpreted as rooted.
 
-        edge_len_type : type, default: `float`
-            Specifies the type of the edge lengths (`int` or `float`). Tokens
+        edge_len_type : type, default: ``float``
+            Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
-            Defaults to `float`.
+            Defaults to ``float``.
         suppress_edge_lengths : boolean, default: `False`
             If `True`, edge length values will not be processed. If `False`,
             edge length values will be processed.
         extract_comment_metadata : boolean, default: `False`
             If `True`, any comments that begin with '&' or '&&' will be parsed
             and stored as part of the annotation set of the corresponding
-            object (accessible through the `annotations` attribute of the
+            object (accessible through the ``annotations`` attribute of the
             object). This requires that the comment contents conform to
             a particular format (NHX or BEAST: 'field = value'). If `False`,
             then the comments will not be parsed, but will be instead stored
-            directly as elements of the `comments` list attribute of the
+            directly as elements of the ``comments`` list attribute of the
             associated object.
         store_tree_weights : boolean, default: `False`
-            If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
+            If `True`, process the tree weight (e.g. "````[&W 1/2]````") comment
             associated with each tree, if any. Defaults to `False`.
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
@@ -238,8 +238,8 @@ class NexusReader(ioservice.DataReader):
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels are case sensitive (e.g., "``P.regius``"
-            and "``P.REGIUS``" wil be treated as different operation taxonomic
+            If `True`, then taxon labels are case sensitive (e.g., "````P.regius````"
+            and "````P.REGIUS````" wil be treated as different operation taxonomic
             unit concepts). Otherwise, taxon label intepretation will be made
             without regard for case.
         preserve_underscores : boolean, default: `False`
@@ -248,11 +248,11 @@ class NexusReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiated into
-            :class:`Taxon` objects. If `True`, internal node labels
+            `Taxon` objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: `False`
             If `False`, leaf (external) node labels will be instantantiated
-            into :class:`Taxon` objects. If `True`, leaff (external) node
+            into `Taxon` objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
 
         exclude_chars : bool
@@ -261,7 +261,7 @@ class NexusReader(ioservice.DataReader):
         exclude_trees : bool
             If `False`, then tree data will not be read. Defaults to
             `True`: tree data will be read.
-        attached_taxon_namespace : :class:`TaxonNamespace`
+        attached_taxon_namespace : `TaxonNamespace`
             Unify all operational taxonomic unit definitions in this namespace.
         """
 
@@ -325,7 +325,7 @@ class NexusReader(ioservice.DataReader):
             global_annotations_target=None):
         """
         Instantiates and returns a DataSet object based on the
-        NEXUS-formatted contents given in the file-like object `stream`.
+        NEXUS-formatted contents given in the file-like object ``stream``.
         """
         self._taxon_namespace_factory = taxon_namespace_factory
         self._tree_list_factory = tree_list_factory
@@ -1213,9 +1213,9 @@ class NexusReader(ioservice.DataReader):
             ):
         """
         Reads character sequence data substatement until the number of
-        character states read is equal to `self._file_specified_nchar` (with
+        character states read is equal to ``self._file_specified_nchar`` (with
         multi-state characters, such as '(AG)' counting as a single
-        state) or, if `self._interleave` is `True`, until an EOL is
+        state) or, if ``self._interleave`` is `True`, until an EOL is
         reached.
 
         Given a sequence of characters, with ambiguities denoted by
@@ -1307,9 +1307,9 @@ class NexusReader(ioservice.DataReader):
             ):
         """
         Reads character sequence data substatement until the number of
-        character states read is equal to `self._file_specified_nchar` (with
+        character states read is equal to ``self._file_specified_nchar`` (with
         multi-state characters, such as '(AG)' counting as a single
-        state) or, if `self._interleave` is `True`, until an EOL is
+        state) or, if ``self._interleave`` is `True`, until an EOL is
         reached.
         """
         if self._interleave:

@@ -89,7 +89,7 @@ def empirical_hpd(values, conf=0.05):
     """
     Assuming a **unimodal** distribution, returns the 0.95 highest posterior
     density (HPD) interval for a set of samples from a posterior distribution.
-    Adapted from `emp.hpd` in the "TeachingDemos" R package (Copyright Greg
+    Adapted from ``emp.hpd`` in the "TeachingDemos" R package (Copyright Greg
     Snow; licensed under the Artistic License).
     """
     conf = min([conf, 1.0 - conf])
@@ -115,7 +115,7 @@ def empirical_hpd(values, conf=0.05):
 
 def empirical_cdf(values, v):
     """
-    Returns the proportion of values in `values` <= `v`.
+    Returns the proportion of values in ``values`` <= ``v``.
     """
     count = 0.0
     for idx, v0 in enumerate(values):
@@ -210,7 +210,7 @@ def quantile_5_95(values):
 
 def variance_covariance(data, population_variance=False):
     """
-    Returns the Variance-Covariance matrix for `data`.
+    Returns the Variance-Covariance matrix for ``data``.
     From: http://www.python-forum.org/pythonforum/viewtopic.php?f=3&t=17441
     """
     N = len(data) # number of vectors
@@ -460,13 +460,13 @@ def summarize(values):
     """
     Summarizes a sample of values:
 
-        - `range`       : tuple pair representing minimum and maximum values
-        - `mean`        : mean of sample
-        - `median`      : median of sample
-        - `var`         : (sample) variance
-        - `sd`          : (sample) standard deviation
-        - `hpd95`       : tuple pair representing 5% and 95% HPD
-        - `quant_5_95`  : tuple pair representing 5% and 95% quantile
+        - ``range``       : tuple pair representing minimum and maximum values
+        - ``mean``        : mean of sample
+        - ``median``      : median of sample
+        - ``var``         : (sample) variance
+        - ``sd``          : (sample) standard deviation
+        - ``hpd95``       : tuple pair representing 5% and 95% HPD
+        - ``quant_5_95``  : tuple pair representing 5% and 95% quantile
 
     """
     summary = {}

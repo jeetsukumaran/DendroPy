@@ -58,11 +58,11 @@ def fitch_down_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over :class:`Node` objects
-        An iterable of :class:`Node` objects in in order of post-order
+    postorder_nodes : iterable of/over `Node` objects
+        An iterable of `Node` objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
-        Name of attribute on :class:`Node` objects in which state set lists
+        Name of attribute on `Node` objects in which state set lists
         will stored/accessed. If `None`, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets
@@ -85,7 +85,7 @@ def fitch_down_pass(
     Examples
     --------
 
-    Assume that we have a tree, `tree`, and an associated data set, `data`::
+    Assume that we have a tree, ``tree``, and an associated data set, ``data``::
 
         import dendropy
         from dendropy.model.parsimony import fitch_down_pass
@@ -101,15 +101,15 @@ def fitch_down_pass(
                 taxon_namespace=taxa)
         taxon_state_sets_map = data.taxon_state_sets_map(gaps_as_missing=True)
 
-    The following will return the parsimony score of the `tree` with
-    respect to the data in `data`::
+    The following will return the parsimony score of the ``tree`` with
+    respect to the data in ``data``::
 
         score = fitch_down_pass(
                 nodes=tree.postorder_node_iter(),
                 taxon_state_sets_map=taxon_set_map)
         print(score)
 
-    In the above, every :class:`Node` object of `tree` will have an attribute
+    In the above, every `Node` object of ``tree`` will have an attribute
     added, "state_sets", that stores the list of state sets from the analysis::
 
         for nd in tree:
@@ -206,11 +206,11 @@ def fitch_up_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over :class:`Node` objects
-        An iterable of :class:`Node` objects in in order of post-order
+    postorder_nodes : iterable of/over `Node` objects
+        An iterable of `Node` objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
-        Name of attribute on :class:`Node` objects in which state set lists
+        Name of attribute on `Node` objects in which state set lists
         will stored/accessed. If `None`, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets

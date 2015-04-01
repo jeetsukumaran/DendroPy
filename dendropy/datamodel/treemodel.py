@@ -68,7 +68,7 @@ class Bipartition(object):
 
     The normalization of the bitmask loses information about the actual
     descendents of a particular edge. Thus in addition to the
-    :attr:`Bipartition.bitmask` attribute, each :class:`Bipartition` object
+    :attr:`Bipartition.bitmask` attribute, each `Bipartition` object
     also maintains a :attr:`Bipartition.leafset_bitmask` attribute which is
     *unnormalized*. This is a bit array representing the presence or absence of
     taxa in the subtree descending from the child node of the edge of which
@@ -93,21 +93,21 @@ class Bipartition(object):
     node in a given tree, or if a particular node is a common ancestor of
     two taxa in a given tree.
 
-    The :class:`Bipartition` object might be used in keys in dictionaries and
+    The `Bipartition` object might be used in keys in dictionaries and
     look-up tables implemented as sets to allow for, e.g., calculation of
     support in terms of the number times a particular bipartition is observed.
     The :attr:`Bipartition.bitmask` is used as hash value for this purpose. As
     such, it is crucial that this value does not change once a particular
-    :class:`Bipartition` object is stored in a dictionary or set. To this end,
-    we impose the constraint that :class:`Bipartition` objects are immutable
-    unless the ``is_mutable`` attribute is explicitly set to ``True`` as a sort
+    `Bipartition` object is stored in a dictionary or set. To this end,
+    we impose the constraint that `Bipartition` objects are immutable
+    unless the ``is_mutable`` attribute is explicitly set to `True` as a sort
     of waiver signed by the client code. Client code does this at its risk,
     with the warning that anything up to and including the implosion of the
-    universe may occur if the :class:`Bipartition` object is a member of an set
+    universe may occur if the `Bipartition` object is a member of an set
     of dictionary at the time (or, at the very least, the modified
-    :class:`Bipartition` object may not be accessible from dictionaries
+    `Bipartition` object may not be accessible from dictionaries
     and sets in which it is stored, or may occlude other
-    :class:`Bipartition` objects in the container).
+    `Bipartition` objects in the container).
 
     Note
     ----
@@ -151,8 +151,8 @@ class Bipartition(object):
 
     def is_trivial_bitmask(bitmask, fill_bitmask):
         """
-        Returns True if the bitmask occurs in any tree of the taxa `mask` -- if
-        there is only fewer than two 1's or fewer than two 0's in `bitmask` (among
+        Returns True if the bitmask occurs in any tree of the taxa ``mask`` -- if
+        there is only fewer than two 1's or fewer than two 0's in ``bitmask`` (among
         all of the that are 1 in mask).
         """
         masked_split = bitmask & fill_bitmask
@@ -172,7 +172,7 @@ class Bipartition(object):
 
     def is_compatible_bitmasks(m1, m2, fill_bitmask):
         """
-        Returns `True` if `m1` is compatible with `m2`
+        Returns `True` if ``m1`` is compatible with ``m2``
 
         Parameters
         ----------
@@ -184,7 +184,7 @@ class Bipartition(object):
         Returns
         -------
         b : bool
-            `True` if `m1` is compatible with `m2`. `False` otherwise.
+            `True` if ``m1`` is compatible with ``m2``. `False` otherwise.
         """
         if fill_bitmask != 0:
             m1 = fill_bitmask & m1
@@ -226,7 +226,7 @@ class Bipartition(object):
             second taxon, and so on, with the last taxon corresponding to the
             most-significant bit.
         tree_leafset_bitmask : integer
-            The `leafset_bitmask` of the root edge of the tree with which this
+            The ``leafset_bitmask`` of the root edge of the tree with which this
             bipartition is associated. In, general, this will be $0b1111...n$,
             where $n$ is the number of taxa, *except* in cases of trees with
             incomplete leaf-sets, where the positions corresponding to the
@@ -384,7 +384,7 @@ class Bipartition(object):
             tree_leafset_bitmask,
             lowest_relevant_bit=None):
         """
-        Avoids recalculation of `lowest_relevant_bit` if specified.
+        Avoids recalculation of ``lowest_relevant_bit`` if specified.
         """
         assert self.is_mutable, "Bipartition instance is not mutable"
         self._tree_leafset_bitmask = tree_leafset_bitmask
@@ -425,7 +425,7 @@ class Bipartition(object):
         the lowest-significant bit (i.e., the group to which the first taxon
         belongs) is set to '0'.
 
-        Also makes this bipartition immutable (unless `is_mutable` is `False`),
+        Also makes this bipartition immutable (unless ``is_mutable`` is `False`),
         which facilitates it being used in dictionaries and sets.
 
         Parameters
@@ -437,18 +437,18 @@ class Bipartition(object):
             the first taxon, the next least-signficant bit corresponds to the
             second taxon, and so on, with the last taxon corresponding to the
             most-significant bit. If not specified or `None`, the current value
-            of `self.leafset_bitmask` is used.
+            of ``self.leafset_bitmask`` is used.
         tree_leafset_bitmask : integer
-            The `leafset_bitmask` of the root edge of the tree with which this
+            The ``leafset_bitmask`` of the root edge of the tree with which this
             bipartition is associated. In, general, this will be $0b1111...n$,
             where $n$ is the number of taxa, *except* in cases of trees with
             incomplete leaf-sets, where the positions corresponding to the
             missing taxa will have the bits unset. If not specified or `None`,
-            the current value of `self.tree_leafset_bitmask` is used.
+            the current value of ``self.tree_leafset_bitmask`` is used.
         is_rooted : bool
             Specifies whether or not the tree with which this bipartition is
             associated is rooted. If not specified or `None`, the current value
-            of `self.is_rooted` is used.
+            of ``self.is_rooted`` is used.
 
         Returns
         -------
@@ -488,7 +488,7 @@ class Bipartition(object):
         the lowest-significant bit (i.e., the group to which the first taxon
         belongs) is set to '0'.
 
-        Also makes this bipartition immutable (unless `is_mutable` is `False`),
+        Also makes this bipartition immutable (unless ``is_mutable`` is `False`),
         which facilitates it being used in dictionaries and sets.
 
         Note that this requires full population of the following fields:
@@ -506,7 +506,7 @@ class Bipartition(object):
 
     def normalize(self, bitmask, convention="lsb0"):
         """
-        Return `bitmask` ensuring that the bit corresponding to the first
+        Return ``bitmask`` ensuring that the bit corresponding to the first
         taxon is 1.
         """
         if convention == "lsb0":
@@ -524,17 +524,17 @@ class Bipartition(object):
 
     def is_compatible_with(self, other):
         """
-        Returns `True` if `other` is compatible with self.
+        Returns `True` if ``other`` is compatible with self.
 
         Parameters
         ----------
-        other : :class:`Bipartition`
+        other : `Bipartition`
             The bipartition to check for compatibility.
 
         Returns
         -------
         b : bool
-            `True` if `other` is compatible with `self`; `False` otherwise.
+            `True` if ``other`` is compatible with ``self``; `False` otherwise.
         """
         m1 = self._split_bitmask
         if isinstance(other, int):
@@ -545,17 +545,17 @@ class Bipartition(object):
 
     def is_incompatible_with(self, other):
         """
-        Returns `True` if `other` conflicts with self.
+        Returns `True` if ``other`` conflicts with self.
 
         Parameters
         ----------
-        other : :class:`Bipartition`
+        other : `Bipartition`
             The bipartition to check for conflicts.
 
         Returns
         -------
         b : bool
-            `True` if `other` conflicts with `self`; `False` otherwise.
+            `True` if ``other`` conflicts with ``self``; `False` otherwise.
         """
         return not self.is_compatible_with(other)
 
@@ -566,13 +566,13 @@ class Bipartition(object):
 
         Parameters
         ----------
-        other : :class:`Bipartition`
+        other : `Bipartition`
             The bipartition to check.
 
         Returns
         -------
         b : bool
-            `True` if the the bipartition is "contained" within `other`
+            `True` if the the bipartition is "contained" within ``other``
         """
         if self._is_rooted:
             m1 = self._leafset_bitmask
@@ -586,18 +586,18 @@ class Bipartition(object):
 
     def is_leafset_nested_within(self, other):
         """
-        Returns `True` if the leafset of `self` is a subset of the leafset of
-        `other`.
+        Returns `True` if the leafset of ``self`` is a subset of the leafset of
+        ``other``.
 
         Parameters
         ----------
-        other : :class:`Bipartition`
+        other : `Bipartition`
             The bipartition to check for compatibility.
 
         Returns
         -------
         b : bool
-            `True` if the leafset of `self` is contained in `other`.
+            `True` if the leafset of ``self`` is contained in ``other``.
         """
         if isinstance(other, int):
             m2 = other
@@ -626,7 +626,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to reference.
         preserve_spaces : boolean, optional
             If `False` (default), then spaces in taxon labels will be replaced
@@ -640,7 +640,7 @@ class Bipartition(object):
         Returns
         -------
         s : string
-            NEWICK representation of split specified by `bitmask`.
+            NEWICK representation of split specified by ``bitmask``.
         """
         return taxon_namespace.bitmask_as_newick_string(
                 bitmask=self._split_bitmask,
@@ -656,7 +656,7 @@ class Bipartition(object):
 
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to reference.
         preserve_spaces : boolean, optional
             If `False` (default), then spaces in taxon labels will be replaced
@@ -670,7 +670,7 @@ class Bipartition(object):
         Returns
         -------
         s : string
-            NEWICK representation of split specified by `bitmask`.
+            NEWICK representation of split specified by ``bitmask``.
         """
         return taxon_namespace.bitmask_as_newick_string(
                 bitmask=self._leafset_bitmask,
@@ -679,22 +679,22 @@ class Bipartition(object):
 
     def leafset_taxa(self, taxon_namespace):
         """
-        Returns list of :class:`Taxon` objects in the leafset of this
+        Returns list of `Taxon` objects in the leafset of this
         bipartition.
 
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to reference.
         index : integer, optional
-            Start from this :class:`Taxon` object instead of the first
-            :class:`Taxon` object in the collection.
+            Start from this `Taxon` object instead of the first
+            `Taxon` object in the collection.
 
         Returns
         -------
-        taxa : :py:class:`list` [:class:`Taxon`]
-            List of :class:`Taxon` objects specified or spanned by
-            `bitmask`.
+        taxa : :py``list`` [`Taxon`]
+            List of `Taxon` objects specified or spanned by
+            ``bitmask``.
         """
         return taxon_namespace.bitmask_taxa_list(
                 bitmask=self._leafset_bitmask,
@@ -714,7 +714,7 @@ class Edge(
         basemodel.DataObject,
         basemodel.Annotable):
     """
-    An :term:`edge` on a :term:`tree`.
+    An :term:``edge`` on a :term:``tree``.
     """
 
     ###########################################################################
@@ -724,9 +724,9 @@ class Edge(
         """
         Keyword Arguments
         -----------------
-        head_node : :class:`Node`, optional
+        head_node : `Node`, optional
             Node from to which this edge links, i.e., the child node of this
-            node `tail_node`.
+            node ``tail_node``.
         length : numerical, optional
             A value representing the weight of the edge.
         rootedge : boolean, optional
@@ -783,7 +783,7 @@ class Edge(
         return self._head_node
     def _set_head_node(self, node):
         # Go through managed property instead of setting attribute to ensure
-        # book-keeping; following should also set `_head_node` of `self`
+        # book-keeping; following should also set ``_head_node`` of ``self``
         node.edge = self
     head_node = property(_get_head_node, _set_head_node)
 
@@ -800,7 +800,7 @@ class Edge(
 
     def get_adjacent_edges(self):
         """
-        Returns a list of all edges that "share" a node with `self`.
+        Returns a list of all edges that "share" a node with ``self``.
         """
         he = [i for i in self.head_node.incident_edges() if i is not self]
         te = [i for i in self.tail_node.incident_edges() if i is not self]
@@ -911,7 +911,7 @@ class Edge(
             output=None,
             taxon_namespace=None):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return
@@ -968,8 +968,8 @@ class Node(
         """
         Keyword Arguments
         -----------------
-        taxon : :class:`Taxon`, optional
-            The :class:`Taxon` instance representing the operational taxonomic
+        taxon : `Taxon`, optional
+            The `Taxon` instance representing the operational taxonomic
             unit concept associated with this Node.
         label : string, optional
             A label for this node.
@@ -1035,21 +1035,21 @@ class Node(
         Pre-order iterator over nodes of subtree rooted at this node.
 
         Visits self and all descendant nodes, with each node visited before its
-        children. Nodes can optionally be filtered by `filter_fn`: only nodes
-        for which `filter_fn` returns `True` when called with the node as an
+        children. Nodes can optionally be filtered by ``filter_fn``: only nodes
+        for which ``filter_fn`` returns `True` when called with the node as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             pre-order sequence.
         """
@@ -1067,16 +1067,16 @@ class Node(
         Visits self and all internal descendant nodes, with each node visited
         before its children. In DendroPy, "internal nodes" are nodes that have
         at least one child node, and thus the root or seed node is typically included
-        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
-        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
             If `False` (default), then the seed node or root is visited. If
@@ -1084,7 +1084,7 @@ class Node(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in pre-order sequence.
         """
@@ -1104,20 +1104,20 @@ class Node(
 
         Visits self and all descendant nodes, with each node visited first
         followed by its children. Nodes can optionally be filtered by
-        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding the nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -1161,16 +1161,16 @@ class Node(
         Visits self and all internal descendant nodes, with each node visited
         after its children. In DendroPy, "internal nodes" are nodes that have
         at least one child node, and thus the root or seed node is typically
-        included unless `exclude_seed_node` is `True`. Nodes can optionally be
-        filtered by `filter_fn`: only nodes for which `filter_fn` returns
+        included unless ``exclude_seed_node`` is `True`. Nodes can optionally be
+        filtered by ``filter_fn``: only nodes for which ``filter_fn`` returns
         `True` when passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
             If `False` (default), then the seed node or root is visited. If
@@ -1178,7 +1178,7 @@ class Node(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -1198,21 +1198,21 @@ class Node(
 
         Visits self and all descendant nodes, with each node and other nodes at
         the same level (distance from root) visited before their children.
-        Nodes can optionally be filtered by `filter_fn`: only nodes for which
-        `filter_fn` returns `True` when called with the node as an argument are
+        Nodes can optionally be filtered by ``filter_fn``: only nodes for which
+        ``filter_fn`` returns `True` when called with the node as an argument are
         visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             level-order sequence.
         """
@@ -1241,20 +1241,20 @@ class Node(
 
         Visits self and all descendant nodes, with each node visited in-between
         its children. Only valid for strictly-bifurcating trees. Nodes can
-        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
         returns `True` when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             infix or in-order sequence.
         """
@@ -1276,20 +1276,20 @@ class Node(
         Iterate over all tips or leaves that ultimately descend from this node.
 
         Visits all leaf or tip nodes descended from this node. Nodes can
-        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
         returns `True` when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding leaf nodes of the subtree rooted at this node.
         """
         if filter_fn:
@@ -1306,14 +1306,14 @@ class Node(
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding nodes that have this node as a parent.
         """
         for node in self._child_nodes:
@@ -1327,14 +1327,14 @@ class Node(
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
+        itor : :py`collections.Iterator` [`Edge`]
             An iterator yielding edges that have this edge as a parent.
         """
         for node in self._child_nodes:
@@ -1345,18 +1345,18 @@ class Node(
         """
         Iterator over all ancestors of this node.
 
-        Visits all nodes that are the ancestors of this node.  If `inclusive`
-        is `True`, `self` is returned as the first item of the sequence;
-        otherwise `self` is skipped. Nodes can optionally be filtered by
-        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        Visits all nodes that are the ancestors of this node.  If ``inclusive``
+        is `True`, ``self`` is returned as the first item of the sequence;
+        otherwise ``self`` is skipped. Nodes can optionally be filtered by
+        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         inclusive : boolean, optional
             If `True`, includes this node in the sequence. If `False`, this is
@@ -1364,7 +1364,7 @@ class Node(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             Iterator over all predecessor/ancestor nodes of this node.
         """
         if inclusive and (filter_fn is None or filter_fn(self)):
@@ -1381,21 +1381,21 @@ class Node(
         Iterator over nodes of subtree rooted at this node in order of the age
         of the node (i.e., the time since the present).
 
-        Iterates over nodes in order of age ('age' is as given by the `age`
+        Iterates over nodes in order of age ('age' is as given by the ``age``
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If `include_leaves` is `True` (default), leaves are included in the
-        iteration; if `include_leaves` is `False`, leaves will be skipped.
-        If `descending` is `False` (default), younger nodes will be returned
+        If ``include_leaves`` is `True` (default), leaves are included in the
+        iteration; if ``include_leaves`` is `False`, leaves will be skipped.
+        If ``descending`` is `False` (default), younger nodes will be returned
         before older ones; if `True`, older nodes will be returned before
         younger ones.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (defau
         include_leaves : boolean, optional
             If `True` (default), then leaf nodes are included in the iteration.
@@ -1406,7 +1406,7 @@ class Node(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
         """
@@ -1461,8 +1461,8 @@ class Node(
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
         """
-        Applies function `before_fn` and `after_fn` to all internal nodes and
-        `leaf_fn` to all terminal nodes in subtree starting with `self`, with
+        Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
+        ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.
 
         Given a tree with preorder sequence of nodes of
@@ -1513,15 +1513,15 @@ class Node(
         Parameters
         ----------
         before_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
         after_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
         leaf_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
 
         Notes
         -----
-        Adapted from work by Mark T. Holder (the `peyotl` module of the Open
+        Adapted from work by Mark T. Holder (the ``peyotl`` module of the Open
         Tree of Life Project):
 
             https://github.com/OpenTreeOfLife/peyotl.git
@@ -1557,13 +1557,13 @@ class Node(
         """
         Assigns the set of child nodes for this node.
 
-        Results in the `parent_node` attribute of each :class:`Node` in `nodes
-        as well as the `tail_node` attribute of corresponding :class:`Edge`
-        objects being assigned to `self`.
+        Results in the ``parent_node`` attribute of each `Node` in `nodes
+        as well as the ``tail_node`` attribute of corresponding `Edge`
+        objects being assigned to ``self``.
 
         Parameters
         ----------
-        child_nodes : collections.Iterable[:class:`Node`]
+        child_nodes : collections.Iterable[`Node`]
             The (iterable) collection of child nodes to be assigned this node
             as a parent.
         """
@@ -1582,17 +1582,17 @@ class Node(
         """
         Adds a child node to this node if it is not already a child.
 
-        Results in the `parent_node` attribute of `node` as well as the
-        `tail_node` attribute of `node.edge` being assigned to `self`.
+        Results in the ``parent_node`` attribute of ``node`` as well as the
+        ``tail_node`` attribute of ``node.edge`` being assigned to ``self``.
 
         Parameters
         ----------
-        node : :class:`Node`
+        node : `Node`
             The node to be added as a child of this node.
 
         Returns
         -------
-        node : :class:`Node`
+        node : `Node`
             The node that was added.
         """
         assert node is not self, "Cannot add node as child of itself"
@@ -1608,19 +1608,19 @@ class Node(
 
         If the node is already a child of this node, then it is moved
         to the specified position.
-        Results in the `parent_node` attribute of `node` as well as the
-        `tail_node` attribute of `node.edge` being assigned to `self`.
+        Results in the ``parent_node`` attribute of ``node`` as well as the
+        ``tail_node`` attribute of ``node.edge`` being assigned to ``self``.
 
         Parameters
         ----------
         index : integer
             The index before which to insert the new node.
-        node : :class:`Node`
+        node : `Node`
             The node to be added as a child of this node.
 
         Returns
         -------
-        node : :class:`Node`
+        node : `Node`
             The node that was added.
         """
         node._parent_node = self
@@ -1642,12 +1642,12 @@ class Node(
         Parameters
         ----------
         \*\*kwargs : keyword arguments
-            Keyword arguments will be passed directly to the :class:`Node`
+            Keyword arguments will be passed directly to the `Node`
             constructor (:meth:`Node.__init()__`).
 
         Returns
         -------
-        node : :class:`Node`
+        node : `Node`
             The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
@@ -1657,20 +1657,20 @@ class Node(
         """
         Create and add a new child to this node at a particular position.
 
-        Results in the `parent_node` attribute of `node` as well as the
-        `tail_node` attribute of `node.edge` being assigned to `self`.
+        Results in the ``parent_node`` attribute of ``node`` as well as the
+        ``tail_node`` attribute of ``node.edge`` being assigned to ``self``.
 
         Parameters
         ----------
         index : integer
             The index before which to insert the new node.
         \*\*kwargs : keyword arguments, optional
-            Keyword arguments will be passed directly to the :class:`Node`
+            Keyword arguments will be passed directly to the `Node`
             constructor (:meth:`Node.__init()__`).
 
         Returns
         -------
-        node : :class:`Node`
+        node : `Node`
             The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
@@ -1681,15 +1681,15 @@ class Node(
         Removes a node from the child set of this node.
 
         Results in the parent of the node being removed set to `None`.  If
-        `suppress_unifurcations` is `True`, if this node ends up having only one
+        ``suppress_unifurcations`` is `True`, if this node ends up having only one
         child after removal of the specified node, then this node will be
         removed from the tree, with its single child added to the child node
         set of its parent and the edge length adjusted accordingly.
-        `suppress_unifurcations` should only be `True` for unrooted trees.
+        ``suppress_unifurcations`` should only be `True` for unrooted trees.
 
         Parameters
         ----------
-        node : :class:`Node`
+        node : `Node`
             The node to be removed.
         suppress_unifurcations : boolean, optional
             If `False` (default), no action is taken. If `True`, then if the
@@ -1700,7 +1700,7 @@ class Node(
 
         Returns
         -------
-        node : :class:`Node`
+        node : `Node`
             The node removed.
         """
         if not node:
@@ -1756,10 +1756,10 @@ class Node(
         Returns a list of tuples.  The first element of each tuple is the
         node removed, the other elements are the information needed by
         `reinsert_nodes' in order to restore the tree to the same topology as
-        it was before the call to `remove_child.` If `suppress_unifurcations` is False
+        it was before the call to ``remove_child.`` If ``suppress_unifurcations`` is False
         then the returned list will contain only one item.
 
-        `suppress_unifurcations` should only be called on unrooted trees.
+        ``suppress_unifurcations`` should only be called on unrooted trees.
         """
         if not node:
             raise ValueError("Tried to remove an non-existing or null node")
@@ -1890,7 +1890,7 @@ class Node(
     def _set_edge(self, new_edge):
         """
         Sets the edge subtending this node, and sets head_node of
-        `edge` to point to self.
+        ``edge`` to point to self.
         """
         # if edge is None:
         #     raise ValueError("A Node cannot have 'None' for an edge")
@@ -1917,7 +1917,7 @@ class Node(
     def _set_edge_length(self, v=None):
         """
         Sets the edge subtending this node, and sets head_node of
-        `edge` to point to self.
+        ``edge`` to point to self.
         """
         self._edge.length = v
     edge_length = property(_get_edge_length, _set_edge_length)
@@ -2007,7 +2007,7 @@ class Node(
     def leaf_nodes(self):
         """
         Returns list of all leaf_nodes descended from this node (or just
-        list with `self` as the only member if `self` is a leaf).
+        list with ``self`` as the only member if ``self`` is a leaf).
 
         Note
         ----
@@ -2016,9 +2016,9 @@ class Node(
 
         Returns
         -------
-        leaves : :py:class:`list` [:class:`Node`]
-           A `list` of :class:`Node` objects descended from this node
-           (inclusive of `self`) that are the leaves.
+        leaves : :py``list`` [`Node`]
+           A ``list`` of `Node` objects descended from this node
+           (inclusive of ``self``) that are the leaves.
         """
         return [node for node in \
                 self.postorder_iter(lambda x: bool(len(x.child_nodes())==0))]
@@ -2030,7 +2030,7 @@ class Node(
         Returns
         -------
         n : int
-            Number of children in `self`.
+            Number of children in ``self``.
         """
         return len(self._child_nodes)
 
@@ -2040,14 +2040,14 @@ class Node(
 
         Note
         ----
-        Unless an actual `list` is needed, iterating over the child nodes using
+        Unless an actual ``list`` is needed, iterating over the child nodes using
         :meth:`Node.child_node_iter()` is preferable to avoid the overhead of
         list construction.
 
         Returns
         -------
-        children : :py:class:`list` [:class:`Node`]
-           A `list` of :class:`Node` objects that have `self` as a parent.
+        children : :py``list`` [`Node`]
+           A ``list`` of `Node` objects that have ``self`` as a parent.
         """
         return list(self._child_nodes)
 
@@ -2057,14 +2057,14 @@ class Node(
 
         Note
         ----
-        Unless an actual `list` is needed, iterating over the child edges using
+        Unless an actual ``list`` is needed, iterating over the child edges using
         :meth:`Node.child_edge_iter()` is preferable to avoid the overhead of
         list construction.
 
         Returns
         -------
-        children : :py:class:`list` [:class:`Edge`]
-           A `list` of :class:`Edge` objects that have `self` as a tail node.
+        children : :py``list`` [`Edge`]
+           A ``list`` of `Edge` objects that have ``self`` as a tail node.
         """
         return list(ch.edge for ch in self._child_nodes)
 
@@ -2074,7 +2074,7 @@ class Node(
 
         Returns
         -------
-        edges : :py:class:`list` [:class:`Edge`]
+        edges : :py``list`` [`Edge`]
             A list of edges linking to this node, with outgoing edges (edges
             connecting to child nodes) followed by the edge connecting
             this node to its parent.
@@ -2093,7 +2093,7 @@ class Node(
 
         Returns
         -------
-        nodes : :py:class:`list` [:class:`Node`]
+        nodes : :py``list`` [`Node`]
             A list with all child nodes and parent node of this node.
         """
         n = [c for c in self._child_nodes]
@@ -2111,9 +2111,9 @@ class Node(
 
         Returns
         -------
-        siblings : :py:class:`list` [:class:`Node`]
-            A list of all nodes descended from the same parent as `self`,
-            excluding `self`.
+        siblings : :py``list`` [`Node`]
+            A list of all nodes descended from the same parent as ``self``,
+            excluding ``self``.
         """
         p = self._parent_node
         if not p:
@@ -2130,13 +2130,13 @@ class Node(
 
     def level(self):
         """
-        Returns the number of nodes between `self` and the seed node of the tree.
+        Returns the number of nodes between ``self`` and the seed node of the tree.
 
         Returns
         -------
         level : integer
-            The number of nodes between `self` and the seed node of the tree,
-            or 0 if `self` has no parent.
+            The number of nodes between ``self`` and the seed node of the tree,
+            or 0 if ``self`` has no parent.
         """
         if self._parent_node:
             return self._parent_node.level() + 1
@@ -2145,12 +2145,12 @@ class Node(
 
     def distance_from_root(self):
         """
-        Weighted path length of `self` from root.
+        Weighted path length of ``self`` from root.
 
         Returns
         -------
         dist : numeric
-            Total weight of all edges connecting `self` with the root of the
+            Total weight of all edges connecting ``self`` with the root of the
             tree.
         """
         if self._parent_node and self.edge.length != None:
@@ -2183,7 +2183,7 @@ class Node(
 
     def distance_from_tip(self):
         """
-        Maximum weighted length of path of `self` to tip.
+        Maximum weighted length of path of ``self`` to tip.
 
         If tree is not ultrametric (i.e., descendent edges have different
         lengths), then count the maximum of edge lengths. Note that
@@ -2194,7 +2194,7 @@ class Node(
         Returns
         -------
         dist : numeric
-            Maximum weight of edges connecting `self` to tip.
+            Maximum weight of edges connecting ``self`` to tip.
         """
         if not self._child_nodes:
             return 0.0
@@ -2216,7 +2216,7 @@ class Node(
 
     def description(self, depth=1, indent=0, itemize="", output=None, taxon_namespace=None):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return
@@ -2321,7 +2321,7 @@ class Node(
         """returns a string that is an identifier for the node.  This is called
         by the newick-writing functions, so the kwargs that affect how node
         labels show up in a newick string are the same ones used here:
-        `suppress_internal_labels` is a Boolean, and defaults to False.
+        ``suppress_internal_labels`` is a Boolean, and defaults to False.
         """
         is_leaf = (len(self._child_nodes) == 0)
         if not is_leaf:
@@ -2405,17 +2405,17 @@ class Tree(
             tree_offset=None,
             **kwargs):
         """
-        Constructs a new :class:`Tree` object and populates it with data from
-        file-like object `stream`.
+        Constructs a new `Tree` object and populates it with data from
+        file-like object ``stream``.
 
         If the source defines multiple tree collections (e.g. multiple NEXUS
-        "Trees" blocks), then the `collection_offset` argument
+        "Trees" blocks), then the ``collection_offset`` argument
         can be used to specify the 0-based index of the tree collection, and
-        `tree_offset` argument can be used to specify the 0-based
+        ``tree_offset`` argument can be used to specify the 0-based
         index of the tree within the collection, as the source. If
-        `collection_offset` is not specified or `None`, then all collections in
-        the source are merged before considering `tree_offset`.  If
-        `tree_offset` is not specified, then the first tree (offset=0) is
+        ``collection_offset`` is not specified or `None`, then all collections in
+        the source are merged before considering ``tree_offset``.  If
+        ``tree_offset`` is not specified, then the first tree (offset=0) is
         returned.
 
         Keyword arguments `**kwargs` are passed directly to
@@ -2427,8 +2427,8 @@ class Tree(
         Notes
         -----
         *All* operational taxonomic unit concepts in the data source will be included
-        in the :class:`TaxonNamespace` object associated with the new
-        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        in the `TaxonNamespace` object associated with the new
+        `TreeList` object and its contained `Tree` objects, even those
         not associated with tree being retrieved.
 
         Parameters
@@ -2438,7 +2438,7 @@ class Tree(
             Source of data.
 
         schema : string
-            Identifier of format of data in `stream`
+            Identifier of format of data in ``stream``
 
         collection_offset : integer
             0-based index of tree block or collection in source to be parsed.
@@ -2446,35 +2446,35 @@ class Tree(
         tree_offset : integer
             0-based index of tree in source to be parsed.  This is the 0-based
             index of the tree within the collection specified by
-            `collection_offset` to be retrieved. If not specified or `None`,
+            ``collection_offset`` to be retrieved. If not specified or `None`,
             then the first tree is returned.
 
         \*\*kwargs : keyword arguments
-            Arguments to customize parsing and instantiation this :class:`Tree`
+            Arguments to customize parsing and instantiation this `Tree`
             from the data source, including schema- or format-specific
             handling. The following optional keyword arguments are recognized
             and handled by this constructor:
 
-                `label`
-                    The label or description of the new :class:`Tree` object.
-                `taxon_namespace`
-                   Specifies the :class:`TaxonNamespace` object to be attached
-                   to the new :class:`TreeList` object. Note that *all*
+                ``label``
+                    The label or description of the new `Tree` object.
+                ``taxon_namespace``
+                   Specifies the `TaxonNamespace` object to be attached
+                   to the new `TreeList` object. Note that *all*
                    operational taxonomic unit concepts in the data source will
-                   be accessioned into the specified :class:`TaxonNamespace`
+                   be accessioned into the specified `TaxonNamespace`
                    instance. This includes the operation taxonomic unit
                    definitions associated with all tree collections and
                    character matrices in the data source.
 
             Other keyword arguments may be available, depending on the
-            implementation of the reader specialized to handle `schema`
+            implementation of the reader specialized to handle ``schema``
             formats. See documentation for details on keyword arguments
             supported by readers of various schemas.
 
         Returns
         -------
-        tree : :class:`Tree` or `None`
-            The :class:`Tree` object corresponding to the tree in the data
+        tree : `Tree` or `None`
+            The `Tree` object corresponding to the tree in the data
             source, or `None` if no valid tree description was found.
 
         """
@@ -2493,7 +2493,7 @@ class Tree(
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
         if collection_offset is None and tree_offset is not None:
-                raise TypeError("Cannot specify `tree_offset` without specifying `collection_offset`")
+                raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
         elif collection_offset is None:
             collection_offset = 0
         if tree_offset is None:
@@ -2526,7 +2526,7 @@ class Tree(
         (e.g., performing a calculation or set of calculations on a tree and
         storing the result, after the which the entire tree itself is
         not needed), this approach is *far* more performant that reading in the
-        trees using a :class:`TreeList`. This is because a full tree structure
+        trees using a `TreeList`. This is because a full tree structure
         requires significant memory overhead, and as memory gets used up and
         the OS starts page faulting, performance starts taking some serious
         hits.
@@ -2536,12 +2536,12 @@ class Tree(
         files : iterable of file paths or file-like objects.
             Iterable of sources, which can either be strings specifying file
             paths or file-like objects open for reading. If a source element is
-            a string (``isinstance(i,str) == True``), then it is assumed to be
+            a string (````isinstance(i,str) == True````), then it is assumed to be
             a path to a file. Otherwise, the source is assumed to be a file-like
             object.
         schema : string
             The name of the data format (e.g., "newick" or "nexus").
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
         \*\*kwargs : keyword arguments
@@ -2549,7 +2549,7 @@ class Tree(
 
         Yields
         ------
-        t : :class:`Tree`
+        t : `Tree`
             Trees as read from the file.
 
         """
@@ -2580,15 +2580,15 @@ class Tree(
 
         Parameters
         ----------
-        bipartition_encoding : iterable[:class:`Bipartition`]
-            An iterable of :class:`Bipartition` instances representing a tree.
+        bipartition_encoding : iterable[`Bipartition`]
+            An iterable of `Bipartition` instances representing a tree.
             Bipartitions will be added to the tree in the order given by
             iterating over this. Bipartitions that are incompatible with the
             tree will be skipped. So if not all bipartitions are compatible
             with each other, then the sequence of bipartitions given in
             ``bipartition_encoding`` should be in order of their support values
             or some other preference criteria.
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
         is_rooted : bool
@@ -2599,7 +2599,7 @@ class Tree(
 
         Returns
         -------
-        t : :class:`Tree`
+        t : `Tree`
             The tree reconstructed from the given bipartition encoding.
         """
         split_bitmasks = [b.split_bitmask for b in bipartition_encoding]
@@ -2637,7 +2637,7 @@ class Tree(
             with each other, then the sequence of splits given in
             ``bipartition_encoding`` should be in order of their support values
             or some other preference criteria.
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : `TaxonNamespace` instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
         is_rooted : bool
@@ -2648,7 +2648,7 @@ class Tree(
             lengths.
         Returns
         -------
-        t : :class:`Tree`
+        t : `Tree`
             The tree reconstructed from the given bipartition encoding.
         """
         leaf_to_root_search = True
@@ -2734,7 +2734,7 @@ class Tree(
 
     def node_factory(cls, **kwargs):
         """
-        Creates and returns a :class:`Node` object.
+        Creates and returns a `Node` object.
 
         Derived classes can override this method to provide support for
         specialized or different types of nodes on the tree.
@@ -2743,12 +2743,12 @@ class Tree(
         ----------
 
         \*\*kwargs : keyword arguments
-            Passed directly to constructor of :class:`Node`.
+            Passed directly to constructor of `Node`.
 
         Returns
         -------
-        node : :class:`Node`
-            A new :class:`Node` object.
+        node : `Node`
+            A new `Node` object.
 
         """
         return Node(**kwargs)
@@ -2759,9 +2759,9 @@ class Tree(
 
     def __init__(self, *args, **kwargs):
         """
-        The constructor can optionally construct a :class:`Tree` object by
-        cloning another :class:`Tree` object passed as the first positional
-        argument, or out of a data source if `stream` and `schema` keyword
+        The constructor can optionally construct a `Tree` object by
+        cloning another `Tree` object passed as the first positional
+        argument, or out of a data source if ``stream`` and ``schema`` keyword
         arguments are passed with a file-like object and a schema-specification
         string object values respectively.
 
@@ -2769,18 +2769,18 @@ class Tree(
         ----------
 
         \*args : positional argument, optional
-            If given, should be exactly one :class:`Tree` object. The new
-            :class:`Tree` will then be a structural clone of this argument.
+            If given, should be exactly one `Tree` object. The new
+            `Tree` will then be a structural clone of this argument.
 
         \*\*kwargs : keyword arguments, optional
             The following optional keyword arguments are recognized
             and handled by this constructor:
 
-                `label`
-                    The label or description of the new :class:`Tree` object.
-                `taxon_namespace`
-                    Specifies the :class:`TaxonNamespace` object to be
-                    that the new :class:`Tree` object will reference.
+                ``label``
+                    The label or description of the new `Tree` object.
+                ``taxon_namespace``
+                    Specifies the `TaxonNamespace` object to be
+                    that the new `Tree` object will reference.
         Examples
         --------
 
@@ -2967,7 +2967,7 @@ class Tree(
     def taxon_namespace_scoped_copy(self, memo=None):
         if memo is None:
             memo = {}
-        # this populates `memo` with references to the
+        # this populates ``memo`` with references to the
         # the TaxonNamespace and Taxon objects
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
@@ -3005,29 +3005,29 @@ class Tree(
 
     def read(self, stream, schema, **kwargs):
         """
-        Redefines this :class:`Tree` object based on data from `source`.
+        Redefines this `Tree` object based on data from ``source``.
 
-        The current :class:`TaxonNamespace` reference will be retained (and
+        The current `TaxonNamespace` reference will be retained (and
         modified if new operational taxonomic unit concept definitions
         are encountered in the data source). *All* other information,
         including metadata/annotations, will be lost or replaced with
         information from the new data source.
 
         If the source defines multiple tree collections (e.g. multiple NEXUS
-        "Trees" blocks), then the `collection_offset` argument
+        "Trees" blocks), then the ``collection_offset`` argument
         can be used to specify the 0-based index of the tree collection, and
-        `tree_offset` argument can be used to specify the 0-based
+        ``tree_offset`` argument can be used to specify the 0-based
         index of the tree within the collection, as the source. If
-        `collection_offset` is not specified or `None`, then all collections in
-        the source are merged before considering `tree_offset`.  If
-        `tree_offset` is not specified, then the first tree (offset=0) is
+        ``collection_offset`` is not specified or `None`, then all collections in
+        the source are merged before considering ``tree_offset``.  If
+        ``tree_offset`` is not specified, then the first tree (offset=0) is
         returned.
 
         Notes
         -----
         *All* operational taxonomic unit concepts in the data source will be included
-        in the :class:`TaxonNamespace` object associated with the new
-        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        in the `TaxonNamespace` object associated with the new
+        `TreeList` object and its contained `Tree` objects, even those
         not associated with tree being retrieved.
 
         Parameters
@@ -3037,37 +3037,37 @@ class Tree(
             Source of data.
 
         schema : string
-            Identifier of format of data in `stream`
+            Identifier of format of data in ``stream``
 
         collection_offset : integer or None
             0-based index of tree block or collection in source to be parsed.
 
         tree_offset : integer or None
             0-based index of tree in source to be parsed. If
-            `collection_offset` is `None`, then this is the 0-based index of
+            ``collection_offset`` is `None`, then this is the 0-based index of
             the tree across all collections considered together. Otherwise,
             this is the 0-based index within a particular collection. If
-            `tree_offset` is `None` or not specified, then the first tree is
+            ``tree_offset`` is `None` or not specified, then the first tree is
             returned.
 
         \*\*kwargs : keyword arguments
-            Arguments to customize parsing and instantiation this :class:`Tree`
+            Arguments to customize parsing and instantiation this `Tree`
             from the data source, including schema- or format-specific
             handling. The following optional keyword arguments are recognized
             and handled by this constructor:
 
-                `label`
-                    The label the tree :class:`Tree` object.
+                ``label``
+                    The label the tree `Tree` object.
 
             Other keyword arguments may be available, depending on the
-            implementation of the reader specialized to handle `schema`
+            implementation of the reader specialized to handle ``schema``
             formats. See documentation for details on keyword arguments
             supported by readers of various schemas.
 
         Returns
         -------
-        tree : :class:`Tree`
-             Returns `self`.
+        tree : `Tree`
+             Returns ``self``.
 
         Raises
         ------
@@ -3076,7 +3076,7 @@ class Tree(
 
         """
         if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
-            raise TypeError("Cannot change `taxon_namespace` when reading an existing Tree")
+            raise TypeError("Cannot change ``taxon_namespace`` when reading an existing Tree")
         kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree._parse_from_stream(stream, schema, **kwargs)
         if tree is None:
@@ -3085,8 +3085,8 @@ class Tree(
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out `self` in `schema` format to a destination given by
-        file-like object `stream`.
+        Writes out ``self`` in ``schema`` format to a destination given by
+        file-like object ``stream``.
 
         Parameters
         ----------
@@ -3123,15 +3123,15 @@ class Tree(
         ----------
 
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be included in
-            the list, or `False` if not. If `filter_fn` is `None` (default),
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be included in
+            the list, or `False` if not. If ``filter_fn`` is `None` (default),
             then all nodes visited will be included.
 
         Returns
         -------
-        nodes : :py:class:`list` [:class:`Node`]
-            List of :class:`Node` objects in the tree.
+        nodes : :py``list`` [`Node`]
+            List of `Node` objects in the tree.
         """
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
         return nodes
@@ -3142,8 +3142,8 @@ class Tree(
 
         Returns
         -------
-        nodes : :py:class:`list` [:class:`Node`]
-            List of leaf :class:`Node` objects in `self`.
+        nodes : :py``list`` [`Node`]
+            List of leaf `Node` objects in ``self``.
         """
         return [leaf for leaf in self.leaf_node_iter()]
 
@@ -3151,7 +3151,7 @@ class Tree(
         """
         Returns list of internal nodes in the tree.
 
-        Root or seed node is included unless `exclude_seed_node` is `True`.
+        Root or seed node is included unless ``exclude_seed_node`` is `True`.
 
         Parameters
         ----------
@@ -3161,8 +3161,8 @@ class Tree(
 
         Returns
         -------
-        nodes : :py:class:`list` [:class:`Node`]
-            List of internal :class:`Node` objects in `self`.
+        nodes : :py``list`` [`Node`]
+            List of internal `Node` objects in ``self``.
         """
         return [nd for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
 
@@ -3173,15 +3173,15 @@ class Tree(
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be included,
-            or `False` if not. If `filter_fn` is `None` (default), then all
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be included,
+            or `False` if not. If ``filter_fn`` is `None` (default), then all
             edges will be included.
 
         Returns
         -------
-        edges : :py:class:`list` [:class:`Edge`]
-            List of :class:`Edge` objects in `self`.
+        edges : :py``list`` [`Edge`]
+            List of `Edge` objects in ``self``.
         """
         edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
         return edges
@@ -3192,8 +3192,8 @@ class Tree(
 
         Returns
         -------
-        edges : :py:class:`list` [:class:`Edge`]
-            List of leaf :class:`Edge` objects in `self`.
+        edges : :py``list`` [`Edge`]
+            List of leaf `Edge` objects in ``self``.
         """
         return [leaf.edge for leaf in self.leaf_node_iter()]
 
@@ -3209,8 +3209,8 @@ class Tree(
 
         Returns
         -------
-        edges : :py:class:`list` [:class:`Edge`]
-            List of internal :class:`Edge` objects in `self`.
+        edges : :py``list`` [`Edge`]
+            List of internal `Edge` objects in ``self``.
         """
         return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_edge)]
 
@@ -3235,14 +3235,14 @@ class Tree(
         Parameters
         ----------
         filter_fn : function object
-            Takes a single :class:`Node` object as an argument and returns
+            Takes a single `Node` object as an argument and returns
             `True` if the node should be returned.
 
         Returns
         -------
-        node : :class:`Node` or `None`
-            Returns first :class:`Node` object for which the filter function
-            `filter_fn` returns `True`, or `None` if no such node exists on
+        node : `Node` or `None`
+            Returns first `Node` object for which the filter function
+            ``filter_fn`` returns `True`, or `None` if no such node exists on
             this tree.
         """
         for node in self.preorder_node_iter(filter_fn):
@@ -3251,18 +3251,18 @@ class Tree(
 
     def find_node_with_label(self, label):
         """
-        Returns first node with `label` attribute matching `label` argument.
+        Returns first node with ``label`` attribute matching ``label`` argument.
 
         Parameters
         ----------
         label : string
-            Value for `label` attribute of :class:`Node` object in this tree.
+            Value for ``label`` attribute of `Node` object in this tree.
 
         Returns
         -------
-        node : :class:`Node` or `None`
-            Returns first :class:`Node` object with `label` attribute having value
-            given in `label`, or `None` if no such node is found.
+        node : `Node` or `None`
+            Returns first `Node` object with ``label`` attribute having value
+            given in ``label``, or `None` if no such node is found.
 
         """
         for node in self.preorder_node_iter():
@@ -3272,19 +3272,19 @@ class Tree(
 
     def find_node_for_taxon(self, taxon):
         """
-        Returns node associated with :class:`Taxon` object `taxon`.
+        Returns node associated with `Taxon` object ``taxon``.
 
         Parameters
         ----------
-        taxon : :class:`Taxon` object
-            :class:`Taxon` object that should be associated with the node to be
+        taxon : `Taxon` object
+            `Taxon` object that should be associated with the node to be
             returned.
 
         Returns
         -------
-        node : :class:`Node` or `None`
-            Returns first :class:`Node` object with `taxon` attribute referencing same
-            object as `taxon` argument, or `None` if no such node exists.
+        node : `Node` or `None`
+            Returns first `Node` object with ``taxon`` attribute referencing same
+            object as ``taxon`` argument, or `None` if no such node exists.
         """
         for node in self.postorder_node_iter():
             try:
@@ -3296,21 +3296,21 @@ class Tree(
 
     def find_node_with_taxon(self, taxon_filter_fn=None):
         """
-        Returns node associated with :class:`Taxon` object for which `taxon_filter_fn`
+        Returns node associated with `Taxon` object for which ``taxon_filter_fn``
         returns `True`.
 
         Parameters
         ----------
         taxon_filter_fn : function object
-            Takes a single :class:`Taxon` object as an argument and returns
-            `True` if the node associated with that :class:`Taxon` should be
+            Takes a single `Taxon` object as an argument and returns
+            `True` if the node associated with that `Taxon` should be
             returned.
 
         Returns
         -------
-        node : :class:`Node` or `None`
-            Returns first :class:`Node` object with `taxon` attribute passing filter
-            function `taxon_filter_fn`, or `None` if no such node is found.
+        node : `Node` or `None`
+            Returns first `Node` object with ``taxon`` attribute passing filter
+            function ``taxon_filter_fn``, or `None` if no such node is found.
         """
         for node in self.preorder_node_iter():
             if hasattr(node, "taxon") and node.taxon is not None:
@@ -3320,18 +3320,18 @@ class Tree(
 
     def find_node_with_taxon_label(self, label):
         """
-        Returns node associated with :class:`Taxon` object with the specified label.
+        Returns node associated with `Taxon` object with the specified label.
 
         Parameters
         ----------
         label : string
-            Label of :class:`Taxon` object associated with the node to be returned.
+            Label of `Taxon` object associated with the node to be returned.
 
         Returns
         -------
-        node : :class:`Node` or `None`
-            Returns first :class:`Node` object with `taxon` attribute having label
-            `label`, or`None` if no such node is found.
+        node : `Node` or `None`
+            Returns first `Node` object with ``taxon`` attribute having label
+            ``label``, or`None` if no such node is found.
 
         """
         return self.find_node_with_taxon(lambda x: x.label == label)
@@ -3348,11 +3348,11 @@ class Tree(
         that has all of the taxa that:
 
             * are specified by the leafset bitmask given by the keyword argument
-              `leafset_bitmask`
+              ``leafset_bitmask``
             * are in the list of Taxon objects given by the keyword argument
-              `taxa`
+              ``taxa``
             * have the labels specified by the list of strings given by the
-              keyword argument `taxon_labels`
+              keyword argument ``taxon_labels``
 
         Returns `None` if no appropriate node is found. Assumes that
         bipartitions have been encoded on the tree. It is possible that the
@@ -3366,27 +3366,27 @@ class Tree(
         \*\*kwargs : keyword arguments
             Exactly one of the following must be specified:
 
-                `leafset_bitmask` : integer
+                ``leafset_bitmask`` : integer
                     Node object subtended by the first edge compatible with this
                     leafset bitmask will be returned.
-                `taxa` : collections.Iterable [:class:`Taxon`]
+                ``taxa`` : collections.Iterable [`Taxon`]
                     Shallowest node object with descendent nodes associated with
-                    all the :class:`Taxon` objects specified will be returned.
-                `taxon_labels` : collections.Iterable [string]
+                    all the `Taxon` objects specified will be returned.
+                ``taxon_labels`` : collections.Iterable [string]
                     Shallowest node object with descendent nodes associated
-                    with the minimal set of :class:Taxon objects that
+                    with the minimal set of Taxon objects that
                     collectively have all the labels specified in
-                    `taxon_labels` will be returned.
+                    ``taxon_labels`` will be returned.
 
             In addition, the following optional keywords are supported:
 
-                `start_node` : :class:`Node`, optional
+                ``start_node`` : `Node`, optional
                     If given, specifies the node at which to start searching.
-                    If not, defaults to the root or `seed_node`.
+                    If not, defaults to the root or ``seed_node``.
 
         Returns
         -------
-        node : :class:`Node` or `None`
+        node : `Node` or `None`
             The most-recent common ancestor of the nodes specified, or `None`
             if no such node exists.
         """
@@ -3459,7 +3459,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
+        itor : :py`collections.Iterator` [`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -3469,23 +3469,23 @@ class Tree(
         """
         Pre-order iterator over nodes in tree.
 
-        Visits nodes in `self`, with each node visited before its children.
-        Nodes can optionally be filtered by `filter_fn`: only nodes for which
-        `filter_fn` returns `True` when called with the node as an argument are
+        Visits nodes in ``self``, with each node visited before its children.
+        Nodes can optionally be filtered by ``filter_fn``: only nodes for which
+        ``filter_fn`` returns `True` when called with the node as an argument are
         yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding nodes in `self` in pre-order sequence.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding nodes in ``self`` in pre-order sequence.
         """
         return self.seed_node.preorder_iter(filter_fn=filter_fn)
 
@@ -3493,19 +3493,19 @@ class Tree(
         """
         Pre-order iterator over internal nodes in tree.
 
-        Visits internal nodes in `self`, with each node visited before its
+        Visits internal nodes in ``self``, with each node visited before its
         children. In DendroPy, "internal nodes" are nodes that have at least
         one child node, and thus the root or seed node is typically included
-        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
-        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
             If `False` (default), then the seed node or root is visited. If
@@ -3513,8 +3513,8 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding the internal nodes of `self`.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding the internal nodes of ``self``.
         """
         return self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn,
                 exclude_seed_node=exclude_seed_node)
@@ -3523,23 +3523,23 @@ class Tree(
         """
         Post-order iterator over nodes of tree.
 
-        Visits nodes in `self`, with each node visited first followed by its
-        children. Nodes can optionally be filtered by `filter_fn`: only nodes
-        for which `filter_fn` returns `True` when called with the node as an
+        Visits nodes in ``self``, with each node visited first followed by its
+        children. Nodes can optionally be filtered by ``filter_fn``: only nodes
+        for which ``filter_fn`` returns `True` when called with the node as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding the nodes in `self` in post-order sequence.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding the nodes in ``self`` in post-order sequence.
         """
         return self.seed_node.postorder_iter(filter_fn=filter_fn)
 
@@ -3547,19 +3547,19 @@ class Tree(
         """
         Pre-order iterator over internal nodes tree.
 
-        Visits internal nodes in `self`, with each node visited after its
+        Visits internal nodes in ``self``, with each node visited after its
         children. In DendroPy, "internal nodes" are nodes that have at least
         one child node, and thus the root or seed node is typically included
-        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
-        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
             If `False` (default), then the seed node or root is visited. If
@@ -3567,8 +3567,8 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding the internal nodes of `self` in post-order
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding the internal nodes of ``self`` in post-order
             sequence.
         """
         return self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn,
@@ -3578,23 +3578,23 @@ class Tree(
         """
         Level-order iteration over nodes of tree.
 
-        Visits nodes in `self`, with each node and other nodes at the same
+        Visits nodes in ``self``, with each node and other nodes at the same
         level (distance from root) visited before their children.  Nodes can
-        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
         returns `True` when called with the node as an argument are visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding nodes of `self` in level-order sequence.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding nodes of ``self`` in level-order sequence.
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
@@ -3611,23 +3611,23 @@ class Tree(
         """
         In-order iteration over nodes of tree.
 
-        Visits nodes in `self`, with each node visited in-between its children.
+        Visits nodes in ``self``, with each node visited in-between its children.
         Only valid for strictly-bifurcating trees. Nodes can optionally be
-        filtered by `filter_fn`: only nodes for which `filter_fn` returns
+        filtered by ``filter_fn``: only nodes for which ``filter_fn`` returns
         `True` when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding nodes of `self` in infix or in-order sequence.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding nodes of ``self`` in infix or in-order sequence.
         """
         return self.seed_node.inorder_iter(filter_fn=filter_fn)
 
@@ -3635,22 +3635,22 @@ class Tree(
         """
         Iterate over all tips or leaves of tree.
 
-        Visits all leaf or tip in `self`. Nodes can optionally be filtered by
-        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        Visits all leaf or tip in ``self``. Nodes can optionally be filtered by
+        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
         called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding leaf nodes in `self`.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding leaf nodes in ``self``.
         """
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
@@ -3668,12 +3668,12 @@ class Tree(
         Iterator over nodes of tree in order of the age of the node (i.e., the
                 time since the present).
 
-        Iterates over nodes in order of age ('age' is as given by the `age`
+        Iterates over nodes in order of age ('age' is as given by the ``age``
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If `include_leaves` is `True` (default), leaves are included in the
-        iteration; if `include_leaves` is `False`, leaves will be skipped.
-        If `descending` is `False` (default), younger nodes will be returned
+        If ``include_leaves`` is `True` (default), leaves are included in the
+        iteration; if ``include_leaves`` is `False`, leaves will be skipped.
+        If ``descending`` is `False` (default), younger nodes will be returned
         before older ones; if `True`, older nodes will be returned before
         younger ones.
 
@@ -3683,9 +3683,9 @@ class Tree(
             If `True` (default), then leaf nodes are included in the iteration.
             If `False`, then leaf nodes are skipped.
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
         descending : boolean, optional
             If `False` (default), then younger nodes are visited before older
@@ -3693,8 +3693,8 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            Iterator over age-ordered sequence of nodes of `self`.
+        itor : :py`collections.Iterator` [`Node`]
+            Iterator over age-ordered sequence of nodes of ``self``.
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
@@ -3715,8 +3715,8 @@ class Tree(
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
         """
-        Applies function `before_fn` and `after_fn` to all internal nodes and
-        `leaf_fn` to all terminal nodes in subtree starting with `self`, with
+        Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
+        ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.
 
         Given a tree with preorder sequence of nodes of
@@ -3767,15 +3767,15 @@ class Tree(
         Parameters
         ----------
         before_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
         after_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
         leaf_fn : function object or `None`
-            A function object that takes a :class:`Node` as its argument.
+            A function object that takes a `Node` as its argument.
 
         Notes
         -----
-        Adapted from work by Mark T. Holder (the `peyotl` module of the Open
+        Adapted from work by Mark T. Holder (the ``peyotl`` module of the Open
         Tree of Life Project):
 
             https://github.com/OpenTreeOfLife/peyotl.git
@@ -3790,23 +3790,23 @@ class Tree(
         """
         Pre-order iterator over nodes in tree.
 
-        Visits nodes in `self`, with each node visited before its children.
-        Nodes can optionally be filtered by `filter_fn`: only nodes for which
-        `filter_fn` returns `True` when called with the node as an argument are
+        Visits nodes in ``self``, with each node visited before its children.
+        Nodes can optionally be filtered by ``filter_fn``: only nodes for which
+        ``filter_fn`` returns `True` when called with the node as an argument are
         yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Node` object as an argument
-            and returns `True` if the :class:`Node` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Node` object as an argument
+            and returns `True` if the `Node` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Node`]
-            An iterator yielding nodes in `self` in pre-order sequence.
+        itor : :py`collections.Iterator` [`Node`]
+            An iterator yielding nodes in ``self`` in pre-order sequence.
         """
         # NOTE: from-scratch implementation here instead of wrapping
         # `preorder_node_iter()`for efficiency
@@ -3821,19 +3821,19 @@ class Tree(
         """
         Pre-order iterator over internal edges in tree.
 
-        Visits internal edges in `self`, with each edge visited before its
+        Visits internal edges in ``self``, with each edge visited before its
         children. In DendroPy, "internal edges" are edges that have at least
         one child edge, and thus the root or seed edge is typically included
-        unless `exclude_seed_edge` is `True`. Edges can optionally be filtered
-        by `filter_fn`: only edges for which `filter_fn` returns `True` when
+        unless ``exclude_seed_edge`` is `True`. Edges can optionally be filtered
+        by ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
         passed the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
         exclude_seed_edge : boolean, optional
             If `False` (default), then the edge subtending the seed node or
@@ -3841,8 +3841,8 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding the internal edges of `self`.
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding the internal edges of ``self``.
         """
         # NOTE: from-scratch implementation here instead of wrapping
         # `preorder_internal_node_iter()`for efficiency
@@ -3861,23 +3861,23 @@ class Tree(
         """
         Post-order iterator over edges of tree.
 
-        Visits edges in `self`, with each edge visited first followed by its
-        children. Edges can optionally be filtered by `filter_fn`: only edges
-        for which `filter_fn` returns `True` when called with the edge as an
+        Visits edges in ``self``, with each edge visited first followed by its
+        children. Edges can optionally be filtered by ``filter_fn``: only edges
+        for which ``filter_fn`` returns `True` when called with the edge as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding the edges in `self` in post-order sequence.
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding the edges in ``self`` in post-order sequence.
 
         """
         # NOTE: custom implementation here instead of wrapping
@@ -3912,19 +3912,19 @@ class Tree(
         """
         Pre-order iterator over internal edges tree.
 
-        Visits internal edges in `self`, with each edge visited after its
+        Visits internal edges in ``self``, with each edge visited after its
         children. In DendroPy, "internal edges" are edges that have at least
         one child edge, and thus the root or seed edge is typically included
-        unless `exclude_seed_edge` is `True`. Edges can optionally be filtered
-        by `filter_fn`: only edges for which `filter_fn` returns `True` when
+        unless ``exclude_seed_edge`` is `True`. Edges can optionally be filtered
+        by ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
         passed the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
         exclude_seed_edge : boolean, optional
             If `False` (default), then the seed edge or root is visited. If
@@ -3932,8 +3932,8 @@ class Tree(
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding the internal edges of `self` in post-order
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding the internal edges of ``self`` in post-order
             sequence.
         """
         # NOTE: from-scratch implementation here instead of wrapping
@@ -3952,23 +3952,23 @@ class Tree(
         """
         Level-order iteration over edges of tree.
 
-        Visits edges in `self`, with each edge and other edges at the same
+        Visits edges in ``self``, with each edge and other edges at the same
         level (distance from root) visited before their children.  Edges can
-        optionally be filtered by `filter_fn`: only edges for which `filter_fn`
+        optionally be filtered by ``filter_fn``: only edges for which ``filter_fn``
         returns `True` when called with the edge as an argument are visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding edges of `self` in level-order sequence.
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding edges of ``self`` in level-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -3990,23 +3990,23 @@ class Tree(
         """
         In-order iteration over edges of tree.
 
-        Visits edges in `self`, with each edge visited in-between its children.
+        Visits edges in ``self``, with each edge visited in-between its children.
         Only valid for strictly-bifurcating trees. Edges can optionally be
-        filtered by `filter_fn`: only edges for which `filter_fn` returns
+        filtered by ``filter_fn``: only edges for which ``filter_fn`` returns
         `True` when called with the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding edges of `self` in infix or in-order sequence.
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding edges of ``self`` in infix or in-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -4019,22 +4019,22 @@ class Tree(
         """
         Iterate over all tips or leaves of tree.
 
-        Visits all leaf or tip in `self`. Edges can optionally be filtered by
-        `filter_fn`: only edges for which `filter_fn` returns `True` when
+        Visits all leaf or tip in ``self``. Edges can optionally be filtered by
+        ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
         called with the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
-            A function object that takes a :class:`Edge` object as an argument
-            and returns `True` if the :class:`Edge` object is to be yielded by
-            the iterator, or `False` if not. If `filter_fn` is `None`
+            A function object that takes a `Edge` object as an argument
+            and returns `True` if the `Edge` object is to be yielded by
+            the iterator, or `False` if not. If ``filter_fn`` is `None`
             (default), then all edges visited will be yielded.
 
         Returns
         -------
-        itor : :py:class:`collections.Iterator` [:class:`Edge`]
-            An iterator yielding leaf edges in `self`.
+        itor : :py`collections.Iterator` [`Edge`]
+            An iterator yielding leaf edges in ``self``.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -4073,8 +4073,8 @@ class Tree(
 
     def update_taxon_namespace(self):
         """
-        All :class:`Taxon` objects in `self` that are not in
-        `self.taxon_namespace` will be added.
+        All `Taxon` objects in ``self`` that are not in
+        ``self.taxon_namespace`` will be added.
         """
         for nd in self:
             if nd.taxon is not None:
@@ -4083,8 +4083,8 @@ class Tree(
 
     def poll_taxa(self, taxa=None):
         """
-        Returns a set populated with all of :class:`Taxon` instances associated
-        with `self`.
+        Returns a set populated with all of `Taxon` instances associated
+        with ``self``.
 
         Parameters
         ----------
@@ -4093,8 +4093,8 @@ class Tree(
 
         Returns
         -------
-        taxa : set[:class:`Taxon`]
-            Set of taxa associated with `self`.
+        taxa : set[`Taxon`]
+            Set of taxa associated with ``self``.
         """
         if taxa is None:
             taxa = set()
@@ -4105,7 +4105,7 @@ class Tree(
 
     def infer_taxa(self):
         """
-        Creates (and returns) a new TaxonNamespace object for `self` populated
+        Creates (and returns) a new TaxonNamespace object for ``self`` populated
         with taxa from this tree.
         """
         deprecate.dendropy_deprecation_warning(
@@ -4132,9 +4132,9 @@ class Tree(
 
     def unassign_taxa(self, exclude_leaves=False, exclude_internal=False):
         """
-        Strips taxon assignments from tree. If `exclude_leaves` is True,
-        then taxa on leaves will be retained. If `exclude_internal` is True,
-        then taxa on internal nodes will be retained. The `taxon_namespace` is not
+        Strips taxon assignments from tree. If ``exclude_leaves`` is True,
+        then taxa on leaves will be retained. If ``exclude_internal`` is True,
+        then taxa on internal nodes will be retained. The ``taxon_namespace`` is not
         affected by this operation.
         """
         for nd in self.postorder_node_iter():
@@ -4147,13 +4147,13 @@ class Tree(
         """
         Randomly assigns taxa to leaf nodes. If the number of taxa defined in
         the taxon set of the tree is more than the number of tips, then a random
-        subset of taxa in `taxon_namespace` will be assigned to the tips of tree.
-        If the number of tips is more than the number of taxa in the `taxon_namespace`,
-        and `add_extra_taxa` is not True [default], then new Taxon
-        objects will be created and added to the `taxon_namespace`; if `create_required_taxa`
+        subset of taxa in ``taxon_namespace`` will be assigned to the tips of tree.
+        If the number of tips is more than the number of taxa in the ``taxon_namespace``,
+        and ``add_extra_taxa`` is not True [default], then new Taxon
+        objects will be created and added to the ``taxon_namespace``; if ``create_required_taxa``
         is False, then an exception is raised.
 
-        In addition, a Random() object or equivalent can be passed using `rng`;
+        In addition, a Random() object or equivalent can be passed using ``rng``;
         otherwise GLOBAL_RNG is used.
         """
         if rng is None:
@@ -4241,16 +4241,16 @@ class Tree(
         """
         Reseeds the tree at a different (existing) node.
 
-        Takes an internal node, `new_seed_node` that must already be in the
-        tree and rotates the tree such that `new_seed_node` is the `seed_node`
+        Takes an internal node, ``new_seed_node`` that must already be in the
+        tree and rotates the tree such that ``new_seed_node`` is the ``seed_node``
         of the tree. This is a 'soft' rerooting -- i.e., changes the tree
         representation so tree traversal behaves as if the tree is rooted at
         'new_seed_node', but it does not actually change the tree's rooting
-        state.  If `update_bipartitions` is True, then the edges'
-        `bipartition_bitmask` and the tree's `bipartition_edge_map` attributes
+        state.  If ``update_bipartitions`` is True, then the edges'
+        ``bipartition_bitmask`` and the tree's ``bipartition_edge_map`` attributes
         will be updated. If the *old* root of the tree had an outdegree of 2,
         then after this operation, it will have an outdegree of one. In this
-        case, unless `suppress_unifurcations` is False, then it will be removed
+        case, unless ``suppress_unifurcations`` is False, then it will be removed
         from the tree.
         """
 
@@ -4331,15 +4331,15 @@ class Tree(
         return self.seed_node
 
     def to_outgroup_position(self, outgroup_node, update_bipartitions=False, suppress_unifurcations=True):
-        """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
+        """Reroots the tree at the parent of ``outgroup_node`` and makes ``outgroup_node`` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
-        Assumes that `outgroup_node` and `outgroup_node._parent_node` and are in the tree/
-        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
-        `bipartition_encoding` attributes will be updated.
+        Assumes that ``outgroup_node`` and ``outgroup_node._parent_node`` and are in the tree/
+        If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
+        ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_unifurcations` is False, then it will be
+        ``suppress_unifurcations`` is False, then it will be
         removed from the tree.
         """
         p = outgroup_node._parent_node
@@ -4353,16 +4353,16 @@ class Tree(
 
     def reroot_at_node(self, new_root_node, update_bipartitions=False, suppress_unifurcations=True):
         """
-        Takes an internal node, `new_seed_node` that must already be in the tree and
+        Takes an internal node, ``new_seed_node`` that must already be in the tree and
         roots the tree at that node.
         This is a 'hard' rerooting -- i.e., changes the tree
         representation so tree traversal behaves as if the tree is rooted at
         'new_seed_node', *and* changes the tree's rooting state.
-        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
-        `bipartition_encoding` attributes will be updated.
+        If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
+        ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_unifurcations` is False, then it will be
+        ``suppress_unifurcations`` is False, then it will be
         removed from the tree.
         """
         self.reseed_at(new_seed_node=new_root_node,
@@ -4380,16 +4380,16 @@ class Tree(
             update_bipartitions=False,
             suppress_unifurcations=True):
         """
-        Takes an internal edge, `edge`, adds a new node to it, and then roots
+        Takes an internal edge, ``edge``, adds a new node to it, and then roots
         the tree on the new node.
-        `length1` and `length2` will be assigned to the new (sub-)edge leading
-        to the old parent of the original edge, while `length2` will be
+        ``length1`` and ``length2`` will be assigned to the new (sub-)edge leading
+        to the old parent of the original edge, while ``length2`` will be
         assigned to the old child of the original edge.
-        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
-        `bipartition_encoding` attributes will be updated.
+        If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
+        ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_unifurcations` is False, then it will be
+        ``suppress_unifurcations`` is False, then it will be
         removed from the tree.
         """
         old_tail = edge.tail_node
@@ -4409,11 +4409,11 @@ class Tree(
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
         Sets the rooted flag on the tree to True.
-        If `update_bipartitions` is True, then the edges' `bipartition` and the tree's
-        `bipartition_encoding` attributes will be updated.
+        If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
+        ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_unifurcations` is False, then it will be
+        ``suppress_unifurcations`` is False, then it will be
         removed from the tree.
         """
         from dendropy.calculate import treemeasure
@@ -4531,12 +4531,12 @@ class Tree(
             resolved.
         update_bipartitions : bool
             If `True`, then bipartitions will be calculated.
-        rng : :class:`random.Random` object or `None`
-            If `rng` is an object with a `sample()` method then the polytomy
+        rng : `random.Random` object or `None`
+            If ``rng`` is an object with a `sample()` method then the polytomy
             will be resolved by sequentially adding, generating all tree
             topologies equiprobably. `rng.sample()` should behave like
             `random.sample()`
-            If `rng` is `None`, then polytomy is broken deterministically by
+            If ``rng`` is `None`, then polytomy is broken deterministically by
             repeatedly joining pairs of children.
         """
         polytomies = []
@@ -4579,7 +4579,7 @@ class Tree(
             update_bipartitions=False,
             suppress_unifurcations=True):
         """
-        Removes subtree starting at `node` from tree.
+        Removes subtree starting at ``node`` from tree.
         """
         if not node:
             raise ValueError("Tried to remove an non-existing or null node")
@@ -4598,23 +4598,23 @@ class Tree(
             update_bipartitions=False,
             suppress_unifurcations=True):
         """
-        Removes all leaves for which `filter_fn` returns `False`. If recursive
+        Removes all leaves for which ``filter_fn`` returns `False`. If recursive
         is `True`, then process is repeated until all leaf nodes in the tree will
-        evaluate to `True` when passed to `filter_fn`.
+        evaluate to `True` when passed to ``filter_fn``.
 
         Parameters
         ----------
-        `filter_fn` : function object
-            A function that takes a :class:`Node` object and returns `True` if
+        ``filter_fn`` : function object
+            A function that takes a `Node` object and returns `True` if
             the object is to be allowed as a leaf node, and `False` if otherwise.
         recursive : bool
             If `True`, then filter is repeatedly applied until all leaf nodes
-            evaluate to `True` under `filter_fn`. If `False`, then only a
+            evaluate to `True` under ``filter_fn``. If `False`, then only a
             single pass is made on the current leaf set. This may result in new
-            leaves for which the `filter_fn` is `False` (e.g., the parent node
+            leaves for which the ``filter_fn`` is `False` (e.g., the parent node
             of a cherry in which both children evaluated to `False`
-            under `filter_fn` now is a leaf node which may be `False`
-            under `filter_fn`).
+            under ``filter_fn`` now is a leaf node which may be `False`
+            under ``filter_fn``).
         suppress_unifurcations : bool
             If `True`, nodes of outdegree 1 will be deleted as they are
             encountered.
@@ -4641,7 +4641,7 @@ class Tree(
             suppress_unifurcations=True):
         """
         Removes all terminal nodes that have their ``taxon`` attribute set to
-        ``None``.
+        `None`.
         """
         for nd in self.leaf_node_iter():
             if nd.taxon is None:
@@ -4654,7 +4654,7 @@ class Tree(
     def prune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
-        `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
+        ``taxa`` (which can be any iterable, including a TaxonNamespace object) from ``self``.
         """
         nodes_to_remove = []
         for nd in self.postorder_node_iter():
@@ -4678,7 +4678,7 @@ class Tree(
             suppress_unifurcations=True):
         """
         Removes terminal nodes that are associated with Taxon objects with
-        labels given by `labels`.
+        labels given by ``labels``.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.prune_taxa(taxa=taxa,
@@ -4705,7 +4705,7 @@ class Tree(
             suppress_unifurcations=True):
         """
         Removes terminal nodes that are not associated with Taxon objects with
-        labels given by `labels`.
+        labels given by ``labels``.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.retain_taxa(taxa=taxa,
@@ -4715,8 +4715,8 @@ class Tree(
     def randomly_reorient(self, rng=None, update_bipartitions=False):
         """
         Randomly picks a new rooting position and rotates the branches around all
-        internal nodes in the `self`. If `update_bipartitions` is True, the the `bipartition_bitmask`
-        and `bipartition_edge_map` attributes kept valid.
+        internal nodes in the ``self``. If ``update_bipartitions`` is True, the the ``bipartition_bitmask``
+        and ``bipartition_edge_map`` attributes kept valid.
         """
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
@@ -4728,7 +4728,7 @@ class Tree(
         self.randomly_rotate(rng=rng)
 
     def randomly_rotate(self, rng=None):
-        "Randomly rotates the branches around all internal nodes in `self`"
+        "Randomly rotates the branches around all internal nodes in ``self``"
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
         internal_nodes = self.internal_nodes()
@@ -4739,8 +4739,8 @@ class Tree(
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is ``False``) or
-        descending (if ``ascending`` is ``False``) order in terms of the number of
+        Sorts child nodes in ascending (if ``ascending`` is `False`) or
+        descending (if ``ascending`` is `False`) order in terms of the number of
         children each child node has.
         """
         node_desc_counts = {}
@@ -4779,7 +4779,7 @@ class Tree(
     ### Ages, depths, branch lengths etc. (mutation)
 
     def scale_edges(self, edge_len_multiplier):
-        """Multiplies every edge length in `self` by `edge_len_multiplier`"""
+        """Multiplies every edge length in ``self`` by ``edge_len_multiplier``"""
         for e in self.postorder_edge_iter():
             if e.length is not None:
                 e.length *= edge_len_multiplier
@@ -4790,7 +4790,7 @@ class Tree(
             ):
         """
         Sets the edge lengths of the tree so that the path lengths from the
-        tips equal the value of the `age` attribute of the nodes.
+        tips equal the value of the ``age`` attribute of the nodes.
 
         Parameters
         ----------
@@ -4821,9 +4821,9 @@ class Tree(
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips. If the lengths of
-        different paths to the node differ by more than `ultrametricity_precision`, then a
+        different paths to the node differ by more than ``ultrametricity_precision``, then a
         ValueError exception will be raised indicating deviation from
-        ultrametricity. If `ultrametricity_precision` is negative or False, then this check
+        ultrametricity. If ``ultrametricity_precision`` is negative or False, then this check
         will be skipped.
         """
         ages = []
@@ -4853,7 +4853,7 @@ class Tree(
         """
         Adds attribute "root_distance" to each node, with value set to the
         sum of edge lengths from the node to the root. Returns list of
-        distances. If `return_leaf_distances_only` is True, then only
+        distances. If ``return_leaf_distances_only`` is True, then only
         leaf distances will be true.
         """
         dists = []
@@ -4889,7 +4889,7 @@ class Tree(
         """
         Returns sum of edge lengths of self. Edges with no lengths defined
         (None) will be considered to have a length of 0.
-        Note that we do not overrride `__len__` as this requires an integer
+        Note that we do not overrride ``__len__`` as this requires an integer
         return value.
         """
         total = 0
@@ -4977,19 +4977,19 @@ class Tree(
             '(A,(B,C))' will be changed to '(A,B,C)' after this.
         suppress_storage : bool
             By default, the bipartition encoding is stored as a list (assigned
-            to `self.bipartition_encoding`) and returned. If `suppress_storage`
+            to ``self.bipartition_encoding``) and returned. If ``suppress_storage``
             is `True`, then the list is not created.
         is_bipartitions_mutable : bool
-            By default, the :class:`Bipartition` instances coded will be locked
+            By default, the `Bipartition` instances coded will be locked
             or frozen, allowing their use in hashing containers such as
             dictionary (keys) and sets. To allow modification of values, the
-            `is_mutable` attribute must be set to `True`.
+            ``is_mutable`` attribute must be set to `True`.
 
         Returns
         -------
-        b : list[:class:`Bipartition`] or `None`
-            A list of :class:`Bipartition` objects of this :class:`Tree`
-            representing the structure of this tree, or, if `suppress_storage`
+        b : list[`Bipartition`] or `None`
+            A list of `Bipartition` objects of this `Tree`
+            representing the structure of this tree, or, if ``suppress_storage``
             is `True`, then `None`.
 
         """
@@ -5161,7 +5161,7 @@ class Tree(
 
     def is_compatible_with_bipartition(self, bipartition, is_bipartitions_updated=False):
         """
-        Returns true if the :class:`Bipartition` `bipartition` is compatible
+        Returns true if the `Bipartition` ``bipartition`` is compatible
         with all bipartitions of this tree.
         """
         if not is_bipartitions_updated or not self.bipartitions_encoding:
@@ -5246,7 +5246,7 @@ class Tree(
 
     def description(self, depth=1, indent=0, itemize="", output=None):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return
@@ -5363,7 +5363,7 @@ class Tree(
 
     def write_ascii_plot(self, stream, **kwargs):
         """
-        Writes an ASCII text graphic of this tree to `stream`.
+        Writes an ASCII text graphic of this tree to ``stream``.
         """
         return stream.write(self.as_ascii_plot(**kwargs))
 
@@ -5377,7 +5377,7 @@ class Tree(
 
     def write_as_dot(self, out, **kwargs):
         """
-        Writes the tree to `out` as a DOT formatted digraph
+        Writes the tree to ``out`` as a DOT formatted digraph
         """
         if not kwargs.get("taxon_namespace"):
             kwargs["taxon_namespace"] = self.taxon_namespace
@@ -5441,7 +5441,7 @@ class Tree(
         """Performs sanity-checks of the tree data structure.
 
         kwargs:
-            `check_bipartitions` if True specifies that the bipartition attributes are checked.
+            ``check_bipartitions`` if True specifies that the bipartition attributes are checked.
         """
         check_bipartitions = kwargs.get('check_bipartitions', False)
         unique_bipartition_edge_mapping = kwargs.get('unique_bipartition_edge_mapping', False)
@@ -5586,7 +5586,7 @@ class AsciiTreePlot(object):
         width : int
             Force a particular display width, in terms of number of columns.
         node_label_compose_fn : function object
-            A function that takes a :class:Node object as an argument and returns
+            A function that takes a Node object as an argument and returns
             the string to be used to display it.
 
         """
@@ -5820,7 +5820,7 @@ def _format_split(split, length=None, **kwargs):
     return bitprocessing.int_as_bitstring(split, length=length)
 
 def _convert_node_to_root_polytomy(nd):
-    """If `nd` has two children and at least on of them is an internal node,
+    """If ``nd`` has two children and at least on of them is an internal node,
     then it will be converted to an out-degree three node (with the edge length
     added as needed).
 

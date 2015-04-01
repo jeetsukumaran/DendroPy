@@ -209,9 +209,9 @@ class NexusCharsSubsetsTest(
 
     def verify_subsets(self, src_filename, expected_sets):
         """
-        `src_filename` -- name of file containing full data and charsets
+        ``src_filename`` -- name of file containing full data and charsets
                           statement
-        `expected_sets` -- dictionary with keys = label of charset, and values
+        ``expected_sets`` -- dictionary with keys = label of charset, and values
                            = name of file with subset of characters correspond
                            to the charset.
         """

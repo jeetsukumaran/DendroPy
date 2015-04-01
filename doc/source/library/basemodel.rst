@@ -23,3 +23,7 @@ The :class:`AnnotationSet` Class
     :members:
 
 
+Supporting Classes
+==================
+.. autoclass:: dendropy.utility.bibtex.BibTexEntry
+    :members:

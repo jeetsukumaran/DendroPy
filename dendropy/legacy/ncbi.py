@@ -59,7 +59,7 @@ def compose_taxon_label_from_gb_defline(gb_defline,
         gbnum_in_front=True,
         exclude_gbnum=False):
     """
-    If `gb_defline` matches a GenBank FASTA-format defline structure, then this returns a
+    If ``gb_defline`` matches a GenBank FASTA-format defline structure, then this returns a
     label:
 
         <GB-ACCESSION-ID><SEPARATOR><DESC_COMPONENT(1)><SEPARATOR><DESC_COMPONENT(2)>...<DESC_COMPONENT(n)>
@@ -72,7 +72,7 @@ def compose_taxon_label_from_gb_defline(gb_defline,
 
         EU105975_Homo_sapiens_Ache
 
-    If `gb_defline` does *not* match a GenBank FASTA-format defline structure, then the string
+    If ``gb_defline`` does *not* match a GenBank FASTA-format defline structure, then the string
     is returned unchanged.
     """
     m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
@@ -95,7 +95,7 @@ def relabel_taxa_from_defline(taxon_set,
         gbnum_in_front=True,
         exclude_gbnum=False):
     """
-    Examines the labels of each `Taxon` object in `taxon_set`, and if
+    Examines the labels of each `Taxon` object in ``taxon_set``, and if
     conforming to a GenBank pattern, translates the labels to a standard
     format:
 
@@ -201,13 +201,13 @@ class Entrez(object):
         dendropy.interop.genbank.GenBankRna, or
         dendropy.interop.genbank.GenBankProtein instead ***
         Instantiates a broker that queries NCBI and returns data.  If
-        ``generate_labels`` is ``True``, then appropriate labels for sequences
+        ``generate_labels`` is `True`, then appropriate labels for sequences
         will be automatically composed for each sequence based on the GenBank
         FASTA defline. ``label_num_desc_components`` specifies the number of
         components from the defline to use. ``label_separator`` specifies the
         string used to separate the different label components.
         ``label_id_in_front`` specifies whether the GenBank accession number
-        should form the beginning (``True``) or tail (``False``) end of the
+        should form the beginning (`True`) or tail (`False`) end of the
         label. ``sort_taxa_by_label`` specifies whether the sequences should be
         sorted by their final label values.
         """
@@ -272,10 +272,10 @@ class Entrez(object):
         """
         Returns a DnaCharacterMatrix object (or some other type, if specified
         by ``matrix_type`` argument) populated with sequences from the Entrez
-        nucleotide database with accession numbers given by `ids` (a list of
-        accession numbers). If `prefix` is given, it is pre-pended to all values
+        nucleotide database with accession numbers given by ``ids`` (a list of
+        accession numbers). If ``prefix`` is given, it is pre-pended to all values
         given in the id list. Any other keyword arguments given are passed to
-        the constructor of ``DnaCharacterMatrix``.
+        the constructor of `DnaCharacterMatrix`.
         **Note that the order of records is *not* the same as the order of ids!!!**
         """
         if prefix is not None:
@@ -319,9 +319,9 @@ class Entrez(object):
         Returns a DnaCharacterMatrix object (or some other type, if specified
         by the ``matrix_type`` argument) populated with sequences from the
         Entrez nucleotide database with accession numbers between ``start``
-        and, up to and *including* ``end``. If `prefix` is given, then it is
+        and, up to and *including* ``end``. If ``prefix`` is given, then it is
         pre-pended to the ids. Any other keyword arguments given are passed to
-        thee constructor of ``DnaCharacterMatrix``.
+        thee constructor of `DnaCharacterMatrix`.
         """
         ids = range(first, last+1)
         return self.fetch_nucleotide_accessions(ids=ids, prefix=prefix, verify=verify, matrix_type=matrix_type, **kwargs)

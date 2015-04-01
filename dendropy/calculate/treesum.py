@@ -36,10 +36,10 @@ class TreeSummarizer(object):
         """
         __init__ kwargs:
 
-            - `support_as_labels` (boolean)
-            - `support_as_edge_lengths` (boolean)
-            - `support_as_percentages` (boolean)
-            - `support_label_decimals` (integer)
+            - ``support_as_labels`` (boolean)
+            - ``support_as_edge_lengths`` (boolean)
+            - ``support_as_percentages`` (boolean)
+            - ``support_label_decimals`` (integer)
         """
         self.support_as_labels = kwargs.get("support_as_labels", True)
         self.support_as_edge_lengths = kwargs.get("support_as_edge_lengths", False)
@@ -54,7 +54,7 @@ class TreeSummarizer(object):
             min_freq=0.5,
             rooted=None,
             include_edge_lengths=True):
-        """Returns a consensus tree from splits in `split_distribution`.
+        """Returns a consensus tree from splits in ``split_distribution``.
 
         If include_edge_length_var is True, then the sample variance of the
             edge length will also be calculated and will be stored as
@@ -177,20 +177,20 @@ class TreeSummarizer(object):
             split_distribution,
             is_bipartitions_updated=False,):
         """
-        Summarizes edge length and age information in `split_distribution` for
-        each node on target tree `tree`.
-        This will result in each node in `tree` being decorated with the following attributes:
-            `age_mean`,
-            `age_median`,
-            `age_sd`,
-            `age_hpd95`,
-            `age_range`,
-        And each edge in `tree` being decorated with the following attributes:
-            `length_mean`,
-            `length_median`,
-            `length_sd`,
-            `length_hpd95`,
-            `length_range`,
+        Summarizes edge length and age information in ``split_distribution`` for
+        each node on target tree ``tree``.
+        This will result in each node in ``tree`` being decorated with the following attributes:
+            ``age_mean``,
+            ``age_median``,
+            ``age_sd``,
+            ``age_hpd95``,
+            ``age_range``,
+        And each edge in ``tree`` being decorated with the following attributes:
+            ``length_mean``,
+            ``length_median``,
+            ``length_sd``,
+            ``length_hpd95``,
+            ``length_range``,
         These attributes will be added to the annotations dictionary to be persisted.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
@@ -229,16 +229,16 @@ class TreeSummarizer(object):
             summarization_fn=None,
             is_bipartitions_updated=False):
         """
-        Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
-        result of `summarization_fn` applied to the vector of ages of the
-        same node on the input trees (in `split_distribution`, a
+        Sets the ``age`` attribute of nodes on ``tree`` (a `Tree` object) to the
+        result of ``summarization_fn`` applied to the vector of ages of the
+        same node on the input trees (in ``split_distribution``, a
         `SplitDistribution` object) being summarized.
-        `summarization_fn` should take an iterable of floats, and return a float. If `None`, it
-        defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
-        If `set_edge_lengths` is `True`, then edge lengths will be set to so that the actual node ages
-        correspond to the `age` attribute value.
-        If `collapse_negative_edges` is True, then edge lengths with negative values will be set to 0.
-        If `allow_negative_edges` is True, then no error will be raised if edges have negative lengths.
+        ``summarization_fn`` should take an iterable of floats, and return a float. If `None`, it
+        defaults to calculating the mean (``lambda x: float(sum(x))/len(x)``).
+        If ``set_edge_lengths`` is `True`, then edge lengths will be set to so that the actual node ages
+        correspond to the ``age`` attribute value.
+        If ``collapse_negative_edges`` is True, then edge lengths with negative values will be set to 0.
+        If ``allow_negative_edges`` is True, then no error will be raised if edges have negative lengths.
         """
         if summarization_fn is None:
             summarization_fn = lambda x: float(sum(x))/len(x)
@@ -276,12 +276,12 @@ class TreeSummarizer(object):
             summarization_fn=None,
             is_bipartitions_updated=False):
         """
-        Sets the lengths of edges on `tree` (a `Tree` object) to the mean
+        Sets the lengths of edges on ``tree`` (a `Tree` object) to the mean
         lengths of the corresponding edges on the input trees (in
-        `split_distribution`, a `SplitDistribution` object) being
+        ``split_distribution``, a `SplitDistribution` object) being
         summarized.
-        `summarization_fn` should take an iterable of floats, and return a float. If `None`, it
-        defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
+        ``summarization_fn`` should take an iterable of floats, and return a float. If `None`, it
+        defaults to calculating the mean (``lambda x: float(sum(x))/len(x)``).
         """
         if summarization_fn is None:
             summarization_fn = lambda x: float(sum(x))/len(x)
@@ -349,8 +349,8 @@ class TreeSummarizer(object):
 
     def consensus_tree(self, trees, min_freq=0.5, is_bipartitions_updated=False):
         """
-        Returns a consensus tree of all trees in `trees`, with minumum frequency
-        of split to be added to the consensus tree given by `min_freq`.
+        Returns a consensus tree of all trees in ``trees``, with minumum frequency
+        of split to be added to the consensus tree given by ``min_freq``.
         """
         taxon_namespace = trees[0].taxon_namespace
         split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
@@ -365,8 +365,8 @@ class TreeSummarizer(object):
 
 def consensus_tree(trees, min_freq=0.5, is_bipartitions_updated=False, **kwargs):
     """
-    Returns a consensus tree of all trees in `trees`, with minumum frequency
-    of split to be added to the consensus tree given by `min_freq`.
+    Returns a consensus tree of all trees in ``trees``, with minumum frequency
+    of split to be added to the consensus tree given by ``min_freq``.
     """
     tsum = TreeSummarizer(**kwargs)
     return tsum.consensus_tree(trees,

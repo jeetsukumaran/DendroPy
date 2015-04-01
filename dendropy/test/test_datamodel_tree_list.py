@@ -603,7 +603,7 @@ class TreeListIdentity(unittest.TestCase):
         self.t3 = dendropy.TreeList(label="a")
 
     def test_equal(self):
-        # two distinct :class:`TreeList` objects are equal
+        # two distinct `TreeList` objects are equal
         # if they have the same namespace and trees
         trees = [dendropy.Tree() for i in range(5)]
         for tree in trees:
@@ -612,7 +612,7 @@ class TreeListIdentity(unittest.TestCase):
         self.assertEqual(self.t1, self.t2)
 
     def test_unequal1(self):
-        # two distinct :class:`TreeList` objects are equal
+        # two distinct `TreeList` objects are equal
         # if they have the same namespace and trees
         trees1 = [dendropy.Tree() for i in range(5)]
         for tree in trees1:
@@ -623,7 +623,7 @@ class TreeListIdentity(unittest.TestCase):
         self.assertNotEqual(self.t1, self.t2)
 
     def test_unequal2(self):
-        # two distinct :class:`TreeList` objects are equal
+        # two distinct `TreeList` objects are equal
         # if they have the same namespace and trees
         trees1 = [dendropy.Tree() for i in range(5)]
         for tree in trees1:

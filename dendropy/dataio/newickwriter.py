@@ -85,13 +85,13 @@ class NewickWriter(ioservice.DataWriter):
             and referenced in tree statements (instead of using the taxon
             labels). If `True`, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be :class:`Taxon` objects and the
+            given, then the keys should be `Taxon` objects and the
             values should be the token (strings).
         suppress_annotations : boolean, default: `True`
             If `False`, metadata annotations will be written out as special
             comments. Defaults to `True`: metadata annotations will be ignored.
         annotations_as_nhx : boolean, default: `False`
-            If `True`, and if `suppress_annotations` is `False`, will write
+            If `True`, and if ``suppress_annotations`` is `False`, will write
             annotation as NHX statements. Default is `False`: annotations
             will not be written as NHX statements.
         suppress_item_comments : boolean, default: `True`
@@ -99,31 +99,31 @@ class NewickWriter(ioservice.DataWriter):
             edges, etc. will be written. Default is `True`: comments will be
             ignored.
         node_label_element_separator : string, default: ' '
-            If both `suppress_leaf_taxon_labels` and
-            `suppress_leaf_node_labels` are `False`, then this will be the
+            If both ``suppress_leaf_taxon_labels`` and
+            ``suppress_leaf_node_labels`` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
         node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a :class:`Node`
+            If not `None`, should be a function that takes a `Node`
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
-            labelling function, ignoring `suppress_leaf_taxon_labels`,
-            `suppress_leaf_node_labels=True`, `suppress_internal_taxon_labels`,
-            `suppress_internal_node_labels`, etc. Defaults to `None`.
+            labelling function, ignoring ``suppress_leaf_taxon_labels``,
+            `suppress_leaf_node_labels=True`, ``suppress_internal_taxon_labels``,
+            ``suppress_internal_node_labels``, etc. Defaults to `None`.
         edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
         real_value_format_specifier : string, default: ''
             Format specification for real/float values. Will be applied to edge
-            lengths (if `edge_label_compose_fn` is not given) as well as
+            lengths (if ``edge_label_compose_fn`` is not given) as well as
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
 
         Typically, these keywords would be passed to the `write_to_path()`,
-        `write_to_stream` or `as_string` arguments, when 'newick' is used as
+        ``write_to_stream`` or ``as_string`` arguments, when 'newick' is used as
         the schema::
 
             d.write_to_path('outputfile.tre',
@@ -155,18 +155,18 @@ class NewickWriter(ioservice.DataWriter):
         In a NEWICK string, however, no such distinction is possible, and
         any one node can only be rendered with a single token or symbol. Thus,
         if there is more than one source of label available for a particular
-        node (e.g., if both `suppress_leaf_taxon_labels` and
-        `suppress_leaf_node_labels` are `False`, and a particular leaf
+        node (e.g., if both ``suppress_leaf_taxon_labels`` and
+        ``suppress_leaf_node_labels`` are `False`, and a particular leaf
         node has both a taxon *and* a label associated with it), then
         the node symbol will be rendered as concatenation of the unsuppressed
         candidate labels, with each candidate label separated by the value
-        given in `node_label_element_separator`. Note that this concatenated
+        given in ``node_label_element_separator``. Note that this concatenated
         label requires special handling when being re-read to avoid being
         interpreted as the operational taxonomic unit concept label in
         its entirety. These defaults can all be overridden using the
         various keywords, or a custom label can be composed for the
         node by passing an appropriate function object via the
-        `node_label_compose_fn` argument.
+        ``node_label_compose_fn`` argument.
 
         Note that, in typical NEWICK usage, labels of leaf nodes represent
         operational taxonomic unit concepts, and thus the default setting to
@@ -259,7 +259,7 @@ class NewickWriter(ioservice.DataWriter):
 
     def _write_tree_list(self, stream, tree_list):
         """
-        Writes a `TreeList` in NEWICK schema to `stream`.
+        Writes a `TreeList` in NEWICK schema to ``stream``.
         """
         for tree in tree_list:
             self._write_tree(stream, tree)
@@ -282,7 +282,7 @@ class NewickWriter(ioservice.DataWriter):
 
     def _write_tree(self, stream, tree):
         """
-        Composes and writes `tree` to `stream`.
+        Composes and writes ``tree`` to ``stream``.
         """
         if tree.rooting_state_is_undefined or self.suppress_rooting:
             rooting = ""

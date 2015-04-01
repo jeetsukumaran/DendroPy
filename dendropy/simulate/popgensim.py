@@ -45,11 +45,11 @@ class FragmentedPopulations(object):
         """
         __init__ arguments:
 
-            - `div_time_gens` : generations since divergence,
-            - `num_desc_pops` : number of descendent populations,
-            - `mutrate_per_site_per_generation` : sequence mutation rate, per-site per-generation
-            - `desc_diploid_pop_size` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)
-            - `rng` : random number generator
+            - ``div_time_gens`` : generations since divergence,
+            - ``num_desc_pops`` : number of descendent populations,
+            - ``mutrate_per_site_per_generation`` : sequence mutation rate, per-site per-generation
+            - ``desc_diploid_pop_size`` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)
+            - ``rng`` : random number generator
         """
         self.div_time_gens = div_time_gens
         self.num_desc_pops = num_desc_pops
@@ -113,8 +113,8 @@ class FragmentedPopulations(object):
     def generate_gene_tree(self, species_name, samples_per_pop=10):
         """
         Given:
-            `species_name` : string identifying species/taxon
-            `samples_per_pop` : number of samples (genes) per population
+            ``species_name`` : string identifying species/taxon
+            ``samples_per_pop`` : number of samples (genes) per population
         Returns:
             DendroPy tree, with branch lengths in generations
         """
@@ -148,14 +148,14 @@ def pop_gen_tree(tree=None,
     population sizes and leaf nodes decorated by the number of genes
     (samples or lineages) in each leaf.
 
-    If `tree` is given, then this is used as the tree to be decorated.
+    If ``tree`` is given, then this is used as the tree to be decorated.
     Otherwise, a Yule tree is generated based on the given taxon_namespace.
-    Either `tree` or `taxon_namespace` must be given.
+    Either ``tree`` or ``taxon_namespace`` must be given.
 
     The timing of the divergences can be controlled by specifying a vector of
-    ages, `ages`. This should be sequences of values specifying the ages of the
+    ages, ``ages``. This should be sequences of values specifying the ages of the
     first, second, third etc. divergence events, in terms of time from the
-    present, specified either in generations (if the `pop_sizes` vector is
+    present, specified either in generations (if the ``pop_sizes`` vector is
     given) or population units (if the pop_size vector is not given).
     If an ages vector is given and there are less than num_pops-1 of these,
     then an exception is raised.
@@ -165,7 +165,7 @@ def pop_gen_tree(tree=None,
     If it is an integer, all the population get the same number of
     genes. If it is a list, it must be at least as long as num_pops.
 
-    The population sizes of each edge can be specified using the `pop_sizes`
+    The population sizes of each edge can be specified using the ``pop_sizes``
     vector, which should be a sequence of values specifying the population
     sizes of the edges in postorder. If the pop_size vector is given, then it
     must be at least as long as there are branches on a tree, i.e. 2 * num_pops
@@ -174,7 +174,7 @@ def pop_gen_tree(tree=None,
     * N in a diploid population of N individuals, or N in a haploid population
     * of N individuals.
 
-    If `pop_size` is 1 or 0 or None, then edge lengths of the tree are in
+    If ``pop_size`` is 1 or 0 or None, then edge lengths of the tree are in
     haploid population units; i.e. where 1 unit of time equals 2N generations
     for a diploid population of size N, or N generations for a haploid
     population of size N. Otherwise edge lengths of the tree are in

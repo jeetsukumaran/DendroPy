@@ -17,9 +17,9 @@
 ##############################################################################
 
 """
-This module defines the :class:`DataSet`: a top-level data container object
-that manages collections of :class:`TaxonNamespace`, :class:`TreeList`, and
-(various kinds of) :class:`CharacterMatrix` objects.
+This module defines the `DataSet`: a top-level data container object
+that manages collections of `TaxonNamespace`, `TreeList`, and
+(various kinds of) `CharacterMatrix` objects.
 """
 
 import warnings
@@ -49,31 +49,31 @@ class DataSet(
         basemodel.DataObject):
     """
     A phylogenetic data object that coordinates collections of
-    :class:`TaxonNamespace`, :class:`TreeList`, and (various kinds of)
-    :class:`CharacterMatrix` objects.
+    `TaxonNamespace`, `TreeList`, and (various kinds of)
+    `CharacterMatrix` objects.
 
-    A :class:`DataSet` has three attributes:
+    A `DataSet` has three attributes:
 
-        `taxon_namespaces`
-            A list of :class:`TaxonNamespace` objects, each representing
+        ``taxon_namespaces``
+            A list of `TaxonNamespace` objects, each representing
             a distinct namespace for operational taxononomic unit concept
             definitions.
 
-        `tree_lists`
-            A list of :class:`TreeList` objects, each representing a
-            collection of :class:`Tree` objects.
+        ``tree_lists``
+            A list of `TreeList` objects, each representing a
+            collection of `Tree` objects.
 
-        `char_matrices`
-            A list of :class:`CharacterMatrix`-derived objects (e.g.
-            :class:`DnaCharacterMatrix`).
+        ``char_matrices``
+            A list of `CharacterMatrix`-derived objects (e.g.
+            `DnaCharacterMatrix`).
 
-    Multiple :class:`TaxonNamespace` objects within a :class:`DataSet` are
+    Multiple `TaxonNamespace` objects within a `DataSet` are
     allowed so as to support reading/loading of data from external sources that
     have multiple independent taxon namespaces defined within the same source
     or document (e.g., a Mesquite file with multiple taxa blocks, or a NeXML
     file with multiple OTU sections). Ideally, however, this would not
     be how data is managed. Recommended idiomatic usage would be to use a
-    :class:`DataSet` to manage multiple types of data that all share and
+    `DataSet` to manage multiple types of data that all share and
     reference the same, single taxon namespace.
 
     This convention can be enforced by setting the DataSet instance to
@@ -90,16 +90,16 @@ class DataSet(
     Note that unless there is a need to collect and serialize a collection of
     data to the same file or external source, it is probably better
     semantically to use more specific data structures (e.g., a
-    :class:`TreeList` object for trees or a :class:`DnaCharacterMatrix`
+    `TreeList` object for trees or a `DnaCharacterMatrix`
     object for an alignment). Similarly, when deserializing an external
     data source, if just a single type or collection of data is needed (e.g.,
     the collection of trees from a file that includes both trees and an
     alignment), then it is semantically cleaner to deserialize the data
-    into a more specific structure (e.g., a :class:`TreeList` to get all the
+    into a more specific structure (e.g., a `TreeList` to get all the
     trees). However, when deserializing a mixed external data source
     with, e.g. multiple alignments or trees and one or more alignments, and you
     need to access/use more than a single collection, it is more efficient to
-    read the entire data source at once into a :class:`DataSet` object and then
+    read the entire data source at once into a `DataSet` object and then
     independently extract the data objects as you need them from the various
     collections.
 
@@ -110,8 +110,8 @@ class DataSet(
             schema,
             **kwargs):
         """
-        Constructs a new :class:`DataSet` object and populates it with data
-        from file-like object `stream`.
+        Constructs a new `DataSet` object and populates it with data
+        from file-like object ``stream``.
         """
         exclude_trees = kwargs.pop("exclude_trees", False)
         exclude_chars = kwargs.pop("exclude_chars", False)
@@ -138,13 +138,13 @@ class DataSet(
     def __init__(self, *args, **kwargs):
         """
         The constructor can take one argument. This can either be another
-        :class:`DataSet` instance or an iterable of :class:`TaxonNamespace`,
-        :class:`TreeList`, or :class:`CharacterMatrix`-derived instances.
+        `DataSet` instance or an iterable of `TaxonNamespace`,
+        `TreeList`, or `CharacterMatrix`-derived instances.
 
-        In the former case, the newly-constructed :class:`DataSet` will be a
+        In the former case, the newly-constructed `DataSet` will be a
         shallow-copy clone of the argument.
 
-        In the latter case, the newly-constructed :class:`DataSet` will have
+        In the latter case, the newly-constructed `DataSet` will have
         the elements of the iterable added to the respective collections
         (``taxon_namespaces``, ``tree_lists``, or ``char_matrices``, as
         appropriate). This is essentially like calling :meth:`DataSet.add()`
@@ -204,7 +204,7 @@ class DataSet(
         if (self.attached_taxon_namespace is not None
                 and taxon_namespace is not None
                 and self.attached_taxon_namespace is not taxon_namespace):
-            raise ValueError("DataSet has attached TaxonNamespace that is not the same as `taxon_namespace`")
+            raise ValueError("DataSet has attached TaxonNamespace that is not the same as ``taxon_namespace``")
         if self.attached_taxon_namespace is not None and taxon_namespace is None:
             taxon_namespace = self.attached_taxon_namespace
         label = kwargs.pop("label", None)
@@ -234,8 +234,8 @@ class DataSet(
             exclude_chars=False,
             **kwargs):
         """
-        Writes out `self` in `schema` format to a destination given by
-        file-like object `stream`.
+        Writes out ``self`` in ``schema`` format to a destination given by
+        file-like object ``stream``.
 
         Parameters
         ----------
@@ -279,13 +279,13 @@ class DataSet(
     def add_taxon_namespace(self, taxon_namespace):
         """
         Adds a taxonomic unit concept namespace represented by a
-        :class:`TaxonNamespace` instance to this dataset if it is not already
+        `TaxonNamespace` instance to this dataset if it is not already
         there.
 
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace`
-            The :class:`TaxonNamespace` object to be added.
+        taxon_namespace : `TaxonNamespace`
+            The `TaxonNamespace` object to be added.
         """
         self.taxon_namespaces.add(taxon_namespace)
         return taxon_namespace
@@ -302,12 +302,12 @@ class DataSet(
     def attach_taxon_namespace(self, taxon_namespace=None):
         """
         Forces all read() calls of this DataSet to use the same TaxonSet. If
-        `taxon_namespace` If `taxon_namespace` is None, then a new TaxonSet will be
+        ``taxon_namespace`` If ``taxon_namespace`` is None, then a new TaxonSet will be
         created, added to self.taxa, and that is the TaxonSet that will be
         attached.
         """
         if taxon_namespace is None:
-            raise TypeError("Automatic creation of a new TaxonNamespace is no longer supported: `taxon_namespace` argument required to be passed a valid 'TaxonNamespace' instance. E.g.,:\n\n    taxon_namespace = dendropy.TaxonNamespace()\n    dataset.attach_taxon_namespace(taxon_namespace)\n")
+            raise TypeError("Automatic creation of a new TaxonNamespace is no longer supported: ``taxon_namespace`` argument required to be passed a valid 'TaxonNamespace' instance. E.g.,:\n\n    taxon_namespace = dendropy.TaxonNamespace()\n    dataset.attach_taxon_namespace(taxon_namespace)\n")
             taxon_namespace = self.new_taxon_namespace()
         if type(taxon_namespace) == type(True):
             raise ValueError("attach_taxon_namespace() no longer accepts a bool argument: a valid 'TaxonNamespace' instance is required")
@@ -326,16 +326,16 @@ class DataSet(
         The following idioms are supported:
 
             `taxon_namespace=tns`
-                Attach `tns` as the bound (single, unified) taxonomic namespace
+                Attach ``tns`` as the bound (single, unified) taxonomic namespace
                 reference for all objects.
             `attached_taxon_namespace=tns`
-                Attach `tns` as the bound (single, unified) taxonomic namespace
+                Attach ``tns`` as the bound (single, unified) taxonomic namespace
                 reference for all objects.
             `attach_taxon_namespace=True, attached_taxon_namespace=tns`
-                Attach `tns` as the bound (single, unified) taxonomic namespace
+                Attach ``tns`` as the bound (single, unified) taxonomic namespace
                 reference for all objects.
             `attach_taxon_namespace=True`
-                Create a *new* :class:`TaxonNamespace` and set it as the bound
+                Create a *new* `TaxonNamespace` and set it as the bound
                 (single, unified) taxonomic namespace reference for all
                 objects.
         """
@@ -449,13 +449,13 @@ class DataSet(
 
     def add_tree_list(self, tree_list):
         """
-        Adds a :class:`TreeList` instance to this dataset if it is not already
+        Adds a `TreeList` instance to this dataset if it is not already
         there.
 
         Parameters
         ----------
-        tree_list : :class:`TreeList`
-            The :class:`TreeList` object to be added.
+        tree_list : `TreeList`
+            The `TreeList` object to be added.
         """
         if tree_list.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(tree_list.taxon_namespace)
@@ -464,19 +464,19 @@ class DataSet(
 
     def new_tree_list(self, *args, **kwargs):
         """
-        Creates a new :class:`TreeList` instance, adds it to this DataSet.
+        Creates a new `TreeList` instance, adds it to this DataSet.
 
         Parameters
         ----------
         \*args : positional arguments
-            Passed directly to :class:`TreeList` constructor.
+            Passed directly to `TreeList` constructor.
         \*\*kwargs : keyword arguments, optional
-            Passed directly to :class:`TreeList` constructor.
+            Passed directly to `TreeList` constructor.
 
         Returns
         -------
-        t : :class:`TreeList`
-            The new :class:`TreeList` instance created.
+        t : `TreeList`
+            The new `TreeList` instance created.
         """
         if self.attached_taxon_namespace is not None:
             if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
@@ -500,13 +500,13 @@ class DataSet(
 
     def add_char_matrix(self, char_matrix):
         """
-        Adds a :class:`CharacterMatrix` or :class:`CharacterMatrix`-derived
+        Adds a `CharacterMatrix` or `CharacterMatrix`-derived
         instance to this dataset if it is not already there.
 
         Parameters
         ----------
-        char_matrix : :class:`CharacterMatrix`
-            The :class:`CharacterMatrix` object to be added.
+        char_matrix : `CharacterMatrix`
+            The `CharacterMatrix` object to be added.
         """
         if char_matrix.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(char_matrix.taxon_namespace)
@@ -516,7 +516,7 @@ class DataSet(
     def new_char_matrix(self, char_matrix_type, *args, **kwargs):
         """
         Creation and accession of new `CharacterMatrix` (of class
-        `char_matrix_type`) into `chars` of self."
+        ``char_matrix_type``) into ``chars`` of self."
         """
         if self.attached_taxon_namespace is not None:
             if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:

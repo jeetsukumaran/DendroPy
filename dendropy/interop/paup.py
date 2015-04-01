@@ -209,9 +209,9 @@ class PaupService(object):
             Path of file containing TAXA block to execute. This is crucial to
             getting the taxon order (and hence, indexes, and hence, split
             bitmasks) correct. If not given, will use the first file
-            given in `tree_filepaths`.
-        taxon_namespace : :class:`TaxonNamespace`
-            The :class:`TaxonNamespace` object to populate.
+            given in ``tree_filepaths``.
+        taxon_namespace : `TaxonNamespace`
+            The `TaxonNamespace` object to populate.
 
         Returns
         -------
@@ -223,7 +223,7 @@ class PaupService(object):
                 -   "bipartition_frequencies" : dictionary with split bitmasks as keys
                     and (weighted) proportional frequencies of occurrences as values
                 -   "num_trees" : number of trees counted
-                -   "taxon_namespace" : :class:`TaxonNamespace` instance
+                -   "taxon_namespace" : `TaxonNamespace` instance
                     corresponding to the taxa <=> split bitmask mapping
                 -   "is_rooted" : indicates whether the trees were rooted or not
         """
@@ -285,11 +285,11 @@ class PaupService(object):
             Path of file containing TAXA block to execute. This is crucial to
             getting the taxon order (and hence, indexes, and hence, split
             bitmasks) correct. If not given, will use the first file
-            given in `tree_filepaths`.
-        taxon_namespace : :class:`TaxonNamespace`
-            :class:`TaxonNamespace` object to use.
-        split_distribution : :class:`SplitDistribution`
-            :class:`SplitDistribution object to use.
+            given in ``tree_filepaths``.
+        taxon_namespace : `TaxonNamespace`
+            `TaxonNamespace` object to use.
+        split_distribution : `SplitDistribution`
+            `SplitDistribution object to use.
         """
         if split_distribution is None:
             split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
@@ -417,7 +417,7 @@ class PaupService(object):
     def parse_taxon_namespace(self, paup_output, taxon_namespace=None):
         """
         Given PAUP* output that includes a taxon listing as produced by
-        `stage_list_taxa`, this parses out and returns a taxon block.
+        ``stage_list_taxa``, this parses out and returns a taxon block.
         """
         taxlabels = []
         taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
@@ -442,7 +442,7 @@ class PaupService(object):
     def parse_is_tree_rooted(self, paup_output):
         """
         Given PAUP* output that includes a information produced by
-        `stage_tree_info`, this parses out and returns the rooting
+        ``stage_tree_info``, this parses out and returns the rooting
         state of trees in memory
         """
         pattern = re.compile(r'\d+ (\w+) trees in memory')
@@ -688,7 +688,7 @@ def estimate_tree(char_matrix,
                     extra_post_est_commands=None,
                     paup_path='paup'):
     """
-    Given a dataset, `char_matrix`, estimates a tree using the given criterion.
+    Given a dataset, ``char_matrix``, estimates a tree using the given criterion.
     """
     paup_args = {
         'nst': num_states,
@@ -761,7 +761,7 @@ def estimate_model(char_matrix,
                     tree_user_brlens=True,
                     paup_path='paup'):
     """
-    Given a dataset, `char_matrix`, uses client-supplied tree or estimates a
+    Given a dataset, ``char_matrix``, uses client-supplied tree or estimates a
     tree, and character substitution model for the data.
     Returns a tuple, consisting of a trees block with the tree(s) used for the
     estimated character model, and a dictionary with estimates of rates, kappa,
@@ -851,7 +851,7 @@ def estimate_model(char_matrix,
 
 def prune_taxa_from_trees(trees, taxa, paup_path='paup'):
     """
-    Drops Taxon objects given in container `taxa` from TreeList `trees`
+    Drops Taxon objects given in container ``taxa`` from TreeList ``trees``
     """
     tf = tempfile.NamedTemporaryFile("w", delete=True)
     trees.write_to_stream(tf, schema='nexus')
@@ -943,7 +943,7 @@ class PaupSession(processio.Session):
 
     def read_data(self, data):
         """
-        Writes `data` as NEXUS-formatted file and
+        Writes ``data`` as NEXUS-formatted file and
         executes file within processio.
         """
         cf = tempfile.NamedTemporaryFile("w", delete=True)

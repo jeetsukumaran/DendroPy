@@ -74,10 +74,10 @@ def indexes_of_set_bits(s, fill_bitmask=-1, one_based=False, ordination_in_mask=
 
 def iter_set_bit_indexes(s, fill_bitmask=-1, one_based=False, ordination_in_mask=False):
     """
-    Returns the index of each bit that is on in `s` and the `fill_bitmask`
+    Returns the index of each bit that is on in ``s`` and the ``fill_bitmask``
 
         If 'one_based` is True then the 0x01 bit is returned as 1 instead of 0.
-        If `ordination_in_mask` is True then the indices returned will be the
+        If ``ordination_in_mask`` is True then the indices returned will be the
             count of the 1's in the fill_bitmask that are to the right of the bit rather
             than the total number of digits to the right of the bit. Thus, the
             index will be the index in a taxon block that is the subset of the

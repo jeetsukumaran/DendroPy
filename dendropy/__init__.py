@@ -16,12 +16,6 @@
 ##
 ##############################################################################
 
-"""
-Imports into the `dendropy` namespace all fundamental
-classes and methods for instantiating objects in the
-`dendropy.dataobject` subpackage to for usage by client code.
-"""
-
 ###############################################################################
 ## Populate the 'dendropy' namespace
 

@@ -50,8 +50,8 @@ class TreeList(
         basemodel.Writeable,
         basemodel.DataObject):
     """
-    A collection of :class:`Tree` objects, all referencing the same "universe" of
-    opeational taxonomic unit concepts through the same :class:`TaxonNamespace`
+    A collection of `Tree` objects, all referencing the same "universe" of
+    opeational taxonomic unit concepts through the same `TaxonNamespace`
     object reference.
     """
 
@@ -62,14 +62,14 @@ class TreeList(
             tree_offset=None,
             **kwargs):
         """
-        Constructs a new :class:`TreeList` object and populates it with trees from
-        file-like object `stream`.
+        Constructs a new `TreeList` object and populates it with trees from
+        file-like object ``stream``.
 
         Notes
         -----
         *All* operational taxonomic unit concepts in the data source will be included
-        in the :class:`TaxonNamespace` object associated with the new
-        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        in the `TaxonNamespace` object associated with the new
+        `TreeList` object and its contained `Tree` objects, even those
         not associated with trees or the particular trees being retrieved.
 
         Parameters
@@ -79,20 +79,20 @@ class TreeList(
             Source of data.
 
         schema : string
-            Identifier of format of data in `stream`
+            Identifier of format of data in ``stream``
 
         collection_offset : integer or None
             0-based index indicating collection of trees to parse. If `None`,
             then all tree collections are retrieved, with each distinct
-            collection parsed into a separate :class:`TreeList` object. If the
+            collection parsed into a separate `TreeList` object. If the
             tree colleciton offset index is equal or greater than the number of
             tree collections in the data source, then IndexError is raised.
             Negative offsets work like negative list indexes; e.g., a
-            `collection_offset` of -1 means to read the last collection of
+            ``collection_offset`` of -1 means to read the last collection of
             trees in the data source. For data formats that do not support the
             concept of distinct tree collections (e.g. NEWICK) are considered
             single-collection data source (i.e, the only acceptable
-            `collection_offset` values are -1 or 0).
+            ``collection_offset`` values are -1 or 0).
 
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
@@ -100,43 +100,43 @@ class TreeList(
             `None` (default), then all trees are parsed.  Otherwise, must be an
             integer value up the length of the collection minus 1.  A positive
             offset indicates the number of trees in the collection to skip;
-            e.g. a `tree_offset` of 20 means to skip the first 20 trees in the
+            e.g. a ``tree_offset`` of 20 means to skip the first 20 trees in the
             collection.  Negative offsets work like negative list indexes;
-            e.g., a `tree_offset` value of -10 means to retrieve the last 10
+            e.g., a ``tree_offset`` value of -10 means to retrieve the last 10
             trees in the collection.  If the tree offset index is equal or
             greater than the number of trees in the collection, then IndexError
             is raised. Requires that a particular tree collection has been
-            identified using the `tree_collection_offset` parameter: if
-            `tree_collection_offset` is not specified, a `TypeError` is raised.
+            identified using the ``tree_collection_offset`` parameter: if
+            ``tree_collection_offset`` is not specified, a TypeError is raised.
 
         \*\*kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
-            accession of :class:`Tree` objects read from the data source, including
+            accession of `Tree` objects read from the data source, including
             schema- or format-specific handling.
 
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                * `label` Specifies the label or description of the new
-                  :class:`TreeList`.
-                * `taxon_namespace` specifies the :class:`TaxonNamespace`
-                   object to be attached to the new :class:`TreeList` object.
+                * ``label`` Specifies the label or description of the new
+                  `TreeList`.
+                * ``taxon_namespace`` specifies the `TaxonNamespace`
+                   object to be attached to the new `TreeList` object.
                    Note that *all* operational taxonomic unit concepts in the
                    data source will be accessioned into the specified
-                   :class:`TaxonNamespace` instance. This includes the
+                   `TaxonNamespace` instance. This includes the
                    operation taxonomic unit definitions associated with all
                    tree collections and character matrices in the data source.
-                * `tree_list` : **SPECIAL** If passed a :class:`TreeList` using
+                * ``tree_list`` : **SPECIAL** If passed a `TreeList` using
                   this keyword, then this instance is populated and returned
                   (instead of a new instance being created).
 
             All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
-            of the reader specialized to handle `schema` formats.
+            of the reader specialized to handle ``schema`` formats.
 
         Notes
         -----
-        Note that in most cases, even if `collection_offset` and `tree_offset`
+        Note that in most cases, even if ``collection_offset`` and ``tree_offset``
         are specified to restrict the trees returned, the *entire* data source
         is still parsed and processed. So this is not more efficient than
         reading all the trees and then manually-extracting them later; just
@@ -147,7 +147,7 @@ class TreeList(
 
         Returns
         -------
-        A :class:`TreeList` object.
+        A `TreeList` object.
 
         """
         # these must be pulled before passing the kwargs
@@ -165,7 +165,7 @@ class TreeList(
 
         if collection_offset is None:
             if tree_offset is not None:
-                raise TypeError("Cannot specify `tree_offset` without specifying `collection_offset`")
+                raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
             # coerce all tree products into this list
             reader.read_tree_lists(
                         stream=stream,
@@ -212,28 +212,28 @@ class TreeList(
 
     def tree_factory(cls, *args, **kwargs):
         """
-        Creates and returns a :class:`Tree` of a type that this list understands how to
+        Creates and returns a `Tree` of a type that this list understands how to
         manage.
 
         Deriving classes can override this to provide for custom Tree-type
         object lists. You can simple override the class-level variable
         `DEFAULT_TREE_TYPE` in your derived class if the constructor signature
-        of the alternate tree type is the same as `:class:Tree`.
+        of the alternate tree type is the same as `Tree`.
         If you want to have a TreeList *instance* that generates
         custom trees (i.e., as opposed to a TreeList-ish *class* of instances),
-        set the `tree_type` attribute of the TreeList instance.
+        set the ``tree_type`` attribute of the TreeList instance.
 
         Parameters
         ----------
         \*args : positional arguments
-            Passed directly to constructor of :class:`Tree`.
+            Passed directly to constructor of `Tree`.
 
         \*\*kwargs : keyword arguments
-            Passed directly to constructor of :class:`Tree`.
+            Passed directly to constructor of `Tree`.
 
         Returns
         -------
-        A :class:`Tree` object.
+        A `Tree` object.
 
         """
         tree = cls.DEFAULT_TREE_TYPE(*args, **kwargs)
@@ -245,20 +245,20 @@ class TreeList(
 
     def __init__(self, *args, **kwargs):
         """
-        Constructs a new :class:`TreeList` object, populating it with any iterable
+        Constructs a new `TreeList` object, populating it with any iterable
         container with Tree object members passed as unnamed argument, or from
-        a data source if `stream` and `schema` are passed.
+        a data source if ``stream`` and ``schema`` are passed.
 
         If passed an iterable container, the objects in that container must be
-        of type :class:`Tree` (or derived). If the container is of type :class:`TreeList`,
-        then, because each :class:`Tree` object must have the same :class:`TaxonNamespace`
-        reference as the containing :class:`TreeList`, the trees in the container
+        of type `Tree` (or derived). If the container is of type `TreeList`,
+        then, because each `Tree` object must have the same `TaxonNamespace`
+        reference as the containing `TreeList`, the trees in the container
         passed as an initialization argument will be **deep**-copied (except
-        for associated :class:`TaxonNamespace` and :class:`Taxon` objects, which will
+        for associated `TaxonNamespace` and `Taxon` objects, which will
         be shallow-copied). If the container is any other type of
-        iterable, then the :class:`Tree` objects will be **shallow**-copied.
+        iterable, then the `Tree` objects will be **shallow**-copied.
 
-        :class:`TreeList` objects can directly thus be instantiated in the
+        `TreeList` objects can directly thus be instantiated in the
         following ways::
 
             # /usr/bin/env python
@@ -392,7 +392,7 @@ class TreeList(
     def taxon_namespace_scoped_copy(self, memo=None):
         if memo is None:
             memo = {}
-        # this populates `memo` with references to the
+        # this populates ``memo`` with references to the
         # the TaxonNamespace and Taxon objects
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
@@ -411,8 +411,8 @@ class TreeList(
 
     def _taxon_namespace_pseudofactory(self, **kwargs):
         """
-        Dummy factory to coerce all :class:`TaxonNamespace` objects required when
-        parsing a data source to reference `self.taxon_namespace`.
+        Dummy factory to coerce all `TaxonNamespace` objects required when
+        parsing a data source to reference ``self.taxon_namespace``.
         """
         if "label" in kwargs and kwargs["label"] is not None and self.taxon_namespace.label is None:
             self.taxon_namespace.label = kwargs["label"]
@@ -420,8 +420,8 @@ class TreeList(
 
     def _tree_list_pseudofactory(self, **kwargs):
         """
-        Dummy factory to coerce all :class:`TreeList` objects required when
-        parsing a data source to reference `self`.
+        Dummy factory to coerce all `TreeList` objects required when
+        parsing a data source to reference ``self``.
         """
         if "label" in kwargs and kwargs["label"] is not None and self.label is None:
             self.label = kwargs["label"]
@@ -434,13 +434,13 @@ class TreeList(
             tree_offset=None,
             **kwargs):
         """
-        Parses :class:`Tree` objects from data source and adds to this collection.
+        Parses `Tree` objects from data source and adds to this collection.
 
         Notes
         -----
         *All* operational taxonomic unit concepts in the data source will be included
-        in the :class:`TaxonNamespace` object associated with the new
-        :class:`TreeList` object and its contained :class:`Tree` objects, even those
+        in the `TaxonNamespace` object associated with the new
+        `TreeList` object and its contained `Tree` objects, even those
         not associated with trees or the particular trees being retrieved.
 
         Parameters
@@ -450,20 +450,20 @@ class TreeList(
             Source of data.
 
         schema : string
-            Identifier of format of data in `stream`.
+            Identifier of format of data in ``stream``.
 
         collection_offset : integer or None
             0-based index indicating collection of trees to parse. If `None`,
             then all tree collections are retrieved, with each distinct
-            collection parsed into a separate :class:`TreeList` object. If the
+            collection parsed into a separate `TreeList` object. If the
             tree colleciton offset index is equal or greater than the number of
             tree collections in the data source, then IndexError is raised.
             Negative offsets work like negative list indexes; e.g., a
-            `collection_offset` of -1 means to read the last collection of
+            ``collection_offset`` of -1 means to read the last collection of
             trees in the data source. For data formats that do not support the
             concept of distinct tree collections (e.g. NEWICK) are considered
             single-collection data source (i.e, the only acceptable
-            `collection_offset` values are -1 or 0).
+            ``collection_offset`` values are -1 or 0).
 
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
@@ -471,35 +471,35 @@ class TreeList(
             `None` (default), then all trees are parsed.  Otherwise, must be an
             integer value up the length of the collection minus 1.  A positive
             offset indicates the number of trees in the collection to skip;
-            e.g. a `tree_offset` of 20 means to skip the first 20 trees in the
+            e.g. a ``tree_offset`` of 20 means to skip the first 20 trees in the
             collection.  Negative offsets work like negative list indexes;
-            e.g., a `tree_offset` value of -10 means to retrieve the last 10
+            e.g., a ``tree_offset`` value of -10 means to retrieve the last 10
             trees in the collection.  If the tree offset index is equal or
             greater than the number of trees in the collection, then IndexError
             is raised. Requires that a particular tree collection has been
-            identified using the `tree_collection_offset` parameter: if
-            `tree_collection_offset` is not specified, a `TypeError` is raised.
+            identified using the ``tree_collection_offset`` parameter: if
+            ``tree_collection_offset`` is not specified, a TypeError is raised.
 
         \*\*kwargs : keyword arguments
 
             Arguments to customize parsing, instantiation, processing, and
-            accession of :class:`Tree` objects read from the data source, including
+            accession of `Tree` objects read from the data source, including
             schema- or format-specific handling. These will be passed to the
             underlying schema-specific reader for handling.
 
             General (schema-agnostic) keyword arguments are:
 
-                * `rooted` specifies the default rooting interpretation of the tree.
-                * `edge_len_type` specifies the type of the edge lengths (int or
+                * ``rooted`` specifies the default rooting interpretation of the tree.
+                * ``edge_len_type`` specifies the type of the edge lengths (int or
                   float; defaults to 'float')
 
             Other keyword arguments are available depending on the schema. See
-            specific schema handlers (e.g., :class:`NewickReader`, :class:`NexusReader`,
-            :class:`NexmlReader`) for more details.
+            specific schema handlers (e.g., `NewickReader`, `NexusReader`,
+            `NexmlReader`) for more details.
 
         Notes
         -----
-        Note that in most cases, even if `collection_offset` and `tree_offset`
+        Note that in most cases, even if ``collection_offset`` and ``tree_offset``
         are specified to restrict the trees read, the *entire* data source
         is still parsed and processed. So this is not more efficient than
         reading all the trees and then manually-extracting them later; just
@@ -510,12 +510,12 @@ class TreeList(
 
         Returns
         -------
-        n : `int`
-            The number of :class:`Tree` objects read.
+        n : ``int``
+            The number of `Tree` objects read.
 
         """
         if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
-            raise TypeError("Cannot change `taxon_namespace` when reading into an existing TreeList")
+            raise TypeError("Cannot change ``taxon_namespace`` when reading into an existing TreeList")
         kwargs["taxon_namespace"] = self.taxon_namespace
         kwargs["tree_list"] = self
         cur_size = len(self._trees)
@@ -530,8 +530,8 @@ class TreeList(
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out `self` in `schema` format to a destination given by
-        file-like object `stream`.
+        Writes out ``self`` in ``schema`` format to a destination given by
+        file-like object ``stream``.
 
         Parameters
         ----------
@@ -577,42 +577,42 @@ class TreeList(
             taxon_import_strategy="migrate",
             **kwargs):
         """
-        Inserts a :class:`Tree` object, `tree`, into the collection before
-        `index`.
+        Inserts a `Tree` object, ``tree``, into the collection before
+        ``index``.
 
-        The :class:`TaxonNamespace` reference of `tree` will be set to that of
-        `self`.  Any :class:`Taxon` objects associated with nodes in `tree`
-        that are not already in `self.taxon_namespace` will be handled
-        according to `taxon_import_strategy`:
+        The `TaxonNamespace` reference of ``tree`` will be set to that of
+        ``self``.  Any `Taxon` objects associated with nodes in ``tree``
+        that are not already in ``self.taxon_namespace`` will be handled
+        according to ``taxon_import_strategy``:
 
             - 'migrate'
-                :class:`Taxon` objects associated with `tree` that are not
-                already in `self.taxon_nameaspace` will be remapped based on
+                `Taxon` objects associated with ``tree`` that are not
+                already in ``self.taxon_nameaspace`` will be remapped based on
                 their labels, with new :class`Taxon` objects being
                 reconstructed if none with matching labels are found.
                 Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
-                be called on `tree`, where `kwargs` is as passed to this
+                be called on ``tree``, where ``kwargs`` is as passed to this
                 function.
             - 'add'
-                :class:`Taxon` objects associated with `tree` that are not already
-                in `self.taxon_namespace` will be added. Note that this might
-                result in :class:`Taxon` objects with duplicate labels as no
-                attempt at mapping to existing :class:`Taxon` objects based on
+                `Taxon` objects associated with ``tree`` that are not already
+                in ``self.taxon_namespace`` will be added. Note that this might
+                result in `Taxon` objects with duplicate labels as no
+                attempt at mapping to existing `Taxon` objects based on
                 label-matching is done.
 
         Parameters
         ----------
         index : integer
-            Position before which to insert `tree`.
-        tree : A :class:`Tree` instance
-            The :class:`Tree` object to be added.
+            Position before which to insert ``tree``.
+        tree : A `Tree` instance
+            The `Tree` object to be added.
         taxon_import_strategy : string
-            If `tree` is associated with a different :class:`TaxonNamespace`,
-            this argument determines how new :class:`Taxon` objects in `tree`
+            If ``tree`` is associated with a different `TaxonNamespace`,
+            this argument determines how new `Taxon` objects in ``tree``
             are handled: 'migrate' or 'add'. See above for details.
         \*\*kwargs : keyword arguments
             These arguments will be passed directly to
-            'migrate_taxon_namespace()' method call on `tree`.
+            'migrate_taxon_namespace()' method call on ``tree``.
 
         See Also
         --------
@@ -631,39 +631,39 @@ class TreeList(
             taxon_import_strategy="migrate",
             **kwargs):
         """
-        Adds a :class:`Tree` object, `tree`, to the collection.
+        Adds a `Tree` object, ``tree``, to the collection.
 
-        The :class:`TaxonNamespace` reference of `tree` will be set to that of
-        `self`.  Any :class:`Taxon` objects associated with nodes in `tree`
-        that are not already in `self.taxon_namespace` will be handled
-        according to `taxon_import_strategy`:
+        The `TaxonNamespace` reference of ``tree`` will be set to that of
+        ``self``.  Any `Taxon` objects associated with nodes in ``tree``
+        that are not already in ``self.taxon_namespace`` will be handled
+        according to ``taxon_import_strategy``:
 
             - 'migrate'
-                :class:`Taxon` objects associated with `tree` that are not
-                already in `self.taxon_nameaspace` will be remapped based on
+                `Taxon` objects associated with ``tree`` that are not
+                already in ``self.taxon_nameaspace`` will be remapped based on
                 their labels, with new :class`Taxon` objects being
                 reconstructed if none with matching labels are found.
                 Specifically, '`tree.migrate_taxon_namespace(**kwargs)`' will
-                be called on `tree`, where `kwargs` is as passed to this
+                be called on ``tree``, where ``kwargs`` is as passed to this
                 function.
             - 'add'
-                :class:`Taxon` objects associated with `tree` that are not already
-                in `self.taxon_namespace` will be added. Note that this might
-                result in :class:`Taxon` objects with duplicate labels as no
-                attempt at mapping to existing :class:`Taxon` objects based on
+                `Taxon` objects associated with ``tree`` that are not already
+                in ``self.taxon_namespace`` will be added. Note that this might
+                result in `Taxon` objects with duplicate labels as no
+                attempt at mapping to existing `Taxon` objects based on
                 label-matching is done.
 
         Parameters
         ----------
-        tree : A :class:`Tree` instance
-            The :class:`Tree` object to be added.
+        tree : A `Tree` instance
+            The `Tree` object to be added.
         taxon_import_strategy : string
-            If `tree` is associated with a different :class:`TaxonNamespace`,
-            this argument determines how new :class:`Taxon` objects in `tree`
+            If ``tree`` is associated with a different `TaxonNamespace`,
+            this argument determines how new `Taxon` objects in ``tree``
             are handled: 'migrate' or 'add'. See above for details.
         \*\*kwargs : keyword arguments
             These arguments will be passed directly to
-            'migrate_taxon_namespace()' method call on `tree`.
+            'migrate_taxon_namespace()' method call on ``tree``.
 
         See Also
         --------
@@ -679,19 +679,19 @@ class TreeList(
 
     def extend(self, other):
         """
-        In-place addition of :class:`Tree` objects in `other` to `self`.
+        In-place addition of `Tree` objects in ``other`` to ``self``.
 
-        If `other` is a :class:`TreeList`, then the :class:`Trees` are *copied*
-        and migrated into `self.taxon_namespace`; otherwise, the original
-        objects are migrated into `self.taxon_namespace` and added directly.
+        If ``other`` is a `TreeList`, then the `Trees` are *copied*
+        and migrated into ``self.taxon_namespace``; otherwise, the original
+        objects are migrated into ``self.taxon_namespace`` and added directly.
 
         Parameters
         ----------
-        other : iterable of :class:`Tree` objects
+        other : iterable of `Tree` objects
 
         Returns
         -------
-        `self` : :class:`TreeList`
+        ``self`` : `TreeList`
         """
         if isinstance(other, TreeList):
             for t0 in other:
@@ -704,39 +704,39 @@ class TreeList(
 
     def __iadd__(self, other):
         """
-        In-place addition of :class:`Tree` objects in `other` to `self`.
+        In-place addition of `Tree` objects in ``other`` to ``self``.
 
-        If `other` is a :class:`TreeList`, then the :class:`Trees` are *copied*
-        and migrated into `self.taxon_namespace`; otherwise, the original
-        objects are migrated into `self.taxon_namespace` and added directly.
+        If ``other`` is a `TreeList`, then the `Trees` are *copied*
+        and migrated into ``self.taxon_namespace``; otherwise, the original
+        objects are migrated into ``self.taxon_namespace`` and added directly.
 
         Parameters
         ----------
-        other : iterable of :class:`Tree` objects
+        other : iterable of `Tree` objects
 
         Returns
         -------
-        `self` : :class:`TreeList`
+        ``self`` : `TreeList`
         """
         return self.extend(other)
 
     def __add__(self, other):
         """
-        Creates and returns new :class:`TreeList` with clones of all :class:`Trees` in `self`
-        as well as all :class:`Tree` objects in `other`.  If `other` is a
-        :class:`TreeList`, then the :class:`Trees` are *cloned* and migrated into
-        `self.taxon_namespace`; otherwise, the original objects are migrated into
-        `self.taxon_namespace` and added directly.
+        Creates and returns new `TreeList` with clones of all `Trees` in ``self``
+        as well as all `Tree` objects in ``other``.  If ``other`` is a
+        `TreeList`, then the `Trees` are *cloned* and migrated into
+        ``self.taxon_namespace``; otherwise, the original objects are migrated into
+        ``self.taxon_namespace`` and added directly.
 
         Parameters
         ----------
-        other : iterable of :class:`Tree` objects
+        other : iterable of `Tree` objects
 
         Returns
         -------
-        tlist : :class:`TreeList` object
-            :class:`TreeList` object containing clones of :class:`Tree` objects
-            in `self` and `other`.
+        tlist : `TreeList` object
+            `TreeList` object containing clones of `Tree` objects
+            in ``self`` and ``other``.
         """
         tlist = TreeList(taxon_namespace=self.taxon_namespace)
         tlist += self
@@ -760,11 +760,11 @@ class TreeList(
 
     def __getitem__(self, index):
         """
-        If `index` is an integer, then :class:`Tree` object at position `index`
-        is returned. If `index` is a slice, then a :class:`TreeList` is returned
+        If ``index`` is an integer, then `Tree` object at position ``index``
+        is returned. If ``index`` is a slice, then a `TreeList` is returned
         with references (i.e., not copies or clones, but the actual original
-        instances themselves) to :class:`Tree` objects in the positions given
-        by the slice. The :class:`TaxonNamespace` is the same as `self`.
+        instances themselves) to `Tree` objects in the positions given
+        by the slice. The `TaxonNamespace` is the same as ``self``.
 
         Parameters
         ----------
@@ -773,7 +773,7 @@ class TreeList(
 
         Returns
         -------
-        t : :class:`Tree` object or :class:`TreeList` object
+        t : `Tree` object or `TreeList` object
 
         """
         if isinstance(index, slice):
@@ -852,8 +852,8 @@ class TreeList(
 
     def poll_taxa(self, taxa=None):
         """
-        Returns a set populated with all of :class:`Taxon` instances associated
-        with `self`.
+        Returns a set populated with all of `Taxon` instances associated
+        with ``self``.
 
         Parameters
         ----------
@@ -862,8 +862,8 @@ class TreeList(
 
         Returns
         -------
-        taxa : set[:class:`Taxon`]
-            Set of taxa associated with `self`.
+        taxa : set[`Taxon`]
+            Set of taxa associated with ``self``.
         """
         if taxa is None:
             taxa = set()
@@ -882,11 +882,11 @@ class TreeList(
             ):
         """
         Return TreeArray containing information of trees currently
-        in self. Processes `kwargs_dict` intelligently: removing
+        in self. Processes ``kwargs_dict`` intelligently: removing
         and passing on keyword arguments pertaining to TreeArray
         construction, and leaving everything else.
         """
-        # TODO: maybe ignore_node_ages defaults to `False` but `ultrametricity_precision` defaults to 0?
+        # TODO: maybe ignore_node_ages defaults to `False` but ``ultrametricity_precision`` defaults to 0?
         ta = TreeArray.from_tree_list(
                 trees=self,
                 # taxon_namespace=self.taxon_namespace,
@@ -904,9 +904,9 @@ class TreeList(
             default_edge_length_value=None,
             **kwargs):
         """
-        Return :class:`SplitDistribution` collecting information on splits in
+        Return `SplitDistribution` collecting information on splits in
         contained trees. Keyword arguments get passed directly to
-        :class:`SplitDistribution` constructor.
+        `SplitDistribution` constructor.
         """
         assert "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is self.taxon_namespace
         kwargs["taxon_namespace"] = self.taxon_namespace
@@ -920,8 +920,8 @@ class TreeList(
 
     def as_tree_array(self, **kwargs):
         """
-        Return :class:`TreeArray` collecting information on splits in contained
-        trees. Keyword arguments get passed directly to :class:`TreeArray`
+        Return `TreeArray` collecting information on splits in contained
+        trees. Keyword arguments get passed directly to `TreeArray`
         constructor.
         """
         ta = TreeArray.from_tree_list(
@@ -936,7 +936,7 @@ class TreeList(
             **kwargs):
         """
         Returns a consensus tree of all trees in self, with minumum frequency
-        of bipartition to be added to the consensus tree given by `min_freq`.
+        of bipartition to be added to the consensus tree given by ``min_freq``.
         """
         ta = self._get_tree_array(kwargs)
         return ta.consensus_tree(min_freq=min_freq,
@@ -947,10 +947,10 @@ class TreeList(
         """
         Given a bipartition specified as:
 
-            - a :class:`Bipartition` instance given the keyword 'bipartition'
+            - a `Bipartition` instance given the keyword 'bipartition'
             - a split bitmask given the keyword 'split_bitmask'
-            - a list of `Taxon` objects given with the keyword `taxa`
-            - a list of taxon labels given with the keyword `labels`
+            - a list of `Taxon` objects given with the keyword ``taxa``
+            - a list of taxon labels given with the keyword ``labels``
 
         this function returns the proportion of trees in self
         in which the split is found.
@@ -1089,12 +1089,12 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             is_bipartitions_updated=False,
             default_edge_length_value=None):
         """
-        Counts splits in this tree and add to totals. `tree` must be decorated
+        Counts splits in this tree and add to totals. ``tree`` must be decorated
         with splits, and no attempt is made to normalize taxa.
 
         Parameters
         ----------
-        tree : a :class:`Tree` object.
+        tree : a `Tree` object.
             The tree on which to count the splits.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
@@ -1104,11 +1104,11 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         Returns
         --------
         s : iterable of splits
-            A list of split bitmasks from `tree`.
+            A list of split bitmasks from ``tree``.
         e :
-            A list of edge length values from `tree`.
+            A list of edge length values from ``tree``.
         a :
-            A list of node age values from `tree`.
+            A list of node age values from ``tree``.
         """
         assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
@@ -1269,8 +1269,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
-        tree : :class:`Tree`
-            The :class:`Tree` which will be scored.
+        tree : `Tree`
+            The `Tree` which will be scored.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
@@ -1366,7 +1366,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
-        tree : :class:`Tree`
+        tree : `Tree`
             The tree for which the score should be calculated.
         is_bipartitions_updated : bool
             If `True`, then the splits are assumed to have already been encoded
@@ -1405,7 +1405,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
-        tree : :class:`Tree`
+        tree : `Tree`
             The tree for which the score should be calculated.
         is_bipartitions_updated : bool
             If `True`, then the splits are assumed to have already been encoded
@@ -1438,7 +1438,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             **split_summarization_kwargs
             ):
         """
-        Returns a consensus tree from splits in `self`.
+        Returns a consensus tree from splits in ``self``.
 
         Parameters
         ----------
@@ -1454,7 +1454,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
-            :class:`SplitDistributionSummarizer` object. See
+            `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
 
         Returns
@@ -1499,7 +1499,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         Parameters
         ----------
 
-        tree: :class:`Tree` instance
+        tree: `Tree` instance
             Tree to be decorated with support values.
 
         is_bipartitions_updated: bool
@@ -1507,7 +1507,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
-            :class:`SplitDistributionSummarizer` object. See
+            `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
 
         """
@@ -1572,37 +1572,37 @@ class SplitDistributionSummarizer(object):
 
         add_support_as_node_attribute: bool
             Adds each node's support value as an attribute of the node,
-            "`support`".
+            "``support``".
 
         add_support_as_node_annotation: bool
             Adds support as a metadata annotation, "`support". If
-            `add_support_as_node_attribute` is `True`, then the value will be
-            dynamically-bound to the value of the node's "`support`" attribute.
+            ``add_support_as_node_attribute`` is `True`, then the value will be
+            dynamically-bound to the value of the node's "``support``" attribute.
 
         set_support_as_node_label : bool
-            Sets the `label` attribute of each node to the support value.
+            Sets the ``label`` attribute of each node to the support value.
 
         add_node_age_summaries_as_node_attributes: bool
             Summarizes the distribution of the ages of each node in the
             following attributes:
 
-                - `age_mean`
-                - `age_median`
-                - `age_sd`
-                - `age_hpd95`
-                - `age_range`
+                - ``age_mean``
+                - ``age_median``
+                - ``age_sd``
+                - ``age_hpd95``
+                - ``age_range``
 
         add_node_age_summaries_as_node_annotations: bool
             Summarizes the distribution of the ages of each node in the
             following metadata annotations:
 
-                - `age_mean`
-                - `age_median`
-                - `age_sd`
-                - `age_hpd95`
-                - `age_range`
+                - ``age_mean``
+                - ``age_median``
+                - ``age_sd``
+                - ``age_hpd95``
+                - ``age_range``
 
-            If `add_node_age_summaries_as_node_attributes` is `True`, then the
+            If ``add_node_age_summaries_as_node_attributes`` is `True`, then the
             values will be dynamically-bound to the corresponding node
             attributes.
 
@@ -1610,23 +1610,23 @@ class SplitDistributionSummarizer(object):
             Summarizes the distribution of the lengths of each edge in the
             following attribtutes:
 
-                - `length_mean`
-                - `length_median`
-                - `length_sd`
-                - `length_hpd95`
-                - `length_range`
+                - ``length_mean``
+                - ``length_median``
+                - ``length_sd``
+                - ``length_hpd95``
+                - ``length_range``
 
         add_edge_length_summaries_as_edge_annotations: bool
             Summarizes the distribution of the lengths of each edge in the
             following metadata annotations:
 
-                - `length_mean`
-                - `length_median`
-                - `length_sd`
-                - `length_hpd95`
-                - `length_range`
+                - ``length_mean``
+                - ``length_median``
+                - ``length_sd``
+                - ``length_hpd95``
+                - ``length_range``
 
-            If `add_edge_length_summaries_as_edge_attributes` is `True`, then the
+            If ``add_edge_length_summaries_as_edge_attributes`` is `True`, then the
             values will be dynamically-bound to the corresponding edge
             attributes.
 
@@ -1828,7 +1828,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     and edge lengths, minimizing memory and processing time.
     This class stores trees as collections of splits and edge lengths. All
     other information, such as labels, metadata annotations, etc. will be
-    discarded. A full :class:`Tree` instance can be reconstructed as needed
+    discarded. A full `Tree` instance can be reconstructed as needed
     from the structural information stored by this class, at the cost of
     computation time.
     """
@@ -1885,7 +1885,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         """
         Parameters
         ----------
-        taxon_namespace : :class:`TaxonNamespace`
+        taxon_namespace : `TaxonNamespace`
             The operational taxonomic unit concept namespace to manage taxon
             references.
         is_rooted_trees : bool
@@ -1983,15 +1983,15 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             is_bipartitions_updated=False,
             index=None):
         """
-        Adds the structure represented by a :class:`Tree` instance to the
+        Adds the structure represented by a `Tree` instance to the
         collection.
 
         Parameters
         ----------
-        tree : :class:`Tree`
-            A :class:`Tree` instance. This must have the same rooting state as
+        tree : `Tree`
+            A `Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
-            that of `self.is_rooted_trees`.
+            that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
@@ -2004,9 +2004,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         index : int
             The index of the accession.
         s : iterable of splits
-            A list of split bitmasks from `tree`.
+            A list of split bitmasks from ``tree``.
         e :
-            A list of edge length values from `tree`.
+            A list of edge length values from ``tree``.
         """
         if self.taxon_namespace is not tree.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, tree)
@@ -2052,14 +2052,14 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def add_trees(self, trees, is_bipartitions_updated=False):
         """
         Adds multiple structures represneted by an iterator over or iterable of
-        :class:`Tree` instances to the collection.
+        `Tree` instances to the collection.
 
         Parameters
         ----------
-        trees : iterator over or iterable of :class:`Tree` instances
-            An iterator over or iterable of :class:`Tree` instances. Thess must
+        trees : iterator over or iterable of `Tree` instances
+            An iterator over or iterable of `Tree` instances. Thess must
             have the same rooting state as all the other trees accessioned into
-            this collection as well as that of `self.is_rooted_trees`.
+            this collection as well as that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
@@ -2147,15 +2147,15 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def append(tree, is_bipartitions_updated=False):
         """
-        Adds a :class:`Tree` instance to the collection before position given
-        by `index`.
+        Adds a `Tree` instance to the collection before position given
+        by ``index``.
 
         Parameters
         ----------
-        tree : :class:`Tree`
-            A :class:`Tree` instance. This must have the same rooting state as
+        tree : `Tree`
+            A `Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
-            that of `self.is_rooted_trees`.
+            that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
@@ -2167,17 +2167,17 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def insert(index, tree, is_bipartitions_updated=False):
         """
-        Adds a :class:`Tree` instance to the collection before position given
-        by `index`.
+        Adds a `Tree` instance to the collection before position given
+        by ``index``.
 
         Parameters
         ----------
         index : integer
             Insert before index.
-        tree : :class:`Tree`
-            A :class:`Tree` instance. This must have the same rooting state as
+        tree : `Tree`
+            A `Tree` instance. This must have the same rooting state as
             all the other trees accessioned into this collection as well as
-            that of `self.is_rooted_trees`.
+            that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
             If `False` [default], then the tree will have its splits encoded or
             updated. Otherwise, if `True`, then the tree is assumed to have its
@@ -2188,9 +2188,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         index : int
             The index of the accession.
         s : iterable of splits
-            A list of split bitmasks from `tree`.
+            A list of split bitmasks from ``tree``.
         e :
-            A list of edge length values `tree`.
+            A list of edge length values ``tree``.
         """
         return self.add_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated,
@@ -2198,12 +2198,12 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def extend(self, tree_array):
         """
-        Accession of data from `tree_array` to self.
+        Accession of data from ``tree_array`` to self.
 
         Parameters
         ----------
-        tree_array : :class:`TreeArray`
-            A :class:`TreeArray` instance from which to add data.
+        tree_array : `TreeArray`
+            A `TreeArray` instance from which to add data.
 
         """
         assert self.taxon_namespace is tree_array.taxon_namespace
@@ -2219,29 +2219,29 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
     def __iadd__(self, tree_array):
         """
-        Accession of data from `tree_array` to self.
+        Accession of data from ``tree_array`` to self.
 
         Parameters
         ----------
-        tree_array : :class:`TreeArray`
-            A :class:`TreeArray` instance from which to add data.
+        tree_array : `TreeArray`
+            A `TreeArray` instance from which to add data.
 
         """
         return self.extend(tree_array)
 
     def __add__(self, other):
         """
-        Creates and returns new :class:`TreeArray`.
+        Creates and returns new `TreeArray`.
 
         Parameters
         ----------
-        other : iterable of :class:`Tree` objects
+        other : iterable of `Tree` objects
 
         Returns
         -------
-        tlist : :class:`TreeArray` object
-            :class:`TreeArray` object containing clones of :class:`Tree` objects
-            in `self` and `other`.
+        tlist : `TreeArray` object
+            `TreeArray` object containing clones of `Tree` objects
+            in ``self`` and ``other``.
         """
         ta = TreeArray(
                 taxon_namespace=self.taxon_namespace,
@@ -2291,7 +2291,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
         raise NotImplementedError
         # """
         # Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
-        # to the "tree" at `index`.
+        # to the "tree" at ``index``.
         # """
         # return self._tree_split_bitmasks[index], self._tree_edge_lengths[index]
 
@@ -2327,7 +2327,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def get_split_bitmask_and_edge_tuple(self, index):
         """
         Returns a pair of tuples, ( (splits...), (lengths...) ), corresponding
-        to the "tree" at `index`.
+        to the "tree" at ``index``.
         """
         return self._tree_split_bitmasks[index], self._tree_edge_lengths[index]
 
@@ -2509,7 +2509,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             **split_summarization_kwargs
             ):
         """
-        Returns a consensus tree from splits in `self`.
+        Returns a consensus tree from splits in ``self``.
 
         Parameters
         ----------
@@ -2525,7 +2525,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
-            :class:`SplitDistributionSummarizer` object. See
+            `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
 
         Returns
@@ -2610,7 +2610,7 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     def bipartition_encoding_frequencies(self):
         """
         Returns a dictionary with keys being bipartition encodings of trees
-        (as `frozenset` collections of :class:`Bipartiton` objects) and
+        (as ``frozenset`` collections of `Bipartiton` objects) and
         values the frequency of occurrence of trees represented by that
         encoding in the collection.
         """
@@ -2642,8 +2642,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             frequency_annotation_name="frequency",
             ):
         """
-        Returns a :class:`TreeList` instance containing the reconstructed tree
-        topologies (i.e. :class:`Tree` instances with no edge weights) in the
+        Returns a `TreeList` instance containing the reconstructed tree
+        topologies (i.e. `Tree` instances with no edge weights) in the
         collection, with the frequency added as an attributed.
 
         Parameters
@@ -2654,15 +2654,15 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             first). If `False`, then they will be sorted in *ascending*
             frequency. If `None` (default), then they will not be sorted.
         frequency_attr_name : str
-            Name of attribute to add to each :class:`Tree` representing
+            Name of attribute to add to each `Tree` representing
             the frequency of that topology in the collection. If `None`
             then the attribute will not be added.
         frequency_annotation_name : str
-            Name of annotation to add to the annotations of each :class:`Tree`,
+            Name of annotation to add to the annotations of each `Tree`,
             representing the frequency of that topology in the collection. The
             value of this annotation will be dynamically-bound to the attribute
-            specified by `frequency_attr_name` unless that is `None`. If
-            `frequency_annotation_name` is `None` then the annotation will not
+            specified by ``frequency_attr_name`` unless that is `None`. If
+            ``frequency_annotation_name`` is `None` then the annotation will not
             be added.
         """
         if sort_descending is not None and frequency_attr_name is None:

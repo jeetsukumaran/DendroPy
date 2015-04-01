@@ -76,7 +76,7 @@ def _to_nexml_chartype(chartype):
 def _to_nexml_tree_length_type(length_type):
     """
     Returns attribute string for nexml tree type depending on whether
-    `length_type` is an int or a float.
+    ``length_type`` is an int or a float.
     """
     if length_type == int:
         return "nex:IntTree"

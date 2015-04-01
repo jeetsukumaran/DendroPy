@@ -73,7 +73,7 @@ class CharacterType(
 
     def _get_state_alphabet(self):
         """
-        The :class:`StateAlphabet` representing the state alphabet for this
+        The `StateAlphabet` representing the state alphabet for this
         column: i.e., the collection of symbols and the state identities to
         which they map.
         """
@@ -165,7 +165,8 @@ class CharacterDataSequence(
     def symbols_as_string(self, sep=""):
         """
         Returns values of this vector as a single string, with individual value
-        elements separated by `sep`.
+        elements separated by ``sep``.
+
         Returns
         -------
         s : string
@@ -279,8 +280,8 @@ class CharacterSubset(
         """
         Keyword arguments:
 
-            - `label`: name of this subset
-            - `character_indices`: list of 0-based (integer) indices
+            - ``label``: name of this subset
+            - ``character_indices``: list of 0-based (integer) indices
                of column positions that constitute this subset.
 
         """
@@ -318,14 +319,14 @@ class CharacterMatrix(
     types such as DNA, RNA, continuous, etc.
 
     This class (and derived classes) behave lika dictionary where the keys are
-    :any:`Taxon` objects or `Taxon` and the values are :class:`CharacterDataVector` objects.:
+    :any:`Taxon` objects or `Taxon` and the values are `CharacterDataSequence` objects.:
 
     A range of methods exist for importing data from another matrix object.
     These vary depending on how "new" and "existing" are treated.  A "new"
-    sequence is a sequence in the other matrix associated with a :class:`Taxon`
+    sequence is a sequence in the other matrix associated with a `Taxon`
     object for which there is no sequence defined in the current matrix.  An
     "existing" sequence is a sequence in the other matrix associated with a
-    :class:`Taxon` object for which there *is* a sequence defined in the
+    `Taxon` object for which there *is* a sequence defined in the
     current matrix.
 
     +---------------------------------+---------------------------------------------+--------------------------------------------+
@@ -399,7 +400,7 @@ class CharacterMatrix(
         pos_start = 0
         for cidx, cm in enumerate(char_matrices):
             if cm.taxon_namespace is not taxon_namespace:
-                raise ValueError("Different `taxon_namespace` references in matrices to be merged")
+                raise ValueError("Different ``taxon_namespace`` references in matrices to be merged")
             if len(cm) != len(taxon_namespace):
                 raise ValueError("Number of sequences not equal to the number of taxa")
             if len(cm) != nseqs:
@@ -429,8 +430,8 @@ class CharacterMatrix(
 
     def concatenate_from_streams(cls, streams, schema, **kwargs):
         """
-        Read a character matrix from each file object given in `streams`,
-        assuming data format/schema `schema`, and passing any keyword arguments
+        Read a character matrix from each file object given in ``streams``,
+        assuming data format/schema ``schema``, and passing any keyword arguments
         down to the underlying specialized reader. Merge the character matrices
         and return the combined character matrix. Component parts will be
         recorded as character subsets.
@@ -448,8 +449,8 @@ class CharacterMatrix(
 
     def concatenate_from_paths(cls, paths, schema, **kwargs):
         """
-        Read a character matrix from each file path given in `paths`, assuming
-        data format/schema `schema`, and passing any keyword arguments down to
+        Read a character matrix from each file path given in ``paths``, assuming
+        data format/schema ``schema``, and passing any keyword arguments down to
         the underlying specialized reader. Merge the and return the combined
         character matrix. Component parts will be recorded as character
         subsets.
@@ -465,28 +466,28 @@ class CharacterMatrix(
             **kwargs):
         """
         Populates character matrix from dictionary (or similar mapping type),
-        creating :class:`Taxon` objects and sequences as needed.
+        creating `Taxon` objects and sequences as needed.
 
-        Keys must be strings representing labels :class:`Taxon` objects or
-        :class:`Taxon` objects directly. If key is specified as string, then it
-        will be dereferenced to the first existing :class:`Taxon` object in the
-        current taxon namespace with the same label. If no such :class:`Taxon`
-        object can be found, then a new :class:`Taxon` object is created and
+        Keys must be strings representing labels `Taxon` objects or
+        `Taxon` objects directly. If key is specified as string, then it
+        will be dereferenced to the first existing `Taxon` object in the
+        current taxon namespace with the same label. If no such `Taxon`
+        object can be found, then a new `Taxon` object is created and
         added to the current namespace. If a key is specified as a
-        :class:`Taxon` object, then this is used directly. If it is not in the
+        `Taxon` object, then this is used directly. If it is not in the
         current taxon namespace, it will be added.
 
         Values are the sequences (more generally, iterable of values).  If
-        values are of type :class:`CharacterDataSequence`, then they are added
-        as-is.  Otherwise :class:`CharacterDataSequence` instances are
+        values are of type `CharacterDataSequence`, then they are added
+        as-is.  Otherwise `CharacterDataSequence` instances are
         created for them. Values may be coerced into types compatible with
-        particular matrices. The classmethod `cls.coerce_values()` will be
+        particular matrices. The classmethod `coerce_values()` will be
         called for this.
 
         Examples
         --------
 
-        The following creates a :class:`DnaCharacterMatrix` instance with three
+        The following creates a `DnaCharacterMatrix` instance with three
         sequences::
 
             d = {
@@ -496,34 +497,34 @@ class CharacterMatrix(
             }
             dna = DnaCharacterMatrix.from_dict(d)
 
-        Three :class:`Taxon` objects will be created, corresponding to the
+        Three `Taxon` objects will be created, corresponding to the
         labels 's1', 's2', 's3'. Each associated string sequence will be
-        converted to a :class:`CharacterDataSequence`, with each symbol ("A", "C",
+        converted to a `CharacterDataSequence`, with each symbol ("A", "C",
         etc.) being replaced by the DNA state represented by the symbol.
 
         Parameters
         ----------
         source_dict : dict or other mapping type
-            Keys must be strings representing labels :class:`Taxon` objects or
-            :class:`Taxon` objects directly. Values are sequences. See above
+            Keys must be strings representing labels `Taxon` objects or
+            `Taxon` objects directly. Values are sequences. See above
             for details.
-        char_matrix : :class:`CharacterMatrix`
-            Instance of :class:`CharacterMatrix` to populate with data. If not
+        char_matrix : `CharacterMatrix`
+            Instance of `CharacterMatrix` to populate with data. If not
             specified, a new one will be created using keyword arguments
-            specified by `kwargs`.
+            specified by ``kwargs``.
         case_sensitive_taxon_labels : boolean
-            If `True`, matching of string labels specified as keys in `d` will
-            be matched to :class:`Taxon` objects in current taxon namespace
+            If `True`, matching of string labels specified as keys in ``d`` will
+            be matched to `Taxon` objects in current taxon namespace
             with case being respected. If `False`, then case will be ignored.
         \*\*kwargs : keyword arguments, optional
             Keyword arguments to be passed to constructor of
-            :class:`CharacterMatrix` when creating new instance to populate, if
-            no target instance is provided via `char_matrix`.
+            `CharacterMatrix` when creating new instance to populate, if
+            no target instance is provided via ``char_matrix``.
 
         Returns
         -------
-        char_matrix : :class:`CharacterMatrix`
-            :class:`CharacterMatrix` populated by data from `d`.
+        char_matrix : `CharacterMatrix`
+            `CharacterMatrix` populated by data from ``d``.
         """
         if char_matrix is None:
             char_matrix = cls(**kwargs)
@@ -542,19 +543,19 @@ class CharacterMatrix(
 
     def coerce_values(cls, values):
         """
-        Converts elements of `values` to type of matrix.
+        Converts elements of ``values`` to type of matrix.
 
         This method is called by :meth:`CharacterMatrix.from_dict` to create
         sequences from iterables of values.  This method should be overridden
-        by derived classes to ensure that `values` consists of types compatible
+        by derived classes to ensure that ``values`` consists of types compatible
         with the particular type of matrix. For example, a CharacterMatrix type
-        with a fixed state alphabet (such as :class:`DnaCharacterMatrix`) would
-        dereference the string elements of `values` to return a list of
-        :class:`StateIdentity` objects corresponding to the symbols represented
+        with a fixed state alphabet (such as `DnaCharacterMatrix`) would
+        dereference the string elements of ``values`` to return a list of
+        `StateIdentity` objects corresponding to the symbols represented
         by the strings.  If there is no value-type conversion done, then
-        `values` should be returned as-is. If no value-type conversion is
+        ``values`` should be returned as-is. If no value-type conversion is
         possible (e.g., when the type of a value is dependent on positionaly
-        information), then a `TypeError` should be raised.
+        information), then a TypeError should be raised.
 
         Parameters
         ----------
@@ -631,7 +632,7 @@ class CharacterMatrix(
     def taxon_namespace_scoped_copy(self, memo=None):
         if memo is None:
             memo = {}
-        # this populates `memo` with references to the
+        # this populates ``memo`` with references to the
         # the TaxonNamespace and Taxon objects
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
@@ -644,11 +645,11 @@ class CharacterMatrix(
 
     def read(self, stream, schema, **kwargs):
         """
-        Populates objects of this type from `schema`-formatted
-        data in the file-like object source `stream`, *replacing*
+        Populates objects of this type from ``schema``-formatted
+        data in the file-like object source ``stream``, *replacing*
         all current data. If multiple character matrices are in the data
         source, a 0-based index of the character matrix to use can
-        be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
+        be specified using the ``matrix_offset`` keyword (defaults to 0, i.e., first
         character matrix).
         """
         warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
@@ -660,8 +661,8 @@ class CharacterMatrix(
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out `self` in `schema` format to a destination given by
-        file-like object `stream`.
+        Writes out ``self`` in ``schema`` format to a destination given by
+        file-like object ``stream``.
 
         Parameters
         ----------
@@ -716,8 +717,8 @@ class CharacterMatrix(
 
     def poll_taxa(self, taxa=None):
         """
-        Returns a set populated with all of :class:`Taxon` instances associated
-        with `self`.
+        Returns a set populated with all of `Taxon` instances associated
+        with ``self``.
 
         Parameters
         ----------
@@ -726,8 +727,8 @@ class CharacterMatrix(
 
         Returns
         -------
-        taxa : set[:class:`Taxon`]
-            Set of taxa associated with `self`.
+        taxa : set[`Taxon`]
+            Set of taxa associated with ``self``.
         """
         if taxa is None:
             taxa = set()
@@ -737,8 +738,8 @@ class CharacterMatrix(
 
     def update_taxon_namespace(self):
         """
-        All :class:`Taxon` objects in `self` that are not in
-        `self.taxon_namespace` will be added.
+        All `Taxon` objects in ``self`` that are not in
+        ``self.taxon_namespace`` will be added.
         """
         assert self.taxon_namespace is not None
         for taxon in self._taxon_sequence_map:
@@ -747,7 +748,7 @@ class CharacterMatrix(
 
     def reindex_subcomponent_taxa(self):
         """
-        Synchronizes `Taxon` objects of map to `taxon_namespace` of self.
+        Synchronizes `Taxon` objects of map to ``taxon_namespace`` of self.
         """
         raise NotImplementedError("'reindex_subcomponent_taxa()' is no longer supported; use '{}.reconstruct_taxon_namespace()' instead".format(self.__class__.__name__))
 
@@ -756,11 +757,11 @@ class CharacterMatrix(
 
     def _resolve_key(self, key):
         """
-        Resolves map access key into :class:`Taxon` instance.
+        Resolves map access key into `Taxon` instance.
 
-        If `key` is integer, assumed to be taxon index.
-        If `key` string, assumed to be taxon label.
-        Otherwise, assumed to be :class:`Taxon` instance directly.
+        If ``key`` is integer, assumed to be taxon index.
+        If ``key`` string, assumed to be taxon label.
+        Otherwise, assumed to be `Taxon` instance directly.
         """
         if isinstance(key, int):
             if key >= 0 and key < len(self.taxon_namespace):
@@ -777,22 +778,22 @@ class CharacterMatrix(
 
     def new_sequence(self, taxon, values=None):
         """
-        Creates a new :class:`CharacterDataSequence` associated with :class:`Taxon`
-        `taxon`, and populates it with values in `values`.
+        Creates a new `CharacterDataSequence` associated with `Taxon`
+        ``taxon``, and populates it with values in ``values``.
 
         Parameters
         ----------
-        taxon : :class:`Taxon`
-            :class:`Taxon` instance with which this sequence is associated.
+        taxon : `Taxon`
+            `Taxon` instance with which this sequence is associated.
         values : iterable or `None`
             An initial set of values with which to populate the new character
             sequence.
 
         Returns
         -------
-        s : :class:`CharacterDataSequence`
-            A new :class:`CharacterDataSequence` associated with :class:`Taxon`
-            `taxon`.
+        s : `CharacterDataSequence`
+            A new `CharacterDataSequence` associated with `Taxon`
+            ``taxon``.
         """
         if taxon in self._taxon_sequence_map:
             raise ValueError("Character values vector for taxon {} already exists".format(repr(taxon)))
@@ -804,30 +805,30 @@ class CharacterMatrix(
 
     def __getitem__(self, key):
         """
-        Retrieves sequence for `key`, which can be a index or a label of a
-        :class:`Taxon` instance in the current taxon namespace, or a
-        :class:`Taxon` instance directly.
+        Retrieves sequence for ``key``, which can be a index or a label of a
+        `Taxon` instance in the current taxon namespace, or a
+        `Taxon` instance directly.
 
-        If no sequence is currently associated with specified :class:`Taxon`, a
-        new one will be created. Note that the :class:`Taxon` object must have
+        If no sequence is currently associated with specified `Taxon`, a
+        new one will be created. Note that the `Taxon` object must have
         already been defined in the curent taxon namespace.
 
         Parameters
         ----------
-        key : integer, string, or :class:`Taxon`
-            If an integer, assumed to be an index of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            If a string, assumed to be a label of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            Otherwise, assumed to be :class:`Taxon` instance directly. In all
-            cases, the :class:`Taxon` object must be (already) defined in the
+        key : integer, string, or `Taxon`
+            If an integer, assumed to be an index of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            If a string, assumed to be a label of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            Otherwise, assumed to be `Taxon` instance directly. In all
+            cases, the `Taxon` object must be (already) defined in the
             current taxon namespace.
 
         Returns
         -------
-        s : :class:`CharacterDataSequence`
-            A sequence associated with the :class:`Taxon` instance referenced
-            by `key`.
+        s : `CharacterDataSequence`
+            A sequence associated with the `Taxon` instance referenced
+            by ``key``.
         """
         taxon = self._resolve_key(key)
         try:
@@ -837,23 +838,23 @@ class CharacterMatrix(
 
     def __setitem__(self, key, values):
         """
-        Assigns sequence `values` to taxon specified by `key`, which can be a
-        index or a label of a :class:`Taxon` instance in the current taxon
-        namespace, or a :class:`Taxon` instance directly.
+        Assigns sequence ``values`` to taxon specified by ``key``, which can be a
+        index or a label of a `Taxon` instance in the current taxon
+        namespace, or a `Taxon` instance directly.
 
-        If no sequence is currently associated with specified :class:`Taxon`, a
-        new one will be created.  Note that the :class:`Taxon` object must have
+        If no sequence is currently associated with specified `Taxon`, a
+        new one will be created.  Note that the `Taxon` object must have
         already been defined in the curent taxon namespace.
 
         Parameters
         ----------
-        key : integer, string, or :class:`Taxon`
-            If an integer, assumed to be an index of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            If a string, assumed to be a label of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            Otherwise, assumed to be :class:`Taxon` instance directly. In all
-            cases, the :class:`Taxon` object must be (already) defined in the
+        key : integer, string, or `Taxon`
+            If an integer, assumed to be an index of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            If a string, assumed to be a label of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            Otherwise, assumed to be `Taxon` instance directly. In all
+            cases, the `Taxon` object must be (already) defined in the
             current taxon namespace.
 
         """
@@ -866,42 +867,42 @@ class CharacterMatrix(
 
     def __contains__(self, key):
         """
-        Returns `True` if a sequence associated with `key` is in `self`, or
+        Returns `True` if a sequence associated with ``key`` is in ``self``, or
         `False` otherwise.
 
         Parameters
         ----------
-        key : integer, string, or :class:`Taxon`
-            If an integer, assumed to be an index of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            If a string, assumed to be a label of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            Otherwise, assumed to be :class:`Taxon` instance directly. In all
-            cases, the :class:`Taxon` object must be (already) defined in the
+        key : integer, string, or `Taxon`
+            If an integer, assumed to be an index of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            If a string, assumed to be a label of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            Otherwise, assumed to be `Taxon` instance directly. In all
+            cases, the `Taxon` object must be (already) defined in the
             current taxon namespace.
 
         Returns
         -------
         b : boolean
-            `True` if `key` is in `self`; `False` otherwise.
+            `True` if ``key`` is in ``self``; `False` otherwise.
         """
         return self._taxon_sequence_map.__contains__(key)
 
     def __delitem__(self, key):
         """
-        Removes sequence for `key`, which can be a index or a label of a
-        :class:`Taxon` instance in the current taxon namespace, or a
-        :class:`Taxon` instance directly.
+        Removes sequence for ``key``, which can be a index or a label of a
+        `Taxon` instance in the current taxon namespace, or a
+        `Taxon` instance directly.
 
         Parameters
         ----------
-        key : integer, string, or :class:`Taxon`
-            If an integer, assumed to be an index of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            If a string, assumed to be a label of a :class:`Taxon` object in
-            the current :class:`TaxonNamespace` object of `self.taxon_namespace`.
-            Otherwise, assumed to be :class:`Taxon` instance directly. In all
-            cases, the :class:`Taxon` object must be (already) defined in the
+        key : integer, string, or `Taxon`
+            If an integer, assumed to be an index of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            If a string, assumed to be a label of a `Taxon` object in
+            the current `TaxonNamespace` object of ``self.taxon_namespace``.
+            Otherwise, assumed to be `Taxon` instance directly. In all
+            cases, the `Taxon` object must be (already) defined in the
             current taxon namespace.
 
         """
@@ -919,7 +920,7 @@ class CharacterMatrix(
 
         Returns
         -------
-        s : list of :class:`CharacterDataSequence` objects in self
+        s : list of `CharacterDataSequence` objects in self
 
         """
         s = [self[taxon] for taxon in self]
@@ -1029,15 +1030,15 @@ class CharacterMatrix(
 
     def fill(self, value, size=None, append=True):
         """
-        Pads out all sequences in `self` by adding `value` to each sequence
-        until its length is `size` long or equal to the length of the longest
-        sequence if `size` is not specified.
+        Pads out all sequences in ``self`` by adding ``value`` to each sequence
+        until its length is ``size`` long or equal to the length of the longest
+        sequence if ``size`` is not specified.
 
         Parameters
         ----------
         value : object
             A valid value (e.g., a numeric value for continuous characters, or
-            a :class:`StateIdentity` for discrete character).
+            a `StateIdentity` for discrete character).
         size : integer or None
             The size (length) up to which the sequences will be padded. If `None`, then
             the maximum (longest) sequence size will be used.
@@ -1059,7 +1060,7 @@ class CharacterMatrix(
 
     def fill_taxa(self):
         """
-        Adds a new (empty) sequence for each :class:`Taxon` instance in
+        Adds a new (empty) sequence for each `Taxon` instance in
         current taxon namespace that does not have a sequence.
         """
         for taxon in self.taxon_namespace:
@@ -1068,10 +1069,10 @@ class CharacterMatrix(
 
     def pack(self, value=None, size=None, append=True):
         """
-        Adds missing sequences for all :class:`Taxon` instances in current
-        namespace, and then pads out all sequences in `self` by adding `value`
-        to each sequence until its length is `size` long or equal to the length
-        of the longest sequence if `size` is not specified. A combination of
+        Adds missing sequences for all `Taxon` instances in current
+        namespace, and then pads out all sequences in ``self`` by adding ``value``
+        to each sequence until its length is ``size`` long or equal to the length
+        of the longest sequence if ``size`` is not specified. A combination of
         :meth:`CharacterMatrix.fill_taxa()` and
         :meth:`CharacterMatrix.fill()`.
 
@@ -1079,7 +1080,7 @@ class CharacterMatrix(
         ----------
         value : object
             A valid value (e.g., a numeric value for continuous characters, or
-            a :class:`StateIdentity` for discrete character).
+            a `StateIdentity` for discrete character).
         size : integer or None
             The size (length) up to which the sequences will be padded. If `None`, then
             the maximum (longest) sequence size will be used.
@@ -1093,20 +1094,20 @@ class CharacterMatrix(
 
     def add_sequences(self, other_matrix):
         """
-        Adds sequences for :class:`Taxon` objects that are in `other_matrix` but not in
-        `self`.
+        Adds sequences for `Taxon` objects that are in ``other_matrix`` but not in
+        ``self``.
 
         Parameters
         ----------
-        other_matrix : :class:`CharacterMatrix`
+        other_matrix : `CharacterMatrix`
             Matrix from which to add sequences.
 
         Notes
         -----
-            1. `other_matrix` must be of same type as `self`.
-            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               but not in `self` will be added to `self` as a shallow-copy.
+            1. ``other_matrix`` must be of same type as ``self``.
+            2. ``other_matrix`` must have the same `TaxonNamespace` as ``self``.
+            3. Each sequence associated with a `Taxon` reference in ``other_matrix``
+               but not in ``self`` will be added to ``self`` as a shallow-copy.
             4. All other sequences will be ignored.
 
         """
@@ -1118,21 +1119,21 @@ class CharacterMatrix(
 
     def replace_sequences(self, other_matrix):
         """
-        Replaces sequences for :class:`Taxon` objects shared between `self` and
-        `other_matrix`.
+        Replaces sequences for `Taxon` objects shared between ``self`` and
+        ``other_matrix``.
 
         Parameters
         ----------
-        other_matrix : :class:`CharacterMatrix`
+        other_matrix : `CharacterMatrix`
             Matrix from which to replace sequences.
 
         Notes
         -----
-            1. `other_matrix` must be of same type as `self`.
-            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence in `self` associated with a :class:`Taxon` that is
-               also represented in `other_matrix` will be replaced with a
-               shallow-copy of the corresponding sequence from `other_matrix`.
+            1. ``other_matrix`` must be of same type as ``self``.
+            2. ``other_matrix`` must have the same `TaxonNamespace` as ``self``.
+            3. Each sequence in ``self`` associated with a `Taxon` that is
+               also represented in ``other_matrix`` will be replaced with a
+               shallow-copy of the corresponding sequence from ``other_matrix``.
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
@@ -1143,24 +1144,24 @@ class CharacterMatrix(
 
     def update_sequences(self, other_matrix):
         """
-        Replaces sequences for :class:`Taxon` objects shared between `self` and
-        `other_matrix` and adds sequences for :class:`Taxon` objects that are
-        in `other_matrix` but not in `self`.
+        Replaces sequences for `Taxon` objects shared between ``self`` and
+        ``other_matrix`` and adds sequences for `Taxon` objects that are
+        in ``other_matrix`` but not in ``self``.
 
         Parameters
         ----------
-        other_matrix : :class:`CharacterMatrix`
+        other_matrix : `CharacterMatrix`
             Matrix from which to update sequences.
 
         Notes
         -----
-            1. `other_matrix` must be of same type as `self`.
-            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               but not in `self` will be added to `self`.
-            4. Each sequence in `self` associated with a :class:`Taxon` that is
-               also represented in `other_matrix` will be replaced with a
-               shallow-copy of the corresponding sequence from `other_matrix`.
+            1. ``other_matrix`` must be of same type as ``self``.
+            2. ``other_matrix`` must have the same `TaxonNamespace` as ``self``.
+            3. Each sequence associated with a `Taxon` reference in ``other_matrix``
+               but not in ``self`` will be added to ``self``.
+            4. Each sequence in ``self`` associated with a `Taxon` that is
+               also represented in ``other_matrix`` will be replaced with a
+               shallow-copy of the corresponding sequence from ``other_matrix``.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, other_matrix)
@@ -1169,22 +1170,22 @@ class CharacterMatrix(
 
     def extend_sequences(self, other_matrix):
         """
-        Extends sequences in `self` with characters associated with
-        corresponding :class:`Taxon` objects in `other_matrix`.
+        Extends sequences in ``self`` with characters associated with
+        corresponding `Taxon` objects in ``other_matrix``.
 
         Parameters
         ----------
-        other_matrix : :class:`CharacterMatrix`
+        other_matrix : `CharacterMatrix`
             Matrix from which to extend sequences.
 
         Notes
         -----
-            1. `other_matrix` must be of same type as `self`.
-            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in
-               `other_matrix` that is also in `self` will be appended to the
-               sequence currently associated with that :class:`Taxon` reference
-               in `self`.
+            1. ``other_matrix`` must be of same type as ``self``.
+            2. ``other_matrix`` must have the same `TaxonNamespace` as ``self``.
+            3. Each sequence associated with a `Taxon` reference in
+               ``other_matrix`` that is also in ``self`` will be appended to the
+               sequence currently associated with that `Taxon` reference
+               in ``self``.
             4. All other sequences will be ignored.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
@@ -1195,27 +1196,27 @@ class CharacterMatrix(
 
     def extend_matrix(self, other_matrix):
         """
-        Extends sequences in `self` with characters associated with
-        corresponding :class:`Taxon` objects in `other_matrix` and adds
-        sequences for :class:`Taxon` objects that are in `other_matrix` but not
-        in `self`.
+        Extends sequences in ``self`` with characters associated with
+        corresponding `Taxon` objects in ``other_matrix`` and adds
+        sequences for `Taxon` objects that are in ``other_matrix`` but not
+        in ``self``.
 
         Parameters
         ----------
-        other_matrix : :class:`CharacterMatrix`
+        other_matrix : `CharacterMatrix`
             Matrix from which to extend.
 
         Notes
         -----
-            1. `other_matrix` must be of same type as `self`.
-            2. `other_matrix` must have the same :class:`TaxonNamespace` as `self`.
-            3. Each sequence associated with a :class:`Taxon` reference in `other_matrix`
-               that is also in `self` will be appending
-               to the sequence currently associated with that :class:`Taxon`
-               reference in `self`.
-            4. Each sequence associated with a :class:`Taxon` reference in
-               `other_matrix` that is also in `self` will replace the sequence
-               currently associated with that :class:`Taxon` reference in `self`.
+            1. ``other_matrix`` must be of same type as ``self``.
+            2. ``other_matrix`` must have the same `TaxonNamespace` as ``self``.
+            3. Each sequence associated with a `Taxon` reference in ``other_matrix``
+               that is also in ``self`` will be appending
+               to the sequence currently associated with that `Taxon`
+               reference in ``self``.
+            4. Each sequence associated with a `Taxon` reference in
+               ``other_matrix`` that is also in ``self`` will replace the sequence
+               currently associated with that `Taxon` reference in ``self``.
         """
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, other_matrix)
@@ -1227,27 +1228,27 @@ class CharacterMatrix(
 
     def remove_sequences(self, taxa):
         """
-        Removes sequences associated with :class:`Taxon` instances specified in
-        `taxa`. A `KeyError` is raised if a :class:`Taxon` instance is
+        Removes sequences associated with `Taxon` instances specified in
+        ``taxa``. A KeyError is raised if a `Taxon` instance is
         specified for which there is no associated sequences.
 
         Parameters
         ----------
-        taxa : iterable[:class:`Taxon`]
-            List or some other iterable of :class:`Taxon` instances.
+        taxa : iterable[`Taxon`]
+            List or some other iterable of `Taxon` instances.
         """
         for taxon in taxa:
             del self._taxon_sequence_map[taxon]
 
     def discard_sequences(self, taxa):
         """
-        Removes sequences associated with :class:`Taxon` instances specified in
-        `taxa` if they exist.
+        Removes sequences associated with `Taxon` instances specified in
+        ``taxa`` if they exist.
 
         Parameters
         ----------
-        taxa : iterable[:class:`Taxon`]
-            List or some other iterable of :class:`Taxon` instances.
+        taxa : iterable[`Taxon`]
+            List or some other iterable of `Taxon` instances.
         """
         for taxon in taxa:
             try:
@@ -1257,12 +1258,12 @@ class CharacterMatrix(
 
     def keep_sequences(self, taxa):
         """
-        Discards all sequences *not* associated with any of the :class:`Taxon` instances.
+        Discards all sequences *not* associated with any of the `Taxon` instances.
 
         Parameters
         ----------
-        taxa : iterable[:class:`Taxon`]
-            List or some other iterable of :class:`Taxon` instances.
+        taxa : iterable[`Taxon`]
+            List or some other iterable of `Taxon` instances.
         """
         to_keep = set(taxa)
         for taxon in self._taxon_sequence_map:
@@ -1286,10 +1287,10 @@ class CharacterMatrix(
     #     """
     #     DEPRECATED
     #     Extends this matrix by adding taxa and characters from the given
-    #     map to this one.  If `overwrite_existing` is True and a taxon
+    #     map to this one.  If ``overwrite_existing`` is True and a taxon
     #     in the other map is already present in the current one, then
     #     the sequence associated with the taxon in the second map
-    #     replaces the sequence in the current one. If `extend_existing`
+    #     replaces the sequence in the current one. If ``extend_existing``
     #     is True and a taxon in the other matrix is already present in
     #     the current one, then the squence map with the taxon in
     #     the second map will be added to the sequence in the current
@@ -1308,10 +1309,10 @@ class CharacterMatrix(
     #            extend_existing=False):
     #     """
     #     Extends this matrix by adding taxa and characters from the given
-    #     matrix to this one.  If `overwrite_existing` is True and a taxon
+    #     matrix to this one.  If ``overwrite_existing`` is True and a taxon
     #     in the other matrix is already present in the current one, then
     #     the sequence associated with the taxon in the second matrix
-    #     replaces the sequence in the current one. If `extend_existing`
+    #     replaces the sequence in the current one. If ``extend_existing``
     #     is True and a taxon in the other matrix is already present in
     #     the current one, then the sequence associated with the taxon in
     #     the second matrix will be added to the sequence in the current
@@ -1359,7 +1360,7 @@ class CharacterMatrix(
     def export_character_subset(self, character_subset):
         """
         Returns a new CharacterMatrix (of the same type) consisting only
-        of columns given by the CharacterSubset, `character_subset`.
+        of columns given by the CharacterSubset, ``character_subset``.
         Note that this new matrix will still reference the same taxon set.
         """
         if isinstance(character_subset, str):
@@ -1372,7 +1373,7 @@ class CharacterMatrix(
     def export_character_indices(self, indices):
         """
         Returns a new CharacterMatrix (of the same type) consisting only
-        of columns given by the 0-based indices in `indices`.
+        of columns given by the 0-based indices in ``indices``.
         Note that this new matrix will still reference the same taxon set.
         """
         clone = self.__class__(self)
@@ -1388,7 +1389,7 @@ class CharacterMatrix(
 
     def description(self, depth=1, indent=0, itemize="", output=None):
         """
-        Returns description of object, up to level `depth`.
+        Returns description of object, up to level ``depth``.
         """
         if depth is None or depth < 0:
             return
@@ -1444,7 +1445,7 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     class ContinuousCharacterDataSequence(CharacterDataSequence):
         """
         A sequence of continuous character values for a particular taxon or entry
-        in a data matrix. Specializes :class:`CharacterDataSequence` by assuming all
+        in a data matrix. Specializes `CharacterDataSequence` by assuming all
         values are primitive numerics (i.e., either floats or integers) when
         copying or representing self.
         """
@@ -1475,7 +1476,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     """Character data container/manager manager.
 
     That adds the attributes self.state_alphabets (a list of alphabets)
-    and self.default_state_alphabet
+    and ``self.default_state_alphabet``.
     """
 
     class DiscreteCharacterDataSequence(CharacterDataSequence):
@@ -1701,7 +1702,7 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
-    "`standard` data."
+    "``standard`` data."
 
     class StandardCharacterDataSequence(DiscreteCharacterMatrix.DiscreteCharacterDataSequence):
         pass
@@ -1715,7 +1716,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         Unnamed args are passed to clone_from.
 
         A default state alphabet consisting of state symbols of 0-9 will
-        automatically be created unless the `default_state_alphabet=None` is
+        automatically be created unless the ``default_state_alphabet=None`` is
         passed in. To specify a different default state alphabet:
 
             default_state_alphabet=dendropy.new_standard_state_alphabet("abc")

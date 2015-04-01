@@ -217,8 +217,8 @@ def approx_equal(x, y, tol=1e-5):
     return (abs(x - y) < tol)
 
 def vec_approx_equal(x, y, tol=1e-5):
-    """Returns True if each element in the iterable `x` differs by less than
-    `tol` from the corresponding element in `y`
+    """Returns True if each element in the iterable ``x`` differs by less than
+    ``tol`` from the corresponding element in ``y``
     """
     if len(x) != len(y):
         return False
@@ -228,8 +228,8 @@ def vec_approx_equal(x, y, tol=1e-5):
     return True
 
 def mat_approx_equal(x, y, tol=1e-5):
-    """Returns True if each cell in 2D iterable matrix `x` differs by less than
-    `tol` from the corresponding element in `y`
+    """Returns True if each cell in 2D iterable matrix ``x`` differs by less than
+    ``tol`` from the corresponding element in ``y``
     """
     if len(x) != len(y):
         return False
@@ -253,17 +253,17 @@ def _failure(tester, msg):
 def assert_approx_equal(x, y, tester=None, tol=1e-5):
     """Asserts that x and y are approximately equal.
 
-    If `tester` is a unittest.TestCase then assertTrue is used; otherwise
+    If ``tester`` is a unittest.TestCase then assertTrue is used; otherwise
     AssertionErrors are raised.
     """
     if abs(x - y) >= tol:
         _failure(tester, "%f != %f" % (x, y))
 
 def assert_vec_approx_equal(x, y, tester=None, tol=1e-5):
-    """Returns True if each element in the iterable `x` differs by less than
-    `tol` from the corresponding element in `y`
+    """Returns True if each element in the iterable ``x`` differs by less than
+    ``tol`` from the corresponding element in ``y``
 
-    If `tester` is a unittest.TestCase then assertTrue is used; otherwise
+    If ``tester`` is a unittest.TestCase then assertTrue is used; otherwise
     AssertionErrors are raised.
     """
     if len(x) != len(y):
@@ -274,9 +274,9 @@ def assert_vec_approx_equal(x, y, tester=None, tol=1e-5):
             _failure(tester, "%f != %f at element %d" % (i, j, n))
 
 def assert_mat_approx_equal(x, y, tester=None, tol=1e-5):
-    """Returns True if each cell in 2D iterable matrix `x` differs by less than
-    `tol` from the corresponding element in `y`
-    If `tester` is a unittest.TestCase then assertTrue is used; otherwise
+    """Returns True if each cell in 2D iterable matrix ``x`` differs by less than
+    ``tol`` from the corresponding element in ``y``
+    If ``tester`` is a unittest.TestCase then assertTrue is used; otherwise
     AssertionErrors are raised.
     """
     if len(x) != len(y):

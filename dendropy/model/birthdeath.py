@@ -30,60 +30,60 @@ import dendropy
 
 def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
     """
-    Returns a birth-death tree with birth rate specified by `birth_rate`, and
-    death rate specified by `death_rate`, with edge lengths in continuous (real)
+    Returns a birth-death tree with birth rate specified by ``birth_rate``, and
+    death rate specified by ``death_rate``, with edge lengths in continuous (real)
     units.
 
-    `birth_rate_sd` is the standard deviation of the normally-distributed mutation
+    ``birth_rate_sd`` is the standard deviation of the normally-distributed mutation
     added to the birth rate as it is inherited by daughter nodes; if 0, birth
     rate does not evolve on the tree.
 
-    `death_rate_sd` is the standard deviation of the normally-distributed mutation
+    ``death_rate_sd`` is the standard deviation of the normally-distributed mutation
     added to the death rate as it is inherited by daughter nodes; if 0, death
     rate does not evolve on the tree.
 
     Tree growth is controlled by one or more of the following arguments, of which
     at least one must be specified:
 
-        - If `ntax` is given as a keyword argument, tree is grown until the number of
+        - If ``ntax`` is given as a keyword argument, tree is grown until the number of
           tips == ntax.
-        - If `taxon_namespace` is given as a keyword argument, tree is grown until the
+        - If ``taxon_namespace`` is given as a keyword argument, tree is grown until the
           number of tips == len(taxon_namespace), and the taxa are assigned randomly to the
           tips.
         - If 'max_time' is given as a keyword argument, tree is grown for
-          a maximum of `max_time`.
-        - If `gsa_ntax` is given then the tree will be simulated up to this number of
+          a maximum of ``max_time``.
+        - If ``gsa_ntax`` is given then the tree will be simulated up to this number of
           tips (or 0 tips), then a tree will be randomly selected from the
-          intervals which corresond to times at which the tree had exactly `ntax`
+          intervals which corresond to times at which the tree had exactly ``ntax``
           leaves (or len(taxon_namespace) tips). This allows for simulations according to
           the "General Sampling Approach" of [citeHartmannWS2010]_
 
 
     If more than one of the above is given, then tree growth will terminate when
-    *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-    of tips == len(taxon_namespace) or maximum time = `max_time`) are met.
+    *any* of the termination conditions (i.e., number of tips == ``ntax``, or number
+    of tips == len(taxon_namespace) or maximum time = ``max_time``) are met.
 
     Also accepts a Tree object (with valid branch lengths) as an argument passed
-    using the keyword `tree`: if given, then this tree will be used; otherwise
+    using the keyword ``tree``: if given, then this tree will be used; otherwise
     a new one will be created.
 
-    If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
-    otherwise (default), taxa will be assigned. If `taxon_namespace` is given
-    (`tree.taxon_namespace`, if `tree` is given), and the final number of tips on the
+    If ``assign_taxa`` is False, then taxa will *not* be assigned to the tips;
+    otherwise (default), taxa will be assigned. If ``taxon_namespace`` is given
+    (``tree.taxon_namespace``, if ``tree`` is given), and the final number of tips on the
     tree after the termination condition is reached is less then the number of
-    taxa in `taxon_namespace` (as will be the case, for example, when
-    `ntax` < len(`taxon_namespace`)), then a random subset of taxa in `taxon_namespace` will
+    taxa in ``taxon_namespace`` (as will be the case, for example, when
+    ``ntax`` < len(``taxon_namespace``)), then a random subset of taxa in ``taxon_namespace`` will
     be assigned to the tips of tree. If the number of tips is more than the number
-    of taxa in the `taxon_namespace`, new Taxon objects will be created and added
-    to the `taxon_namespace` if the keyword argument `create_required_taxa` is not given as
+    of taxa in the ``taxon_namespace``, new Taxon objects will be created and added
+    to the ``taxon_namespace`` if the keyword argument ``create_required_taxa`` is not given as
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_until_success` is `True` (the
+    In this case, if the keyword argument ``repeat_until_success`` is `True` (the
     default), then a new branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
-    A Random() object or equivalent can be passed using the `rng` keyword;
+    A Random() object or equivalent can be passed using the ``rng`` keyword;
     otherwise GLOBAL_RNG is used.
 
     .. [citeHartmannWS2010] Hartmann, Wong, and Stadler "Sampling Trees from Evolutionary Models" Systematic Biology. 2010. 59(4). 465-476
@@ -116,7 +116,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     if "tree" in kwargs:
         tree = kwargs['tree']
         if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not tree.taxon_namespace:
-            raise ValueError("Cannot specify both `tree` and `taxon_namespace`")
+            raise ValueError("Cannot specify both ``tree`` and ``taxon_namespace``")
     else:
         tree = dendropy.Tree(taxon_namespace=taxon_namespace)
         tree.is_rooted = True
@@ -298,54 +298,54 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
 def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
     """
-    Returns a birth-death tree with birth rate specified by `birth_rate`, and
-    death rate specified by `death_rate`, with edge lengths in discrete (integer)
+    Returns a birth-death tree with birth rate specified by ``birth_rate``, and
+    death rate specified by ``death_rate``, with edge lengths in discrete (integer)
     units.
 
-    `birth_rate_sd` is the standard deviation of the normally-distributed mutation
+    ``birth_rate_sd`` is the standard deviation of the normally-distributed mutation
     added to the birth rate as it is inherited by daughter nodes; if 0, birth
     rate does not evolve on the tree.
 
-    `death_rate_sd` is the standard deviation of the normally-distributed mutation
+    ``death_rate_sd`` is the standard deviation of the normally-distributed mutation
     added to the death rate as it is inherited by daughter nodes; if 0, death
     rate does not evolve on the tree.
 
     Tree growth is controlled by one or more of the following arguments, of which
     at least one must be specified:
 
-        - If `ntax` is given as a keyword argument, tree is grown until the number of
+        - If ``ntax`` is given as a keyword argument, tree is grown until the number of
           tips == ntax.
-        - If `taxon_namespace` is given as a keyword argument, tree is grown until the
+        - If ``taxon_namespace`` is given as a keyword argument, tree is grown until the
           number of tips == len(taxon_namespace), and the taxa are assigned randomly to the
           tips.
-        - If 'max_time' is given as a keyword argument, tree is grown for `max_time`
+        - If 'max_time' is given as a keyword argument, tree is grown for ``max_time``
           number of generations.
 
     If more than one of the above is given, then tree growth will terminate when
-    *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-    of tips == len(taxon_namespace) or number of generations = `max_time`) are met.
+    *any* of the termination conditions (i.e., number of tips == ``ntax``, or number
+    of tips == len(taxon_namespace) or number of generations = ``max_time``) are met.
 
     Also accepts a Tree object (with valid branch lengths) as an argument passed
-    using the keyword `tree`: if given, then this tree will be used; otherwise
+    using the keyword ``tree``: if given, then this tree will be used; otherwise
     a new one will be created.
 
-    If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
-    otherwise (default), taxa will be assigned. If `taxon_namespace` is given
-    (`tree.taxon_namespace`, if `tree` is given), and the final number of tips on the
+    If ``assign_taxa`` is False, then taxa will *not* be assigned to the tips;
+    otherwise (default), taxa will be assigned. If ``taxon_namespace`` is given
+    (``tree.taxon_namespace``, if ``tree`` is given), and the final number of tips on the
     tree after the termination condition is reached is less then the number of
-    taxa in `taxon_namespace` (as will be the case, for example, when
-    `ntax` < len(`taxon_namespace`)), then a random subset of taxa in `taxon_namespace` will
+    taxa in ``taxon_namespace`` (as will be the case, for example, when
+    ``ntax`` < len(``taxon_namespace``)), then a random subset of taxa in ``taxon_namespace`` will
     be assigned to the tips of tree. If the number of tips is more than the number
-    of taxa in the `taxon_namespace`, new Taxon objects will be created and added
-    to the `taxon_namespace` if the keyword argument `create_required_taxa` is not given as
+    of taxa in the ``taxon_namespace``, new Taxon objects will be created and added
+    to the ``taxon_namespace`` if the keyword argument ``create_required_taxa`` is not given as
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_until_success` is `True`, then a new
+    In this case, if the keyword argument ``repeat_until_success`` is `True`, then a new
     branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
-    A Random() object or equivalent can be passed using the `rng` keyword;
+    A Random() object or equivalent can be passed using the ``rng`` keyword;
     otherwise GLOBAL_RNG is used.
     """
     if 'ntax' not in kwargs \
@@ -369,7 +369,7 @@ def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_r
     if "tree" in kwargs:
         tree = kwargs['tree']
         if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not tree.taxon_namespace:
-            raise ValueError("Cannot specify both `tree` and `taxon_namespace`")
+            raise ValueError("Cannot specify both ``tree`` and ``taxon_namespace``")
     else:
         tree = dendropy.Tree(taxon_namespace=taxon_namespace)
         tree.is_rooted = True
@@ -462,8 +462,8 @@ def fit_pure_birth_model(**kwargs):
     Calculates the maximum-likelihood estimate of the birth rate of a set of
     *internal* node ages under a Yule (pure-birth) model.
 
-    Requires either a :class:`Tree` object or an interable of *internal* node
-    ages to be passed in via keyword arguments `tree` or `internal_node_ages`,
+    Requires either a `Tree` object or an interable of *internal* node
+    ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``,
     respectively. The former is more convenient when doing one-off
     calculations, while the latter is more efficient if the list of internal
     node ages needs to be used in other places and you already have it
@@ -475,20 +475,20 @@ def fit_pure_birth_model(**kwargs):
 
         Exactly *one* of the following *must* be specified:
 
-            tree : a :class:`Tree` object.
-                A :class:`Tree` object. The tree needs to be ultrametric for the
+            tree : a `Tree` object.
+                A `Tree` object. The tree needs to be ultrametric for the
                 internal node ages (time from each internal node to the tips)
                 to make sense. The precision by which the ultrametricity is
-                checked can be specified using the `ultrametricity_precision` keyword
-                argument (see below). If `tree` is given, then
-                `internal_node_ages` cannot be given, and vice versa. If `tree`
-                is not given, then `internal_node_ages` must be given.
+                checked can be specified using the ``ultrametricity_precision`` keyword
+                argument (see below). If ``tree`` is given, then
+                ``internal_node_ages`` cannot be given, and vice versa. If ``tree``
+                is not given, then ``internal_node_ages`` must be given.
             internal_node_ages : iterable (of numerical values)
                 Iterable of node ages of the internal nodes of a tree, i.e., the
                 list of sum of the edge lengths between each internal node and
-                the tips of the tree. If `internal_node_ages` is given, then
-                `tree` cannot be given, and vice versa. If `internal_node_ages`
-                is not given, then `tree` must be given.
+                the tips of the tree. If ``internal_node_ages`` is given, then
+                ``tree`` cannot be given, and vice versa. If ``internal_node_ages``
+                is not given, then ``tree`` must be given.
 
         While the following is optional, and is only used if internal node ages
         need to be calculated (i.e., 'tree' is passed in).
@@ -497,16 +497,16 @@ def fit_pure_birth_model(**kwargs):
                 When calculating the node ages, an error will be raised if the tree in
                 o ultrametric. This error may be due to floating-point or numerical
                 imprecision. You can set the precision of the ultrametricity validation
-                by setting the `ultrametricity_precision` parameter. E.g., use `ultrametricity_precision=0.01` for
+                by setting the ``ultrametricity_precision`` parameter. E.g., use `ultrametricity_precision=0.01` for
                 a more relaxed precision, down to 2 decimal places. Use
                 `ultrametricity_precision=False` to disable checking of ultrametricity precision.
 
             ignore_likelihood_calculation_failure: bool (default: False)
                 In some cases (typically, abnormal trees, e.g., 1-tip), the
                 likelihood estimation will fail. In this case a ValueError will
-                be raised. If `ignore_likelihood_calculation_failure` is
+                be raised. If ``ignore_likelihood_calculation_failure`` is
                 `True`, then the function call will still succeed, with the
-                likelihood set to -`inf`.
+                likelihood set to -``inf``.
 
     Returns
     -------
@@ -609,7 +609,7 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
 
     Parameters
     ----------
-    tree : :class:`Tree` object
+    tree : `Tree` object
         A tree to be fitted.
 
     Returns

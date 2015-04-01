@@ -47,9 +47,9 @@ class PhylogeneticIndependentConstrasts(object):
 
         Parameters
         ----------
-        tree : :class:`Tree` object
+        tree : `Tree` object
             Tree to use.
-        char_matrix : :class:`ContinuousCharacterMatrix`
+        char_matrix : `ContinuousCharacterMatrix`
             ContinuousCharacterMatrix that is the source of the data
         polytomy_strategy
             One of: 'error', 'ignore', 'resolve':
@@ -101,18 +101,18 @@ class PhylogeneticIndependentConstrasts(object):
             self._tree.resolve_polytomies()
         self.is_dirty = True
     tree = property(_get_tree, _set_tree, None, """\
-            This tree will have an attribute added to each node, `pic`. This
+            This tree will have an attribute added to each node, ``pic``. This
             attribute will be a dictionary with character (column) index as
             keys. Each column index will map to another dictionary that has the
             following keys (and values):
 
-                - `pic_state_value`
-                - `pic_state_variance`
-                - `pic_contrast_raw`
-                - `pic_contrast_variance`
-                - `pic_contrast_standardized`
-                - `pic_edge_length_error`
-                - `pic_corrected_edge_length`
+                - ``pic_state_value``
+                - ``pic_state_variance``
+                - ``pic_contrast_raw``
+                - ``pic_contrast_variance``
+                - ``pic_contrast_standardized``
+                - ``pic_edge_length_error``
+                - ``pic_corrected_edge_length``
             """)
 
     def _get_char_matrix(self):
@@ -139,13 +139,13 @@ class PhylogeneticIndependentConstrasts(object):
         This second dictionary has the node's id as a key and as a value the a
         dictionary with the following:
 
-                - `pic_state_value`
-                - `pic_state_variance`
-                - `pic_contrast_raw`
-                - `pic_contrast_variance`
-                - `pic_contrast_standardized`
-                - `pic_edge_length_error`
-                - `pic_corrected_edge_length`
+                - ``pic_state_value``
+                - ``pic_state_variance``
+                - ``pic_contrast_raw``
+                - ``pic_contrast_variance``
+                - ``pic_contrast_standardized``
+                - ``pic_edge_length_error``
+                - ``pic_corrected_edge_length``
 
         """
         if character_index in self._character_contrasts:
@@ -227,15 +227,15 @@ class PhylogeneticIndependentConstrasts(object):
         """
         Returns a Tree object annotated with the following attributes added
         to each node (as annotations to be serialized if
-        `annotate_pic_statistics` is True):
+        ``annotate_pic_statistics`` is True):
 
-            - `pic_state_value`
-            - `pic_state_variance`
-            - `pic_contrast_raw`
-            - `pic_contrast_variance`
-            - `pic_contrast_standardized`
-            - `pic_edge_length_error`
-            - `pic_corrected_edge_length`
+            - ``pic_state_value``
+            - ``pic_state_variance``
+            - ``pic_contrast_raw``
+            - ``pic_contrast_variance``
+            - ``pic_contrast_standardized``
+            - ``pic_edge_length_error``
+            - ``pic_corrected_edge_length``
 
         """
         contrasts = self._get_contrasts(character_index)
@@ -254,40 +254,40 @@ class PhylogeneticIndependentConstrasts(object):
 
 def evolve_continuous_char(node, rng=None, **kwargs):
     """
-    Takes a node and a random number generator object, `rng` This function
-    "evolves" a set of rates on the subtree descending from the  `node`.
+    Takes a node and a random number generator object, ``rng`` This function
+    "evolves" a set of rates on the subtree descending from the  ``node``.
 
     kwargs keys that are used are:
 
-    `roeotroe`
+    ``roeotroe``
         the rate of evolution of the rate of evolution. This
         parameter that controls the degree of deviations away from the
         molecular clock.
-    `min_rate`
+    ``min_rate``
         is the minimum rate (default None)
-    `max_rate`
+    ``max_rate``
         is the maximum rate (default None),
-    `model`
+    ``model``
         is a string specifying the name of the model. Currently only the
         KTB (Kishino, Thorne, Bruno) is supported
-    `time_attr`
+    ``time_attr``
         is a string that specifies the name of the attribute
         that returns the branch length in terms of time for a node. The
         default is "edge_length"
-    `val_attr`
+    ``val_attr``
         is the string that specifies the name of the attribute
         used to hold the value that is evolving along the nodes.  The root
         of the subtree is assumed to have this field on calling of the
         function.  On success all nodes in the subtree will have the
         attribute.  The default is "mutation_rate"
-    `mean_val_attr`
+    ``mean_val_attr``
         if specified this is string that gives the name of
         attribute in each node that is mean value for the branch (default is
         None). This is filled in after time_attr and val_attr are read,
         so it is permissible to have this attribute match one of thos
         strings (although it will make the model odd if the mean_val_attr
         is the same as the val_attr)
-        `constrain_rate_mode`
+        ``constrain_rate_mode``
         controls the behavior when the minimum or maximum rate is
         simulated. The choices are "crop", and "linear_bounce" "crop" means
         that the rate is set to the most extreme value allowed.
@@ -364,13 +364,13 @@ def evolve_continuous_char(node, rng=None, **kwargs):
 
 def _bounce_constrain(start_x, x, min_x=None, max_x=None):
     """Returns the value of variable and its mean value over a path.
-    We assume that some variable started at `start_x` and moved toward `x`, but
-    has to bounce of barriers specified by `min_x` and `max_x`.
+    We assume that some variable started at ``start_x`` and moved toward ``x``, but
+    has to bounce of barriers specified by ``min_x`` and ``max_x``.
 
-    `x` determines the direction and magnitude of the change.
+    ``x`` determines the direction and magnitude of the change.
 
-    `start_x` must fall in the legal range (between the min and max). If
-    `x` is also legal, then (x, (x + start_x)/2.0) will be returned reflecting
+    ``start_x`` must fall in the legal range (between the min and max). If
+    ``x`` is also legal, then (x, (x + start_x)/2.0) will be returned reflecting
     the fact that the arithmetic mean of the endpoints represents the mean value
     of the variable if it took a direct path (at constant rate).
     """
@@ -409,17 +409,17 @@ def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
     """
     Returns a simulated rate for the head node of a tree when:
 
-        * the tail node has rate `starting_rate`
-        * the time duration of the edge is `duration`
-        * the rate of evolution of the rate of evolution is `roeotroe` (this is
+        * the tail node has rate ``starting_rate``
+        * the time duration of the edge is ``duration``
+        * the rate of evolution of the rate of evolution is ``roeotroe`` (this is
             the parameter nu in Kishino, Thorne, and Bruno 2001)
-    `rng` is a random number generator.
+    ``rng`` is a random number generator.
 
     The model used to generate the rate is the one described by Thorne, Kishino,
     and Painter 1998.  The descendant rates or lognormally distributed.
-    The mean rate returned will have an expectation of `starting_rate`
+    The mean rate returned will have an expectation of ``starting_rate``
     The variance of the normal distribution for the logarithm of the ending rate
-        is the product of `duration` and `roeotroe`
+        is the product of ``duration`` and ``roeotroe``
     """
     rate_var = duration*roeotroe
     if rate_var > 0.0:
@@ -430,17 +430,17 @@ def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
 def _calc_KTB_rate(starting_rate, duration, roeotroe, rng):
     """
     Returns a simulated rate for the head node of a tree when:
-        * the tail node has rate `starting_rate`
-        * the time duration of the edge is `duration`
-        * the rate of evolution of the rate of evolution is `roeotroe` (this is
+        * the tail node has rate ``starting_rate``
+        * the time duration of the edge is ``duration``
+        * the rate of evolution of the rate of evolution is ``roeotroe`` (this is
             the parameter nu in Kishino, Thorne, and Bruno 2001)
-    `rng` is a random number generator.
+    ``rng`` is a random number generator.
 
     The model used to generate the rate is the one described by Kishino, Thorne,
     and Bruno 2001.  The descendant rates or lognormally distributed.
-    The mean rate returned will have an expectation of `starting_rate`
+    The mean rate returned will have an expectation of ``starting_rate``
     The variance of the normal distribution for the logarithm of the ending rate
-        is the product of `duration` and `roeotroe`
+        is the product of ``duration`` and ``roeotroe``
     """
     if starting_rate <= 0.0:
         raise ValueError("starting_rate must be positive in the KTB model")

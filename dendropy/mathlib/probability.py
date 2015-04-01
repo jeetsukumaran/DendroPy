@@ -34,7 +34,7 @@ def factorial(num):
     return result
 
 def binomial_coefficient(population, sample):
-    "Returns  `population` choose `sample`."
+    "Returns  ``population`` choose ``sample``."
     s = max(sample, population - sample)
     assert s <= population
     assert population > -1
@@ -83,7 +83,7 @@ def exp_pdf(value, rate):
 def poisson_rv(rate, rng=None):
     """
     Returns a random number from a Poisson distribution with rate of
-    `rate` (mean of 1/rate).
+    ``rate`` (mean of 1/rate).
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -103,7 +103,7 @@ def poisson_rv(rate, rng=None):
 def num_poisson_events(rate, period, rng=None):
     """
     Returns the number of events that have occurred in a Poisson
-    process of `rate` over `period`.
+    process of ``rate`` over ``period``.
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -117,15 +117,15 @@ def num_poisson_events(rate, period, rng=None):
 
 def poisson_pmf(k, rate):
     """
-    Returns the probability of a number, `k`, drawn from a Poisson distribution
-    with rate parameter, `rate` (= 1/mean).
+    Returns the probability of a number, ``k``, drawn from a Poisson distribution
+    with rate parameter, ``rate`` (= 1/mean).
     """
     mean = 1.0/rate
     return float((mean ** k) * math.exp(-mean))/factorial(k)
 
 def sample_multinomial(probs, rng=None):
-    """Returns the index of the probability bin in `probs`.
-    `probs` is assumed to sum to 1.0 (all rounding error contributes to the
+    """Returns the index of the probability bin in ``probs``.
+    ``probs`` is assumed to sum to 1.0 (all rounding error contributes to the
     last bin).
     """
     if rng is None:
@@ -140,8 +140,8 @@ def sample_multinomial(probs, rng=None):
 def weighted_choice(seq, weights, rng=None):
     """
     Selects an element out of seq, with probabilities of each element
-    given by the list `weights` (which must be at least as long as the
-    length of `seq` - 1).
+    given by the list ``weights`` (which must be at least as long as the
+    length of ``seq`` - 1).
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -299,9 +299,9 @@ def geometric_rv(p, rng=None):
 
 def hypergeometric_pmf(x, m, n, k):
     """
-    Given a population consisting of `m` items of class M and `n` items of class N,
-    this returns the probability of observing `x` items of class M when sampling
-    `k` times without replacement from the entire population (i.e., {M,N})
+    Given a population consisting of ``m`` items of class M and ``n`` items of class N,
+    this returns the probability of observing ``x`` items of class M when sampling
+    ``k`` times without replacement from the entire population (i.e., {M,N})
 
             p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)
     """
@@ -309,9 +309,9 @@ def hypergeometric_pmf(x, m, n, k):
 
 def hypergeometric_pmf(x, m, n, k):
     """
-    Given a population consisting of `m` items of class M and `n` items of class N,
-    this returns the probability of observing `x` items of class M when sampling
-    `k` times without replacement from the entire population (i.e., {M,N})
+    Given a population consisting of ``m`` items of class M and ``n`` items of class N,
+    this returns the probability of observing ``x`` items of class M when sampling
+    ``k`` times without replacement from the entire population (i.e., {M,N})
 
             p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)
     """

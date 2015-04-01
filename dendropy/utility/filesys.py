@@ -88,11 +88,11 @@ class LineReadingThread(Thread):
         """
         __init__ processes the following arguments:
 
-            - `lineCallback` is the callable that takes a string that is each line, and returns False to stop reading.  This is a way of using the class without sub-classing and overriding keep_going
-            - `stream` is in input file-like object
-            - `filename` can be sent instead of `stream`, it should be the path to the file to read.
-            - `stop_event` is an Event, that will kill the thread if it is triggered.
-            - `sleep_interval` is the interval to sleep while waiting for a new tree to appear.
+            - ``lineCallback`` is the callable that takes a string that is each line, and returns False to stop reading.  This is a way of using the class without sub-classing and overriding keep_going
+            - ``stream`` is in input file-like object
+            - ``filename`` can be sent instead of ``stream``, it should be the path to the file to read.
+            - ``stop_event`` is an Event, that will kill the thread if it is triggered.
+            - ``sleep_interval`` is the interval to sleep while waiting for a new tree to appear.
 
         All other arguments are passed to the Thread.__init__()
         """
@@ -113,9 +113,9 @@ class LineReadingThread(Thread):
                         args=tuple(*args), kwargs=dict(**kwargs))
 
     def wait_for_file_to_appear(self, filename):
-        """Blocks until the file `filename` appears or stop_event is triggered.
+        """Blocks until the file ``filename`` appears or stop_event is triggered.
 
-        Returns True if `filename` exists.
+        Returns True if ``filename`` exists.
 
         Checks for the stop_event *before* checking for the file existence.
         (paup_wrap and raxml_wrap threads depend on this behavior).
@@ -129,7 +129,7 @@ class LineReadingThread(Thread):
             time.sleep(self.sleep_interval)
 
     def open_file_when_exists(self, filename):
-        """Blocks until the file `filename` appears and then returns a file
+        """Blocks until the file ``filename`` appears and then returns a file
         object opened in rU mode.
 
         Returns None if the stop event is triggered.
