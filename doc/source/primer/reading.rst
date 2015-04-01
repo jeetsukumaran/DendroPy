@@ -16,7 +16,11 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
     :meth:`get_from_string(src, schema, **kwargs)`
         Takes a string containing the source data as the first argument, and a string specifying the schema as the second.
 
-All these methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
+A "schema" is DendroPy-speak for "format" (we cannot use the argument name "format" because this is a Python built-in, and hence we adopted this terminology for consistency), and is specified using one of a set of predefined string values.
+The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
+Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+
+All ":meth:`get_from_*()`"  methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
@@ -24,17 +28,6 @@ All these methods minimally take a source and :ref:`schema specification string 
     >>> dna1 = dendropy.DnaCharacterMatrix.get_from_stream(open("pythonidae.fasta"), "dnafasta")
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
-
-The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
-
-Alternatively, you can also pass a file-like object and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
-
-    >>> import dendropy
-    >>> tree1 = dendropy.Tree(stream=open("mle.tre"), schema="newick")
-    >>> tree_list1 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), schema="nexus")
-    >>> dna1 = dendropy.DnaCharacterMatrix(stream=open("pythonidae.fasta"), schema="dnafasta")
-    >>> std1 = dendropy.StandardCharacterMatrix(stream=open("python_morph.nex"), schema="nexus")
-    >>> dataset1 = dendropy.DataSet(stream=open("pythonidae.nex"), schema="nexus")
 
 Various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space. These are discussed :ref:`below <Customizing_Data_Creation_and_Reading>`.
 
