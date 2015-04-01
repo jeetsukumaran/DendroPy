@@ -1,6 +1,6 @@
 
 *********************************************************************
-:mod:`dendropy.datamodel.treecollectionmodel` -- Collections of Trees
+Collections of Trees -- :mod:`dendropy.datamodel.treecollectionmodel`
 *********************************************************************
 
 .. module:: dendropy.datamodel.treecollectionmodel
@@ -11,5 +11,15 @@
 The :class:`TreeList` Class
 ===========================
 .. autoclass:: dendropy.datamodel.treecollectionmodel.TreeList
+    :members:
+
+The :class:`TreeArray` Class
+============================
+.. autoclass:: dendropy.datamodel.treecollectionmodel.TreeArray
+    :members:
+
+The :class:`SplitDistribution` Class
+====================================
+.. autoclass:: dendropy.datamodel.treecollectionmodel.SplitDistribution
     :members:
 

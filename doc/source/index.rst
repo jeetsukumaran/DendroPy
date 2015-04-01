@@ -95,16 +95,15 @@ Bug Reports and Other Issues
 ============================
 
 Everyone has issues.
-
-And sometimes, not pointing them out is enabling rather than helping. So, if you encounter or even *think* you have encountered a bug or a problem in the way DendroPy works, please report it on the |dendropy_issues|_ page.
+And sometimes, not pointing them out is enabling rather than helping. So, if you encounter or think you have encountered a problem in the way DendroPy works, please report it on the |dendropy_issues|_ page.
 The DendroPy library has a really large suite of tests, but it is also a really, really, really, *really* large and complex library, and there are many nooks and crannies in which can scurry many crooks and nannies, so you will be doing us *and* the community a really generous favor by reporting bugs and problems.
 Even if you are not sure if you are actually dealing with a bug, please do not hesitate to report it as an issue: false positives are better than false negatives in this context.
 
 Having said that, *please* do take the trouble to write-up a decent bug report.
-It really is quite frustrating to receive vague and lackadaisical "reports" that are little more than blurted-into-keyboard stream-of-consciousness reaction to what you just saw on the screen (e.g., "doesn't work").
+It really is quite frustrating to receive vague and lackadaisical "reports" that are little more than stream-of-consciousness responses to stimuli from the monitor that were almost accidentally blurted into the keyboard (e.g., "doesn't work").
 At the very least, you should provide:
 
-    -   An coherent summary of what occurred, describing the operation that you were trying to do, and the result that you observed that led you to think there is an error.
+    -   A brief explication of what occurred, describing the operation that you were trying to do, and the result (or non-result) that you observed that led you to think there is an error.
     -   The environment in which this error occurred. This includes, at the very least, the operating system, as well as things such as the python version, DendroPy version, the installation locations of DendroPy and the Python libraries, etc. Apart from the operating system, you can retrieve all this information by running the following command::
 
             $ python -m dendropy
@@ -112,7 +111,7 @@ At the very least, you should provide:
         The version of SumTrees that ships with DendroPy 4 onwards includes a special flag, "``--describe``" (i.e., you would type "``sumtrees.py --describe``"), that also provides this information.
         Including the details of either of these commands in their entirety along with the operating system is not only useful, but essential.
     -   We have gone to great lengths to write sensible and meaningful error messages, and that chunk of text that usually appears on the screen on error (i.e., the "stack trace") is packed with useful information, and should be included in its entirety should it appear.
-    -   We need to be able to reproduce the error on our side to be able to fix. Thus, providing a *self-contained* and *minimum* example of the error is crucial. This might involve a little bit of work on your side, to extract the essential bits of code from their context and to ensure that it can run, at least, up to the point where it does not due to the error. The "steps to reproduce" section of a bug report is so important, that anyone who makes sure to include a good one into their bug report can expect strawberry cheesecake and a orange mocha frappuccino delivered to them once a day for the rest of their natural lives.
+    -   We need to be able to reproduce the error on our side to be able to fix. Thus, providing a *self-contained* and *minimum* example of the error is crucial. This might involve a little bit of work on your side, to extract the essential bits of code from their context and to ensure that it can run, at least, up to the point where it does not due to the error. The "steps to reproduce" section of a bug report is so important and useful that anyone who makes sure to include a good one into their bug report would be perfectly justified in expecting that strawberry cheesecake and a orange mocha frappuccino get delivered to their doorstep the moment the report is posted.
 
 Help, Discussion, and Comments
 ==============================

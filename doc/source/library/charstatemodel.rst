@@ -1,6 +1,6 @@
-**************************************************************************************
-:mod:`dendropy.datamodel.charstatemodel` -- (Character) State Identities and Alphabets
-**************************************************************************************
+************************************************************************************
+Character State Identities and Alphabets -- :mod:`dendropy.datamodel.charstatemodel`
+************************************************************************************
 
 .. module:: dendropy.datamodel.charstatemodel
 

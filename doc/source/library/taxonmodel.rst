@@ -1,5 +1,5 @@
 **************************************************
-:mod:`dendropy.datamodel.taxonmodel` -- Taxon Data
+Taxon Data -- :mod:`dendropy.datamodel.taxonmodel`
 **************************************************
 
 .. module:: dendropy.datamodel.taxonmodel

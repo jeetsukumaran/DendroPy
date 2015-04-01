@@ -1,5 +1,5 @@
 ********************************************
-:mod:`dendropy.datamodel.treemodel` -- Trees
+Trees -- :mod:`dendropy.datamodel.treemodel`
 ********************************************
 
 .. module:: dendropy.datamodel.treemodel
@@ -21,3 +21,9 @@ The :class:`Edge` Class
 =======================
 .. autoclass:: dendropy.datamodel.treemodel.Edge
     :members:
+
+The :class:`Bipartition` Class
+==============================
+.. autoclass:: dendropy.datamodel.treemodel.Bipartition
+    :members:
+
