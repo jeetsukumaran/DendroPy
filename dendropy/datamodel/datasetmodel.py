@@ -301,9 +301,9 @@ class DataSet(
 
     def attach_taxon_namespace(self, taxon_namespace=None):
         """
-        Forces all read() calls of this DataSet to use the same TaxonSet. If
-        ``taxon_namespace`` If ``taxon_namespace`` is None, then a new TaxonSet will be
-        created, added to self.taxa, and that is the TaxonSet that will be
+        Forces all read() calls of this DataSet to use the same |TaxonNamespace|. If
+        ``taxon_namespace`` If ``taxon_namespace`` is None, then a new |TaxonNamespace| will be
+        created, added to ``self.taxa``, and that is the |TaxonNamespace| that will be
         attached.
         """
         if taxon_namespace is None:
@@ -317,6 +317,9 @@ class DataSet(
         return self.attached_taxon_namespace
 
     def detach_taxon_namespace(self):
+        """
+        Relaxes constraint forcing all
+        """
         t = self.attached_taxon_namespace
         self.attached_taxon_namespace = None
         return t
@@ -438,7 +441,7 @@ class DataSet(
 
     def detach_taxon_set(self):
         """
-        DEPRECATED: Use `DataSet.detach_taxon_namespace()` instead.
+        DEPRECATED: Use `detach_taxon_namespace()` instead.
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",

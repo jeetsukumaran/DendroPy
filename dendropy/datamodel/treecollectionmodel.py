@@ -681,7 +681,7 @@ class TreeList(
         """
         In-place addition of |Tree| objects in ``other`` to ``self``.
 
-        If ``other`` is a |TreeList|, then the `Trees` are *copied*
+        If ``other`` is a |TreeList|, then the trees are *copied*
         and migrated into ``self.taxon_namespace``; otherwise, the original
         objects are migrated into ``self.taxon_namespace`` and added directly.
 
@@ -706,7 +706,7 @@ class TreeList(
         """
         In-place addition of |Tree| objects in ``other`` to ``self``.
 
-        If ``other`` is a |TreeList|, then the `Trees` are *copied*
+        If ``other`` is a |TreeList|, then the trees are *copied*
         and migrated into ``self.taxon_namespace``; otherwise, the original
         objects are migrated into ``self.taxon_namespace`` and added directly.
 
@@ -722,9 +722,9 @@ class TreeList(
 
     def __add__(self, other):
         """
-        Creates and returns new |TreeList| with clones of all `Trees` in ``self``
+        Creates and returns new |TreeList| with clones of all trees in ``self``
         as well as all |Tree| objects in ``other``.  If ``other`` is a
-        |TreeList|, then the `Trees` are *cloned* and migrated into
+        |TreeList|, then the trees are *cloned* and migrated into
         ``self.taxon_namespace``; otherwise, the original objects are migrated into
         ``self.taxon_namespace`` and added directly.
 
@@ -920,8 +920,8 @@ class TreeList(
 
     def as_tree_array(self, **kwargs):
         """
-        Return `TreeArray` collecting information on splits in contained
-        trees. Keyword arguments get passed directly to `TreeArray`
+        Return |TreeArray| collecting information on splits in contained
+        trees. Keyword arguments get passed directly to |TreeArray|
         constructor.
         """
         ta = TreeArray.from_tree_list(
@@ -2202,8 +2202,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
-        tree_array : `TreeArray`
-            A `TreeArray` instance from which to add data.
+        tree_array : |TreeArray|
+            A |TreeArray| instance from which to add data.
 
         """
         assert self.taxon_namespace is tree_array.taxon_namespace
@@ -2223,15 +2223,15 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
         Parameters
         ----------
-        tree_array : `TreeArray`
-            A `TreeArray` instance from which to add data.
+        tree_array : |TreeArray|
+            A |TreeArray| instance from which to add data.
 
         """
         return self.extend(tree_array)
 
     def __add__(self, other):
         """
-        Creates and returns new `TreeArray`.
+        Creates and returns new |TreeArray|.
 
         Parameters
         ----------
@@ -2239,8 +2239,8 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
 
         Returns
         -------
-        tlist : `TreeArray` object
-            `TreeArray` object containing clones of |Tree| objects
+        tlist : |TreeArray| object
+            |TreeArray| object containing clones of |Tree| objects
             in ``self`` and ``other``.
         """
         ta = TreeArray(
