@@ -3056,8 +3056,7 @@ class Tree(
             handling. The following optional keyword arguments are recognized
             and handled by this constructor:
 
-                ``label``
-                    The label the tree |Tree| object.
+                - ``label``: The label the tree |Tree| object.
 
             Other keyword arguments may be available, depending on the
             implementation of the reader specialized to handle ``schema``
