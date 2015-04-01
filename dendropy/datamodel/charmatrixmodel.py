@@ -1600,7 +1600,7 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     Specializes |CharacterMatrix| for continuous data.
 
     Sequences stored using |ContinuousCharacterDataSequence|, with values of
-    elements assumed to be ``float``(-like).
+    elements assumed to be ``float`` .
     """
 
     class ContinuousCharacterDataSequence(CharacterDataSequence):
@@ -1738,7 +1738,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 T2 C-T
                 T3 GC?
 
-            Return with ``gaps_as_missing==True``:
+            Return with ``gaps_as_missing==True`` ::
 
                 {
                     <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
@@ -1746,7 +1746,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                     <T3> : [ set([2]), set([1]),        set([0,1,2,3]) ],
                 }
 
-            Return with ``gaps_as_missing==False``:
+            Return with ``gaps_as_missing==False`` ::
 
                 {
                     <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
