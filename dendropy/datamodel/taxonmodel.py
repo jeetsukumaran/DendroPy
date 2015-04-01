@@ -523,7 +523,7 @@ class TaxonNamespace(
         >>> Z
 
         In contrast to actual data (i.e., the |Taxon| objects), alll
-        metadata associated with "``tns2``" (i.e., the `AnnotationSet` object,
+        metadata associated with "``tns2``" (i.e., the |AnnotationSet| object,
         in the :attr:`TaxonNamespace.annotations` attribute), will be a full,
         independent deep-copy.
 

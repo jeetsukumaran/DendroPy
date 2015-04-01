@@ -67,9 +67,9 @@ class DataObject(object):
 
                 - 0: shallow-copy: All member objects are references,
                   except for :attr:``annotation_set`` of top-level object and
-                  member `Annotation` objects: these are full,
+                  member |Annotation| objects: these are full,
                   independent instances (though any complex objects in the
-                  ``value`` field of `Annotation` objects are also
+                  ``value`` field of |Annotation| objects are also
                   just references).
                 - 1: taxon-namespace-scoped copy: All member objects are full
                   independent instances, *except* for |TaxonNamespace|
@@ -487,11 +487,11 @@ class Annotable(object):
             other,
             attribute_object_mapper=None):
         """
-        Copies annotations from ``other``, which must be of `Annotable`
+        Copies annotations from ``other``, which must be of |Annotable|
         type.
 
-        Copies are deep-copies, in that the `Annotation` objects added
-        to the ``annotation_set`` `AnnotationSet` collection of ``self`` are
+        Copies are deep-copies, in that the |Annotation| objects added
+        to the ``annotation_set`` |AnnotationSet| collection of ``self`` are
         independent copies of those in the ``annotate_set`` collection of
         ``other``. However, dynamic bound-attribute annotations retain references
         to the original objects as given in ``other``, which may or may not be
@@ -499,25 +499,25 @@ class Annotable(object):
         are bound via mappings found in ``attribute_object_mapper``.
         In dynamic bound-attribute annotations, the ``_value`` attribute of the
         annotations object (:attr:`Annotation._value`) is a tuple consisting of
-        "``(obj, attr_name)``", which instructs the `Annotation` object to
+        "``(obj, attr_name)``", which instructs the |Annotation| object to
         return "``getattr(obj, attr_name)``" (via: "``getattr(*self._value)``")
         when returning the value of the Annotation. "``obj``" is typically the object
-        to which the `AnnotationSet` belongs (i.e., ``self``). When a copy
-        of `Annotation` is created, the object reference given in the
+        to which the |AnnotationSet| belongs (i.e., ``self``). When a copy
+        of |Annotation| is created, the object reference given in the
         first element of the ``_value`` tuple of dynamic bound-attribute
         annotations are unchanged, unless the id of the object reference is fo
 
         Parameters
         ----------
 
-        ``other`` : `Annotable`
+        ``other`` : |Annotable|
             Source of annotations to copy.
 
         ``attribute_object_mapper`` : dict
             Like the ``memo`` of ``__deepcopy__``, maps object id's to objects. The
             purpose of this is to update the parent or owner objects of dynamic
             attribute annotations.
-            If a dynamic attribute `Annotation`
+            If a dynamic attribute |Annotation|
             gives object ``x`` as the parent or owner of the attribute (that is,
             the first element of the :attr:`Annotation._value` tuple is
             ``other``) and ``id(x)`` is found in ``attribute_object_mapper``,
@@ -525,7 +525,7 @@ class Annotable(object):
             ``attribute_object_mapper[id(x)]``.
             If ``attribute_object_mapper`` is `None` (default), then the
             following mapping is automatically inserted: ``id(other): self``.
-            That is, any references to ``other`` in any `Annotation`
+            That is, any references to ``other`` in any |Annotation|
             object will be remapped to ``self``.  If really no reattribution
             mappings are desired, then an empty dictionary should be passed
             instead.
@@ -573,10 +573,10 @@ class Annotable(object):
     def __copy__(self, memo=None):
         """
         Cloning level: 0.
-        :attr:``annotation_set`` of top-level object and member `Annotation`
+        :attr:``annotation_set`` of top-level object and member |Annotation|
         objects are full, independent instances. All other member objects (include
         objects referenced by dynamically-bound attribute values of
-        `Annotation` objects) are references.
+        |Annotation| objects) are references.
         All member objects are references, except for
         """
         if memo is None:
@@ -882,8 +882,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : `Annotation`
-            The new `Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if not name_is_prefixed:
             if name_prefix is None and namespace is None:
@@ -954,8 +954,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : `Annotation`
-            The new `Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if annotation_name is None:
             annotation_name = attr_name
@@ -1030,8 +1030,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : `Annotation`
-            The new `Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if read_as == "bibtex":
             return self.add_bibtex(citation=citation,
@@ -1080,8 +1080,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : `Annotation`
-            The new `Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
@@ -1209,8 +1209,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : `AnnotationSet` or `None`
-            `AnnotationSet` containing `Annotation` objects that
+        results : |AnnotationSet| or `None`
+            |AnnotationSet| containing |Annotation| objects that
             match criteria, or `None` if no matching annotations found.
         """
         results = []
@@ -1235,8 +1235,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : `Annotation` or `None`
-            First `Annotation` object found that matches criteria, or
+        results : |Annotation| or `None`
+            First |Annotation| object found that matches criteria, or
             `None` if no matching annotations found.
         """
         if "default" in kwargs:
@@ -1261,15 +1261,15 @@ class AnnotationSet(container.OrderedSet):
         Parameters
         ----------
         name : string
-            Name of `Annotation` object whose value is to be returned.
+            Name of |Annotation| object whose value is to be returned.
 
         default : any, optional
-            Value to return if no matching `Annotation` object found.
+            Value to return if no matching |Annotation| object found.
 
         Returns
         -------
-        results : `Annotation` or `None`
-            ``value`` of first `Annotation` object found that matches
+        results : |Annotation| or `None`
+            ``value`` of first |Annotation| object found that matches
             criteria, or `None` if no matching annotations found.
         """
         for a in self:
@@ -1287,12 +1287,12 @@ class AnnotationSet(container.OrderedSet):
         Parameters
         ----------
         name : string
-            Name of `Annotation` object whose value is to be returned.
+            Name of |Annotation| object whose value is to be returned.
 
         Returns
         -------
-        results : `Annotation` or `None`
-            ``value`` of first `Annotation` object found that matches
+        results : |Annotation| or `None`
+            ``value`` of first |Annotation| object found that matches
             criteria.
         """
         v = self.get_value(name, default=None)
@@ -1336,8 +1336,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : `AnnotationSet`
-            `AnnotationSet` containing `Annotation` objects that
+        results : |AnnotationSet|
+            |AnnotationSet| containing |Annotation| objects that
             were removed.
         """
         to_remove = []

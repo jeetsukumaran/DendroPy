@@ -60,8 +60,8 @@ class CharacterType(
         basemodel.DataObject,
         basemodel.Annotable):
     """
-    A character format or type of a particular column: i.e., maps
-    a particular set of character state definitions to a column in a character matrix.
+    A character format or type of a particular column: i.e., maps a particular
+    set of character state definitions to a column in a character matrix.
     """
 
     def __init__(self,
@@ -106,11 +106,11 @@ class CharacterDataSequence(
     of continuous data, and special instances of |StateIdentity| objects in the
     case of discrete data.
 
-    Character type data (represented by `CharacterType` instances) and metadata
-    annotations (represented by `AnnotationSet` instances), if any, are
+    Character type data (represented by |CharacterType| instances) and metadata
+    annotations (represented by |AnnotationSet| instances), if any, are
     maintained in a parallel list that need to be accessed separately using the
     index of the value to which the data correspond. So, for example, the
-    `AnnotationSet` object containing the metadata annotations for the first
+    |AnnotationSet| object containing the metadata annotations for the first
     value in a sequence, ``s[0]``, is available through
     ``s.annotations_at(0)``, while the character type information for that
     first element is available through ``s.character_type_at(0)`` and can be
@@ -198,6 +198,15 @@ class CharacterDataSequence(
         return self.symbols_as_string()
 
     def append(self, character_value, character_type=None, character_annotations=None):
+        """
+        Adds a value to ``self``.
+
+        Parameters
+        ----------
+        character_value : object
+            Value to be stored.
+        character_type : |CharacterType|
+        """
         self._character_values.append(character_value)
         self._character_types.append(character_type)
         self._character_annotations.append(character_annotations)
@@ -344,7 +353,7 @@ class CharacterMatrix(
     Numerous methods are provided to manipulate and iterate over sequences.
     Character partitions can be managed through `CharacterSubset` objects,
     while management of detailed metadata on character types are available
-    through `CharacterType` objects.
+    through |CharacterType| objects.
 
     Objects can be instantiated by reading data from external sources through
     the usual ``get_from_stream()``, ``get_from_path()``, or
@@ -1476,7 +1485,12 @@ class CharacterMatrix(
 ## Specialized Matrices
 
 class ContinuousCharacterMatrix(CharacterMatrix):
-    "Character data container/manager manager."
+    """
+    Specializes |CharacterMatrix| for continuous data.
+
+    Sequences stored using |ContinuousCharacterDataSequence|, with values of
+    elements assumed to be ``float``(-like).
+    """
 
     class ContinuousCharacterDataSequence(CharacterDataSequence):
         """

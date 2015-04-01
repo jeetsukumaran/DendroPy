@@ -224,7 +224,12 @@ rst_epilog = """
 .. |RestrictionSitesCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix`
 .. |StandardCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix`
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix`
-.. |CharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataVector`
+.. |CharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence`
+.. |ContinuousCharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterDataSequence`
+.. |CharacterType| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterType`
+.. |Annotation| replace:: :class:`~dendropy.datamodel.basemodel.Annotation`
+.. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
+.. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`

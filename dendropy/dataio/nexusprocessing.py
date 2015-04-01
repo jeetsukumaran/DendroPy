@@ -284,15 +284,15 @@ def parse_comment_metadata_to_annotations(
         field_value_types=None,
         strip_leading_trailing_spaces=True):
     """
-    Returns set of `Annotation` objects corresponding to metadata
+    Returns set of |Annotation| objects corresponding to metadata
     given in comments.
 
     Parameters
     ----------
     ``comment`` : string
         A comment token.
-    ``annotations`` : `AnnotationSet` or ``set``
-        Set of `Annotation` objects to which to add this annotation.
+    ``annotations`` : |AnnotationSet| or ``set``
+        Set of |Annotation| objects to which to add this annotation.
     ``field_name_map`` : dict
         A dictionary mapping field names (as given in the comment string)
         to strings that should be used to represent the field in the
@@ -306,8 +306,8 @@ def parse_comment_metadata_to_annotations(
 
     Returns
     -------
-    metadata : :py:``set`` [`Annotation`]
-        Set of `Annotation` objects corresponding to metadata
+    metadata : :py:``set`` [|Annotation|]
+        Set of |Annotation| objects corresponding to metadata
         parsed.
     """
     if annotations is None:

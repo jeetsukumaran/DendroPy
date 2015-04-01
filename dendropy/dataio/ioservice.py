@@ -189,7 +189,7 @@ class DataReader(IOService):
             A function that takes all the arguments of |StateAlphabet|
             and returns a properly configured instance.
 
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
             `None`, then such metadata or annotations will not be stored.
@@ -342,7 +342,7 @@ class DataReader(IOService):
             where ``tree_list`` is an existing |TreeList| object that should be
             used.
 
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
             `None`, then such metadata or annotations will not be stored.
@@ -421,7 +421,7 @@ class DataWriter(IOService):
             Collection of |TreeList| objects to be serialized.
         char_matrices : Iterable of |CharacterMatrix| objects
             Collection of |CharacterMatrix| objects to be serialized.
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
             `None`, then such metadata or annotations will not be stored.
@@ -446,7 +446,7 @@ class DataWriter(IOService):
             If set to `True`, tree data will not be written to the destination.
         exclude_chars : boolean, default: False
             If set to `True`, character data will not be written to the destination.
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
             `None`, then such metadata or annotations will not be stored.
