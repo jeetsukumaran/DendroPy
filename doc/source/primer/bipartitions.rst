@@ -2,39 +2,32 @@
 Bipartitions
 ************
 
-Brief Usage Overview
-====================
-
-1. Many tree statistics and operations in DendroPy use the *bipartition
-   encoding* of a :class:`Tree` instance in the background, including, for
-   example:
+Many tree statistics and operations in DendroPy use the *bipartition encoding*
+of a :class:`Tree` instance in the background, including, for example:
 
     -   tree statistics and metrics
     -   tree comparisons
     -   tree scoring
 
-2. By default, the DendroPy functions assume that bipartitions are *not*
-   encoded, or are not up-to-date with respect to the current tree structure,
-   resulting in their recalculation *every* time. This is computationally
-   inefficient, and you want to avoid it if, indeed, the bipartition encoding
-   of a tree is current. You can control whether or not these service functions
-   recalculate the bipartition encoding by passing in the argument
-   ``is_bipartitions_updated=True`` to suppress the recalculation or
-   ``is_bipartitions_updated=False`` to force it.
+By default, the DendroPy functions assume that bipartitions are *not* encoded,
+or are not up-to-date with respect to the current tree structure, resulting in
+their recalculation *every* time. This is computationally inefficient, and you
+want to avoid it if, indeed, the bipartition encoding of a tree is current. You
+can control whether or not these service functions recalculate the bipartition
+encoding by passing in the argument ``is_bipartitions_updated=True`` to
+suppress the recalculation or ``is_bipartitions_updated=False`` to force it.
 
-2. If you are doing multiple operations that require a bipartition encoding,
-   you should call :class:`Tree.encode_bipartitions()` *once* for each tree,
-   and, then, as long as the trees are *not* *modified* since the encoding,
-   specify the ``is_bipartitions_updated=True`` argument to each of the
-   functions that use it to ensure that the bipartitions are not recalculated
-   each time.
+If you are doing multiple operations that require a bipartition encoding, you
+should call :class:`Tree.encode_bipartitions()` *once* for each tree, and,
+then, as long as the trees are *not* *modified* since the encoding, specify the
+``is_bipartitions_updated=True`` argument to each of the functions that use it
+to ensure that the bipartitions are not recalculated each time.
 
-3. If, on the other hand, you modify a tree structure in any way, e.g.,
-   rerooting, pruning, add/removing nodes or subtrees, you should update the
-   bipartition encoding of a tree yourself by calling
-   :class:`Tree.encode_bipartitions()`, or make sure to specify
-   ``is_bipartitions_updated=False`` to the *first* function that you call
-   following the tree modification.
+If, on the other hand, you modify a tree structure in any way, e.g., rerooting,
+pruning, add/removing nodes or subtrees, you should update the bipartition
+encoding of a tree yourself by calling :class:`Tree.encode_bipartitions()`, or
+make sure to specify ``is_bipartitions_updated=False`` to the *first* function
+that you call following the tree modification.
 
 Modeling Bipartitions
 =====================
@@ -409,7 +402,3 @@ Note that in all cases, for bipartitions to be meaningfully compared two conditi
     2. The trees must have the same rooting state (i.e., all rooted or all
        unrooted).
 
--- ### DOCUMENTATION IN PROGRESS ###
-
--- IF YOU REFERENCE THIS DOCUMENTATION OR ANY PART THEREOF, PLEASE CITE IT AS:
--- "Sukumaran, J. 2014. The DendroPy Primer. Day Month Year article was published. Web. Day Month Year article was accessed. <URL>

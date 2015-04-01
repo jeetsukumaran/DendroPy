@@ -38,6 +38,7 @@ Working with Trees and Tree Lists
     treenav.rst
     treestats.rst
     treemanips.rst
+    bipartitions.rst
     treesims.rst
 
 Working with Character Data: Sequences and Matrices
