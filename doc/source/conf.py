@@ -226,6 +226,7 @@ rst_epilog = """
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix`
 .. |CharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence`
 .. |ContinuousCharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterDataSequence`
+.. |DnaCharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterDataSequence`
 .. |CharacterType| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterType`
 .. |Annotation| replace:: :class:`~dendropy.datamodel.basemodel.Annotation`
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`

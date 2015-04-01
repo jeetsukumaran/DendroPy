@@ -1630,15 +1630,9 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     data_type = "continuous"
 
     def __init__(self, *args, **kwargs):
-        "See CharacterMatrix.__init__ documentation"
         CharacterMatrix.__init__(self, *args, **kwargs)
 
 class DiscreteCharacterMatrix(CharacterMatrix):
-    """Character data container/manager manager.
-
-    That adds the attributes self.state_alphabets (a list of alphabets)
-    and ``self.default_state_alphabet``.
-    """
 
     class DiscreteCharacterDataSequence(CharacterDataSequence):
         pass
@@ -1647,10 +1641,6 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     data_type = "discrete"
 
     def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
         CharacterMatrix.__init__(self, *args, **kwargs)
         self.state_alphabets = []
         self._default_state_alphabet = None
@@ -1748,7 +1738,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 T2 C-T
                 T3 GC?
 
-            Return with `gaps_as_missing==True`:
+            Return with ``gaps_as_missing==True``:
 
                 {
                     <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
@@ -1756,7 +1746,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                     <T3> : [ set([2]), set([1]),        set([0,1,2,3]) ],
                 }
 
-            Return with `gaps_as_missing==False`:
+            Return with ``gaps_as_missing==False``:
 
                 {
                     <T1> : [ set([0]), set([2]),        set([0,1,2,3]) ],
@@ -1800,17 +1790,14 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
     datatype_alphabet = None
 
     def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-        """
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
         self.state_alphabets.append(self.__class__.datatype_alphabet)
         self._default_state_alphabet = self.__class__.datatype_alphabet
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "DNA nucleotide data."
-
+    """
+    Specializes |CharacterMatrix| for DNA data.
+    """
     class DnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = DnaCharacterDataSequence
@@ -1818,8 +1805,9 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = DNA_STATE_ALPHABET
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "RNA nucleotide data."
-
+    """
+    Specializes |CharacterMatrix| for DNA data.
+    """
     class RnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = RnaCharacterDataSequence
@@ -1827,8 +1815,9 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = RNA_STATE_ALPHABET
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "Generic nucleotide data."
-
+    """
+    Specializes |CharacterMatrix| for RNA data.
+    """
     class NucleotideCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = NucleotideCharacterDataSequence
@@ -1836,8 +1825,9 @@ class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = NUCLEOTIDE_STATE_ALPHABET
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "Protein / amino acid data."
-
+    """
+    Specializes |CharacterMatrix| for protein or amino acid data.
+    """
     class ProteinCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = ProteinCharacterDataSequence
@@ -1845,8 +1835,9 @@ class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = PROTEIN_STATE_ALPHABET
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "Restriction sites data."
-
+    """
+    Specializes |CharacterMatrix| for restriction site data.
+    """
     class RestrictionSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = RestrictionSitesCharacterDataSequence
@@ -1854,8 +1845,9 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = RESTRICTION_SITES_STATE_ALPHABET
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
-    "Infinite sites data."
-
+    """
+    Specializes |CharacterMatrix| for infinite sites data.
+    """
     class InfiniteSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
         pass
     character_sequence_type = InfiniteSitesCharacterDataSequence
@@ -1863,8 +1855,11 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
-    "``standard`` data."
+    """
+    Specializes |CharacterMatrix| for "standard" data (i.e., generic discrete
+    character data).
 
+    """
     class StandardCharacterDataSequence(DiscreteCharacterMatrix.DiscreteCharacterDataSequence):
         pass
     character_sequence_type = StandardCharacterDataSequence
@@ -1872,19 +1867,15 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
     data_type = "standard"
 
     def __init__(self, *args, **kwargs):
-        """See CharacterMatrix.__init__ documentation for kwargs.
-
-        Unnamed args are passed to clone_from.
-
+        """
         A default state alphabet consisting of state symbols of 0-9 will
         automatically be created unless the ``default_state_alphabet=None`` is
-        passed in. To specify a different default state alphabet:
+        passed in. To specify a different default state alphabet::
 
             default_state_alphabet=dendropy.new_standard_state_alphabet("abc")
             default_state_alphabet=dendropy.new_standard_state_alphabet("ij")
 
         """
-
         if "default_state_alphabet" in kwargs:
             default_state_alphabet = kwargs.pop("default_state_alphabet")
         else:
