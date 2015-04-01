@@ -34,6 +34,7 @@ from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
 from dendropy.utility import urlio
 from dendropy.utility import error
+from dendropy.utility import deprecate
 
 ##############################################################################
 ## DataObject
@@ -419,6 +420,37 @@ class MultiReadable(Readable):
         src_str = urlio.read_url(url)
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
+
+class SingleReadable(MultiReadable):
+
+    def error(self, funcname):
+        read_from_func = funcname
+        get_from_func = funcname.replace("read", "get")
+        raise TypeError(("\n".join((
+                "The '{classname}' class no longer supports           ",
+                "(re-)population by re-reading data from an external  ",
+                "source. Instantiate a new object using, for example, ",
+                "'{classname}.{get_from_func}()' and bind it to",
+                "the variable name instead. That is, instead of:",
+                "",
+                "    x.{read_from_func}(...)",
+                "",
+                "use:",
+                "",
+                "    x = {classname}.{get_from_func}(...)",
+                "",
+                "",
+                ))).format(classname=self.__class__.__name__, get_from_func=get_from_func, read_from_func=read_from_func))
+    def read(self, stream, schema, **kwargs):
+        raise NotImplementedError()
+    def read_from_stream(self, fileobj, schema, **kwargs):
+        self.error("read_from_stream")
+    def read_from_path(self, filepath, schema, **kwargs):
+        self.error("read_from_path")
+    def read_from_string(self, src_str, schema, **kwargs):
+        self.error("read_from_string")
+    def read_from_url(self, url, schema, **kwargs):
+        self.error("read_from_url")
 
 ##############################################################################
 ## Writeable

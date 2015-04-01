@@ -446,7 +446,7 @@ class CharacterSubset(
 class CharacterMatrix(
         taxonmodel.TaxonNamespaceAssociated,
         basemodel.Annotable,
-        basemodel.Readable,
+        basemodel.SingleReadable,
         basemodel.Writeable,
         basemodel.DataObject):
     """
@@ -810,7 +810,7 @@ class CharacterMatrix(
     #     m = self.__class__._parse_from_stream(stream=stream,
     #             schema=schema,
     #             **kwargs)
-        return self.clone_from(m)
+    #     return self.clone_from(m)
 
     def write(self, stream, schema, **kwargs):
         """
