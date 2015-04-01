@@ -11,3 +11,4 @@ DendroPy Library Reference
     treecollectionmodel.rst
     charstatemodel.rst
     charmatrixmodel.rst
+    datasetmodel.rst

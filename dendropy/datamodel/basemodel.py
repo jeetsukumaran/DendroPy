@@ -281,14 +281,14 @@ class Readable(object):
 
         Returns
         -------
-        n : ``int`` or :py``tuple`` [``int``]
+        n : ``int`` or ``tuple`` [``int``]
             A value indicating size of data read, where "size" depends on
             the object:
 
                 - `Tree`: **undefined**
                 - `TreeList`: number of trees
                 - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple``(number of taxon namespaces, number of tree lists, number of matrices)
+                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
         raise NotImplementedError
@@ -312,14 +312,15 @@ class Readable(object):
 
         Returns
         -------
-        n : :py``tuple`` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
                 - `Tree`: **undefined**
                 - `TreeList`: number of trees
                 - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple``(number of taxon namespaces, number of tree lists, number of matrices)
+                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+
         """
         return self.read(stream=fileobj, schema=schema, **kwargs)
 
@@ -341,14 +342,14 @@ class Readable(object):
 
         Returns
         -------
-        n : :py``tuple`` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
                 - `Tree`: **undefined**
                 - `TreeList`: number of trees
                 - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple``(number of taxon namespaces, number of tree lists, number of matrices)
+                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         with open(filepath, "r", newline=None) as fsrc:
             return self.read(stream=fsrc, schema=schema, **kwargs)
@@ -371,14 +372,14 @@ class Readable(object):
 
         Returns
         -------
-        n : :py``tuple`` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
                 - `Tree`: **undefined**
                 - `TreeList`: number of trees
                 - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple``(number of taxon namespaces, number of tree lists, number of matrices)
+                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
@@ -401,14 +402,14 @@ class Readable(object):
 
         Returns
         -------
-        n : :py``tuple`` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
                 - `Tree`: **undefined**
                 - `TreeList`: number of trees
                 - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple``(number of taxon namespaces, number of tree lists, number of matrices)
+                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         src_str = urlio.read_url(url)
         s = StringIO(src_str)

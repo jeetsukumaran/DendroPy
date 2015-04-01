@@ -99,9 +99,36 @@ class CharacterDataSequence(
         ):
     """
     A sequence of character values or values for a particular taxon or entry in
-    a data matrix. Extends list by supporting metadata annotation, and richer
-    suite of representing data in self (e.g., as list or string of symbols
-    instead of just the raw data values).
+    a data matrix.
+
+    Objects of this class can be (almost) treated as simple lists, where the
+    elements are the values of characters (typically, real values in the case
+    of continuous data, and special instances of `StateIdentity` objects in the
+    case of discrete data.
+
+    Character type data (represented by `CharacterType` instances) and metadata
+    annotations (represented by `AnnotationSet` instances), if any, are
+    maintained in a parallel list that need to be accessed separately using the
+    index of the value to which the data correspond. So, for example, the
+    `AnnotationSet` object containing the metadata annotations for the first
+    value in a sequence, ``s[0]``, is available through
+    ``s.annotations_at(0)``, while the character type information for that
+    first element is available through ``s.character_type_at(0)`` and can be
+    set through ``s.set_character_type_at(0, c)``.
+
+    In most cases where metadata annotations and character type information are
+    not needed, treating objects of this class as a simple list provides all
+    the functionality needed. Where metadata annotations or character type
+    information are required, all the standard list mutation methods (e.g.,
+    `insert()`, `append()`, `extend()`) also take optional
+    ``character_type`` and ``character_annotations`` argument in addition to
+    the primary ``character_value`` argument, thus allowing for setting of the
+    value, character type, and annotation set simultaneously.
+    While iteration over character values are available through the standard
+    list iteration interface, the method `iter_cells()` provides for iterating
+    over ``<character-value, character-type, character-annotation-set>``
+    triplets.
+
     """
 
     ###############################################################################
@@ -120,19 +147,11 @@ class CharacterDataSequence(
         self._character_values = []
         self._character_types = []
         self._character_annotations = []
-        # self._character_types = collections.defaultdict(lambda: None)
-        # self._character_annotations = collections.defaultdict(basemodel.Annotable)
         if character_values:
             self.extend(
                     character_values=character_values,
                     character_types=character_types,
                     character_annotations=character_annotations)
-
-#     def __copy__(self, memo=None):
-#         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
-
-#     def taxon_namespace_scoped_copy(self, memo=None):
-#         raise TypeError("Cannot directly copy {}".format(self.__class__.__name__))
 
     ###############################################################################
     ## Life-cycle
