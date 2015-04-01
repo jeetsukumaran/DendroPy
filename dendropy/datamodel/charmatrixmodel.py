@@ -318,10 +318,21 @@ class CharacterMatrix(
     directly, but rather one of the derived classes below, specialized for data
     types such as DNA, RNA, continuous, etc.
 
-    This class (and derived classes) behave lika dictionary where the keys are
-    :any:`Taxon` objects or `Taxon` and the values are `CharacterDataSequence` objects.:
+    This class and derived classes behave like a dictionary where the keys are
+    `Taxon` objects and the values are `CharacterDataSequence` objects. Access
+    to sequences based on taxon labels as well as indexes are also provided.
+    Numerous methods are provided to manipulate and iterate over sequences.
+    Character partitions can be managed through `CharacterSubset` objects,
+    while management of detailed metadata on character types are available
+    through `CharacterType` objects.
 
-    A range of methods exist for importing data from another matrix object.
+    Objects can be instantiated by reading data from external sources through
+    the usual ``get_from_stream()``, ``get_from_path()``, or
+    ``get_from_string()`` functions. In addition, a single matrix object can be
+    instantiated from multiple matrices (`concatenate()`) or data sources
+    (`concatenate_from_paths`).
+
+    A range of methods also exist for importing data from another matrix object.
     These vary depending on how "new" and "existing" are treated.  A "new"
     sequence is a sequence in the other matrix associated with a `Taxon`
     object for which there is no sequence defined in the current matrix.  An
@@ -338,6 +349,8 @@ class CharacterMatrix(
     +---------------------------------+---------------------------------------------+--------------------------------------------+
     | Existing Sequences: EXTENDED    | :meth:`CharacterMatrix.extend_sequences()`  | :meth:`CharacterMatrix.extend_matrix()`    |
     +---------------------------------+---------------------------------------------+--------------------------------------------+
+
+    If character subsets have been defined, these subsets can be exported to independent matrices.
 
     """
 

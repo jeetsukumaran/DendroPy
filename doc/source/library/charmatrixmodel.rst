@@ -1,11 +1,29 @@
-***********************************************************************************
-Character State Sequences and Matrices -- :mod:`dendropy.datamodel.charmatrixmodel`
-***********************************************************************************
+*****************************************************************************
+Character Sequences and Matrices -- :mod:`dendropy.datamodel.charmatrixmodel`
+*****************************************************************************
 
 .. module:: dendropy.datamodel.charmatrixmodel
 
 .. toctree::
     :maxdepth: 2
+
+Character Sequences
+===================
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterDataSequence
+    :members:
+
+Character Types
+===============
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterType
+    :members:
+
+Character Subsets
+=================
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterSubset
+    :members:
 
 
 Character Matrices
@@ -16,7 +34,7 @@ The :class:`CharacterMatrix` Class
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterMatrix
     :members:
-
+    :inherited-members:
 
 :class:`ContinuousCharacterMatrix`: Continuous Data
 ---------------------------------------------------
@@ -60,10 +78,4 @@ The :class:`CharacterMatrix` Class
 .. autoclass:: dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix
     :members:
 
-
-Character Sequences
-===================
-
-.. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterDataSequence
-    :members:
 

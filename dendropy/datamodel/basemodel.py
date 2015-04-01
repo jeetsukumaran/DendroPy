@@ -295,7 +295,7 @@ class Readable(object):
 
     def read_from_stream(self, fileobj, schema, **kwargs):
         """
-        Reads from file (exactly equivalent to just `read()`, provided
+        Reads from file (exactly equivalent to just ``read()``, provided
         here as a separate method for completeness.
 
         Parameters
@@ -498,8 +498,8 @@ class Annotable(object):
         are bound via mappings found in ``attribute_object_mapper``.
         In dynamic bound-attribute annotations, the ``_value`` attribute of the
         annotations object (:attr:`Annotation._value`) is a tuple consisting of
-        "`(obj, attr_name)`", which instructs the `Annotation` object to
-        return "`getattr(obj, attr_name)`" (via: "`getattr(*self._value)`")
+        "``(obj, attr_name)``", which instructs the `Annotation` object to
+        return "``getattr(obj, attr_name)``" (via: "``getattr(*self._value)``")
         when returning the value of the Annotation. "``obj``" is typically the object
         to which the `AnnotationSet` belongs (i.e., ``self``). When a copy
         of `Annotation` is created, the object reference given in the
@@ -519,11 +519,11 @@ class Annotable(object):
             If a dynamic attribute `Annotation`
             gives object ``x`` as the parent or owner of the attribute (that is,
             the first element of the :attr:`Annotation._value` tuple is
-            ``other``) and `id(x)` is found in ``attribute_object_mapper``,
+            ``other``) and ``id(x)`` is found in ``attribute_object_mapper``,
             then in the copy the owner of the attribute is changed to
             ``attribute_object_mapper[id(x)]``.
             If ``attribute_object_mapper`` is `None` (default), then the
-            following mapping is automatically inserted: ````id(other): self````.
+            following mapping is automatically inserted: ``id(other): self``.
             That is, any references to ``other`` in any `Annotation`
             object will be remapped to ``self``.  If really no reattribution
             mappings are desired, then an empty dictionary should be passed
@@ -869,7 +869,7 @@ class AnnotationSet(container.OrderedSet):
         is_attribute : boolean, optional
             If value is passed as a tuple of (object, "attribute_name") and this
             is True, then actual content will be the result of calling
-            getattr(object, "attribute_name").
+            ``getattr(object, "attribute_name")``.
         annotate_as_reference : boolean, optional
             The value should be interpreted as a URI that points to content.
         is_hidden : boolean, optional
