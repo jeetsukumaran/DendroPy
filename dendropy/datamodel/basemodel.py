@@ -1009,18 +1009,11 @@ class AnnotationSet(container.OrderedSet):
             only supports 'bibtex'.
         store_as : string, optional
             Specifies how to record the citation, with one of the
-            following strings as values:
-
-                "bibtex"
-                    A set of annotations, where each BibTex field becomes a
-                    separate annotation.
-                "prism"
-                    A set of of PRISM (Publishing Requirements for Industry
-                    Standard Metadata) annotations.
-                "dublin"
-                    A set of of Dublic Core annotations.
-
-            Defaults to "bibtex".
+            following strings as values: "bibtex" (a set of annotations, where
+            each BibTex field becomes a separate annotation); "prism"
+            (a set of PRISM [Publishing Requirements for Industry Standard
+            Metadata] annotations); "dublin" (A set of of Dublic Core
+            annotations). Defaults to "bibtex".
         name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
@@ -1059,18 +1052,11 @@ class AnnotationSet(container.OrderedSet):
             BibTex fields as keys and contents as values.
         store_as : string, optional
             Specifies how to record the citation, with one of the
-            following strings as values:
-
-                "bibtex"
-                    A set of annotations, where each BibTex field becomes a
-                    separate annotation.
-                "prism"
-                    A set of of PRISM (Publishing Requirements for Industry
-                    Standard Metadata) annotations.
-                "dublin"
-                    A set of of Dublic Core annotations.
-
-            Defaults to "bibtex".
+            following strings as values: "bibtex" (a set of annotations, where
+            each BibTex field becomes a separate annotation); "prism"
+            (a set of PRISM [Publishing Requirements for Industry Standard
+            Metadata] annotations); "dublin" (A set of of Dublic Core
+            annotations). Defaults to "bibtex".
         name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
