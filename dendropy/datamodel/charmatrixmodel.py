@@ -206,12 +206,27 @@ class CharacterDataSequence(
         character_value : object
             Value to be stored.
         character_type : |CharacterType|
+            Description of character value.
+        character_annotations : |AnnotationSet|
+            Metadata annotations associated with this character.
         """
         self._character_values.append(character_value)
         self._character_types.append(character_type)
         self._character_annotations.append(character_annotations)
 
     def extend(self, character_values, character_types=None, character_annotations=None):
+        """
+        Extends `self` with values.
+
+        Parameters
+        ----------
+        character_values : iterable of objects
+            Values to be stored.
+        character_types : iterable of |CharacterType| objects
+            Descriptions of character values.
+        character_annotations : iterable |AnnotationSet| objects
+            Metadata annotations associated with characters.
+        """
         self._character_values.extend(character_values)
         if character_types is None:
             self._character_types.extend( [None] * len(character_values) )
@@ -243,6 +258,10 @@ class CharacterDataSequence(
     next = __next__ # Python 2 legacy support
 
     def iter_cells(self):
+        """
+        Iterate over triplets of character values and associated
+        |CharacterType| and |AnnotationSet| instances.
+        """
         for v, t, a in zip(self._character_values, self._character_types, self._character_annotations):
             yield v, t, a
 
@@ -252,6 +271,21 @@ class CharacterDataSequence(
         del self._character_annotations[idx]
 
     def set_at(self, idx, character_value, character_type=None, character_annotations=None):
+        """
+        Set value and associated character type and metadata annotations for
+        element at ``idx```.
+
+        Parameters
+        ----------
+        idx : integer
+            Index of element to set.
+        character_value : object
+            Value to be stored.
+        character_type : |CharacterType|
+            Description of character value.
+        character_annotations : |AnnotationSet|
+            Metadata annotations associated with this character.
+        """
         to_add = (idx+1) - len(self._character_values)
         while to_add > 0:
             self.append(None)
@@ -261,37 +295,112 @@ class CharacterDataSequence(
         self._character_annotations[idx] = character_annotations
 
     def insert(self, idx, character_value, character_type=None, character_annotations=None):
+        """
+        Insert value and associated character type and metadata annotations for
+        element at ``idx```.
+
+        Parameters
+        ----------
+        idx : integer
+            Index of element to set.
+        character_value : object
+            Value to be stored.
+        character_type : |CharacterType|
+            Description of character value.
+        character_annotations : |AnnotationSet|
+            Metadata annotations associated with this character.
+        """
         self._character_values.insert(idx, character_value)
         self._character_types.insert(idx, character_type)
         self._character_annotations.insert(idx, character_annotations)
 
     def value_at(self, idx):
+        """
+        Return value of character at ``idx```.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element value to return.
+
+        Returns
+        -------
+        c : object
+            Value of character at index ``idx```.
+        """
         return self._character_values[idx]
 
-    def value_at(self, idx):
-        return self.value_at(idx)
-
     def character_type_at(self, idx):
+        """
+        Return type of character at ``idx```.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element character type to return.
+
+        Returns
+        -------
+        c : |CharacterType|
+            |CharacterType| associated with character index ``idx```.
+        """
         return self._character_types[idx]
 
     def annotations_at(self, idx):
+        """
+        Return metadata annotations of character at ``idx```.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element annotations to return.
+
+        Returns
+        -------
+        c : |AnnotationSet|
+            |AnnotationSet| representing metadata annotations of character at index ``idx```.
+        """
         if self._character_annotations[idx] is None:
             self._character_annotations[idx] = basemodel.AnnotationSet()
         return self._character_annotations[idx]
 
     def has_annotations_at(self, idx):
+        """
+        Return `True` if character at ``idx``` has metadata annotations.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element annotations to check.
+
+        Returns
+        -------
+        b : bool
+            `True` if character at ``idx``` has metadata annotations, `False`
+            otherwise.
+        """
         return not self._character_annotations[idx] is None
 
-    def set_value_at(self, idx, value):
-        self._character_values[idx] = value
-
-    def set_value_at(self, idx, value):
-        self.set_value_at(value)
-
     def set_character_type_at(self, idx, character_type):
+        """
+        Set type of character at ``idx```.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element character type to set.
+        """
         self._character_types[idx] = character_type
 
     def set_annotations_at(self, idx, annotations):
+        """
+        Set metadata annotations of character at ``idx```.
+
+        Parameters
+        ----------
+        ``idx``` : integer
+            Index of element annotations to set.
+        """
         self._character_annotations[idx] = annotations
 
 ###############################################################################
@@ -307,11 +416,13 @@ class CharacterSubset(
 
     def __init__(self, label=None, character_indices=None):
         """
-        Keyword arguments:
-
-            - ``label``: name of this subset
-            - ``character_indices``: list of 0-based (integer) indices
-               of column positions that constitute this subset.
+        Parameters
+        ----------
+        label: str
+            Name of this subset.
+        character_indices: iterable of ``int``
+            Iterable of 0-based (integer) indices of column positions that
+            constitute this subset.
 
         """
         basemodel.DataObject.__init__(self, label=label)
