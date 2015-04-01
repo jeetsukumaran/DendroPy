@@ -273,7 +273,7 @@ class CharacterDataSequence(
     def set_at(self, idx, character_value, character_type=None, character_annotations=None):
         """
         Set value and associated character type and metadata annotations for
-        element at ``idx```.
+        element at ``idx``.
 
         Parameters
         ----------
@@ -297,7 +297,7 @@ class CharacterDataSequence(
     def insert(self, idx, character_value, character_type=None, character_annotations=None):
         """
         Insert value and associated character type and metadata annotations for
-        element at ``idx```.
+        element at ``idx``.
 
         Parameters
         ----------
@@ -316,49 +316,49 @@ class CharacterDataSequence(
 
     def value_at(self, idx):
         """
-        Return value of character at ``idx```.
+        Return value of character at ``idx``.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element value to return.
 
         Returns
         -------
         c : object
-            Value of character at index ``idx```.
+            Value of character at index ``idx``.
         """
         return self._character_values[idx]
 
     def character_type_at(self, idx):
         """
-        Return type of character at ``idx```.
+        Return type of character at ``idx``.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element character type to return.
 
         Returns
         -------
         c : |CharacterType|
-            |CharacterType| associated with character index ``idx```.
+            |CharacterType| associated with character index ``idx``.
         """
         return self._character_types[idx]
 
     def annotations_at(self, idx):
         """
-        Return metadata annotations of character at ``idx```.
+        Return metadata annotations of character at ``idx``.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element annotations to return.
 
         Returns
         -------
         c : |AnnotationSet|
-            |AnnotationSet| representing metadata annotations of character at index ``idx```.
+            |AnnotationSet| representing metadata annotations of character at index ``idx``.
         """
         if self._character_annotations[idx] is None:
             self._character_annotations[idx] = basemodel.AnnotationSet()
@@ -366,39 +366,39 @@ class CharacterDataSequence(
 
     def has_annotations_at(self, idx):
         """
-        Return `True` if character at ``idx``` has metadata annotations.
+        Return `True` if character at ``idx`` has metadata annotations.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element annotations to check.
 
         Returns
         -------
         b : bool
-            `True` if character at ``idx``` has metadata annotations, `False`
+            `True` if character at ``idx`` has metadata annotations, `False`
             otherwise.
         """
         return not self._character_annotations[idx] is None
 
     def set_character_type_at(self, idx, character_type):
         """
-        Set type of character at ``idx```.
+        Set type of character at ``idx``.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element character type to set.
         """
         self._character_types[idx] = character_type
 
     def set_annotations_at(self, idx, annotations):
         """
-        Set metadata annotations of character at ``idx```.
+        Set metadata annotations of character at ``idx``.
 
         Parameters
         ----------
-        ``idx``` : integer
+        idx : integer
             Index of element annotations to set.
         """
         self._character_annotations[idx] = annotations
