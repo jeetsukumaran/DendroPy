@@ -310,12 +310,15 @@ class CharacterMatrix(
         basemodel.DataObject):
     """
     A data structure that manages assocation of operational taxononomic unit
-    concepts to sequences of character state identities or values. This is
-    a base class that provides general functionality; derived classes
+    concepts to sequences of character state identities or values.
+
+    This is a base class that provides general functionality; derived classes
     specialize for particular data types. You will not be using the class
     directly, but rather one of the derived classes below, specialized for data
-    types such as DNA, RNA, continuous, etc. However, most of the methods for
-    these classes actually live in this shared based class.
+    types such as DNA, RNA, continuous, etc.
+
+    This class (and derived classes) behave lika dictionary where the keys are
+    :any:`Taxon` objects or `Taxon` and the values are :class:`CharacterDataVector` objects.:
 
     A range of methods exist for importing data from another matrix object.
     These vary depending on how "new" and "existing" are treated.  A "new"
