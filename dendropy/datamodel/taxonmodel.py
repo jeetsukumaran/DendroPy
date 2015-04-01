@@ -226,14 +226,14 @@ class TaxonNamespaceAssociated(object):
         Move this object and all members to a new operational taxonomic unit
         concept namespace scope.
 
-        Current :attr:``self.taxon_namespace`` value will be replaced with value
+        Current :attr:`self.taxon_namespace` value will be replaced with value
         given in ``taxon_namespace`` if this is not `None`, or a new
         |TaxonNamespace| object. Following this,
         `reconstruct_taxon_namespace()` will be called: each distinct
         |Taxon| object associated with ``self`` or members of ``self`` that
         is not alread in ``taxon_namespace`` will be replaced with a new
         |Taxon| object that will be created with the same label and
-        added to :attr:``self.taxon_namespace``.  Calling this method results in
+        added to :attr:`self.taxon_namespace`.  Calling this method results in
         the object (and all its member objects) being associated with a new,
         independent taxon namespace.
 
@@ -321,7 +321,7 @@ class TaxonNamespaceAssociated(object):
         ``self`` or members of ``self`` that is not already in
         ``self.taxon_namespace`` will be replaced with a new |Taxon|
         object that will be created with the same label and added to
-        :attr:``self.taxon_namespace``.
+        :attr:`self.taxon_namespace`.
 
         Label mapping case sensitivity follows the
         ``self.taxon_namespace.is_case_sensitive`` setting. If

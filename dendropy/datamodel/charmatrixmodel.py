@@ -724,7 +724,7 @@ class CharacterMatrix(
             unify_taxa_by_label=True,
             taxon_mapping_memo=None):
         """
-        See :meth:`dendropy.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace`.
+        See `TaxonNamespaceAssociated.reconstruct_taxon_namespace`.
         """
         if taxon_mapping_memo is None:
             taxon_mapping_memo = {}

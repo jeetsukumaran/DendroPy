@@ -14,6 +14,10 @@ The :class:`TaxonNamespace` Class
 
 The :class:`Taxon` Class
 ========================
-.. class:: Taxon
 .. autoclass:: dendropy.datamodel.taxonmodel.Taxon
+    :members:
+
+The :class:`TaxonNamespaceAssociated` Class
+===========================================
+.. autoclass:: dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated
     :members:
