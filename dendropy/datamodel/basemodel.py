@@ -262,6 +262,11 @@ class Readable(object):
         #     kwargs["stream"] = fo
         #     return self._process_source_kwargs(**kwargs)
 
+class MultiReadable(Readable):
+    """
+    Mixin class which all classes that support multiple (e.g., aggregative) deserialization should subclass.
+    """
+
     def read(self, stream, schema, **kwargs):
         """
         Populates/constructs objects of this type from ``schema``-formatted

@@ -3003,84 +3003,84 @@ class Tree(
     ###########################################################################
     ### I/O
 
-    def read(self, stream, schema, **kwargs):
-        """
-        Redefines this |Tree| object based on data from ``source``.
+    # def read(self, stream, schema, **kwargs):
+    #     """
+    #     Redefines this |Tree| object based on data from ``source``.
 
-        The current |TaxonNamespace| reference will be retained (and
-        modified if new operational taxonomic unit concept definitions
-        are encountered in the data source). *All* other information,
-        including metadata/annotations, will be lost or replaced with
-        information from the new data source.
+    #     The current |TaxonNamespace| reference will be retained (and
+    #     modified if new operational taxonomic unit concept definitions
+    #     are encountered in the data source). *All* other information,
+    #     including metadata/annotations, will be lost or replaced with
+    #     information from the new data source.
 
-        If the source defines multiple tree collections (e.g. multiple NEXUS
-        "Trees" blocks), then the ``collection_offset`` argument
-        can be used to specify the 0-based index of the tree collection, and
-        ``tree_offset`` argument can be used to specify the 0-based
-        index of the tree within the collection, as the source. If
-        ``collection_offset`` is not specified or `None`, then all collections in
-        the source are merged before considering ``tree_offset``.  If
-        ``tree_offset`` is not specified, then the first tree (offset=0) is
-        returned.
+    #     If the source defines multiple tree collections (e.g. multiple NEXUS
+    #     "Trees" blocks), then the ``collection_offset`` argument
+    #     can be used to specify the 0-based index of the tree collection, and
+    #     ``tree_offset`` argument can be used to specify the 0-based
+    #     index of the tree within the collection, as the source. If
+    #     ``collection_offset`` is not specified or `None`, then all collections in
+    #     the source are merged before considering ``tree_offset``.  If
+    #     ``tree_offset`` is not specified, then the first tree (offset=0) is
+    #     returned.
 
-        Notes
-        -----
-        *All* operational taxonomic unit concepts in the data source will be included
-        in the |TaxonNamespace| object associated with the new
-        |TreeList| object and its contained |Tree| objects, even those
-        not associated with tree being retrieved.
+    #     Notes
+    #     -----
+    #     *All* operational taxonomic unit concepts in the data source will be included
+    #     in the |TaxonNamespace| object associated with the new
+    #     |TreeList| object and its contained |Tree| objects, even those
+    #     not associated with tree being retrieved.
 
-        Parameters
-        ----------
+    #     Parameters
+    #     ----------
 
-        stream : file or file-like object
-            Source of data.
+    #     stream : file or file-like object
+    #         Source of data.
 
-        schema : string
-            Identifier of format of data in ``stream``
+    #     schema : string
+    #         Identifier of format of data in ``stream``
 
-        collection_offset : integer or None
-            0-based index of tree block or collection in source to be parsed.
+    #     collection_offset : integer or None
+    #         0-based index of tree block or collection in source to be parsed.
 
-        tree_offset : integer or None
-            0-based index of tree in source to be parsed. If
-            ``collection_offset`` is `None`, then this is the 0-based index of
-            the tree across all collections considered together. Otherwise,
-            this is the 0-based index within a particular collection. If
-            ``tree_offset`` is `None` or not specified, then the first tree is
-            returned.
+    #     tree_offset : integer or None
+    #         0-based index of tree in source to be parsed. If
+    #         ``collection_offset`` is `None`, then this is the 0-based index of
+    #         the tree across all collections considered together. Otherwise,
+    #         this is the 0-based index within a particular collection. If
+    #         ``tree_offset`` is `None` or not specified, then the first tree is
+    #         returned.
 
-        \*\*kwargs : keyword arguments
-            Arguments to customize parsing and instantiation this |Tree|
-            from the data source, including schema- or format-specific
-            handling. The following optional keyword arguments are recognized
-            and handled by this constructor:
+    #     \*\*kwargs : keyword arguments
+    #         Arguments to customize parsing and instantiation this |Tree|
+    #         from the data source, including schema- or format-specific
+    #         handling. The following optional keyword arguments are recognized
+    #         and handled by this constructor:
 
-                - ``label``: The label the tree |Tree| object.
+    #             - ``label``: The label the tree |Tree| object.
 
-            Other keyword arguments may be available, depending on the
-            implementation of the reader specialized to handle ``schema``
-            formats. See documentation for details on keyword arguments
-            supported by readers of various schemas.
+    #         Other keyword arguments may be available, depending on the
+    #         implementation of the reader specialized to handle ``schema``
+    #         formats. See documentation for details on keyword arguments
+    #         supported by readers of various schemas.
 
-        Returns
-        -------
-        tree : |Tree|
-             Returns ``self``.
+    #     Returns
+    #     -------
+    #     tree : |Tree|
+    #          Returns ``self``.
 
-        Raises
-        ------
-        ValueError
-            If no valid trees matching criteria found in source.
+    #     Raises
+    #     ------
+    #     ValueError
+    #         If no valid trees matching criteria found in source.
 
-        """
-        if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
-            raise TypeError("Cannot change ``taxon_namespace`` when reading an existing Tree")
-        kwargs["taxon_namespace"] = self.taxon_namespace
-        tree = Tree._parse_from_stream(stream, schema, **kwargs)
-        if tree is None:
-            raise ValueError("Invalid tree source specification")
-        self.__dict__ = tree.__dict__
+    #     """
+    #     if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
+    #         raise TypeError("Cannot change ``taxon_namespace`` when reading an existing Tree")
+    #     kwargs["taxon_namespace"] = self.taxon_namespace
+    #     tree = Tree._parse_from_stream(stream, schema, **kwargs)
+    #     if tree is None:
+    #         raise ValueError("Invalid tree source specification")
+    #     self.__dict__ = tree.__dict__
 
     def write(self, stream, schema, **kwargs):
         """

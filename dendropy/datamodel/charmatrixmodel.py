@@ -796,20 +796,20 @@ class CharacterMatrix(
     ###########################################################################
     ### Data I/O
 
-    def read(self, stream, schema, **kwargs):
-        """
-        Populates objects of this type from ``schema``-formatted
-        data in the file-like object source ``stream``, *replacing*
-        all current data. If multiple character matrices are in the data
-        source, a 0-based index of the character matrix to use can
-        be specified using the ``matrix_offset`` keyword (defaults to 0, i.e., first
-        character matrix).
-        """
-        warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
-                DeprecationWarning)
-        m = self.__class__._parse_from_stream(stream=stream,
-                schema=schema,
-                **kwargs)
+    # def read(self, stream, schema, **kwargs):
+    #     """
+    #     Populates objects of this type from ``schema``-formatted
+    #     data in the file-like object source ``stream``, *replacing*
+    #     all current data. If multiple character matrices are in the data
+    #     source, a 0-based index of the character matrix to use can
+    #     be specified using the ``matrix_offset`` keyword (defaults to 0, i.e., first
+    #     character matrix).
+    #     """
+    #     warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
+    #             DeprecationWarning)
+    #     m = self.__class__._parse_from_stream(stream=stream,
+    #             schema=schema,
+    #             **kwargs)
         return self.clone_from(m)
 
     def write(self, stream, schema, **kwargs):

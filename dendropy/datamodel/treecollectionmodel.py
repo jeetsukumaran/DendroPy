@@ -46,7 +46,7 @@ from dendropy import dataio
 class TreeList(
         taxonmodel.TaxonNamespaceAssociated,
         basemodel.Annotable,
-        basemodel.Readable,
+        basemodel.MultiReadable,
         basemodel.Writeable,
         basemodel.DataObject):
     """
