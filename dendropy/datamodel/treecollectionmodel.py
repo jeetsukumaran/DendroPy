@@ -1822,13 +1822,15 @@ class SplitDistributionSummarizer(object):
 
 class TreeArray(taxonmodel.TaxonNamespaceAssociated):
     """
-    Storage of minimal tree structural information as represented by toplogy
-    and edge lengths.
+    High-performance collection of tree structures.
 
+    Storage of minimal tree structural information as represented by toplogy
+    and edge lengths, minimizing memory and processing time.
     This class stores trees as collections of splits and edge lengths. All
     other information, such as labels, metadata annotations, etc. will be
     discarded. A full :class:`Tree` instance can be reconstructed as needed
-    from the structural information stored by this class.
+    from the structural information stored by this class, at the cost of
+    computation time.
     """
 
     class IncompatibleTreeArrayUpdate(Exception):

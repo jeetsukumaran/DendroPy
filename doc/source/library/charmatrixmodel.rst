@@ -10,23 +10,52 @@ Character State Sequences and Matrices -- :mod:`dendropy.datamodel.charmatrixmod
 The :class:`CharacterMatrix` Class
 ==================================
 
-A range of methods exist for importing data from another
-:class:`CharacterMatrix` instance.  These vary depending on how "new" and
-"existing" are treated.  A "new" sequence is a sequence in the other matrix
-associated with a :class:`Taxon` object for which there is no sequence defined
-in the current matrix.  An "existing" sequence is a sequene in the other
-matrix associated with a :class:`Taxon` object for which there *is* a sequence
-defined in the current matrix.
-
-+---------------------------------+---------------------------------------------+--------------------------------------------+
-|                                 | New Sequences: IGNORED                      | New Sequences: ADDED                       |
-+=================================+=============================================+============================================+
-| Existing Sequences: IGNORED     | [NO-OP]                                     | :meth:`CharacterMatrix.add_sequences()`    |
-+---------------------------------+---------------------------------------------+--------------------------------------------+
-| Existing Sequences: OVERWRITTEN | :meth:`CharacterMatrix.replace_sequences()` | :meth:`CharacterMatrix.update_sequences()` |
-+---------------------------------+---------------------------------------------+--------------------------------------------+
-| Existing Sequences: EXTENDED    | :meth:`CharacterMatrix.extend_sequences()`  | :meth:`CharacterMatrix.extend_matrix()`    |
-+---------------------------------+---------------------------------------------+--------------------------------------------+
-
 .. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterMatrix
     :members:
+
+
+Specializations of :class:`CharacterMatrix` for Various Data Types
+==================================================================
+
+:class:`ContinuousCharacterMatrix`: Continuous Data
+---------------------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix
+    :members:
+
+:class:`DnaCharacterMatrix`: DNA Data
+-------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix
+    :members:
+
+:class:`RnaCharacterMatrix`: RNA Data
+-------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix
+    :members:
+
+:class:`ProteinCharacterMatrix`: Protein (Amino Acid) Data
+----------------------------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix
+    :members:
+
+:class:`RestrictionSitesCharacterMatrix`: Restriction Sites Data
+----------------------------------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix
+    :members:
+
+:class:`InfiniteSitesCharacterMatrix` : Infinite Sites Data
+-----------------------------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix
+    :members:
+
+:class:`StandardCharacterMatrix`: "Standard" Data
+-------------------------------------------------
+
+.. autoclass:: dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix
+    :members:
+

@@ -312,7 +312,29 @@ class CharacterMatrix(
     A data structure that manages assocation of operational taxononomic unit
     concepts to sequences of character state identities or values. This is
     a base class that provides general functionality; derived classes
-    specialize for particular data types.
+    specialize for particular data types. You will not be using the class
+    directly, but rather one of the derived classes below, specialized for data
+    types such as DNA, RNA, continuous, etc. However, most of the methods for
+    these classes actually live in this shared based class.
+
+    A range of methods exist for importing data from another matrix object.
+    These vary depending on how "new" and "existing" are treated.  A "new"
+    sequence is a sequence in the other matrix associated with a :class:`Taxon`
+    object for which there is no sequence defined in the current matrix.  An
+    "existing" sequence is a sequence in the other matrix associated with a
+    :class:`Taxon` object for which there *is* a sequence defined in the
+    current matrix.
+
+    +---------------------------------+---------------------------------------------+--------------------------------------------+
+    |                                 | New Sequences: IGNORED                      | New Sequences: ADDED                       |
+    +=================================+=============================================+============================================+
+    | Existing Sequences: IGNORED     | [NO-OP]                                     | :meth:`CharacterMatrix.add_sequences()`    |
+    +---------------------------------+---------------------------------------------+--------------------------------------------+
+    | Existing Sequences: OVERWRITTEN | :meth:`CharacterMatrix.replace_sequences()` | :meth:`CharacterMatrix.update_sequences()` |
+    +---------------------------------+---------------------------------------------+--------------------------------------------+
+    | Existing Sequences: EXTENDED    | :meth:`CharacterMatrix.extend_sequences()`  | :meth:`CharacterMatrix.extend_matrix()`    |
+    +---------------------------------+---------------------------------------------+--------------------------------------------+
+
     """
 
     ###########################################################################
@@ -1694,7 +1716,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         passed in. To specify a different default state alphabet:
 
             default_state_alphabet=dendropy.new_standard_state_alphabet("abc")
-            default_state_alphabet=dendropy.new_standard_state_alphabet("abac")
+            default_state_alphabet=dendropy.new_standard_state_alphabet("ij")
 
         """
 
