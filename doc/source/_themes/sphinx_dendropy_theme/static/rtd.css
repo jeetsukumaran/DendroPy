@@ -121,7 +121,8 @@ h5 a.anchor:hover, h6 a.anchor:hover {
 
 /* Normal links get a pseudo-underline */
 a {
-    color: #444;
+    /* color: #6688aa; */
+    color: #206088;
     text-decoration: none;
     border-bottom: 1px solid #ccc;
 }
@@ -131,7 +132,7 @@ a {
 .toctree-wrapper a,
 .indextable a,
 #indices-and-tables a {
-    color: #444;
+    color: #206088;
     text-decoration: none;
     border-bottom: none;
 }
@@ -141,9 +142,9 @@ a:hover,
 div.toctree-wrapper a:hover,
 .indextable a:hover,
 #indices-and-tables a:hover {
-    color: #111;
+    color: #cc4400;
     text-decoration: none;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #cc4400;
 }
 
 /* Footer links */
@@ -380,9 +381,9 @@ div.sphinxsidebar p a {
 }
 div.sphinxsidebar li a:hover,
 div.sphinxsidebar p a:hover {
-    color: #111;
+    color: #cc4400;
     text-decoration: none;
-    border: 1px solid #888;
+    border: 1px solid #cc4400;
 }
 
 /* Tweak any link appearing in a heading */
