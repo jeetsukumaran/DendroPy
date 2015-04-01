@@ -186,7 +186,7 @@ class DataReader(IOService):
             parsed.
 
         state_alphabet_factory : function object
-            A function that takes all the arguments of `StateAlphabet`
+            A function that takes all the arguments of |StateAlphabet|
             and returns a properly configured instance.
 
         global_annotations_target : `Annotable` object

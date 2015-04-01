@@ -213,7 +213,9 @@ rst_epilog = """
 .. |Bipartition| replace:: :class:`~dendropy.datamodel.treemodel.Bipartition`
 .. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
 .. |DataSet| replace:: :class:`~dendropy.datamodel.datasetmodel.DataSet`
-.. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmodel.CharacterMatrix`
+.. |StateIdentity| replace:: :class:`~dendropy.datamodel.charstatemodel.StateIdentity`
+.. |StateAlphabet| replace:: :class:`~dendropy.datamodel.charstatemodel.StateAlphabet`
+.. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix`
 .. |DnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix`
 .. |RnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix`
 .. |ProteinCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix`

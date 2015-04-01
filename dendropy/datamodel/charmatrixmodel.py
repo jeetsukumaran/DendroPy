@@ -73,7 +73,7 @@ class CharacterType(
 
     def _get_state_alphabet(self):
         """
-        The `StateAlphabet` representing the state alphabet for this
+        The |StateAlphabet| representing the state alphabet for this
         column: i.e., the collection of symbols and the state identities to
         which they map.
         """
@@ -103,7 +103,7 @@ class CharacterDataSequence(
 
     Objects of this class can be (almost) treated as simple lists, where the
     elements are the values of characters (typically, real values in the case
-    of continuous data, and special instances of `StateIdentity` objects in the
+    of continuous data, and special instances of |StateIdentity| objects in the
     case of discrete data.
 
     Character type data (represented by `CharacterType` instances) and metadata
@@ -584,7 +584,7 @@ class CharacterMatrix(
         with the particular type of matrix. For example, a CharacterMatrix type
         with a fixed state alphabet (such as |DnaCharacterMatrix|) would
         dereference the string elements of ``values`` to return a list of
-        `StateIdentity` objects corresponding to the symbols represented
+        |StateIdentity| objects corresponding to the symbols represented
         by the strings.  If there is no value-type conversion done, then
         ``values`` should be returned as-is. If no value-type conversion is
         possible (e.g., when the type of a value is dependent on positionaly
@@ -1074,7 +1074,7 @@ class CharacterMatrix(
         ----------
         value : object
             A valid value (e.g., a numeric value for continuous characters, or
-            a `StateIdentity` for discrete character).
+            a |StateIdentity| for discrete character).
         size : integer or None
             The size (length) up to which the sequences will be padded. If `None`, then
             the maximum (longest) sequence size will be used.
@@ -1116,7 +1116,7 @@ class CharacterMatrix(
         ----------
         value : object
             A valid value (e.g., a numeric value for continuous characters, or
-            a `StateIdentity` for discrete character).
+            a |StateIdentity| for discrete character).
         size : integer or None
             The size (length) up to which the sequences will be padded. If `None`, then
             the maximum (longest) sequence size will be used.
