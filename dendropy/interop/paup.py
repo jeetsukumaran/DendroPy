@@ -210,8 +210,8 @@ class PaupService(object):
             getting the taxon order (and hence, indexes, and hence, split
             bitmasks) correct. If not given, will use the first file
             given in ``tree_filepaths``.
-        taxon_namespace : `TaxonNamespace`
-            The `TaxonNamespace` object to populate.
+        taxon_namespace : |TaxonNamespace|
+            The |TaxonNamespace| object to populate.
 
         Returns
         -------
@@ -223,7 +223,7 @@ class PaupService(object):
                 -   "bipartition_frequencies" : dictionary with split bitmasks as keys
                     and (weighted) proportional frequencies of occurrences as values
                 -   "num_trees" : number of trees counted
-                -   "taxon_namespace" : `TaxonNamespace` instance
+                -   "taxon_namespace" : |TaxonNamespace| instance
                     corresponding to the taxa <=> split bitmask mapping
                 -   "is_rooted" : indicates whether the trees were rooted or not
         """
@@ -286,8 +286,8 @@ class PaupService(object):
             getting the taxon order (and hence, indexes, and hence, split
             bitmasks) correct. If not given, will use the first file
             given in ``tree_filepaths``.
-        taxon_namespace : `TaxonNamespace`
-            `TaxonNamespace` object to use.
+        taxon_namespace : |TaxonNamespace|
+            |TaxonNamespace| object to use.
         split_distribution : `SplitDistribution`
             `SplitDistribution object to use.
         """

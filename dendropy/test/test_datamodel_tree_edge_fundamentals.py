@@ -32,7 +32,7 @@ class EdgeIdentity(unittest.TestCase):
         self.e2 = dendropy.Edge(label="a")
 
     def test_equal(self):
-        # two distinct `Edge` objects are never equal, even if all
+        # two distinct |Edge| objects are never equal, even if all
         # member values are the same.
         self.assertNotEqual(self.e1, self.e2)
 

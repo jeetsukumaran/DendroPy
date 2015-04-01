@@ -47,9 +47,9 @@ class PhylogeneticIndependentConstrasts(object):
 
         Parameters
         ----------
-        tree : `Tree` object
+        tree : |Tree| object
             Tree to use.
-        char_matrix : `ContinuousCharacterMatrix`
+        char_matrix : |ContinuousCharacterMatrix|
             ContinuousCharacterMatrix that is the source of the data
         polytomy_strategy
             One of: 'error', 'ignore', 'resolve':

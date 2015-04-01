@@ -462,7 +462,7 @@ def fit_pure_birth_model(**kwargs):
     Calculates the maximum-likelihood estimate of the birth rate of a set of
     *internal* node ages under a Yule (pure-birth) model.
 
-    Requires either a `Tree` object or an interable of *internal* node
+    Requires either a |Tree| object or an interable of *internal* node
     ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``,
     respectively. The former is more convenient when doing one-off
     calculations, while the latter is more efficient if the list of internal
@@ -475,8 +475,8 @@ def fit_pure_birth_model(**kwargs):
 
         Exactly *one* of the following *must* be specified:
 
-            tree : a `Tree` object.
-                A `Tree` object. The tree needs to be ultrametric for the
+            tree : a |Tree| object.
+                A |Tree| object. The tree needs to be ultrametric for the
                 internal node ages (time from each internal node to the tips)
                 to make sense. The precision by which the ultrametricity is
                 checked can be specified using the ``ultrametricity_precision`` keyword
@@ -609,7 +609,7 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
 
     Parameters
     ----------
-    tree : `Tree` object
+    tree : |Tree| object
         A tree to be fitted.
 
     Returns

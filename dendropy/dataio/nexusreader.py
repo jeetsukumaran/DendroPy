@@ -248,11 +248,11 @@ class NexusReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiated into
-            `Taxon` objects. If `True`, internal node labels
+            |Taxon| objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: `False`
             If `False`, leaf (external) node labels will be instantantiated
-            into `Taxon` objects. If `True`, leaff (external) node
+            into |Taxon| objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
 
         exclude_chars : bool
@@ -261,7 +261,7 @@ class NexusReader(ioservice.DataReader):
         exclude_trees : bool
             If `False`, then tree data will not be read. Defaults to
             `True`: tree data will be read.
-        attached_taxon_namespace : `TaxonNamespace`
+        attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
         """
 

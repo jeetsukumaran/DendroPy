@@ -58,11 +58,11 @@ def fitch_down_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over `Node` objects
-        An iterable of `Node` objects in in order of post-order
+    postorder_nodes : iterable of/over |Node| objects
+        An iterable of |Node| objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
-        Name of attribute on `Node` objects in which state set lists
+        Name of attribute on |Node| objects in which state set lists
         will stored/accessed. If `None`, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets
@@ -109,7 +109,7 @@ def fitch_down_pass(
                 taxon_state_sets_map=taxon_set_map)
         print(score)
 
-    In the above, every `Node` object of ``tree`` will have an attribute
+    In the above, every |Node| object of ``tree`` will have an attribute
     added, "state_sets", that stores the list of state sets from the analysis::
 
         for nd in tree:
@@ -206,11 +206,11 @@ def fitch_up_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over `Node` objects
-        An iterable of `Node` objects in in order of post-order
+    postorder_nodes : iterable of/over |Node| objects
+        An iterable of |Node| objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
-        Name of attribute on `Node` objects in which state set lists
+        Name of attribute on |Node| objects in which state set lists
         will stored/accessed. If `None`, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets

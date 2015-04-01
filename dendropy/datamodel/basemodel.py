@@ -72,8 +72,8 @@ class DataObject(object):
                   ``value`` field of `Annotation` objects are also
                   just references).
                 - 1: taxon-namespace-scoped copy: All member objects are full
-                  independent instances, *except* for `TaxonNamespace`
-                  and `Taxon` instances: these are references.
+                  independent instances, *except* for |TaxonNamespace|
+                  and |Taxon| instances: these are references.
                 - 2: Exhaustive deep-copy: all objects are cloned.
         """
         if depth == 0:
@@ -89,7 +89,7 @@ class DataObject(object):
         """
         Cloning level: 1.
         Taxon-namespace-scoped copy: All member objects are full independent
-        instances, *except* for `TaxonNamespace` and `Taxon`
+        instances, *except* for |TaxonNamespace| and |Taxon|
         objects: these are preserved as references.
         """
         raise NotImplementedError
@@ -285,10 +285,10 @@ class Readable(object):
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - `Tree`: **undefined**
-                - `TreeList`: number of trees
-                - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
         raise NotImplementedError
@@ -316,10 +316,10 @@ class Readable(object):
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - `Tree`: **undefined**
-                - `TreeList`: number of trees
-                - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
         return self.read(stream=fileobj, schema=schema, **kwargs)
@@ -346,10 +346,10 @@ class Readable(object):
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - `Tree`: **undefined**
-                - `TreeList`: number of trees
-                - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         with open(filepath, "r", newline=None) as fsrc:
             return self.read(stream=fsrc, schema=schema, **kwargs)
@@ -376,10 +376,10 @@ class Readable(object):
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - `Tree`: **undefined**
-                - `TreeList`: number of trees
-                - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
@@ -406,10 +406,10 @@ class Readable(object):
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - `Tree`: **undefined**
-                - `TreeList`: number of trees
-                - `CharacterMatrix`: number of sequences
-                - `DataSet`: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         src_str = urlio.read_url(url)
         s = StringIO(src_str)

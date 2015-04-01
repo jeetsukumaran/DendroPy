@@ -132,7 +132,7 @@ class NexusTokenizer(Tokenizer):
 
 class NexusTaxonSymbolMapper(object):
     """
-    Manages `TaxonNamespace` and `Taxon` object look-ups when
+    Manages |TaxonNamespace| and |Taxon| object look-ups when
     parsing NEXUS and NEWICK formatted data.
 
     Operational taxonomic unit concepts in NEXUS files can be referenced using
@@ -145,27 +145,27 @@ class NexusTaxonSymbolMapper(object):
     In the event of redundant over overdetermined symbols, the resolution order
     is as given above.
 
-    This class encapsulates creating, looking-up and retrieving `Taxon`
+    This class encapsulates creating, looking-up and retrieving |Taxon|
     objects corresponding to operation taxonomic unit concept references
     encountered when reading NEXUS or NEWICK data sources from the
-    `TaxonNamespace` that it wraps and manages. It keeps track of
+    |TaxonNamespace| that it wraps and manages. It keeps track of
     "TRANSLATE" block tokens, operational taxonomic unit labels, and
     operational taxonomic unit indexes in mapping containers that allow for
-    quick retrieval of corresponding `Taxon` objects. The symbol look-up
+    quick retrieval of corresponding |Taxon| objects. The symbol look-up
     is case-insensitive, as per NEXUS/NEWICK convention.
 
-    If a `Taxon` object is not found for a particular symbol, it will
-    create a new `Taxon` object with that symbol for its label, and
+    If a |Taxon| object is not found for a particular symbol, it will
+    create a new |Taxon| object with that symbol for its label, and
     register it in all the other supplemental mappings appropriately.
 
-    Note that the `TaxonNamespace` object passed to this class and the
-    member `Taxon` objects should not be modified during the lifespan of
+    Note that the |TaxonNamespace| object passed to this class and the
+    member |Taxon| objects should not be modified during the lifespan of
     this class or, at least, the tenure of the management of
-    `TaxonNamespace` and member `Taxon` objects by this class.
+    |TaxonNamespace| and member |Taxon| objects by this class.
     This is to ensure that the various supplementatl mappings (in particular,
     the label mapping and the taxon number mapping) are synchronized.
-    To this end, the of the `TaxonNamespace` object is locked, and all
-    `Taxon` object creation should be through this class's native
+    To this end, the of the |TaxonNamespace| object is locked, and all
+    |Taxon| object creation should be through this class's native
     methods.
     """
 

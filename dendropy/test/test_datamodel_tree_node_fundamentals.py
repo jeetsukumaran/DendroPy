@@ -45,7 +45,7 @@ class NodeIdentity(unittest.TestCase):
         self.n2 = dendropy.Node(label="a", taxon=taxon)
 
     def test_equal(self):
-        # two distinct `Node` objects are never equal, even if all
+        # two distinct |Node| objects are never equal, even if all
         # member values are the same.
         self.assertNotEqual(self.n1, self.n2)
         self.assertIs(self.n1.taxon, self.n2.taxon)

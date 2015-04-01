@@ -30,7 +30,7 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
     """
     Returns *unweighted* Robinson-Foulds distance between two trees.
 
-    Trees need to share the same `TaxonNamespace` reference. The
+    Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
     ``is_bipartitions_updated`` argument must be `False` to force recalculation
@@ -38,18 +38,18 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 
     Parameters
     ----------
-    tree1 : `Tree` object
+    tree1 : |Tree| object
         The first tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree2`` and must have
+        same |TaxonNamespace| reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : `Tree` object
+    tree2 : |Tree| object
         The second tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree1`` and must have
+        same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `False`, then the bipartitions on *both* trees will be updated
         before comparison. If `True` then the bipartitions will only be
-        calculated for a `Tree` object if they have not been calculated
+        calculated for a |Tree| object if they have not been calculated
         before, either explicitly or implicitly.
 
     Returns
@@ -98,7 +98,7 @@ def weighted_robinson_foulds_distance(
     Returns *weighted* Robinson-Foulds distance between two trees based on
     ``edge_weight_attr``.
 
-    Trees need to share the same `TaxonNamespace` reference. The
+    Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
     ``is_bipartitions_updated`` argument must be `False` to force recalculation of
@@ -106,20 +106,20 @@ def weighted_robinson_foulds_distance(
 
     Parameters
     ----------
-    tree1 : `Tree` object
+    tree1 : |Tree| object
         The first tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree2`` and must have
+        same |TaxonNamespace| reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : `Tree` object
+    tree2 : |Tree| object
         The second tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree1`` and must have
+        same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated before
         comparison. If `False` (default) then the bipartitions will only be
-        calculated for a `Tree` object if they have not been calculated
+        calculated for a |Tree| object if they have not been calculated
         before, either explicitly or implicitly.
 
     Returns
@@ -164,7 +164,7 @@ def false_positives_and_negatives(
     bipartitions (bipartitions found in ``reference_tree`` but not in
     ``comparison_tree``).
 
-    Trees need to share the same `TaxonNamespace` reference. The
+    Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
     ``is_bipartitions_updated`` argument must be `False` to force recalculation of
@@ -172,18 +172,18 @@ def false_positives_and_negatives(
 
     Parameters
     ----------
-    reference_tree : `Tree` object
+    reference_tree : |Tree| object
         The first tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree2`` and must have
+        same |TaxonNamespace| reference as ``tree2`` and must have
         bipartitions encoded.
-    comparison_tree : `Tree` object
+    comparison_tree : |Tree| object
         The second tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree1`` and must have
+        same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a `Tree` object if they have not been
+        will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
@@ -237,7 +237,7 @@ def euclidean_distance(
     Returns the Euclidean distance (a.k.a. Felsenstein's 2004 "branch length
     distance") between two trees based on ``edge_weight_attr``.
 
-    Trees need to share the same `TaxonNamespace` reference. The
+    Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
     ``is_bipartitions_updated`` argument must be `False` to force recalculation of
@@ -245,20 +245,20 @@ def euclidean_distance(
 
     Parameters
     ----------
-    tree1 : `Tree` object
+    tree1 : |Tree| object
         The first tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree2`` and must have
+        same |TaxonNamespace| reference as ``tree2`` and must have
         bipartitions encoded.
-    tree2 : `Tree` object
+    tree2 : |Tree| object
         The second tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree1`` and must have
+        same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a `Tree` object if they have not been
+        will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns
@@ -298,7 +298,7 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     Returns a list of bipartitions that are in ``reference_tree``, but
     not in ``comparison_tree``.
 
-    Trees need to share the same `TaxonNamespace` reference. The
+    Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
     ``is_bipartitions_updated`` argument must be `False` to force recalculation of
@@ -306,18 +306,18 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
 
     Parameters
     ----------
-    reference_tree : `Tree` object
+    reference_tree : |Tree| object
         The first tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree2`` and must have
+        same |TaxonNamespace| reference as ``tree2`` and must have
         bipartitions encoded.
-    comparison_tree : `Tree` object
+    comparison_tree : |Tree| object
         The second tree of the two trees being compared. This must share the
-        same `TaxonNamespace` reference as ``tree1`` and must have
+        same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
         If `True`, then the bipartitions on *both* trees will be updated
         before comparison. If `False` (default) then the bipartitions
-        will only be calculated for a `Tree` object if they have not been
+        will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
     Returns

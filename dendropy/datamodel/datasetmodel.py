@@ -17,9 +17,9 @@
 ##############################################################################
 
 """
-This module defines the `DataSet`: a top-level data container object
-that manages collections of `TaxonNamespace`, `TreeList`, and
-(various kinds of) `CharacterMatrix` objects.
+This module defines the |DataSet|: a top-level data container object
+that manages collections of |TaxonNamespace|, |TreeList|, and
+(various kinds of) |CharacterMatrix| objects.
 """
 
 import warnings
@@ -49,31 +49,31 @@ class DataSet(
         basemodel.DataObject):
     """
     A phylogenetic data object that coordinates collections of
-    `TaxonNamespace`, `TreeList`, and (various kinds of)
-    `CharacterMatrix` objects.
+    |TaxonNamespace|, |TreeList|, and (various kinds of)
+    |CharacterMatrix| objects.
 
-    A `DataSet` has three attributes:
+    A |DataSet| has three attributes:
 
         ``taxon_namespaces``
-            A list of `TaxonNamespace` objects, each representing
+            A list of |TaxonNamespace| objects, each representing
             a distinct namespace for operational taxononomic unit concept
             definitions.
 
         ``tree_lists``
-            A list of `TreeList` objects, each representing a
-            collection of `Tree` objects.
+            A list of |TreeList| objects, each representing a
+            collection of |Tree| objects.
 
         ``char_matrices``
-            A list of `CharacterMatrix`-derived objects (e.g.
-            `DnaCharacterMatrix`).
+            A list of |CharacterMatrix|-derived objects (e.g.
+            |DnaCharacterMatrix|).
 
-    Multiple `TaxonNamespace` objects within a `DataSet` are
+    Multiple |TaxonNamespace| objects within a |DataSet| are
     allowed so as to support reading/loading of data from external sources that
     have multiple independent taxon namespaces defined within the same source
     or document (e.g., a Mesquite file with multiple taxa blocks, or a NeXML
     file with multiple OTU sections). Ideally, however, this would not
     be how data is managed. Recommended idiomatic usage would be to use a
-    `DataSet` to manage multiple types of data that all share and
+    |DataSet| to manage multiple types of data that all share and
     reference the same, single taxon namespace.
 
     This convention can be enforced by setting the DataSet instance to
@@ -90,16 +90,16 @@ class DataSet(
     Note that unless there is a need to collect and serialize a collection of
     data to the same file or external source, it is probably better
     semantically to use more specific data structures (e.g., a
-    `TreeList` object for trees or a `DnaCharacterMatrix`
+    |TreeList| object for trees or a |DnaCharacterMatrix|
     object for an alignment). Similarly, when deserializing an external
     data source, if just a single type or collection of data is needed (e.g.,
     the collection of trees from a file that includes both trees and an
     alignment), then it is semantically cleaner to deserialize the data
-    into a more specific structure (e.g., a `TreeList` to get all the
+    into a more specific structure (e.g., a |TreeList| to get all the
     trees). However, when deserializing a mixed external data source
     with, e.g. multiple alignments or trees and one or more alignments, and you
     need to access/use more than a single collection, it is more efficient to
-    read the entire data source at once into a `DataSet` object and then
+    read the entire data source at once into a |DataSet| object and then
     independently extract the data objects as you need them from the various
     collections.
 
@@ -110,7 +110,7 @@ class DataSet(
             schema,
             **kwargs):
         """
-        Constructs a new `DataSet` object and populates it with data
+        Constructs a new |DataSet| object and populates it with data
         from file-like object ``stream``.
         """
         exclude_trees = kwargs.pop("exclude_trees", False)
@@ -138,13 +138,13 @@ class DataSet(
     def __init__(self, *args, **kwargs):
         """
         The constructor can take one argument. This can either be another
-        `DataSet` instance or an iterable of `TaxonNamespace`,
-        `TreeList`, or `CharacterMatrix`-derived instances.
+        |DataSet| instance or an iterable of |TaxonNamespace|,
+        |TreeList|, or |CharacterMatrix|-derived instances.
 
-        In the former case, the newly-constructed `DataSet` will be a
+        In the former case, the newly-constructed |DataSet| will be a
         shallow-copy clone of the argument.
 
-        In the latter case, the newly-constructed `DataSet` will have
+        In the latter case, the newly-constructed |DataSet| will have
         the elements of the iterable added to the respective collections
         (``taxon_namespaces``, ``tree_lists``, or ``char_matrices``, as
         appropriate). This is essentially like calling :meth:`DataSet.add()`
@@ -279,21 +279,21 @@ class DataSet(
     def add_taxon_namespace(self, taxon_namespace):
         """
         Adds a taxonomic unit concept namespace represented by a
-        `TaxonNamespace` instance to this dataset if it is not already
+        |TaxonNamespace| instance to this dataset if it is not already
         there.
 
         Parameters
         ----------
-        taxon_namespace : `TaxonNamespace`
-            The `TaxonNamespace` object to be added.
+        taxon_namespace : |TaxonNamespace|
+            The |TaxonNamespace| object to be added.
         """
         self.taxon_namespaces.add(taxon_namespace)
         return taxon_namespace
 
     def new_taxon_namespace(self, *args, **kwargs):
         """
-        Creates a new `TaxonNamespace` object, according to the arguments given
-        (passed to `TaxonNamespace()`), and adds it to this `DataSet`.
+        Creates a new |TaxonNamespace| object, according to the arguments given
+        (passed to `TaxonNamespace()`), and adds it to this |DataSet|.
         """
         t = taxonmodel.TaxonNamespace(*args, **kwargs)
         self.add_taxon_namespace(t)
@@ -335,7 +335,7 @@ class DataSet(
                 Attach ``tns`` as the bound (single, unified) taxonomic namespace
                 reference for all objects.
             `attach_taxon_namespace=True`
-                Create a *new* `TaxonNamespace` and set it as the bound
+                Create a *new* |TaxonNamespace| and set it as the bound
                 (single, unified) taxonomic namespace reference for all
                 objects.
         """
@@ -438,7 +438,7 @@ class DataSet(
 
     def detach_taxon_set(self):
         """
-        DEPRECATED: Use `detach_taxon_namespace()` instead.
+        DEPRECATED: Use `DataSet.detach_taxon_namespace()` instead.
         """
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'detach_taxon_set' will no longer be supported in future releases; use 'detach_taxon_namespace' instead",
@@ -449,13 +449,13 @@ class DataSet(
 
     def add_tree_list(self, tree_list):
         """
-        Adds a `TreeList` instance to this dataset if it is not already
+        Adds a |TreeList| instance to this dataset if it is not already
         there.
 
         Parameters
         ----------
-        tree_list : `TreeList`
-            The `TreeList` object to be added.
+        tree_list : |TreeList|
+            The |TreeList| object to be added.
         """
         if tree_list.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(tree_list.taxon_namespace)
@@ -464,19 +464,19 @@ class DataSet(
 
     def new_tree_list(self, *args, **kwargs):
         """
-        Creates a new `TreeList` instance, adds it to this DataSet.
+        Creates a new |TreeList| instance, adds it to this DataSet.
 
         Parameters
         ----------
         \*args : positional arguments
-            Passed directly to `TreeList` constructor.
+            Passed directly to |TreeList| constructor.
         \*\*kwargs : keyword arguments, optional
-            Passed directly to `TreeList` constructor.
+            Passed directly to |TreeList| constructor.
 
         Returns
         -------
-        t : `TreeList`
-            The new `TreeList` instance created.
+        t : |TreeList|
+            The new |TreeList| instance created.
         """
         if self.attached_taxon_namespace is not None:
             if "taxon_namespace" in kwargs and kwargs["taxon_namespace"] is not self.attached_taxon_namespace:
@@ -500,13 +500,13 @@ class DataSet(
 
     def add_char_matrix(self, char_matrix):
         """
-        Adds a `CharacterMatrix` or `CharacterMatrix`-derived
+        Adds a |CharacterMatrix| or |CharacterMatrix|-derived
         instance to this dataset if it is not already there.
 
         Parameters
         ----------
-        char_matrix : `CharacterMatrix`
-            The `CharacterMatrix` object to be added.
+        char_matrix : |CharacterMatrix|
+            The |CharacterMatrix| object to be added.
         """
         if char_matrix.taxon_namespace not in self.taxon_namespaces:
             self.taxon_namespaces.add(char_matrix.taxon_namespace)
@@ -515,7 +515,7 @@ class DataSet(
 
     def new_char_matrix(self, char_matrix_type, *args, **kwargs):
         """
-        Creation and accession of new `CharacterMatrix` (of class
+        Creation and accession of new |CharacterMatrix| (of class
         ``char_matrix_type``) into ``chars`` of self."
         """
         if self.attached_taxon_namespace is not None:

@@ -206,18 +206,22 @@ rst_epilog = """
 .. |TaxonNamespace| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace`
 .. |Tree| replace:: :class:`~dendropy.datamodel.treemodel.Tree`
 .. |TreeList| replace:: :class:`~dendropy.datamodel.treemodel.TreeList`
+.. |TreeArray| replace:: :class:`~dendropy.datamodel.treemodel.TreeArray`
+.. |SplitsDistribution| replace:: :class:`~dendropy.datamodel.treemodel.SplitsDistribution`
 .. |Node| replace:: :class:`~dendropy.datamodel.treemodel.Node`
 .. |Edge| replace:: :class:`~dendropy.datamodel.treemodel.Edge`
+.. |Bipartition| replace:: :class:`~dendropy.datamodel.treemodel.Bipartition`
 .. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
 .. |DataSet| replace:: :class:`~dendropy.datamodel.datasetmodel.DataSet`
 .. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmodel.CharacterMatrix`
 .. |DnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix`
 .. |RnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix`
 .. |ProteinCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix`
+.. |InfiniteSitesCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix`
+.. |RestrictionSitesCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix`
 .. |StandardCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix`
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix`
-.. |CharacterDataVector| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataVector`
-.. |CharacterDataCell| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataCell`
+.. |CharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataVector`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`

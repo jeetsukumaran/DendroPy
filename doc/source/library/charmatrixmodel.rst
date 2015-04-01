@@ -29,50 +29,50 @@ Character Subsets
 Character Matrices
 ==================
 
-The :class:`CharacterMatrix` Class
+The |CharacterMatrix| Class
 ----------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.CharacterMatrix
     :members:
     :inherited-members:
 
-:class:`ContinuousCharacterMatrix`: Continuous Data
+|ContinuousCharacterMatrix|: Continuous Data
 ---------------------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix
     :members:
 
-:class:`DnaCharacterMatrix`: DNA Data
+|DnaCharacterMatrix|: DNA Data
 -------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix
     :members:
 
-:class:`RnaCharacterMatrix`: RNA Data
+|RnaCharacterMatrix|: RNA Data
 -------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix
     :members:
 
-:class:`ProteinCharacterMatrix`: Protein (Amino Acid) Data
+|ProteinCharacterMatrix|: Protein (Amino Acid) Data
 ----------------------------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix
     :members:
 
-:class:`RestrictionSitesCharacterMatrix`: Restriction Sites Data
+|RestrictionSitesCharacterMatrix|: Restriction Sites Data
 ----------------------------------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix
     :members:
 
-:class:`InfiniteSitesCharacterMatrix` : Infinite Sites Data
+|InfiniteSitesCharacterMatrix| : Infinite Sites Data
 -----------------------------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix
     :members:
 
-:class:`StandardCharacterMatrix`: "Standard" Data
+|StandardCharacterMatrix|: "Standard" Data
 -------------------------------------------------
 
 .. autoclass:: dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix

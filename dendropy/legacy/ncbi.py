@@ -95,7 +95,7 @@ def relabel_taxa_from_defline(taxon_set,
         gbnum_in_front=True,
         exclude_gbnum=False):
     """
-    Examines the labels of each `Taxon` object in ``taxon_set``, and if
+    Examines the labels of each |Taxon| object in ``taxon_set``, and if
     conforming to a GenBank pattern, translates the labels to a standard
     format:
 
@@ -275,7 +275,7 @@ class Entrez(object):
         nucleotide database with accession numbers given by ``ids`` (a list of
         accession numbers). If ``prefix`` is given, it is pre-pended to all values
         given in the id list. Any other keyword arguments given are passed to
-        the constructor of `DnaCharacterMatrix`.
+        the constructor of |DnaCharacterMatrix|.
         **Note that the order of records is *not* the same as the order of ids!!!**
         """
         if prefix is not None:
@@ -321,7 +321,7 @@ class Entrez(object):
         Entrez nucleotide database with accession numbers between ``start``
         and, up to and *including* ``end``. If ``prefix`` is given, then it is
         pre-pended to the ids. Any other keyword arguments given are passed to
-        thee constructor of `DnaCharacterMatrix`.
+        thee constructor of |DnaCharacterMatrix|.
         """
         ids = range(first, last+1)
         return self.fetch_nucleotide_accessions(ids=ids, prefix=prefix, verify=verify, matrix_type=matrix_type, **kwargs)

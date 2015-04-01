@@ -51,7 +51,7 @@ class NexusWriter(ioservice.DataWriter):
         suppress_taxa_block: boolean, default: `False`
             If `True`, do not write a "TAXA" block.
         suppress_unreferenced_taxon_namespaces: boolean, default: `False`
-            If `True`, then when writing `DataSet` objects, any `TaxonNamespace`
+            If `True`, then when writing |DataSet| objects, any |TaxonNamespace|
             object in the DataSet's ``taxon_namespaces`` collection will *not* be written
             as a "TAXA" block
         file_comments: iterable [``str``]
@@ -103,7 +103,7 @@ class NexusWriter(ioservice.DataWriter):
             and referenced in tree statements (instead of using the taxon
             labels). If `True`, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be `Taxon` objects and the
+            given, then the keys should be |Taxon| objects and the
             values should be the token (strings).
         suppress_annotations : boolean, default: `False`
             If `True`, metadata annotations will be ignored.
@@ -121,7 +121,7 @@ class NexusWriter(ioservice.DataWriter):
             ``suppress_leaf_node_labels`` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
         node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a `Node`
+            If not `None`, should be a function that takes a |Node|
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node

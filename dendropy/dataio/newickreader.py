@@ -175,11 +175,11 @@ class NewickReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiated into
-            `Taxon` objects. If `True`, internal node labels
+            |Taxon| objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: `False`
             If `False`, leaf (external) node labels will be instantantiated
-            into `Taxon` objects. If `True`, leaff (external) node
+            into |Taxon| objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
         terminating_semicolon_required : boolean, default: `True`
             If `True` [default], then a tree statement that does not end in a
@@ -271,16 +271,16 @@ class NewickReader(ioservice.DataReader):
         ----------
         stream : file or file-like object
             A file or file-like object opened for reading.
-        taxon_namespace : `TaxonNamespace`
+        taxon_namespace : |TaxonNamespace|
             Operational taxonomic unit namespace to use for taxon management.
         tree_factory : function object
-            A function that returns a new `Tree` object when called
+            A function that returns a new |Tree| object when called
             without arguments.
 
         Returns
         -------
-        iter : :py`collections.Iterator` [`Tree`]
-            An iterator yielding `Tree` objects constructed based on
+        iter : :py`collections.Iterator` [|Tree|]
+            An iterator yielding |Tree| objects constructed based on
             data in ``stream``.
         """
         nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,

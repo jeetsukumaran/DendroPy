@@ -46,7 +46,7 @@ class NexmlTreeDataYielder(
             a string (````isinstance(i,str) == True````), then it is assumed to be
             a path to a file. Otherwise, the source is assumed to be a file-like
             object.
-        taxon_namespace : `TaxonNamespace` instance
+        taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
         \*\*kwargs : keyword arguments

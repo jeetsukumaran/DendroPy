@@ -201,8 +201,8 @@ def coalesce_nodes(nodes,
 
     Parameters
     ----------
-    nodes : iterable[`Node`]
-        An interable of `Node` objects representing a sample of neutral
+    nodes : iterable[|Node|]
+        An interable of |Node| objects representing a sample of neutral
         genes (some, all, or none of these nodes may have descendent nodes).
     pop_size : integer
         The effective *haploid* population size; i.e., number of genes in the
@@ -223,7 +223,7 @@ def coalesce_nodes(nodes,
 
     Returns
     -------
-    nodes : iterable[`Node`]
+    nodes : iterable[|Node|]
         A list of nodes once ``period`` is exhausted or if any draw of ``t``
         exceeds ``period``, if ``period`` is given or when there is only one node
         left.
@@ -323,7 +323,7 @@ def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULT
 
     Parameters
     ----------
-    tree : `Tree`
+    tree : |Tree|
         A tree instance.
     ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is
@@ -361,7 +361,7 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
 
     Parameters
     ----------
-    tree : `Tree`
+    tree : |Tree|
         A tree instance.
     ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is

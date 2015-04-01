@@ -50,23 +50,23 @@ class ContainingTree(dendropy.Tree):
         Mandatory Arguments:
 
             ``containing_tree``
-                A `Tree` or `Tree`-like object that describes the topological
+                A |Tree| or |Tree|-like object that describes the topological
                 constraints or conditions of the containing tree (e.g., species,
                 host, or biogeographical area trees).
 
             ``contained_taxon_namespace``
-                A `TaxonNamespace` object that will be used to manage the taxa of
+                A |TaxonNamespace| object that will be used to manage the taxa of
                 the contained trees.
 
             ``contained_to_containing_taxon_map``
-                A `TaxonNamespaceMapping` object mapping `Taxon` objects in the
-                contained `TaxonNamespace` to corresponding `Taxon` objects in the
+                A |TaxonNamespaceMapping| object mapping |Taxon| objects in the
+                contained |TaxonNamespace| to corresponding |Taxon| objects in the
                 containing tree.
 
         Optional Arguments:
 
             ``contained_trees``
-                An iterable container of `Tree` or `Tree`-like objects that
+                An iterable container of |Tree| or |Tree|-like objects that
                 will be contained into ``containing_tree``; e.g. gene or
                 parasite trees.
 
@@ -128,11 +128,11 @@ class ContainingTree(dendropy.Tree):
 
     def _set_contained_to_containing_taxon_map(self, contained_to_containing_taxon_map):
         """
-        Sets mapping of `Taxon` objects of the genes/parasite/etc. to that of
+        Sets mapping of |Taxon| objects of the genes/parasite/etc. to that of
         the population/species/host/etc.
         Creates mapping (e.g., species to genes) and decorates edges of self
-        with sets of both containing `Taxon` objects and the contained
-        `Taxon` objects that map to them.
+        with sets of both containing |Taxon| objects and the contained
+        |Taxon| objects that map to them.
         """
         if isinstance(contained_to_containing_taxon_map, dendropy.TaxonNamespaceMapping):
             if self._contained_taxon_namespace is not contained_to_containing_taxon_map.domain_taxon_namespace:

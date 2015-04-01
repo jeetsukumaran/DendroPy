@@ -85,7 +85,7 @@ class NewickWriter(ioservice.DataWriter):
             and referenced in tree statements (instead of using the taxon
             labels). If `True`, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be `Taxon` objects and the
+            given, then the keys should be |Taxon| objects and the
             values should be the token (strings).
         suppress_annotations : boolean, default: `True`
             If `False`, metadata annotations will be written out as special
@@ -103,7 +103,7 @@ class NewickWriter(ioservice.DataWriter):
             ``suppress_leaf_node_labels`` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
         node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a `Node`
+            If not `None`, should be a function that takes a |Node|
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node
@@ -259,7 +259,7 @@ class NewickWriter(ioservice.DataWriter):
 
     def _write_tree_list(self, stream, tree_list):
         """
-        Writes a `TreeList` in NEWICK schema to ``stream``.
+        Writes a |TreeList| in NEWICK schema to ``stream``.
         """
         for tree in tree_list:
             self._write_tree(stream, tree)

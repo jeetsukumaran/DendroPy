@@ -229,7 +229,7 @@ class TreeSummarizer(object):
             summarization_fn=None,
             is_bipartitions_updated=False):
         """
-        Sets the ``age`` attribute of nodes on ``tree`` (a `Tree` object) to the
+        Sets the ``age`` attribute of nodes on ``tree`` (a |Tree| object) to the
         result of ``summarization_fn`` applied to the vector of ages of the
         same node on the input trees (in ``split_distribution``, a
         `SplitDistribution` object) being summarized.
@@ -276,7 +276,7 @@ class TreeSummarizer(object):
             summarization_fn=None,
             is_bipartitions_updated=False):
         """
-        Sets the lengths of edges on ``tree`` (a `Tree` object) to the mean
+        Sets the lengths of edges on ``tree`` (a |Tree| object) to the mean
         lengths of the corresponding edges on the input trees (in
         ``split_distribution``, a `SplitDistribution` object) being
         summarized.

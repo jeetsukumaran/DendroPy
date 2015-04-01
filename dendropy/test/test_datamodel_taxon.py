@@ -33,7 +33,7 @@ class TaxonIdentity(compare_and_validate.Comparator, unittest.TestCase):
         self.t2 = Taxon("a")
 
     def test_equal(self):
-        # two distinct `Taxon` objects are never equal, even if all
+        # two distinct |Taxon| objects are never equal, even if all
         # member values are the same.
         self.assertNotEqual(self.t1, self.t2)
 
