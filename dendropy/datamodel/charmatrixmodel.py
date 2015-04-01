@@ -216,7 +216,7 @@ class CharacterDataSequence(
 
     def extend(self, character_values, character_types=None, character_annotations=None):
         """
-        Extends `self` with values.
+        Extends ``self`` with values.
 
         Parameters
         ----------
