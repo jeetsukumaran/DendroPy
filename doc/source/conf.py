@@ -164,7 +164,7 @@ rst_epilog = """
 .. |DendroPy| replace:: DendroPy
 .. _DendroPy: http://www.dendropy.org/
 .. |dendropy_homepage_url| replace:: http://www.dendropy.org/
-.. |dendropy_tutorial_url| replace:: http://www.dendropy.org/tutorial/index.html
+.. |dendropy_primer_url| replace:: http://www.dendropy.org/primer/index.html
 .. |dendropy_library_url| replace:: http://www.dendropy.org/library/index.html
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
@@ -190,7 +190,7 @@ rst_epilog = """
 
 .. |dendropy_logo| replace:: /_static/dendropy_logo.png
 .. |dendropy_library_doc| replace:: /library/index
-.. |dendropy_tutorial_doc| replace:: /tutorial/index
+.. |dendropy_primer_doc| replace:: /primer/index
 .. |sumtrees_doc| replace:: /scripts/sumtrees
 
 .. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
@@ -364,7 +364,7 @@ latex_elements = {
 latex_documents = [
   ('index', 'DendroPy.tex', u'DendroPy Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
-  ('tutorial/index', 'DendroPy-Tutorial.tex', u'DendroPy Tutorial',
+  ('primer/index', 'DendroPy-Primer.tex', u'DendroPy Primer',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
   ('library/index', 'DendroPy-Library-API.tex', u'DendroPy Library API Reference',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
@@ -402,7 +402,7 @@ man_pages = [
     #  [u'Jeet Sukumaran and Mark T. Holder'], 1),
     ('library/index', 'dendropy', u'DendroPy Library API Reference',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
-    ('tutorial/index', 'dendropy-tutorial', u'DendroPy Tutorial',
+    ('primer/index', 'dendropy-primer', u'DendroPy Primer',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
     ('scripts/sumtrees', 'sumtrees', u'SumTrees User Manual',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
@@ -421,7 +421,7 @@ texinfo_documents = [
   ('library/index', 'DendroPy', u'DendroPy Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
-  ('tutorial/index', 'DendroPy-Tutorial', u'DendroPy Tutorial',
+  ('primer/index', 'DendroPy-Primer', u'DendroPy Primer',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
   ('scripts/sumtrees', 'SumTrees', u'SumTrees Documentation',

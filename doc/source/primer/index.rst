@@ -1,7 +1,11 @@
 #####################
-The DendroPy Tutorial
+The DendroPy Primer
 #####################
 
+
+.. contents::
+    :local:
+    :backlinks: none
 
 The DendroPy Data Model: Phylogenetic Data Objects
 ==================================================

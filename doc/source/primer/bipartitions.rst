@@ -412,4 +412,4 @@ Note that in all cases, for bipartitions to be meaningfully compared two conditi
 -- ### DOCUMENTATION IN PROGRESS ###
 
 -- IF YOU REFERENCE THIS DOCUMENTATION OR ANY PART THEREOF, PLEASE CITE IT AS:
--- "Sukumaran, J. 2014. The DendroPy Tutorial. Day Month Year article was published. Web. Day Month Year article was accessed. <URL>
+-- "Sukumaran, J. 2014. The DendroPy Primer. Day Month Year article was published. Web. Day Month Year article was accessed. <URL>

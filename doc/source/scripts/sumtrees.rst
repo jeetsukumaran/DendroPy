@@ -172,7 +172,7 @@ For example, if your machine has two cores, and you want to run the previous ana
 You can specify as many processes as you want, up to the total number of tree support files passed as input sources.
 If you specify fewer processes than input sources, then the files will be cycled through the processes.
 
-Tutorials and Examples
+Primers and Examples
 ======================
 
 At its most basic, you will need to supply SumTrees with the path to one or more tree files in Newick or NEXUS format that you want to summarize::

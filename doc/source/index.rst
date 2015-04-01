@@ -8,7 +8,7 @@ DendroPy Phylogenetic Computing Library
 
     Introduction <self>
     downloading.rst
-    tutorial/index.rst
+    primer/index.rst
     library/index.rst
     scripts/sumtrees.rst
     glossary.rst
@@ -51,9 +51,9 @@ Documentation
 
         The many ways to get DendroPy up and running on your system.
 
-    :doc:`DendroPy Tutorial </tutorial/index>`
+    :doc:`DendroPy Primer </primer/index>`
 
-        A detailed tutorial on how to use the DendroPy library, with lots of annotated practical examples and code walk-throughs.
+        A detailed primer on how to use the DendroPy library, with lots of annotated practical examples and code walk-throughs.
 
     :doc:`DendroPy Library API Reference </library/index>`
 
