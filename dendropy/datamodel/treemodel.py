@@ -4465,6 +4465,15 @@ class Tree(
         return self.seed_node
 
     def suppress_unifurcations(self, update_bipartitions=False):
+        """
+        Delete all nodes of outdegree-one from this tree.
+
+        Parameters
+        ----------
+        update_bipartitions : bool
+            If `True` then the bipartitions encoding will be calculated.
+
+        """
         if update_bipartitions and self.bipartition_encoding:
             bipartitions_to_delete = set()
         else:
