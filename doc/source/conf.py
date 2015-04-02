@@ -232,8 +232,8 @@ rst_epilog = """
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
 .. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
 
-.. |get_from_methods| replace::  "``get_from_*()``"
-.. |read_from_methods| replace:: "``read_from_*()``"
+.. |get_from_methods| replace::  :py:meth:`get_from_*() <get_from_*>`
+.. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`

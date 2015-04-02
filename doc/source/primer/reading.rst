@@ -5,22 +5,24 @@ Reading Phylogenetic Data
 Creating and Populating New Objects
 ===================================
 
-The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support |get_from_methods| factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
+The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support "|get_from_methods|" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
     :meth:`get_from_stream(src, schema, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
+        Takes a file or file-like object opened for reading the data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+        Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+        Creates and returns a new object
 
     :meth:`get_from_path(src, schema, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
 
     :meth:`get_from_string(src, schema, **kwargs)`
-        Takes a string containing the source data as the first argument, and a string specifying the schema as the second.
+        Takes a string containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
 
-A "schema" is DendroPy-speak for "format" (we cannot use the argument name "format" because this is a Python built-in, and hence we adopted this terminology for consistency), and is specified using one of a set of predefined string values.
+A ":term:`schema`" is DendroPy-speak for "format" (we cannot use the argument name "format" because this is a Python built-in, and hence we adopted this terminology for consistency), and is specified using one of a set of predefined string values.
 The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
 Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-All |get_from_methods|  methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
+All "|get_from_methods|"  methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
@@ -34,20 +36,20 @@ Various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` can als
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
 
-The collection classes (|TreeList|, |TreeArray| and |DataSet|) all support a suite of |read_from_methods| instance methods that *add* data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
-These |read_from_methods| have signatures that parallel the |get_from_methods| factory methods described above:
+In addition to the "|get_from_methods|" class factory methods, the collection classes (|TreeList|, |TreeArray| and |DataSet|) all support a suite of "|read_from_methods|" *instance* methods that *add* data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
+These "|read_from_methods|" instance methods have signatures that parallel the "|get_from_methods|" factory methods described above:
 
     :meth:`read_from_stream(src, schema, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
+        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the :term:`schema` as the second.
 
     :meth:`read_from_path(src, schema, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
 
     :meth:`read_from_string(src, schema, **kwargs)`
-        Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
+        Takes a string specifying containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
 
 When called on an existing |TreeList|, |TreeArray| or |DataSet| objects, these methods *add* the data from the data source to the object.
-As with the |get_from_methods| methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate schema, such as "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
+As with the "|get_from_methods|" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate :term:`schema`, such as "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
 
 For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object::
 
@@ -67,10 +69,10 @@ For example, the following accumulates post-burn-in trees from several different
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
 The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonNamespace| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonNamespace| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
-As with the |get_from_methods| methods, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
+As with the "|get_from_methods|" methods, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
 
 
-.. note:: DendroPy 3.xx supported |read_from_methods| methods on |Tree| and |CharacterMatrix|-derived classes. This is no longer supported in DendroPy 4 and above. Instead of trying to re-populate an existing |Tree| or |CharacterMatrix|-derived object by using |read_from_methods|::
+.. note:: DendroPy 3.xx supported "|read_from_methods|" methods on |Tree| and |CharacterMatrix|-derived classes. This is no longer supported in DendroPy 4 and above. Instead of trying to re-populate an existing |Tree| or |CharacterMatrix|-derived object by using "|read_from_methods|"::
 
             x = dendropy.Tree()
             x.read_from_path("tree1.nex", "nexus")
@@ -79,7 +81,7 @@ As with the |get_from_methods| methods, keyword arguments can be used to provide
             .
             x.read_from_path("tree2.nex", "nexus")
 
-        simply rebind the new object returned by |get_from_methods|::
+        simply rebind the new object returned by "|get_from_methods|"::
 
             x = dendropy.Tree.get_from_path("tree1.nex", "nexus")
             .
@@ -92,7 +94,7 @@ As with the |get_from_methods| methods, keyword arguments can be used to provide
 Specifying the Data Source Format
 ==================================
 
-All the |get_from_methods| and |read_from_methods| methods take a schema specification string using the ``schema`` argument which specifies the format of the data source.
+All the "|get_from_methods|" and "|read_from_methods|" methods take a :term:`schema` specification string using the ``schema`` argument which specifies the format of the data source.
 
 The string can be one of the following:
 
@@ -119,7 +121,7 @@ Customizing Data Creation and Reading
 =====================================
 
 When specifying a data source from which to create or populate data objects
-using the |get_from_methods| or |read_from_methods| methods, you can also
+using the "|get_from_methods|" or "|read_from_methods|" methods, you can also
 specify keyword arguments that provide fine-grained control over how the data
 source is parsed.
 
@@ -148,7 +150,7 @@ All Schemas
         as the |TaxonNamespace| associated with the object.
         When reading into a |DataSet| object, if the data source defines
         multiple collections of taxa (as is possible with, for example, the
-        NEXML schema, or the Mesquite variant of the NEXUS schema), then
+        NEXML :term:`schema`, or the Mesquite variant of the NEXUS :term:`schema`), then
         multiple new |TaxonNamespace| object will be created. By passing a
         |TaxonNamespace| object through the ``taxon_namespace`` keyword, you
         can force DendroPy to use the same |TaxonNamespace| object for all

@@ -1,5 +1,5 @@
-Tree Terminology
-----------------
+Glossary and Terminological Reference
+-------------------------------------
 
 .. glossary::
     :sorted:
@@ -91,8 +91,16 @@ Tree Terminology
         most-recent common ancestor of all the :class:`leaf nodes` on the tree.
 
     schema
-        The format or syntax of data serialized. Examples are NEXUS, NEWICk,
-        Phylip, NeXML, etc.
+        The format or syntax of serialized phylogenetic or related data.
+        Examples are NEXUS, NEWICk, Phylip, NeXML, etc. A "schema" is
+        DendroPy-speak for "format" (we cannot use the argument name "format"
+        because this is a Python built-in, and hence we adopted this
+        terminology for consistency), and is typicallly specified using one of
+        a set of predefined string values, known as "schema specification
+        strings". Supported reading (input) schemas are described :ref:`here
+        <Specifying_the_Data_Source_Format>` while supported writing (output)
+        schemas are described :ref:`here <Specifying_the_Data_Writing_Format>`.
+
 
     subtree
         A subtree of a tree T is a tree consisting of a node in T and all of

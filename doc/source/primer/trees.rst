@@ -50,7 +50,7 @@ The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_s
     >>> treelist.read_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
     >>> treelist.read_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
 
-In the case of |Tree| objects, calling |read_from_methods| *repopulates* (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling |read_from_methods| *appends* the tree definitions in the data source to the |TreeList|.
+In the case of |Tree| objects, calling "|read_from_methods|" *repopulates* (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling "|read_from_methods|" *appends* the tree definitions in the data source to the |TreeList|.
 
 Cloning an Existing |Tree| or |TreeList|
 ----------------------------------------
@@ -160,7 +160,7 @@ This means that even though the tree shape and structure is identical between th
 
     TypeError: Trees have different TaxonNamespace objects: 0x101f630 vs. 0x103bf30
 
-The solution is to explicitly specify the same ``taxon_namespace`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonNamespace| objects have constructors, factory methods, and |read_from_methods| methods take a specific :class:`TaxonNamespace` object as an argument using the ``taxon_namespace`` a keyword. For example::
+The solution is to explicitly specify the same ``taxon_namespace`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonNamespace| objects have constructors, factory methods, and "|read_from_methods|" methods take a specific :class:`TaxonNamespace` object as an argument using the ``taxon_namespace`` a keyword. For example::
 
     >>> taxa = dendropy.TaxonNamespace()
     >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_namespace=taxa)
@@ -192,7 +192,7 @@ As |Tree| objects are appended to a |TreeList| object, the |TreeList| object wil
     >>> treecalc.robinson_foulds_distance(t1, t2)
     0.0
 
-The same applies when using the |read_from_methods| method of a |TreeList| object: all trees read from the data source will be assigned the same |TaxonNamespace| object, and the taxa referenced in the tree definition will be mapped to corresponding |Taxon| objects, identified by label, in the |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
+The same applies when using the "|read_from_methods|" method of a |TreeList| object: all trees read from the data source will be assigned the same |TaxonNamespace| object, and the taxa referenced in the tree definition will be mapped to corresponding |Taxon| objects, identified by label, in the |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
 
 While |TreeList| objects ensure that all |Tree| objects created, read or added using them all have the same |TaxonNamespace| object reference, if two |TreeList| objects are independentally created, they will each have their own, distinct, |TaxonNamespace| object reference.
 For example, if you want to read in two collections of trees and compare trees between the two collections, the following will **not** work:
@@ -237,7 +237,7 @@ In some cases, you might not need to maintain all the trees in memory at the sam
 For example, you might be interested in calculating the distribution of a statistic over a collection of trees, but have no need to refer to any of the trees after the statistic has been calculated.
 In this case, it might be more efficient to use the :func:`~dendropy.dataio.tree_source_iter()` function.
 This takes a file-like object as its first argument and a schema specification as the second and returns an iterator over the trees in the file.
-Additional keyword arguments to customize the parsing are the same as that for the general |get_from_methods| and |read_from_methods| methods.
+Additional keyword arguments to customize the parsing are the same as that for the general "|get_from_methods|" and "|read_from_methods|" methods.
 For example, the following script reads a model tree from a file, and then iterates over a collection of MCMC trees in another file, calculating a storing the symmetric distance between the model tree and each of the MCMC trees one at time:
 
 .. literalinclude:: /examples/tree_iter1.py
@@ -251,7 +251,7 @@ Also note how the ``tree_offset`` keyword is used to skip over the burn-in trees
 
 If you want to iterate over trees in multiple sources, you can use the :func:`~dendropy.dataio.multi_tree_source_iter()`.
 This takes a list of file-like objects *or* a list of filepath strings as its first argument, and a schema-specification string as its second argument.
-Again, other keyword arguments supported by the general |get_from_methods| and |read_from_methods| methods are also available.
+Again, other keyword arguments supported by the general "|get_from_methods|" and "|read_from_methods|" methods are also available.
 
 For example:
 
