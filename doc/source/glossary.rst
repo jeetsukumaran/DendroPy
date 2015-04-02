@@ -4,62 +4,83 @@ Glossary and Terminological Reference
 .. glossary::
     :sorted:
 
-    edge
-        A path or link connecting two :term:`nodes` on a tree, modeled in
-        DendroPy by the :class:`Edge` class. An edge connects a "tail node"
-        (also called an origin or source node) to a "head node" (also called a
-        target or destination node), with the with the "head node" of an edge
-        being one of the children (or :term:`child nodes`) of the "tail node".
+    ancestor nodes
+        On a :term:`tree`, the full set of :term:`nodes <node>` from which a
+        given :term:`nodes <node>` has descended (i.e., given node's parent,
+        parent's parent, parent's parent's parent, and so on until the
+        :term:`root` or the :term:`seed node` of the tree, inclusive).
 
-    nodes
-    node
-        A node is a structure which may contain a value or condition, or
-        represent a separate data structure (which could be a tree of its own).
-        Each node in a tree has zero or more child nodes, which are below it in
-        the tree (by convention, trees are drawn growing downwards). A node
-        that has a child is called the child's parent node (or ancestor node,
-        or superior).  A node has at most one parent, to which it is connected
-        by its subtending :term:`edge`.  A node has exactly one subtending
-        edge, and this is typically accessed as an attribute of the node. A
-        node may have zero or more outgoing edges, which connect it to its
-        :term:`child nodes`.
-
-    parent node
-        A :term:`node` that is the immediate ancestor of a given node.
+    bipartition
+    split
+        On a :term:`tree`, a partition of the leaf set of a tree into two
+        mutually-exclusive and collectively-comprehensive subsets. It
+        corresponds to an edge of a tree: if we imagine "splitting" or cutting
+        a tree into two trees at a given edge, the leaf sets of each of the new
+        trees form the two subsets of the partitioning. A bipartition is often
+        referred to as a split, especially in the context of :term:`unrooted`
+        trees.
 
     child node
-    child nodes
-    child
-    children
-    children nodes
-        A :term:`node` that is the immediate descendent of a given node.
+        On a :term:`tree`, a :term:`node` or the set of :term:`nodes <node>`
+        that immediately descend from a given :term:`node`.
 
     descendent nodes
         The full set of nodes that are descended from a given node (i.e., the
         given node's children and children's children and children's children's
-        children, and so on, until the :term:`leaf` nodes of the tree,
+        children, and so on, until the :term:`leaf nodes <leaf node>` of the tree,
         inclusive).
 
-    ancestor nodes
-        The full set of nodes from which a given node has descended (i.e.,
-        given node's parent, parent's parent, parent's parent's parent, and so
-        on until the :term:`root` or the :term:`seed node` of the tree,
-        inclusive).
+    edge
+    branch
+        A connection between two :term:`nodes <node>` on a :term:`tree`,
+        modeled in DendroPy by the |Edge| class. A synonym for "branch" in the
+        context of phylogenetic trees. An edge connects a "tail node" (also
+        called an origin or source node) to a "head node" (also called a target
+        or destination node). The tail node is called the ":term:`parent
+        <parent node>`" of the head node, while the head node is called the
+        ":term:`child <child node>`" of the tail node. Edges can have any number
+        of properties or attributes associated with them, representing a
+        diverse range of phenomena, but the most important one is the edge
+        :term:`length or weight <edge length>`.
+
+    edge length
+    edge weight
+        A (typically) quantitative attribute of an :term:`edge`.
+
+    node
+        A node is a structure which may contain a value or condition, or
+        represent a separate data structure (which could be a tree of its own).
+        Each node in a tree has zero or more :term:`child nodes <child node>`,
+        which are below it in the tree (by convention, trees are drawn growing
+        downwards). A node that has a child is called the child's parent node
+        (or ancestor node, or superior).  A node has at most one parent, to
+        which it is connected by its subtending :term:`edge`.  A node has
+        exactly one subtending edge, and this is typically accessed as an
+        attribute of the node. A node may have zero or more outgoing edges,
+        which connect it to its :term:`child nodes <child node>`.
+
+    node depth
+        On a :term:`tree`, the depth of a node is the length of the
+        :term:`path` to its :term:`root` (i.e., its root path). The root node
+        has a depth zero.
 
     internal node
         An internal node (also known as an inner node, inode for short, or branch
-        node) is any :term:`node` of a tree that has child nodes.
+        node) is any :term:`node` of a tree that has :term:`child nodes <child node>`.
 
     leaf node
-    leaf nodes
-    leaf
-    tip
-    tips
+    tip node
     terminal node
     external node
     outer node
         An leaf :term:`node` (also known as a tip, outer node, external node, or
-        terminal node) is any :term:`node` that does not have :term:`children`.
+        terminal node) is any :term:`node` that does not have :term:`children
+        <child node>`.
+
+    parent node
+    ancestor node
+        On a :term:`tree`, a :term:`node` from which a given node
+        immediately descends.
 
     seed node
     root
@@ -72,23 +93,33 @@ Glossary and Terminological Reference
         By definition, the seed node does not have a :term:`parent node`.  It
         is the node at which algorithms on the tree begin, since as a data
         structure, one can only pass from :term:`parent node` to :term:`child
-        nodes`.  If the tree is :term:`rooted`, then the seed node is
-        equivalent to the root of the tree.
+        nodes <child node>`.  If the tree is :term:`rooted`, then the seed node
+        is equivalent to the root of the tree.
 
-    height
+    node height
         The height of a node is the length of the longest downward path to a
         leaf from that node. The height of the root is the height of the tree.
         The depth of a node is the length of the path to its root (i.e., its
-        root path). This is commonly needed in the manipulation of the various
-        self-balancing trees, AVL Trees in particular. The root node has depth
-        zero, leaf nodes have height zero, and a tree with only a single node
+        root path). The root node has depth zero,
+        leaf nodes have height zero, and a tree with only a single node
         (hence both a root and leaf) has depth and height zero. Conventionally,
         an empty tree (tree with no nodes, if such are allowed) has depth and
         height 1.
 
+    path
+    path length
+    path weight
+    unweighted path
+    weighted path
+        In the context of :term:`trees <tree>`, the number or sum of lengths of
+        :term:`edges <edge>` connecting two :term:`nodes <node>`. An
+        *unweighted* path length is just the number of :term:`edges:, while a
+        *weighted* path length or path weight is the sum of :term:`edge lengths
+        <edge length>`.
+
     rooted
         A state of a :term:`tree` in which its :term:`seed node` represents the
-        most-recent common ancestor of all the :class:`leaf nodes` on the tree.
+        most-recent common ancestor of all the :term:`leaf nodes <leaf node>` on the tree.
 
     schema
         The format or syntax of serialized phylogenetic or related data.
@@ -111,24 +142,15 @@ Glossary and Terminological Reference
         corresponding to any other node is called a proper subtree (in analogy
         to the term proper subset).
 
-    split
-    bipartition
-        A split is an partition of the leaf set of a tree into two
-        mutually-exclusive and collectively-comprehensive subsets. It
-        corresponds to an edge of a tree: if we imagine "splitting" or cutting
-        a tree into two trees at a given edge, the leaf sets of each of the new
-        trees form the two subsets of the partitioning. A split is sometimes
-        referred to as a bipartition.
-
     tree
         An `arborescence
         <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, or a
         fully-connected `directed acylic graph
         <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ in which the
         directionality is from the :term:`root` (or ":term:`seed node`" in
-        DendroPy's parlance) in which the direction to the :term:`tips`.
+        DendroPy's parlance) in which the direction to the :term:`tips <leaf node>`.
 
     unrooted
         A state of a :term:`tree` in which its :term:`seed node` is an
         algorithmic artifact, and not necessarily represents the most-recent
-        common ancestor of all the :class:`leaf nodes` on the tree.
+        common ancestor of all the :term:`leaf nodes <leaf node>` on the tree.
