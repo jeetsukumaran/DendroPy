@@ -2798,7 +2798,7 @@ class Tree(
                 t1 = Tree()
 
                 # the canonical way to instantiate a Tree from a data source
-                # is the use the `get_from_*` family of static factory methods
+                # is the use the 'get_from_*' family of static factory methods
                 t2 = Tree.get_from_stream(open('treefile.tre', 'rU'), "newick", tree_offset=0)
                 t3 = Tree.get_from_path('sometrees.nexus',
                         "nexus",

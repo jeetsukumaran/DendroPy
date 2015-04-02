@@ -38,7 +38,7 @@ The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_s
     >>> ds = dendropy.DataSet.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
     >>> ds = dendropy.DataSet.read_from_path('pythonidae.mle.nex', 'nexus')
 
-Note how the :meth:`~dendropy.datamodel.datasetmodel.DataSet.attach_taxon_namespace()` method is called before invoking any :meth:`read_from_*()` statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonNamespace| instance.
+Note how the :meth:`~dendropy.datamodel.datasetmodel.DataSet.attach_taxon_namespace()` method is called before invoking any |read_from_methods| statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonNamespace| instance.
 
 Cloning an Existing |DataSet|
 -----------------------------

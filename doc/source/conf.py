@@ -232,6 +232,9 @@ rst_epilog = """
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
 .. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
 
+.. |get_from_methods| replace::  "``get_from_*()``"
+.. |read_from_methods| replace:: "``read_from_*()``"
+
 .. |True| replace:: `True`
 .. |False| replace:: `False`
 .. |None| replace:: `None`
@@ -244,6 +247,7 @@ rst_epilog = """
 .. _SeqGen: http://tree.bio.ed.ac.uk/software/seqgen/
 .. |GenBank| replace:: GenBank
 .. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
+
 """
 
 _source_archive_url = """

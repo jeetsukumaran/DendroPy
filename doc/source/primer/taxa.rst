@@ -73,7 +73,7 @@ Which will result in::
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regius'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
-Finally, you can also override the default behavior of DendroPy's NEXUS/Newick parser by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
+Finally, you can also override the default behavior of DendroPy's NEXUS/Newick parser by passing the keyword argument ``preserve_underscores=True`` to any |read_from_methods| or |get_from_methods| method. For example:
 
 .. literalinclude:: /examples/taxon_labels4.py
     :linenos:

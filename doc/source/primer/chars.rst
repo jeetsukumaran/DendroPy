@@ -17,7 +17,7 @@ In most cases, you will not deal with objects of the |CharacterMatrix| class dir
 |CharacterMatrix| Creating and Reading
 ======================================
 
-As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the :meth:`get_from_*()` factory and :meth:`read_from_*()` instance methods to populate objects from a data source.
+As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the |get_from_methods| factory and |read_from_methods| instance methods to populate objects from a data source.
 These methods take a data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the reading behavior.
 
 Creating a New |CharacterMatrix| from a Data Source
@@ -35,14 +35,14 @@ The following examples simultaneously instantiate and populate |CharacterMatrix|
 Repopulating a |CharacterMatrix| from a DataSource
 --------------------------------------------------
 
-The :meth:`read_from_*()` instance methods **replace** the calling object with data from the data source, overwriting existing data::
+The |read_from_methods| instance methods **replace** the calling object with data from the data source, overwriting existing data::
 
     >>> import dendropy
     >>> dna = dendropy.DnaCharacterMatrix()
     >>> dna.read_from_path('pythonidae_cytb.nex', 'nexus')
     >>> dna.read_from_path('pythonidae_rag1.nex', 'nexus')
 
-The second :meth:`read_from_*()` will result in the ``dna`` object being re-populated with data from the file ``pythonidae_rag1.nex``.
+The second |read_from_methods| will result in the ``dna`` object being re-populated with data from the file ``pythonidae_rag1.nex``.
 
 |CharacterMatrix| Saving and Writing
 ====================================

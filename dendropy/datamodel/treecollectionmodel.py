@@ -270,7 +270,7 @@ class TreeList(
             tlst1 = TreeList()
 
             # the canonical way to instantiate a TreeList from a data source
-            # is `get_from_*` family of static factory methods
+            # is 'get_from_*' family of static factory methods
             tlst2 = TreeList.get_from_stream(open('treefile.tre', 'rU'), "newick")
             tlst3 = TreeList.get_from_path('sometrees.nexus', "nexus")
             tlst4 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
