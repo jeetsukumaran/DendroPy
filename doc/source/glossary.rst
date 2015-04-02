@@ -72,18 +72,63 @@ Glossary and Terminological Reference
     branch
         A connection between two :term:`nodes <node>` on a :term:`tree`,
         modeled in DendroPy by the |Edge| class. A synonym for "branch" in the
-        context of phylogenetic trees. An edge connects a "tail node" (also
-        called an origin or source node) to a "head node" (also called a target
-        or destination node). The tail node is called the ":term:`parent
-        <parent node>`" of the head node, while the head node is called the
-        ":term:`child <child node>`" of the tail node. Edges can have any number
-        of properties or attributes associated with them, representing a
-        diverse range of phenomena, but the most important one is the edge
-        :term:`length or weight <edge length>`.
+        context of phylogenetic trees.
+
+        An edge connects a "tail node" (also called an origin or source node)
+        to a "head node" (also called a target or destination node). The tail
+        node is called the ":term:`parent <parent node>`" of the head node,
+        while the head node is called the ":term:`child <child node>`" of the
+        tail node.
+
+        An edge is said to subtend or be incident to the node *to* which an
+        edge connects, i.e., the head node.
+        Conversely, the edges connecting a node to its children are called
+        outgoing edges with respect to the tail node.
+
+        On a :term:`tree`, every node has one and exactly one incident edge,
+        and every edge has a :term:`head node`. On the other hand, not every
+        node may have outgoing edges (e.g, :term:`leaf nodes <leaf node>`),
+        and not every edge has a :term:`tail node` (e.g., :term:`root nodes
+        <seed node>`). As such, edges can be thought of "belonging" to their
+        head nodes, due to this one-to-one relationship.
+
+        Edges can have any number of properties or attributes associated with
+        them, representing a diverse range of phenomena, but the most important
+        one is the edge :term:`length or weight <edge length>`.
+
 
     edge length
     edge weight
-        A (typically) quantitative attribute of an :term:`edge`.
+        A (typically) quantitative value associated with an :term:`edge`. This
+        value may represent any number of things, but most typically is used to
+        model time, evolutionary distance, or expected rates of substitution on
+        a phylogenetic tree. An :term:`edge` may have many values, quantitative
+        or otherwise, associated with it, but the length or weight is special
+        as it usually denotes the relationship between the :term:`tail node`
+        and :term:`head node` related by an :term:`edge`.
+
+    internal node
+        An internal node (also known as an inner node, inode for short, or branch
+        node) is any :term:`node` of a tree that has :term:`child nodes <child node>`.
+
+    head node
+    target node
+    destination node
+        On an :term:`edge` connecting two :term:`nodes <node>`, the node *to*
+        which the edge extends to link *from* the other node, termed the
+        :term:`tail node`. The head node is the :term:`child node` of the
+        :term:`tail node`,  and the :term:`tail node` is the :term:`parent
+        node` of the head node. The :term:`edge` is said to subtend or be
+        incident to the head node.
+
+    leaf node
+    tip node
+    terminal node
+    external node
+    outer node
+        An leaf :term:`node` (also known as a tip, outer node, external node, or
+        terminal node) is any :term:`node` that does not have :term:`children
+        <child node>`.
 
     node
         A fundamental unit of a :term:`tree`, representing a value or values.
@@ -104,19 +149,6 @@ Glossary and Terminological Reference
         :term:`path` to its :term:`root` (i.e., its root path). The root node
         has a depth zero.
 
-    internal node
-        An internal node (also known as an inner node, inode for short, or branch
-        node) is any :term:`node` of a tree that has :term:`child nodes <child node>`.
-
-    leaf node
-    tip node
-    terminal node
-    external node
-    outer node
-        An leaf :term:`node` (also known as a tip, outer node, external node, or
-        terminal node) is any :term:`node` that does not have :term:`children
-        <child node>`.
-
     parent node
     ancestor node
         On a :term:`tree`, a :term:`node` from which a given node
@@ -127,9 +159,9 @@ Glossary and Terminological Reference
         The first or topmost :term:`node` in a tree is called the seed node.
         This is also called the "root" or "root node" or the tree, though, in
         the strictest sense, this equivalence is only valid when the tree is
-        explicitly :term:`rooted <rooted tree>`. Both :term:`rooted trees <rooted tree>` and
-        :term:`unrooted trees <unrooted tree>` have seed nodes. In rooted
-        trees, the seed node is the root of the tree.
+        explicitly :term:`rooted <rooted tree>`. Both :term:`rooted trees
+        <rooted tree>` and :term:`unrooted trees <unrooted tree>` have seed
+        nodes. In rooted trees, the seed node is the root of the tree.
 
         By definition, the seed node does not have a :term:`parent node`.  It
         is the node at which algorithms on the tree begin, since as a data
@@ -183,6 +215,14 @@ Glossary and Terminological Reference
         node is the root node of the subtree it determines; the subtree
         corresponding to any other node is called a proper subtree (in analogy
         to the term proper subset).
+
+    tail node
+    source node
+    origin node
+        On an :term:`edge` connecting two :term:`nodes <node>`, the node *from*
+        which the edge extends to link *to* the other node, termed the :term:`head node`.
+        The tail node is the :term:`parent node` of the :term:`head node`,  and
+        the :term:`head node` is the :term:`child node` of the tail node.
 
     tree
         An `arborescence
