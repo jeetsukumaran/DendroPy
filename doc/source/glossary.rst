@@ -8,7 +8,7 @@ Glossary and Terminological Reference
         On a :term:`tree`, the full set of :term:`nodes <node>` from which a
         given :term:`node <node>` has descended (i.e., the given node's parent,
         parent's parent, parent's parent's parent, and so on until the
-        :term:`root` or the :term:`seed node` of the tree, inclusive).
+        :term:`root <seed node>` or the :term:`seed node` of the tree, inclusive).
 
     basal
     basal node
@@ -20,15 +20,16 @@ Glossary and Terminological Reference
 
     basal bifurcation
         On a :term:`tree`, a :term:`seed or root <seed node>` which has exactly
-        two :term:`child nodes <child node>`. On :term:`rooted trees <rooted
-        tree>` this (can) reflect actual information, but on :term:`unrooted
-        trees <unrooted tree>` this is actually an artifact as the :term:`seed
-        or root <seed node>` does not actually exist and is just an algorithmic
-        necessity. In practical terms, this means that :term:`bipartitions
-        <bipartition>` calculations and operations on :term:`unrooted
-        trees <unrooted tree>` may result in undetermined and errorenous
-        behavior. Thus, typically, on unrooted trees the basal bifurcation is
-        collapsed to yield a basal trifurcation.
+        two :term:`child nodes <child node>`. On a :term:`rooted tree <rooted
+        tree>` this (can) reflect actual information, but on an :term:`unrooted
+        tree <unrooted tree>`, this is actually an artifact, as the :term:`seed
+        or root <seed node>` does not actually exist as it is just an
+        algorithmic contrivance. In practical terms, this means that
+        :term:`bipartition <bipartition>` calculations and operations on
+        :term:`unrooted trees <unrooted tree>` with basal bifurcations may
+        result in undetermined and errorenous behavior. Thus, typically, on
+        unrooted trees the basal bifurcation is collapsed to yield a basal
+        trifurcation.
 
     basal trifurcation
         On a :term:`tree`, a :term:`seed or root <seed node>` which has exactly
@@ -106,6 +107,11 @@ Glossary and Terminological Reference
         as it usually denotes the relationship between the :term:`tail node`
         and :term:`head node` related by an :term:`edge`.
 
+    incident edge
+    subtending edge
+        An :term:`edge` that connects *to* a particular :term:`node` is termed
+        the incident or subtending edge of that node.
+
     internal edge
         An :term:`edge` that has an :term:`internal node` as a :term:`head
         node`.
@@ -141,23 +147,31 @@ Glossary and Terminological Reference
         terminal node.
 
     node
-        A fundamental unit of a :term:`tree`, representing a value or values.
+        An fundamental element of information or data on a :term:`tree`,
+        connected to other such elements in a parent-child relationshop by
+        :term:`edges <edge>`.
         In DendroPy, a node is modeled by the |Node| class.
-        A node is a structure which may contain a value or condition, or
-        represent a separate data structure (which could be a tree of its own).
-        Each node in a tree has zero or more :term:`child nodes <child node>`,
-        which are below it in the tree (by convention, trees are drawn growing
-        downwards). A node that has a child is called the child's parent node
-        (or ancestor node, or superior).  A node has at most one parent, to
-        which it is connected by its subtending :term:`edge`.  A node has
-        exactly one subtending edge, and this is typically accessed as an
-        attribute of the node. A node may have zero or more outgoing edges,
-        which connect it to its :term:`child nodes <child node>`.
+
+        A node has at most one :term:`parent <parent node>`, to which it is
+        connected by its :term:`incident or subtending <incident edge>`.
+
+        A node may have zero or more :term:`children <child node>`, to each of
+        which it is connected by an independent :term:`outgoing edge <outgoing
+        edge>`.
+
+        A node can be associated with zero or more informational or data
+        values. In a phylogenetic :term:`tree`, one of these values is often a
+        :term:`taxon`, but many other aspects of information can be modeled.
 
     node depth
         On a :term:`tree`, the depth of a node is the length of the
-        :term:`path` to its :term:`root` (i.e., its root path). The root node
-        has a depth zero.
+        :term:`path` to its :term:`root <seed node>` (i.e., its root path). The
+        root node has a depth zero.
+
+    outgoing edge
+        An :term:`edge` that connects *from* a particular :term:`node` (to,
+        e.g., its :term:`children <child node>` is said to be an outgoing edge
+        for that node.
 
     parent node
     ancestor node
@@ -165,13 +179,13 @@ Glossary and Terminological Reference
         immediately descends.
 
     seed node
-    root
-        The first or topmost :term:`node` in a tree is called the seed node.
-        This is also called the "root" or "root node" or the tree, though, in
-        the strictest sense, this equivalence is only valid when the tree is
-        explicitly :term:`rooted <rooted tree>`. Both :term:`rooted trees
-        <rooted tree>` and :term:`unrooted trees <unrooted tree>` have seed
-        nodes. In rooted trees, the seed node is the root of the tree.
+    root node
+        The first or topmost :term:`node` in a tree. This is also more commonly
+        called the "root" or "root node" of the tree, though, in the strictest
+        sense, this equivalence is only valid when the tree is explicitly
+        :term:`rooted <rooted tree>`. Both :term:`rooted trees <rooted tree>`
+        and :term:`unrooted trees <unrooted tree>` have seed nodes. In rooted
+        trees, the seed node is the root of the tree.
 
         By definition, the seed node does not have a :term:`parent node`.  It
         is the node at which algorithms on the tree begin, since as a data
@@ -190,15 +204,17 @@ Glossary and Terminological Reference
         height 1.
 
     path
+        The sequence of :term:`edges <edge>` connecting two :term:`nodes
+        <node>` on a :term:`tree`.
+
     path length
     path weight
     unweighted path
     weighted path
-        In the context of :term:`trees <tree>`, the number or sum of lengths of
-        :term:`edges <edge>` connecting two :term:`nodes <node>`. An
-        *unweighted* path length is just the number of :term:`edges:, while a
-        *weighted* path length or path weight is the sum of :term:`edge lengths
-        <edge length>`.
+        The number or sum of lengths of the :term:`edges <edge>` connecting two
+        :term:`nodes <node>` on a :term:`tree`. An *unweighted* path length is
+        just the number of :term:`edges:, while a *weighted* path length or
+        path weight is the sum of :term:`edge lengths <edge length>`.
 
     rooted tree
         A state of a :term:`tree` in which its :term:`seed node` represents the
@@ -216,6 +232,12 @@ Glossary and Terminological Reference
         strings". Supported reading (input) schemas are described :ref:`here
         <Specifying_the_Data_Source_Format>` while supported writing (output)
         schemas are described :ref:`here <Specifying_the_Data_Writing_Format>`.
+
+    sibling node
+    sister node
+        Two or more :term:`nodes <node>` that share the same :term:`parent
+        node`, i.e., are descended from the same node, are said to be siblings
+        or sisters with respect to each other.
 
     subtree
         A subtree of a tree T is a tree consisting of a node in T and all of
@@ -235,13 +257,32 @@ Glossary and Terminological Reference
         the :term:`head node` is the :term:`child node` of the tail node.
         The edge is said to be an outgoing node with respect to the tail node.
 
+    taxon
+    operational taxonomic unit
+    taxon concept
+    taxon name
+        A class of organisms being modeled represented by a string label or
+        namethat is guaranteed to be unique within a particular :term:`taxon
+        namespace`.
+
+    taxon namespace
+        A set of distinct and unique labels, with each label mapping to one and exactly one :
+
+        or names that is used to relate data from
+        across different data sources to each other by reference to a
+        :term:`taxon concept`.
+
     tree
         An `arborescence
         <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, or a
         fully-connected `directed acylic graph
         <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ in which the
-        directionality is from the :term:`root` (or ":term:`seed node`" in
+        directionality is from the :term:`root <seed node>` (or ":term:`seed node`" in
         DendroPy's parlance) in which the direction to the :term:`tips <leaf node>`.
+        Trees are modeled in DendroPy by the |Tree| class.
+
+        A :term:`tree` is made up of :term:`nodes <node>` connected to each
+        other by :term:`edges <edge>`.
 
     unifurcation
     unifurcating node
