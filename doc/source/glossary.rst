@@ -96,7 +96,6 @@ Glossary and Terminological Reference
         them, representing a diverse range of phenomena, but the most important
         one is the edge :term:`length or weight <edge length>`.
 
-
     edge length
     edge weight
         A (typically) quantitative value associated with an :term:`edge`. This
@@ -107,9 +106,13 @@ Glossary and Terminological Reference
         as it usually denotes the relationship between the :term:`tail node`
         and :term:`head node` related by an :term:`edge`.
 
+    internal edge
+        An :term:`edge` that has an :term:`internal node` as a :term:`head
+        node`.
+
     internal node
-        An internal node (also known as an inner node, inode for short, or branch
-        node) is any :term:`node` of a tree that has :term:`child nodes <child node>`.
+        A :term:`node` that has :term:`child nodes <child node>`. Also known as
+        an inner node or branch node.
 
     head node
     target node
@@ -118,17 +121,24 @@ Glossary and Terminological Reference
         which the edge extends to link *from* the other node, termed the
         :term:`tail node`. The head node is the :term:`child node` of the
         :term:`tail node`,  and the :term:`tail node` is the :term:`parent
-        node` of the head node. The :term:`edge` is said to subtend or be
-        incident to the head node.
+        node` of the head node. The :term:`edge` is said to subtend, or be
+        incident, to the head node.
+
+    leaf edge
+    terminal edge
+    external edge
+    outer edge
+        An :term:`edge` that has an :term:`leaf node` as a :term:`head
+        node`.
 
     leaf node
     tip node
     terminal node
     external node
     outer node
-        An leaf :term:`node` (also known as a tip, outer node, external node, or
-        terminal node) is any :term:`node` that does not have :term:`children
-        <child node>`.
+        A :term:`node` that does not have any :term:`child nodes <child node>`
+        descending from it. Also known as a tip, outer node, external node, or
+        terminal node.
 
     node
         A fundamental unit of a :term:`tree`, representing a value or values.
@@ -223,6 +233,7 @@ Glossary and Terminological Reference
         which the edge extends to link *to* the other node, termed the :term:`head node`.
         The tail node is the :term:`parent node` of the :term:`head node`,  and
         the :term:`head node` is the :term:`child node` of the tail node.
+        The edge is said to be an outgoing node with respect to the tail node.
 
     tree
         An `arborescence
