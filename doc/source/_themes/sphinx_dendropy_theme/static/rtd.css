@@ -768,3 +768,8 @@ p {
     }
 
 }
+
+/* SPECIAL ELEMENTS  -------------------------------------------------------------- */
+
+.copyrightblock { font-size: 80% }
+.licenseblock { font-weight: bold; text-align: center; }

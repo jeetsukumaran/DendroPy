@@ -155,7 +155,7 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
-rst_epilog = """
+rst_prolog = """
 .. |js| replace:: Jeet Sukumaran
 .. _js: http://www.jeetworks.org/about
 .. |mth| replace:: Mark T. Holder
@@ -193,8 +193,6 @@ rst_epilog = """
 .. |dendropy_primer_doc| replace:: /primer/index
 .. |sumtrees_doc| replace:: /scripts/sumtrees
 
-.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
-.. |dendropy_copyright| replace:: **Copyright 2009-2010 Jeet Sukumaran and Mark T. Holder**
 .. |dendropy_announce| replace:: DendroPy Announcements
 .. _dendropy_announce: http://groups.google.com/group/dendropy-announce
 .. |dendropy_users| replace:: DendroPy Users
@@ -250,13 +248,17 @@ rst_epilog = """
 
 """
 
-_source_archive_url = """
+rst_prolog += """\
 .. |dendropy_source_archive_url| replace:: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
 .. |dendropy_source_archive| replace:: DendroPy source code archive
 .. _dendropy_source_archive: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
 """ % (version, version)
 
-rst_epilog += _source_archive_url
+rst_prolog += """\
+.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
+.. |dendropy_copyright| replace:: Copyright {copyright}. All rights reserved.
+.. |
+""".format(copyright=copyright)
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -452,7 +454,7 @@ texinfo_documents = [
 epub_title = u'DendroPy'
 epub_author = u'Jeet Sukumaran and Mark T. Holder'
 epub_publisher = u'Jeet Sukumaran and Mark T. Holder'
-epub_copyright = u'2014, Jeet Sukumaran and Mark T. Holder'
+epub_copyright = u'2015, Jeet Sukumaran and Mark T. Holder'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'DendroPy'

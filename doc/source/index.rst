@@ -72,16 +72,6 @@ Documentation
 
         A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.
 
-Citation
-=========
-
-If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as:
-
-    |dendropy_citation|
-
-Note that, in the interests of scientific reproducibility, in addition to noting the primary citation for DendroPy as given above in the reference section, you should note in the text of your publications (e.g., in the "Methods" section, or, at the very least, in the "Supplemental Materials" section) the specific version of DendroPy that you used (e.g., "DendroPy version 4.0.0, revision 78e6a63"). You can get useful information about your DendroPy installation by typing "``python -m dendropy``".
-
-
 Feature Requests
 ================
 
@@ -89,7 +79,6 @@ We are constantly expanding and improving the DendroPy library.
 And we are constantly looking for ideas on *how* to expand and improve DendroPy.
 If you have an idea that you would like to see implemented in DendroPy, or a need/requirement for some sort of functionality that DendroPy does not provide or does not provide easily, or, for that matter, a suggestion/idea for how something DendroPy already does that can be done better, *please* let us know by posting it as an issue on the |dendropy_issues|_ page.
 We take these very seriously, and look forward to ideas/suggestions/requests/critiques such as these, not only because they improve the library for the entire community of users, but also because they sometimes provide for interesting side-projects for us.
-
 
 Bug Reports and Other Issues
 ============================
@@ -123,6 +112,7 @@ I follow and respond to messages on this group fairly regularly, so you should g
 
 Of course, we accept all bug reports, bad or good, and I guess we would prefer to have a bad bug report than no report at all, so if all the above seem enough of a hassle to discourage you from posting an issue at all, feel free to go ahead and write it up any way you see fit.
 
+.. include:: citation.inc
 .. include:: license.inc
 .. include:: acknowledgements.inc
 
