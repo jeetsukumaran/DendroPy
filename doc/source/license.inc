@@ -4,7 +4,7 @@ Copyright, License and Warranty
 .. container:: copyrightblock
 
     The DendroPy project, including all source code, documentation, images, and
-    other supporting files and media, either as provide online or otherwise
+    other supporting files and media, either as provided online or otherwise
     distributed, is:
 
         .. container:: licenseblock
