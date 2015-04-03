@@ -273,16 +273,25 @@ Glossary and Terminological Reference
         :term:`taxon concept`.
 
     tree
-        An `arborescence
-        <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, or a
-        fully-connected `directed acylic graph
-        <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ in which the
-        directionality is from the :term:`root <seed node>` (or ":term:`seed node`" in
-        DendroPy's parlance) in which the direction to the :term:`tips <leaf node>`.
-        Trees are modeled in DendroPy by the |Tree| class.
+    arborescence
+        A tree is a set of :term:`nodes <node>` connected to each other in
+        parent-child relationships given by a set of :term:`edges <edge>`. In
+        DendroPy, a tree is modeled by the |Tree| class. A tree is a
+        specialization of a `graph
+        <http://en.wikipedia.org/wiki/Graph_%28mathematics%29>`_, constrained
+        such that:
 
-        A :term:`tree` is made up of :term:`nodes <node>` connected to each
-        other by :term:`edges <edge>`.
+            1. All its :term:`edges <edge>` are directional.
+            2. It has no `directed cycles <http://en.wikipedia.org/wiki/Cycle_graph#Directed_cycle_graph>`_ .
+            3. The directionality is from the :term:`root <seed node>` (or
+               ":term:`seed node`" in DendroPy's parlance) in which the
+               direction to the :term:`tips <leaf node>`.
+
+        The first and second constraints alone result in a `directed acylic graph
+        <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ .
+        The third addition of the constraint results in an `arborescence
+        <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, which is
+        strictly synonymous with "tree".
 
     unifurcation
     unifurcating node
