@@ -151,14 +151,11 @@ Glossary and Terminological Reference
         connected to other such elements in a parent-child relationshop by
         :term:`edges <edge>`.
         In DendroPy, a node is modeled by the |Node| class.
-
         A node has at most one :term:`parent <parent node>`, to which it is
-        connected by its :term:`incident or subtending <incident edge>`.
-
+        connected by its :term:`incident or subtending <incident edge>` edge.
         A node may have zero or more :term:`children <child node>`, to each of
         which it is connected by an independent :term:`outgoing edge <outgoing
-        edge>`.
-
+        edge>` edge.
         A node can be associated with zero or more informational or data
         values. In a phylogenetic :term:`tree`, one of these values is often a
         :term:`taxon`, but many other aspects of information can be modeled.
@@ -240,13 +237,10 @@ Glossary and Terminological Reference
         or sisters with respect to each other.
 
     subtree
-        A subtree of a tree T is a tree consisting of a node in T and all of
-        its descendants in T.[c][1] Nodes thus correspond to subtrees (each
-        node corresponds to the subtree of itself and all its descendants)  the
-        subtree corresponding to the root node is the entire tree, and each
-        node is the root node of the subtree it determines; the subtree
-        corresponding to any other node is called a proper subtree (in analogy
-        to the term proper subset).
+        A subtree of a :term:`tree` is a tree consisting of a :term:`node` in
+        the tree and all its :term:`descendents <descendent nodes>`. Each
+        :term:`node` on a :term:`tree` thus corresponds to the :term:`root
+        <seed node>` of the subtree that it determines.
 
     tail node
     source node
