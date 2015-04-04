@@ -191,7 +191,7 @@ rst_prolog = """
 .. |dendropy_logo| replace:: /_static/dendropy_logo.png
 .. |dendropy_library_doc| replace:: /library/index
 .. |dendropy_primer_doc| replace:: /primer/index
-.. |sumtrees_doc| replace:: /scripts/sumtrees
+.. |sumtrees_doc| replace:: /programs/sumtrees
 
 .. |dendropy_announce| replace:: DendroPy Announcements
 .. _dendropy_announce: http://groups.google.com/group/dendropy-announce
@@ -374,7 +374,7 @@ latex_documents = [
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
   ('library/index', 'DendroPy-Library-API.tex', u'DendroPy Library API Reference',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
-  ('scripts/sumtrees', 'DendroPy-SumTrees.tex', u'SumTrees User Manual',
+  ('programs/sumtrees', 'DendroPy-SumTrees.tex', u'SumTrees User Manual',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
 ]
 
@@ -410,7 +410,7 @@ man_pages = [
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
     ('primer/index', 'dendropy-primer', u'DendroPy Primer',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
-    ('scripts/sumtrees', 'sumtrees', u'SumTrees User Manual',
+    ('programs/sumtrees', 'sumtrees', u'SumTrees User Manual',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
 ]
 
@@ -430,7 +430,7 @@ texinfo_documents = [
   ('primer/index', 'DendroPy-Primer', u'DendroPy Primer',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
-  ('scripts/sumtrees', 'SumTrees', u'SumTrees Documentation',
+  ('programs/sumtrees', 'SumTrees', u'SumTrees Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
 ]

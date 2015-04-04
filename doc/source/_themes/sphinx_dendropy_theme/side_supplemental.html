@@ -3,10 +3,24 @@
     <div style="border-top: double 1px white; padding-top: 10px;">
         <h3>Documentation</h3>
         <ul>
-            {# <li><a href="{{pathto('index')}}">Introduction</a></li> #}
             <li><a href="{{pathto('primer/index')}}">The DendroPy Primer</a></li>
             <li><a href="{{pathto('library/index')}}">Library API Reference</a></li>
-            <li><a href="{{pathto('scripts/sumtrees')}}">SumTrees</a></li>
+            <li>
+                <a href="{{pathto('schemas/index')}}">Schemas</a>
+                <ul>
+                    <li><a href="{{pathto('schemas/fasta')}}">FASTA</a></li>
+                    <li><a href="{{pathto('schemas/newick')}}">NEWICK</a></li>
+                    <li><a href="{{pathto('schemas/nexml')}}">NeXML</a></li>
+                    <li><a href="{{pathto('schemas/nexus')}}">NEXUS</a></li>
+                    <li><a href="{{pathto('schemas/newick')}}">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="{{pathto('programs/index')}}">Programs</a>
+                <ul>
+                    <li><a href="{{pathto('programs/sumtrees')}}">SumTrees</a></li>
+                </ul>
+            </li>
             <li><a href="{{pathto('glossary')}}">Glossary and Terminological Reference</a></li>
             <li><a href="{{pathto('changes')}}">Change History</a></li>
         </ul>

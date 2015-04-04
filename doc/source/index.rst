@@ -10,7 +10,8 @@ DendroPy Phylogenetic Computing Library
     downloading.rst
     primer/index.rst
     library/index.rst
-    scripts/sumtrees.rst
+    schemas/index.rst
+    programs/index.rst
     glossary.rst
     migration.rst
     changes.rst
@@ -59,7 +60,7 @@ Documentation
 
         The technical details of the modules, classes and methods of the DendroPy library. Almost all of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
-    :doc:`SumTrees User Manual </scripts/sumtrees>`
+    :doc:`SumTrees User Manual </programs/sumtrees>`
 
         How to use SumTrees, an application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
