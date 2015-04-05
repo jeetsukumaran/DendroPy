@@ -2446,8 +2446,7 @@ class Tree(
         tree_offset : integer
             0-based index of tree in source to be parsed.  This is the 0-based
             index of the tree within the collection specified by
-            ``collection_offset`` to be retrieved. If not specified or `None`,
-            then the first tree is returned.
+            ``collection_offset`` to be retrieved.
 
         \*\*kwargs : keyword arguments
             Arguments to customize parsing and instantiation this |Tree|
@@ -2493,7 +2492,7 @@ class Tree(
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
         if collection_offset is None and tree_offset is not None:
-                raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
+            raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
         elif collection_offset is None:
             collection_offset = 0
         if tree_offset is None:

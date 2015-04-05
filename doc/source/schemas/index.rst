@@ -3,7 +3,7 @@ A Guide to Phylogenetic and Evolutionary Informatics Data Formats and Their Hand
 ################################################################################################
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     fasta
     newick

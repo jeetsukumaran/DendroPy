@@ -44,7 +44,7 @@ class ContainingTree(dendropy.Tree):
             **kwargs):
         """
         __init__ converts ``self`` to ContainingTree class, embedding the trees
-        given in the list, ````contained_trees.````
+        given in the list, ``contained_trees.``
 
 
         Mandatory Arguments:
@@ -344,7 +344,7 @@ class ContainingTree(dendropy.Tree):
                 size is taken to be 1.
 
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
-        ````build_edge_taxa_sets()```` should be called).
+        ``build_edge_taxa_sets()`` should be called).
         """
         et = self.simulate_contained_kingman(
                 edge_pop_size_attr=edge_pop_size_attr,
@@ -375,7 +375,7 @@ class ContainingTree(dendropy.Tree):
                 size is taken to be 1.
 
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
-        ````build_edge_taxa_sets()```` should be called), and that the tree
+        ``build_edge_taxa_sets()`` should be called), and that the tree
         is *not* added to the set of contained trees. For the latter, call
         ``embed_contained_kingman``.
         """

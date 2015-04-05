@@ -128,15 +128,15 @@ class NewickReader(ioservice.DataReader):
             Specifies how trees in the data source should be intepreted with
             respect to their rooting:
 
-                '````default-unrooted````' [default]:
-                    All trees are interpreted as unrooted unless a '````[&R]````'
+                'default-unrooted' [default]:
+                    All trees are interpreted as unrooted unless a '[&R]'
                     comment token explicitly specifies them as rooted.
-                '````default-rooted````'
-                    All trees are interpreted as rooted unless a '````[&U]````'
+                'default-rooted'
+                    All trees are interpreted as rooted unless a '[&U]'
                     comment token explicitly specifies them as unrooted.
-                '````force-unrooted````'
+                'force-unrooted'
                     All trees are unconditionally interpreted as unrooted.
-                '````force-rooted````'
+                'force-rooted'
                     All trees are unconditionally interpreted as rooted.
 
         edge_len_type : type, default: ``float``
@@ -156,7 +156,7 @@ class NewickReader(ioservice.DataReader):
             but will be instead stored directly as elements of the ``comments``
             list attribute of the associated object.
         store_tree_weights : boolean, default: `False`
-            If `True`, process the tree weight (e.g. "````[&W 1/2]````") comment
+            If `True`, process the tree weight (e.g. "[&W 1/2]") comment
             associated with each tree, if any. Defaults to `False`.
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
@@ -165,8 +165,8 @@ class NewickReader(ioservice.DataReader):
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels are case sensitive (e.g., "````P.regius````"
-            and "````P.REGIUS````" wil be treated as different operation taxonomic
+            If `True`, then taxon labels are case sensitive (e.g., "P.regius"
+            and "P.REGIUS" wil be treated as different operation taxonomic
             unit concepts). Otherwise, taxon label intepretation will be made
             without regard for case.
         preserve_underscores : boolean, default: `False`
@@ -184,6 +184,10 @@ class NewickReader(ioservice.DataReader):
         terminating_semicolon_required : boolean, default: `True`
             If `True` [default], then a tree statement that does not end in a
             semi-colon is an error. If `False`, then no error will be raised.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
         """
 
         # base

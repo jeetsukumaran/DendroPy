@@ -27,6 +27,17 @@ class FastaReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, **kwargs):
+        """
+        Keyword Arguments
+        -----------------
+        data_type : str
+            Specifies type of data: "dna", "continuous", "rna", "protein",
+            "standard", "restriction", or "infinite".
+        ignore_unrecognized_keyword_arguments : bool
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `True`: unsupported keyword
+            arguments will result in an error.
+        """
         ioservice.DataReader.__init__(self)
         self.data_type = kwargs.pop("data_type", None)
         self.check_for_unused_keyword_arguments(kwargs)

@@ -32,7 +32,7 @@ class DocStringOnlyMethodDocumenter(autodoc.MethodDocumenter):
     objtype = "docstringonly"
 
     # do not indent the content
-    content_indent = ""
+    content_indent = "    "
 
     # do not add a header to the docstring
     def add_directive_header(self, sig):
@@ -245,6 +245,12 @@ rst_prolog = """
 .. _SeqGen: http://tree.bio.ed.ac.uk/software/seqgen/
 .. |GenBank| replace:: GenBank
 .. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
+
+.. |Newick| replace:: Newick
+.. _Newick: http://evolution.genetics.washington.edu/phylip/newicktree.html
+
+.. |Nexus| replace:: Nexus
+.. _Nexus: http://en.wikipedia.org/wiki/Nexus_file
 
 """
 

@@ -229,7 +229,7 @@ class TaxonNamespaceAssociated(object):
         Current :attr:`self.taxon_namespace` value will be replaced with value
         given in ``taxon_namespace`` if this is not `None`, or a new
         |TaxonNamespace| object. Following this,
-        `reconstruct_taxon_namespace()` will be called: each distinct
+        ``reconstruct_taxon_namespace()`` will be called: each distinct
         |Taxon| object associated with ``self`` or members of ``self`` that
         is not alread in ``taxon_namespace`` will be replaced with a new
         |Taxon| object that will be created with the same label and

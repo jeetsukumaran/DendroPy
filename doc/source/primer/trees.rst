@@ -1,19 +1,56 @@
-******************************
-Trees and Collections of Trees
-******************************
-
-Trees and Tree Lists
-====================
-
+*****
 Trees
------
+*****
 
-Trees in DendroPy are represented by the class |Tree|.
-Every |Tree| object has a :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
-The :attr:`~dendropy.datamodel.treemodel.Tree.seed_node`, like every other node on the tree, is a |Node| object.
+:term:`Trees <tree>` in DendroPy are represented by objects of the class |Tree|.
+:term:`Trees <tree>` consist of a collection of :term:`nodes <node>`, represented by objects of the class |Node|, connected to each other in parent-child or ancestor-descendent relationships by objects of the class |Edge|.
+The first or initial :term:`node` of a |Tree| is the head of the data structure, and is represented by the :attr:`seed_node` attribute of a |Tree| object.
+If the tree is :term:`rooted <rooted tree>`, then this is the :term:`root node`.
+If the tree is :term:`unrooted <unrooted tree>`, however, then this is an artificial node that *only* serves as the initial node when iterating over a tree: in :term:`preorder <preorder traversal>` or the final node when iterating over the tree in :term:`postorder <postorder traversal>`, but does not have any informational significance by itself: it is an algorithmic artifact.
+
+The :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` attribute of a |Tree| object, like every other node on the tree, is an object of the |Node| class.
 Every |Node| object maintains a list of its immediate child |Node| objects as well as a reference to its parent |Node| object.
-You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.datamodel.treemodel.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.datamodel.treemodel.Node.parent_node` attribute.
-By definition, the :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
+You can iterate over the :term:`child <child node>` of a particular |Node| object using the :meth:`~dendropy.datamodel.treemodel.Node.child_node_iter()` method, get a shallow-copy list of child |Node| objects using the :meth:`~dendropy.datamodel.treemodel.Node.child_nodes()` method, or access the :term:`parent <parent node>` |Node| object directly through the :attr:`~dendropy.datamodel.treemodel.Node.parent_node` attribute of the |Node|.
+By definition, the :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` has no :term:`parent node`, :term:`leaf nodes <leaf node>` have no :term:`child nodes <child node>`, and term:`internal nodes <internal node>` have both :term:`parent nodes <parent node>` and :term:`child nodes <child node>`.
+
+Every |Node| object has an attribute, :attr:`~dendropy.datamodel.treemodel.Node.edge`, which is an |Edge| object representing the :term:`edge` that is :term:`incident to or subtends <incident edge>` the :term:`node` represented by that |Node| object.
+Each |Edge|, in turn, has an attribute, :attr:`~dendropy.datamodel.treemodel.Edge.head_node`, which is the |Node| object representing the :term:`node` that the edge subtends.
+
+
+Creating a New |Tree| Instance from a Data Source
+=================================================
+
+The following factory class methods instantiate a *single* |Tree| object from data source specified as a file or file-like object opened for reading, a path to a file, or given directly as a string value, respectively:
+
+    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_stream`
+    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_path`
+    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_string`
+
+These methods all have the same signature, exemplified by the following::
+
+
+    tree = Tree.get_from_path(
+        src,
+        schema,
+        label=None,
+        taxon_namespace=None,
+        collection_offset=None,
+        tree_offset=None,
+        **kwargs,
+        )
+
+where:
+
+    - **src** (*file* or *str*) --- File-like object (``get_from_stream``), path to file (``get_from_path``), or string (``get_from_string``) with :term:`tree` data.
+    - **schema** (*str*) -- Identifier of format of data given in ``src``.
+    - **collection_offset** (*integer*) -- 0-based index of tree block or collection in source to be parsed.
+    - **label** (*str*) -- Name or identifier to be assigned to the new |Tree|; if not given, will be assigned the one specified in the data source, or `None` otherwise.
+    - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace| instance to use to :doc:`manage the taxon names <taxa>`. If not specified, a new one will be created.
+    - **collection_offset** (*int*) -- 0-based index of tree block or collection in source to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
+    - **tree_offset** (*int*) -- 0-based index of tree within collection in source to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
+    - **\*\*kwargs** -- schema-specific keyword arguments. These provide control over how the data is interpreted, depending on the schemas used.
+
+If the source defines multiple tree collections (e.g. multiple |Nexus| "``Trees``" blocks), then the `collection_offset` argument can be used to specify the 0-based index of the tree collection, and `tree_offset` argument can be used to specify the 0-based index of the tree within the collection, as the source. If `collection_offset` is not specified or `None`, then all collections in the source are merged before considering `tree_offset`. If `tree_offset` is not specified, then the first tree is selected.
 
 Tree Lists
 ----------
