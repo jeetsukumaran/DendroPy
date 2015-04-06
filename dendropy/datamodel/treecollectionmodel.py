@@ -428,7 +428,7 @@ class TreeList(
             self.label = kwargs["label"]
         return self
 
-    def read(self,
+    def _read_stream_source(self,
             stream,
             schema,
             collection_offset=None,

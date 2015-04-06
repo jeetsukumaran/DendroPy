@@ -193,7 +193,7 @@ class DataSet(
     ###########################################################################
     ### Data I/O
 
-    def read(self,
+    def _read_stream_source(self,
             stream,
             schema,
             exclude_trees=False,

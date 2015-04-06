@@ -3003,7 +3003,7 @@ class Tree(
     ###########################################################################
     ### I/O
 
-    # def read(self, stream, schema, **kwargs):
+    # def _read_stream_source(self, stream, schema, **kwargs):
     #     """
     #     Redefines this |Tree| object based on data from ``source``.
 

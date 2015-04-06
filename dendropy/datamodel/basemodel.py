@@ -112,6 +112,14 @@ class Deserializable(object):
         raise NotImplementedError
     _parse_from_stream = classmethod(_parse_from_stream)
 
+    def get(**kwargs):
+        """
+        Factory method to return new object of this class from an external
+        source.
+        """
+        pass
+    get = classmethod(get)
+
     def get_from_stream(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file-like object
@@ -272,7 +280,7 @@ class MultiReadable(object):
     Mixin class which all classes that support multiple (e.g., aggregative) deserialization should subclass.
     """
 
-    def read(self, stream, schema, **kwargs):
+    def _read_stream_source(self, stream, schema, **kwargs):
         """
         Populates/constructs objects of this type from ``schema``-formatted
         data in the file-like object source ``stream``.
@@ -303,7 +311,7 @@ class MultiReadable(object):
         """
         raise NotImplementedError
 
-    def read_from_stream(self, fileobj, schema, **kwargs):
+    def read_from_stream(self, src, schema, **kwargs):
         """
         Reads from file (exactly equivalent to just ``read()``, provided
         here as a separate method for completeness.
@@ -332,9 +340,9 @@ class MultiReadable(object):
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
-        return self.read(stream=fileobj, schema=schema, **kwargs)
+        return self._read_stream_source(stream=src, schema=schema, **kwargs)
 
-    def read_from_path(self, filepath, schema, **kwargs):
+    def read_from_path(self, src, schema, **kwargs):
         """
         Reads data from file specified by ``filepath``.
 
@@ -361,10 +369,10 @@ class MultiReadable(object):
                 - |CharacterMatrix|: number of sequences
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        with open(filepath, "r", newline=None) as fsrc:
-            return self.read(stream=fsrc, schema=schema, **kwargs)
+        with open(src, "r", newline=None) as fsrc:
+            return self._read_stream_source(stream=fsrc, schema=schema, **kwargs)
 
-    def read_from_string(self, src_str, schema, **kwargs):
+    def read_from_string(self, src, schema, **kwargs):
         """
         Reads a string.
 
@@ -391,10 +399,10 @@ class MultiReadable(object):
                 - |CharacterMatrix|: number of sequences
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        s = StringIO(src_str)
-        return self.read(stream=s, schema=schema, **kwargs)
+        s = StringIO(src)
+        return self._read_stream_source(stream=s, schema=schema, **kwargs)
 
-    def read_from_url(self, url, schema, **kwargs):
+    def read_from_url(self, src, schema, **kwargs):
         """
         Reads a URL source.
 
@@ -421,9 +429,9 @@ class MultiReadable(object):
                 - |CharacterMatrix|: number of sequences
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        src_str = urlio.read_url(url)
+        src_str = urlio.read_url(src)
         s = StringIO(src_str)
-        return self.read(stream=s, schema=schema, **kwargs)
+        return self._read_stream_source(stream=s, schema=schema, **kwargs)
 
 ##############################################################################
 ## NonMultiReadable

@@ -797,7 +797,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Data I/O
 
-    # def read(self, stream, schema, **kwargs):
+    # def _read_stream_source(self, stream, schema, **kwargs):
     #     """
     #     Populates objects of this type from ``schema``-formatted
     #     data in the file-like object source ``stream``, *replacing*
