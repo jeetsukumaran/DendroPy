@@ -17,23 +17,26 @@ Supported Methods
 |Tree|
 ......
 
-    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_stream`
-    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_path`
-    -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_string`
+:meth:`~dendropy.datamodel.treemodel.Tree.get`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. literalinclude:: /schemas/interfaces/newick_tree_get_from_stream.py
 
-.. literalinclude:: /schemas/interfaces/newick_tree_get_from_path.py
 
 |TreeList|
 ..........
 
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_stream`
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_path`
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_string`
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_stream`
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_path`
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_string`
-
-.. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
+            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
 
 |TreeArray|
 ...........

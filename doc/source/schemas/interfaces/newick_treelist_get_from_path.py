@@ -1,5 +1,5 @@
-tree = dendropy.Tree.get_from_path(
-    src="tree.tre",
+tree_list = dendropy.TreeList.get_from_path(
+    src="path/to/file",
     schema="newick",
     label=None,
     taxon_namespace=None,
@@ -19,4 +19,5 @@ tree = dendropy.Tree.get_from_path(
     terminating_semicolon_required=True,
     ignore_unrecognized_keyword_arguments=False,
     )
+
 

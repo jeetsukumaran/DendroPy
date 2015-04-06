@@ -253,6 +253,10 @@ rst_prolog = """
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
 .. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
 
+.. |get| replace::  :py:meth:`get`
+.. |put| replace::  :py:meth:`put`
+.. |read| replace::  :py:meth:`read`
+
 .. |get_from_methods| replace::  :py:meth:`get_from_*() <get_from_*>`
 .. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
 .. |write_to_methods| replace::  :py:meth:`write_to_*() <read_from_*>`

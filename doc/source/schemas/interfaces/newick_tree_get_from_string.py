@@ -1,5 +1,5 @@
-tree = dendropy.Tree.get_from_path(
-    src="tree.tre",
+tree = dendropy.Tree.get_from_string(
+    src="(A,(B,(C,D)));",
     schema="newick",
     label=None,
     taxon_namespace=None,

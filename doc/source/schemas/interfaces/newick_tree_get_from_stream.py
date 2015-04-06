@@ -1,5 +1,5 @@
-tree = dendropy.Tree.get_from_path(
-    src="tree.tre",
+tree = dendropy.Tree.get_from_stream(
+    src=open("tree.tre", "r"),
     schema="newick",
     label=None,
     taxon_namespace=None,

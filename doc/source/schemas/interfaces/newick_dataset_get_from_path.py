@@ -1,10 +1,10 @@
-tree = dendropy.Tree.get_from_path(
-    src="tree.tre",
+data_set = dendropy.DataSet.get_from_path(
+    src="path/to/file",
     schema="newick",
     label=None,
     taxon_namespace=None,
-    collection_offset=None,
-    tree_offset=None,
+    exclude_chars=False,
+    exclude_trees=False,
     rooting="default-unrooted",
     edge_length_type=float,
     suppress_edge_lengths=False,
@@ -19,4 +19,6 @@ tree = dendropy.Tree.get_from_path(
     terminating_semicolon_required=True,
     ignore_unrecognized_keyword_arguments=False,
     )
+
+
 

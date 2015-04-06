@@ -1,8 +1,7 @@
-tree = dendropy.Tree.get_from_path(
-    src="tree.tre",
+tree_array = dendropy.TreeArray.read_from_path(
+    src="path/to/file",
     schema="newick",
     label=None,
-    taxon_namespace=None,
     collection_offset=None,
     tree_offset=None,
     rooting="default-unrooted",
