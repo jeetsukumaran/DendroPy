@@ -446,7 +446,8 @@ class CharacterSubset(
 class CharacterMatrix(
         taxonmodel.TaxonNamespaceAssociated,
         basemodel.Annotable,
-        basemodel.SingleReadable,
+        basemodel.Deserializable,
+        basemodel.NonMultiReadable,
         basemodel.Writeable,
         basemodel.DataObject):
     """

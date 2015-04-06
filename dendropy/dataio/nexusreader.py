@@ -212,7 +212,7 @@ class NexusReader(ioservice.DataReader):
                 'force-rooted'
                     All trees are unconditionally interpreted as rooted.
 
-        edge_len_type : type, default: ``float``
+        edge_length_type : type, default: ``float``
             Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
             Defaults to ``float``.

@@ -44,6 +44,7 @@ from dendropy import dataio
 
 class DataSet(
         basemodel.Annotable,
+        basemodel.Deserializable,
         basemodel.MultiReadable,
         basemodel.Writeable,
         basemodel.DataObject):

@@ -139,7 +139,7 @@ class NewickReader(ioservice.DataReader):
                 'force-rooted'
                     All trees are unconditionally interpreted as rooted.
 
-        edge_len_type : type, default: ``float``
+        edge_length_type : type, default: ``float``
             Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
             Defaults to ``float``.
@@ -245,7 +245,7 @@ class NewickReader(ioservice.DataReader):
             )
         # self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
-        self.edge_len_type = kwargs.pop("edge_len_type", float)
+        self.edge_length_type = kwargs.pop("edge_length_type", float)
         self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
@@ -574,7 +574,7 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer.require_next_token()
                 if not self.suppress_edge_lengths:
                     try:
-                        edge_length = self.edge_len_type(nexus_tokenizer.current_token)
+                        edge_length = self.edge_length_type(nexus_tokenizer.current_token)
                     except ValueError:
                         raise NewickReader.NewickReaderMalformedStatementError(
                                 message="Invalid edge length: '{}'".format(nexus_tokenizer.current_token),

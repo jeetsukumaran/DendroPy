@@ -427,7 +427,8 @@ class TaxonNamespaceAssociated(object):
 ## TaxonNamespace
 
 class TaxonNamespace(
-        basemodel.Readable,
+        basemodel.Deserializable,
+        basemodel.MultiReadable,
         basemodel.Writeable,
         basemodel.DataObject,
         basemodel.Annotable):

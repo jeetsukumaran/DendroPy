@@ -46,6 +46,7 @@ from dendropy import dataio
 class TreeList(
         taxonmodel.TaxonNamespaceAssociated,
         basemodel.Annotable,
+        basemodel.Deserializable,
         basemodel.MultiReadable,
         basemodel.Writeable,
         basemodel.DataObject):
@@ -490,7 +491,7 @@ class TreeList(
             General (schema-agnostic) keyword arguments are:
 
                 * ``rooted`` specifies the default rooting interpretation of the tree.
-                * ``edge_len_type`` specifies the type of the edge lengths (int or
+                * ``edge_length_type`` specifies the type of the edge lengths (int or
                   float; defaults to 'float')
 
             Other keyword arguments are available depending on the schema. See

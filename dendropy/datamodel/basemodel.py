@@ -96,9 +96,9 @@ class DataObject(object):
         raise NotImplementedError
 
 ##############################################################################
-## Readable
+## Deserializable
 
-class Readable(object):
+class Deserializable(object):
     """
     Mixin class which all classes that require deserialization should subclass.
     """
@@ -263,7 +263,11 @@ class Readable(object):
         #     kwargs["stream"] = fo
         #     return self._process_source_kwargs(**kwargs)
 
-class MultiReadable(Readable):
+
+##############################################################################
+## MultiReadabe
+
+class MultiReadable(object):
     """
     Mixin class which all classes that support multiple (e.g., aggregative) deserialization should subclass.
     """
@@ -421,7 +425,13 @@ class MultiReadable(Readable):
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
 
-class SingleReadable(MultiReadable):
+##############################################################################
+## NonMultiReadable
+
+class NonMultiReadable(object):
+    """
+    Mixin to enforce transition from DendroPy 3 to DendroPy 4 API
+    """
 
     def error(self, funcname):
         read_from_func = funcname

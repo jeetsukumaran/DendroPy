@@ -2387,7 +2387,8 @@ class Node(
 class Tree(
         taxonmodel.TaxonNamespaceAssociated,
         basemodel.Annotable,
-        basemodel.SingleReadable,
+        basemodel.Deserializable,
+        basemodel.NonMultiReadable,
         basemodel.Writeable,
         basemodel.DataObject):
     """
