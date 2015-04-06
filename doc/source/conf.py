@@ -38,8 +38,31 @@ class DocStringOnlyMethodDocumenter(autodoc.MethodDocumenter):
     def add_directive_header(self, sig):
         pass
 
+    # def add_line(self, line, source, *lineno):
+    #     """Append one line of generated reST to the output."""
+    #     print self.indent + line
+    #     self.directive.result.append(self.indent + line, source, *lineno)
+
+class KeywordArgumentsOnlyMethodDocumenter(autodoc.MethodDocumenter):
+    objtype = "keywordargumentsonly"
+
+    # do not indent the content
+    content_indent = "    "
+
+    # do not add a header to the docstring
+    def add_directive_header(self, sig):
+        pass
+
+    def add_line(self, line, source, *lineno):
+        if ":Keyword Arguments:" in line:
+            line = line.replace(":Keyword Arguments:", "                   ")
+            self._emit_line = True
+        if getattr(self, "_emit_line", False):
+            self.directive.result.append(self.indent + line, source, *lineno)
+
 def setup(app):
     app.add_autodocumenter(DocStringOnlyMethodDocumenter)
+    app.add_autodocumenter(KeywordArgumentsOnlyMethodDocumenter)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -232,6 +255,7 @@ rst_prolog = """
 
 .. |get_from_methods| replace::  :py:meth:`get_from_*() <get_from_*>`
 .. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
+.. |write_to_methods| replace::  :py:meth:`write_to_*() <read_from_*>`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`

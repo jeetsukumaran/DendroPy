@@ -6,7 +6,7 @@ Trees
 :term:`Trees <tree>` consist of a collection of :term:`nodes <node>`, represented by objects of the class |Node|, connected to each other in parent-child or ancestor-descendent relationships by objects of the class |Edge|.
 The first or initial :term:`node` of a |Tree| is the head of the data structure, and is represented by the :attr:`seed_node` attribute of a |Tree| object.
 If the tree is :term:`rooted <rooted tree>`, then this is the :term:`root node`.
-If the tree is :term:`unrooted <unrooted tree>`, however, then this is an artificial node that *only* serves as the initial node when iterating over a tree: in :term:`preorder <preorder traversal>` or the final node when iterating over the tree in :term:`postorder <postorder traversal>`, but does not have any informational significance by itself: it is an algorithmic artifact.
+If the tree is :term:`unrooted <unrooted tree>`, however, then this is an artificial node that *only* serves as the initial node when iterating over a tree in :term:`preorder <preorder traversal>` or the final node when iterating over the tree in :term:`postorder <postorder traversal>`, but does not have any informational significance by itself: it is an algorithmic artifact.
 
 The :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` attribute of a |Tree| object, like every other node on the tree, is an object of the |Node| class.
 Every |Node| object maintains a list of its immediate child |Node| objects as well as a reference to its parent |Node| object.
@@ -42,15 +42,14 @@ These methods all have the same signature, exemplified by the following::
 where:
 
     - **src** (*file* or *str*) --- File-like object (``get_from_stream``), path to file (``get_from_path``), or string (``get_from_string``) with :term:`tree` data.
-    - **schema** (*str*) -- Identifier of format of data given in ``src``.
+    - **schema** (*str*) -- :ref:`Schema specification string <Specifying_the_Data_Source_Format>`: identifier of format of data given in ``src``.
     - **collection_offset** (*integer*) -- 0-based index of tree block or collection in source to be parsed.
     - **label** (*str*) -- Name or identifier to be assigned to the new |Tree|; if not given, will be assigned the one specified in the data source, or `None` otherwise.
     - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace| instance to use to :doc:`manage the taxon names <taxa>`. If not specified, a new one will be created.
     - **collection_offset** (*int*) -- 0-based index of tree block or collection in source to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
-    - **tree_offset** (*int*) -- 0-based index of tree within collection in source to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
-    - **\*\*kwargs** -- schema-specific keyword arguments. These provide control over how the data is interpreted, depending on the schemas used.
+    - **tree_offset** (*int*) -- 0-based index of tree within the collection specified by ``collection_offset`` to be parsed to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
+    - **\*\*kwargs** -- schema-specific keyword arguments. These provide control over how the data is interpreted and processed, depending on the schemas used.
 
-If the source defines multiple tree collections (e.g. multiple |Nexus| "``Trees``" blocks), then the `collection_offset` argument can be used to specify the 0-based index of the tree collection, and `tree_offset` argument can be used to specify the 0-based index of the tree within the collection, as the source. If `collection_offset` is not specified or `None`, then all collections in the source are merged before considering `tree_offset`. If `tree_offset` is not specified, then the first tree is selected.
 
 Tree Lists
 ----------
