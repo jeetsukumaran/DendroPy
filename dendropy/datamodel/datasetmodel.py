@@ -46,7 +46,7 @@ class DataSet(
         basemodel.Annotable,
         basemodel.Deserializable,
         basemodel.MultiReadable,
-        basemodel.Writeable,
+        basemodel.Serializable,
         basemodel.DataObject):
     """
     A phylogenetic data object that coordinates collections of
@@ -228,7 +228,7 @@ class DataSet(
                 n_tree_lists2-n_tree_lists,
                 n_char_matrices2-n_char_matrices)
 
-    def write(self,
+    def _write(self,
             stream,
             schema,
             exclude_trees=False,

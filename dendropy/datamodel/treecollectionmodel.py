@@ -48,7 +48,7 @@ class TreeList(
         basemodel.Annotable,
         basemodel.Deserializable,
         basemodel.MultiReadable,
-        basemodel.Writeable,
+        basemodel.Serializable,
         basemodel.DataObject):
     """
     A collection of |Tree| objects, all referencing the same "universe" of
@@ -529,7 +529,7 @@ class TreeList(
         new_size = len(self._trees)
         return new_size - cur_size
 
-    def write(self, stream, schema, **kwargs):
+    def _write(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.

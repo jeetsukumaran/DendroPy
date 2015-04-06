@@ -448,7 +448,7 @@ class CharacterMatrix(
         basemodel.Annotable,
         basemodel.Deserializable,
         basemodel.NonMultiReadable,
-        basemodel.Writeable,
+        basemodel.Serializable,
         basemodel.DataObject):
     """
     A data structure that manages assocation of operational taxononomic unit
@@ -813,7 +813,7 @@ class CharacterMatrix(
     #             **kwargs)
     #     return self.clone_from(m)
 
-    def write(self, stream, schema, **kwargs):
+    def _write(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.

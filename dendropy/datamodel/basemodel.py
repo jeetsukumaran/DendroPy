@@ -37,6 +37,25 @@ from dendropy.utility import error
 from dendropy.utility import deprecate
 
 ##############################################################################
+## Keyword Processor
+
+def _extract_serialization_target_keyword(kwargs, target_type):
+    target_type_keywords = ["file", "path", "url", "str",]
+    found_kw = []
+    for kw in target_type_keywords:
+        if kw in kwargs:
+            found_kw.append(kw)
+    if not found_kw:
+        raise TypeError("{} not specified; exactly one of the following keyword arguments required to be specified: {}".format(target_type, target_type_keywords))
+    if len(found_kw) > 1:
+        raise TypeError("{} specified multiple times: {}".format(target_type, found_kw))
+    target = kwargs.pop(found_kw[0])
+    if "schema" not in kwargs:
+        raise TypeError("Mandatory keyword argument 'schema' not specified")
+    schema = kwargs.pop("schema")
+    return found_kw[0], target, schema
+
+##############################################################################
 ## DataObject
 
 class DataObject(object):
@@ -112,12 +131,25 @@ class Deserializable(object):
         raise NotImplementedError
     _parse_from_stream = classmethod(_parse_from_stream)
 
-    def get(**kwargs):
+    def get(cls, **kwargs):
         """
         Factory method to return new object of this class from an external
         source.
         """
-        pass
+        try:
+            src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
+        except Exception as e:
+            raise e
+        if src_type == "file":
+            return cls.get_from_stream(src=src, schema=schema, **kwargs)
+        elif src_type == "path":
+            return cls.get_from_path(src=src, schema=schema, **kwargs)
+        elif src_type == "str":
+            return cls.get_from_string(src=src, schema=schema, **kwargs)
+        elif src_type == "url":
+            return cls.get_from_url(src=src, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(src_type))
     get = classmethod(get)
 
     def get_from_stream(cls, src, schema, **kwargs):
@@ -239,37 +271,6 @@ class Deserializable(object):
             sys.stderr.write(text)
             raise
     get_from_url = classmethod(get_from_url)
-
-    def _process_source_kwargs(self, **kwargs):
-        """
-        If ``stream`` is specified, then _process_source_kwargs:
-
-            # checks that ``schema`` keyword argument is specified, and then
-            # calls self.read()
-
-        If ``stream`` is not specified, then nothing happens: unless the
-        data object was populated through other means, and empty data
-        object will the result (typically used as a starting point
-        for population unit by unit).
-        """
-        if "stream" in kwargs:
-            stream = kwargs["stream"]
-            del(kwargs["stream"])
-            schema = require_format_from_kwargs(kwargs)
-            self.read(stream=stream, schema=schema, **kwargs)
-        # else:
-        #     from pudb import set_trace; set_trace()
-        # elif "source_string" in kwargs:
-        #     as_str = kwargs["source_string"]
-        #     del(kwargs["source_string"])
-        #     kwargs["stream"] = StringIO(as_str)
-        #     return self._process_source_kwargs(**kwargs)
-        # elif "source_file" in kwargs:
-        #     fp = kwargs["source_filepath"]
-        #     fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
-        #     del(kwargs["source_filepath"])
-        #     kwargs["stream"] = fo
-        #     return self._process_source_kwargs(**kwargs)
 
 
 ##############################################################################
@@ -471,14 +472,32 @@ class NonMultiReadable(object):
         self.error("read_from_url")
 
 ##############################################################################
-## Writeable
+## Serializable
 
-class Writeable(object):
+class Serializable(object):
     """
     Mixin class which all classes that require serialization should subclass.
     """
 
-    def write(self, stream, schema, **kwargs):
+    def put(self, **kwargs):
+        """
+        Serialize ``self``.
+
+        Mandatory keyword arguments specify the destination and schema
+        (format). Other keyword arguments control the output.
+        """
+        try:
+            dest_type, dest, schema = _extract_serialization_target_keyword(kwargs, "Destination")
+        except Exception as e:
+            raise e
+        if dest_type == "file":
+            return self.write_to_stream(dest=dest, schema=schema, **kwargs)
+        elif dest_type == "path":
+            return self.write_to_path(dest=dest, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(dest_type))
+
+    def _write(self, stream, schema, **kwargs):
         """
         Writes the object to the file-like object ``stream`` in ``schema``
         schema.
@@ -489,21 +508,21 @@ class Writeable(object):
         """
         Writes to file-like object ``dest``.
         """
-        return self.write(stream=dest, schema=schema, **kwargs)
+        return self._write(stream=dest, schema=schema, **kwargs)
 
     def write_to_path(self, dest, schema, **kwargs):
         """
         Writes to file specified by ``dest``.
         """
         with open(os.path.expandvars(os.path.expanduser(dest)), "w") as f:
-            return self.write(stream=f, schema=schema, **kwargs)
+            return self._write(stream=f, schema=schema, **kwargs)
 
     def as_string(self, schema, **kwargs):
         """
         Composes and returns string representation of the data.
         """
         s = StringIO()
-        self.write(stream=s, schema=schema, **kwargs)
+        self._write(stream=s, schema=schema, **kwargs)
         return s.getvalue()
 
 ##############################################################################

@@ -429,7 +429,7 @@ class TaxonNamespaceAssociated(object):
 class TaxonNamespace(
         basemodel.Deserializable,
         basemodel.MultiReadable,
-        basemodel.Writeable,
+        basemodel.Serializable,
         basemodel.DataObject,
         basemodel.Annotable):
 
@@ -1580,7 +1580,7 @@ class TaxonNamespace(
 
     ### I/O
 
-    def write(self, stream, schema, **kwargs):
+    def _write(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.

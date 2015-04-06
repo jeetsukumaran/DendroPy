@@ -2389,7 +2389,7 @@ class Tree(
         basemodel.Annotable,
         basemodel.Deserializable,
         basemodel.NonMultiReadable,
-        basemodel.Writeable,
+        basemodel.Serializable,
         basemodel.DataObject):
     """
     An arborescence, i.e. a fully-connected directed acyclic graph with all
@@ -3082,7 +3082,7 @@ class Tree(
     #         raise ValueError("Invalid tree source specification")
     #     self.__dict__ = tree.__dict__
 
-    def write(self, stream, schema, **kwargs):
+    def _write(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
@@ -3108,7 +3108,7 @@ class Tree(
         tree_list.append(self, taxon_import_strategy="add")
         # Go through TreeList.write() to reduce testing targets (i.e., testing
         # Tree.write() tests TreeList.write())
-        tree_list.write(stream, schema, **kwargs)
+        tree_list.write_to_stream(stream, schema, **kwargs)
         # writer.write_tree_list(tree_list, stream)
 
     ###########################################################################
