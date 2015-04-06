@@ -9,17 +9,7 @@ NEWICK
 Reading
 =======
 
-Examples
---------
-
-.. literalinclude:: /schemas/interfaces/newick_tree_get_from_path.py
-
 .. schema_specific_keyword_arguments_reading_newick:
-
-Schema-Specific Keyword Arguments
----------------------------------
-
-.. autokeywordargumentsonly:: dendropy.dataio.newickreader.NewickReader.__init__
 
 Supported Methods
 -----------------
@@ -31,6 +21,8 @@ Supported Methods
     -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_path`
     -   :meth:`~dendropy.datamodel.treemodel.Tree.get_from_string`
 
+.. literalinclude:: /schemas/interfaces/newick_tree_get_from_path.py
+
 |TreeList|
 ..........
 
@@ -41,12 +33,16 @@ Supported Methods
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_path`
     -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_string`
 
+.. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
+
 |TreeArray|
 ...........
 
     -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_stream`
     -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_path`
     -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_string`
+
+.. literalinclude:: /schemas/interfaces/newick_treearray_read_from_path.py
 
 |DataSet|
 .........
@@ -55,4 +51,9 @@ Supported Methods
     -   :meth:`~dendropy.datamodel.treemodel.DataSet.read_from_path`
     -   :meth:`~dendropy.datamodel.treemodel.DataSet.read_from_string`
 
+.. literalinclude:: /schemas/interfaces/newick_dataset_get_from_path.py
 
+Schema-Specific Keyword Arguments
+---------------------------------
+
+.. autokeywordargumentsonly:: dendropy.dataio.newickreader.NewickReader.__init__
