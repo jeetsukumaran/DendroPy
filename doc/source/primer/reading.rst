@@ -20,8 +20,8 @@ The source can be:
     -   or a URL (specified using the keyword argument ``"url"``)
 
 The schema is specified using the keyword argument ``"schema"``, and takes a string value that identifies the format of data.
-This ":ref:`schema specification string <Specifying_the_Data_Source_Format>`" can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
-Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+This ":ref:`schema specification string <Specifying_the_Data_Source_Format>`" can be one of: ":doc:`fasta </schemas/fasta>`", ":doc:`newick </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", ":doc:`nexml </schemas/nexml>`", or ":doc:`phylip </schemas/phylip>`".
+Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a |FASTA|-formatted data source).
 
 .. A ":term:`schema`" is DendroPy-speak for "format" (we cannot use the argument or variable name "format" for this in library, because this is a Python built-in, and hence we use "schema" and adopted this terminology for consistency), and is specified using one of a set of predefined string values.
 
@@ -50,7 +50,7 @@ For example:
     dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
 
 The "|get|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
-Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
+Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick|_ or |Nexus| data).
 
 
 .. note::

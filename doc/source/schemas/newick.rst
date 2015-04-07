@@ -1,10 +1,17 @@
 ******
-NEWICK
+Newick
 ******
 
 .. contents::
     :local:
     :backlinks: none
+
+Description
+===========
+
+    * http://evolution.genetics.washington.edu/phylip/newicktree.html
+    * http://en.wikipedia.org/wiki/Newick_format
+    * http://evolution.genetics.washington.edu/phylip/newick_doc.html
 
 Reading
 =======

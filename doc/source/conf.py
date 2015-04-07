@@ -275,11 +275,11 @@ rst_prolog = """
 .. |GenBank| replace:: GenBank
 .. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
 
-.. |Newick| replace:: Newick
-.. _Newick: http://evolution.genetics.washington.edu/phylip/newicktree.html
-
-.. |Nexus| replace:: Nexus
-.. _Nexus: http://en.wikipedia.org/wiki/Nexus_file
+.. |FASTA| replace:: :doc:`/schemas/fasta`
+.. |Newick| replace:: :doc:`/schemas/newick`
+.. |Nexus| replace:: :doc:`/schemas/nexus`
+.. |NeXML| replace:: :doc:`/schemas/nexml`
+.. |Phylip| replace:: :doc:`/schemas/phylip`
 
 """
 
