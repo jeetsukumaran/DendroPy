@@ -5,11 +5,12 @@ Reading Phylogenetic Data
 Creating and Populating New Objects
 ===================================
 
-The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all
-support a "|get|" factory class-method that instantiates an object of the given
-class from a data source.
-This method takes, at a minumum, two keyword arguments that specify the
-*source* of the data and the *schema* (or format) of the data.
+The |Tree|, |TreeList|, |CharacterMatrix|-derived (i.e., |DnaCharacterMatrix|,
+|ProteinCharacterMatrix|, |StandardCharacterMatrix|, etc.), and |DataSet|
+classes all support a "|get|" factory class-method that instantiates an object
+of the given class from a data source. This method takes, at a minumum, two
+keyword arguments that specify the *source* of the data and the *schema* (or
+format) of the data.
 
 The source can be:
 
@@ -54,28 +55,33 @@ Some of these are specific to the given class (e.g. the "``edge_length_type``" a
 
 .. note::
 
-    These classes also support a "|get_from_methods|" family of factory
-    class-methods that can be seen as specializations of the "|get|" method for
-    various types of sources (in fact, the "|get|" method is actually a
-    dispatcher that calls on one of these methods below for implementation of the functionality):
+    The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes
+    also support a "|get_from_methods|" family of factory class-methods that
+    can be seen as specializations of the "|get|" method for various types of
+    sources (in fact, the "|get|" method is actually a dispatcher that calls on
+    one of these methods below for implementation of the functionality):
 
         :meth:`get_from_stream(src, schema, \*\*kwargs)`
             Takes a file or file-like object opened for reading the data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
-            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`get(file=src, schema=schema, ...)`".
 
         :meth:`get_from_path(src, schema, \*\*kwargs)`
-            Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
-            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+            Takes a string specifying the path to the the data source file as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`get(path=src, schema=schema, ...)`".
 
         :meth:`get_from_string(src, schema, \*\*kwargs)`
-            Takes a string containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
-            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+            Takes a string containing the source data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`get(value=src, schema=schema, ...)`".
 
         :meth:`get_from_url(src, schema, \*\*kwargs)`
-            Takes a string containing the URL of the data as the first argument, and a string specifying the :term:`schema` as the second.
+            Takes a string containing the URL of the data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
             Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+            This is equivalent to calling ":meth:`get(url=src, schema=schema, ...)`".
 
-    As with the "|get|" method, the additional keywords are specific to the given class or schema type.
+    As with the "|get|" method, the additional keyword arguments are specific to the given class or schema type.
 
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================

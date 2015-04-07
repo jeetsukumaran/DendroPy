@@ -14,47 +14,30 @@ Reading
 Supported Methods
 -----------------
 
-|Tree|
-......
+:meth:`dendropy.datamodel.treemodel.Tree.get`
+.............................................
+.. literalinclude:: /schemas/interfaces/newick_tree_get.py
 
-:meth:`~dendropy.datamodel.treemodel.Tree.get`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. literalinclude:: /schemas/interfaces/newick_tree_get_from_stream.py
+:meth:`dendropy.datamodel.treemodel.TreeList.get`
+.................................................
+.. literalinclude:: /schemas/interfaces/newick_treelist_get.py
 
+:meth:`~dendropy.datamodel.treemodel.TreeList.read`
+...................................................
+.. literalinclude:: /schemas/interfaces/newick_treelist_read.py
 
-|TreeList|
-..........
+:meth:`~dendropy.datamodel.treemodel.TreeArray.read`
+....................................................
+.. literalinclude:: /schemas/interfaces/newick_treearray_read.py
 
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_stream`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_path`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.get_from_string`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_stream`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_path`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
-    -   :meth:`~dendropy.datamodel.treemodel.TreeList.read_from_string`
-            .. literalinclude:: /schemas/interfaces/newick_treelist_get_from_path.py
+:meth:`~dendropy.datamodel.treemodel.DataSet.get`
+.................................................
+.. literalinclude:: /schemas/interfaces/newick_dataset_get.py
 
-|TreeArray|
-...........
+:meth:`~dendropy.datamodel.treemodel.DataSet.read`
+..................................................
+.. literalinclude:: /schemas/interfaces/newick_dataset_read.py
 
-    -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_stream`
-    -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_path`
-    -   :meth:`~dendropy.datamodel.treemodel.TreeArray.read_from_string`
-
-.. literalinclude:: /schemas/interfaces/newick_treearray_read_from_path.py
-
-|DataSet|
-.........
-
-    -   :meth:`~dendropy.datamodel.treemodel.DataSet.read_from_stream`
-    -   :meth:`~dendropy.datamodel.treemodel.DataSet.read_from_path`
-    -   :meth:`~dendropy.datamodel.treemodel.DataSet.read_from_string`
-
-.. literalinclude:: /schemas/interfaces/newick_dataset_get_from_path.py
 
 Schema-Specific Keyword Arguments
 ---------------------------------
