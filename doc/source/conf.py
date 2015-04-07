@@ -45,6 +45,7 @@ class DocStringOnlyMethodDocumenter(autodoc.MethodDocumenter):
 
 class KeywordArgumentsOnlyMethodDocumenter(autodoc.MethodDocumenter):
     objtype = "keywordargumentsonly"
+    priority = 0 # do not override normal autodocumenter
 
     # do not indent the content
     content_indent = "    "
@@ -60,9 +61,9 @@ class KeywordArgumentsOnlyMethodDocumenter(autodoc.MethodDocumenter):
         if getattr(self, "_emit_line", False):
             self.directive.result.append(self.indent + line, source, *lineno)
 
-# def setup(app):
+def setup(app):
 #     app.add_autodocumenter(DocStringOnlyMethodDocumenter)
-#     app.add_autodocumenter(KeywordArgumentsOnlyMethodDocumenter)
+    app.add_autodocumenter(KeywordArgumentsOnlyMethodDocumenter)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

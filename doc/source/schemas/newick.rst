@@ -9,7 +9,7 @@ NEWICK
 Reading
 =======
 
-.. schema_specific_keyword_arguments_reading_newick:
+.. _schema_specific_keyword_arguments_reading_newick:
 
 Supported Methods
 -----------------
@@ -18,26 +18,25 @@ Supported Methods
 ........................................................
 .. literalinclude:: /schemas/interfaces/newick_tree_get.py
 
-:meth:`dendropy.datamodel.treemodel.TreeList.get`
-.................................................
+:meth:`TreeList.get <dendropy.datamodel.treemodel.TreeList.get>`
+................................................................
 .. literalinclude:: /schemas/interfaces/newick_treelist_get.py
 
-:meth:`~dendropy.datamodel.treemodel.TreeList.read`
-...................................................
+:meth:`TreeList.read <dendropy.datamodel.treemodel.TreeList.read>`
+..................................................................
 .. literalinclude:: /schemas/interfaces/newick_treelist_read.py
 
-:meth:`~dendropy.datamodel.treemodel.TreeArray.read`
-....................................................
+:meth:`TreeArray.read <dendropy.datamodel.treemodel.TreeArray.read>`
+....................................................................
 .. literalinclude:: /schemas/interfaces/newick_treearray_read.py
 
-:meth:`~dendropy.datamodel.treemodel.DataSet.get`
-.................................................
+:meth:`DataSet.get <dendropy.datamodel.treemodel.DataSet.get>`
+..............................................................
 .. literalinclude:: /schemas/interfaces/newick_dataset_get.py
 
-:meth:`~dendropy.datamodel.treemodel.DataSet.read`
-..................................................
+:meth:`DataSet.read <dendropy.datamodel.treemodel.DataSet.read>`
+................................................................
 .. literalinclude:: /schemas/interfaces/newick_dataset_read.py
-
 
 Schema-Specific Keyword Arguments
 ---------------------------------
