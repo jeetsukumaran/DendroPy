@@ -40,7 +40,7 @@ from dendropy.utility import deprecate
 ## Keyword Processor
 
 def _extract_serialization_target_keyword(kwargs, target_type):
-    target_type_keywords = ["file", "path", "url", "str",]
+    target_type_keywords = ["file", "path", "url", "value", "stream", "string"]
     found_kw = []
     for kw in target_type_keywords:
         if kw in kwargs:
@@ -140,11 +140,11 @@ class Deserializable(object):
             src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
         except Exception as e:
             raise e
-        if src_type == "file":
+        if src_type == "file" or src_type == "stream":
             return cls.get_from_stream(src=src, schema=schema, **kwargs)
         elif src_type == "path":
             return cls.get_from_path(src=src, schema=schema, **kwargs)
-        elif src_type == "str":
+        elif src_type == "value" or src_type == "string":
             return cls.get_from_string(src=src, schema=schema, **kwargs)
         elif src_type == "url":
             return cls.get_from_url(src=src, schema=schema, **kwargs)

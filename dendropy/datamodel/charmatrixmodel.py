@@ -470,8 +470,8 @@ class CharacterMatrix(
     Objects can be instantiated by reading data from external sources through
     the usual ``get_from_stream()``, ``get_from_path()``, or
     ``get_from_string()`` functions. In addition, a single matrix object can be
-    instantiated from multiple matrices (`concatenate()`) or data sources
-    (`concatenate_from_paths`).
+    instantiated from multiple matrices (``concatenate()``) or data sources
+    (``concatenate_from_paths``).
 
     A range of methods also exist for importing data from another matrix object.
     These vary depending on how "new" and "existing" are treated.  A "new"
@@ -1551,10 +1551,7 @@ class CharacterMatrix(
         if depth is None or depth < 0:
             return
         output_strio = StringIO()
-        if self.label is None:
-            label = " (%s)" % self.oid
-        else:
-            label = " (%s: '%s')" % (self.oid, self.label)
+        label = " (%s: '%s')" % (id(self), self.label)
         output_strio.write('%s%s%s object at %s%s'
                 % (indent*' ',
                    itemize,
@@ -1882,7 +1879,8 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         else:
             default_state_alphabet = charstatemodel.new_standard_state_alphabet()
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
-        self._default_state_alphabet = default_state_alphabet
+        if default_state_alphabet is not None:
+            self.default_state_alphabet = default_state_alphabet
 
 ###############################################################################
 ## Main Character Matrix Factory Function

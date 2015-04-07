@@ -5,33 +5,77 @@ Reading Phylogenetic Data
 Creating and Populating New Objects
 ===================================
 
-The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support "|get_from_methods|" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
+The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all
+support a "|get|" factory class-method that instantiates an object of the given
+class from a data source.
+This method takes, at a minumum, two keyword arguments that specify the
+*source* of the data and the *schema* (or format) of the data.
 
-    :meth:`get_from_stream(src, schema, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
-        Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
-        Creates and returns a new object
+The source can be:
 
-    :meth:`get_from_path(src, schema, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
+    -   a path to a file (specified using the keyword argument "``path``")
+    -   a file or a file-like object opened for reading (specified using the keyword argument ``"file"``)
+    -   a string value giving the data directly (specified using the keyword argument ``"value"``)
+    -   or a URL (specified using the keyword argument ``"url"``)
 
-    :meth:`get_from_string(src, schema, **kwargs)`
-        Takes a string containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
-
-A ":term:`schema`" is DendroPy-speak for "format" (we cannot use the argument name "format" because this is a Python built-in, and hence we adopted this terminology for consistency), and is specified using one of a set of predefined string values.
-The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
+The schema is specified using the keyword argument ``"schema"``, and takes a string value that identifies the format of data.
+This ":ref:`schema specification string <Specifying_the_Data_Source_Format>`" can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
 Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-All "|get_from_methods|"  methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
+.. A ":term:`schema`" is DendroPy-speak for "format" (we cannot use the argument or variable name "format" for this in library, because this is a Python built-in, and hence we use "schema" and adopted this terminology for consistency), and is specified using one of a set of predefined string values.
 
-    >>> import dendropy
-    >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
-    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", schema="nexus")
-    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_stream(open("pythonidae.fasta"), "dnafasta")
-    >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
-    >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
+For example:
 
-Various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space. These are discussed :ref:`below <Customizing_Data_Creation_and_Reading>`.
+.. code-block:: python
+
+    import dendropy
+
+    tree1 = dendropy.Tree.get(path="mle.tre", schema="newick")
+    tree2 = dendropy.Tree.get(file=open("mle.nex", "r"), schema="nexus")
+    tree3 = dendropy.Tree.get(value="((A,B),(C,D));", schema="newick")
+    tree4 = dendropy.Tree.get(url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex", schema="nexus")
+
+    tree_list1 = dendropy.TreeList.get(path="pythonidae.mcmc.nex", schema="nexus")
+    tree_list2 = dendropy.TreeList.get(file=open("pythonidae.mcmc.nex", "r"), schema="nexus")
+    tree_list3 = dendropy.TreeList.get(value="(A,(B,C));((A,B),C);", "r"), schema="newick")
+
+    dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.fasta"), schema="fasta")
+    dna2 = dendropy.DnaCharacterMatrix.get(url="http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus", schema="nexus")
+    aa1 = dendropy.ProteinCharacterMatrix.get(file=open("pythonidae.dat"), schema="phylip")
+    std1 = dendropy.StandardCharacterMatrix.get(path="python_morph.nex", schema="nexus")
+    std2 = dendropy.StandardCharacterMatrix.get(value=">t1\n01011\n\n>t2\n11100", schema="fasta")
+
+    dataset1 = dendropy.DataSet.get(path="pythonidae.chars_and_trees.nex", schema="nexus")
+    dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
+
+The "|get|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
+Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
+
+
+.. note::
+
+    These classes also support a "|get_from_methods|" family of factory
+    class-methods that can be seen as specializations of the "|get|" method for
+    various types of sources (in fact, the "|get|" method is actually a
+    dispatcher that calls on one of these methods below for implementation of the functionality):
+
+        :meth:`get_from_stream(src, schema, \*\*kwargs)`
+            Takes a file or file-like object opened for reading the data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+
+        :meth:`get_from_path(src, schema, \*\*kwargs)`
+            Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
+            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+
+        :meth:`get_from_string(src, schema, \*\*kwargs)`
+            Takes a string containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
+            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+
+        :meth:`get_from_url(src, schema, \*\*kwargs)`
+            Takes a string containing the URL of the data as the first argument, and a string specifying the :term:`schema` as the second.
+            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+
+    As with the "|get|" method, the additional keywords are specific to the given class or schema type.
 
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
