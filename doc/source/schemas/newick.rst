@@ -9,7 +9,7 @@ NEWICK
 Reading
 =======
 
-.. _schema_specific_keyword_arguments_reading_newick:
+.. _Schema_specific_keyword_arguments_reading_newick:
 
 Supported Methods
 -----------------

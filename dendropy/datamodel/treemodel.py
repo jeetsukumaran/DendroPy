@@ -183,7 +183,7 @@ class Bipartition(object):
 
         Returns
         -------
-        b : bool
+        bool
             `True` if ``m1`` is compatible with ``m2``. `False` otherwise.
         """
         if fill_bitmask != 0:
@@ -320,7 +320,7 @@ class Bipartition(object):
 
         Returns
         -------
-        s : str
+        str
             The bitstring representing the bipartition.
 
         Example
@@ -354,7 +354,7 @@ class Bipartition(object):
 
         Returns
         -------
-        s : str
+        str
             The bitstring representing the bipartition.
 
         Example
@@ -452,7 +452,7 @@ class Bipartition(object):
 
         Returns
         -------
-        bitmask : integer
+        integer
             The bipartition bitmask.
         """
         assert self.is_mutable, "Bipartition instance is not mutable"
@@ -533,7 +533,7 @@ class Bipartition(object):
 
         Returns
         -------
-        b : bool
+        bool
             `True` if ``other`` is compatible with ``self``; `False` otherwise.
         """
         m1 = self._split_bitmask
@@ -554,7 +554,7 @@ class Bipartition(object):
 
         Returns
         -------
-        b : bool
+        bool
             `True` if ``other`` conflicts with ``self``; `False` otherwise.
         """
         return not self.is_compatible_with(other)
@@ -571,7 +571,7 @@ class Bipartition(object):
 
         Returns
         -------
-        b : bool
+        bool
             `True` if the the bipartition is "contained" within ``other``
         """
         if self._is_rooted:
@@ -596,7 +596,7 @@ class Bipartition(object):
 
         Returns
         -------
-        b : bool
+        bool
             `True` if the leafset of ``self`` is contained in ``other``.
         """
         if isinstance(other, int):
@@ -610,7 +610,7 @@ class Bipartition(object):
         """
         Returns
         -------
-        b : bool
+        bool
             `True` if this bipartition divides a leaf and the rest of the
             tree.
         """
@@ -639,7 +639,7 @@ class Bipartition(object):
 
         Returns
         -------
-        s : string
+        string
             NEWICK representation of split specified by ``bitmask``.
         """
         return taxon_namespace.bitmask_as_newick_string(
@@ -669,7 +669,7 @@ class Bipartition(object):
 
         Returns
         -------
-        s : string
+        string
             NEWICK representation of split specified by ``bitmask``.
         """
         return taxon_namespace.bitmask_as_newick_string(
@@ -692,7 +692,7 @@ class Bipartition(object):
 
         Returns
         -------
-        taxa : :py``list`` [|Taxon|]
+        :py:class:`list` [|Taxon|]
             List of |Taxon| objects specified or spanned by
             ``bitmask``.
         """
@@ -1049,7 +1049,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes of the subtree rooted at this node in
             pre-order sequence.
         """
@@ -1084,7 +1084,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in pre-order sequence.
         """
@@ -1117,7 +1117,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -1178,7 +1178,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -1212,7 +1212,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes of the subtree rooted at this node in
             level-order sequence.
         """
@@ -1254,7 +1254,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes of the subtree rooted at this node in
             infix or in-order sequence.
         """
@@ -1289,7 +1289,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding leaf nodes of the subtree rooted at this node.
         """
         if filter_fn:
@@ -1313,7 +1313,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes that have this node as a parent.
         """
         for node in self._child_nodes:
@@ -1334,7 +1334,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding edges that have this edge as a parent.
         """
         for node in self._child_nodes:
@@ -1364,7 +1364,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             Iterator over all predecessor/ancestor nodes of this node.
         """
         if inclusive and (filter_fn is None or filter_fn(self)):
@@ -1406,7 +1406,7 @@ class Node(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
         """
@@ -1592,7 +1592,7 @@ class Node(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             The node that was added.
         """
         assert node is not self, "Cannot add node as child of itself"
@@ -1620,7 +1620,7 @@ class Node(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             The node that was added.
         """
         node._parent_node = self
@@ -1647,7 +1647,7 @@ class Node(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
@@ -1670,7 +1670,7 @@ class Node(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
@@ -1700,7 +1700,7 @@ class Node(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             The node removed.
         """
         if not node:
@@ -1987,7 +1987,7 @@ class Node(
 
         Returns
         -------
-        leafness : boolean
+        boolean
             `True` if the node is a leaf, i.e., has no child nodes. `False`
             otherwise.
         """
@@ -1999,7 +1999,7 @@ class Node(
 
         Returns
         -------
-        internalness : boolean
+        boolean
             `True` if the node is not a leaf. `False` otherwise.
         """
         return bool(self._child_nodes)
@@ -2016,7 +2016,7 @@ class Node(
 
         Returns
         -------
-        leaves : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
            A ``list`` of |Node| objects descended from this node
            (inclusive of ``self``) that are the leaves.
         """
@@ -2029,7 +2029,7 @@ class Node(
 
         Returns
         -------
-        n : int
+        int
             Number of children in ``self``.
         """
         return len(self._child_nodes)
@@ -2046,7 +2046,7 @@ class Node(
 
         Returns
         -------
-        children : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
            A ``list`` of |Node| objects that have ``self`` as a parent.
         """
         return list(self._child_nodes)
@@ -2063,7 +2063,7 @@ class Node(
 
         Returns
         -------
-        children : :py``list`` [|Edge|]
+        :py:class:`list` [|Edge|]
            A ``list`` of |Edge| objects that have ``self`` as a tail node.
         """
         return list(ch.edge for ch in self._child_nodes)
@@ -2074,7 +2074,7 @@ class Node(
 
         Returns
         -------
-        edges : :py``list`` [|Edge|]
+        :py:class:`list` [|Edge|]
             A list of edges linking to this node, with outgoing edges (edges
             connecting to child nodes) followed by the edge connecting
             this node to its parent.
@@ -2093,7 +2093,7 @@ class Node(
 
         Returns
         -------
-        nodes : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
             A list with all child nodes and parent node of this node.
         """
         n = [c for c in self._child_nodes]
@@ -2111,7 +2111,7 @@ class Node(
 
         Returns
         -------
-        siblings : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
             A list of all nodes descended from the same parent as ``self``,
             excluding ``self``.
         """
@@ -2134,7 +2134,7 @@ class Node(
 
         Returns
         -------
-        level : integer
+        integer
             The number of nodes between ``self`` and the seed node of the tree,
             or 0 if ``self`` has no parent.
         """
@@ -2149,7 +2149,7 @@ class Node(
 
         Returns
         -------
-        dist : numeric
+        numeric
             Total weight of all edges connecting ``self`` with the root of the
             tree.
         """
@@ -2193,7 +2193,7 @@ class Node(
 
         Returns
         -------
-        dist : numeric
+        numeric
             Maximum weight of edges connecting ``self`` to tip.
         """
         if not self._child_nodes:
@@ -2473,7 +2473,7 @@ class Tree(
 
         Returns
         -------
-        tree : |Tree| or `None`
+        |Tree| or `None`
             The |Tree| object corresponding to the tree in the data
             source, or `None` if no valid tree description was found.
 
@@ -2599,7 +2599,7 @@ class Tree(
 
         Returns
         -------
-        t : |Tree|
+        |Tree|
             The tree reconstructed from the given bipartition encoding.
         """
         split_bitmasks = [b.split_bitmask for b in bipartition_encoding]
@@ -2648,7 +2648,7 @@ class Tree(
             lengths.
         Returns
         -------
-        t : |Tree|
+        |Tree|
             The tree reconstructed from the given bipartition encoding.
         """
         leaf_to_root_search = True
@@ -2747,7 +2747,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node|
+        |Node|
             A new |Node| object.
 
         """
@@ -3129,7 +3129,7 @@ class Tree(
 
         Returns
         -------
-        nodes : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
             List of |Node| objects in the tree.
         """
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
@@ -3141,7 +3141,7 @@ class Tree(
 
         Returns
         -------
-        nodes : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
             List of leaf |Node| objects in ``self``.
         """
         return [leaf for leaf in self.leaf_node_iter()]
@@ -3160,7 +3160,7 @@ class Tree(
 
         Returns
         -------
-        nodes : :py``list`` [|Node|]
+        :py:class:`list` [|Node|]
             List of internal |Node| objects in ``self``.
         """
         return [nd for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
@@ -3179,7 +3179,7 @@ class Tree(
 
         Returns
         -------
-        edges : :py``list`` [|Edge|]
+        :py:class:`list` [|Edge|]
             List of |Edge| objects in ``self``.
         """
         edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
@@ -3191,7 +3191,7 @@ class Tree(
 
         Returns
         -------
-        edges : :py``list`` [|Edge|]
+        :py:class:`list` [|Edge|]
             List of leaf |Edge| objects in ``self``.
         """
         return [leaf.edge for leaf in self.leaf_node_iter()]
@@ -3208,7 +3208,7 @@ class Tree(
 
         Returns
         -------
-        edges : :py``list`` [|Edge|]
+        :py:class:`list` [|Edge|]
             List of internal |Edge| objects in ``self``.
         """
         return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_edge)]
@@ -3239,7 +3239,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             Returns first |Node| object for which the filter function
             ``filter_fn`` returns `True`, or `None` if no such node exists on
             this tree.
@@ -3259,7 +3259,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             Returns first |Node| object with ``label`` attribute having value
             given in ``label``, or `None` if no such node is found.
 
@@ -3281,7 +3281,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             Returns first |Node| object with ``taxon`` attribute referencing same
             object as ``taxon`` argument, or `None` if no such node exists.
         """
@@ -3307,7 +3307,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             Returns first |Node| object with ``taxon`` attribute passing filter
             function ``taxon_filter_fn``, or `None` if no such node is found.
         """
@@ -3328,7 +3328,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             Returns first |Node| object with ``taxon`` attribute having label
             ``label``, or`None` if no such node is found.
 
@@ -3385,7 +3385,7 @@ class Tree(
 
         Returns
         -------
-        node : |Node| or `None`
+        |Node| or `None`
             The most-recent common ancestor of the nodes specified, or `None`
             if no such node exists.
         """
@@ -3458,7 +3458,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -3483,7 +3483,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes in ``self`` in pre-order sequence.
         """
         return self.seed_node.preorder_iter(filter_fn=filter_fn)
@@ -3512,7 +3512,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the internal nodes of ``self``.
         """
         return self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn,
@@ -3537,7 +3537,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the nodes in ``self`` in post-order sequence.
         """
         return self.seed_node.postorder_iter(filter_fn=filter_fn)
@@ -3566,7 +3566,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding the internal nodes of ``self`` in post-order
             sequence.
         """
@@ -3592,7 +3592,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes of ``self`` in level-order sequence.
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
@@ -3625,7 +3625,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes of ``self`` in infix or in-order sequence.
         """
         return self.seed_node.inorder_iter(filter_fn=filter_fn)
@@ -3648,7 +3648,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding leaf nodes in ``self``.
         """
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
@@ -3692,7 +3692,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             Iterator over age-ordered sequence of nodes of ``self``.
         """
         if self.seed_node.age is None:
@@ -3804,7 +3804,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Node|]
+        :py:class:`collections.Iterator` [|Node|]
             An iterator yielding nodes in ``self`` in pre-order sequence.
         """
         # NOTE: from-scratch implementation here instead of wrapping
@@ -3840,7 +3840,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding the internal edges of ``self``.
         """
         # NOTE: from-scratch implementation here instead of wrapping
@@ -3875,7 +3875,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding the edges in ``self`` in post-order sequence.
 
         """
@@ -3931,7 +3931,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding the internal edges of ``self`` in post-order
             sequence.
         """
@@ -3966,7 +3966,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding edges of ``self`` in level-order sequence.
         """
         if filter_fn is not None:
@@ -4004,7 +4004,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding edges of ``self`` in infix or in-order sequence.
         """
         if filter_fn is not None:
@@ -4032,7 +4032,7 @@ class Tree(
 
         Returns
         -------
-        itor : :py`collections.Iterator` [|Edge|]
+        :py:class:`collections.Iterator` [|Edge|]
             An iterator yielding leaf edges in ``self``.
         """
         if filter_fn is not None:
@@ -4092,7 +4092,7 @@ class Tree(
 
         Returns
         -------
-        taxa : set[|Taxon|]
+        set[|Taxon|]
             Set of taxa associated with ``self``.
         """
         if taxa is None:
@@ -4995,7 +4995,7 @@ class Tree(
 
         Returns
         -------
-        b : list[|Bipartition|] or `None`
+        list[|Bipartition|] or `None`
             A list of |Bipartition| objects of this |Tree|
             representing the structure of this tree, or, if ``suppress_storage``
             is `True`, then `None`.
