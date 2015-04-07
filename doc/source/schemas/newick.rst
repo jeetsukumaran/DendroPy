@@ -14,8 +14,8 @@ Reading
 Supported Methods
 -----------------
 
-:meth:`dendropy.datamodel.treemodel.Tree.get`
-.............................................
+:meth:`Tree.get <dendropy.datamodel.treemodel.Tree.get>`
+........................................................
 .. literalinclude:: /schemas/interfaces/newick_tree_get.py
 
 :meth:`dendropy.datamodel.treemodel.TreeList.get`

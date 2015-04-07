@@ -5,14 +5,13 @@ Trees -- :mod:`dendropy.datamodel.treemodel`
 .. module:: dendropy.datamodel.treemodel
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
 The :class:`Tree` Class
 =======================
 .. autoclass:: dendropy.datamodel.treemodel.Tree
     :members:
-    :inherited-members:
-    :exclude-members: get get_from_stream
+    :exclude-members: get,get_from_stream
 
 .. classmethod:: Tree.get(\*\*kwargs)
 
