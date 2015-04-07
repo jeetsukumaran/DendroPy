@@ -16,8 +16,6 @@ Description
 Reading
 =======
 
-.. _Schema_specific_keyword_arguments_reading_newick:
-
 Supported Methods
 -----------------
 
@@ -44,6 +42,8 @@ Supported Methods
 :meth:`DataSet.read <dendropy.datamodel.treemodel.DataSet.read>`
 ................................................................
 .. literalinclude:: /schemas/interfaces/newick_dataset_read.py
+
+.. _schema_specific_keyword_arguments_reading_newick:
 
 Schema-Specific Keyword Arguments
 ---------------------------------
