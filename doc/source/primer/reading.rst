@@ -50,7 +50,7 @@ For example:
     dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
 
 The "|get|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
-Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick|_ or |Nexus| data).
+Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
 
 
 .. note::
@@ -144,26 +144,14 @@ As with the "|get_from_methods|" methods, keyword arguments can be used to provi
 Specifying the Data Source Format
 ==================================
 
-All the "|get_from_methods|" and "|read_from_methods|" methods take a :term:`schema` specification string using the ``schema`` argument which specifies the format of the data source.
+All the "|get|", "|read|", "|get_from_methods|", and "|read_from_methods|" methods require that the a :term:`schema` of the source data be specified using the ``schema`` argument.
+This value passed to the ``schema`` argument is a string identifer (known as the *schema-specification string*), and should be one of the following pre-defined labels:
 
-The string can be one of the following:
-
-    "``nexus``"
-        To read |Tree|, |TreeList|, |CharacterMatrix|, or |DataSet| objects from a NEXUS-formatted source.
-
-    "``newick``"
-        To read |Tree|, |TreeList|, or |DataSet| objects from a Newick-formatted source.
-
-    "``fasta``"
-        To read |CharacterMatrix| or |DataSet| objects from a FASTA-formatted source. FASTA-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
-
-    "``phylip``"
-        To read |CharacterMatrix| or |DataSet| objects from a PHYLIP-formatted source.
-        You would typically use a specific |CharacterMatrix| class depending on the data type: e.g. |DnaCharacterMatrix|, |ContinuousCharacterMatrix| etc. If you use a more general class, e.g. |DataSet|, then for PHYLIP-sources you need to specify the additional keyword argument, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
-
-    "``beast-summary-tree``"
-        To read |Tree| or |TreeList| objects from a BEAST annotated consensus tree source.
-        Each node on the resulting tree(s) will have the following attributes: "``height``", "``height_median``", "``height_95hpd``", "``height_range``", "``length``", "``length_median``", "``length_95hpd``", "``length_range``", "``posterior'. Scalar values will be of ``float`` type, while ranges (e.g., "``height_95hpd``", "``height_range``", "``length_95hpd``", "``length_range``") will be two-element lists of ``float``.
+    - ":doc:`fasta </schemas/fasta>`"
+    - ":doc:`newick </schemas/newick>`"
+    - ":doc:`nexus </schemas/nexus>`"
+    - ":doc:`nexml </schemas/nexml>`"
+    - ":doc:`phylip </schemas/phylip>`"
 
 .. _Customizing_Data_Creation_and_Reading:
 
