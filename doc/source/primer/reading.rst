@@ -139,19 +139,6 @@ As with the "|get_from_methods|" methods, keyword arguments can be used to provi
             .
             x = dendropy.Tree.get_from_path("tree2.nex", "nexus")
 
-.. _Specifying_the_Data_Source_Format:
-
-Specifying the Data Source Format
-==================================
-
-All the "|get|", "|read|", "|get_from_methods|", and "|read_from_methods|" methods require that the a :term:`schema` of the source data be specified using the ``schema`` argument.
-This value passed to the ``schema`` argument is a string identifer (known as the *schema-specification string*), and should be one of the following pre-defined labels:
-
-    - ":doc:`fasta </schemas/fasta>`"
-    - ":doc:`newick </schemas/newick>`"
-    - ":doc:`nexus </schemas/nexus>`"
-    - ":doc:`nexml </schemas/nexml>`"
-    - ":doc:`phylip </schemas/phylip>`"
 
 .. _Customizing_Data_Creation_and_Reading:
 
@@ -165,66 +152,5 @@ source is parsed.
 
 Some of these keyword arguments apply generally, regardless of the format of
 the data source or the data object being created, while others are specific to
-the data object type or the data source format.
-
-All Schemas
-^^^^^^^^^^^
-
-    ``attached_taxon_namespace``
-        If |True| when reading into a |DataSet| object, then a new
-        |TaxonNamespace| object will be created and added to the
-        :attr:`~dendropy.datamodel.datasetmodel.DataSet.taxon_namespaces` list
-        of the |DataSet| object, and the |DataSet| object will be placed in
-        "attached" (or single) taxon set mode, i.e., all taxa in any data
-        sources parsed or read will be mapped to the same |TaxonNamespace|
-        object. By default, this is |False|, resulting in a multi-taxon set
-        mode |DataSet| object.
-
-    ``taxon_namespace``
-        If passed a |TaxonNamespace| object, then this |TaxonNamespace| will be
-        used to manage all taxon references in the data source.  When creating
-        a new |Tree|, |TreeList| or |CharacterMatrix| object from a data
-        source, the |TaxonNamespace| object passed by this keyword will be used
-        as the |TaxonNamespace| associated with the object.
-        When reading into a |DataSet| object, if the data source defines
-        multiple collections of taxa (as is possible with, for example, the
-        NEXML :term:`schema`, or the Mesquite variant of the NEXUS :term:`schema`), then
-        multiple new |TaxonNamespace| object will be created. By passing a
-        |TaxonNamespace| object through the ``taxon_namespace`` keyword, you
-        can force DendroPy to use the same |TaxonNamespace| object for all
-        taxon references.
-
-    ``exclude_trees``
-        If |True|, then all tree data in the data source will be skipped.
-        Default value is |False|, i.e., all tree data will be included.
-
-    ``exclude_chars``
-        If |True|, then all character data in the data source will be skipped.
-        Default value is |False|, i.e., all character data will be included.
-
-Schema-Specific
-^^^^^^^^^^^^^^^
-
-
-Newick
-......
-
-.. autodocstringonly:: dendropy.dataio.newickreader.NewickReader.__init__
-
-NEXUS
-.....
-
-.. autodocstringonly:: dendropy.dataio.nexusreader.NexusReader.__init__
-
-FASTA
-.....
-
-.. autodocstringonly:: dendropy.dataio.fastareader.FastaReader.__init__
-
-PHYLIP
-......
-
-
-BEAST Summary Trees
-...................
+the data object type, the data source format, or both.
 
