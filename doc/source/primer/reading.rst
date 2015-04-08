@@ -50,8 +50,8 @@ For example:
     dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
 
 The "|get|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
-Some are general to all classes (e.g., the "``label``" or "``taxon_namespace``" arguments), while others specific to the given class (e.g. the "``exclude_trees``" argument when instantiating data into a |DataSet| object).
-These are covered in the documentation of the individual methods:
+Some are general to all classes (e.g., the "``label``" or "``taxon_namespace``" arguments), while others specific to a given class (e.g. the "``exclude_trees``" argument when instantiating data into a |DataSet| object, or the "``tree_offset``" argument when instantiating data into a |Tree| or |TreeList| object).
+These are all covered in detail in the documentation of the respective methods for each class:
 
     -   :meth:`Tree.get <dendropy.datamodel.treemodel.Tree.get>`
     -   :meth:`TreeList.get <dendropy.datamodel.treemodel.TreeList.get>`
