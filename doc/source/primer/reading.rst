@@ -2,8 +2,8 @@
 Reading Phylogenetic Data
 *************************
 
-Creating and Populating New Objects
-===================================
+Creating New Objects From an External Data Source
+=================================================
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived (i.e., |DnaCharacterMatrix|,
 |ProteinCharacterMatrix|, |StandardCharacterMatrix|, etc.), and |DataSet|
@@ -50,8 +50,20 @@ For example:
     dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
 
 The "|get|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
-Some of these are specific to the given class (e.g. the "``edge_length_type``" argument when reading tree data into a |Tree|, |TreeList|, or |DataSet| object), while others are specific to the schema or format (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
+Some are general to all classes (e.g., the "``label``" or "``taxon_namespace``" arguments), while others specific to the given class (e.g. the "``exclude_trees``" argument when instantiating data into a |DataSet| object).
+These are covered in the documentation of the individual methods:
 
+    -   :meth:`Tree.get <dendropy.datamodel.treemodel.Tree.get>`
+    -   :meth:`TreeList.get <dendropy.datamodel.treemodel.TreeList.get>`
+    -   :meth:`DnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`
+    -   :meth:`RnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`
+    -   :meth:`ProteinCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`
+    -   :meth:`RestrictionSiteCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RestrictionSiteCharacterMatrix.get>`
+    -   :meth:`InfiniteSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`
+    -   :meth:`DataSet.get <dendropy.datamodel.treemodel.DataSet.get>`
+
+Other optional keyword arguments are :ref:`specific to the schema or format <Schema_Specific_Keyword_Arguments>` (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
+These are covered in detail in the :doc:`DendroPy Schema Guide </schemas/index>`.
 
 .. note::
 
@@ -83,8 +95,8 @@ Some of these are specific to the given class (e.g. the "``edge_length_type``" a
 
     As with the "|get|" method, the additional keyword arguments are specific to the given class or schema type.
 
-Reading and Populating (or Repopulating) Existing Objects
-=========================================================
+Adding Data to Existing Objects from an External Data Source
+============================================================
 
 In addition to the "|get_from_methods|" class factory methods, the collection classes (|TreeList|, |TreeArray| and |DataSet|) all support a suite of "|read_from_methods|" *instance* methods that *add* data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
 These "|read_from_methods|" instance methods have signatures that parallel the "|get_from_methods|" factory methods described above:
