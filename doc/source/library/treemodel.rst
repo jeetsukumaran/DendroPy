@@ -15,7 +15,7 @@ The :class:`Tree` Class
 
 .. classmethod:: Tree.get(\*\*kwargs)
 
-    Instantiate and return a *single* |Tree| object from a data source.
+    Instantiate and return a *new* |Tree| object from a data source.
 
     :Mandatory Source-Specification Keyword Arguments (one and exactly one of the following required):
 
@@ -33,19 +33,19 @@ The :class:`Tree` Class
         - **label** (*str*) -- Name or identifier to be assigned to the new |Tree|; if not given, will be assigned the one specified in the data source, or `None` otherwise.
         - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace| instance to use to :doc:`manage the taxon names </primer/taxa>`. If not specified, a new one will be created.
         - **collection_offset** (*int*) -- 0-based index of tree block or collection in source to be parsed. If not specified then the first collection (offset = 0) is assumed.
-        - **tree_offset** (*int*) -- 0-based index of tree within the collection specified by ``collection_offset`` to be parsed to be parsed. If not specified, then the first tree (offset = 0) is assumed.
+        - **tree_offset** (*int*) -- 0-based index of tree within the collection specified by ``collection_offset`` to be parsed. If not specified, then the first tree (offset = 0) is assumed.
 
     :Optional Schema-Specific Keyword Arguments:
 
-        -  These provide control over how the data is interpreted and processed, and supported argument names and values depend on the schema as specified by the value of passed to the "``schema``" argument:
+        -  These provide control over how the data is interpreted and processed, and supported argument names and values depend on the schema as specified by the value passed as the "``schema``" argument:
             -   :ref:`"newick" (Newick) <schema_specific_keyword_arguments_reading_newick>`
             -   :ref:`"nexus" (Nexus) <schema_specific_keyword_arguments_reading_nexus>`
             -   :ref:`"nexml" (NeXML) <schema_specific_keyword_arguments_reading_nexml>`
 
 
-.. classmethod:: Tree.put(\*\*kwargs)
+.. method:: Tree.put(\*\*kwargs)
 
-    Write out `self` to file.
+    Write out tree to file.
 
     :Mandatory Destimation-Specification Keyword Arguments (one and exactly one of the following required):
 
@@ -58,7 +58,7 @@ The :class:`Tree` Class
 
     :Optional Schema-Specific Keyword Arguments:
 
-        -  These provide control over how the data is formatted, and supported argument names and values depend on the schema as specified by the value of passed to the "``schema``" argument:
+        -  These provide control over how the data is formatted, and supported argument names and values depend on the schema as specified by the value passed as the "``schema``" argument:
             -   :ref:`"newick" (Newick) <schema_specific_keyword_arguments_writing_newick>`
             -   :ref:`"nexus" (Nexus) <schema_specific_keyword_arguments_writing_nexus>`
             -   :ref:`"nexml" (NeXML) <schema_specific_keyword_arguments_writing_nexml>`

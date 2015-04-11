@@ -272,29 +272,32 @@ class TreeList(
             # instantiate an empty tree
             tlst1 = TreeList()
 
-            # the canonical way to instantiate a TreeList from a data source
-            # is 'get_from_*' family of static factory methods
-            tlst2 = TreeList.get_from_stream(open('treefile.tre', 'rU'), "newick")
-            tlst3 = TreeList.get_from_path('sometrees.nexus', "nexus")
-            tlst4 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
+            # TreeList objects can be instantiated from an external data source
+            # using the 'get()' factory class method
+
+            tlst2 = TreeList.get(file=open('treefile.tre', 'rU'), schema="newick")
+            tlst3 = TreeList.get(path='sometrees.nexus', schema="nexus")
+            tlst4 = TreeList.get(value="((A,B),(C,D));((A,C),(B,D));", schema="newick")
 
             # can also call `read()` on a TreeList object; each read adds
             # (appends) the tree(s) found to the TreeList
             tlst5 = TreeList()
-            tlst5.read(open('boot1.tre', 'rU'), "newick")
-            tlst5.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
-            tlst5.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
-            tlst5.read_from_path("boot3.tre", "newick")
+            tlst5.read(file=open('boot1.tre', 'rU'), schema="newick")
+            tlst5.read(path="boot3.tre", schema="newick")
+            tlst5.read(value="((A,B),(C,D));((A,C),(B,D));", schema="newick")
 
             # populated from list of Tree objects
-            tlist6_1 = Tree.get_from_string("((A,B),(C,D))",
+            tlist6_1 = Tree.get(
+                    value="((A,B),(C,D))",
                     schema="newick")
-            tlist6_2 = Tree.get_from_string("((A,C),(B,D))",
+            tlist6_2 = Tree.get(
+                    value="((A,C),(B,D))",
                     schema="newick")
             tlist6 = TreeList([tlist5_1, tlist5_2])
 
             # passing keywords to underlying tree parser
-            tlst8 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));",
+            tlst8 = TreeList.get(
+                             value="((A,B),(C,D));((A,C),(B,D));",
                              schema="newick",
                              taxon_namespace=tlst3.taxon_namespace,
                              rooting="force-rooted",
@@ -307,17 +310,26 @@ class TreeList(
             # all the trees and then manually-extracting them later; just more
             # convenient
 
-            # skip the first 100 trees in the first collection of trees
-            trees = TreeList.get_from_path("mcmc.tre", "newick",
-                        collection_offset=0, tree_offset=100)
+            # skip the *first* 100 trees in the *first* (offset=0) collection of trees
+            trees = TreeList.get(
+                        path="mcmc.tre",
+                        schema="newick",
+                        collection_offset=0,
+                        tree_offset=100)
 
-            # get the last 10 trees in the first collection of trees
-            trees = TreeList.get_from_path("mcmc.tre", "newick",
-                        collection_offset=0, tree_offset=-10)
+            # get the *last* 10 trees in the *second* (offset=1) collection of trees
+            trees = TreeList.get(
+                        path="mcmc.tre",
+                        schema="newick",
+                        collection_offset=1,
+                        tree_offset=-10)
 
             # get the last 10 trees in the second-to-last collection of trees
-            trees = TreeList.get_from_path("mcmc.xml", "nexml",
-                        collection_offset=-2, tree_offset=-10)
+            trees = TreeList.get(
+                        path="mcmc.tre",
+                        schema="newick",
+                        collection_offset=-2,
+                        tree_offset=100)
 
             # Slices give shallow-copy: trees are references
             tlst4copy0a = t4[:]

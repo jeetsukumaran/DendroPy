@@ -2785,105 +2785,105 @@ class Tree(
 
         Tree objects can be instantiated in the following ways::
 
-                # /usr/bin/env python
+            # /usr/bin/env python
 
-                try:
-                    from StringIO import StringIO
-                except ImportError:
-                    from io import StringIO
-                from dendropy import Tree, TaxonNamespace
+            try:
+                from StringIO import StringIO
+            except ImportError:
+                from io import StringIO
+            from dendropy import Tree, TaxonNamespace
 
-                # empty tree
-                t1 = Tree()
+            # empty tree
+            t1 = Tree()
 
-                # Tree objects can be instantiated from an external data source
-                # using the 'get()' factory class method
+            # Tree objects can be instantiated from an external data source
+            # using the 'get()' factory class method
 
-                # From a file-like object
-                t2 = Tree.get(file=open('treefile.tre', 'rU'),
-                              schema="newick",
-                              tree_offset=0)
+            # From a file-like object
+            t2 = Tree.get(file=open('treefile.tre', 'rU'),
+                            schema="newick",
+                            tree_offset=0)
 
-                # From a path
-                t3 = Tree.get(path='sometrees.nexus',
-                        schema="nexus",
-                        collection_offset=2,
-                        tree_offset=1)
+            # From a path
+            t3 = Tree.get(path='sometrees.nexus',
+                    schema="nexus",
+                    collection_offset=2,
+                    tree_offset=1)
 
-                # From a string
-                s = "((A,B),(C,D));((A,C),(B,D));"
-                # tree will be '((A,B),(C,D))'
-                t4 = Tree.get(value=s,
-                        schema="newick")
-                # tree will be '((A,C),(B,D))'
-                t5 = Tree.get(value=s,
-                        schema="newick",
-                        tree_offset=1)
-                # passing keywords to underlying tree parser
-                t7 = dendropy.Tree.get(
-                        value="((A,B),(C,D));",
-                        schema="newick",
-                        taxon_namespace=t3.taxon_namespace,
-                        suppress_internal_node_taxa=False,
-                        preserve_underscores=True)
+            # From a string
+            s = "((A,B),(C,D));((A,C),(B,D));"
+            # tree will be '((A,B),(C,D))'
+            t4 = Tree.get(value=s,
+                    schema="newick")
+            # tree will be '((A,C),(B,D))'
+            t5 = Tree.get(value=s,
+                    schema="newick",
+                    tree_offset=1)
+            # passing keywords to underlying tree parser
+            t7 = dendropy.Tree.get(
+                    value="((A,B),(C,D));",
+                    schema="newick",
+                    taxon_namespace=t3.taxon_namespace,
+                    suppress_internal_node_taxa=False,
+                    preserve_underscores=True)
 
-                # Tree objects can be written out using the 'put()' method.
-                t1.put(file=open('treefile.tre', 'rU'),
-                        schema="newick")
-                t1.put(path='treefile.nex',
-                        schema="nexus")
+            # Tree objects can be written out using the 'put()' method.
+            t1.put(file=open('treefile.tre', 'rU'),
+                    schema="newick")
+            t1.put(path='treefile.nex',
+                    schema="nexus")
 
-                # Or returned as a string using the 'as_string()' method.
-                s = t1.as_string("nexml")
+            # Or returned as a string using the 'as_string()' method.
+            s = t1.as_string("nexml")
 
-                # tree structure deep-copied from another tree
-                t8 = dendropy.Tree(t7)
-                assert t8 is not t7                             # Trees are distinct
-                assert t8.symmetric_difference(t7) == 0         # and structure is identical
-                assert t8.taxon_namespace is t7.taxon_namespace             # BUT taxa are not cloned.
-                nds3 = [nd for nd in t7.postorder_node_iter()]  # Nodes in the two trees
-                nds4 = [nd for nd in t8.postorder_node_iter()]  # are distinct objects,
-                for i, n in enumerate(nds3):                    # and can be manipulated
-                    assert nds3[i] is not nds4[i]               # independentally.
-                egs3 = [eg for eg in t7.postorder_edge_iter()]  # Edges in the two trees
-                egs4 = [eg for eg in t8.postorder_edge_iter()]  # are also distinct objects,
-                for i, e in enumerate(egs3):                    # and can also be manipulated
-                    assert egs3[i] is not egs4[i]               # independentally.
-                lves7 = t7.leaf_nodes()                         # Leaf nodes in the two trees
-                lves8 = t8.leaf_nodes()                         # are also distinct objects,
-                for i, lf in enumerate(lves3):                  # but order is the same,
-                    assert lves7[i] is not lves8[i]             # and associated Taxon objects
-                    assert lves7[i].taxon is lves8[i].taxon     # are the same.
+            # tree structure deep-copied from another tree
+            t8 = dendropy.Tree(t7)
+            assert t8 is not t7                             # Trees are distinct
+            assert t8.symmetric_difference(t7) == 0         # and structure is identical
+            assert t8.taxon_namespace is t7.taxon_namespace             # BUT taxa are not cloned.
+            nds3 = [nd for nd in t7.postorder_node_iter()]  # Nodes in the two trees
+            nds4 = [nd for nd in t8.postorder_node_iter()]  # are distinct objects,
+            for i, n in enumerate(nds3):                    # and can be manipulated
+                assert nds3[i] is not nds4[i]               # independentally.
+            egs3 = [eg for eg in t7.postorder_edge_iter()]  # Edges in the two trees
+            egs4 = [eg for eg in t8.postorder_edge_iter()]  # are also distinct objects,
+            for i, e in enumerate(egs3):                    # and can also be manipulated
+                assert egs3[i] is not egs4[i]               # independentally.
+            lves7 = t7.leaf_nodes()                         # Leaf nodes in the two trees
+            lves8 = t8.leaf_nodes()                         # are also distinct objects,
+            for i, lf in enumerate(lves3):                  # but order is the same,
+                assert lves7[i] is not lves8[i]             # and associated Taxon objects
+                assert lves7[i].taxon is lves8[i].taxon     # are the same.
 
-                # To create deep copy of a tree with a different taxon namespace,
-                # Use 'copy.deepcopy()'
-                t9 = copy.deepcopy(t7)
+            # To create deep copy of a tree with a different taxon namespace,
+            # Use 'copy.deepcopy()'
+            t9 = copy.deepcopy(t7)
 
-                # Or explicitly pass in a new TaxonNamespace instance
-                taxa = TaxonNamespace()
-                t9 = dendropy.Tree(t7, taxon_namespace=taxa)
-                assert t9 is not t7                             # As above, the trees are distinct
-                assert t9.symmetric_difference(t7) == 0         # and the structures are identical,
-                assert t9.taxon_namespace is not t7.taxon_namespace         # but this time, the taxa *are* different
-                assert t9.taxon_namespace is taxa                     # as the given TaxonNamespace is used instead.
-                lves3 = t7.leaf_nodes()                         # Leaf nodes (and, for that matter other nodes
-                lves5 = t9.leaf_nodes()                         # as well as edges) are also distinct objects
-                for i, lf in enumerate(lves3):                  # and the order is the same, as above,
-                    assert lves7[i] is not lves9[i]             # but this time the associated Taxon
-                    assert lves7[i].taxon is not lves9[i].taxon # objects are distinct though the taxon
-                    assert lves7[i].taxon.label == lves9[i].taxon.label # labels are the same.
+            # Or explicitly pass in a new TaxonNamespace instance
+            taxa = TaxonNamespace()
+            t9 = dendropy.Tree(t7, taxon_namespace=taxa)
+            assert t9 is not t7                             # As above, the trees are distinct
+            assert t9.symmetric_difference(t7) == 0         # and the structures are identical,
+            assert t9.taxon_namespace is not t7.taxon_namespace         # but this time, the taxa *are* different
+            assert t9.taxon_namespace is taxa                     # as the given TaxonNamespace is used instead.
+            lves3 = t7.leaf_nodes()                         # Leaf nodes (and, for that matter other nodes
+            lves5 = t9.leaf_nodes()                         # as well as edges) are also distinct objects
+            for i, lf in enumerate(lves3):                  # and the order is the same, as above,
+                assert lves7[i] is not lves9[i]             # but this time the associated Taxon
+                assert lves7[i].taxon is not lves9[i].taxon # objects are distinct though the taxon
+                assert lves7[i].taxon.label == lves9[i].taxon.label # labels are the same.
 
-                # to 'switch out' the TaxonNamespace of a tree, replace the reference and
-                # reindex the taxa:
-                t11 = Tree.get(value='((A,B),(C,D));', 'newick')
-                taxa = TaxonNamespace()
-                t11.taxon_namespace = taxa
-                t11.reindex_subcomponent_taxa()
+            # to 'switch out' the TaxonNamespace of a tree, replace the reference and
+            # reindex the taxa:
+            t11 = Tree.get(value='((A,B),(C,D));', 'newick')
+            taxa = TaxonNamespace()
+            t11.taxon_namespace = taxa
+            t11.reindex_subcomponent_taxa()
 
-                # You can also explicitly pass in a seed node:
-                seed = Node(label="root")
-                t12 = Tree(seed_node=seed)
-                assert t12.seed_node is seed
+            # You can also explicitly pass in a seed node:
+            seed = Node(label="root")
+            t12 = Tree(seed_node=seed)
+            assert t12.seed_node is seed
 
         """
         if len(args) > 1:
