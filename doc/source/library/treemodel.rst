@@ -11,7 +11,7 @@ The :class:`Tree` Class
 =======================
 .. autoclass:: dendropy.datamodel.treemodel.Tree
     :members:
-    :exclude-members: get,get_from_stream
+    :exclude-members: get,put
 
 .. classmethod:: Tree.get(\*\*kwargs)
 
@@ -42,18 +42,27 @@ The :class:`Tree` Class
             -   :ref:`"nexus" (Nexus) <schema_specific_keyword_arguments_reading_nexus>`
             -   :ref:`"nexml" (NeXML) <schema_specific_keyword_arguments_reading_nexml>`
 
-.. classmethod:: Tree.get_from_stream(src, schema, label=None, taxon_namespace=None, collection_offset=None, tree_offset=None, \*\*kwargs,)
 
-    Instantiate and return a *single* |Tree| object from a file opened for
-    reading given by ``src``.
+.. classmethod:: Tree.put(\*\*kwargs)
 
-    :Parameters:    - **src** (*file* or *str*) -- File-like object (``get_from_stream``), path to file (``get_from_path``), or string (``get_from_string``) with :term:`tree` data.
-                    - **schema** (*str*) -- Identifier of format of data given in ``src``.
-                    - **label** (*str*) -- Name or identifier to be assigned to the new |Tree|; if not given, will be assigned the one specified in the data source, or `None` otherwise.
-                    - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace| instance to use to :doc:`manage the taxon names </primer/taxa>`. If not specified, a new one will be created.
-                    - **collection_offset** (*int*) -- 0-based index of tree block or collection in source to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
-                    - **tree_offset** (*int*) -- 0-based index of tree within the collection specified by ``collection_offset`` to be parsed to be parsed. If ``tree_offset`` is specified, then ``collection_offset`` must be also be specified. If neither is specified, then the first tree given in the source will be selected.
-                    - **\*\*kwargs** -- schema-specific keyword arguments. These provide control over how the data is interpreted and processed, depending on the schemas used.
+    Write out `self` to file.
+
+    :Mandatory Destimation-Specification Keyword Arguments (one and exactly one of the following required):
+
+        - **file** (*file*) -- File or file-like object opened for writing.
+        - **path** (*str*) -- Path to file to which to write.
+
+    :Mandatory Schema-Specification Keyword Argument:
+
+        - **schema** (*str*) -- Identifier of format of data given by the "``file``", "``path``", "``value``", or "``url``" argument specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`".
+
+    :Optional Schema-Specific Keyword Arguments:
+
+        -  These provide control over how the data is formatted, and supported argument names and values depend on the schema as specified by the value of passed to the "``schema``" argument:
+            -   :ref:`"newick" (Newick) <schema_specific_keyword_arguments_writing_newick>`
+            -   :ref:`"nexus" (Nexus) <schema_specific_keyword_arguments_writing_nexus>`
+            -   :ref:`"nexml" (NeXML) <schema_specific_keyword_arguments_writing_nexml>`
+
 
 The :class:`Node` Class
 =======================

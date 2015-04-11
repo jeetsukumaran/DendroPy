@@ -2796,8 +2796,8 @@ class Tree(
                 # empty tree
                 t1 = Tree()
 
-                # The canonical way to instantiate a Tree from a data source
-                # is the use the 'get()' factory class methods
+                # Tree objects can be instantiated from an external data source
+                # using the 'get()' factory class method
 
                 # From a file-like object
                 t2 = Tree.get(file=open('treefile.tre', 'rU'),
@@ -2826,6 +2826,15 @@ class Tree(
                         taxon_namespace=t3.taxon_namespace,
                         suppress_internal_node_taxa=False,
                         preserve_underscores=True)
+
+                # Tree objects can be written out using the 'put()' method.
+                t1.put(file=open('treefile.tre', 'rU'),
+                        schema="newick")
+                t1.put(path='treefile.nex',
+                        schema="nexus")
+
+                # Or returned as a string using the 'as_string()' method.
+                s = t1.as_string("nexml")
 
                 # tree structure deep-copied from another tree
                 t8 = dendropy.Tree(t7)
