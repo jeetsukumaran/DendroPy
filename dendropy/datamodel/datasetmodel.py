@@ -149,9 +149,10 @@ class DataSet(
 
             - **schema** (*str*) -- Identifier of format of data given by the
               "``file``", "``path``", "``value``", or "``url``" argument
-              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
-              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
-              "|Schemas|" for more details.
+              specified above: ":doc:`fasta </schemas/fasta>`", ":doc:`newick
+              </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", or
+              ":doc:`nexml </schemas/nexml>`", ":doc:`phylip
+              </schemas/phylip>`", etc. See "|Schemas|" for more details.
 
         **Optional General Keyword Arguments:**
 
@@ -159,6 +160,9 @@ class DataSet(
               source will be skipped.
             - **exclude_chars** (*bool*) -- If ``True``, then all character
               data in the data source will be skipped.
+            - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
+              instance to use to :doc:`manage the taxon names </primer/taxa>`.
+              If not specified, a new one will be created.
 
         **Optional Schema-Specific Keyword Arguments:**
 
@@ -290,6 +294,12 @@ class DataSet(
               source will be skipped.
             - **exclude_chars** (*bool*) -- If ``True``, then all character
               data in the data source will be skipped.
+            - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
+              instance to use to :doc:`manage the taxon names </primer/taxa>`.
+              If not specified, a new one will be created unless the DataSet
+              object is in attached taxon namespace mode
+              (``self.attached_taxon_namespace`` is not ``None`` but assigned
+              to a specific |TaxonNamespace| instance).
 
         **Optional Schema-Specific Keyword Arguments:**
 

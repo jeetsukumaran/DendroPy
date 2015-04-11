@@ -275,6 +275,7 @@ rst_prolog = """
 .. |GenBank| replace:: GenBank
 .. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
 
+.. |Schemas| replace:: :doc:`/schemas/index`
 .. |FASTA| replace:: :doc:`/schemas/fasta`
 .. |Newick| replace:: :doc:`/schemas/newick`
 .. |Nexus| replace:: :doc:`/schemas/nexus`

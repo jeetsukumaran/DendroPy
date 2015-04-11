@@ -554,9 +554,10 @@ class CharacterMatrix(
 
             - **schema** (*str*) -- Identifier of format of data given by the
               "``file``", "``path``", "``value``", or "``url``" argument
-              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
-              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
-              "|Schemas|" for more details.
+              specified above: ":doc:`fasta </schemas/fasta>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`",
+              ":doc:`phylip </schemas/phylip>`", etc.
+              See "|Schemas|" for more details.
 
         **Optional General Keyword Arguments:**
 
