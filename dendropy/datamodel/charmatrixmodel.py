@@ -538,6 +538,48 @@ class CharacterMatrix(
         return char_matrix
     _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
+    @classmethod
+    def get(cls, **kwargs):
+        """
+        Instantiate and return a *new* character matrix object from a data source.
+
+        **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
+
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **label** (*str*) -- Name or identifier to be assigned to the new
+              object; if not given, will be assigned the one specified in the
+              data source, or `None` otherwise.
+            - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
+              instance to use to :doc:`manage the taxon names </primer/taxa>`.
+              If not specified, a new one will be created.
+            - **matrix_offset** (*int*) -- 0-based index of character block or
+              matrix in source to be parsed. If not specified then the
+              first matrix (offset = 0) is assumed.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
+        """
+        return cls._get_from(**kwargs)
+
     def concatenate(cls, char_matrices):
         """
         Creates and returns a single character matrix from multiple

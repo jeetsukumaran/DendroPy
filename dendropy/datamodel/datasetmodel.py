@@ -133,6 +133,43 @@ class DataSet(
         return dataset
     _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
+    @classmethod
+    def get(cls, **kwargs):
+        """
+        Instantiate and return a *new* |TreeList| object from a data source.
+
+        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
+
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **exclude_trees** (*bool*) -- If ``True``, then all tree data in the data
+              source will be skipped.
+            - **exclude_chars** (*bool*) -- If ``True``, then all character
+              data in the data source will be skipped.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
+        """
+        return cls._get_from(**kwargs)
+
     ###########################################################################
     ### Lifecycle and Identity
 
@@ -227,6 +264,42 @@ class DataSet(
         return (n_tns2-n_tns,
                 n_tree_lists2-n_tree_lists,
                 n_char_matrices2-n_char_matrices)
+
+    def read(self, **kwargs):
+        """
+        Add data to ``self`` from data source.
+
+        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
+
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **exclude_trees** (*bool*) -- If ``True``, then all tree data in the data
+              source will be skipped.
+            - **exclude_chars** (*bool*) -- If ``True``, then all character
+              data in the data source will be skipped.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
+        """
+        return basemodel.MultiReadable._read_from(self, **kwargs)
 
     def _format_and_write_to_stream(self,
             stream,
