@@ -157,9 +157,9 @@ class CharacterTestChecker(object):
             check_sequence_annotations=True,
             check_column_annotations=True,
             check_cell_annotations=True):
-        char_matrix = matrix_type.get_from_path(
-                src_filepath,
-                schema,
+        char_matrix = matrix_type.get(
+                path=src_filepath,
+                schema=schema,
                 **factory_kwargs)
         self.verify_char_matrix(char_matrix,
             check_taxon_annotations=check_taxon_annotations,
