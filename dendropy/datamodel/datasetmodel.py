@@ -228,7 +228,7 @@ class DataSet(
                 n_tree_lists2-n_tree_lists,
                 n_char_matrices2-n_char_matrices)
 
-    def _write(self,
+    def _format_and_write_to_stream(self,
             stream,
             schema,
             exclude_trees=False,

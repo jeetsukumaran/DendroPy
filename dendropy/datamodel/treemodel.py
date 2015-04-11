@@ -2517,7 +2517,7 @@ class Tree(
         """
         Instantiate and return a *new* |Tree| object from a data source.
 
-        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
+        **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
@@ -2872,10 +2872,10 @@ class Tree(
                     suppress_internal_node_taxa=False,
                     preserve_underscores=True)
 
-            # Tree objects can be written out using the 'put()' method.
-            t1.put(file=open('treefile.tre', 'rU'),
+            # Tree objects can be written out using the 'write()' method.
+            t1.write(file=open('treefile.tre', 'rU'),
                     schema="newick")
-            t1.put(path='treefile.nex',
+            t1.write(path='treefile.nex',
                     schema="nexus")
 
             # Or returned as a string using the 'as_string()' method.
@@ -3139,7 +3139,7 @@ class Tree(
     #         raise ValueError("Invalid tree source specification")
     #     self.__dict__ = tree.__dict__
 
-    def _write(self, stream, schema, **kwargs):
+    def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.

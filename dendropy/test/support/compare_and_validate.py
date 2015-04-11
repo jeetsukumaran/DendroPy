@@ -32,12 +32,12 @@ class ValidateWriteable(object):
             kwargs):
         self.maxDiff = None
         sio = StringIO()
-        writeable.write_to_stream(sio, schema, **kwargs)
+        writeable.write(stream=sio, schema=schema, **kwargs)
         s0 = sio.getvalue()
-        s1 = writeable.as_string(schema, **kwargs)
+        s1 = writeable.as_string(schema=schema, **kwargs)
         self.assertEqual(s0, s1)
         with pathmap.SandboxedFile() as tempf:
-            writeable.write_to_path(tempf.name, schema, **kwargs)
+            writeable.write(path=tempf.name, schema, **kwargs)
             tempf.flush()
             tempf.close()
             with open(tempf.name, "r") as src:
@@ -54,13 +54,13 @@ class ValidateReadable(object):
             kwargs):
         results = []
         with open(source_path, "r") as s0:
-            obj0 = object_type.get_from_stream(s0, schema, **kwargs)
+            obj0 = object_type.get(stream=s0, schema, **kwargs)
             results.append(obj0)
-        obj1 = object_type.get_from_path(source_path, schema, **kwargs)
+        obj1 = object_type.get(path=source_path, schema, **kwargs)
         results.append(obj1)
         with open(source_path, "r") as s0:
             s = s0.read()
-            obj2 = object_type.get_from_string(s, schema, **kwargs)
+            obj2 = object_type.get(value=s, schema, **kwargs)
         results.append(obj2)
         return results
 
@@ -72,15 +72,15 @@ class ValidateReadable(object):
         results = []
         obj0 = object_factory()
         with open(source_path, "r") as s0:
-            obj0.read_from_stream(s0, schema, **kwargs)
+            obj0.read(stream=s0, schema, **kwargs)
             results.append(obj0)
         obj1 = object_factory()
-        obj1.read_from_path(source_path, schema, **kwargs)
+        obj1.read(path=source_path, schema, **kwargs)
         results.append(obj1)
         obj2 = object_factory()
         with open(source_path, "r") as s0:
             s = s0.read()
-            obj2.read_from_string(s, schema, **kwargs)
+            obj2.read(value=s, schema, **kwargs)
         results.append(obj2)
         return results
 

@@ -1580,7 +1580,7 @@ class TaxonNamespace(
 
     ### I/O
 
-    def _write(self, stream, schema, **kwargs):
+    def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.

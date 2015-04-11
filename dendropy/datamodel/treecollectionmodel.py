@@ -633,7 +633,7 @@ class TreeList(
         """
         return basemodel.MultiReadable._read_from(self, **kwargs)
 
-    def _write(self, stream, schema, **kwargs):
+    def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
@@ -1925,7 +1925,10 @@ class SplitDistributionSummarizer(object):
 ###############################################################################
 ### TreeArray
 
-class TreeArray(taxonmodel.TaxonNamespaceAssociated):
+class TreeArray(
+        taxonmodel.TaxonNamespaceAssociated,
+        basemodel.MultiReadable,
+        ):
     """
     High-performance collection of tree structures.
 
@@ -2175,6 +2178,9 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
             self.add_tree(tree,
                     is_bipartitions_updated=is_bipartitions_updated)
 
+    ##############################################################################
+    ## I/O
+
     def read_from_files(self,
             files,
             schema,
@@ -2217,35 +2223,84 @@ class TreeArray(taxonmodel.TaxonNamespaceAssociated):
                 self.add_tree(tree=tree, is_bipartitions_updated=False)
             current_tree_offset += 1
 
-    ##############################################################################
-    ## Convenient I/O
+    def _parse_and_add_from_stream(self,
+            stream,
+            schema,
+            **kwargs):
+        cur_size = len(self._tree_split_bitmasks)
+        self.read_from_files(files=[stream], schema=schema, **kwargs)
+        new_size = len(self._tree_split_bitmasks)
+        return new_size - cur_size
 
-    def read_from_stream(self, fileobj, schema, **kwargs):
+    def read(self, **kwargs):
         """
-        Reads trees from a file. See :meth:|TreeList|.read_from_stream()`.
-        """
-        return self.read_from_files(
-                files=[fileobj],
-                schema=schema,
-                **kwargs)
+        Add |Tree| objects to existing |TreeList| from data source providing
+        one or more collections of trees.
 
-    def read_from_path(self, filepath, schema, **kwargs):
-        """
-        Reads trees from a path. See :meth:|TreeList|.read_from_path()`.
-        """
-        return self.read_from_files(
-                files=[filepath],
-                schema=schema,
-                **kwargs)
+        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
-    def read_from_string(self, src_str, schema, **kwargs):
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **collection_offset** (*int*) -- 0-based index of tree block or
+              collection in source to be parsed. If not specified then the
+              first collection (offset = 0) is assumed.
+            - **tree_offset** (*int*) -- 0-based index of first tree within the
+              collection specified by ``collection_offset`` to be parsed (i.e.,
+              skipping the first ``tree_offset`` trees). If not
+              specified, then the first tree (offset = 0) is assumed (i.e., no
+              trees within the specified collection will be skipped). Use this
+              to specify, e.g. a burn-in.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
         """
-        Reads trees from a string. See :meth:|TreeList|.read_from_string()`.
-        """
-        return self.read_from_files(
-                files=[StringIO(src_str)],
-                schema=schema,
-                **kwargs)
+        return basemodel.MultiReadable._read_from(self, **kwargs)
+
+
+    # def read_from_stream(self, fileobj, schema, **kwargs):
+    #     """
+    #     Reads trees from a file. See :meth:|TreeList|.read_from_stream()`.
+    #     """
+    #     return self.read_from_files(
+    #             files=[fileobj],
+    #             schema=schema,
+    #             **kwargs)
+
+    # def read_from_path(self, filepath, schema, **kwargs):
+    #     """
+    #     Reads trees from a path. See :meth:|TreeList|.read_from_path()`.
+    #     """
+    #     return self.read_from_files(
+    #             files=[filepath],
+    #             schema=schema,
+    #             **kwargs)
+
+    # def read_from_string(self, src_str, schema, **kwargs):
+    #     """
+    #     Reads trees from a string. See :meth:|TreeList|.read_from_string()`.
+    #     """
+    #     return self.read_from_files(
+    #             files=[StringIO(src_str)],
+    #             schema=schema,
+    #             **kwargs)
 
     ##############################################################################
     ## Container (List) Interface

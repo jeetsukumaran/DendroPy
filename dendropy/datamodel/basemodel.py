@@ -520,12 +520,27 @@ class Serializable(object):
     Mixin class which all classes that require serialization should subclass.
     """
 
-    def put(self, **kwargs):
+    def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
-        Serialize ``self``.
+        Writes the object to the file-like object ``stream`` in ``schema``
+        schema.
+        """
+        raise NotImplementedError
 
-        Mandatory keyword arguments specify the destination and schema
-        (format). Other keyword arguments control the output.
+    def _write_to(self, **kwargs):
+        """
+        Write this object to an external resource by dispatching calls to more
+        specialized ``write_to_*`` methods. Implementing classes will have a
+        publically-exposed method, ``write()``, that wraps a call to this
+        method. This allows for class-specific documentation of keyword
+        arguments. E.g.::
+
+            def write(self, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return Serializable._write_to(self, **kwargs)
+
         """
         try:
             dest_type, dest, schema = _extract_serialization_target_keyword(kwargs, "Destination")
@@ -538,32 +553,62 @@ class Serializable(object):
         else:
             raise ValueError("Unsupported source type: {}".format(dest_type))
 
-    def _write(self, stream, schema, **kwargs):
+    def write(self, **kwargs):
         """
-        Writes the object to the file-like object ``stream`` in ``schema``
-        schema.
+        Writes out ``self`` in ``schema`` format.
+
+        **Mandatory Destination-Specification Keyword Argument (Exactly One of the Following Required):**
+
+            - **file** (*file*) -- File or file-like object opened for writing.
+            - **path** (*str*) -- Path to file to which to write.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data. See
+              "|Schemas|" for more details.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is formatted, and supported
+            argument names and values depend on the schema as specified by the
+            value passed as the "``schema``" argument. See "|Schemas|" for more
+            details.
+
         """
-        raise NotImplementedError
+        return Serializable._write_to(self, **kwargs)
 
     def write_to_stream(self, dest, schema, **kwargs):
         """
         Writes to file-like object ``dest``.
         """
-        return self._write(stream=dest, schema=schema, **kwargs)
+        return self._format_and_write_to_stream(stream=dest, schema=schema, **kwargs)
 
     def write_to_path(self, dest, schema, **kwargs):
         """
         Writes to file specified by ``dest``.
         """
         with open(os.path.expandvars(os.path.expanduser(dest)), "w") as f:
-            return self._write(stream=f, schema=schema, **kwargs)
+            return self._format_and_write_to_stream(stream=f, schema=schema, **kwargs)
 
     def as_string(self, schema, **kwargs):
         """
         Composes and returns string representation of the data.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data. See
+              "|Schemas|" for more details.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is formatted, and supported
+            argument names and values depend on the schema as specified by the
+            value passed as the "``schema``" argument. See "|Schemas|" for more
+            details.
+
         """
         s = StringIO()
-        self._write(stream=s, schema=schema, **kwargs)
+        self._format_and_write_to_stream(stream=s, schema=schema, **kwargs)
         return s.getvalue()
 
 ##############################################################################
