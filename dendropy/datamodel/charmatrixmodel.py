@@ -504,7 +504,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Factory (Class) Methods
 
-    def _parse_from_stream(cls,
+    def _parse_and_create_from_stream(cls,
             stream,
             schema,
             matrix_offset=0,
@@ -536,7 +536,7 @@ class CharacterMatrix(
                     char_matrix.data_type,
                     cls.data_type))
         return char_matrix
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     def concatenate(cls, char_matrices):
         """
@@ -797,7 +797,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Data I/O
 
-    # def _read_stream_source(self, stream, schema, **kwargs):
+    # def _parse_and_add_from_stream(self, stream, schema, **kwargs):
     #     """
     #     Populates objects of this type from ``schema``-formatted
     #     data in the file-like object source ``stream``, *replacing*
@@ -808,7 +808,7 @@ class CharacterMatrix(
     #     """
     #     warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
     #             DeprecationWarning)
-    #     m = self.__class__._parse_from_stream(stream=stream,
+    #     m = self.__class__._parse_and_create_from_stream(stream=stream,
     #             schema=schema,
     #             **kwargs)
     #     return self.clone_from(m)

@@ -106,7 +106,7 @@ class DataSet(
 
     """
 
-    def _parse_from_stream(cls,
+    def _parse_and_create_from_stream(cls,
             stream,
             schema,
             **kwargs):
@@ -131,7 +131,7 @@ class DataSet(
                 state_alphabet_factory=charstatemodel.StateAlphabet,
                 )
         return dataset
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     ###########################################################################
     ### Lifecycle and Identity
@@ -193,7 +193,7 @@ class DataSet(
     ###########################################################################
     ### Data I/O
 
-    def _read_stream_source(self,
+    def _parse_and_add_from_stream(self,
             stream,
             schema,
             exclude_trees=False,

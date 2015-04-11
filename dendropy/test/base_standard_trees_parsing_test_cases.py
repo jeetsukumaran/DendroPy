@@ -34,14 +34,13 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
                 tree_string = src.read()
             with open(tree_filepath, "r") as tree_stream:
                 approaches = (
-                        (dendropy.TreeList.get_from_path, tree_filepath),
-                        (dendropy.TreeList.get_from_stream, tree_stream),
-                        (dendropy.TreeList.get_from_string, tree_string),
+                        {"path": tree_filepath},
+                        {"file": tree_stream},
+                        {"value": tree_string},
                         )
-                for method, src in approaches:
-                    tree_list = method(src, self.__class__.schema)
-                    # for taxon in tree_list.taxon_namespace:
-                    #     print(taxon)
+                for approach_kwargs in approaches:
+                    approach_kwargs["schema"] = self.__class__.schema
+                    tree_list = dendropy.TreeList.get(**approach_kwargs)
                     self.verify_standard_trees(tree_list=tree_list,
                             tree_file_title=tree_file_title)
 
@@ -55,15 +54,15 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
             tree_string = src.read()
         with open(tree_filepath, "r") as tree_stream:
             approaches = (
-                    ("read_from_path", tree_filepath),
-                    ("read_from_stream", tree_stream),
-                    ("read_from_string", tree_string),
+                    {"path": tree_filepath},
+                    {"file": tree_stream},
+                    {"value": tree_string},
                     )
-            for method, src in approaches:
+            for approach_kwargs in approaches:
                 # prepopulate
-                tree_list = dendropy.TreeList.get_from_path(
-                        self.schema_tree_filepaths[preloaded_tree_file_title],
-                        self.__class__.schema)
+                tree_list = dendropy.TreeList.get(
+                        path=self.schema_tree_filepaths[preloaded_tree_file_title],
+                        schema=self.__class__.schema)
                 # check to make sure trees were loaded
                 old_len = len(tree_list)
                 self.assertEqual(old_len, len(tree_list._trees))
@@ -72,8 +71,8 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
 
                 # load
                 old_id = id(tree_list)
-                f = getattr(tree_list, method)
-                trees_read = f(src, self.__class__.schema)
+                approach_kwargs["schema"] = self.__class__.schema
+                trees_read = tree_list.read(**approach_kwargs)
                 new_id = id(tree_list)
                 self.assertEqual(old_id, new_id)
 

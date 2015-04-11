@@ -56,7 +56,7 @@ class TreeList(
     object reference.
     """
 
-    def _parse_from_stream(cls,
+    def _parse_and_create_from_stream(cls,
             stream,
             schema,
             collection_offset=None,
@@ -209,7 +209,55 @@ class TreeList(
         #         tree_offset=tree_offset,
         #         **kwargs)
         # return tree_list
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
+
+    @classmethod
+    def get(cls, **kwargs):
+        """
+        Instantiate and return a *new* |TreeList| object from a data source.
+
+        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
+
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **label** (*str*) -- Name or identifier to be assigned to the new
+              object; if not given, will be assigned the one specified in the
+              data source, or `None` otherwise.
+            - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
+              instance to use to :doc:`manage the taxon names </primer/taxa>`.
+              If not specified, a new one will be created.
+            - **collection_offset** (*int*) -- 0-based index of tree block or
+              collection in source to be parsed. If not specified then the
+              first collection (offset = 0) is assumed.
+            - **tree_offset** (*int*) -- 0-based index of first tree within the
+              collection specified by ``collection_offset`` to be parsed (i.e.,
+              skipping the first ``tree_offset`` trees). If not
+              specified, then the first tree (offset = 0) is assumed (i.e., no
+              trees within the specified collection will be skipped). Use this
+              to specify, e.g. a burn-in.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
+        """
+        return cls._get_from(**kwargs)
 
     DEFAULT_TREE_TYPE = treemodel.Tree
 
@@ -442,7 +490,7 @@ class TreeList(
             self.label = kwargs["label"]
         return self
 
-    def _read_stream_source(self,
+    def _parse_and_add_from_stream(self,
             stream,
             schema,
             collection_offset=None,
@@ -534,7 +582,7 @@ class TreeList(
         kwargs["taxon_namespace"] = self.taxon_namespace
         kwargs["tree_list"] = self
         cur_size = len(self._trees)
-        TreeList._parse_from_stream(
+        TreeList._parse_and_create_from_stream(
                 stream=stream,
                 schema=schema,
                 collection_offset=collection_offset,
@@ -542,6 +590,48 @@ class TreeList(
                 **kwargs)
         new_size = len(self._trees)
         return new_size - cur_size
+
+    def read(self, **kwargs):
+        """
+        Add |Tree| objects to existing |TreeList| from data source providing
+        one or more collections of trees.
+
+        **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
+
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
+            - **value** (*str*) -- Data given directly.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data given by the
+              "``file``", "``path``", "``value``", or "``url``" argument
+              specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
+              </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
+              "|Schemas|" for more details.
+
+        **Optional General Keyword Arguments:**
+
+            - **collection_offset** (*int*) -- 0-based index of tree block or
+              collection in source to be parsed. If not specified then the
+              first collection (offset = 0) is assumed.
+            - **tree_offset** (*int*) -- 0-based index of first tree within the
+              collection specified by ``collection_offset`` to be parsed (i.e.,
+              skipping the first ``tree_offset`` trees). If not
+              specified, then the first tree (offset = 0) is assumed (i.e., no
+              trees within the specified collection will be skipped). Use this
+              to specify, e.g. a burn-in.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is interpreted and
+            processed, and supported argument names and values depend on
+            the schema as specified by the value passed as the "``schema``"
+            argument. See "|Schemas|" for more details.
+
+        """
+        return basemodel.MultiReadable._read_from(self, **kwargs)
 
     def _write(self, stream, schema, **kwargs):
         """

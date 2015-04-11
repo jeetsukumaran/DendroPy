@@ -2399,7 +2399,7 @@ class Tree(
     semantically equivalent to the root.
     """
 
-    def _parse_from_stream(cls,
+    def _parse_and_create_from_stream(cls,
             stream,
             schema,
             collection_offset=None,
@@ -2510,7 +2510,7 @@ class Tree(
         tree = tree_list[tree_offset]
         tree.label = label
         return tree
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):
@@ -2519,9 +2519,9 @@ class Tree(
 
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
-            - **file** (*file*) -- File or file-like object with data opened for reading.
-            - **path** (*str*) -- Path to file with data.
-            - **url** (*str*) -- URL providing data.
+            - **file** (*file*) -- File or file-like object of data opened for reading.
+            - **path** (*str*) -- Path to file of data.
+            - **url** (*str*) -- URL of data.
             - **value** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
@@ -2535,7 +2535,7 @@ class Tree(
         **Optional General Keyword Arguments:**
 
             - **label** (*str*) -- Name or identifier to be assigned to the new
-              |Tree|; if not given, will be assigned the one specified in the
+              object; if not given, will be assigned the one specified in the
               data source, or `None` otherwise.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
@@ -3060,7 +3060,7 @@ class Tree(
     ###########################################################################
     ### I/O
 
-    # def _read_stream_source(self, stream, schema, **kwargs):
+    # def _parse_and_add_from_stream(self, stream, schema, **kwargs):
     #     """
     #     Redefines this |Tree| object based on data from ``source``.
 
@@ -3134,7 +3134,7 @@ class Tree(
     #     if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
     #         raise TypeError("Cannot change ``taxon_namespace`` when reading an existing Tree")
     #     kwargs["taxon_namespace"] = self.taxon_namespace
-    #     tree = Tree._parse_from_stream(stream, schema, **kwargs)
+    #     tree = Tree._parse_and_create_from_stream(stream, schema, **kwargs)
     #     if tree is None:
     #         raise ValueError("Invalid tree source specification")
     #     self.__dict__ = tree.__dict__

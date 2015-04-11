@@ -122,19 +122,19 @@ class Deserializable(object):
     Mixin class which all classes that require deserialization should subclass.
     """
 
-    def _parse_from_stream(cls, stream, schema, **kwargs):
+    def _parse_and_create_from_stream(cls, stream, schema, **kwargs):
         """
         Subclasses need to implement this method to create
         and return and instance of themselves read from the
         stream.
         """
         raise NotImplementedError
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     def _get_from(cls, **kwargs):
         """
         Factory method to return new object of this class from an external
-        source by dispatching calls to more specialzied ``get_from_`` methods.
+        source by dispatching calls to more specialized ``get_from_*`` methods.
         Implementing classes will have a publically-exposed method, ``get()``,
         that wraps a call to this method. This allows for class-specific
         documentation of keyword arguments. E.g.::
@@ -186,7 +186,7 @@ class Deserializable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        return cls._parse_from_stream(stream=src,
+        return cls._parse_and_create_from_stream(stream=src,
                 schema=schema,
                 **kwargs)
     get_from_stream = classmethod(get_from_stream)
@@ -215,7 +215,7 @@ class Deserializable(object):
             in source.
         """
         with open(src, "r", newline=None) as fsrc:
-            return cls._parse_from_stream(stream=fsrc,
+            return cls._parse_and_create_from_stream(stream=fsrc,
                     schema=schema,
                     **kwargs)
     get_from_path = classmethod(get_from_path)
@@ -243,7 +243,7 @@ class Deserializable(object):
             in source.
         """
         ssrc = StringIO(src)
-        return cls._parse_from_stream(stream=ssrc,
+        return cls._parse_and_create_from_stream(stream=ssrc,
                 schema=schema,
                 **kwargs)
     get_from_string = classmethod(get_from_string)
@@ -274,7 +274,7 @@ class Deserializable(object):
         text = urlio.read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
         try:
-            return cls._parse_from_stream(
+            return cls._parse_and_create_from_stream(
                     stream=ssrc,
                     schema=schema,
                     **kwargs)
@@ -292,7 +292,7 @@ class MultiReadable(object):
     Mixin class which all classes that support multiple (e.g., aggregative) deserialization should subclass.
     """
 
-    def _read_stream_source(self, stream, schema, **kwargs):
+    def _parse_and_add_from_stream(self, stream, schema, **kwargs):
         """
         Populates/constructs objects of this type from ``schema``-formatted
         data in the file-like object source ``stream``.
@@ -323,6 +323,36 @@ class MultiReadable(object):
         """
         raise NotImplementedError
 
+    def _read_from(self, **kwargs):
+        """
+        Add data to objects of this class from an external
+        source by dispatching calls to more specialized ``read_from_*`` methods.
+        Implementing classes will have a publically-exposed method, ``read()``,
+        that wraps a call to this method. This allows for class-specific
+        documentation of keyword arguments. E.g.::
+
+            def read(self, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return MultiReadable._read_from(self, **kwargs)
+
+        """
+        try:
+            src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
+        except Exception as e:
+            raise e
+        if src_type == "file" or src_type == "stream":
+            return self.read_from_stream(src=src, schema=schema, **kwargs)
+        elif src_type == "path":
+            return self.read_from_path(src=src, schema=schema, **kwargs)
+        elif src_type == "value" or src_type == "string":
+            return self.read_from_string(src=src, schema=schema, **kwargs)
+        elif src_type == "url":
+            return self.read_from_url(src=src, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(src_type))
+
     def read_from_stream(self, src, schema, **kwargs):
         """
         Reads from file (exactly equivalent to just ``read()``, provided
@@ -352,7 +382,7 @@ class MultiReadable(object):
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
-        return self._read_stream_source(stream=src, schema=schema, **kwargs)
+        return self._parse_and_add_from_stream(stream=src, schema=schema, **kwargs)
 
     def read_from_path(self, src, schema, **kwargs):
         """
@@ -382,7 +412,7 @@ class MultiReadable(object):
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         with open(src, "r", newline=None) as fsrc:
-            return self._read_stream_source(stream=fsrc, schema=schema, **kwargs)
+            return self._parse_and_add_from_stream(stream=fsrc, schema=schema, **kwargs)
 
     def read_from_string(self, src, schema, **kwargs):
         """
@@ -412,7 +442,7 @@ class MultiReadable(object):
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
         s = StringIO(src)
-        return self._read_stream_source(stream=s, schema=schema, **kwargs)
+        return self._parse_and_add_from_stream(stream=s, schema=schema, **kwargs)
 
     def read_from_url(self, src, schema, **kwargs):
         """
@@ -443,7 +473,7 @@ class MultiReadable(object):
         """
         src_str = urlio.read_url(src)
         s = StringIO(src_str)
-        return self._read_stream_source(stream=s, schema=schema, **kwargs)
+        return self._parse_and_add_from_stream(stream=s, schema=schema, **kwargs)
 
 ##############################################################################
 ## NonMultiReadable
