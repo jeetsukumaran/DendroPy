@@ -152,38 +152,12 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
                     f = getattr(tree_list, method)
                     trees_read = f(src,
                             self.__class__.schema,
-                            collection_offset=0,
+                            # collection_offset=0,
                             tree_offset=tree_offset)
                     self.verify_standard_trees(
                             tree_list=tree_list,
                             tree_file_title=tree_file_title,
                             tree_offset=tree_offset)
-
-    def test_tree_offset_without_collection_offset_get(self):
-        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        approaches = (
-                dendropy.TreeList.get_from_path,
-                dendropy.TreeList.get_from_stream,
-                dendropy.TreeList.get_from_string,
-                )
-        for approach in approaches:
-            with self.assertRaises(TypeError):
-                approach(tree_filepath, self.__class__.schema, collection_offset=None, tree_offset=0)
-
-    def test_tree_offset_without_collection_offset_read(self):
-        tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
-        tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        approaches = (
-                "read_from_path",
-                "read_from_stream",
-                "read_from_string",
-                )
-        for approach in approaches:
-            tree_list = dendropy.TreeList()
-            f = getattr(tree_list, approach)
-            with self.assertRaises(TypeError):
-                f(tree_filepath, self.__class__.schema, collection_offset=None, tree_offset=0)
 
     def test_out_of_range_tree_offset_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'

@@ -164,9 +164,11 @@ class TreeList(
         if tree_list is None:
             tree_list = cls(label=label, taxon_namespace=taxon_namespace)
 
+        if collection_offset is None and tree_offset is not None:
+            collection_offset = 0
         if collection_offset is None:
-            if tree_offset is not None:
-                raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
+            # if tree_offset is not None:
+            #     raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
             # coerce all tree products into this list
             reader.read_tree_lists(
                         stream=stream,
