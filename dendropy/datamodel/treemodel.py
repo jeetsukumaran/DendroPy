@@ -2410,14 +2410,13 @@ class Tree(
         file-like object ``stream``.
 
         If the source defines multiple tree collections (e.g. multiple NEXUS
-        "Trees" blocks), then the ``collection_offset`` argument
-        can be used to specify the 0-based index of the tree collection, and
-        ``tree_offset`` argument can be used to specify the 0-based
-        index of the tree within the collection, as the source. If
-        ``collection_offset`` is not specified or `None`, then all collections in
-        the source are merged before considering ``tree_offset``.  If
-        ``tree_offset`` is not specified, then the first tree (offset=0) is
-        returned.
+        "Trees" blocks), then the ``collection_offset`` argument can be
+        used to specify the 0-based index of the tree collection, and
+        ``tree_offset`` argument can be used to specify the 0-based index of
+        the tree within the collection, as the source. If ``collection_offset``
+        is not specified or `None`, then the first collection (offset=0) is
+        assumed. If ``tree_offset`` is not specified, then the first tree
+        (offset=0) is returned.
 
         Keyword arguments `**kwargs` are passed directly to
         :meth:|TreeList|.read()`, which wraps the actual parsing.
@@ -2492,9 +2491,9 @@ class Tree(
         tree_list_factory = lambda label, taxon_namespace: TreeList(label=label, taxon_namespace=taxon_namespace, tree_type=cls)
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
-        if collection_offset is None and tree_offset is not None:
-            raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
-        elif collection_offset is None:
+        # if collection_offset is None and tree_offset is not None:
+        #     raise TypeError("Cannot specify ``tree_offset`` without specifying ``collection_offset``")
+        if collection_offset is None:
             collection_offset = 0
         if tree_offset is None:
             tree_offset = 0
@@ -2797,20 +2796,32 @@ class Tree(
                 # empty tree
                 t1 = Tree()
 
-                # the canonical way to instantiate a Tree from a data source
-                # is the use the 'get_from_*' family of static factory methods
-                t2 = Tree.get_from_stream(open('treefile.tre', 'rU'), "newick", tree_offset=0)
-                t3 = Tree.get_from_path('sometrees.nexus',
-                        "nexus",
+                # The canonical way to instantiate a Tree from a data source
+                # is the use the 'get()' factory class methods
+
+                # From a file-like object
+                t2 = Tree.get(file=open('treefile.tre', 'rU'),
+                              schema="newick",
+                              tree_offset=0)
+
+                # From a path
+                t3 = Tree.get(path='sometrees.nexus',
+                        schema="nexus",
                         collection_offset=2,
                         tree_offset=1)
-                s = "((A,B),(C,D));((A,C),(B,D));"
-                t4 = Tree.get_from_string(s, "newick") # tree will be '((A,B),(C,D))'
-                t5 = Tree.get_from_string(s, "newick", tree_offset=1) # tree will be '((A,C),(B,D))'
 
+                # From a string
+                s = "((A,B),(C,D));((A,C),(B,D));"
+                # tree will be '((A,B),(C,D))'
+                t4 = Tree.get(value=s,
+                        schema="newick")
+                # tree will be '((A,C),(B,D))'
+                t5 = Tree.get(value=s,
+                        schema="newick",
+                        tree_offset=1)
                 # passing keywords to underlying tree parser
-                t7 = dendropy.Tree.get_from_string(
-                        "((A,B),(C,D));",
+                t7 = dendropy.Tree.get(
+                        value="((A,B),(C,D));",
                         schema="newick",
                         taxon_namespace=t3.taxon_namespace,
                         suppress_internal_node_taxa=False,
@@ -2853,17 +2864,9 @@ class Tree(
                     assert lves7[i].taxon is not lves9[i].taxon # objects are distinct though the taxon
                     assert lves7[i].taxon.label == lves9[i].taxon.label # labels are the same.
 
-                # can also call `read()` on a Tree object; each read adds the
-                # *replaces* the current tree with the definition specified in the
-                # data source
-                t10 = Tree()
-                t10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
-                t10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick", tree_offset=0)
-                t10.read_from_path("mle.tre", "newick")
-
                 # to 'switch out' the TaxonNamespace of a tree, replace the reference and
                 # reindex the taxa:
-                t11 = Tree.get_from_string('((A,B),(C,D));', 'newick')
+                t11 = Tree.get(value='((A,B),(C,D));', 'newick')
                 taxa = TaxonNamespace()
                 t11.taxon_namespace = taxa
                 t11.reindex_subcomponent_taxa()
@@ -2881,7 +2884,7 @@ class Tree(
             if "seed_node" in kwargs:
                 raise TypeError("Cannot specify 'seed_node' if passing in a Tree object to clone")
             if "stream" in kwargs or "schema" in kwargs:
-                raise TypeError("Constructing from an external stream is no longer supported: use the factory method 'Tree.get_from_stream()'")
+                raise TypeError("Constructing from an external stream is no longer supported: use the factory method 'Tree.get(file=...)'")
             if isinstance(args[0], Node):
                 raise TypeError("Constructing a tree around a Node passed as a position argument is no longer supported; a keyword argument is now required for this approach: use Tree(seed_node=node)")
             if isinstance(args[0], Tree):

@@ -812,14 +812,25 @@ class NewickTreeReaderOffsetTreeTest(
     def test_tree_offset_without_collection_offset_newick_get(self):
         tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
         tree_filepath = self.schema_tree_filepaths[tree_file_title]
-        approaches = (
-                dendropy.Tree.get_from_path,
-                dendropy.Tree.get_from_stream,
-                dendropy.Tree.get_from_string,
-                )
-        for approach in approaches:
-            with self.assertRaises(TypeError):
-                approach(tree_filepath, "newick", collection_offset=None, tree_offset=0)
+        tree_reference = standard_file_test_trees._TREE_REFERENCES[tree_file_title]
+        expected_number_of_trees = tree_reference["num_trees"]
+        with open(tree_filepath, "r") as src:
+            tree_string = src.read()
+        with open(tree_filepath, "r") as tree_stream:
+            approaches = (
+                    (dendropy.Tree.get_from_path, tree_filepath),
+                    (dendropy.Tree.get_from_stream, tree_stream),
+                    (dendropy.Tree.get_from_string, tree_string),
+                    )
+            for approach in approaches:
+                tree_offset = 2
+                tree = approach[0](approach[1], "newick", tree_offset=tree_offset)
+                reference_tree_idx = tree_offset
+                self.compare_to_reference_by_title_and_index(
+                        tree=tree,
+                        tree_file_title=tree_file_title,
+                        reference_tree_idx=tree_offset)
+
 
     # def test_tree_offset_without_collection_offset_newick_read(self):
     #     tree_file_title = 'dendropy-test-trees-n33-unrooted-x10a'
