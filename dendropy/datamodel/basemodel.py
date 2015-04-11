@@ -131,10 +131,21 @@ class Deserializable(object):
         raise NotImplementedError
     _parse_from_stream = classmethod(_parse_from_stream)
 
-    def get(cls, **kwargs):
+    def _get_from(cls, **kwargs):
         """
         Factory method to return new object of this class from an external
-        source.
+        source by dispatching calls to more specialzied ``get_from_`` methods.
+        Implementing classes will have a publically-exposed method, ``get()``,
+        that wraps a call to this method. This allows for class-specific
+        documentation of keyword arguments. E.g.::
+
+            @classmethod
+            def get(cls, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return cls._get_from(**kwargs)
+
         """
         try:
             src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
@@ -150,7 +161,7 @@ class Deserializable(object):
             return cls.get_from_url(src=src, schema=schema, **kwargs)
         else:
             raise ValueError("Unsupported source type: {}".format(src_type))
-    get = classmethod(get)
+    _get_from = classmethod(_get_from)
 
     def get_from_stream(cls, src, schema, **kwargs):
         """

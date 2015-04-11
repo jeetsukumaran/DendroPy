@@ -73,19 +73,32 @@ class NewickTreeReaderBasic(
                             reader_kwargs["suppress_edge_lengths"] = suppress_edge_lengths
                         with open(tree_filepath, "r") as tree_stream:
                             approaches = (
-                                    (dendropy.Tree.get_from_path, tree_filepath),
-                                    (dendropy.Tree.get_from_stream, tree_stream),
-                                    (dendropy.Tree.get_from_string, tree_string),
+                                    {"path": tree_filepath},
+                                    {"file": tree_stream},
+                                    {"value": tree_string},
                                     )
-                            for method, src in approaches:
-                                t = method(src,
-                                        "newick",
-                                        **reader_kwargs
-                                        )
+                            for approach_kwargs in approaches:
+                                approach_kwargs.update(reader_kwargs)
+                                approach_kwargs["schema"] = "newick"
+                                t = dendropy.Tree.get(**approach_kwargs)
                                 self.verify_curated_tree(t,
                                         suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
                                         suppress_leaf_node_taxa=expected_suppress_leaf_node_taxa,
                                         suppress_edge_lengths=expected_suppress_edge_lengths)
+                            # approaches = (
+                            #         (dendropy.Tree.get_from_path, tree_filepath),
+                            #         (dendropy.Tree.get_from_stream, tree_stream),
+                            #         (dendropy.Tree.get_from_string, tree_string),
+                            #         )
+                            # for method, src in approaches:
+                            #     t = method(src,
+                            #             "newick",
+                            #             **reader_kwargs
+                            #             )
+                            #     self.verify_curated_tree(t,
+                            #             suppress_internal_node_taxa=expected_suppress_internal_node_taxa,
+                            #             suppress_leaf_node_taxa=expected_suppress_leaf_node_taxa,
+                            #             suppress_edge_lengths=expected_suppress_edge_lengths)
                         # with open(tree_filepath, "r") as tree_stream:
                         #     approaches = (
                         #             ("read_from_path", tree_filepath),
@@ -172,7 +185,9 @@ class NewickTreeReaderBasic(
                             _LOG.debug("Token = '{}', Rooting interpretation = '{}'".format(token_str, rooting_interpretation))
                             s = self.get_newick_string(tree_preamble_tokens=token_str)
                             _LOG.debug(s)
-                            t = dendropy.Tree.get_from_string(s, "newick",
+                            t = dendropy.Tree.get(
+                                    value=s,
+                                    schema="newick",
                                     rooting=rooting_interpretation,
                                     store_tree_weights=store_tree_weights,
                                     extract_comment_metadata=extract_comment_metadata)
@@ -199,8 +214,8 @@ class NewickTreeMultifurcatingtree(dendropytest.ExtendedTestCase):
          ([t]t:20[t],[u]u:21[u],[v]v:22[v])[w]w:23[w],[q]
          ([h]h:8[h],[i]i:9[i],[j]j:10[j],[k]k:11[k],[o]([l]l:12[l],[m]m:13[m],[n]n:14[n])[o]o:15[o])[q]q:17[q])[r]r:18[r][r];
         """
-        tree = dendropy.Tree.get_from_string(s,
-                "newick",
+        tree = dendropy.Tree.get(value=s,
+                schema="newick",
                 suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=True)
         expected_children = {
@@ -285,7 +300,7 @@ class NewickTreeInvalidStatements(dendropytest.ExtendedTestCase):
         for s in invalid_tree_statements:
             # t = dendropy.Tree.get_from_string(s, "newick")
             with self.assertRaises(error.DataParseError):
-                t = dendropy.Tree.get_from_string(s, "newick")
+                t = dendropy.Tree.get(value=s, schema="newick")
 
 class NewickTreeDuplicateTaxa(
         curated_test_tree.CuratedTestTree,
@@ -302,9 +317,9 @@ class NewickTreeDuplicateTaxa(
         )
         for sidx, s in enumerate(tree_statements):
             with self.assertRaises(newickreader.NewickReader.NewickReaderDuplicateTaxonError):
-                tree = dendropy.Tree.get_from_string(s, "newick")
-            tree = dendropy.Tree.get_from_string(s,
-                    "newick",
+                tree = dendropy.Tree.get(value=s, schema="newick")
+            tree = dendropy.Tree.get(value=s,
+                    schema="newick",
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=True)
             labels = [nd.label for nd in tree]
@@ -314,13 +329,14 @@ class NewickTreeAnonymousTaxa(dendropytest.ExtendedTestCase):
 
     def test_anonymous_taxa_no_error(self):
         s = "((,),(,(,(,))));"
-        tree = dendropy.Tree.get_from_string(s,
-                "newick")
+        tree = dendropy.Tree.get(value=s,
+                schema="newick")
 
     def test_anonymous_taxa(self):
         s = "((:1[a],:2[b])[c]:3,(:4[d],([e]:5,([f]:6,:7[g]):8[h])[i]:9)[j]:10):11[k];"
-        tree = dendropy.Tree.get_from_string(s,
-                "newick")
+        tree = dendropy.Tree.get(
+                value=s,
+                schema="newick")
         self.assertEqual(len(tree.taxon_namespace), 0)
         anodes = [nd for nd in tree]
         leaves = [nd for nd in tree.leaf_node_iter()]
