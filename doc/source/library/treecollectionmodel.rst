@@ -12,7 +12,7 @@ The |TreeList| Class
 ====================
 .. autoclass:: dendropy.datamodel.treecollectionmodel.TreeList
     :members:
-    :exclude-members: get,put
+    :exclude-members: get,read,put
 
 .. classmethod:: TreeList.get(\*\*kwargs)
 
@@ -60,8 +60,6 @@ The |TreeList| Class
 
     :Optional General Keyword Arguments:
 
-        - **label** (*str*) -- Name or identifier to be assigned to the new |TreeList|; if not given, will be assigned the one specified in the data source, or `None` otherwise.
-        - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace| instance to use to :doc:`manage the taxon names </primer/taxa>`. If not specified, a new one will be created.
         - **collection_offset** (*int*) -- 0-based index of tree block or collection in source to be parsed. If not specified then the first collection (offset = 0) is assumed.
         - **tree_offset** (*int*) -- 0-based index of first tree within the collection specified by ``collection_offset`` to be parsed (i.e., skipping the first ``tree_offset`` trees). If not specified, then the first tree (offset = 0) is assumed.
 
