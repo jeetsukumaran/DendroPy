@@ -78,37 +78,37 @@ Supported Methods
 :meth:`DnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`
 ..............................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_dnacharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`RnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`
 ..............................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_rnacharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`ProteinCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`
 ......................................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_proteincharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`RestrictionSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`
 ........................................................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_restrictionsitescharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`InfiniteSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`
 ..................................................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_infinitesitescharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`StandardCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`
 ........................................................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_standardcharactermatrix_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 :meth:`DataSet.write <dendropy.datamodel.datasetmodel.DataSet.write>`
 .....................................................................
 
-.. literalinclude:: /schemas/interfaces/fasta_dataset_write.py
+.. literalinclude:: /schemas/interfaces/fasta_write.py
 
 .. _schema_specific_keyword_arguments_writing_fasta:
 
