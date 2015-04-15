@@ -22,7 +22,7 @@ d = dendropy.DataSet.get(
         label=None,
         taxon_namespace=None,
         ignore_unrecognized_keyword_arguments=False,
-        data_type="dna",
+        data_type="standard",
         )
 
 d = dendropy.DataSet.get(
@@ -31,6 +31,6 @@ d = dendropy.DataSet.get(
         label=None,
         taxon_namespace=None,
         ignore_unrecognized_keyword_arguments=False,
-        data_type="dna",
-        default_state_alphabet=dendropy.new_standard_state_alphabet("abc"),
+        data_type="standard",
+        default_state_alphabet=dendropy.new_standard_state_alphabet("01")
         )

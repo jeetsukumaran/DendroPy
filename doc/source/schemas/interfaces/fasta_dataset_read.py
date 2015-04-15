@@ -15,7 +15,7 @@ d.read(
         label=None,
         taxon_namespace=None,
         ignore_unrecognized_keyword_arguments=False,
-        data_type="dna",
+        data_type="protein",
         )
 
 d = dendropy.DataSet()
@@ -25,7 +25,7 @@ d.read(
         label=None,
         taxon_namespace=None,
         ignore_unrecognized_keyword_arguments=False,
-        data_type="dna",
+        data_type="standard",
         )
 
 d = dendropy.DataSet()
@@ -35,6 +35,6 @@ d.read(
         label=None,
         taxon_namespace=None,
         ignore_unrecognized_keyword_arguments=False,
-        data_type="dna",
+        data_type="standard",
         default_state_alphabet=dendropy.new_standard_state_alphabet("abc"),
         )

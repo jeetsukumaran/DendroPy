@@ -51,10 +51,16 @@ Supported Methods
 :meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.get>`
 .................................................................
 
+Note that the type of data needs to be specified using the ``data_type``
+keyword argument.
+
 .. literalinclude:: /schemas/interfaces/fasta_dataset_get.py
 
-:meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.read>`
-..................................................................
+:meth:`DataSet.read <dendropy.datamodel.datasetmodel.DataSet.read>`
+...................................................................
+
+Note that the type of data needs to be specified using the ``data_type``
+keyword argument.
 
 .. literalinclude:: /schemas/interfaces/fasta_dataset_read.py
 
