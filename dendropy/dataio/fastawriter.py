@@ -34,7 +34,7 @@ class FastaWriter(ioservice.DataWriter):
         -----------------
 
         wrap: boolean, default: `True`
-            If `False`, then sequenes are written out as single, unbroken lines.
+            If `False`, then sequences are written out as single, unbroken lines.
             Defaults to `True`: wraps sequences at 70 colums.
         """
         ioservice.DataWriter.__init__(self)

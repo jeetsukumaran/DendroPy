@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Writing of NEWICK-format tree to a stream.
+Writing of Newick-format tree to a stream.
 """
 
 import re
@@ -36,7 +36,7 @@ from dendropy.dataio import ioservice
 
 class NewickWriter(ioservice.DataWriter):
     """
-    Formatter for NEWICK data.
+    Formatter for Newick data.
     """
 
     def __init__(self, **kwargs):
@@ -109,7 +109,7 @@ class NewickWriter(ioservice.DataWriter):
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
             labelling function, ignoring ``suppress_leaf_taxon_labels``,
-            `suppress_leaf_node_labels=True`, ``suppress_internal_taxon_labels``,
+            ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``,
             ``suppress_internal_node_labels``, etc. Defaults to `None`.
         edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
@@ -122,37 +122,13 @@ class NewickWriter(ioservice.DataWriter):
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
 
-        Typically, these keywords would be passed to the `write_to_path()`,
-        ``write_to_stream`` or ``as_string`` arguments, when 'newick' is used as
-        the schema::
-
-            d.write_to_path('outputfile.tre',
-                    schema='newick',
-                    suppress_leaf_taxon_labels=False,
-                    suppress_leaf_node_labels=True,
-                    suppress_internal_taxon_labels=False,
-                    suppress_internal_node_labels=False,
-                    suppress_rooting=False,
-                    suppress_edge_lengths=False,
-                    unquoted_underscores=False,
-                    preserve_spaces=False,
-                    store_tree_weights=False,
-                    taxon_token_map=None,
-                    suppress_annotations=True,
-                    annotations_as_nhx=False,
-                    suppress_item_comments=True,
-                    node_label_element_separator=' ',
-                    node_label_compose_fn=None,
-                    edge_label_compose_fn=None,
-                    real_value_format_specifier='.8f',
-                    )
         Notes
         -----
 
         DendroPy distinguishes between *taxon* labels and *node*
         labels.
 
-        In a NEWICK string, however, no such distinction is possible, and
+        In a Newick string, however, no such distinction is possible, and
         any one node can only be rendered with a single token or symbol. Thus,
         if there is more than one source of label available for a particular
         node (e.g., if both ``suppress_leaf_taxon_labels`` and
@@ -168,7 +144,7 @@ class NewickWriter(ioservice.DataWriter):
         node by passing an appropriate function object via the
         ``node_label_compose_fn`` argument.
 
-        Note that, in typical NEWICK usage, labels of leaf nodes represent
+        Note that, in typical Newick usage, labels of leaf nodes represent
         operational taxonomic unit concepts, and thus the default setting to
         render leaf taxon labels but suppress leaf node labels. Internal node
         labels, on the other hand, are typically used both to represent
@@ -259,12 +235,12 @@ class NewickWriter(ioservice.DataWriter):
 
     def _write_tree_list(self, stream, tree_list):
         """
-        Writes a |TreeList| in NEWICK schema to ``stream``.
+        Writes a |TreeList| in Newick schema to ``stream``.
         """
         for tree in tree_list:
             self._write_tree(stream, tree)
             stream.write("\n")
-        # In NEWICK format, no clear way to distinguish between
+        # In Newick format, no clear way to distinguish between
         # annotations/comments associated with tree collection and
         # annotations/comments associated with first tree. So we place them at
         # *end* of document.
@@ -411,7 +387,7 @@ class NewickWriter(ioservice.DataWriter):
 
     # def _compose_node(self, node):
     #     """
-    #     Given a DendroPy Node, this returns the Node as a NEWICK
+    #     Given a DendroPy Node, this returns the Node as a Newick
     #     statement according to the class-defined formatting rules.
     #     """
     #     child_nodes = node.child_nodes()
