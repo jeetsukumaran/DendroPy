@@ -15,6 +15,11 @@ Description
 Reading
 =======
 
+Schema-Specific Keyword Arguments
+---------------------------------
+
+.. autokeywordargumentsonly:: dendropy.dataio.fastareader.FastaReader.__init__
+
 Supported Methods
 -----------------
 
@@ -64,13 +69,15 @@ keyword argument.
 
 .. literalinclude:: /schemas/interfaces/fasta_dataset_read.py
 
+Writing
+=======
+
+.. _schema_specific_keyword_arguments_writing_fasta:
+
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.fastareader.FastaReader.__init__
-
-Writing
-=======
+.. autokeywordargumentsonly:: dendropy.dataio.fastawriter.FastaWriter.__init__
 
 Supported Methods
 -----------------
@@ -110,9 +117,4 @@ Supported Methods
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-.. _schema_specific_keyword_arguments_writing_fasta:
 
-Schema-Specific Keyword Arguments
----------------------------------
-
-.. autokeywordargumentsonly:: dendropy.dataio.fastawriter.FastaWriter.__init__

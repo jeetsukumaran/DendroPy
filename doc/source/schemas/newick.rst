@@ -16,6 +16,13 @@ Description
 Reading
 =======
 
+.. _schema_specific_keyword_arguments_reading_newick:
+
+Schema-Specific Keyword Arguments
+---------------------------------
+
+.. autokeywordargumentsonly:: dendropy.dataio.newickreader.NewickReader.__init__
+
 Supported Methods
 -----------------
 
@@ -43,15 +50,15 @@ Supported Methods
 ...................................................................
 .. literalinclude:: /schemas/interfaces/newick_dataset_read.py
 
-.. _schema_specific_keyword_arguments_reading_newick:
+Writing
+=======
+
+.. _schema_specific_keyword_arguments_writing_newick:
 
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.newickreader.NewickReader.__init__
-
-Writing
-=======
+.. autokeywordargumentsonly:: dendropy.dataio.newickwriter.NewickWriter.__init__
 
 Supported Methods
 -----------------
@@ -68,10 +75,4 @@ Supported Methods
 .....................................................................
 .. literalinclude:: /schemas/interfaces/newick_write.py
 
-.. _schema_specific_keyword_arguments_writing_newick:
-
-Schema-Specific Keyword Arguments
----------------------------------
-
-.. autokeywordargumentsonly:: dendropy.dataio.newickwriter.NewickWriter.__init__
 
