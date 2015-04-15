@@ -127,12 +127,19 @@ class NexusWriter(ioservice.DataWriter):
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
             labelling function, ignoring ``suppress_leaf_taxon_labels``,
-            `suppress_leaf_node_labels=True`, ``suppress_internal_taxon_labels``,
+            ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``,
             ``suppress_internal_node_labels``, etc. Defaults to `None`.
         edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
+        real_value_format_specifier : string, default: ''
+            Format specification for real/float values. Will be applied to edge
+            lengths (if ``edge_label_compose_fn`` is not given) as well as
+            annotations. The format specifier should be given in Python's
+            string format specification mini-language. E.g. ".8f", ".4E",
+            "8.4f".
+
         """
         # base
         ioservice.DataWriter.__init__(self)

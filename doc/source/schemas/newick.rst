@@ -30,12 +30,12 @@ Supported Methods
 ........................................................
 .. literalinclude:: /schemas/interfaces/newick_tree_get.py
 
-:meth:`TreeList.get <dendropy.datamodel.treemodel.TreeList.get>`
-................................................................
+:meth:`TreeList.get <dendropy.datamodel.treecollection.TreeList.get>`
+.....................................................................
 .. literalinclude:: /schemas/interfaces/newick_treelist_get.py
 
-:meth:`TreeList.read <dendropy.datamodel.treemodel.TreeList.read>`
-..................................................................
+:meth:`TreeList.read <dendropy.datamodel.treecollectionmodel.TreeList.read>`
+............................................................................
 .. literalinclude:: /schemas/interfaces/newick_treelist_read.py
 
 :meth:`TreeArray.read <dendropy.datamodel.treecollectionmodel.TreeArray.read>`
