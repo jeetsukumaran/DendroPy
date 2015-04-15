@@ -163,6 +163,10 @@ class DataSet(
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created.
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 
@@ -300,6 +304,10 @@ class DataSet(
               object is in attached taxon namespace mode
               (``self.attached_taxon_namespace`` is not ``None`` but assigned
               to a specific |TaxonNamespace| instance).
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 

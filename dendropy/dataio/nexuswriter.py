@@ -435,7 +435,7 @@ class NexusWriter(ioservice.DataWriter):
         if block in self._block_title_map:
             return self._block_title_map[block]
         if not block.label:
-            title = id(block)
+            title = str(id(block))
         else:
             title = block.label
         idx = 1

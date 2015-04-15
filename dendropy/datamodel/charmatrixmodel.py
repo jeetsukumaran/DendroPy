@@ -570,6 +570,10 @@ class CharacterMatrix(
             - **matrix_offset** (*int*) -- 0-based index of character block or
               matrix in source to be parsed. If not specified then the
               first matrix (offset = 0) is assumed.
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 

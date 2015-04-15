@@ -248,6 +248,10 @@ class TreeList(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 
@@ -622,6 +626,10 @@ class TreeList(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 
@@ -2263,6 +2271,10 @@ class TreeArray(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+              then unsupported or unrecognized keyword arguments will not
+              result in an error. Default is `False`: unsupported keyword
+              arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
 

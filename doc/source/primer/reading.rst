@@ -54,13 +54,14 @@ Some are general to all classes (e.g., the "``label``" or "``taxon_namespace``" 
 These are all covered in detail in the documentation of the respective methods for each class:
 
     -   :meth:`Tree.get <dendropy.datamodel.treemodel.Tree.get>`
-    -   :meth:`TreeList.get <dendropy.datamodel.treemodel.TreeList.get>`
+    -   :meth:`TreeList.get <dendropy.datamodel.treecollectionmodel.TreeList.get>`
     -   :meth:`DnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`
     -   :meth:`RnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`
     -   :meth:`ProteinCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`
-    -   :meth:`RestrictionSiteCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RestrictionSiteCharacterMatrix.get>`
+    -   :meth:`RestrictionSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get>`
     -   :meth:`InfiniteSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`
-    -   :meth:`DataSet.get <dendropy.datamodel.treemodel.DataSet.get>`
+    -   :meth:`StandardCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get>`
+    -   :meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.get>`
 
 Other optional keyword arguments are :ref:`specific to the schema or format <Schema_Specific_Keyword_Arguments>` (e.g., the "``preserve_underscores``" argument when reading |Newick| or |Nexus| data).
 These are covered in detail in the :doc:`DendroPy Schema Guide </schemas/index>`.
