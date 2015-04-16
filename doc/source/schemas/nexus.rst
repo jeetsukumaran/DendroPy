@@ -91,46 +91,46 @@ Supported Methods
 
 :meth:`Tree.write <dendropy.datamodel.treemodel.Tree.write>`
 ............................................................
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_trees_write.py
 
 :meth:`TreeList.write <dendropy.datamodel.treecollectionmodel.TreeList.write>`
 ..............................................................................
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_trees_write.py
 
 :meth:`DnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`
 ..............................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`RnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`
 ..............................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`ProteinCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`
 ......................................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`RestrictionSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`
 ........................................................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`InfiniteSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`
 ..................................................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`StandardCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`
 ........................................................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_chars_write.py
 
 :meth:`DataSet.write <dendropy.datamodel.datasetmodel.DataSet.write>`
 .....................................................................
 
-.. literalinclude:: /schemas/interfaces/nexus_write.py
+.. literalinclude:: /schemas/interfaces/nexus_dataset_write.py
 
 
 

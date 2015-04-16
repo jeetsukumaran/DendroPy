@@ -48,12 +48,20 @@ class NexusWriter(ioservice.DataWriter):
         simple : boolean, default: `False`
             If `True`, write in simple NEXUS format, i.e. in a single "DATA"
             block, instead of separate "TAXA" and "CHARACTER" blocks.
-        suppress_taxa_block: boolean, default: `False`
-            If `True`, do not write a "TAXA" block.
+        suppress_taxa_blocks: boolean, default: `False`
+            If `True`, do not write a "TAXA" block. Note that this may make the
+            file impossible to parse if there are multiple taxon namespaces in
+            the data.
         suppress_unreferenced_taxon_namespaces: boolean, default: `False`
-            If `True`, then when writing |DataSet| objects, any |TaxonNamespace|
-            object in the DataSet's ``taxon_namespaces`` collection will *not* be written
-            as a "TAXA" block
+            If `True`, then when writing |DataSet| objects, any
+            |TaxonNamespace| object in the DataSet's ``taxon_namespaces``
+            collection will *not* be written as a "TAXA" block if it is not
+            referenced by any character matrix (``char_matrices``) or tree list
+            (``tree_lists``).
+        suppress_block_titles : bool
+            If `True` then 'TITLE' element to blocks will not be written. Note
+            that this may make the file impossible to parse if there are
+            multiple taxon namespaces in the data.
         file_comments: iterable [``str``]
             List of lines of text to be added as comments to the file.
         preamble_blocks: iterable [``str``]
@@ -62,6 +70,19 @@ class NexusWriter(ioservice.DataWriter):
         supplemental_blocks: iterable [``str``]
             List of strings to be written after data (e.g., PAUP blocks,
             MrBayes blocks etc.).
+        allow_multiline_comments : bool
+            If `False` then comments will be merged into a single string before
+            being written. Default is `True`: each comment element will be
+            written on its own line.
+        continuous_character_state_value_format_fn : function object
+            When writing |ContinuousCharacterMatrix| data: a function that
+            takes a continuous character value and returns the string
+            representation of it.
+        discrete_character_state_value_format_fn : function object
+            When writing discrete character data (e.g., a
+            |StandardCharacterMatrix|): a function that takes a
+            standard character state value (i.e., a |StateIdentity| instance)
+            and returns the string representation of it.
         suppress_leaf_taxon_labels : boolean, default: `False`
             If `True`, then taxon labels will not be rendered for leaves.
             Default is `False`: render leaf taxon labels. See notes below for
@@ -151,12 +172,22 @@ class NexusWriter(ioservice.DataWriter):
         self.suppress_taxa_blocks = kwargs.pop("suppress_taxa_block", None)
         self.suppress_block_titles = kwargs.pop("suppress_block_titles", None)
         self.file_comments = kwargs.pop("file_comments", [])
+        if self.file_comments is None:
+            self.file_comments = []
         self.preamble_blocks = kwargs.pop("preamble_blocks", [])
+        if self.preamble_blocks is None:
+            self.preamble_blocks = []
         self.supplemental_blocks = kwargs.pop("supplemental_blocks", [])
+        if self.supplemental_blocks is None:
+            self.supplemental_blocks = []
         self.allow_multiline_comments = kwargs.pop("allow_multiline_comments", True)
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
         self.continuous_character_state_value_format_fn = kwargs.pop("continuous_character_state_value_format_fn", self._format_continuous_character_value)
+        if self.continuous_character_state_value_format_fn is None:
+            self.continuous_character_state_value_format_fn = self._format_continuous_character_value
         self.discrete_character_state_value_format_fn = kwargs.pop("discrete_character_state_value_format_fn", self._format_discrete_character_value)
+        if self.discrete_character_state_value_format_fn is None:
+            self.discrete_character_state_value_format_fn = self._format_discrete_character_value
         self.translate_tree_taxa = kwargs.pop("translate_tree_taxa", None)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
