@@ -340,16 +340,16 @@ class TreeList(
 
             # populated from list of Tree objects
             tlist6_1 = Tree.get(
-data="((A,B),(C,D))",
+                    data="((A,B),(C,D))",
                     schema="newick")
             tlist6_2 = Tree.get(
-data="((A,C),(B,D))",
+                    data="((A,C),(B,D))",
                     schema="newick")
             tlist6 = TreeList([tlist5_1, tlist5_2])
 
             # passing keywords to underlying tree parser
             tlst8 = TreeList.get(
-         data="((A,B),(C,D));((A,C),(B,D));",
+                             data="((A,B),(C,D));((A,C),(B,D));",
                              schema="newick",
                              taxon_namespace=tlst3.taxon_namespace,
                              rooting="force-rooted",
