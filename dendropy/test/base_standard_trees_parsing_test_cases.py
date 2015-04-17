@@ -36,7 +36,7 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
                 approaches = (
                         {"path": tree_filepath},
                         {"file": tree_stream},
-                        {"value": tree_string},
+                        {"data": tree_string},
                         )
                 for approach_kwargs in approaches:
                     approach_kwargs["schema"] = self.__class__.schema
@@ -56,7 +56,7 @@ class StandardTreesParsingTestCase(standard_file_test_trees.StandardTestTreesChe
             approaches = (
                     {"path": tree_filepath},
                     {"file": tree_stream},
-                    {"value": tree_string},
+                    {"data": tree_string},
                     )
             for approach_kwargs in approaches:
                 # prepopulate

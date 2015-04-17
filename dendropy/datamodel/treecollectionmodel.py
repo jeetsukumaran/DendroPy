@@ -221,12 +221,12 @@ class TreeList(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
               "|Schemas|" for more details.
@@ -329,7 +329,7 @@ class TreeList(
 
             tlst2 = TreeList.get(file=open('treefile.tre', 'rU'), schema="newick")
             tlst3 = TreeList.get(path='sometrees.nexus', schema="nexus")
-            tlst4 = TreeList.get(value="((A,B),(C,D));((A,C),(B,D));", schema="newick")
+            tlst4 = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
 
             # can also call `read()` on a TreeList object; each read adds
             # (appends) the tree(s) found to the TreeList
@@ -340,16 +340,16 @@ class TreeList(
 
             # populated from list of Tree objects
             tlist6_1 = Tree.get(
-                    value="((A,B),(C,D))",
+data="((A,B),(C,D))",
                     schema="newick")
             tlist6_2 = Tree.get(
-                    value="((A,C),(B,D))",
+data="((A,C),(B,D))",
                     schema="newick")
             tlist6 = TreeList([tlist5_1, tlist5_2])
 
             # passing keywords to underlying tree parser
             tlst8 = TreeList.get(
-                             value="((A,B),(C,D));((A,C),(B,D));",
+         data="((A,B),(C,D));((A,C),(B,D));",
                              schema="newick",
                              taxon_namespace=tlst3.taxon_namespace,
                              rooting="force-rooted",
@@ -605,12 +605,12 @@ class TreeList(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
               "|Schemas|" for more details.
@@ -2250,12 +2250,12 @@ class TreeArray(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
               "|Schemas|" for more details.

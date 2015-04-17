@@ -2522,12 +2522,12 @@ class Tree(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
               "|Schemas|" for more details.
@@ -2862,15 +2862,15 @@ class Tree(
             # From a string
             s = "((A,B),(C,D));((A,C),(B,D));"
             # tree will be '((A,B),(C,D))'
-            t4 = Tree.get(value=s,
+            t4 = Tree.get(data=s,
                     schema="newick")
             # tree will be '((A,C),(B,D))'
-            t5 = Tree.get(value=s,
+            t5 = Tree.get(data=s,
                     schema="newick",
                     tree_offset=1)
             # passing keywords to underlying tree parser
             t7 = dendropy.Tree.get(
-                    value="((A,B),(C,D));",
+                    data="((A,B),(C,D));",
                     schema="newick",
                     taxon_namespace=t3.taxon_namespace,
                     suppress_internal_node_taxa=False,
@@ -2924,7 +2924,7 @@ class Tree(
 
             # to 'switch out' the TaxonNamespace of a tree, replace the reference and
             # reindex the taxa:
-            t11 = Tree.get(value='((A,B),(C,D));', 'newick')
+            t11 = Tree.get(data='((A,B),(C,D));', 'newick')
             taxa = TaxonNamespace()
             t11.taxon_namespace = taxa
             t11.reindex_subcomponent_taxa()

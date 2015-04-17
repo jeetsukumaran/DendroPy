@@ -16,7 +16,7 @@ The source can be:
 
     -   a path to a file (specified using the keyword argument "``path``")
     -   a file or a file-like object opened for reading (specified using the keyword argument ``"file"``)
-    -   a string value giving the data directly (specified using the keyword argument ``"value"``)
+    -   a string value giving the data directly (specified using the keyword argument ``"data"``)
     -   or a URL (specified using the keyword argument ``"url"``)
 
 The schema is specified using the keyword argument ``"schema"``, and takes a string value that identifies the format of data.
@@ -33,18 +33,18 @@ For example:
 
     tree1 = dendropy.Tree.get(path="mle.tre", schema="newick")
     tree2 = dendropy.Tree.get(file=open("mle.nex", "r"), schema="nexus")
-    tree3 = dendropy.Tree.get(value="((A,B),(C,D));", schema="newick")
+    tree3 = dendropy.Tree.get(data="((A,B),(C,D));", schema="newick")
     tree4 = dendropy.Tree.get(url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex", schema="nexus")
 
     tree_list1 = dendropy.TreeList.get(path="pythonidae.mcmc.nex", schema="nexus")
     tree_list2 = dendropy.TreeList.get(file=open("pythonidae.mcmc.nex", "r"), schema="nexus")
-    tree_list3 = dendropy.TreeList.get(value="(A,(B,C));((A,B),C);", "r"), schema="newick")
+    tree_list3 = dendropy.TreeList.get(data="(A,(B,C));((A,B),C);", "r"), schema="newick")
 
     dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.fasta"), schema="fasta")
     dna2 = dendropy.DnaCharacterMatrix.get(url="http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus", schema="nexus")
     aa1 = dendropy.ProteinCharacterMatrix.get(file=open("pythonidae.dat"), schema="phylip")
     std1 = dendropy.StandardCharacterMatrix.get(path="python_morph.nex", schema="nexus")
-    std2 = dendropy.StandardCharacterMatrix.get(value=">t1\n01011\n\n>t2\n11100", schema="fasta")
+    std2 = dendropy.StandardCharacterMatrix.get(data=">t1\n01011\n\n>t2\n11100", schema="fasta")
 
     dataset1 = dendropy.DataSet.get(path="pythonidae.chars_and_trees.nex", schema="nexus")
     dataset2 = dendropy.DataSet.get(url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml", schema="nexml")
@@ -87,7 +87,7 @@ These are covered in detail in the :doc:`DendroPy Schema Guide </schemas/index>`
         :meth:`get_from_string(src, schema, \*\*kwargs)`
             Takes a string containing the source data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
             Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
-            This is equivalent to calling ":meth:`get(value=src, schema=schema, ...)`".
+            This is equivalent to calling ":meth:`get(data=src, schema=schema, ...)`".
 
         :meth:`get_from_url(src, schema, \*\*kwargs)`
             Takes a string containing the URL of the data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.

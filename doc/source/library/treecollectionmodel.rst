@@ -28,7 +28,7 @@ The |TreeList| Class
 
     :Mandatory Schema-Specification Keyword Argument:
 
-        - **schema** (*str*) -- Identifier of format of data given by the "``file``", "``path``", "``value``", or "``url``" argument specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`".
+        - **schema** (*str*) -- Identifier of format of data given by the "``file``", "``path``", "``data``", or "``url``" argument specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`".
 
     :Optional Schema-Specific Keyword Arguments:
 

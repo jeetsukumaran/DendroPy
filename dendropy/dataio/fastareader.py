@@ -106,33 +106,40 @@ class FastaReader(ioservice.DataReader):
                 char_matrices=[char_matrix])
         return product
 
+
 class DnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         deprecate.dendropy_deprecation_warning(
-                preamble="No longer supported since DendroPy 4:",
-                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='dnafasta', ...)",
-                new_construct="d = dendropy.DnaCharacterMatrix.get(path=..., schema='fasta', ...)",
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='dnafasta', ...)\nd = dendropy.DataSet.get_from_path(schema='dnafasta', ...)",
+                new_construct="d = dendropy.DnaCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='dna', ...)",
                 stacklevel=7)
-        raise TypeError("'dnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'DnaCharacterMatrix.get()' method instead")
+        # raise TypeError("'dnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'DnaCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "dna"
+        FastaReader.__init__(self, **kwargs)
 
 class RnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         deprecate.dendropy_deprecation_warning(
-                preamble="No longer supported since DendroPy 4:",
-                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='dnafasta', ...)",
-                new_construct="d = dendropy.DnaCharacterMatrix.get(path=..., schema='fasta', ...)",
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='rnafasta', ...)\nd = dendropy.DataSet.get_from_path(schema='rnafasta', ...)",
+                new_construct="d = dendropy.RnaCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='rna', ...)",
                 stacklevel=7)
-        raise TypeError("'rnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'RnaCharacterMatrix.get()' method instead")
+        # raise TypeError("'rnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'RnaCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "rna"
+        FastaReader.__init__(self, **kwargs)
 
 class ProteinFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
         deprecate.dendropy_deprecation_warning(
-                preamble="No longer supported since DendroPy 4:",
-                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='dnafasta', ...)",
-                new_construct="d = dendropy.DnaCharacterMatrix.get(path=..., schema='fasta', ...)",
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='proteinfasta', ...)\nd = dendropy.DataSet.get_from_path(schema='proteinfasta', ...)",
+                new_construct="d = dendropy.ProteinCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='protein', ...)",
                 stacklevel=7)
-        raise TypeError("'proteinfasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'ProteinCharacterMatrix.get()' method instead")
+        # raise TypeError("'proteinfasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'ProteinCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "protein"
+        FastaReader.__init__(self, **kwargs)
 

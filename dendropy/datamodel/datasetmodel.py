@@ -143,12 +143,12 @@ class DataSet(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`fasta </schemas/fasta>`", ":doc:`newick
               </schemas/newick>`", ":doc:`nexus </schemas/nexus>`", or
               ":doc:`nexml </schemas/nexml>`", ":doc:`phylip
@@ -282,12 +282,12 @@ class DataSet(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`newick </schemas/newick>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`". See
               "|Schemas|" for more details.

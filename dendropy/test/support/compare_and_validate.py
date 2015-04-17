@@ -60,7 +60,7 @@ class ValidateReadable(object):
         results.append(obj1)
         with open(source_path, "r") as s0:
             s = s0.read()
-            obj2 = object_type.get(value=s, schema=schema, **kwargs)
+            obj2 = object_type.get(data=s, schema=schema, **kwargs)
         results.append(obj2)
         return results
 

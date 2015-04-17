@@ -548,12 +548,12 @@ class CharacterMatrix(
             - **file** (*file*) -- File or file-like object of data opened for reading.
             - **path** (*str*) -- Path to file of data.
             - **url** (*str*) -- URL of data.
-            - **value** (*str*) -- Data given directly.
+            - **data** (*str*) -- Data given directly.
 
         **Mandatory Schema-Specification Keyword Argument:**
 
             - **schema** (*str*) -- Identifier of format of data given by the
-              "``file``", "``path``", "``value``", or "``url``" argument
+              "``file``", "``path``", "``data``", or "``url``" argument
               specified above: ":doc:`fasta </schemas/fasta>`", ":doc:`nexus
               </schemas/nexus>`", or ":doc:`nexml </schemas/nexml>`",
               ":doc:`phylip </schemas/phylip>`", etc.

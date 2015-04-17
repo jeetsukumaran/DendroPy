@@ -75,7 +75,7 @@ class NewickTreeReaderBasic(
                             approaches = (
                                     {"path": tree_filepath},
                                     {"file": tree_stream},
-                                    {"value": tree_string},
+                                    {"data": tree_string},
                                     )
                             for approach_kwargs in approaches:
                                 approach_kwargs.update(reader_kwargs)
@@ -186,7 +186,7 @@ class NewickTreeReaderBasic(
                             s = self.get_newick_string(tree_preamble_tokens=token_str)
                             _LOG.debug(s)
                             t = dendropy.Tree.get(
-                                    value=s,
+                                    data=s,
                                     schema="newick",
                                     rooting=rooting_interpretation,
                                     store_tree_weights=store_tree_weights,
@@ -214,7 +214,7 @@ class NewickTreeMultifurcatingtree(dendropytest.ExtendedTestCase):
          ([t]t:20[t],[u]u:21[u],[v]v:22[v])[w]w:23[w],[q]
          ([h]h:8[h],[i]i:9[i],[j]j:10[j],[k]k:11[k],[o]([l]l:12[l],[m]m:13[m],[n]n:14[n])[o]o:15[o])[q]q:17[q])[r]r:18[r][r];
         """
-        tree = dendropy.Tree.get(value=s,
+        tree = dendropy.Tree.get(data=s,
                 schema="newick",
                 suppress_internal_node_taxa=True,
                 suppress_leaf_node_taxa=True)
@@ -300,7 +300,7 @@ class NewickTreeInvalidStatements(dendropytest.ExtendedTestCase):
         for s in invalid_tree_statements:
             # t = dendropy.Tree.get_from_string(s, "newick")
             with self.assertRaises(error.DataParseError):
-                t = dendropy.Tree.get(value=s, schema="newick")
+                t = dendropy.Tree.get(data=s, schema="newick")
 
 class NewickTreeDuplicateTaxa(
         curated_test_tree.CuratedTestTree,
@@ -317,8 +317,8 @@ class NewickTreeDuplicateTaxa(
         )
         for sidx, s in enumerate(tree_statements):
             with self.assertRaises(newickreader.NewickReader.NewickReaderDuplicateTaxonError):
-                tree = dendropy.Tree.get(value=s, schema="newick")
-            tree = dendropy.Tree.get(value=s,
+                tree = dendropy.Tree.get(data=s, schema="newick")
+            tree = dendropy.Tree.get(data=s,
                     schema="newick",
                     suppress_internal_node_taxa=True,
                     suppress_leaf_node_taxa=True)
@@ -329,13 +329,13 @@ class NewickTreeAnonymousTaxa(dendropytest.ExtendedTestCase):
 
     def test_anonymous_taxa_no_error(self):
         s = "((,),(,(,(,))));"
-        tree = dendropy.Tree.get(value=s,
+        tree = dendropy.Tree.get(data=s,
                 schema="newick")
 
     def test_anonymous_taxa(self):
         s = "((:1[a],:2[b])[c]:3,(:4[d],([e]:5,([f]:6,:7[g]):8[h])[i]:9)[j]:10):11[k];"
         tree = dendropy.Tree.get(
-                value=s,
+                data=s,
                 schema="newick")
         self.assertEqual(len(tree.taxon_namespace), 0)
         anodes = [nd for nd in tree]
