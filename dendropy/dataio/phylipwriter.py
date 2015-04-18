@@ -34,11 +34,25 @@ class PhylipWriter(ioservice.DataWriter):
 
     def __init__(self, **kwargs):
         """
-        __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
-            - ``strict`` (boolean)
-            - ``spaces_to_underscores`` (boolean)
-            - ``force_unique_taxon_labels`` (boolean)
+        Keyword Arguments
+        -----------------
+
+        strict : bool
+            If `True`, use 'strict' format, i.e., taxon labels given in
+            first 10 characters, followed by sequence starting at character 11.
+            Default is `False`: use 'relaxed' format, with arbitrary-length
+            taxon labels separated from sequences by two or more spaces.
+        spaces_to_underscores : bool
+            If `True`, all spaces will be converted to underscores. Default is
+            `False`: spaces will be preserved.
+        force_unique_taxon_labels : bool
+            If `True`, then taxon labels will be modified to avoid duplicate
+            labels. Default is `False`: taxon labels will not be modified.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
         """
         ioservice.DataWriter.__init__(self, **kwargs)
         self.strict = kwargs.pop("strict", False)

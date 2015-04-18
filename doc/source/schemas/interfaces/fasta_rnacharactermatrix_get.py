@@ -1,4 +1,4 @@
-d = dendropy.DnaCharacterMatrix.get(
+d = dendropy.RnaCharacterMatrix.get(
         path="data.fas",
         schema="fasta",
         label=None,

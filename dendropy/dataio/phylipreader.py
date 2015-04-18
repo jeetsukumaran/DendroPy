@@ -54,6 +54,42 @@ class PhylipReader(ioservice.DataReader):
             error.DataParseError.__init__(self, *args, **kwargs)
 
     def __init__(self, **kwargs):
+        """
+        Keyword Arguments
+        -----------------
+        data_type: str
+            When reading into a |DataSet| object, the type of data must be
+            specified: "dna", "rna", "protein", "restriction", "infinite",
+            "standard", or "continuous".
+        default_state_alphabet: |StateAlphabet| instance
+            A |StateAlphabet| object to be used to manage the alphabet of the
+            characters (|StandardCharacterMatrix| **only**).
+        strict : bool
+            If `True`, then data is given in 'strict' format, where first 10
+            characters are the taxon label and remaining characters are the sequence.
+            Default is `False`: relaxed format, where taxon labels are of
+            arbitrary length and separation of sequences are is by one or more (if
+            ``multispace_delimiter`` is `False`) or two or more (if
+            ``multispace_delimiter`` is `True`) spaces.
+        interleaved : bool
+            If `True`, then data is in interleaved format.
+            Default is `False`: data is non-interleaved.
+        multispace_delimiter: bool
+            If `True` (and ``strict`` is `False`), then at least two spaces are
+            required to delimit taxon label and associated sequence. Default is
+            `False`: one or more spaces delimit taxon label and associated
+            sequence.
+        underscore_to_spaces: bool
+            If `True`, then underscores in taxon labels are converted to
+            spaces. Default is `False`: underscores are not converted.
+        ignore_invalid_chars : bool
+            If `True` then any invalid characters in sequences will be ignored.
+            Default is `False`: invalid characters result in errors.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
+        """
         ioservice.DataReader.__init__(self)
         self.data_type = kwargs.pop("data_type", None)
         # if "char_matrix_type" in kwargs and "data_type" in kwargs:
@@ -76,6 +112,12 @@ class PhylipReader(ioservice.DataReader):
         self.multispace_delimiter = kwargs.pop("multispace_delimiter", False)
         self.underscores_to_spaces = kwargs.pop("underscores_to_spaces", False)
         self.ignore_invalid_chars = kwargs.pop("ignore_invalid_chars", False)
+        self.default_state_alphabet = kwargs.pop("default_state_alphabet", None)
+        if self.default_state_alphabet is not None:
+            if self.data_type is None:
+                self.data_type = "standard"
+            elif self.data_type != "standard":
+                raise ValueError("Cannot specify 'default_state_alphabet' with data type of '{}'".format(self.data_type))
         self.check_for_unused_keyword_arguments(kwargs)
         self.ntax = None
         self.nchar = None
@@ -113,17 +155,25 @@ class PhylipReader(ioservice.DataReader):
         self.taxon_namespace = taxon_namespace_factory(label=None)
         if self.data_type is None:
             raise TypeError("Data type must be specified for this schema")
-        self.char_matrix = char_matrix_factory(
-                self.data_type,
-                label=None,
-                taxon_namespace=self.taxon_namespace)
-        if self.data_type == "standard":
-            state_alphabet = state_alphabet_factory(
-                fundamental_states="0123456789",
-                no_data_symbol="?",
-                gap_symbol="-",
-                case_sensitive=False)
-            self.char_matrix.state_alphabets.append(state_alphabet)
+        if self.data_type == "standard" and self.default_state_alphabet is not None:
+            self.char_matrix = char_matrix_factory(
+                    self.data_type,
+                    label=None,
+                    taxon_namespace=taxon_namespace,
+                    default_state_alphabet=self.default_state_alphabet,
+                    )
+        else:
+            self.char_matrix = char_matrix_factory(
+                    self.data_type,
+                    label=None,
+                    taxon_namespace=taxon_namespace)
+            if self.data_type == "standard":
+                state_alphabet = state_alphabet_factory(
+                    fundamental_states="0123456789",
+                    no_data_symbol="?",
+                    gap_symbol="-",
+                    case_sensitive=False)
+                self.char_matrix.state_alphabets.append(state_alphabet)
         lines = filesys.get_lines(stream)
         if len(lines) == 0:
             raise error.DataSourceError("No data in source", stream=self.stream)
