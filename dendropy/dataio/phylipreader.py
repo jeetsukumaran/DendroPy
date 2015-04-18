@@ -159,14 +159,14 @@ class PhylipReader(ioservice.DataReader):
             self.char_matrix = char_matrix_factory(
                     self.data_type,
                     label=None,
-                    taxon_namespace=taxon_namespace,
+                    taxon_namespace=self.taxon_namespace,
                     default_state_alphabet=self.default_state_alphabet,
                     )
         else:
             self.char_matrix = char_matrix_factory(
                     self.data_type,
                     label=None,
-                    taxon_namespace=taxon_namespace)
+                    taxon_namespace=self.taxon_namespace)
             if self.data_type == "standard":
                 state_alphabet = state_alphabet_factory(
                     fundamental_states="0123456789",
