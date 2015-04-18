@@ -1,9 +1,7 @@
 d.write(
         path='trees.nex',
         schema='nexus',
-        simple=False,
         suppress_taxa_blocks=None,
-        suppress_unreferenced_taxon_namespaces=False,
         suppress_block_titles=None,
         file_comments=[],
         preamble_blocks=[],
@@ -26,5 +24,6 @@ d.write(
         node_label_compose_fn=None,
         edge_label_compose_fn=None,
         real_value_format_specifier='',
+        ignore_unrecognized_keyword_arguments=False,
         )
 

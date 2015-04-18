@@ -121,6 +121,10 @@ class NewickWriter(ioservice.DataWriter):
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
 
         Notes
         -----

@@ -1,7 +1,7 @@
 d.write(
-        path="data.fas",
-        schema="fasta",
-        wrap=True,
+        path='trees.xml',
+        schema='nexml',
         ignore_unrecognized_keyword_arguments=False,
         )
+
 

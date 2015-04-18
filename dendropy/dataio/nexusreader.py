@@ -219,15 +219,15 @@ class NexusReader(ioservice.DataReader):
         suppress_edge_lengths : boolean, default: `False`
             If `True`, edge length values will not be processed. If `False`,
             edge length values will be processed.
-        extract_comment_metadata : boolean, default: `False`
-            If `True`, any comments that begin with '&' or '&&' will be parsed
-            and stored as part of the annotation set of the corresponding
-            object (accessible through the ``annotations`` attribute of the
-            object). This requires that the comment contents conform to
-            a particular format (NHX or BEAST: 'field = value'). If `False`,
-            then the comments will not be parsed, but will be instead stored
-            directly as elements of the ``comments`` list attribute of the
-            associated object.
+        extract_comment_metadata : boolean, default: `True`
+            If `True` (default), any comments that begin with '&' or '&&' will
+            be parsed and stored as part of the annotation set of the
+            corresponding object (accessible through the ``annotations``
+            attribute of the object). This requires that the comment
+            contents conform to a particular format (NHX or BEAST: 'field =
+            value'). If `False`, then the comments will not be parsed,
+            but will be instead stored directly as elements of the ``comments``
+            list attribute of the associated object.
         store_tree_weights : boolean, default: `False`
             If `True`, process the tree weight (e.g. "[&W 1/2]") comment
             associated with each tree, if any. Defaults to `False`.
@@ -254,7 +254,27 @@ class NexusReader(ioservice.DataReader):
             If `False`, leaf (external) node labels will be instantantiated
             into |Taxon| objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
-
+        terminating_semicolon_required : boolean, default: `True`
+            If `True` [default], then a tree statement that does not end in a
+            semi-colon is an error. If `False`, then no error will be raised.
+        unconstrained_taxa_accumulation_mode : bool
+            If `True`, then no error is raised even if the number of taxon
+            names defined exceeds the number of declared taxa (as specified by
+            'NTAX'). Defaults to `False`.
+        automatically_substitute_missing_taxa_blocks : bool
+            If `True` then, if a taxon namespace is linked to by title but is
+            not given in the data file, then, if one and exactly one other
+            taxon namespace has been given in the data file, this taxon
+            namespace will be used; if there are multiple taxon namespaces,
+            then if ``automatically_create_missing_taxa_blocks`` is `True` a
+            new taxon namespace will be created, otherwise an error is raised.
+            Default is `False`: if a taxon namespace is linked to by title but
+            is not given in the data file, then an error is raised.
+        automatically_create_missing_taxa_blocks : bool
+            If `True` then taxon namespaces linked to by title but not given in
+            the data file will be automatically created. If `False` taxon
+            namespaces linked to by title but not given in the data file will
+            result in error.
         exclude_chars : bool
             If `False`, then character data will not be read. Defaults to
             `True`: character data will be read.
@@ -263,6 +283,10 @@ class NexusReader(ioservice.DataReader):
             `True`: tree data will be read.
         attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
         """
 
         # base

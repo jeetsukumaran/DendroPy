@@ -58,10 +58,13 @@ class NexusWriter(ioservice.DataWriter):
             collection will *not* be written as a "TAXA" block if it is not
             referenced by any character matrix (``char_matrices``) or tree list
             (``tree_lists``).
-        suppress_block_titles : bool
+        suppress_block_titles : bool or `None`
             If `True` then 'TITLE' element to blocks will not be written. Note
             that this may make the file impossible to parse if there are
-            multiple taxon namespaces in the data.
+            multiple taxon namespaces in the data. If `False`, then the
+            'TITLE' element will always be written. Default is `None`: the
+            'TITLE' element will only be written if needed because there is
+            more than on taxon namespace in the data.
         file_comments: iterable [``str``]
             List of lines of text to be added as comments to the file.
         preamble_blocks: iterable [``str``]
@@ -160,6 +163,10 @@ class NexusWriter(ioservice.DataWriter):
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
 
         """
         # base

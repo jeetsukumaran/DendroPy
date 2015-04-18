@@ -28,5 +28,6 @@ d.write(
         node_label_compose_fn=None,
         edge_label_compose_fn=None,
         real_value_format_specifier='',
+        ignore_unrecognized_keyword_arguments=False,
         )
 

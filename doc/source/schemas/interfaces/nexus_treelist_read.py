@@ -11,7 +11,7 @@ tree_list.read(
     store_tree_weights=False,
     encode_splits=False,
     finish_node_fn=None,
-    case_insensitive_taxon_labels=None,
+    case_sensitive_taxon_labels=False,
     preserve_underscores=False,
     suppress_internal_node_taxa=True,
     suppress_leaf_node_taxa=False,

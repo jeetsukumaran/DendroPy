@@ -3,7 +3,6 @@ d.write(
         schema='nexus',
         simple=False,
         suppress_taxa_blocks=None,
-        suppress_unreferenced_taxon_namespaces=False,
         suppress_block_titles=None,
         file_comments=[],
         preamble_blocks=[],
@@ -17,5 +16,6 @@ d.write(
         annotations_as_nhx=False,
         suppress_item_comments=False,
         real_value_format_specifier='',
+        ignore_unrecognized_keyword_arguments=False,
         )
 
