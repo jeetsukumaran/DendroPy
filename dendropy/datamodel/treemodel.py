@@ -2558,6 +2558,39 @@ class Tree(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
+        Examples
+        --------
+
+        ::
+
+            # From a file-like object
+            t2 = Tree.get(file=open('treefile.tre', 'rU'),
+                            schema="newick",
+                            tree_offset=0)
+
+            # From a path
+            t3 = Tree.get(path='sometrees.nexus',
+                    schema="nexus",
+                    collection_offset=2,
+                    tree_offset=1)
+
+            # From a string
+            s = "((A,B),(C,D));((A,C),(B,D));"
+            # tree will be '((A,B),(C,D))'
+            t4 = Tree.get(data=s,
+                    schema="newick")
+            # tree will be '((A,C),(B,D))'
+            t5 = Tree.get(data=s,
+                    schema="newick",
+                    tree_offset=1)
+            # passing keywords to underlying tree parser
+            t7 = dendropy.Tree.get(
+                    data="((A,B),(C,D));",
+                    schema="newick",
+                    taxon_namespace=t3.taxon_namespace,
+                    suppress_internal_node_taxa=False,
+                    preserve_underscores=True)
+
         """
         return cls._get_from(**kwargs)
 
@@ -2599,6 +2632,33 @@ class Tree(
         ------
         t : |Tree|
             Trees as read from the file.
+
+        Examples
+        --------
+
+        ::
+
+            taxon_namespace = dendropy.TaxonNamespace()
+            f1 = open("path/to/trees1.nex", "r")
+            f2 = open("path/to/trees2.nex", "r")
+            tree_yielder = dendropy.Tree.yield_from_files(
+                    files=[f1, f2, "path/to/trees3.nex", "path/to/trees4.nex"],
+                    schema="nexus",
+                    taxon_namespace=taxon_namespace,
+                    store_tree_weights=True,
+                    preserve_underscores=True,
+                    rooting="default-unrooted",
+                    ignore_unrecognized_keyword_arguments=True,
+                    )
+            lengths = []
+            root_ages = []
+            for tree in tree_yielder:
+                length = 0.0
+                for edge in tree:
+                    length += edge.length
+                lengths.append(length)
+                tree.calc_node_ages()
+                root_ages.append(tree.seed_node.age)
 
         """
         if taxon_namespace is None:
