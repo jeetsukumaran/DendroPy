@@ -138,6 +138,9 @@ class DataSet(
         """
         Instantiate and return a *new* |TreeList| object from a data source.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -174,6 +177,18 @@ class DataSet(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            dataset1 = dendropy.DataSet.get(
+                    path="pythonidae.chars_and_trees.nex",
+                    schema="nexus")
+            dataset2 = dendropy.DataSet.get(
+                    url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml",
+                    schema="nexml")
 
         """
         return cls._get_from(**kwargs)
@@ -277,6 +292,9 @@ class DataSet(
         """
         Add data to ``self`` from data source.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -315,6 +333,19 @@ class DataSet(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            ds = dendropy.DataSet()
+            ds.read(
+                    path="pythonidae.chars_and_trees.nex",
+                    schema="nexus")
+            ds.read(
+                    url="http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml",
+                    schema="nexml")
 
         """
         return basemodel.MultiReadable._read_from(self, **kwargs)

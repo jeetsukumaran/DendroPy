@@ -574,6 +574,19 @@ class Serializable(object):
             value passed as the "``schema``" argument. See "|Schemas|" for more
             details.
 
+        Examples
+        --------
+
+        ::
+
+                d.write(path="path/to/file.dat",
+                        schema="nexus",
+                        preserve_underscores=True)
+                f = open("path/to/file.dat")
+                d.write(file=f,
+                        schema="nexus",
+                        preserve_underscores=True)
+
         """
         return Serializable._write_to(self, **kwargs)
 

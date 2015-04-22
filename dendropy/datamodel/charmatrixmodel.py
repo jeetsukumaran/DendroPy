@@ -543,6 +543,9 @@ class CharacterMatrix(
         """
         Instantiate and return a *new* character matrix object from a data source.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -581,6 +584,27 @@ class CharacterMatrix(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            dna1 = dendropy.DnaCharacterMatrix.get(
+                    file=open("pythonidae.fasta"),
+                    schema="fasta")
+            dna2 = dendropy.DnaCharacterMatrix.get(
+                    url="http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus",
+                    schema="nexus")
+            aa1 = dendropy.ProteinCharacterMatrix.get(
+                    file=open("pythonidae.dat"),
+                    schema="phylip")
+            std1 = dendropy.StandardCharacterMatrix.get(
+                    path="python_morph.nex",
+                    schema="nexus")
+            std2 = dendropy.StandardCharacterMatrix.get(
+                    data=">t1\n01011\n\n>t2\n11100",
+                    schema="fasta")
 
         """
         return cls._get_from(**kwargs)

@@ -2517,6 +2517,9 @@ class Tree(
         """
         Instantiate and return a *new* |Tree| object from a data source.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -2563,8 +2566,13 @@ class Tree(
 
         ::
 
+            # From a URL
+            t1 = dendropy.Tree.get(
+                    url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex",
+                    schema="nexus")
+
             # From a file-like object
-            t2 = Tree.get(file=open('treefile.tre', 'rU'),
+            t2 = Tree.get(file=open('treefile.tre', 'r'),
                             schema="newick",
                             tree_offset=0)
 
@@ -2909,7 +2917,7 @@ class Tree(
             # using the 'get()' factory class method
 
             # From a file-like object
-            t2 = Tree.get(file=open('treefile.tre', 'rU'),
+            t2 = Tree.get(file=open('treefile.tre', 'r'),
                             schema="newick",
                             tree_offset=0)
 
@@ -2937,7 +2945,7 @@ class Tree(
                     preserve_underscores=True)
 
             # Tree objects can be written out using the 'write()' method.
-            t1.write(file=open('treefile.tre', 'rU'),
+            t1.write(file=open('treefile.tre', 'r'),
                     schema="newick")
             t1.write(path='treefile.nex',
                     schema="nexus")

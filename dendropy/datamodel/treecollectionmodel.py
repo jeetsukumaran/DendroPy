@@ -216,6 +216,9 @@ class TreeList(
         """
         Instantiate and return a *new* |TreeList| object from a data source.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -259,6 +262,27 @@ class TreeList(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            tlst1 = dendropy.TreeList.get(
+                    file=open('treefile.tre', 'rU'),
+                    schema="newick")
+            tlst2 = dendropy.TreeList.get(
+                    path='sometrees.nexus',
+                    schema="nexus",
+                    collection_offset=2,
+                    tree_offset=100)
+            tlst3 = dendropy.TreeList.get(
+                    data="((A,B),(C,D));((A,C),(B,D));",
+                    schema="newick")
+            tree4 = dendropy.dendropy.TreeList.get(
+                    url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex",
+                    schema="nexus")
+
 
         """
         return cls._get_from(**kwargs)
@@ -600,6 +624,9 @@ class TreeList(
         Add |Tree| objects to existing |TreeList| from data source providing
         one or more collections of trees.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -637,6 +664,28 @@ class TreeList(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            tlist = dendropy.TreeList()
+            tlist.read(
+                    file=open('treefile.tre', 'rU'),
+                    schema="newick",
+                    tree_offset=100)
+            tlist.read(
+                    path='sometrees.nexus',
+                    schema="nexus",
+                    collection_offset=2,
+                    tree_offset=100)
+            tlist.read(
+                    data="((A,B),(C,D));((A,C),(B,D));",
+                    schema="newick")
+            tlist.read(
+                    url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex",
+                    schema="nexus")
 
         """
         return basemodel.MultiReadable._read_from(self, **kwargs)
@@ -2245,6 +2294,9 @@ class TreeArray(
         Add |Tree| objects to existing |TreeList| from data source providing
         one or more collections of trees.
 
+        Keyword Arguments
+        -----------------
+
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -2282,6 +2334,28 @@ class TreeArray(
             processed, and supported argument names and values depend on
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
+
+        Examples
+        --------
+
+        ::
+
+            tree_array = dendropy.TreeArray()
+            tree_array.read(
+                    file=open('treefile.tre', 'rU'),
+                    schema="newick",
+                    tree_offset=100)
+            tree_array.read(
+                    path='sometrees.nexus',
+                    schema="nexus",
+                    collection_offset=2,
+                    tree_offset=100)
+            tree_array.read(
+                    data="((A,B),(C,D));((A,C),(B,D));",
+                    schema="newick")
+            tree_array.read(
+                    url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex",
+                    schema="nexus")
 
         """
         return basemodel.MultiReadable._read_from(self, **kwargs)
