@@ -543,9 +543,6 @@ class CharacterMatrix(
         """
         Instantiate and return a *new* character matrix object from a data source.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -580,13 +577,12 @@ class CharacterMatrix(
 
         **Optional Schema-Specific Keyword Arguments:**
 
-            These provide control over how the data is interpreted and
-            processed, and supported argument names and values depend on
-            the schema as specified by the value passed as the "``schema``"
-            argument. See "|Schemas|" for more details.
+        These provide control over how the data is interpreted and
+        processed, and supported argument names and values depend on
+        the schema as specified by the value passed as the "``schema``"
+        argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 
@@ -603,7 +599,7 @@ class CharacterMatrix(
                     path="python_morph.nex",
                     schema="nexus")
             std2 = dendropy.StandardCharacterMatrix.get(
-                    data=">t1\n01011\n\n>t2\n11100",
+                    data=">t1\\n01011\\n\\n>t2\\n11100",
                     schema="fasta")
 
         """

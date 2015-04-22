@@ -138,9 +138,6 @@ class DataSet(
         """
         Instantiate and return a *new* |TreeList| object from a data source.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -178,8 +175,7 @@ class DataSet(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 
@@ -292,9 +288,6 @@ class DataSet(
         """
         Add data to ``self`` from data source.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -334,8 +327,7 @@ class DataSet(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 

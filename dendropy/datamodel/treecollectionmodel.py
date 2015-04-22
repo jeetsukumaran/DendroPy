@@ -216,9 +216,6 @@ class TreeList(
         """
         Instantiate and return a *new* |TreeList| object from a data source.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -263,8 +260,7 @@ class TreeList(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 
@@ -624,9 +620,6 @@ class TreeList(
         Add |Tree| objects to existing |TreeList| from data source providing
         one or more collections of trees.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -665,8 +658,7 @@ class TreeList(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 
@@ -2294,9 +2286,6 @@ class TreeArray(
         Add |Tree| objects to existing |TreeList| from data source providing
         one or more collections of trees.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -2335,8 +2324,7 @@ class TreeArray(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 

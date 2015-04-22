@@ -2517,9 +2517,6 @@ class Tree(
         """
         Instantiate and return a *new* |Tree| object from a data source.
 
-        Keyword Arguments
-        -----------------
-
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
 
             - **file** (*file*) -- File or file-like object of data opened for reading.
@@ -2561,8 +2558,7 @@ class Tree(
             the schema as specified by the value passed as the "``schema``"
             argument. See "|Schemas|" for more details.
 
-        Examples
-        --------
+        **Examples:**
 
         ::
 
