@@ -141,14 +141,20 @@ For example, the following accumulates post-burn-in trees from several different
 .. The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonNamespace| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonNamespace| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
 .. As with the "|get|" method, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
 
-while the following accumulates data from a variety of sources into a single |DataSet| object::
+while the following accumulates data from a variety of sources into a single |DataSet| object under the same |TaxonNamespace| to ensure that they all reference the same set of |Taxon| objects::
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
     >>> tns = dendropy.TaxonNamespace()
     >>> ds.attach_taxon_namespace(tns)
-    >>> ds.read(
-
+    >>> ds.read(url="http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex",
+    ...     schema="nexus")
+    >>> ds.read(file=open("pythonidae.fasta"), schema="fasta")
+    >>> ds.read(url="http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus",
+    ...     schema="nexus")
+    >>> ds.read(file=open("pythonidae.dat"), schema="phylip")
+    >>> ds.read(path="python_morph.nex", schema="nexus")
+    >>> ds.read(data=">t1\n01011\n\n>t2\n11100", schema="fasta")
 
 .. note:: DendroPy 3.xx supported "|read_from_methods|" methods on |Tree| and |CharacterMatrix|-derived classes. This is no longer supported in DendroPy 4 and above. Instead of trying to re-populate an existing |Tree| or |CharacterMatrix|-derived object by using "|read_from_methods|"::
 
@@ -159,25 +165,38 @@ while the following accumulates data from a variety of sources into a single |Da
             .
             x.read_from_path("tree2.nex", "nexus")
 
-        simply rebind the new object returned by "|get_from_methods|"::
+        simply rebind the new object returned by "|get|"::
 
-            x = dendropy.Tree.get_from_path("tree1.nex", "nexus")
+            x = dendropy.Tree.get(path="tree1.nex", "nexus")
             .
             .
             .
-            x = dendropy.Tree.get_from_path("tree2.nex", "nexus")
+            x = dendropy.Tree.get(path="tree2.nex", "nexus")
 
+.. note:: The |TreeList|, |TreeArray|, and |DataSet| classes
+    also support a "|read_from_methods|" family of instance methods that
+    can be seen as specializations of the "|read|" method for various types of
+    sources (in fact, the "|read|" method is actually a dispatcher that calls on
+    one of these methods below for implementation of the functionality):
 
-.. _Customizing_Data_Creation_and_Reading:
+        :meth:`read_from_stream(src, schema, \*\*kwargs)`
+            Takes a file or file-like object opened for reading the data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`read(file=src, schema=schema, ...)`".
 
-Customizing Data Creation and Reading
-=====================================
+        :meth:`read_from_path(src, schema, \*\*kwargs)`
+            Takes a string specifying the path to the the data source file as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`read(path=src, schema=schema, ...)`".
 
-When specifying a data source from which to create or populate data objects
-using the "|get|" or "|read|" methods, you can also specify keyword arguments
-that provide fine-grained control over how the data source is parsed.
+        :meth:`read_from_string(src, schema, \*\*kwargs)`
+            Takes a string containing the source data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be to control the parsing and other options.
+            This is equivalent to calling ":meth:`read(data=src, schema=schema, ...)`".
 
-Some of these keyword arguments apply generally, regardless of the format of
-the data source or the data object being created, while others are specific to
-the data object type, the data source format, or both.
+        :meth:`read_from_url(src, schema, \*\*kwargs)`
+            Takes a string containing the URL of the data as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second.
+            Optional :term:`schema`-specific keyword arguments can be  to control the parsing and other options.
+            This is equivalent to calling ":meth:`read(url=src, schema=schema, ...)`".
 
+    As with the "|read|" method, the additional keyword arguments are specific to the given class or schema type.
