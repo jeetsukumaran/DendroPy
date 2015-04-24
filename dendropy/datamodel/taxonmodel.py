@@ -135,7 +135,7 @@ def process_attached_taxon_namespace_directives(kwargs_dict):
             ]
     for kw in deprecated_kw:
         if kw in kwargs_dict:
-            raise TypeError("'{}' is no longer supported as a keyword argument. Use the instance method 'attach_taxon_namespace()' of the data object instead".format(kw))
+            raise TypeError("'{}' is no longer supported as a keyword argument. Use the instance method 'attach_taxon_namespace()' of the data object instead to bind the object to a single TaxonNamespace".format(kw))
     taxon_namespace = None
     attach_taxon_namespace = False
     if ( ("taxon_set" in kwargs_dict or "taxon_namespace" in kwargs_dict)

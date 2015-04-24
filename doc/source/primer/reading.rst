@@ -12,7 +12,7 @@ of the given class from a data source. This method takes, at a minumum, two
 keyword arguments that specify the *source* of the data and the *schema* (or
 format) of the data.
 
-The source can be:
+The source must be specifed using one and exactly one of the following:
 
     -   a path to a file (specified using the keyword argument "``path``")
     -   a file or a file-like object opened for reading (specified using the keyword argument ``"file"``)
@@ -99,40 +99,55 @@ These are covered in detail in the :doc:`DendroPy Schema Guide </schemas/index>`
 Adding Data to Existing Objects from an External Data Source
 ============================================================
 
-In addition to the "|get_from_methods|" class factory methods, the collection classes (|TreeList|, |TreeArray| and |DataSet|) all support a suite of "|read_from_methods|" *instance* methods that *add* data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
-These "|read_from_methods|" instance methods have signatures that parallel the "|get_from_methods|" factory methods described above:
+In addition to the "|get|" class factory method, the collection classes (|TreeList|, |TreeArray| and |DataSet|) each support a "|read|" *instance* method that *add* data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
+This "|read|" instance method has a signature that parallels the "|get|" factory method described above, requiring:
 
-    :meth:`read_from_stream(src, schema, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the :term:`schema` as the second.
+    -   A specification of a source using one and exactly one of the following keyword arguments: "``path``", "``file``", "``data``", "``url``".
+    -   A specification of the :ref:`schema <Specifying_the_Data_Source_Format>` or format of the data.
+    -   Optional keyword arguments to customize/control the parsing and interpretation of the data.
 
-    :meth:`read_from_path(src, schema, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the :term:`schema` as the second.
+As with the "|get|" method, the "|read|" method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed, which are covered in more detail in the documentation of the respective methods for each class:
 
-    :meth:`read_from_string(src, schema, **kwargs)`
-        Takes a string specifying containing the source data as the first argument, and a string specifying the :term:`schema` as the second.
+    -   :meth:`TreeList.read <dendropy.datamodel.treecollectionmodel.TreeList.read>`
+    -   :meth:`TreeArray.read <dendropy.datamodel.treecollectionmodel.TreeArray.read>`
+    -   :meth:`DataSet.read <dendropy.datamodel.datasetmodel.DataSet.read>`
 
-When called on an existing |TreeList|, |TreeArray| or |DataSet| objects, these methods *add* the data from the data source to the object.
-As with the "|get_from_methods|" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate :term:`schema`, such as "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
+as well as :ref:`schema-specific keyword arguments <Schema_Specific_Keyword_Arguments>` which are covered in detail in the :doc:`DendroPy Schema Guide </schemas/index>`.
 
 For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object::
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()
-    >>> post_trees.read_from_path("pythonidae.nex.run1.t", "nexus", tree_offset=200)
-    >>> print(post_trees.description())
-    TreeList object at 0x550990 (TreeList5573008): 801 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run2.t", "nexus", tree_offset=200)
-    >>> print(post_trees.description())
-    TreeList object at 0x550990 (TreeList5573008): 1602 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run3.t", "nexus", tree_offset=200)
-    >>> print(post_trees.description())
-    TreeList object at 0x550990 (TreeList5573008): 2403 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run4.t", "nexus", tree_offset=200)
-    >>> print(post_trees.description())
-    TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
+    >>> post_trees.read(
+    ...         file=open("pythonidae.nex.run1.t", "r")
+    ...         schema="nexus",
+    ...         tree_offset=200)
+    >>> print(len(post_trees))
+    800
+    >>> post_trees.read(
+    ...         path="pythonidae.nex.run2.t",
+    ...         schema="nexus",
+    ...         tree_offset=200)
+    >>> print(len(post_trees))
+    1600
+    >>> s = open("pythonidae.nex.run3.t", "r").read()
+    >>> post_trees.read(
+    ...         data=s,
+    ...         schema="nexus",
+    ...         tree_offset=200)
+    >>> print(len(post_trees))
+    2400
 
-The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonNamespace| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonNamespace| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
-As with the "|get_from_methods|" methods, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
+.. The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonNamespace| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonNamespace| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
+.. As with the "|get|" method, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
+
+while the following accumulates data from a variety of sources into a single |DataSet| object::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> tns = dendropy.TaxonNamespace()
+    >>> ds.attach_taxon_namespace(tns)
+    >>> ds.read(
 
 
 .. note:: DendroPy 3.xx supported "|read_from_methods|" methods on |Tree| and |CharacterMatrix|-derived classes. This is no longer supported in DendroPy 4 and above. Instead of trying to re-populate an existing |Tree| or |CharacterMatrix|-derived object by using "|read_from_methods|"::
@@ -159,9 +174,8 @@ Customizing Data Creation and Reading
 =====================================
 
 When specifying a data source from which to create or populate data objects
-using the "|get_from_methods|" or "|read_from_methods|" methods, you can also
-specify keyword arguments that provide fine-grained control over how the data
-source is parsed.
+using the "|get|" or "|read|" methods, you can also specify keyword arguments
+that provide fine-grained control over how the data source is parsed.
 
 Some of these keyword arguments apply generally, regardless of the format of
 the data source or the data object being created, while others are specific to
