@@ -14,9 +14,7 @@ The DendroPy Data Model: Phylogenetic Data Objects
     :maxdepth: 2
 
     dataobjects.rst
-    reading.rst
-    writing.rst
-    examining.rst
+    reading_and_writing.rst
     converting.rst
 
 Working with Taxa: Operational Taxonomic Units and Taxon Namespaces
