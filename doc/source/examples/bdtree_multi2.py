@@ -17,4 +17,4 @@ def generate(mean, sd, num_periods):
     return tree
 
 tree = generate(0.1, 0.01, 100)
-print(tree.as_string('newick'))
+print(tree.as_string(schema='newick'))

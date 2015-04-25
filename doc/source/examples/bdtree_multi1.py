@@ -14,9 +14,9 @@ def generate(birth_rates, death_rates):
                                    tree=tree,
                                    assign_taxa=False,
                                    repeat_until_success=True)
-        print(tree.as_string('newick'))
+        print(tree.as_string(schema='newick'))
     tree.randomly_assign_taxa(create_required_taxa=True)
     return tree
 
 tree = generate([0.1, 0.6, 0.1], [0.1, 0.6, 0.1])
-print(tree.as_string('newick'))
+print(tree.as_string(schema='newick'))
