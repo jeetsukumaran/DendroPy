@@ -257,6 +257,7 @@ rst_prolog = """
 .. |get| replace::  :py:meth:`get`
 .. |put| replace::  :py:meth:`put`
 .. |read| replace::  :py:meth:`read`
+.. |write| replace::  :py:meth:`write`
 
 .. |get_from_methods| replace::  :py:meth:`get_from_*() <get_from_*>`
 .. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
