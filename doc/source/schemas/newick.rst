@@ -26,28 +26,40 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`Tree.get <dendropy.datamodel.treemodel.Tree.get>`
-........................................................
+``Tree.get``
+............
+(:meth:`method reference <dendropy.datamodel.treemodel.Tree.get>`)
+
 .. literalinclude:: /schemas/interfaces/newick_tree_get.py
 
-:meth:`TreeList.get <dendropy.datamodel.treecollection.TreeList.get>`
-.....................................................................
+``TreeList.get``
+................
+(:meth:`method reference <dendropy.datamodel.treecollectionmodel.TreeList.get>`)
+
 .. literalinclude:: /schemas/interfaces/newick_treelist_get.py
 
-:meth:`TreeList.read <dendropy.datamodel.treecollectionmodel.TreeList.read>`
-............................................................................
+``TreeList.read``
+.................
+(:meth:`method reference <dendropy.datamodel.treecollectionmodel.TreeList.read>`)
+
 .. literalinclude:: /schemas/interfaces/newick_treelist_read.py
 
-:meth:`TreeArray.read <dendropy.datamodel.treecollectionmodel.TreeArray.read>`
-..............................................................................
+``TreeArray.read``
+..................
+(:meth:`method reference <dendropy.datamodel.treecollectionmodel.TreeArray.read>`)
+
 .. literalinclude:: /schemas/interfaces/newick_treearray_read.py
 
-:meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.get>`
-.................................................................
+``DataSet.get``
+...............
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.get>`)
+
 .. literalinclude:: /schemas/interfaces/newick_dataset_get.py
 
-:meth:`DataSet.read <dendropy.datamodel.datasetmodel.DataSet.read>`
-...................................................................
+``DataSet.read``
+................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.read>`)
+
 .. literalinclude:: /schemas/interfaces/newick_dataset_read.py
 
 Writing
@@ -63,16 +75,40 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`Tree.write <dendropy.datamodel.treemodel.Tree.write>`
-............................................................
+``Tree.write``
+..............
+(:meth:`method reference <dendropy.datamodel.treemodel.Tree.write>`)
+
 .. literalinclude:: /schemas/interfaces/newick_write.py
 
-:meth:`TreeList.write <dendropy.datamodel.treecollectionmodel.TreeList.write>`
-..............................................................................
+``Tree.as_string``
+..................
+(:meth:`method reference <dendropy.datamodel.treemodel.Tree.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/newick_as_string.py
+
+``TreeList.write``
+..................
+(:meth:`method reference <dendropy.datamodel.treecollectionmodel.TreeList.write>`)
+
 .. literalinclude:: /schemas/interfaces/newick_write.py
 
-:meth:`DataSet.write <dendropy.datamodel.datasetmodel.DataSet.write>`
-.....................................................................
+``TreeList.as_string``
+......................
+(:meth:`method reference <dendropy.datamodel.treecollectionmodel.TreeList.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/newick_as_string.py
+
+``DataSet.write``
+.................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.write>`)
+
 .. literalinclude:: /schemas/interfaces/newick_write.py
+
+``DataSet.as_string``
+.....................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/newick_as_string.py
 
 

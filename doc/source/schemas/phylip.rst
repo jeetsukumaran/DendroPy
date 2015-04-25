@@ -20,51 +20,60 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`DnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`
-..........................................................................................
+``DnaCharacterMatrix.get``
+..........................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_dnacharactermatrix_get.py
 
-:meth:`RnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`
-..........................................................................................
+``RnaCharacterMatrix.get``
+..........................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_rnacharactermatrix_get.py
 
-:meth:`ProteinCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`
-..................................................................................................
+``ProteinCharacterMatrix.get``
+..............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_proteincharactermatrix_get.py
 
-:meth:`RestrictionSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get>`
-....................................................................................................................
+``RestrictionSitesCharacterMatrix.get``
+.......................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_restrictionsitescharactermatrix_get.py
 
-:meth:`InfiniteSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`
-...............................................................................................................
+``InfiniteSitesCharacterMatrix.get``
+....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_infinitesitescharactermatrix_get.py
 
-:meth:`StandardCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get>`
-....................................................................................................
+``StandardCharacterMatrix.get``
+...............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_standardcharactermatrix_get.py
 
-:meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.get>`
-.................................................................
+``DataSet.get``
+...............
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.get>`)
 
 Note that the type of data needs to be specified using the ``data_type``
 keyword argument.
 
 .. literalinclude:: /schemas/interfaces/phylip_dataset_get.py
 
-:meth:`DataSet.read <dendropy.datamodel.datasetmodel.DataSet.read>`
-...................................................................
+``DataSet.read``
+................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.read>`)
 
 Note that the type of data needs to be specified using the ``data_type``
 keyword argument.
 
 .. literalinclude:: /schemas/interfaces/phylip_dataset_read.py
+
 
 Writing
 =======
@@ -79,39 +88,93 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`DnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`
-..............................................................................................
+``DnaCharacterMatrix.write``
+.............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`RnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`
-..............................................................................................
+``DnaCharacterMatrix.as_string``
+................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``RnaCharacterMatrix.write``
+.............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`ProteinCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`
-......................................................................................................
+``RnaCharacterMatrix.as_string``
+................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``ProteinCharacterMatrix.write``
+.................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`RestrictionSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`
-........................................................................................................................
+``ProteinCharacterMatrix.as_string``
+.....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``RestrictionSitesCharacterMatrix.write``
+.........................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`InfiniteSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`
-..................................................................................................................
+``RestrictionSitesCharacterMatrix.as_string``
+.............................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``InfiniteSitesCharacterMatrix.write``
+......................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`StandardCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`
-........................................................................................................
+``InfiniteSitesCharacterMatrix.as_string``
+..........................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``StandardCharacterMatrix.write``
+.................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
-:meth:`DataSet.write <dendropy.datamodel.datasetmodel.DataSet.write>`
-.....................................................................
+``StandardCharacterMatrix.as_string``
+.....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
+
+
+``DataSet.write``
+.................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.write>`)
 
 .. literalinclude:: /schemas/interfaces/phylip_write.py
 
+``DataSet.as_string``
+.....................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.as_string>`)
+
+.. literalinclude:: /schemas/interfaces/phylip_as_string.py
 

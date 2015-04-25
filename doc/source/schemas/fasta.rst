@@ -23,46 +23,54 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`DnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`
-..........................................................................................
+``DnaCharacterMatrix.get``
+..........................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_dnacharactermatrix_get.py
 
-:meth:`RnaCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`
-..........................................................................................
+``RnaCharacterMatrix.get``
+..........................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_rnacharactermatrix_get.py
 
-:meth:`ProteinCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`
-..................................................................................................
+``ProteinCharacterMatrix.get``
+..............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_proteincharactermatrix_get.py
 
-:meth:`RestrictionSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get>`
-....................................................................................................................
+``RestrictionSitesCharacterMatrix.get``
+.......................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_restrictionsitescharactermatrix_get.py
 
-:meth:`InfiniteSitesCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`
-...............................................................................................................
+``InfiniteSitesCharacterMatrix.get``
+....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_infinitesitescharactermatrix_get.py
 
-:meth:`StandardCharacterMatrix.get <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get>`
-....................................................................................................
+``StandardCharacterMatrix.get``
+...............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_standardcharactermatrix_get.py
 
-:meth:`DataSet.get <dendropy.datamodel.datasetmodel.DataSet.get>`
-.................................................................
+``DataSet.get``
+...............
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.get>`)
 
 Note that the type of data needs to be specified using the ``data_type``
 keyword argument.
 
 .. literalinclude:: /schemas/interfaces/fasta_dataset_get.py
 
-:meth:`DataSet.read <dendropy.datamodel.datasetmodel.DataSet.read>`
-...................................................................
+``DataSet.read``
+................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.read>`)
 
 Note that the type of data needs to be specified using the ``data_type``
 keyword argument.
@@ -82,73 +90,93 @@ Schema-Specific Keyword Arguments
 Supported Methods
 -----------------
 
-:meth:`DnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`
-..............................................................................................
+``DnaCharacterMatrix.write``
+.............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`DnaCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.as_string>`
-......................................................................................................
+``DnaCharacterMatrix.as_string``
+................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`RnaCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`
-..............................................................................................
+
+``RnaCharacterMatrix.write``
+.............................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`RnaCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.as_string>`
-......................................................................................................
+``RnaCharacterMatrix.as_string``
+................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`ProteinCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`
-......................................................................................................
+
+``ProteinCharacterMatrix.write``
+.................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`ProteinCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.as_string>`
-..............................................................................................................
+``ProteinCharacterMatrix.as_string``
+.....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`RestrictionSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`
-........................................................................................................................
+
+``RestrictionSitesCharacterMatrix.write``
+.........................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`RestrictionSitesCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.as_string>`
-................................................................................................................................
+``RestrictionSitesCharacterMatrix.as_string``
+.............................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`InfiniteSitesCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`
-..................................................................................................................
+
+``InfiniteSitesCharacterMatrix.write``
+......................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`InfiniteSitesCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.as_string>`
-..........................................................................................................................
+``InfiniteSitesCharacterMatrix.as_string``
+..........................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`StandardCharacterMatrix.write <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`
-........................................................................................................
+
+``StandardCharacterMatrix.write``
+.................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`StandardCharacterMatrix.as_string <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.as_string>`
-................................................................................................................
+``StandardCharacterMatrix.as_string``
+.....................................
+(:meth:`method reference <dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
-:meth:`DataSet.write <dendropy.datamodel.datasetmodel.DataSet.write>`
-.....................................................................
+
+``DataSet.write``
+.................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.write>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_write.py
 
-:meth:`DataSet.as_string <dendropy.datamodel.datasetmodel.DataSet.as_string>`
-.............................................................................
+``DataSet.as_string``
+.....................
+(:meth:`method reference <dendropy.datamodel.datasetmodel.DataSet.as_string>`)
 
 .. literalinclude:: /schemas/interfaces/fasta_as_string.py
 
