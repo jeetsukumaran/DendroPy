@@ -3,7 +3,9 @@
 import dendropy
 from dendropy.calculate import treestat
 
-tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+tree = dendropy.Tree.get(
+    path="pythonidae.mle.nex",
+    schema="nexus")
 pdm = treestat.PatristicDistanceMatrix(tree)
 for i, t1 in enumerate(tree.taxon_namespace):
     for t2 in tree.taxon_namespace[i+1:]:

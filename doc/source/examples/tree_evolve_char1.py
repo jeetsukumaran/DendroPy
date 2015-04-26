@@ -13,6 +13,8 @@ def process_node(node, start=1.0):
     if node.taxon is not None:
         print("%s : %s" % (node.taxon, node.value))
 
-mle = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
+mle = dendropy.Tree.get(
+    path='pythonidae.mle.nex',
+    schema='nexus')
 process_node(mle.seed_node)
 

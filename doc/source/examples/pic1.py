@@ -4,9 +4,9 @@ import dendropy
 from dendropy import continuous
 
 taxa = dendropy.TaxonNamespace()
-tree = dendropy.Tree.get_from_path(
-        "primates.cc.tre",
-        "newick",
+tree = dendropy.Tree.get(
+        path="primates.cc.tre",
+        schema="newick",
         taxon_namespace=taxa)
 chars = dendropy.ContinuousCharacterMatrix.get_from_path(
         "primates.cc.nex",

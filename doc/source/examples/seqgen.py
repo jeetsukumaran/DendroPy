@@ -3,8 +3,9 @@
 import dendropy
 from dendropy.interop import seqgen
 
-trees = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex",
-        "nexus")
+trees = dendropy.TreeList.get(
+        path="pythonidae.mcmc.nex",
+        schema="nexus")
 s = seqgen.SeqGen()
 
 # generate one alignment per tree

@@ -4,9 +4,9 @@ import dendropy
 
 labels = ["A","B","C","D","E","F","G","H"]
 taxa = dendropy.TaxonNamespace(labels)
-tree = dendropy.Tree.get_from_string(
-        "((A,(B,(C,D))),((E,F),(G,H)));",
-        "newick",
+tree = dendropy.Tree.get(
+        data="((A,(B,(C,D))),((E,F),(G,H)));",
+        schema="newick",
         taxon_namespace=taxa)
 tree.is_rooted = False
 tree.encode_splits()

@@ -13,13 +13,13 @@ frag_tree_str = "[&R](A:120000,B:120000,C:120000,D:120000):100000"
 
 # taxa and trees
 containing_taxa = dendropy.TaxonNamespace()
-stepwise_tree = dendropy.Tree.get_from_string(
-        stepwise_tree_str,
-        "newick",
+stepwise_tree = dendropy.Tree.get(
+        data=stepwise_tree_str,
+        schema="newick",
         taxon_namespace=containing_taxa)
-frag_tree = dendropy.Tree.get_from_string(
-        frag_tree_str,
-        "newick",
+frag_tree = dendropy.Tree.get(
+        data=frag_tree_str,
+        schema="newick",
         taxon_namespace=containing_taxa)
 
 # taxon set association

@@ -2,8 +2,9 @@
 
 import dendropy
 
-trees = dendropy.TreeList.get_from_path("pythonidae.beast-mcmc.trees",
-        "nexus",
+trees = dendropy.TreeList.get(
+        path="pythonidae.beast-mcmc.trees",
+        schema="nexus",
         tree_offset=200)
 pbhg = []
 for idx, tree in enumerate(trees):

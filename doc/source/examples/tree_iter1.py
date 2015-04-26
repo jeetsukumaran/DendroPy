@@ -6,9 +6,12 @@ from dendropy import treecompare
 
 distances = []
 taxa = dendropy.TaxonNamespace()
-mle_tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus', taxon_namespace=taxa)
-for mcmc_tree in tree_source_iter(
-        stream=open('pythonidae.mcmc.nex', 'rU'),
+mle_tree = dendropy.Tree.get(
+    path='pythonidae.mle.nex',
+    schema='nexus',
+    taxon_namespace=taxa)
+for mcmc_tree in Tree.yield_from_files(
+        files=[open('pythonidae.mcmc.nex', 'r')],
         schema='nexus',
         taxon_namespace=taxa,
         tree_offset=200):
