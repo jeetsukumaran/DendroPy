@@ -24,7 +24,6 @@ import re
 import textwrap
 import sys
 from dendropy.utility.container import OrderedCaselessDict
-from dendropy.utility import textprocessing
 
 # default order of fields
 BIBTEX_FIELDS = [
@@ -60,9 +59,9 @@ def _clean_parsed_text(text):
     Strips outer quotes, curly braces, etc.; remove multiple
     consecutive whitespaces, etc.
     """
-    if textprocessing.startswith('{') and textprocessing.endswith('}'):
+    if text.startswith('{') and text.endswith('}'):
         text = text[1:-1]
-    elif textprocessing.startswith('"') and textprocessing.endswith('"'):
+    elif text.startswith('"') and text.endswith('"'):
         text = text[1:-1]
     text = re.sub("[\s]+", " ", text).strip()
     return text
@@ -222,7 +221,7 @@ class BibTexEntry(object):
         text = text.replace("\n", "")
         self.bibtype = None
         self.citekey = None
-        text = textprocessing.strip()
+        text = text.strip()
         decompose_match = self.decompose_pattern.match(text)
         try:
             self.bibtype = decompose_match.group(1)
@@ -318,9 +317,9 @@ class BibTexDb(object):
 
     def add_from_text(self, text):
         """
-        Loads from textprocessing.
+        Loads from text.
         """
-        text = textprocessing.replace('\n','')
+        text = text.replace('\n','')
         entry_pattern = re.compile(r'@\w*{([^{}]+{[^{}]*({[^{}]*}[^{}]*)*})+}')
         for match in entry_pattern.finditer(text):
             entry = BibTexEntry(match.group())
