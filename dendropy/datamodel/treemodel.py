@@ -29,6 +29,7 @@ except ImportError:
     from io import StringIO # Python 3
 import copy
 import sys
+from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
 from dendropy.utility import terminal
 from dendropy.utility import error
@@ -3534,7 +3535,7 @@ class Tree(
         if leafset_bitmask is None or leafset_bitmask == 0:
             raise ValueError("Null leafset bitmask (0)")
 
-        if start_node.edge.bipartition.leafset_bitmask is None or not kwargs.get("is_bipartitions_updated", True):
+        if start_node.edge.bipartition.leafset_bitmask == 0 or not kwargs.get("is_bipartitions_updated", True):
             self.encode_bipartitions(suppress_unifurcations=False)
 
         if (start_node.edge.bipartition.leafset_bitmask & leafset_bitmask) != leafset_bitmask:

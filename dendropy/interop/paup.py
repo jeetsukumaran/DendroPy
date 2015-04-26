@@ -835,7 +835,7 @@ def estimate_model(char_matrix,
             m = patterns[value_name].match(line)
             if m:
                 results[value_name] = m.group(1)
-    for value_name in results:
+    for value_name in results.keys():
         if value_name == 'likelihood':
             results[value_name] = -1 * float(results[value_name])
             results["log_likelihood"] = results[value_name]

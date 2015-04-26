@@ -24,6 +24,7 @@ import re
 import textwrap
 import sys
 from dendropy.utility.container import OrderedCaselessDict
+from dendropy.utility import textprocessing
 
 # default order of fields
 BIBTEX_FIELDS = [
@@ -218,7 +219,7 @@ class BibTexEntry(object):
         """
         Parses a BibTeX text entry.
         """
-        text = textprocessing.replace("\n", "")
+        text = text.replace("\n", "")
         self.bibtype = None
         self.citekey = None
         text = textprocessing.strip()
