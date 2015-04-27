@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import treecompare
+from dendropy.calculate import treecompare
 
 distances = []
 taxa = dendropy.TaxonNamespace()
@@ -13,7 +13,7 @@ mcmc_tree_file_paths = ['pythonidae.mb.run1.t',
         'pythonidae.mb.run2.t',
         'pythonidae.mb.run3.t',
         'pythonidae.mb.run4.t']
-for mcmc_tree in Tree.yield_from_files(
+for mcmc_tree in dendropy.Tree.yield_from_files(
         files=mcmc_tree_file_paths,
         schema='nexus',
         taxon_namespace=taxa):
