@@ -1553,6 +1553,12 @@ class TaxonNamespace(
     def bitmask_as_bitstring(self, b):
         return bitprocessing.int_as_bitstring(b, length=self._current_accession_count)
 
+    def split_as_string(self, b):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: 'TaxonNamespace.split_as_string()'; use 'TaxonNamespace.bitmask_as_bitstring()' instead",
+                stacklevel=3)
+        return self.bitmask_as_bitstring(b)
+
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
         Returns description of object, up to level ``depth``.
