@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import popgenstat
+from dendropy.calculate import popgenstat
 
 seqs = dendropy.DnaCharacterMatrix.get(
         path="orti1994.nex",

@@ -11,7 +11,7 @@ tree = dendropy.Tree.get(
 print("Before:")
 print(tree.as_string(schema='newick'))
 print(tree.as_ascii_plot(plot_metric='length'))
-tree.reroot_at_midpoint(update_splits=False)
+tree.reroot_at_midpoint(update_bipartitions=False)
 print("After:")
 print(tree.as_string(schema='newick'))
 print(tree.as_ascii_plot(plot_metric='length'))

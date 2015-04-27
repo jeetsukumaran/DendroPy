@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import continuous
+from dendropy.model import continuous
 
 taxa = dendropy.TaxonNamespace()
 tree = dendropy.Tree.get(

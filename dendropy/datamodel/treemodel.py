@@ -4523,7 +4523,7 @@ class Tree(
         old_tail.remove_child(old_head)
         # new_seed_node.add_child(old_head, edge_length=length2)
         new_seed_node.add_child(old_head)
-        old.head.edge.length = length2
+        old_head.edge.length = length2
         self.reroot_at_node(new_seed_node,
                 update_bipartitions=update_bipartitions,
                 suppress_unifurcations=suppress_unifurcations)
