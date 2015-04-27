@@ -5,6 +5,13 @@ import dendropy
 # tree assumed to be unrooted unless '[&R]' is specified
 tree = dendropy.Tree.get(path="pythonidae.mle.nex", schema="nexus")
 
+# same as above, explicit
+tree = dendropy.Tree.get(
+        path="pythonidae.mle.nex",
+        schema="nexus",
+        rooting="default-unrooted",
+        )
+
 # forces tree to be rooted
 tree = dendropy.Tree.get(path="pythonidae.mle.nex",
         schema="nexus",
@@ -15,20 +22,15 @@ tree = dendropy.Tree.get(path="pythonidae.mle.nex",
         schema="nexus",
         rooting="force-unrooted")
 
-tree = dendropy.Tree()
-tree.read(
-        path="pythonidae.mle.nex",
-        schema="nexus",
-        rooting="force-rooted")
-
-
+# forces trees to be rooted
 tree_list = dendropy.TreeList.get(
         path="pythonidae.mcmc.nex",
         schema="nexus",
         rooting="force-rooted")
 
+# forces trees to default to rooted, unless '[&U]' is specified
 tree_list = dendropy.TreeList()
 tree_list.read(
     path="pythonidae.mcmc.nex",
     schema="nexus",
-    rooting="force-rooted")
+    rooting="default-rooted")

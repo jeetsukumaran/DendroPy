@@ -2,7 +2,6 @@
 [written Sun Jan 31 17:15:31 CST 2010 by Mesquite  version 2.72 (build 528) at glyphoglossus/10.0.1.2]
 BEGIN TREES;
 	Title Simulated_Trees;
-	LINK Taxa = DEFAULT;
 	TRANSLATE
 		1 Xenopeltis_unicolor,
 		2 Loxocemus_bicolor,
