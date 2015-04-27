@@ -1,15 +1,15 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import treesim
-from dendropy import reconcile
+from dendropy.simulate import treesim
+from dendropy.model import reconcile
 
 # simulation parameters and output
 num_reps = 10
 
 # population tree descriptions
-stepwise_tree_str = "[&R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000"
-frag_tree_str = "[&R](A:120000,B:120000,C:120000,D:120000):100000"
+stepwise_tree_str = "[&R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000;"
+frag_tree_str = "[&R](A:120000,B:120000,C:120000,D:120000):100000;"
 
 # taxa and trees
 containing_taxa = dendropy.TaxonNamespace()
@@ -37,11 +37,11 @@ frag_tree = reconcile.ContainingTree(frag_tree,
 
 # for each rep
 for rep in range(num_reps):
-    gene_tree1 = treesim.contained_coalescent(containing_tree=stepwise_tree,
+    gene_tree1 = treesim.contained_coalescent_tree(containing_tree=stepwise_tree,
         gene_to_containing_taxon_map=genes_to_species,
         default_pop_size=40000)
     stepwise_tree.embed_tree(gene_tree1)
-    gene_tree2 = treesim.contained_coalescent(containing_tree=frag_tree,
+    gene_tree2 = treesim.contained_coalescent_tree(containing_tree=frag_tree,
         gene_to_containing_taxon_map=genes_to_species,
         default_pop_size=40000)
     frag_tree.embed_tree(gene_tree2)

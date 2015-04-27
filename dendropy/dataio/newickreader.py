@@ -582,7 +582,16 @@ class NewickReader(ioservice.DataReader):
                                 col_num=nexus_tokenizer.token_column_num,
                                 stream=nexus_tokenizer.src)
                     current_node.edge.length = edge_length
-                nexus_tokenizer.require_next_token()
+                try:
+                    nexus_tokenizer.require_next_token()
+                except tokenizer.Tokenizer.UnexpectedEndOfStreamError as e:
+                    message = e.message + ". (Perhaps the terminating semicolon for the tree statement is missing? Add a semicolon or semicolons to the tree statement, or specify 'terminating_semicolon_required=False' to allow for missing semicolons)"
+                    raise tokenizer.Tokenizer.UnexpectedEndOfStreamError(
+                            message=message,
+                            line_num=e.line_num,
+                            col_num=e.col_num,
+                            stream=e.stream)
+
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
                 # self._parenthesis_nesting_level -= 1 # handled by calling code

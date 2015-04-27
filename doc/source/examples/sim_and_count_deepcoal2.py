@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import treesim
-from dendropy import reconcile
+from dendropy.simulate import treesim
+from dendropy.model import reconcile
 
 # simulation parameters and output
 num_reps = 10
