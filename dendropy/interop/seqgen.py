@@ -205,11 +205,7 @@ class SeqGen(object):
             dataset = dendropy.DataSet(**kwargs)
             if taxon_namespace is not None:
                 dataset.attach_taxon_namespace(taxon_namespace)
-        results = StringIO(stdout)
-        #_LOG.debug('stderr = ' + stderr)
-        #_LOG.debug('stdout = ' + stdout)
-
-        dataset.read(results, "nexus")
+        dataset.read(data=stdout, schema="nexus")
         return dataset
 
 
