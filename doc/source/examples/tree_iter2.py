@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import multi_tree_source_iter
 from dendropy import treecompare
 
 distances = []

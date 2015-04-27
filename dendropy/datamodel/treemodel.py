@@ -2672,6 +2672,8 @@ class Tree(
                 taxon_namespace = taxonmodel.TaxonNamespace()
         else:
             assert "taxon_set" not in kwargs
+        if "tree_offset" in kwargs:
+            raise TypeError("'tree_offset' is not supported: trees should be skipped/discarded on the client code side")
         tree_yielder = dataio.get_tree_yielder(
                 files,
                 schema,

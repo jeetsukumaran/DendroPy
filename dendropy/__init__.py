@@ -16,6 +16,8 @@
 ##
 ##############################################################################
 
+import sys
+
 ###############################################################################
 ## Populate the 'dendropy' namespace
 
@@ -66,6 +68,7 @@ from dendropy.utility.error import TaxonNamespaceReconstructionError
 from dendropy.utility.error import UltrametricityError
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.utility.error import SeedNodeDeletionException
+from dendropy.utility import deprecate
 
 
 ###############################################################################
@@ -175,7 +178,16 @@ def citation_info(include_preamble=True, width=76):
     citation_lines.extend(citation)
     return citation_lines
 
+def tree_source_iter(*args, **kwargs):
+    s = "No longer supported in DendroPy 4: Instead of 'tree_source_iter()', use 'Tree.yield_from_files()' instead"
+    raise NotImplementedError(s)
+
+def multi_tree_source_iter(*args, **kwargs):
+    s = "No longer supported in DendroPy 4: Instead of 'multi_tree_source_iter()', use 'Tree.yield_from_files()' instead"
+    raise NotImplementedError(s)
+
 if __name__ == "__main__":
     description(sys.stdout)
+
 
 

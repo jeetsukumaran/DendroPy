@@ -31,7 +31,7 @@ A number of modules have been renamed, moved, or split into multiple modules.
 Calls to the old module should continue to work, albeit with warnings exhorting
 that you update to the latest configuration.
 
-    * `dendropy.treecalc` has been split into three submodules depending on
+    * ``dendropy.treecalc`` has been split into three submodules depending on
       whether the statistic or value being calculated is on a single tree, a
       single tree and a dataset, or two trees:
 
@@ -44,20 +44,20 @@ that you update to the latest configuration.
             For calculation of statistics, metrics, and values of a tree with
             reference to a dataset under some criterion.
 
-    * `dendropy.treesplit` has been moved to `dendropy.calculate.treesplit`.
-    * `dendropy.treesum` has been moved to `dendropy.calculate.treesum`.
-    * `dendropy.reconcile` has been moved to `dendropy.calculate.reconcile`.
-    * `dendropy.coalescent` has been moved to `dendropy.calculate.coalescent`.
-    * `dendropy.popgenstat` has been moved to `dendropy.calculate.popgenstat`.
-    * `dendropy.treesim` has been moved to `dendropy.simulate.treesim`.
-    * `dendropy.popgensim` has been moved to `dendropy.simulate.popgensim`.
+    * ``dendropy.treesplit`` has been moved to `dendropy.calculate.treesplit`.
+    * ``dendropy.treesum`` has been moved to `dendropy.calculate.treesum`.
+    * ``dendropy.reconcile`` has been moved to `dendropy.calculate.reconcile`.
+    * ``dendropy.coalescent`` has been moved to `dendropy.calculate.coalescent`.
+    * ``dendropy.popgenstat`` has been moved to `dendropy.calculate.popgenstat`.
+    * ``dendropy.treesim`` has been moved to `dendropy.simulate.treesim`.
+    * ``dendropy.popgensim`` has been moved to `dendropy.simulate.popgensim`.
 
 Behind-the-Scenes Module Reorganization
 ---------------------------------------
 
 * In constrast to the above, the following changes *should* be opaque to most
   normal usage and client code. Most of the names (classes/methods/variables)
-  in these modules were imported into the '`dendropy`' namespace, and this is
+  in these modules were imported into the '``dendropy``' namespace, and this is
   how all public code should be accessing them, *or* they were never exposed
   (or meant to be exposed) for public usage in the first place. A list of
   module changes:
@@ -79,7 +79,7 @@ Behind-the-Scenes Module Reorganization
 Unique Object Identifier ("`oid`") Attributes Removed
 -----------------------------------------------------
 
-* The entire `oid` system ("object identifier"), i.e., the unique id assigned
+* The entire ``oid`` system ("object identifier"), i.e., the unique id assigned
   to every data object, has been removed. This was an implementation artifact
   from NEXML parsing that greatly slowed down a number of operations without
   any benefit or utility for most normal operations.
@@ -87,16 +87,16 @@ Unique Object Identifier ("`oid`") Attributes Removed
 :class:`TaxonSet` is now :class:`TaxonNamespace`
 ================================================
 
-* The `dendropy.TaxonSet` class has been renamed `dendropy.TaxonNamespace`
-  (and the corresponding `taxon_set` attribute of phylogenetic data objects
-  that reference a taxonomic context has been renamed `taxon_namespace`).
+* The ``dendropy.TaxonSet`` class has been renamed |TaxonNamspace|,
+  (and the corresponding ``taxon_set`` attribute of phylogenetic data objects
+  that reference a taxonomic context has been renamed ``taxon_namespace``).
 
-* The :class:`TaxonNamespace` class replaces the :class:`TaxonSet` class as the
+* The |TaxonNamespace| class replaces the :class:`TaxonSet` class as the
   manager for the :class:`Taxon` objects.
 
 * The API is largely similar with the following differences:
 
-    * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
+    * Calls to the ``__getitem__()`` and ``__delitem()__`` methods (e.g.
         'TaxonNamespace[x]') now only accept integer values as arguments
         (representing indexes into the list of :class:`Taxon` objects in the
         internal array).
@@ -109,19 +109,19 @@ Unique Object Identifier ("`oid`") Attributes Removed
         :class:`Taxon` objects (e.g., `findall`, `drop_taxon`, `remove_taxon`,
         `discard_taxon`, `__delitem__`, etc.)
 
-    * Numerous look-up methods took '`case_insensitive`' as an argument that
+    * Numerous look-up methods took '``case_insensitive``' as an argument that
       determined whether the look-up was case sensitive or not (when
       retrieving, for example, a :class:`Taxon` object corresponding to a
       particular label), which, if not specified, default to `False`, i.e. a
       non-caseless or a case-sensitive matching criteria. In all cases, this
-      has been changed to to '`case_sensitive`' with a default of `True`. That
+      has been changed to to '``case_sensitive``' with a default of `True`. That
       is, searches by default are still case-sensitive, but now you will have
-      to specify '`case_sensitive=False`' instead of '`case_insensitive=True`'
+      to specify '``case_sensitive=False``' instead of '``case_insensitive=True``'
       to perform a case-insensitive search. This change was for consistency
       with the rest of the library.
 
 * In most cases, a simple global search-and-replace of "TaxonSet" with
-  "TaxonNamespace" and "`taxon_set`" with "`taxon_namespace`" should be
+  "TaxonNamespace" and "``taxon_set``" with "``taxon_namespace``" should be
   sufficient to bring existing code into line with DendroPy 4.
 
 * For legacy support, a class called :class:`TaxonSet` exists. This derives with no
@@ -132,12 +132,12 @@ Unique Object Identifier ("`oid`") Attributes Removed
   temporary and will be removed in upcoming releases: code should update to
   using :class:`TaxonNamespace` as soon as expedient.
 
-* For legacy support, "`taxon_set`" continues to be accepted and processed as
-  an attribute name and keyword argument synonymous with "`taxon_namespace`".
+* For legacy support, "``taxon_set``" continues to be accepted and processed as
+  an attribute name and keyword argument synonymous with "``taxon_namespace``".
   Usage of this will result in warnings being emitted, but code should
   continue to function as expected. This support is temporary and will be
   removed in upcoming releases: code should update to using
-  "`taxon_namespace`" as soon as expedient.
+  "``taxon_namespace``" as soon as expedient.
 
 The :class:`Node` Class
 =======================
@@ -154,12 +154,12 @@ The :class:`Edge` Class
 
 * Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
-* Because `tail_node` is no longer an independent attribute but a dynamic
-  property, bound to :attr:`Node._parent_node` attribute of the `head_node`
+* Because ``tail_node`` is no longer an independent attribute but a dynamic
+  property, bound to :attr:`Node._parent_node` attribute of the ``head_node``
   (see below), the :class:`Edge` constructor does *not* accept ``tail_node`` as
   an argument.
 
-* The `tail_node` of an :class:`Edge` object is now a dynamic property,
+* The ``tail_node`` of an :class:`Edge` object is now a dynamic property,
   referencing the :attr:`Node._parent_node` attribute of the
   :attr:`Edge._head_node` of the :class:`Edge` object. So, now updating
   :attr:`Edge._tail_node` of an :class:`Edge` object will set the
@@ -185,32 +185,35 @@ The :class:`Tree` Class
 * For consistency with :meth:`Tree.preorder_node_iter()`,
   :meth:`Tree.postorder_node_iter()`, a number of iteration methods have been renamed.
 
-    +--------------------------------+-------------------------------------+
-    | DendroPy 3                     | DendroPy 4                          |
-    +--------------------------------+-------------------------------------+
-    | `Tree.level_order_node_iter()` | :meth:`Tree.levelorder_node_iter()` |
-    +--------------------------------+-------------------------------------+
-    | `Tree.level_order_edge_iter()` | :meth:`Tree.levelorder_edge_iter()` |
-    +--------------------------------+-------------------------------------+
-    | `Node.level_order_iter()`      | :meth:`Node.levelorder_iter()`      |
-    +--------------------------------+-------------------------------------+
-    | `Edge.level_order_iter()`      | :meth:`Edge.levelorder_iter()`      |
-    +--------------------------------+-------------------------------------+
-    | `Tree.age_order_node_iter()`   | :meth:`Tree.ageorder_node_iter()`   |
-    +--------------------------------+-------------------------------------+
-    | `Tree.age_order_edge_iter()`   | :meth:`Tree.ageorder_edge_iter()`   |
-    +--------------------------------+-------------------------------------+
-    | `Node.age_order_iter()`        | :meth:`Node.ageorder_iter()`        |
-    +--------------------------------+-------------------------------------+
-    | `Edge.age_order_iter()`        | :meth:`Edge.ageorder_iter()`        |
-    +--------------------------------+-------------------------------------+
-    | `Tree.leaf_iter()`             | :meth:`Tree.leaf_node_iter()`       |
-    +--------------------------------+-------------------------------------+
+    +----------------------------------+-------------------------------------+
+    | DendroPy 3                       | DendroPy 4                          |
+    +----------------------------------+-------------------------------------+
+    | ``Tree.level_order_node_iter()`` | :meth:`Tree.levelorder_node_iter()` |
+    +----------------------------------+-------------------------------------+
+    | ``Tree.level_order_edge_iter()`` | :meth:`Tree.levelorder_edge_iter()` |
+    +----------------------------------+-------------------------------------+
+    | ``Node.level_order_iter()``      | :meth:`Node.levelorder_iter()`      |
+    +----------------------------------+-------------------------------------+
+    | ``Edge.level_order_iter()``      | :meth:`Edge.levelorder_iter()`      |
+    +----------------------------------+-------------------------------------+
+    | ``Tree.age_order_node_iter()``   | :meth:`Tree.ageorder_node_iter()`   |
+    +----------------------------------+-------------------------------------+
+    | ``Tree.age_order_edge_iter()``   | :meth:`Tree.ageorder_edge_iter()`   |
+    +----------------------------------+-------------------------------------+
+    | ``Node.age_order_iter()``        | :meth:`Node.ageorder_iter()`        |
+    +----------------------------------+-------------------------------------+
+    | ``Edge.age_order_iter()``        | :meth:`Edge.ageorder_iter()`        |
+    +----------------------------------+-------------------------------------+
+    | ``Tree.leaf_iter()``             | :meth:`Tree.leaf_node_iter()`       |
+    +----------------------------------+-------------------------------------+
 
   The old names are still supported for now (with warnings being emitted),
   but new code should start using the newer names.  In additon, support for
   in-order or infix tree traversal has been added:
   :meth:`Tree.inorder_node_iter`, :meth:`Tree.inorder_edge_iter()`.
+
+* Instead of ``tree_source_iter`` and ``multi_tree_source_iter``, use
+  :meth:`dendropy.datamodel.treemodel.Tree.yield_from_files`
 
 NEWICK-format Reading
 =====================
@@ -264,5 +267,6 @@ The :class:`DataSet` Class
   new :class:`DataSet` instance.
 
 * :class:`TaxonNamespace` no longer managed.
+
 
 
