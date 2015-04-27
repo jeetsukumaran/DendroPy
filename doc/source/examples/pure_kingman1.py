@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import treesim
+from dendropy.calculate import treesim
 
 taxa = dendropy.TaxonNamespace(["z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8"])
 tree = treesim.pure_kingman(
