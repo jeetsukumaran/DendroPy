@@ -585,7 +585,7 @@ class NewickReader(ioservice.DataReader):
                 try:
                     nexus_tokenizer.require_next_token()
                 except tokenizer.Tokenizer.UnexpectedEndOfStreamError as e:
-                    message = e.message + ". (Perhaps the terminating semicolon for the tree statement is missing? Add a semicolon or semicolons to the tree statement, or specify 'terminating_semicolon_required=False' to allow for missing semicolons)"
+                    message = e.message + ". (Perhaps the terminating semicolon for the tree statement is missing? If so, add a semicolon to the tree statement or specify 'terminating_semicolon_required=False' to allow for missing semicolons)"
                     raise tokenizer.Tokenizer.UnexpectedEndOfStreamError(
                             message=message,
                             line_num=e.line_num,
