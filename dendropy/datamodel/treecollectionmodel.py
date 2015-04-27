@@ -1138,6 +1138,16 @@ class TreeList(
         except ZeroDivisionError:
             return 0
 
+    def frequency_of_split(self, **kwargs):
+        """
+        DEPRECATED: use 'frequency_of_bipartition()' instead.
+        """
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated since DendroPy 4: Instead of 'frequency_of_split()' use 'frequency_of_bipartition()'",
+                stacklevel=4,
+                )
+        return self.frequency_of_bipartition(**kwargs)
+
 ###############################################################################
 ### SplitDistribution
 

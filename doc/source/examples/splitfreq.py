@@ -12,5 +12,5 @@ for tree_file in ['pythonidae.mb.run1.t',
             schema='nexus',
             tree_offset=20)
 split_leaves = ['Morelia amethistina', 'Morelia tracyae']
-f = trees.frequency_of_split(labels=split_leaves)
+f = trees.frequency_of_bipartition(labels=split_leaves)
 print('Frequency of split %s: %s' % (split_leaves, f))
