@@ -384,7 +384,7 @@ class ContainingTree(dendropy.Tree):
         # corresponding nodes on gene tree, initially populated with leaf
         # nodes.
         contained_nodes = {}
-        for nd in self.leaf_iter():
+        for nd in self.leaf_node_iter():
             contained_nodes[nd] = []
             for gt in nd.edge.contained_taxa:
                 gn = dendropy.Node(taxon=gt)
@@ -400,7 +400,7 @@ class ContainingTree(dendropy.Tree):
                 else:
                     pop_size = default_pop_size
                 if len(contained_nodes[edge.head_node]) > 1:
-                    final = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
+                    final = coalescent.coalesce_nodes(nodes=contained_nodes[edge.head_node],
                             pop_size=pop_size,
                             period=None,
                             rng=rng,
@@ -414,7 +414,7 @@ class ContainingTree(dendropy.Tree):
                     pop_size = getattr(edge, edge_pop_size_attr)
                 else:
                     pop_size = default_pop_size
-                remaining = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
+                remaining = coalescent.coalesce_nodes(nodes=contained_nodes[edge.head_node],
                         pop_size=pop_size,
                         period=edge.length,
                         rng=rng,
