@@ -105,11 +105,22 @@ results in::
     ['A', 'B', 'C']
     ['A', 'B', 'C']
 
-However, with |DataSet| instances, each independent read operation will, by default, be managed under a *new* (i.e., independent and different) |TaxonNamespace|.
+Note how the total number of taxa is three, and there is full correspondence between the taxa.
+That is, the taxa referenced by "A", "B", and "C" in the second read operation were correctly mapped to the taxa from the second read operation.
+
+With |Tree| and |CharacterMatrix|-derived classes, on the other hand, each instance by default gets an independent and distinct |TaxonNamespace|:
+
+.. literalinclude:: /examples/taxa_mgmt1a.py
+
+If taxa are shared, then the |TaxonNamespace| to use should be passed in explicitly:
+
+.. literalinclude:: /examples/taxa_mgmt1b.py
+
+Similarly, with |DataSet| instances, each independent read operation will, by default, be managed under a *new* (i.e., independent and different) |TaxonNamespace|.
 
 .. literalinclude:: /examples/taxa_mgmt2.py
 
-If reading data from multiple data sources using a |DataSet| instance that should all be managed under the same taxon namespace, then the |TaxonNamespace| instance to use should be explicitly passed in using the "``taxon_namespace``" keyword argument:
+So, if reading data from multiple data sources using a |DataSet| instance that should all be managed under the same taxon namespace, then the |TaxonNamespace| instance to use should be explicitly passed in using the "``taxon_namespace``" keyword argument:
 
 .. literalinclude:: /examples/taxa_mgmt3.py
 
