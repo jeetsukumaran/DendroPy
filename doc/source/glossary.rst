@@ -261,11 +261,9 @@ Glossary and Terminological Reference
         namespace`.
 
     taxon namespace
-        A set of distinct and unique labels, with each label mapping to one and exactly one :
-
-        or names that is used to relate data from
-        across different data sources to each other by reference to a
-        :term:`taxon concept`.
+        A set of distinct and unique labels, with each label mapping to one and
+        exactly one or names that is used to relate data from across different
+        data sources to each other by reference to a :term:`taxon concept`.
 
     tree
     arborescence

@@ -19,7 +19,7 @@
 """
 Taxon management.
 
-Operation taxonomic unit concepts are essentially names for taxa in the "real
+Operational taxonomic unit concepts are essentially names for taxa in the "real
 world". Operational taxonomic unit concepts are organized into taxonomic
 namespaces. A taxonomic namespace is a self-contained and
 functionally-complete collection of mutually-distinct operational taxonomic

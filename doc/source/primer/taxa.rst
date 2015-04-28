@@ -1,17 +1,124 @@
-*************************
-Taxa and Taxon Management
-*************************
+********************************************
+Taxa, Taxon Namespaces, and Taxon Management
+********************************************
+
+Conceptual Background
+=====================
+
+Many elements of phylogenetic and, more generally, evo- or bioinformatic data
+are associated with some element in the real world.
+For example, a leaf :term:`node` on a :term:`tree` or a sequence in a character
+matrix is typically associated with an individual biological organism, a
+population or deme, a species or higher-level taxonomic group, and so on.
+In classical phylogenetic literature, this referent is termed an "operational
+taxonomic unit" or OTU.
+In DendroPy, we use the term "taxon".
+Regardless of whether the referent of the data represents an
+individual organism (or even a less distinct subunit, e.g., a fragment from a
+shotgun assay) or an actual taxonomic group, we apply the term "taxon".
+We assign a (string) label to the concept of the entity (individual,
+sub-individual, or group) represented by a "taxon", which allows us to relate
+different elements of data to the same or different real-world referent.
+These collections of labels representing taxon concepts are organized into
+"taxon namespaces".
+
+The concept of a "taxon namespace" is fundamental to managing data in DendroPy.
+A "taxon namespace" represents a self-contained universe of *names* that
+map to operational taxonomic unit *concepts*.
+Operational taxonomic unit concepts are essentially names for groups of
+organisms in the "real world". Operational taxonomic unit concepts are
+organized into taxonomic namespaces. A taxonomic namespace is a self-contained
+and functionally-complete collection of mutually-distinct operational taxonomic
+unit concepts, and provide the semantic context in which operational taxonomic
+units from across various data sources of different formats and provenances can
+be related through correct interpretation of their taxon labels.
+
+    * Operational taxonomic units are modeled by a |Taxon| object.
+
+    * Taxonomic namespaces, in which operational taxonomic units are organized,
+      are modeled by a |TaxonNamespace| object.
+
+    * A |TaxonNamespace| manages a collection of |Taxon| objects, where each
+      object represents a distinct operational taxonomic unit concept within
+      the taxonomic namespace represented by that |TaxonNamespace| object.
+
+    * Each |Taxon| object can belong to one and only one |TaxonNamespace|:
+      |Taxon| objects are not shared across |TaxonNamespace| objects.
+
+    * Each |Taxon| object has an attribute, ``label``, whose (string) value
+      is the name of the operational taxon unit concept that it represents.
+
+    * Different |Taxon| objects represent different operational taxonomic
+      unit concepts, even if they have the same label value.
+
+    * All client objects (`TaxonNamespaceAssociated` objects) that reference
+      the same |TaxonNamespace| reference the same "universe" or domain of
+      operational taxonomic unit concepts.
+
+    * Operational taxonomic units from across different data sources are mapped
+      to distinct |Taxon| objects within a particular |TaxonNamespace| based on
+      matching the string values of labels of the |Taxon| object.
+
+    * A particular taxonomic unit concept in one data source will only be
+      correctly related to the same taxonomic unit concept (i.e, the same
+      |Taxon| object) in another data source only if they have both
+      been parsed with reference to the same taxonomic namespace (i.e., the
+      same |TaxonNamespace| has been used).
+
+    * A |TaxonNamespace| assigned an "accession index" to every |Taxon| object
+      added to it. This is a stable and unique number within the context of any
+      given |TaxonNamespace| object (though a |Taxon| object may have different
+      accession indexes in different |TaxonNamespace| objects if it
+      belongs to multiple namespaces). This number is will be used to
+      calculate the "split bitmask" hash of the trivial split or external edge
+      subtending the node to which this |Taxon| object is assigned on a tree.
+      The concept of a "split bitmask" hash is fundamental to DendroPy's tree
+      operations. The split bitmask is a hash that uniquely identifies every
+      split on a tree.  It is calculated by OR'ing the split bitmask of all the
+      child splits of the given split. Terminal edges, of course, do not have
+      child edges, and their split bitmask is given by the accession index of
+      the |Taxon| object at their head or target nodes.
+
+Management of Taxon Names
+=========================
 
 Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonNamespace| objects.
+Two distinct |Taxon| objects are considered distinct entities, *even if they share the same label*.
+Understanding this is crucial to understanding management of data in DendroPy.
+Many operations in DendroPy are based on the identity of the |Taxon| objects (e.g., counting of splits on trees).
+Many errors by novices using DendroPy come from inadventently creating and using multiple |Taxon| objects to refer to the same taxon concept.
 
 Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonNamespace| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.
 Some data formats do not have explicit definition of taxa, e.g. a Newick tree source.
 These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a Newick file).
 
-Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonNamespace| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonNamespace| object, and used to represent the taxon.
+Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonNamespace| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made).
+If found, the |Taxon| object is used to represent the taxon.
+If not, a new |Taxon| object is created, added to the |TaxonNamespace| object, and used to represent the taxon.
+
+If multiple data sources are read, then with |TreeList| or |TreeArray| the |TaxonNamespace| instance associated with the collection through the ``taxon_namespace`` attribute will always be used to manage the |Taxon| objects, resulting in correct association of labels with |Taxon| objects across multiple reads. So, for example, the following:
+
+.. literalinclude:: /examples/taxa_mgmt1.py
+
+results in::
+
+    ['A', 'B', 'C']
+    ['A', 'B', 'C']
+
+However, with |DataSet| instances, each independent read operation will, by default, be managed under a *new* (i.e., independent and different) |TaxonNamespace|.
+
+.. literalinclude:: /examples/taxa_mgmt2.py
+
+If reading data from multiple data sources using a |DataSet| instance that should all be managed under the same taxon namespace, then the |TaxonNamespace| instance to use should be explicitly passed in using the "``taxon_namespace``" keyword argument:
+
+.. literalinclude:: /examples/taxa_mgmt3.py
+
+Note, however, that if two different |TreeList| instances have different |TaxonNamespace| references, then the |Taxon| objects read/managed by them *will* be necessarily different, even if the labels are the same. The same obtains for |Tree| and |CharacterMatrix|-derived instances: if the associated |TaxonNamespace| references are different, then the associated |Taxon| objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:
+
+.. literalinclude:: /examples/taxa_mgmt5.py
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
-The labels have to match **exactly** for the taxa to be correctly mapped
+The labels have to match **exactly** for the taxa to be correctly mapped.
 
 Some special formats, such as NEXUS or Newick, treat the taxa labels as **case-insensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the same taxon (this can be turned off by specifying the appropriate |False| to ``case_insensitive_taxon_labels`` when reading the data in NEXUS or Newick formats).
 Otherwise, in general, most other formats (e.g., PHYLIP, Fasta, NExML) treat the taxa labels as **case-sensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the different taxa.
@@ -26,7 +133,6 @@ This means that if you were to read a NEXUS file with the taxon label, "Python_r
 This is illustrated by the following:
 
 .. literalinclude:: /examples/taxon_labels1.py
-    :linenos:
 
 Which produces the following, almost certainly incorrect, result::
 
@@ -43,7 +149,6 @@ If you plan on mixing sources from different formats, it is important to keep in
 You could simply avoid underscores and use only spaces instead:
 
 .. literalinclude:: /examples/taxon_labels2.py
-    :linenos:
 
 Which results in::
 
@@ -54,7 +159,6 @@ Which results in::
 Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data:
 
 .. literalinclude:: /examples/taxon_labels2b.py
-    :linenos:
 
 Which results in the same as the preceding example::
 
@@ -65,7 +169,6 @@ Which results in the same as the preceding example::
 You can also wrap the underscore-bearing labels in the NEXUS/Newick source in quotes, which preserves them from being substituted for spaces:
 
 .. literalinclude:: /examples/taxon_labels3.py
-    :linenos:
 
 Which will result in::
 
@@ -76,7 +179,6 @@ Which will result in::
 Finally, you can also override the default behavior of DendroPy's NEXUS/Newick parser by passing the keyword argument ``preserve_underscores=True`` to any "|read_from_methods|" or "|get_from_methods|" method. For example:
 
 .. literalinclude:: /examples/taxon_labels4.py
-    :linenos:
 
 will result in::
 
