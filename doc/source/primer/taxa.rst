@@ -79,8 +79,8 @@ be related through correct interpretation of their taxon labels.
       child edges, and their split bitmask is given by the accession index of
       the |Taxon| object at their head or target nodes.
 
-Management of Taxon Names
-=========================
+Management of Shared Taxon Namespaces
+=====================================
 
 Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonNamespace| objects.
 Two distinct |Taxon| objects are considered distinct entities, *even if they share the same label*.
@@ -108,15 +108,7 @@ results in::
 Note how the total number of taxa is three, and there is full correspondence between the taxa.
 That is, the taxa referenced by "A", "B", and "C" in the second read operation were correctly mapped to the taxa from the second read operation.
 
-With |Tree| and |CharacterMatrix|-derived classes, on the other hand, each instance by default gets an independent and distinct |TaxonNamespace|:
-
-.. literalinclude:: /examples/taxa_mgmt1a.py
-
-If taxa are shared, then the |TaxonNamespace| to use should be passed in explicitly:
-
-.. literalinclude:: /examples/taxa_mgmt1b.py
-
-Similarly, with |DataSet| instances, each independent read operation will, by default, be managed under a *new* (i.e., independent and different) |TaxonNamespace|.
+With |DataSet| instances, however, each independent read operation will, by default, be managed under a *new* (i.e., independent and different) |TaxonNamespace|.
 
 .. literalinclude:: /examples/taxa_mgmt2.py
 
@@ -124,9 +116,22 @@ So, if reading data from multiple data sources using a |DataSet| instance that s
 
 .. literalinclude:: /examples/taxa_mgmt3.py
 
+
 Note, however, that if two different |TreeList| instances have different |TaxonNamespace| references, then the |Taxon| objects read/managed by them *will* be necessarily different, even if the labels are the same. The same obtains for |Tree| and |CharacterMatrix|-derived instances: if the associated |TaxonNamespace| references are different, then the associated |Taxon| objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:
 
 .. literalinclude:: /examples/taxa_mgmt5.py
+
+
+The same obtains with |Tree| and |CharacterMatrix|-derived classes, in that each instance by default gets an independent and distinct |TaxonNamespace|:
+
+.. literalinclude:: /examples/taxa_mgmt1a.py
+
+So, if taxa are shared, then the |TaxonNamespace| to use should be passed in explicitly to ensure that each |Tree| or |CharacterMatrix|-derived instance also share the same |TaxonNamespace|:
+
+.. literalinclude:: /examples/taxa_mgmt1b.py
+
+Managing Taxon Name Mapping Within a Taxon Namespace
+====================================================
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped.
