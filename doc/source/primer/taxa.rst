@@ -117,12 +117,15 @@ So, if reading data from multiple data sources using a |DataSet| instance that s
 .. literalinclude:: /examples/taxa_mgmt3.py
 
 
-Note, however, that if two different |TreeList| instances have different |TaxonNamespace| references, then the |Taxon| objects read/managed by them *will* be necessarily different, even if the labels are the same. The same obtains for |Tree| and |CharacterMatrix|-derived instances: if the associated |TaxonNamespace| references are different, then the associated |Taxon| objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:
+While each |TreeList| manages all its member |Tree| objects under the same |TaxonNamespace| reference, if two different |TreeList| instances have different |TaxonNamespace| references, then the |Taxon| objects read/managed by them *will* be necessarily different from each other, even if the labels are the same.
+
+.. literalinclude:: /examples/taxa_mgmt4.py
+
+Again, this can be addressed by ensuring that the |TaxonNamespace| reference is the same for |TreeList| instances that need to interact:
 
 .. literalinclude:: /examples/taxa_mgmt5.py
 
-
-The same obtains with |Tree| and |CharacterMatrix|-derived classes, in that each instance by default gets an independent and distinct |TaxonNamespace|:
+The same obtains for |Tree| and |CharacterMatrix|-derived instances: if the associated |TaxonNamespace| references are different, then the associated |Taxon| objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:
 
 .. literalinclude:: /examples/taxa_mgmt1a.py
 
