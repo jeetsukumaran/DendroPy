@@ -138,11 +138,9 @@ Managing Taxon Name Mapping Within a Taxon Namespace
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped.
+By default, this matching is case-insensitive, though case-sensitivity can be set by specifying "``case_sensitive_taxon_labels=True``".
 
-Some special formats, such as NEXUS or Newick, treat the taxa labels as **case-insensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the same taxon (this can be turned off by specifying the appropriate |False| to ``case_insensitive_taxon_labels`` when reading the data in NEXUS or Newick formats).
-Otherwise, in general, most other formats (e.g., PHYLIP, Fasta, NExML) treat the taxa labels as **case-sensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the different taxa.
-
-Further quirks may arise due to some schema-specific idiosyncracies.
+Some quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
 Thus, when reading a NEXUS or Newick source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same |Taxon| object.
 
