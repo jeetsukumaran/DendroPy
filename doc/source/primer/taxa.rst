@@ -1,6 +1,6 @@
-********************************************
-Taxa, Taxon Namespaces, and Taxon Management
-********************************************
+*************************************
+Taxon Namespaces and Taxon Management
+*************************************
 
 Conceptual Background
 =====================

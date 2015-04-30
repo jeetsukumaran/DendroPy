@@ -33,7 +33,7 @@ Working with Trees and Tree Lists
     :maxdepth: 2
 
     trees.rst
-    treenav.rst
+    treecollections.rst
     treestats.rst
     treemanips.rst
     bipartitions.rst
