@@ -11,16 +11,16 @@ Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.datamodel
 Reading and Writing |TreeList| Instances
 ========================================
 
-The |TreeList| class supports the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.get`" factory class method for simultaneously instantiating and populating |TreeList| instances, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second::
+The |TreeList| class supports the ":meth:`~dendropy.datamodel.treecollectionmodel.TreeList.get`" factory class method for simultaneously instantiating and populating |TreeList| instances, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second::
 
     import dendropy
     treelist = dendropy.TreeList.get(path='pythonidae.mcmc.nex', schema='nexus')
 
-The ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.read`" instance method can be used to add trees from a data source to an existing |TreeList| instance:
+The ":meth:`~dendropy.datamodel.treecollectionmodel.TreeList.read`" instance method can be used to add trees from a data source to an existing |TreeList| instance:
 
 .. literalinclude:: /examples/tree_list_add1.py
 
-A |TreeList| object can be written to an external resource using the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.write`" method::
+A |TreeList| object can be written to an external resource using the ":meth:`~dendropy.datamodel.treecollectionmodel.TreeList.write`" method::
 
     import dendropy
     treelist = dendropy.TreeList.get(
@@ -33,7 +33,7 @@ A |TreeList| object can be written to an external resource using the ":meth:`~de
         )
 
 
-It can also be represented as a string using the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.as_string`" method::
+It can also be represented as a string using the ":meth:`~dendropy.datamodel.treecollectionmodel.TreeList.as_string`" method::
 
     import dendropy
     treelist = dendropy.TreeList.get(
@@ -64,7 +64,10 @@ The |TreeList| class supports the native Python ``list`` interface methods of ad
 Cloning/Copying a |TreeList|
 ============================
 
-You can make a *shallow*-copy of a |TreeList| by:
+You can make a *shallow*-copy of a |TreeList| calling :meth:`dendropy.datamodel.treecollectionmodel.TreeList.clone` with a "``depth``" argument value of 0 or by slicing:
+
+.. literalinclude:: /examples/tree_list_copy1.py
+
 
 You can also clone existing |Tree| and |TreeList| objects by passing them as arguments to their respective constructors.
 
