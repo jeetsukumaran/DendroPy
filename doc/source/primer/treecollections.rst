@@ -8,17 +8,39 @@ Collections of Trees: The |TreeList| Class
 |TreeList| objects are collections of |Tree| objects constrained to sharing the same |TaxonNamespace|.
 Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.datamodel.treemodel.Tree.taxon_namespace` attribute assigned to the |TaxonNamespace| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
 
-Creating and Populating |TreeList| Instances
-============================================
+Reading and Writing |TreeList| Instances
+========================================
 
-The |TreeList| class supports the "|get|" factory class method for simultaneously instantiating and populating |TreeList| instances, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second:
+The |TreeList| class supports the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.get`" factory class method for simultaneously instantiating and populating |TreeList| instances, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second::
 
-    >>> import dendropy
-    >>> treelist = dendropy.TreeList.get(path='pythonidae.mcmc.nex', schema='nexus')
+    import dendropy
+    treelist = dendropy.TreeList.get(path='pythonidae.mcmc.nex', schema='nexus')
 
-The "|read|" instance method can be used to add trees from a data source to an existing |TreeList| instance:
+The ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.read`" instance method can be used to add trees from a data source to an existing |TreeList| instance:
 
 .. literalinclude:: /examples/tree_list_add1.py
+
+A |TreeList| object can be written to an external resource using the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.write`" method::
+
+    import dendropy
+    treelist = dendropy.TreeList.get(
+        path="trees1.nex",
+        schema="nexus",
+        )
+    treelist.write(
+        path="trees1.newick",
+        schema="newick",
+        )
+
+
+It can also be represented as a string using the ":meth:`~dendropy.datamodel.treecollectiomodel.TreeList.as_string`" method::
+
+    import dendropy
+    treelist = dendropy.TreeList.get(
+        path="trees1.nex",
+        schema="nexus",
+        )
+    print(treelist.as_string(schema="newick",)
 
 More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
 
