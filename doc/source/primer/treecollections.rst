@@ -68,27 +68,15 @@ You can make a *shallow*-copy of a |TreeList| calling :meth:`dendropy.datamodel.
 
 .. literalinclude:: /examples/tree_list_copy1.py
 
+With a shallow-copy, the actual |Tree| instances are shared between lists (as is the |TaxonNamespace|).
 
-You can also clone existing |Tree| and |TreeList| objects by passing them as arguments to their respective constructors.
+For a taxon namespace-scoped *deep*-copy, on the other hand, i.e., where the |Tree| instances are also cloned but the |Taxon| and |TaxonNamespace| references are preserved, you can call :meth:`dendropy.datamodel.treecollectionmodel.TreeList.clone` with a "``depth``" argument value of 1 or by copy construction:
 
-For example, to create a clone of a |Tree| object:
+.. literalinclude:: /examples/tree_list_copy2.py
 
-    >>> import dendropy
-    >>> tree1 = dendropy.Tree.get_from_path('pythonidae.mle.tree', 'nexus')
-    >>> tree2 = dendropy.Tree(tree1)
+Finally, for a true and complete deep-copy, where even the |Taxon| and |TaxonNamespace| references are copied, call :func:`copy.deepcopy`:
 
-With this, ``tree2`` will be an exact clone of ``tree1``, and can be independentally manipulated (e.g., derooted, branches pruned, splits collapsed, etc.) without effecting ``tree1``.
-Note, however, that the |Taxon| objects remain linked: changing the label, for example, of a |Taxon| object on ``tree2`` will result in the label of the corresponding |Taxon| object in ``tree1`` being similarly affected.
-
-To create a clone of a |TreeList| object:
-
-    >>> import dendropy
-    >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
-    >>> treelist2 = dendropy.TreeList(treelist1)
-
-Here, ``treelist2`` will be a *deep-copy* of ``treelist1``, i.e., with each |Tree| object in ``treelist2`` being a clone of the corresponding |Tree| object in ``treelist1``.
-The same constraint regarding |Taxon| object applies: i.e., the cloning does not extend to |Taxon| objects, and these are shared across all |Tree| objects in both ``treelist1`` and ``treelist2``, as well as the |TreeList| objects themselves.
-
+.. literalinclude:: /examples/tree_list_copy3.py
 
 |Tree| and |TreeList| Saving and Writing
 ========================================
