@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 import dendropy
 
 tree = dendropy.Tree.get(path="pythonidae.mle.nex", schema="nexus")

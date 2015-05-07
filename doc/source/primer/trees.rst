@@ -146,12 +146,10 @@ The filter function should take a |Taxon| object as an argument and return |True
 For example:
 
 .. literalinclude:: /examples/find_taxon_node1.py
-    :linenos:
 
 Because we might find it easier to refer to |Taxon| objects by their labels, a convenience method that wraps the retrieval of nodes associated with |Taxon| objects of particular label is provided:
 
 .. literalinclude:: /examples/find_taxon_node2.py
-    :linenos:
 
 Most Recent Common Ancestors
 ----------------------------
@@ -161,10 +159,11 @@ This method takes a list of |Taxon| objects given by the ``taxa`` keyword argume
 For example:
 
 .. literalinclude:: /examples/mrca.py
-    :linenos:
 
 Note that this method is inefficient when you need to resolve MRCA's for multiple sets or pairs of taxa.
-In this context, the :class:`~dendropy.treecalc.PatristicDistanceMatrix` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa.
+In this context, the :class:`~dendropy.calculate.treemeasure.PatristicDistanceMatrix` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa:
+
+.. literalinclude:: /examples/mrca2.py
 
 Viewing and Displaying Trees
 ============================
@@ -195,10 +194,12 @@ If you need to store this representation as a string instead, you can use :meth:
                      \----------+
                                 \------------------- D
 
-While the :meth:`~dendropy.datamodel.treemodel.Tree.write_to_path()`, :meth:`~dendropy.datamodel.treemodel.Tree.write_to_stream()` and :meth:`~dendropy.datamodel.treemodel.Tree.as_string()` methods provide for a rich and flexible way to write representations of a |Tree| in various formats to various destinations, the :meth:`~dendropy.datamodel.treemodel.Tree.print_newick()` provides a quick-and-dirty way to get a snapshot NEWICK string of the tree::
+You can also, as mentioned above, using the :meth:`~dendropy.datamodel.treemodel.Tree.as_string` method to represent a |Tree| as string in any format::
 
-    >>> t.print_newick()
-    (A,(B,(C,D)))
+    t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
+    print(t.as_string(schema="nexus"))
+    print(t.as_string(schema="newick"))
+
 
 
 
