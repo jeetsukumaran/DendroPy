@@ -19,6 +19,54 @@ By definition, the :attr:`~dendropy.datamodel.treemodel.Tree.seed_node` has no :
 Every |Node| object has an attribute, :attr:`~dendropy.datamodel.treemodel.Node.edge`, which is an |Edge| object representing the :term:`edge` that is :term:`incident to or subtends <incident edge>` the :term:`node` represented by that |Node| object.
 Each |Edge|, in turn, has an attribute, :attr:`~dendropy.datamodel.treemodel.Edge.head_node`, which is the |Node| object representing the :term:`node` that the edge subtends.
 
+The |Tree|, |Node|, and |Edge| classes all have "``annotations``" as an attribute, which is a :class:`~dendropy.datamodel.basemodel.AnnotationSet` object, i.e. a collection of :class:`~dendropy.datamodel.basemodel.Annotation` instances tracking metadata.
+More information of metadata can be found in the ":doc:`/primer/working_with_metadata_annotations`" section.
+
+Reading and Writing |Tree| Instances
+====================================
+
+The |Tree| class supports the ":meth:`~dendropy.datamodel.treemodel.Tree.get`" factory class method for simultaneously instantiating and populating a |Tree| instance, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second::
+
+    import dendropy
+    tree = dendropy.Tree.get(
+        path='pythonidae.mcmc.nex',
+        schema='nexus')
+
+A |Tree| object can be written to an external resource using the ":meth:`~dendropy.datamodel.treemodel.Tree.write`" method::
+
+    import dendropy
+    tree = dendropy.Tree.get(
+        path="trees1.nex",
+        schema="nexus",
+        tree_offset=2,
+        )
+    tree.write(
+        path="trees1.newick",
+        schema="newick",
+        )
+
+It can also be represented as a string using the ":meth:`~dendropy.datamodel.treemodel.Tree.as_string`" method::
+
+    import dendropy
+    tree = dendropy.Tree.get(
+        path="trees1.nex",
+        schema="nexus",
+        )
+    print(tree.as_string(schema="newick",)
+
+More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
+
+Cloning/Copying a |Tree|
+========================
+
+You can make a "taxon namespace-scoped" copy of a |Tree| instance, i.e., where all |Node| and associated |Edge| instances of a |Tree| are cloned, but references to |Taxon| objects are preserved, you can call :meth:`dendropy.datamodel.treemodel.Tree.clone` with a "``depth``" argument value of 1 or by copy construction:
+
+.. literalinclude:: /examples/tree_copy1.py
+
+Finally, for a true and complete deep-copy, where even the |Taxon| and |TaxonNamespace| references are copied, call :func:`copy.deepcopy`:
+
+.. literalinclude:: /examples/tree_copy3.py
+
 Tree Traversal
 ==============
 
@@ -117,3 +165,42 @@ For example:
 
 Note that this method is inefficient when you need to resolve MRCA's for multiple sets or pairs of taxa.
 In this context, the :class:`~dendropy.treecalc.PatristicDistanceMatrix` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa.
+
+Viewing and Displaying Trees
+============================
+
+Sometimes it is useful to get a visual representation of a |Tree|.
+
+For quick inspection, the :meth:`~dendropy.datamodel.treemodel.Tree.print_plot()` will write an ASCII text plot to the standard output stream::
+
+    >>> t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
+    >>> t.print_plot()
+    /----------------------------------------------- A
+    +
+    |                /------------------------------ B
+    \----------------+
+                     |          /------------------- C
+                     \----------+
+                                \------------------- D
+
+If you need to store this representation as a string instead, you can use :meth:`~dendropy.datamodel.treemodel.Tree.as_ascii_plot()`::
+
+    >>> s = t.as_ascii_plot()
+    >>> print(s)
+    /----------------------------------------------- A
+    +
+    |                /------------------------------ B
+    \----------------+
+                     |          /------------------- C
+                     \----------+
+                                \------------------- D
+
+While the :meth:`~dendropy.datamodel.treemodel.Tree.write_to_path()`, :meth:`~dendropy.datamodel.treemodel.Tree.write_to_stream()` and :meth:`~dendropy.datamodel.treemodel.Tree.as_string()` methods provide for a rich and flexible way to write representations of a |Tree| in various formats to various destinations, the :meth:`~dendropy.datamodel.treemodel.Tree.print_newick()` provides a quick-and-dirty way to get a snapshot NEWICK string of the tree::
+
+    >>> t.print_newick()
+    (A,(B,(C,D)))
+
+
+
+
+
