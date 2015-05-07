@@ -65,7 +65,7 @@ You can make a "taxon namespace-scoped" copy of a |Tree| instance, i.e., where a
 
 Finally, for a true and complete deep-copy, where even the |Taxon| and |TaxonNamespace| references are copied, call :func:`copy.deepcopy`:
 
-.. literalinclude:: /examples/tree_copy3.py
+.. literalinclude:: /examples/tree_copy2.py
 
 Tree Traversal
 ==============
