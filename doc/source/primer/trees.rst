@@ -89,13 +89,12 @@ While the previous example works, it is probably clearer and more efficient to u
     :meth:`~dendropy.datamodel.treemodel.Tree.level_order_node_iter()`
         Iterates over nodes in a |Tree| object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every node at a particular level is visited before proceeding to the next level.
 
-    :meth:`~dendropy.datamodel.treemodel.Tree.leaf_iter()`
+    :meth:`~dendropy.datamodel.treemodel.Tree.leaf_node_iter()`
         Iterates over the leaf or tip nodes of a |Tree| object.
 
 The previous example would thus be better implemented as follows:
 
 .. literalinclude:: /examples/tree_evolve_char2.py
-    :linenos:
 
 The nodes returned by each of these iterators can be filtered if a filter function is passed as a second argument to the iterator.
 This filter function should take a |Node| object as an argument, and return |True| if the node is to be returned or |False| if it is not. For example, the following iterates over all nodes that have more than two children:
@@ -201,7 +200,21 @@ You can also, as mentioned above, using the :meth:`~dendropy.datamodel.treemodel
     print(t.as_string(schema="newick"))
 
 
+Building a Tree Programmatically
+================================
 
+For example:
 
+.. literalinclude:: /examples/build_tree_programmatically.py
 
+produces the following::
 
+    ((A:1,B:2):1,(C:1,D:2):1);
+
+                                       /---------------------------------- A
+    /----------------------------------+
+    |                                  \---------------------------------- B
+    +
+    |                                  /---------------------------------- C
+    \----------------------------------+
+                                       \---------------------------------- D
