@@ -181,7 +181,7 @@ def weighted_index_choice(weights, rng=None):
 def chisq_pdf(chisq, df):
     """
     Returns the probability value associated with the provided chi-square
-    value and df.  Adapted from chisq.c in Gary Perlman's |Stat.
+    value and df.  Adapted from chisq.c in Gary Perlman's Stat.
     """
 
     BIG = 20.0
@@ -239,7 +239,7 @@ def chisq_pdf(chisq, df):
 def z_pmf(z):
     """
     Returns the probability value associated with the provided z-score.
-    Adapted from z.c in Gary Perlman's |Stat.
+    Adapted from z.c in Gary Perlman's Stat.
     """
 
     Z_MAX = 6.0    # maximum meaningful z-value
@@ -274,8 +274,8 @@ def z_pmf(z):
 
 
 def geometric_rv(p, rng=None):
-    """ Geometric distribution per Devroye, Luc. _Non-Uniform Random Variate
-    Generation_, 1986, p 500. http://cg.scs.carleton.ca/~luc/rnbookindex.html
+    """Geometric distribution per Devroye, Luc. Non-Uniform Random Variate
+    Generation, 1986, p 500. http://cg.scs.carleton.ca/~luc/rnbookindex.html
     """
     if rng is None:
         rng = GLOBAL_RNG

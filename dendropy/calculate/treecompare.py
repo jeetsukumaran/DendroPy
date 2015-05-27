@@ -61,6 +61,8 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
     Examples
     --------
 
+    ::
+
         import dendropy
         from dendropy.calculate import treecompare
         tns = dendropy.TaxonNamespace()
@@ -130,6 +132,8 @@ def weighted_robinson_foulds_distance(
     Examples
     --------
 
+    ::
+
         import dendropy
         from dendropy.calculate import treecompare
         tns = dendropy.TaxonNamespace()
@@ -194,6 +198,8 @@ def false_positives_and_negatives(
 
     Examples
     --------
+
+    ::
 
         import dendropy
         from dendropy.calculate import treecompare
@@ -268,6 +274,8 @@ def euclidean_distance(
 
     Examples
     --------
+
+    ::
 
         import dendropy
         from dendropy.calculate import treecompare
