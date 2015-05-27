@@ -20,7 +20,7 @@ Every |Node| object has an attribute, :attr:`~dendropy.datamodel.treemodel.Node.
 Each |Edge|, in turn, has an attribute, :attr:`~dendropy.datamodel.treemodel.Edge.head_node`, which is the |Node| object representing the :term:`node` that the edge subtends.
 
 The |Tree|, |Node|, and |Edge| classes all have "``annotations``" as an attribute, which is a :class:`~dendropy.datamodel.basemodel.AnnotationSet` object, i.e. a collection of :class:`~dendropy.datamodel.basemodel.Annotation` instances tracking metadata.
-More information of metadata can be found in the ":doc:`/primer/working_with_metadata_annotations`" section.
+More information on working with metadata can be found in the ":doc:`/primer/working_with_metadata_annotations`" section.
 
 Reading and Writing |Tree| Instances
 ====================================

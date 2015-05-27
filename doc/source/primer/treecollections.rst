@@ -7,6 +7,8 @@ Collections of Trees: The |TreeList| Class
 
 |TreeList| objects are collections of |Tree| objects constrained to sharing the same |TaxonNamespace|.
 Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.datamodel.treemodel.Tree.taxon_namespace` attribute assigned to the |TaxonNamespace| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonNamespace|, with new |Taxon| objects created if no suitable match is found.
+Objects of the |TreeList| class have an "``annotations``" attribute, which is a :class:`~dendropy.datamodel.basemodel.AnnotationSet` object, i.e. a collection of :class:`~dendropy.datamodel.basemodel.Annotation` instances tracking metadata.
+More information on working with metadata can be found in the ":doc:`/primer/working_with_metadata_annotations`" section.
 
 Reading and Writing |TreeList| Instances
 ----------------------------------------

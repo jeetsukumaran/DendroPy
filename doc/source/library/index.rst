@@ -17,6 +17,7 @@ Data Model
     taxonmodel.rst
     treemodel.rst
     treecollectionmodel.rst
+    treemeasure.rst
     charstatemodel.rst
     charmatrixmodel.rst
     datasetmodel.rst
