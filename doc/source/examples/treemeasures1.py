@@ -1,7 +1,7 @@
 import collections
 import dendropy
 from dendropy.calculate import treemeasure
-from dendropy.mathlib import statistics
+from dendropy.calculate import statistics
 
 # Since we do not want to waste memory by keeping the actual trees around
 # after we are done calculating the statistics, we use the tree yielder

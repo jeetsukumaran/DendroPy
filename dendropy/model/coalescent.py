@@ -25,7 +25,7 @@ import math
 import dendropy
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import constants
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 
 ###############################################################################
 ## Calculations and statistics

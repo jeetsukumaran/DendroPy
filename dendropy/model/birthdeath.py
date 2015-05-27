@@ -21,7 +21,7 @@ Models, modeling and model-fitting of birth-death processes.
 """
 
 import math
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.utility import constants

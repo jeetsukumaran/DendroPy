@@ -24,7 +24,7 @@ import copy
 import math
 import itertools
 from dendropy.utility import GLOBAL_RNG
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 import dendropy
 
 ############################################################################

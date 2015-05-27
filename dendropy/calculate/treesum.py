@@ -24,7 +24,7 @@ import math
 import collections
 import dendropy
 from dendropy.datamodel import taxonmodel
-from dendropy.mathlib.statistics import mean_and_sample_variance
+from dendropy.calculate.statistics import mean_and_sample_variance
 
 ##############################################################################
 ## TreeSummarizer

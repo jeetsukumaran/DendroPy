@@ -22,7 +22,7 @@ Population genetic statistics.
 
 import math
 import dendropy
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 
 ###############################################################################
 ## internal functions: generally taking lower-level data, such as sequences etc.

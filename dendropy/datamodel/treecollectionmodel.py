@@ -34,7 +34,7 @@ from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.utility import constants
-from dendropy.mathlib import statistics
+from dendropy.calculate import statistics
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treemodel

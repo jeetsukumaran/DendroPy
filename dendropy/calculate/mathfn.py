@@ -17,7 +17,20 @@
 ##############################################################################
 
 """
-DEPRECATED IN DENDROPY 4: USE `dendropy.calculate.probability` instead.
+Some common mathematical functions.
 """
 
-from dendropy.calculate.probability import *
+def gcd(a, b):
+    """Return greatest common divisor using Euclid's Algorithm."""
+    while b:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    """Return lowest common multiple."""
+    return a * b // gcd(a, b)
+
+def LCM(*args):
+    """Return lcm of args."""
+    return reduce(lcm, args)
+
