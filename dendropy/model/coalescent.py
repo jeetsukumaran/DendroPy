@@ -470,7 +470,7 @@ def contained_coalescent_tree(containing_tree,
             tree nodes that are uncoalesced as values.
 
     Note that this function does very much the same thing as
-    `constrained_kingman()`, but provides a very different API.
+    ``constrained_kingman()``, but provides a very different API.
     """
 
     if rng is None:
@@ -603,7 +603,7 @@ def constrained_kingman_tree(pop_tree,
     each node of the population tree is added to the original (input) population
     tree instead of a copy.
 
-    Note that this function does very much the same thing as `contained_coalescent()`,
+    Note that this function does very much the same thing as ``contained_coalescent()``,
     but provides a very different API.
     """
 
