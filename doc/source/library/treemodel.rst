@@ -1,6 +1,6 @@
-********************************************
-Trees -- :mod:`dendropy.datamodel.treemodel`
-********************************************
+******************************************
+:mod:`dendropy.datamodel.treemodel`: Trees
+******************************************
 
 .. module:: dendropy.datamodel.treemodel
 

@@ -1,7 +1,6 @@
-
-*********************************************************************
-Collections of Trees -- :mod:`dendropy.datamodel.treecollectionmodel`
-*********************************************************************
+*******************************************************************
+:mod:`dendropy.datamodel.treecollectionmodel`: Collections of Trees
+*******************************************************************
 
 .. module:: dendropy.datamodel.treecollectionmodel
 

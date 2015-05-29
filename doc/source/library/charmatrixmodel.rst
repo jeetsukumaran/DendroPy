@@ -1,6 +1,6 @@
-*****************************************************************************
-Character Sequences and Matrices -- :mod:`dendropy.datamodel.charmatrixmodel`
-*****************************************************************************
+***************************************************************************
+:mod:`dendropy.datamodel.charmatrixmodel`: Character Sequences and Matrices
+***************************************************************************
 
 .. module:: dendropy.datamodel.charmatrixmodel
 

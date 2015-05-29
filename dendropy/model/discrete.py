@@ -523,7 +523,7 @@ def hky85_chars(
     char_matrix   : |DnaCharacterMatrix|
         If given, new sequences for taxa on ``tree_model`` leaf_nodes will be
         appended to existing sequences of corresponding taxa in char_matrix; if
-       not, a new |DnaCharacterMatrix| object will be created.
+        not, a new |DnaCharacterMatrix| object will be created.
     retain_sequences_on_tree : bool
         If `False`, sequence annotations will be cleared from tree after
         simulation. Set to `True` if you want to, e.g., evolve and accumulate

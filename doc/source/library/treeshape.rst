@@ -1,6 +1,6 @@
-********************
-Models of Tree Shape
-********************
+*****************************************************
+:mod:`dendropy.model.treeshape`: Models of Tree Shape
+*****************************************************
 
 .. automodule:: dendropy.model.treeshape
     :members:

@@ -1,6 +1,6 @@
-**************************************************
-Taxon Data -- :mod:`dendropy.datamodel.taxonmodel`
-**************************************************
+**********************************************************************************
+:mod:`dendropy.datamodel.taxonmodel`: Taxonomic Namespace Reference and Management
+**********************************************************************************
 
 .. module:: dendropy.datamodel.taxonmodel
 

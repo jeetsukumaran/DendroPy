@@ -37,6 +37,7 @@ class PhylogeneticIndependentConstrasts(object):
         -   Garland, T., Jr., Jr., A. F. Bennett, and E. L. Rezende. 2005.
             Phylogenetic approaches in comparative physiology. Journal of
             Experimental Biology 208:3015-3035.
+
     """
 
     def __init__(self,

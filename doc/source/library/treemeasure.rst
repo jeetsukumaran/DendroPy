@@ -1,6 +1,6 @@
-*********************************
-Unary Tree Statistics and Metrics
-*********************************
+************************************************************************
+:mod:`dendropy.calculate.treemeasure`: Unary Tree Statistics and Metrics
+************************************************************************
 
 .. automodule:: dendropy.calculate.treemeasure
     :members:
