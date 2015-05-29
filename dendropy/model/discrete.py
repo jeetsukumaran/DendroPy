@@ -36,7 +36,7 @@ class DiscreteCharacterEvolutionModel(object):
     def __init__(self, state_alphabet, stationary_freqs=None, rng=None):
         """
         __init__ initializes the state_alphabet to define the character type on which
-        this model acts.  The objects random number generator will be ``rng`` or `GLOBAL_RNG`
+        this model acts.  The objects random number generator will be ``rng`` or 'GLOBAL_RNG'
         """
         self.state_alphabet = state_alphabet
         if rng is None:
@@ -413,7 +413,7 @@ def simulate_discrete_char_dataset(seq_len,
         required). Otherwise, a new dendropy.DataSet
         object will be created.
     rng           : random number generator
-        If not given, `GLOBAL_RNG` will be used.
+        If not given, 'GLOBAL_RNG' will be used.
 
     Returns
     -------
@@ -450,30 +450,42 @@ def simulate_discrete_chars(
     """
     Wrapper to conveniently generate a characters simulated under
     the given tree and character model.
-    ``seq_len``       : length of sequence (number of characters)
-    ``tree_model``    : dendropy.Tree object
-    ``seq_model``    : dendropy.model.discrete.DiscreteCharacterEvolutionModel object
-    ``mutation_rate`` : mutation *modifier* rate (should be 1.0 if branch lengths
-                      on tree reflect true expected number of changes
-    ``root_states``   : vector of root states (length must equal ``seq_len``)
-    ``char_matrix``    : dendropy.CharacterMatrix object.
-                      if given, new sequences for taxa on ``tree_model`` leaf_nodes
-                      will be appended to existing sequences of corresponding
-                      taxa in char_matrix; if not, a new
-                      dendropy.CharacterMatrix object will be created
-    ``retain_sequences_on_tree`` : if `False`, sequence annotations will be cleared from tree
-                   after simulation. Set to `True` if you want to, e.g.,
-                   evolve and accumulate different sequences on tree, or retain information
-                   for other purposes.
-    ``rng``           : random number generator; if not given, `GLOBAL_RNG` will be
-                      used
-
-    Returns: a dendropy.CharacterMatrix object.
 
     Since characters will be appended to existing sequences, you can simulate a
     sequences under a mixed model by calling this method multiple times with
     different character models and/or different mutation rates, passing
     in the same ``char_matrix`` object each time.
+
+    Parameters
+    ----------
+
+    seq_len       : int
+        Length of sequence (number of characters).
+    tree_model    : |Tree|
+        Tree on which to simulate.
+    seq_model     : dendropy.model.discrete.DiscreteCharacterEvolutionModel
+        The character substitution model under which to to evolve the
+        characters.
+    mutation_rate : float
+        Mutation *modifier* rate (should be 1.0 if branch lengths on tree
+        reflect true expected number of changes).
+    root_states``   : list
+        Vector of root states (length must equal ``seq_len``).
+    char_matrix   : |DnaCharacterMatrix|
+        If given, new sequences for taxa on ``tree_model`` leaf_nodes will be
+        appended to existing sequences of corresponding taxa in char_matrix; if
+        not, a new |DnaCharacterMatrix| object will be created.
+    retain_sequences_on_tree : bool
+        If `False`, sequence annotations will be cleared from tree after
+        simulation. Set to `True` if you want to, e.g., evolve and accumulate
+        different sequences on tree, or retain information for other purposes.
+    rng           : random number generator
+        If not given, 'GLOBAL_RNG' will be used.
+
+    Returns
+    -------
+    d : a dendropy.datamodel.CharacterMatrix object.
+
     """
     seq_evolver = DiscreteCharacterEvolver(seq_model=seq_model,
                                mutation_rate=mutation_rate)
@@ -529,7 +541,7 @@ def hky85_chars(
         simulation. Set to `True` if you want to, e.g., evolve and accumulate
         different sequences on tree, or retain information for other purposes.
     rng           : random number generator
-        If not given, `GLOBAL_RNG` will be used.
+        If not given, 'GLOBAL_RNG' will be used.
 
     Returns
     -------

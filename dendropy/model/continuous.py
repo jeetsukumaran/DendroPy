@@ -53,14 +53,15 @@ class PhylogeneticIndependentConstrasts(object):
         char_matrix : |ContinuousCharacterMatrix|
             ContinuousCharacterMatrix that is the source of the data
         polytomy_strategy
-            One of: 'error', 'ignore', 'resolve':
+            One of: 'error', 'ignore', 'resolve'.
 
                 'error'
-                    throws an error if tree has polytomies
+                    Throws an error if tree has polytomies.
                 'ignore'
-                    no error, but raw contrasts will not be calculated for
-                    polytomies
+                    No error, but raw contrasts will not be calculated for
+                    polytomies.
                 'resolve'
+                    Randomly resolve polytomies.
 
             Defaults to 'error' if not specified or set to None.
         """

@@ -36,7 +36,7 @@ def discrete_time_to_coalescence(n_genes,
                                  rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
-    to go from ``n_genes`` genes to `n_genes-1` genes in a discrete-time
+    to go from ``n_genes`` genes to ``n_genes``-1 genes in a discrete-time
     Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
     ``n-genes`` lineages coalesce in a population of ``pop_size`` genes.
 
@@ -79,7 +79,7 @@ def time_to_coalescence(n_genes,
         rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
-    to go from ``n_genes`` genes to `n_genes-1` genes in a continuous-time
+    to go from ``n_genes`` genes to ``n_genes``-1 genes in a continuous-time
     Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
     ``n-genes`` lineages coalesce in a population of ``pop_size`` genes.
 
@@ -178,7 +178,7 @@ def coalesce_nodes(nodes,
     exhausted.
 
     This function will a draw a coalescence time, ``t``, from an exponential
-    distribution with a rate of `choose(k, 2)`, where ``k`` is the number of
+    distribution with a rate of ``choose(k, 2)``, where ``k`` is the number of
     nodes. If ``period`` is given and if this time is less than ``period``, or if
     ``period`` is not given, then two nodes are selected at random from ``nodes``,
     and coalesced: a new node is created, and the two nodes are added as
