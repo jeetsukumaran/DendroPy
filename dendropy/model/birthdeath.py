@@ -497,9 +497,10 @@ def fit_pure_birth_model(**kwargs):
                 When calculating the node ages, an error will be raised if the tree in
                 o ultrametric. This error may be due to floating-point or numerical
                 imprecision. You can set the precision of the ultrametricity validation
-                by setting the ``ultrametricity_precision`` parameter. E.g., use `ultrametricity_precision=0.01` for
-                a more relaxed precision, down to 2 decimal places. Use
-                `ultrametricity_precision=False` to disable checking of ultrametricity precision.
+                by setting the ``ultrametricity_precision`` parameter. E.g., use
+                ``ultrametricity_precision=0.01`` for a more relaxed precision,
+                down to 2 decimal places. Use ``ultrametricity_precision=False``
+                to disable checking of ultrametricity precision.
 
             ignore_likelihood_calculation_failure: bool (default: False)
                 In some cases (typically, abnormal trees, e.g., 1-tip), the
@@ -511,12 +512,14 @@ def fit_pure_birth_model(**kwargs):
     Returns
     -------
     m : dictionary
-        A dictionary with keys being parameter names and values being
-        estimates:
-            "birth_rate"
-                The birth rate.
-            "log_likelihood"
-                The log-likelihood of the model and given birth rate.
+
+    A dictionary with keys being parameter names and values being
+    estimates:
+
+        "birth_rate"
+            The birth rate.
+        "log_likelihood"
+            The log-likelihood of the model and given birth rate.
 
     Examples
     --------
@@ -543,22 +546,23 @@ def fit_pure_birth_model(**kwargs):
             print("Tree {}: birth rate = {} (logL = {})".format(
                 idx+1, m["birth_rate"], m["log_likelihood"]))
 
+
     Notes
     -----
     Adapted from the laser package for R:
 
-        Dan Rabosky and Klaus Schliep (2013). laser: Likelihood Analysis of
-        Speciation/Extinction Rates from Phylogenies. R package version
-        2.4-1. http://CRAN.R-project.org/package=laser
+        -   Dan Rabosky and Klaus Schliep (2013). laser: Likelihood Analysis of
+            Speciation/Extinction Rates from Phylogenies. R package version
+            2.4-1. http://CRAN.R-project.org/package=laser
 
     See also:
 
-        Nee, S.  2001.  Inferring speciation rates from phylogenies.
-        _Evolution_ 55:661-668.
+        -   Nee, S.  2001.  Inferring speciation rates from phylogenies.
+            Evolution 55:661-668.
+        -   Yule, G. U. 1924. A mathematical theory of evolution based on the
+            conclusions of Dr.  J. C. Willis. Phil. Trans. R. Soc. Lond. B
+            213:21-87.
 
-        Yule, G. U. 1924. A mathematical theory of evolution based on the
-        conclusions of Dr.  J. C. Willis. _Phil. Trans. R. Soc. Lond. B_
-        213:21-87.
     """
     tree = kwargs.get("tree", None)
     if tree is not None:
@@ -615,15 +619,19 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
     Returns
     -------
     m : dictionary
-        A dictionary with keys being parameter names and values being
-        estimates:
-            "birth_rate"
-                The birth rate.
-            "log_likelihood"
-                The log-likelihood of the model and given birth rate.
+
+    A dictionary with keys being parameter names and values being
+    estimates:
+
+        -   "birth_rate"
+            The birth rate.
+        -   "log_likelihood"
+            The log-likelihood of the model and given birth rate.
 
     Examples
     --------
+
+    ::
 
         import dendropy
         from dendropy.model import birthdeath

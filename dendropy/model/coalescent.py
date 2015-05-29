@@ -42,6 +42,7 @@ def discrete_time_to_coalescence(n_genes,
 
     Parameters
     ----------
+
     n_genes : integer
         The number of genes in the sample.
     pop_size : integer
@@ -60,6 +61,7 @@ def discrete_time_to_coalescence(n_genes,
         A randomly-generated waiting time (in discrete generations) for
         ``n_to_coalesce`` genes to coalesce out of a sample of ``n_genes`` in a
         population of ``pop_size`` genes.
+
     """
     if not pop_size:
         time_units = 1.0
@@ -396,7 +398,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    $\frac{{k \choose 2}}{N_e}$:
+    $\frac{{k \choose 2}}{N_e}$::
 
          \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
 

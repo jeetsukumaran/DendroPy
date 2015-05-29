@@ -32,9 +32,9 @@ class PhylogeneticIndependentConstrasts(object):
 
     References:
 
-        Felsenstein, J. 1985. Phylogenies and the comparative method. American
+        -   Felsenstein, J. 1985. Phylogenies and the comparative method. American
             Naturalist 125:1-15.
-        Garland, T., Jr., Jr., A. F. Bennett, and E. L. Rezende. 2005.
+        -   Garland, T., Jr., Jr., A. F. Bennett, and E. L. Rezende. 2005.
             Phylogenetic approaches in comparative physiology. Journal of
             Experimental Biology 208:3015-3035.
     """

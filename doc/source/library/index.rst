@@ -21,10 +21,22 @@ Data Model
     charmatrixmodel.rst
     datasetmodel.rst
 
+Process Models
+==============
+
+.. toctree::
+    :maxdepth: 2
+
+    birthdeath.rst
+    coalescent.rst
+    continuous.rst
+    discrete.rst
+    parsimony.rst
+    reconcile.rst
+    treeshape.rst
 
 Calculations, Statistics, and Metrics
 =====================================
-
 
 .. toctree::
     :maxdepth: 2

@@ -8,7 +8,7 @@ More specialized tree statistics, however, are available through functions in va
 -   The :mod:`~dendropy.calculate.treemeasure` module provides for calculation of statistics that are typically calculated on a single tree
 -   The :mod:`~dendropy.calculate.treecompare` module provides for calculation of statistics that are typically calculated between trees
 -   The :mod:`~dendropy.calculate.treescore` module provides for statistics that typically score a tree under a model and with reference to some sort of data.
--   Tr
+-   The :mod:`~dendropy.model.coalescent` module provides for calcuations on trees under the coalescent model.
 
 Native Tree Statistic and Metric Methods
 ========================================

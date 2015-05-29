@@ -226,6 +226,8 @@ def fitch_up_pass(
     Examples
     --------
 
+    ::
+
         taxa = dendropy.TaxonNamespace()
         data = dendropy.StandardCharacterMatrix.get_from_path(
                 "apternodus.chars.nexus",
