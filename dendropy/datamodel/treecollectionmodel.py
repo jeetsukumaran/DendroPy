@@ -1097,6 +1097,72 @@ class TreeList(
                 summarize_splits=summarize_splits,
                 **kwargs)
 
+    def maximum_product_of_split_support_tree(
+            self,
+            include_external_splits=False,
+            score_attr="log_product_of_split_support"):
+        """
+        Return the tree with that maximizes the product of split supports.
+        The tree with the maximum log product of the split support is the
+        'maximum credibility tree' (MCT) or the 'maximum clade credibility
+        tree' (MCCT), though sometimes one or both these terms are used to
+        refer to the tree with the highest *sum* of split support.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        mct_tree : Tree
+            Tree that maximizes the product of split supports.
+        """
+        ta = self._get_tree_array({})
+        scores, max_score_tree_idx = ta.calculate_log_product_of_split_supports(
+                include_external_splits=include_external_splits,
+                )
+        tree = self[max_score_tree_idx]
+        if score_attr is not None:
+            setattr(tree, score_attr, scores[max_score_tree_idx])
+        return tree
+
+    def maximum_sum_of_split_support_tree(
+            self,
+            include_external_splits=False,
+            score_attr="sum_of_split_support"):
+        """
+        Return the tree with that maximizes the sum of split supports.
+        The tree with the maximum log sum of the split support is the
+        'maximum credibility tree' (MCT) or the 'maximum clade credibility
+        tree' (MCCT), though sometimes one or both these terms are used to
+        refer to the tree with the highest *sum* of split support.
+
+        Parameters
+        ----------
+        include_external_splits : bool
+            If `True`, then non-internal split posteriors will be included in
+            the score. Defaults to `False`: these are skipped. This should only
+            make a difference when dealing with splits collected from trees of
+            different leaf sets.
+
+        Returns
+        -------
+        mct_tree : Tree
+            Tree that maximizes the sum of split supports.
+        """
+        ta = self._get_tree_array({})
+        scores, max_score_tree_idx = ta.calculate_sum_of_split_supports(
+                include_external_splits=include_external_splits,
+                )
+        tree = self[max_score_tree_idx]
+        if score_attr is not None:
+            setattr(tree, score_attr, scores[max_score_tree_idx])
+        return tree
+
     def frequency_of_bipartition(self, **kwargs):
         """
         Given a bipartition specified as:

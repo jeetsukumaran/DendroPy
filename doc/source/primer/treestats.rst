@@ -103,11 +103,10 @@ The Euclidean distance, like the weighted Robinson-Foulds distance takes edge le
 
 .. literalinclude:: /examples/euctree.py
 
-
 Majority-Rule Consensus Tree from a Collection of Trees
 -------------------------------------------------------
 
-To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.datamodel.treemodel.TreeList.consensus()` instance method.
+To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.consensus()` instance method.
 You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
 The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a Newick string:
 
@@ -116,11 +115,21 @@ The following example aggregates the post-burn-in trees from four MCMC samples i
 Frequency of a Split in a Collection of Trees
 ---------------------------------------------
 
-The :meth:`~dendropy.datamodel.treemodel.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
+The :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
 The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
 The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across four MCMC samples:
 
 .. literalinclude:: /examples/splitfreq.py
+
+The Maximum Clade Credibility Tree
+----------------------------------
+
+The Maximum Clade Credibility (MCT) or the Maximum Clade Credibility Tree (MCCT) is one that maximize the *product* of split support, and is returned for a collection of trees managed in a |TreeList| instance by the :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.maximum_product_of_split_support_tree` method:
+
+.. literalinclude:: mcct.py
+
+Unfortunately, terminology in usage and literature regarding this type of summary is *very* confusing, and sometimes the term "MCCT" is used to refer to the tree that maximizes the *sum* of split support.
+If this is the criteria required, then the :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.maximum_sum_of_split_support_tree` method of the |TreeList| object should be used.
 
 Scoring Trees Under the Coalescent
 ==================================
