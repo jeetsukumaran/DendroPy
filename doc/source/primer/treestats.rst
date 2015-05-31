@@ -52,7 +52,6 @@ The :class:`~dendropy.treecalc.PatristicDistanceMatrix` is the most efficient wa
 Its constructor takes a |Tree| object as an argument, and the object return is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
 
 .. literalinclude:: /examples/pdm.py
-    :linenos:
 
 Comparing and Summarizing Trees
 ===============================
@@ -129,21 +128,18 @@ Scoring Trees Under the Coalescent
 Probability Under the Coalescent Model
 ---------------------------------------
 
-The :mod:`~dendropy.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models. For example:
+The :mod:`~dendropy.model.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models. For example:
 
-    :func:`~dendropy.coalescent.log_probability_of_coalescent_tree`
+    :func:`~dendropy.model.coalescent.log_probability_of_coalescent_tree`
         Given a |Tree| object as the first argument, and the haploid population size as the second, returns the log probability of the |Tree| under the neutral coalescent.
-
-    :func:`~dendropy.coalescent.kl_divergence_coalescent_trees`
-        Reports the Kullback-Leilber divergence of a list of trees from the theoretical distribution of neutral coalescent trees. Requires the `de Hoon statistics package <http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/Statistics>`_ package to be installed.
 
 Numbers of Deep Coalescences
 ----------------------------
 
-    :func:`~dendropy.reconcile.reconciliation_discordance`
+    :func:`~dendropy.model.reconcile.reconciliation_discordance`
         Given two |Tree| objects *sharing the same leaf-set*, this returns the number of deep coalescences resulting from fitting the first tree (e.g., a gene tree) to the second (e.g., a species tree). This is based on the algorithm described `Goodman, et al. <bioinformatics.oxfordjournals.org/cgi/reprint/14/9/819.pdf>`_ (Goodman, et al., 1979. Fitting the gene lineage into its species lineage,a parsimony strategy illustrated by cladograms constructed from globin sequences. Syst. Zool. 19: 99-113).
 
-    :func:`~dendropy.reconcile.monophyletic_partition_discordance`
+    :func:`~dendropy.model.reconcile.monophyletic_partition_discordance`
         Given a |Tree| object as the first argument, and a list of lists of
         |Taxon| objects representing the expected monophyletic partitioning of the |TaxonNamespace| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument. This statistic corresponds to the Slatkin and Maddison (1989) **s** statistic, as described `here <http://mesquiteproject.org/Mesquite_Folder/docs/mesquite/popGen/popGen.html#s>`_.
 
@@ -153,7 +149,7 @@ Number of Deep Coalescences when Embedding One Tree in Another (e.g. Gene/Specie
 Imagine we wanted to generate the distribution of the number of deep coalescences under two scenarios: one in which a population underwent sequential or step-wise vicariance, and another when there was simultaneous fragmentation.
 In this case, the containing tree and the embedded trees have different leaf sets, and there is a many-to-one mapping of embedded tree taxa to containing tree taxa.
 
-The :class:`~dendropy.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
+The :class:`~dendropy.model.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
 It requires a |TaxonNamespaceMapping| object, which provides an association between the embedded taxa and the containing taxa.
 The easiest way to get a |TaxonNamespaceMapping| object is to call the special factory function :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
 This will create a new |TaxonNamespace| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
@@ -161,11 +157,11 @@ It takes two arguments: the |TaxonNamespace| of the containing tree, and the num
 If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to :meth:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping.create_contained_taxon_mapping()`.
 This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.datamodel.taxonmodel.TaxonNamespacePartition` object: you can use a function, attribute or dictionary.
 
-The :class:`~dendropy.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time.
+The :class:`~dendropy.model.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.model.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time.
 
 .. literalinclude:: /examples/sim_and_count_deepcoal2.py
 
-If you have used some other method to simulate your trees, you can use :meth:`~dendropy.reconcile.ContainingTree.embed_tree()` to embed the trees and count then number of deep coalescences.
+If you have used some other method to simulate your trees, you can use :meth:`~dendropy.model.reconcile.ContainingTree.embed_tree()` to embed the trees and count then number of deep coalescences.
 
 .. literalinclude:: /examples/sim_and_count_deepcoal1.py
 
@@ -173,46 +169,3 @@ For more details on simulating contained coalescent trees and counting numbers o
 
 
 
-Tree Distances
---------------
-
-The :mod:`~dendropy.treecalc` module provides for these operations as independent functions that take two |Tree| objects as arguments.
-These independent functions require that both trees have the same |TaxonNamespace| reference, otherwise an exception is raised::
-
-        >>> import dendropy
-        >>> from dendropy import treecalc
-        >>> s1 = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247)"
-        >>> s2 = "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247)"
-        >>> tree1 = dendropy.Tree.get_from_string(s1, 'newick')
-        >>> tree2 = dendropy.Tree.get_from_string(s2, 'newick')
-        >>> treecalc.symmetric_difference(tree1, tree2)
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-          File "treecalc.py", line 240, in symmetric_difference
-            t = false_positives_and_negatives(tree1, tree2)
-          File "treecalc.py", line 254, in false_positives_and_negatives
-            % (hex(id(reference_tree.taxon_namespace)), hex(id(test_tree.taxon_namespace))))
-        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
-        >>> treecalc.euclidean_distance(tree1, tree2)
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-          File "treecalc.py", line 236, in euclidean_distance
-            value_type=value_type)
-          File "treecalc.py", line 160, in splits_distance
-            % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
-        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
-        >>> treecalc.robinson_foulds_distance(tree1, tree2)
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-          File "treecalc.py", line 223, in robinson_foulds_distance
-            value_type=float)
-          File "treecalc.py", line 160, in splits_distance
-            % (hex(id(tree1.taxon_namespace)), hex(id(tree2.taxon_namespace))))
-        TypeError: Trees have different TaxonNamespace objects: 0x10111ec00 vs. 0x10111eaa0
-        >>> tree3 = dendropy.Tree.get_from_string(s2, 'newick', taxon_namespace=tree1.taxon_namespace)
-        >>> treecalc.symmetric_difference(tree1, tree3)
-        0
-        >>> treecalc.euclidean_distance(tree1, tree3)
-        2.2232636377544162
-        >>> treecalc.robinson_foulds_distance(tree1, tree3)
-        2.971031
