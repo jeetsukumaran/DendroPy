@@ -429,7 +429,7 @@ def _get_length_diffs(
                 if e2.tail_node is None:
                     elen2 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_namespace.bitmask_as_newick_string(bipartition)))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (id(tree2), tree2.label, bipartition.leafset_as_newick_string(tree2.taxon_namespace)))
         except KeyError: # excep
             elen2 = 0.0
         value2 = value_type(elen2) #  ctor + bind # best case
@@ -452,7 +452,7 @@ def _get_length_diffs(
                 if e1.tail_node is None:
                     elen1 = 0.0
                 else:
-                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, bipartition))
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (id(tree1), tree1.label, bipartition))
                 #elen1 = 0
         value1 = value_type(elen1)
         length_diffs.append((value1,value2)) # ctor + listappend

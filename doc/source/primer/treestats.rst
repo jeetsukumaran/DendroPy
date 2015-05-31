@@ -54,6 +54,75 @@ Its constructor takes a |Tree| object as an argument, and the object return is c
 .. literalinclude:: /examples/pdm.py
     :linenos:
 
+Comparing and Summarizing Trees
+===============================
+
+Distances Between Trees
+-----------------------
+
+Unweighted Robinson-Foulds Distance
+...................................
+
+The *unweighted* Robinson-Foulds distance (often referred to as just the Robinson-Foulds distance) is given by the :func:`dendropy.calculate.treecompare.symmetric_difference` function:
+
+
+.. literalinclude:: /examples/symdiff1.py
+
+Note that the two trees *must* share the same |TaxonNamespace| reference, otherwise an error will be raised::
+
+    >> import dendropy
+    >> from dendropy.calculate import treecompare
+    >> s1 = "(a,(b,(c,d)));"
+    >> s2 = "(a,(d,(b,c)));"
+    >> tree1 = dendropy.Tree.get(data=s1, schema='newick')
+    >> tree2 = dendropy.Tree.get(data=s2, schema='newick')
+    >> print(treecompare.symmetric_difference(tree1, tree2))
+    Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+            print(treecompare.symmetric_difference(tree1, tree2))
+        File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/calculate/treecompare.py", line 85, in symmetric_difference
+            is_bipartitions_updated=is_bipartitions_updated)
+        File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/calculate/treecompare.py", line 221, in false_positives_and_negatives
+            raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
+        dendropy.utility.error.TaxonNamespaceIdentityError: Non-identical taxon namespace references: <TaxonNamespace object at 0x10052d310> is not <TaxonNamespace object at 0x101572210>
+
+Note, too, that results very much depend on the rooting states of the tree:
+
+.. literalinclude:: /examples/symdiff2.py
+
+Weighted Robinson-Foulds Distance
+.................................
+
+The *weighted* Robinson-Foulds distance takes edge lengths into account, and is given by the :func:`dendropy.calculate.treecompare.weighted_robinson_foulds_distance`:
+
+.. literalinclude:: /examples/weightedrf1.py
+
+Euclidean Distance
+..................
+
+The Euclidean distance, like the weighted Robinson-Foulds distance takes edge lengths into account, but squares the edge lengths instead of taking the absolute distance, and is given by the :func:`dendropy.calculate.treecompare.euclidean_distance`:
+
+.. literalinclude:: /examples/euctree.py
+
+
+Majority-Rule Consensus Tree from a Collection of Trees
+-------------------------------------------------------
+
+To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.datamodel.treemodel.TreeList.consensus()` instance method.
+You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
+The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a Newick string:
+
+.. literalinclude:: /examples/majrule.py
+
+Frequency of a Split in a Collection of Trees
+---------------------------------------------
+
+The :meth:`~dendropy.datamodel.treemodel.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
+The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
+The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across four MCMC samples:
+
+.. literalinclude:: /examples/splitfreq.py
+
 Scoring Trees Under the Coalescent
 ==================================
 
@@ -101,28 +170,6 @@ If you have used some other method to simulate your trees, you can use :meth:`~d
 .. literalinclude:: /examples/sim_and_count_deepcoal1.py
 
 For more details on simulating contained coalescent trees and counting numbers of deep coalescences on them, see ":ref:`Simulating_Contained_Coalescent_Trees`" or ":ref:`Simulating_and_Counting_Deep_Coalescences`".
-
-Majority-Rule Consensus Tree from a Collection of Trees
--------------------------------------------------------
-
-To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.datamodel.treemodel.TreeList.consensus()` instance method.
-You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
-The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a Newick string:
-
-.. literalinclude:: /examples/majrule.py
-    :linenos:
-
-Frequency of a Split in a Collection of Trees
----------------------------------------------
-
-The :meth:`~dendropy.datamodel.treemodel.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
-The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
-The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across four MCMC samples:
-
-.. literalinclude:: /examples/splitfreq.py
-    :linenos:
-
-
 
 
 
