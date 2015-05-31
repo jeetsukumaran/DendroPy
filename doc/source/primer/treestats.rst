@@ -1,6 +1,6 @@
-******************************************
-Tree Statistics, Metrics, and Calculations
-******************************************
+****************************************************************
+Tree Statistics, Metrics, Summarizations, and Other Calculations
+****************************************************************
 
 Some general tree metrics that are calculated without reference to any particular model or data and general report some tree metadata (e.g., tree length, node ages, etc.) are available as instance methods.
 More specialized tree statistics, however, are available through functions in various other modules:
@@ -30,10 +30,19 @@ The :meth:`~dendropy.datamodel.treemodel.Tree.calc_node_ages()` method calculate
 
 .. literalinclude:: /examples/node_ages1.py
 
+Number of Lineages at a Particular Time and Lineage Through Time Plots
+----------------------------------------------------------------------
+
+The :meth:`~dendropy.datamodel.treemodel.Tree.num_lineages_at()` method of the |Tree| class returns the number of lineages at a particular time given in terms of distance from the root.
+The following example extracts the number of lineages at fixed intervals along the length of the tree to use in an Lineage Through Time (LTT) plot:
+
+.. literalinclude:: /examples/ltt.py
+
+
 Unary Tree Statistics and Metrics
 =================================
 
-Numerous statistics on tree shape and structure are available through the :mod:`~dendropy.calculate.treemeasure` module:
+Numerous specialized statistics and indexes of tree shape and structure (B1, Colless' imbalance, Pybus-Harvey-Gamma, etc.) are available through the :mod:`~dendropy.calculate.treemeasure` module:
 
 
 .. literalinclude:: /examples/treemeasures1.py
