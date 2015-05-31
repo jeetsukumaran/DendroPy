@@ -121,12 +121,12 @@ The following example shows how to calculate the frequency of a split defined by
 
 .. literalinclude:: /examples/splitfreq.py
 
-The Maximum Clade Credibility Tree
-----------------------------------
+The Maximum Clade Credibility Tree: The Tree that Maximizes the Product of Split Support
+----------------------------------------------------------------------------------------
 
 The Maximum Clade Credibility (MCT) or the Maximum Clade Credibility Tree (MCCT) is one that maximize the *product* of split support, and is returned for a collection of trees managed in a |TreeList| instance by the :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.maximum_product_of_split_support_tree` method:
 
-.. literalinclude:: mcct.py
+.. literalinclude:: /examples/mcct.py
 
 Unfortunately, terminology in usage and literature regarding this type of summary is *very* confusing, and sometimes the term "MCCT" is used to refer to the tree that maximizes the *sum* of split support.
 If this is the criteria required, then the :meth:`~dendropy.datamodel.treecollectionmodel.TreeList.maximum_sum_of_split_support_tree` method of the |TreeList| object should be used.
