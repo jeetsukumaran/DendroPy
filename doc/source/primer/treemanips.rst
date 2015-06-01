@@ -24,38 +24,10 @@ Setting the Rooting State
 
 All |Tree| objects have a boolean property, :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.datamodel.treemodel.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` to |True| will result in :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` being set to |False| and vice versa.
 
-The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you need to update the splits hashes after modifying the :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` property by calling the :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()` before carrying out any calculations on or with the |Tree| object. Note that calling :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``delete_outdegree_one=False`` to :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()`.
+The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you need to update the splits hashes after modifying the :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` property by calling the :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()` before carrying out any calculations on or with the |Tree| object. Note that calling :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``suppress_unifurcations=False`` to :meth:`~dendropy.datamodel.treemodel.Tree.update_splits()`.
 
 ::
 
-    #! /usr/bin/env python
-
-    import dendropy
-
-    tree_str = "[&R] (A, (B, (C, (D, E))));"
-
-    tree = dendropy.Tree.get_from_string(
-            tree_str,
-            "newick")
-
-    print("Original:")
-    print(tree.as_ascii_plot())
-
-    tree.is_rooted = False
-    print("After `is_rooted=False`:")
-    print(tree.as_ascii_plot())
-
-    tree.update_splits()
-    print("After `update_splits()`:")
-    print(tree.as_ascii_plot())
-
-    tree2 = dendropy.Tree.get_from_string(
-            tree_str,
-            "newick")
-    tree2.is_rooted = False
-    tree2.update_splits(delete_outdegree_one=False)
-    print("After `update_splits(delete_outdegree_one=False)`:")
-    print(tree2.as_ascii_plot())
 
 will result in::
 
@@ -96,7 +68,7 @@ will result in::
                                        \----------------- E
 
 
-    After `update_splits(delete_outdegree_one=False)`:
+    After `update_splits(suppress_unifurcations=False)`:
     /---------------------------------------------------- A
     +
     |            /--------------------------------------- B

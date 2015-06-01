@@ -5221,7 +5221,7 @@ class Tree(
         Recalculates bipartition hashes for tree.
         """
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: 'Tree.update_bipartitions()' will no longer be supported in future releases; use 'Tree.update_bipartitions()' instead",
+                message="Deprecated since DendroPy 4: 'Tree.encode_splits()' will no longer be supported in future releases; use 'Tree.update_bipartitions()' instead",
                 stacklevel=3)
         return self.encode_bipartitions(*args, **kwargs)
 
