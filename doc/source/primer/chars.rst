@@ -49,8 +49,8 @@ You can als represent the data as a string using the :meth:`as_string` method::
 
 More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
 
-Creating a Character Data Matrix
-================================
+Creating a Character Data Matrix from a Dictionary of Strings
+=============================================================
 
 The :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.from_dict` factory method creates a new |CharacterMatrix| from a dictionary mapping taxon labels to sequences represented as strings::
 
@@ -113,18 +113,42 @@ You can instantiate a concatenated matrix from multiple sources using the :meth:
 Sequence Management
 ===================
 
-Sequences in an existing instance of a |CharacterMatrix|-derived class can be managed by using a range of sequence curation methods:
+A range of methods also exist for importing data from another matrix object.
+These vary depending on how "new" and "existing" are treated.  A "new"
+sequence is a sequence in the other matrix associated with a |Taxon|
+object for which there is no sequence defined in the current matrix.  An
+"existing" sequence is a sequence in the other matrix associated with a
+|Taxon| object for which there *is* a sequence defined in the
+current matrix.
+
++---------------------------------+---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+|                                 | New Sequences: IGNORED                                                          | New Sequences: ADDED                                                           |
++=================================+=================================================================================+================================================================================+
+| Existing Sequences: IGNORED     | [NO-OP]                                                                         | :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences()`    |
++---------------------------------+---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+| Existing Sequences: OVERWRITTEN | :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences()` | :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences()` |
++---------------------------------+---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+| Existing Sequences: EXTENDED    | :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences()`  | :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix()`    |
++---------------------------------+---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
+
+More information cane be found in the source documentation:
 
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix()`
+
+In addition there are methods for selecting removing sequences:
+
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.remove_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.discard_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.keep_sequences()`
--   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill()`
+
+As well as "filling out" a matrix by adding columns or rows:
+
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill_taxa()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.pack()`
 
 Accessing Data
@@ -141,4 +165,13 @@ You can also iterate over the matrix in a number of ways:
 .. literalinclude:: /examples/chars_access2.py
 
 
-The "values" of a |CharacterMatrix| are |CharacterDataSequence| objects.
+The "values" return by dereferencing the "keys" of a |CharacterMatrix|  objects are |CharacterDataSequence| objects.
+Objects of this class behave very much like lists, where the elements are either numeric values for |ContinuousCharacterMatrix| matrices:
+
+.. literalinclude:: /examples/chars_access3.py
+
+or |StateIdentity| instances for all other types of matrices:
+
+.. literalinclude:: /examples/chars_access4.py
+
+As can be seen, you can use :meth:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence.values()` to get a list of the values of the sequence directly, :meth:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_list()` to get a list of the values represented as strings, and :meth:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_string()` to get the string representation of the whole sequence.

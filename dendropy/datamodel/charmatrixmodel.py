@@ -157,6 +157,9 @@ class CharacterDataSequence(
     ###############################################################################
     ## Life-cycle
 
+    # def values(self):
+    #     return list(self._character_values)
+
     def values(self):
         """
         Returns list of values of this vector.
@@ -166,9 +169,6 @@ class CharacterDataSequence(
         v : list
             List of values making up this vector.
         """
-        return list(self._character_values)
-
-    def values(self):
         return self._character_values
 
     def symbols_as_list(self):
