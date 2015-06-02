@@ -27,13 +27,13 @@ Once the data is loaded, we create the :class:`~dendropy.model.continuous.Phylog
 
 At this point, the data is ready for analysis. Typically, we want to map the contrasts onto a tree. The :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes a single mandatory argument, the 0-based index of the character (or column) to be analyzed, and returns a |Tree| object that is a clone of the original input |Tree|, but with the following attributes added to each |Node|:
 
-        - `pic_state_value`
-        - `pic_state_variance`
-        - `pic_contrast_raw`
-        - `pic_contrast_variance`
-        - `pic_contrast_standardized`
-        - `pic_edge_length_error`
-        - `pic_corrected_edge_length`
+        - ``pic_state_value``
+        - ``pic_state_variance``
+        - ``pic_contrast_raw``
+        - ``pic_contrast_variance``
+        - ``pic_contrast_standardized``
+        - ``pic_edge_length_error``
+        - ``pic_corrected_edge_length``
 
 In addition to the 0-based index first argument, ``character_index``, the :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes the following optional arguments:
 
