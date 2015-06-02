@@ -44,7 +44,7 @@ To generate a |CharacterMatrix| object from the collection of sequences, call th
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(ids=['EU105474', 'EU105475'])
     >>> char_matrix = gb_dna.generate_char_matrix()
-    >>> print char_matrix.as_string("nexus")
+    >>> print(char_matrix.as_string("nexus"))
     #NEXUS
     BEGIN TAXA;
 
