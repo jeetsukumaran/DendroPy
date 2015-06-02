@@ -18,39 +18,60 @@ It has three primary attributes:
 |DataSet| Creation and Reading
 ===============================
 
-Creating a new |DataSet| from a Data Source
---------------------------------------------
+Reading and Writing |DataSet| Objects
+-------------------------------------
 
-You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.) as the second:
-
-    >>> import dendropy
-    >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
-
-In addition, fine-grained control over the parsing of the data source is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
-Reading into an Existing |DataSet| from a Data Source
------------------------------------------------------
-
-The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments (i.e., a data source, a :ref:`schema specification string <Specifying_the_Data_Source_Format>`, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the parse behavior)
+You can use the :meth:`~dendropy.datamodel.datasetmodel.DataSet.get` factory class method for simultaneously instantiating and populating |DataSet| object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.) as the second::
 
     >>> import dendropy
-    >>> ds = dendropy.DataSet()
-    >>> ds.attach_taxon_namespace()
-    >>> ds = dendropy.DataSet.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
-    >>> ds = dendropy.DataSet.read_from_path('pythonidae.mle.nex', 'nexus')
+    >>> ds = dendropy.DataSet.get(
+        path='pythonidae.nex',
+        schema='nexus')
 
-Note how the :meth:`~dendropy.datamodel.datasetmodel.DataSet.attach_taxon_namespace()` method is called before invoking any "|read_from_methods|" statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonNamespace| instance.
+The :meth:`~dendropy.datamodel.datasetmodel.DataSet.read` instance method for reading additional data into existing objects are also supported, taking the same arguments (i.e., a data source, a :ref:`schema specification string <Specifying_the_Data_Source_Format>`, as well as optional :keyword arguments to customize the parse behavior):
 
-Cloning an Existing |DataSet|
------------------------------
+.. literalinclude:: /examples/ds1.py
 
-You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor:
+.. Note::
 
-    >>> import dendropy
-    >>> ds1 = dendropy.DataSet.get_from_path('pythonidae.cytb.fasta', 'dnafasta')
-    >>> ds2 = dendropy.DataSet(ds1)
+    Note how the :meth:`~dendropy.datamodel.datasetmodel.DataSet.attach_taxon_namespace()` method is called before invoking any ":meth:`~dendropy.datamodel.datasetmodel.DataSet.read`" statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonNamespace| instance.
+    It is **HIGHLY** recommended that you do this, i.e., manage all data with the same |DataSet| instance under the same taxonomic namespace, unless you have a special reason to include multiple independent taxon "domains" in the same data set.
 
-Following this, ``ds2`` will be a *full* deep-copy clone of ``ds1``, with distinct and independent, but identical, |Taxon|, |TaxonNamespace|, |TreeList|, |Tree| and |CharacterMatrix| objects.
-Note that, in distinction to the similar cloning methods of |Tree| and |TreeList|, even the |Taxon| and |TaxonNamespace| objects are cloned, meaning that you manipulate the |Taxon| and |TaxonNamespace| objects of ``ds2`` without in any way effecting those of ``ds1``.
+The ":meth:`~dendropy.datamodel.datasetmodel.DataSet.write`" method allows you to write the data of a |DataSet| to a file-like object or a file path
+The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted tree files into a single |TreeList|, then, adds the |TreeList| as well as the original character data into a single |DataSet| object, which is then written out as NEXUS-formatted file:
+
+.. literalinclude:: /examples/dsrw1.py
+
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the first argument::
+
+    import dendropy
+    ds = dendropy.DataSet()
+    ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    s = ds.as_string('nexus')
+
+or::
+
+    dna1 = dendropy.DataSet.get(file=open("pythonidae.nex"), schema="nexus")
+    s = dna1.as_string(schema="fasta")
+    print(s)
+
+
+In addition, fine-grained control over the reading and writing of data is available through various keyword arguments.
+More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
+
+.. Cloning an Existing |DataSet|
+.. -----------------------------
+..
+.. You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor::
+..
+..     >>> import dendropy
+..     >>> ds1 = dendropy.DataSet.get(
+..     ... path='pythonidae.cytb.fasta',
+..     ... schema='dnafasta')
+..     >>> ds2 = dendropy.DataSet(ds1)
+..
+.. Following this, ``ds2`` will be a *full* deep-copy clone of ``ds1``, with distinct and independent, but identical, |Taxon|, |TaxonNamespace|, |TreeList|, |Tree| and |CharacterMatrix| objects.
+.. Note that, in distinction to the similar cloning methods of |Tree| and |TreeList|, even the |Taxon| and |TaxonNamespace| objects are cloned, meaning that you manipulate the |Taxon| and |TaxonNamespace| objects of ``ds2`` without in any way effecting those of ``ds1``.
 
 Creating a New |DataSet| from Existing |TreeList| and |CharacterMatrix| Objects
 -------------------------------------------------------------------------------
@@ -89,34 +110,6 @@ You can add independentally created or parsed data objects to a |DataSet| using 
     >>> ds.unify_taxa()
 
 Here, again, we call the :meth:`~dendropy.datamodel.datasetmodel.DataSet.unify_taxa()` to map all taxon references to the same, common, unified |TaxonNamespace|.
-
-|DataSet| Saving and Writing
-=============================
-
-Writing to Files
-----------------
-
-The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |DataSet| object to a file-like object or a file path respectively.
-These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the second argument.
-
-The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted tree files into a single |TreeList|, then, adds the |TreeList| as well as the original character data into a single |DataSet| object, which is then written out as NEXUS-formatted file:
-
-.. literalinclude:: /examples/dsrw1.py
-    :linenos:
-
-Fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
-
-Composing a String
-------------------
-
-If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the first argument:
-
-    >>> import dendropy
-    >>> ds = dendropy.DataSet(attached_taxon_namespace=True)
-    >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
-    >>> s = ds.as_string('nexus')
-
-As above, fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
 
 Taxon Management with Data Sets
 ===============================

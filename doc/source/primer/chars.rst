@@ -35,17 +35,21 @@ This method takes a data source as the first keyword argument and a :ref:`schema
     std1 = dendropy.StandardCharacterMatrix.get(path="python_morph.nex", schema="nexus")
     std2 = dendropy.StandardCharacterMatrix.get(data=">t1\n01011\n\n>t2\n11100", schema="fasta")
 
+
 The "|write|" method allows you to write the data of a |CharacterMatrix| to a file-like object or a file path::
 
     dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.nex"), schema="nexus")
     dna1.write(path="out.nexml", schema="nexml")
     dna1.write(file=open("out.fasta", schema="fasta")
 
-You can als represent the data as a string using the :meth:`as_string` method::
+You can also represent the data as a string using the :meth:`as_string` method::
 
     dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.nex"), schema="nexus")
     s = dna1.as_string(schema="fasta")
     print(s)
+
+
+In addition, fine-grained control over the reading and writing of data is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
 
 More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
 
