@@ -8,30 +8,24 @@ Phylogenetic Independent Contrasts (PIC)
 Basic Analysis
 --------------
 
-A phylogenetic independent contrasts analysis (Felsenstein 1985; Garland et al. 2005) can be carried out using the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` class.
+A phylogenetic independent contrasts analysis (Felsenstein 1985; Garland et al. 2005) can be carried out using the :class:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts` class.
 This requires you to have a |Tree| and a |ContinuousCharacterMatrix| which reference the same |TaxonNamespace|.
-Thus, if your data is in the same file::
+Thus, if your data is in the same file:
 
-    >>> import dendropy
-    >>> dataset = dendropy.DataSet.get_from_path("primates.cont.nex", "nexus")
-    >>> tree = dataset.tree_list[0][0]
-    >>> chars = dataset.char_matrices[0]
+.. literalinclude:: /examples/pic2.py
 
-While if you have the tree and characters in a different file::
+While if you have the tree and characters in a different file:
 
-    >>> import dendropy
-    >>> taxa = dendropy.TaxonNamespace()
-    >>> tree = dendropy.Tree.get_from_path("primates.tre", "newick", taxon_namespace=taxa)
-    >>> chars = dendropy.ContinuousCharacterMatrix.get_from_path("primates.cc.nex", "nexus", taxon_namespace=taxa)
+.. literalinclude:: /examples/pic3.py
 
 In either case, we have a |Tree| object, ``tree`` and a |ContinuousCharacterMatrix| object, ``chars``, that both reference the same |TaxonNamespace|.
 
-Once the data is loaded, we create the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` object::
+Once the data is loaded, we create the :class:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts` object::
 
     >>> from dendropy import continuous
-    >>> pic = dendropy.continuous.PhylogeneticIndependentContrasts(tree=tree, char_matrix=chars)
+    >>> pic = continuous.PhylogeneticIndependentContrasts(tree=tree, char_matrix=chars)
 
-At this point, the data is ready for analysis. Typically, we want to map the contrasts onto a tree. The :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes a single mandatory argument, the 0-based index of the character (or column) to be analyzed, and returns a |Tree| object that is a clone of the original input |Tree|, but with the following attributes added to each |Node|:
+At this point, the data is ready for analysis. Typically, we want to map the contrasts onto a tree. The :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes a single mandatory argument, the 0-based index of the character (or column) to be analyzed, and returns a |Tree| object that is a clone of the original input |Tree|, but with the following attributes added to each |Node|:
 
         - `pic_state_value`
         - `pic_state_variance`
@@ -41,7 +35,7 @@ At this point, the data is ready for analysis. Typically, we want to map the con
         - `pic_edge_length_error`
         - `pic_corrected_edge_length`
 
-In addition to the 0-based index first argument, ``character_index``, the :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes the following optional arguments:
+In addition to the 0-based index first argument, ``character_index``, the :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` method takes the following optional arguments:
 
     ``annotate_pic_statistics``
         If |True| then the PIC statistics attributes will be *annotated* (i.e., serialized or persisted when the tree is written out or saved. Defaults to |False|.
@@ -76,7 +70,7 @@ So the following retrieves the constrasts tree for the first character (index=0)
 Results as a Newick String with State Values as Node Labels
 -----------------------------------------------------------
 
-Alternatively, you might want to visualize the results as a tree showing the numeric values of the states. The following produces this for each character in the matrix by first requesting that :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` replace existing node labels with the state values for that node, and then, when writing out in Newick format, suppressing taxon labels and printing node labels in their place:
+Alternatively, you might want to visualize the results as a tree showing the numeric values of the states. The following produces this for each character in the matrix by first requesting that :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` replace existing node labels with the state values for that node, and then, when writing out in Newick format, suppressing taxon labels and printing node labels in their place:
 
 .. literalinclude:: /examples/pic1.py
 
@@ -89,7 +83,7 @@ This results in::
 Results as a NEXUS Document with Analysis Statistics as Node Metadata
 ---------------------------------------------------------------------
 
-However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in |FigTree|_ (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options. The following illustrates this. It collects the metadata-annotated contrast analysis trees produced by :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` in a |TreeList| object, and then prints the |TreeList| as NEXUS-formatted string. The default options to :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` result in annotated attributes, while the default options to the writing method result in the annotations being written out as comment metadata.
+However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in |FigTree|_ (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options. The following illustrates this. It collects the metadata-annotated contrast analysis trees produced by :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` in a |TreeList| object, and then prints the |TreeList| as NEXUS-formatted string. The default options to :meth:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` result in annotated attributes, while the default options to the writing method result in the annotations being written out as comment metadata.
 
 .. literalinclude:: /examples/pic_annotated.py
 
@@ -120,13 +114,13 @@ Thus, we get::
 Multifurcating Trees and Polytomies
 -----------------------------------
 
-By default, the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` class only handles fully-bifurcating trees, and throws an exception if the input tree has polytomies.
+By default, the :class:`~dendropy.model.continuous.PhylogeneticIndependentConstrasts` class only handles fully-bifurcating trees, and throws an exception if the input tree has polytomies.
 You can change this behavior by specifying one of the following strings to the "``polytomy_strategy``" argument of the class constructor:
 
     "``ignore``"
         Polytomies will handled without complaint::
 
-            >>> pic = dendropy.continuous.PhylogeneticIndependentContrasts(tree=tree,
+            >>> pic = dendropy.model.continuous.PhylogeneticIndependentContrasts(tree=tree,
             ...        char_matrix=chars,
             ...        polytomy_strategy='ignore')
 
@@ -135,7 +129,7 @@ You can change this behavior by specifying one of the following strings to the "
     "``resolve``"
         Polytomies will be arbitrarily resolved with 0-length branches::
 
-            >>> pic = dendropy.continuous.PhylogeneticIndependentContrasts(tree=tree,
+            >>> pic = dendropy.model.continuous.PhylogeneticIndependentContrasts(tree=tree,
             ...        char_matrix=chars,
             ...        polytomy_strategy='resolve')
 
