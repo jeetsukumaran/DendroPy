@@ -630,9 +630,7 @@ class CharacterMatrix(
             for t, s in cm.items():
                 if len(s) != v1:
                     raise ValueError("Unequal length sequences in character matrix %d".format(cidx+1))
-            concatenated_chars.extend(cm,
-                    extend_existing=True,
-                    overwrite_existing=False)
+            concatenated_chars.extend_matrix(cm)
             if cm.label is None:
                 new_label = "locus%03d" % cidx
             else:
@@ -659,7 +657,7 @@ class CharacterMatrix(
         """
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = TaxonNamespace()
+            taxon_namespace = taxonmodel.TaxonNamespace()
         kwargs["taxon_namespace"] = taxon_namespace
         char_matrices = []
         for stream in streams:
@@ -1182,9 +1180,11 @@ class CharacterMatrix(
     #         if t in self._taxon_sequence_map:
     #             yield self._taxon_sequence_map[t]
 
-    # def items(self):
-    #     "Returns character map key, value pairs in key-order."
-    #     return [(t, self._taxon_sequence_map[t]) for t in self.taxon_namespace if t in self._taxon_seq_map]
+    def items(self):
+        "Returns character map key, value pairs in key-order."
+        for t in self.taxon_namespace:
+            if t in self._taxon_sequence_map:
+                yield t, self._taxon_sequence_map[t]
 
     # def values(self):
     #     "Returns list of values."

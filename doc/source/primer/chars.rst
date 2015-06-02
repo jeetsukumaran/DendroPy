@@ -11,67 +11,56 @@ In most cases, you will not deal with objects of the |CharacterMatrix| class dir
     - |DnaCharacterMatrix|, for DNA nucleotide sequence data
     - |RnaCharacterMatrix|, for RNA nucleodtide sequence data
     - |ProteinCharacterMatrix|, for amino acid sequence data
-    - |ContinuousCharacterMatrix|, for continuous-valued data
     - |StandardCharacterMatrix|, for discrete-value data
+    - |ContinuousCharacterMatrix|, for continuous-valued data
 
-|CharacterMatrix| Creating and Reading
-======================================
+The |ContinuousCharacterMatrix| class represents its character values directly.
+Typically, all other classes represent its character values as special :class:`~dendropy.datamodel.charstatemodel.StateIdentity` instances, *not* as strings.
+So, for example, the DNA character "A" is modeled by a special :class:`~dendropy.datamodel.charstatemodel.StateIdentity` instance (created by the DendroPy library).
+While it is represented by the string "A", and can be converted to the string and back again, it is not the same as the string "A".
+Each discrete |CharacterMatrix| instance has one or more :class:`~dendropy.datamodel.charstatemodel.StateAlphabet` instances associated with it that manage the collection of letters that make up the character data.
+In the case of, e.g. DNA, RNA, protein and other specialized discrete data, this are pre-defined by DendroPy: ``dendropy.DNA_STATE_ALPHABET``, ``dendropy.RNA_STATE_ALPHABET``, etc.
+In the case of "standard" character data, these are created for each matrix separately. Facilities are provided for the creation of custom state alphabets and for the sharing of state alphabets between different |StandardCharacterMatrix| instances.
 
-As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the "|get_from_methods|" factory and "|read_from_methods|" instance methods to populate objects from a data source.
-These methods take a data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the reading behavior.
+Reading and Writing Character Data
+==================================
 
-Creating a New |CharacterMatrix| from a Data Source
----------------------------------------------------
+As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the "|get|" factory method to populate objects from a data source.
+This method takes a data source as the first keyword argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second::
 
-The following examples simultaneously instantiate and populate |CharacterMatrix| objects of the appropriate type from various file data sources::
+    import dendropy
+    dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.fasta"), schema="fasta")
+    dna2 = dendropy.DnaCharacterMatrix.get(url="http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus", schema="nexus")
+    aa1 = dendropy.ProteinCharacterMatrix.get(file=open("pythonidae.dat"), schema="phylip")
+    std1 = dendropy.StandardCharacterMatrix.get(path="python_morph.nex", schema="nexus")
+    std2 = dendropy.StandardCharacterMatrix.get(data=">t1\n01011\n\n>t2\n11100", schema="fasta")
 
-    >>> import dendropy
-    >>> dna = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.nex', 'nexus')
-    >>> rna = dendropy.DnaCharacterMatrix.get_from_path('hiv1_env.nex', 'nexus')
-    >>> aa = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_mos.nex', 'nexus')
-    >>> cv = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_sizes.nex', 'nexus')
-    >>> sm = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_skull.nex', 'nexus')
+The "|write|" method allows you to write the data of a |CharacterMatrix| to a file-like object or a file path::
 
-Repopulating a |CharacterMatrix| from a DataSource
---------------------------------------------------
+    dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.nex"), schema="nexus")
+    dna1.write(path="out.nexml", schema="nexml")
+    dna1.write(file=open("out.fasta", schema="fasta")
 
-The "|read_from_methods|" instance methods **replace** the calling object with data from the data source, overwriting existing data::
+You can als represent the data as a string using the :meth:`as_string` method::
 
-    >>> import dendropy
-    >>> dna = dendropy.DnaCharacterMatrix()
-    >>> dna.read_from_path('pythonidae_cytb.nex', 'nexus')
-    >>> dna.read_from_path('pythonidae_rag1.nex', 'nexus')
+    dna1 = dendropy.DnaCharacterMatrix.get(file=open("pythonidae.nex"), schema="nexus")
+    s = dna1.as_string(schema="fasta")
+    print(s)
 
-The second "|read_from_methods|" will result in the ``dna`` object being re-populated with data from the file ``pythonidae_rag1.nex``.
+More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
 
-|CharacterMatrix| Saving and Writing
-====================================
+Creating a Character Data Matrix
+================================
 
-Writing to Files
-----------------
+The :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.from_dict` factory method creates a new |CharacterMatrix| from a dictionary mapping taxon labels to sequences represented as strings::
 
-The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |CharacterMatrix| to a file-like object or a file path respectively.
-These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the second argument.
-
-The following example reads a FASTA-formatted file and writes it out to a a NEXUS-formatted file:
-
-    >>> import dendropy
-    >>> dna = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
-    >>> dna.write_to_path('pythonidae_cytb.nexus', 'nexus')
-
-Fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
-
-Composing a String
-------------------
-
-If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the first argument:
-
-    >>> import dendropy
-    >>> dna = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
-    >>> s = dna.as_string('nexus')
-    >>> print(s)
-
-As above, fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
+    import dendropy
+    d = {
+            "s1" : "TCCAA",
+            "s2" : "TGCAA",
+            "s3" : "TG-AA",
+    }
+    dna = dendropy.DnaCharacterMatrix.from_dict(d)
 
 Taxon Management with Character Matrices
 ========================================
@@ -79,23 +68,59 @@ Taxon Management with Character Matrices
 Taxon management with |CharacterMatrix|-derived objects work very much the same as it does with |Tree| or |TreeList| objects every time a |CharacterMatrix|-derived object is independentally created or read, a new |TaxonNamespace| is created, unless an existing one is specified.
 Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common |TaxonNamespace| reference::
 
-    >>> import dendropy
-    >>> taxa = dendropy.TaxonNamespace()
-    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_namespace=taxa)
-    >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_namespace=taxa)
+    import dendropy
+    taxa = dendropy.TaxonNamespace()
+    dna1 = dendropy.DnaCharacterMatrix.get(
+        path="pythonidae_cytb.fasta",
+        schema="fasta",
+        taxon_namespace=taxa)
+    prot1 = dendropy.ProteinCharacterMatrix.get(
+        path="pythonidae_morph.nex",
+        schema="nexus",
+        taxon_namespace=taxa)
+    trees = dendropy.TreeList.get(
+        path="pythonidae.trees.nex",
+        schema="nexus",
+        taxon_namespace=taxa)
+
+Concatenating Multiple Data Matrices
+====================================
+
+A new |CharacterMatrix| can be created from multiple existing matrices using the :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.concatentate()` factory method, which takes a list or an iterable of |CharacterMatrix| instances as an argument.
+        All the CharacterMatrix objects in the list must be of the
+        same type, and share the same TaxonNamespace reference. All taxa
+        must be present in all alignments, all all alignments must
+        be of the same length. Component parts will be recorded as
+        character subsets.
+
+For example:
+
+.. literalinclude:: /examples/char_mat_concat.py
+
+
+results in ::
+
+    d1: 12 sequences, 231 characters
+    d2: 12 sequences, 231 characters
+    d3: 12 sequences, 231 characters
+    d_all: 12 sequences, 693 characters
+    Subsets: {'locus002': <dendropy.datamodel.charmatrixmodel.CharacterSubset object at 0x101d792d0>, 'locus000': <dendropy.datamodel.charmatrixmodel.CharacterSubset object at 0x101d79250>, 'locus001': <dendropy.datamodel.charmatrixmodel.CharacterSubset object at 0x101d79290>}
+
+You can instantiate a concatenated matrix from multiple sources using the :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.concatentate_from_paths()` or :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.concatentate_from_streams()` factory methods:
+
+.. literalinclude:: /examples/char_mat_concat2.py
+
+For more information on extending sequences or characters on an existing instance of a |CharacterMatrix|-derived class, see:
+
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix()`
 
 
 Accessing Data
 ==============
-Each sequence for a particular |Taxon| object is organized into a |CharacterDataVector| object, which, in turn, is a list of |CharacterDataCell| objects.
-You can retrieve the |CharacterDataVector| for a particular taxon by passing the corresponding |Taxon| object, its label, or its index to the |CharacterMatrix| object.
-Thus, to get the character sequence vector associated with the first taxon ("``Python regius``") from the data source ``pythonidae_cytb.fasta``:
 
-    >>> from dendropy import DnaCharacterMatrix
-    >>> cytb = DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
-    >>> v1 = cytb[0]
-    >>> v2 = cytb['Python regius']
-    >>> v3 = cytb[cytb.taxon_namespace[0]]
-    >>> v1 == v2 == v3
-    True
-
+A |CharacterMatrix| behaves very much like a dictionary of lists.
+The "keys" are |Taxon| instances, w
