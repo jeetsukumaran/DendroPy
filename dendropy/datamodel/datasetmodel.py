@@ -478,20 +478,20 @@ class DataSet(
                 tree_list.migrate_taxon_namespace(
                         taxon_namespace=taxon_namespace,
                         unify_taxa_by_label=True,
-                        case_sensitive_label_mapping=case_sensitive_label_mapping,
+                        # case_sensitive_label_mapping=case_sensitive_label_mapping,
                         taxon_mapping_memo=taxon_mapping_memo)
             for char_matrix in self.char_matrices:
                 char_matrix.migrate_taxon_namespace(
                         taxon_namespace=taxon_namespace,
                         unify_taxa_by_label=True,
-                        case_sensitive_label_mapping=case_sensitive_label_mapping,
+                        # case_sensitive_label_mapping=case_sensitive_label_mapping,
                         taxon_mapping_memo=taxon_mapping_memo)
         if attach_taxon_namespace:
             self.attach_taxon_namespace(taxon_namespace)
 
     def unify_taxa(self, taxon_set=None, bind=None):
         deprecate.dendropy_deprecation_warning(
-                message="Deprecated since DendroPy 4: '{class_name}.unify_taxa()' will no longer be supported in future releases; use '{class_name}.unify_taxon_namespace()' instead".format(class_name=self.__class__.__name__))
+                message="Deprecated since DendroPy 4: '{class_name}.unify_taxa()' will no longer be supported in future releases; use '{class_name}.unify_taxon_namespaces()' instead".format(class_name=self.__class__.__name__))
         self.unify_taxon_namespaces(taxon_namespace=taxon_set,
                 attach_taxon_namespace=bind)
 
