@@ -110,17 +110,35 @@ You can instantiate a concatenated matrix from multiple sources using the :meth:
 
 .. literalinclude:: /examples/char_mat_concat2.py
 
-For more information on extending sequences or characters on an existing instance of a |CharacterMatrix|-derived class, see:
+Sequence Management
+===================
+
+Sequences in an existing instance of a |CharacterMatrix|-derived class can be managed by using a range of sequence curation methods:
 
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences()`
 -   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix()`
-
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.remove_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.discard_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.keep_sequences()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill_taxa()`
+-   :meth:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix.pack()`
 
 Accessing Data
 ==============
 
-A |CharacterMatrix| behaves very much like a dictionary of lists.
-The "keys" are |Taxon| instances, w
+A |CharacterMatrix| behaves very much like a dictionary, where the "keys" are |Taxon| instances, which can be dereferenced using the instance itself, the taxon label, or the index of the taxon in the collection (note: this is *not* neccessarily the same as the accession index, which is the basis for bipartition collection).
+
+For example:
+
+.. literalinclude:: /examples/chars_access1.py
+
+You can also iterate over the matrix in a number of ways:
+
+.. literalinclude:: /examples/chars_access2.py
+
+
+The "values" of a |CharacterMatrix| are |CharacterDataSequence| objects.

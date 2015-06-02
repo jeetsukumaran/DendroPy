@@ -986,7 +986,7 @@ class CharacterMatrix(
         Otherwise, assumed to be |Taxon| instance directly.
         """
         if isinstance(key, int):
-            if key >= 0 and key < len(self.taxon_namespace):
+            if abs(key) < len(self.taxon_namespace):
                 taxon = self.taxon_namespace[key]
             else:
                 raise IndexError(key)
@@ -1164,9 +1164,10 @@ class CharacterMatrix(
 
     def values(self):
         """
-        Returns list of values (i.e. sequences) in this matrix.
+        Iterates values (i.e. sequences) in this matrix.
         """
-        return [self[t] for t in self]
+        for t in self:
+            yield self[t]
 
     # def iterkeys(self):
     #     "Dictionary interface implementation for direct access to character map."
