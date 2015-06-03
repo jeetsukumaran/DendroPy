@@ -91,7 +91,7 @@ class PhylipWriter(ioservice.DataWriter):
             spacer = "  "
         maxlen = max([len(str(label)) for label in taxon_label_map.values()])
         n_seqs = len(char_matrix)
-        n_sites = len(char_matrix.values()[0])
+        n_sites = char_matrix.max_sequence_size
         stream.write("%d %d\n" % (n_seqs, n_sites))
         for taxon in char_matrix.taxon_namespace:
             label = taxon_label_map[taxon]
