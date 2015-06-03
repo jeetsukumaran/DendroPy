@@ -25,7 +25,7 @@ import math
 import dendropy
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import constants
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 
 ###############################################################################
 ## Calculations and statistics
@@ -36,12 +36,13 @@ def discrete_time_to_coalescence(n_genes,
                                  rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
-    to go from `n_genes` genes to `n_genes-1` genes in a discrete-time
-    Wright-Fisher population of `pop_size` genes; i.e. waiting time until
-    `n-genes` lineages coalesce in a population of `pop_size` genes.
+    to go from ``n_genes`` genes to ``n_genes``-1 genes in a discrete-time
+    Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
+    ``n-genes`` lineages coalesce in a population of ``pop_size`` genes.
 
     Parameters
     ----------
+
     n_genes : integer
         The number of genes in the sample.
     pop_size : integer
@@ -51,15 +52,16 @@ def discrete_time_to_coalescence(n_genes,
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : :class:`Random`
+    rng : `Random`
         The random number generator instance.
 
     Returns
     -------
     k : integer
         A randomly-generated waiting time (in discrete generations) for
-        `n_to_coalesce` genes to coalesce out of a sample of `n_genes` in a
-        population of `pop_size` genes.
+        ``n_to_coalesce`` genes to coalesce out of a sample of ``n_genes`` in a
+        population of ``pop_size`` genes.
+
     """
     if not pop_size:
         time_units = 1.0
@@ -77,16 +79,16 @@ def time_to_coalescence(n_genes,
         rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
-    to go from `n_genes` genes to `n_genes-1` genes in a continuous-time
-    Wright-Fisher population of `pop_size` genes; i.e. waiting time until
-    `n-genes` lineages coalesce in a population of `pop_size` genes.
+    to go from ``n_genes`` genes to ``n_genes``-1 genes in a continuous-time
+    Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
+    ``n-genes`` lineages coalesce in a population of ``pop_size`` genes.
 
     Given the number of gene lineages in a sample, ``n_genes``, and a
     population size, ``pop_size``, this function returns a random number from
     an exponential distribution with rate $\choose(``pop_size``, 2)$.
-    `pop_size` is the effective *haploid* population size; i.e., number of gene
+    ``pop_size`` is the effective *haploid* population size; i.e., number of gene
     in the population: 2 * N in a diploid population of N individuals,
-    or N in a haploid population of N individuals. If `pop_size` is 1 or 0 or
+    or N in a haploid population of N individuals. If ``pop_size`` is 1 or 0 or
     None, then time is in haploid population units; i.e. where 1 unit of time
     equals 2N generations for a diploid population of size N, or N generations
     for a haploid population of size N. Otherwise time is in generations.
@@ -111,15 +113,15 @@ def time_to_coalescence(n_genes,
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : :class:`Random`
+    rng : `Random`
         The random number generator instance to use.
 
     Returns
     -------
     k : float
         A randomly-generated waiting time (in continuous time) for
-        `n_to_coalesce` genes to coalesce out of a sample of `n_genes` in a
-        population of `pop_size` genes.
+        ``n_to_coalesce`` genes to coalesce out of a sample of ``n_genes`` in a
+        population of ``pop_size`` genes.
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -134,8 +136,8 @@ def time_to_coalescence(n_genes,
 def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     """
     Expected (mean) value for the Time to the Most Recent Common Ancestor of
-    `n_to_coalesce` genes in a sample of `n_genes` drawn from a population of
-    `pop_size` genes.
+    ``n_to_coalesce`` genes in a sample of ``n_genes`` drawn from a population of
+    ``pop_size`` genes.
 
     Parameters
     ----------
@@ -148,15 +150,15 @@ def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : :class:`Random`
+    rng : `Random`
         The random number generator instance.
 
     Returns
     -------
     k : float
-        The expected waiting time (in continuous time) for `n_to_coalesce`
-        genes to coalesce out of a sample of `n_genes` in a population of
-        `pop_size` genes.
+        The expected waiting time (in continuous time) for ``n_to_coalesce``
+        genes to coalesce out of a sample of ``n_genes`` in a population of
+        ``pop_size`` genes.
 
     """
     nc2 = probability.binomial_coefficient(n_genes, n_to_coalesce)
@@ -172,21 +174,21 @@ def coalesce_nodes(nodes,
              rng=None,
              use_expected_tmrca=False):
     """
-    Returns a list of nodes that have not yet coalesced once `period` is
+    Returns a list of nodes that have not yet coalesced once ``period`` is
     exhausted.
 
-    This function will a draw a coalescence time, `t`, from an exponential
-    distribution with a rate of `choose(k, 2)`, where `k` is the number of
-    nodes. If `period` is given and if this time is less than `period`, or if
-    `period` is not given, then two nodes are selected at random from `nodes`,
+    This function will a draw a coalescence time, ``t``, from an exponential
+    distribution with a rate of ``choose(k, 2)``, where ``k`` is the number of
+    nodes. If ``period`` is given and if this time is less than ``period``, or if
+    ``period`` is not given, then two nodes are selected at random from ``nodes``,
     and coalesced: a new node is created, and the two nodes are added as
     child_nodes to this node with an edge length such the the total length from
-    tip to the ancestral node is equal to the depth of the deepest child + `t`.
+    tip to the ancestral node is equal to the depth of the deepest child + ``t``.
     The two nodes are removed from the list of nodes, and the new node is added
-    to it. `t` is then deducted from `period`, and the process repeats.
+    to it. ``t`` is then deducted from ``period``, and the process repeats.
 
-    The function ends and returns the list of nodes once `period` is
-    exhausted or if any draw of `t` exceeds `period`, if `period` is
+    The function ends and returns the list of nodes once ``period`` is
+    exhausted or if any draw of ``t`` exceeds ``period``, if ``period`` is
     given or when there is only one node left.
 
     As each coalescent event occurs, *all* nodes have their edges
@@ -201,20 +203,20 @@ def coalesce_nodes(nodes,
 
     Parameters
     ----------
-    nodes : iterable[:class:`Node`]
-        An interable of :class:`Node` objects representing a sample of neutral
+    nodes : iterable[|Node|]
+        An interable of |Node| objects representing a sample of neutral
         genes (some, all, or none of these nodes may have descendent nodes).
     pop_size : integer
         The effective *haploid* population size; i.e., number of genes in the
         population: 2 * N in a diploid population of N individuals, or N in a
         haploid population of N individuals.
     period : numeric
-        The time that the genes have to coalesce. If `pop_size` is 1 or 0 or
+        The time that the genes have to coalesce. If ``pop_size`` is 1 or 0 or
         None, then time is in haploid population units; i.e. where 1 unit of
         time equals 2N generations for a diploid population of size N, or N
         generations for a haploid population of size N. Otherwise time is in
         generations.
-    rng : :class:`Random`
+    rng : `Random`
         The random number generator instance to use. If not specified, the
         default RNG will be used.
     use_expected_tmrca : bool
@@ -223,9 +225,9 @@ def coalesce_nodes(nodes,
 
     Returns
     -------
-    nodes : iterable[:class:`Node`]
-        A list of nodes once `period` is exhausted or if any draw of `t`
-        exceeds `period`, if `period` is given or when there is only one node
+    nodes : iterable[|Node|]
+        A list of nodes once ``period`` is exhausted or if any draw of ``t``
+        exceeds ``period``, if ``period`` is given or when there is only one node
         left.
     """
 
@@ -323,13 +325,13 @@ def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULT
 
     Parameters
     ----------
-    tree : :class:`Tree`
+    tree : |Tree|
         A tree instance.
     ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
-        by setting the `ultrametricity_precision` parameter. E.g., use
+        by setting the ``ultrametricity_precision`` parameter. E.g., use
         `ultrametricity_precision=0.01` for a more relaxed precision, down to
         2 decimal places. Use `ultrametricity_precision=False` to disable
         checking of ultrametricity.
@@ -361,13 +363,13 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
 
     Parameters
     ----------
-    tree : :class:`Tree`
+    tree : |Tree|
         A tree instance.
     ultrametricity_precision : float
         When calculating the node ages, an error will be raised if the tree is
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
-        by setting the `ultrametricity_precision` parameter. E.g., use
+        by setting the ``ultrametricity_precision`` parameter. E.g., use
         `ultrametricity_precision=0.01` for a more relaxed precision, down to
         2 decimal places. Use `ultrametricity_precision=False` to disable
         checking of ultrametricity.
@@ -396,7 +398,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    $\frac{{k \choose 2}}{N_e}$:
+    $\frac{{k \choose 2}}{N_e}$::
 
          \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
 
@@ -430,47 +432,47 @@ def contained_coalescent_tree(containing_tree,
     Returns a gene tree simulated under the coalescent contained within a
     population or species tree.
 
-        `containing_tree`
-            The population or species tree. If `edge_pop_size_map` is not None,
+        ``containing_tree``
+            The population or species tree. If ``edge_pop_size_map`` is not None,
             and population sizes given are non-trivial (i.e., >1), then edge
             lengths on this tree are in units of generations. Otherwise edge
             lengths are in population units; i.e. 2N generations for diploid
             populations of size N, or N generations for diploid populations of
             size N.
 
-        `gene_to_containing_taxon_map`
+        ``gene_to_containing_taxon_map``
             A TaxonNamespaceMapping object mapping Taxon objects in the
-            `containing_tree` TaxonNamespace to corresponding Taxon objects in the
+            ``containing_tree`` TaxonNamespace to corresponding Taxon objects in the
             resulting gene tree.
 
-        `edge_pop_size_attr`
+        ``edge_pop_size_attr``
             Name of attribute of edges that specify population size. By default
             this is "pop_size". If this attribute does not exist,
-            `default_pop_size` will be used.  The value for this attribute
+            ``default_pop_size`` will be used.  The value for this attribute
             should be the haploid population size or the number of genes;
             i.e.  2N for a diploid population of N individuals, or N for a
             haploid population of N individuals. This value determines how
             branch length units are interpreted in the input tree,
-            `containing_tree`.  If a biologically-meaningful value, then branch
-            lengths on the `containing_tree` are properly read as generations.
+            ``containing_tree``.  If a biologically-meaningful value, then branch
+            lengths on the ``containing_tree`` are properly read as generations.
             If not (e.g. 1 or 0), then they are in population units, i.e. where
             1 unit of time equals 2N generations for a diploid population of
             size N, or N generations for a haploid population of size N.
             Otherwise time is in generations. If this argument is None, then
-            population sizes default to `default_pop_size`.
+            population sizes default to ``default_pop_size``.
 
-        `default_pop_size`
-            Population size to use if `edge_pop_size_attr` is None or
+        ``default_pop_size``
+            Population size to use if ``edge_pop_size_attr`` is None or
             if an edge does not have the attribute. Defaults to 1.
 
     The returned gene tree will have the following extra attributes:
 
-        `pop_node_genes`
-            A dictionary with nodes of `containing_tree` as keys and a list of gene
+        ``pop_node_genes``
+            A dictionary with nodes of ``containing_tree`` as keys and a list of gene
             tree nodes that are uncoalesced as values.
 
     Note that this function does very much the same thing as
-    `constrained_kingman()`, but provides a very different API.
+    ``constrained_kingman()``, but provides a very different API.
     """
 
     if rng is None:
@@ -566,44 +568,44 @@ def constrained_kingman_tree(pop_tree,
                         pop_size_attr='pop_size',
                         decorate_original_tree=False):
     """
-    Given a population tree, `pop_tree` this will return a *pair of
+    Given a population tree, ``pop_tree`` this will return a *pair of
     trees*: a gene tree simulated on this population tree based on
     Kingman's n-coalescent, and population tree with the additional
     attribute 'gene_nodes' on each node, which is a list of
     uncoalesced nodes from the gene tree associated with the given
     node from the population tree.
 
-    `pop_tree` should be a DendroPy Tree object or an object
+    ``pop_tree`` should be a DendroPy Tree object or an object
     of a class derived from this with the following attribute
-    `num_genes` -- the number of gene samples from each population in the
+    ``num_genes`` -- the number of gene samples from each population in the
     present.  Each edge on the tree should also have the attribute
 
-    `pop_size_attr` is the attribute name of the edges of `pop_tree` that
-    specify the population size. By default it is `pop_size`. The should
+    ``pop_size_attr`` is the attribute name of the edges of ``pop_tree`` that
+    specify the population size. By default it is ``pop_size``. The should
     specify the effective *haploid* population size; i.e., number of gene
     in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals.
 
-    If `pop_size` is 1 or 0 or None, then the edge lengths of `pop_tree` is
+    If ``pop_size`` is 1 or 0 or None, then the edge lengths of ``pop_tree`` is
     taken to be in haploid population units; i.e. where 1 unit equals 2N
     generations for a diploid population of size N, or N generations for a
-    haploid population of size N. Otherwise the edge lengths of `pop_tree` is
+    haploid population of size N. Otherwise the edge lengths of ``pop_tree`` is
     taken to be in generations.
 
-    If `gene_tree_list` is given, then the gene tree is added to the
+    If ``gene_tree_list`` is given, then the gene tree is added to the
     tree block, and the tree block's taxa block will be used to manage
-    the gene tree's `taxa`.
+    the gene tree's ``taxa``.
 
-    `gene_node_label_fn` is a function that takes two arguments (a string
+    ``gene_node_label_fn`` is a function that takes two arguments (a string
     and an integer, respectively, where the string is the containing species
     taxon label and the integer is the gene index) and returns a label for
     the corresponding the gene node.
 
-    if `decorate_original_tree` is True, then the list of uncoalesced nodes at
+    if ``decorate_original_tree`` is True, then the list of uncoalesced nodes at
     each node of the population tree is added to the original (input) population
     tree instead of a copy.
 
-    Note that this function does very much the same thing as `contained_coalescent()`,
+    Note that this function does very much the same thing as ``contained_coalescent()``,
     but provides a very different API.
     """
 

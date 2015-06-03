@@ -37,7 +37,7 @@ else:
 
     def as_biopython_object(o):
         """
-        Returns `o` as an biopython object.
+        Returns ``o`` as an biopython object.
         """
         if isinstance(o, dendropy.CharacterMatrix):
             if isinstance(o, dendropy.DnaCharacterMatrix):

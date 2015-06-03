@@ -591,21 +591,7 @@ and saving the result to "``result.tre``"::
     dest.write(examples + "\n")
 
 def print_description(dest=None):
-    import site
-    if dest is None:
-        dest = sys.stdout
-    fields = collections.OrderedDict()
-    fields["DendroPy version"] = dendropy.description()
-    fields["DendroPy location"] = dendropy.homedir()
-    fields["Python version"] = sys.version.replace("\n", "")
-    fields["Python executable"] = sys.executable
-    fields["Python site packages"] = site.getsitepackages()
-    max_fieldname_len = max(len(fieldname) for fieldname in fields)
-    for fieldname, fieldvalue in fields.items():
-        dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
-            fieldname=fieldname,
-            fieldnamewidth=max_fieldname_len + 2,
-            fieldvalue=fieldvalue))
+    return dendropy.description(dest=dest)
 
 def main():
 

@@ -89,7 +89,7 @@ class DataReader(IOService):
             global_annotations_target=None):
         """
         Deriving classes should implement this method to build a data product
-        from the information in `stream` using the provided factory functions.
+        from the information in ``stream`` using the provided factory functions.
 
         Parameters
         ----------
@@ -98,8 +98,8 @@ class DataReader(IOService):
             Source of data.
 
         taxon_namespace_factory : function object
-            A function that takes one named argument, `label`, and returns a
-            `TaxonNamespace` object to be used for each distinct block of
+            A function that takes one named argument, ``label``, and returns a
+            |TaxonNamespace| object to be used for each distinct block of
             operational taxonomic unit concept definitions encountered in the
             data source.
 
@@ -107,7 +107,7 @@ class DataReader(IOService):
 
                 tns = taxon_namespace_factory(label="label")
 
-            In the simplest case, a new `TaxonNamespace` object can be created
+            In the simplest case, a new |TaxonNamespace| object can be created
             for each block of taxon definitions in the data source by setting
             the factory function to::
 
@@ -118,20 +118,20 @@ class DataReader(IOService):
 
                 taxon_namespace_factory = dataset.new_taxon_namespace
 
-            If all data objects should reference the *same* `TaxonNamespace`
+            If all data objects should reference the *same* |TaxonNamespace|
             object, then:
 
                 taxon_namespace_factory = lambda label : taxon_namespace
 
-            where `taxon_namespace` is an existing `TaxonNamespace` object that
+            where ``taxon_namespace`` is an existing |TaxonNamespace| object that
             should be used.
 
-            If `taxon_namespace_factor` is `None`, then no tree data will be
+            If ``taxon_namespace_factor`` is `None`, then no tree data will be
             parsed.
 
         tree_list_factory : function object
-            A function that takes two named arguments, `label` and
-            `taxon_namespace`, and returns a `TreeList` or equivalent object to
+            A function that takes two named arguments, ``label`` and
+            ``taxon_namespace``, and returns a |TreeList| or equivalent object to
             be used to manage each distinct collection of trees in the data
             source.
 
@@ -140,7 +140,7 @@ class DataReader(IOService):
                 tns = taxon_namespace_factory(label="label")
                 tlist = tree_list_factory(label="label", taxon_namespace=tns)
 
-            In the simplest case, a new `TreeList` object can be created for
+            In the simplest case, a new |TreeList| object can be created for
             each block of tree definitions in the data source by setting the
             factory function to::
 
@@ -152,17 +152,17 @@ class DataReader(IOService):
                 tree_list = dataset.new_tree_list
 
             If all Tree data objects instantiated should be accessioned into
-            the *same* `TreeList` object, then:
+            the *same* |TreeList| object, then:
 
                 taxon_namespace_factory = lambda label : tree_list.taxon_namespace
                 tree_list_factory = lambda label, taxon_namespace : tree_list
 
-            where `tree_list` is an existing `TreeList` object that should be
+            where ``tree_list`` is an existing |TreeList| object that should be
             used.
 
         char_matrix_factory : function object
-            A function that takes two named arguments, `label` and
-            `taxon_namespace`, and returns a `CharacterMatrix` or equivalent object to
+            A function that takes two named arguments, ``label`` and
+            ``taxon_namespace``, and returns a |CharacterMatrix| or equivalent object to
             be used to manage each aligment or distinct set of sequences in the data
             source.
 
@@ -171,7 +171,7 @@ class DataReader(IOService):
                 tns = taxon_namespace_factory(label="label")
                 cm = char_matrix_factory(label="label", taxon_namespace=tns)
 
-            In the simplest case, a new `CharacterMatrix` object can be created for
+            In the simplest case, a new |CharacterMatrix| object can be created for
             each alignment or set of sequences in the data source by setting the
             factory function to, for e.g.::
 
@@ -182,14 +182,14 @@ class DataReader(IOService):
 
                 char_matrix = dataset.new_char_matrix
 
-            If `char_matrix_factory` is `None`, then no character data will be
+            If ``char_matrix_factory`` is `None`, then no character data will be
             parsed.
 
         state_alphabet_factory : function object
-            A function that takes all the arguments of :class:`StateAlphabet`
+            A function that takes all the arguments of |StateAlphabet|
             and returns a properly configured instance.
 
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
             `None`, then such metadata or annotations will not be stored.
@@ -197,7 +197,7 @@ class DataReader(IOService):
         Returns
         -------
 
-        A `Product` object : a `namedtuple` with the following attributes:
+        A `Product` object : a ``namedtuple`` with the following attributes:
             "taxon_namespaces", "tree_lists", "char_matrices".
 
         """
@@ -211,15 +211,15 @@ class DataReader(IOService):
             exclude_chars=False,
             state_alphabet_factory=None):
         """
-        Populates the given :class:`DataSet` object from external data source.
+        Populates the given |DataSet| object from external data source.
 
         Parameters
         ----------
 
         stream : file or file-like object
             Source of data.
-        dataset : :class:`DataSet` object
-            The target :class:`DataSet` to populate/build.
+        dataset : |DataSet| object
+            The target |DataSet| to populate/build.
         exclude_trees : boolean, default: False
             If set to `True`, tree data will not be read from the source.
         exclude_chars : boolean, default: False
@@ -263,9 +263,9 @@ class DataReader(IOService):
 
         With data schemas that support the concept of multiple distinct blocks
         or sets of trees (e.g. NEXUS or NeXML), each tree block will be
-        accessioned into a separate `TreeList` instantiated by calling
+        accessioned into a separate |TreeList| instantiated by calling
         `tree_list_factory(label)`. If trees should be accessioned into the
-        same `TreeList`, then this can be coerced by, e.g.::
+        same |TreeList|, then this can be coerced by, e.g.::
 
             t = TreeList()
             reader.read_tree_lists(
@@ -280,8 +280,8 @@ class DataReader(IOService):
             Source of data.
 
         taxon_namespace_factory : function object
-            A function that takes one named argument, `label`, and returns a
-            `TaxonNamespace` object to be used for each distinct block of
+            A function that takes one named argument, ``label``, and returns a
+            |TaxonNamespace| object to be used for each distinct block of
             operational taxonomic unit concept definitions encountered in the
             data source.
 
@@ -289,7 +289,7 @@ class DataReader(IOService):
 
                 tns = taxon_namespace_factory(label="label")
 
-            In the simplest case, a new `TaxonNamespace` object can be created
+            In the simplest case, a new |TaxonNamespace| object can be created
             for each block of taxon definitions in the data source by setting
             the factory function to::
 
@@ -300,20 +300,20 @@ class DataReader(IOService):
 
                 taxon_namespace_factory = dataset.new_taxon_namespace
 
-            If all data objects should reference the *same* `TaxonNamespace`
+            If all data objects should reference the *same* |TaxonNamespace|
             object, then:
 
                 taxon_namespace_factory = lambda label : taxon_namespace
 
-            where `taxon_namespace` is an existing `TaxonNamespace` object that
+            where ``taxon_namespace`` is an existing |TaxonNamespace| object that
             should be used.
 
-            If `taxon_namespace_factor` is `None`, then no tree data will be
+            If ``taxon_namespace_factor`` is `None`, then no tree data will be
             parsed.
 
         tree_list_factory : function object
-            A function that takes two named arguments, `label` and
-            `taxon_namespace`, and returns a `TreeList` or equivalent object to
+            A function that takes two named arguments, ``label`` and
+            ``taxon_namespace``, and returns a |TreeList| or equivalent object to
             be used to manage each distinct collection of trees in the data
             source.
 
@@ -322,7 +322,7 @@ class DataReader(IOService):
                 tns = taxon_namespace_factory(label="label")
                 tlist = tree_list_factory(label="label", taxon_namespace=tns)
 
-            In the simplest case, a new `TreeList` object can be created for
+            In the simplest case, a new |TreeList| object can be created for
             each block of tree definitions in the data source by setting the
             factory function to::
 
@@ -334,25 +334,25 @@ class DataReader(IOService):
                 tree_list = dataset.new_tree_list
 
             If all Tree data objects instantiated should be accessioned into
-            the *same* `TreeList` object, then:
+            the *same* |TreeList| object, then:
 
                 taxon_namespace_factory = lambda label : tree_list.taxon_namespace
                 tree_list_factory = lambda label, taxon_namespace : tree_list
 
-            where `tree_list` is an existing `TreeList` object that should be
+            where ``tree_list`` is an existing |TreeList| object that should be
             used.
 
-        global_annotations_target : `Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
             `None`, then such metadata or annotations will not be stored.
 
         Returns
         -------
-        List of `TreeList` objects.
+        List of |TreeList| objects.
 
         """
-        # `product` is a namedtuple("DataReaderProducts", ["taxon_namespaces", "tree_lists", "char_matrices"])
+        # ``product`` is a namedtuple("DataReaderProducts", ["taxon_namespaces", "tree_lists", "char_matrices"])
         product = self._read(stream=stream,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=tree_list_factory,
@@ -407,7 +407,7 @@ class DataWriter(IOService):
             char_matrices=None,
             global_annotations_target=None):
         """
-        Deriving classes should implement this method to information to `stream`
+        Deriving classes should implement this method to information to ``stream``
         in schema-specific formatting.
 
         Parameters
@@ -415,13 +415,13 @@ class DataWriter(IOService):
 
         stream : file or file-like object
             Destination for data.
-        taxon_namespaces : Iterable of :class:`TaxonNamespace` objects
-            Collection of :class:`TaxonNamespace` objects to be serialized.
-        tree_lists : Iterable of :class:`TreeList` objects
-            Collection of :class:`TreeList` objects to be serialized.
-        char_matrices : Iterable of :class:`CharacterMatrix` objects
-            Collection of :class:`CharacterMatrix` objects to be serialized.
-        global_annotations_target : `Annotable` object
+        taxon_namespaces : Iterable of |TaxonNamespace| objects
+            Collection of |TaxonNamespace| objects to be serialized.
+        tree_lists : Iterable of |TreeList| objects
+            Collection of |TreeList| objects to be serialized.
+        char_matrices : Iterable of |CharacterMatrix| objects
+            Collection of |CharacterMatrix| objects to be serialized.
+        global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
             `None`, then such metadata or annotations will not be stored.
@@ -436,17 +436,17 @@ class DataWriter(IOService):
             exclude_chars,
             ):
         """
-        Writes the given :class:`DataSet` object to the file-like object `stream`.
+        Writes the given |DataSet| object to the file-like object ``stream``.
 
         stream : file or file-like object
             Destination for data.
-        dataset : :class:`DataSet` object
-            The :class:`DataSet` to write.
+        dataset : |DataSet| object
+            The |DataSet| to write.
         exclude_trees : boolean, default: False
             If set to `True`, tree data will not be written to the destination.
         exclude_chars : boolean, default: False
             If set to `True`, character data will not be written to the destination.
-        global_annotations_target : :class:`Annotable` object
+        global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
             `None`, then such metadata or annotations will not be stored.
@@ -543,7 +543,7 @@ class DataYielder(IOService):
                 for item in self._yield_items_from_stream(stream=self._current_file):
                     yield item
         else:
-            # StringIO does not support `with`
+            # StringIO does not support ``with``
             for item in self._yield_items_from_stream(stream=self._current_file):
                 yield item
         self._current_file = None

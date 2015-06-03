@@ -48,20 +48,44 @@ class NexusWriter(ioservice.DataWriter):
         simple : boolean, default: `False`
             If `True`, write in simple NEXUS format, i.e. in a single "DATA"
             block, instead of separate "TAXA" and "CHARACTER" blocks.
-        suppress_taxa_block: boolean, default: `False`
-            If `True`, do not write a "TAXA" block.
+        suppress_taxa_blocks: boolean, default: `False`
+            If `True`, do not write a "TAXA" block. Note that this may make the
+            file impossible to parse if there are multiple taxon namespaces in
+            the data.
         suppress_unreferenced_taxon_namespaces: boolean, default: `False`
-            If `True`, then when writing :class:`DataSet` objects, any :class:`TaxonNamespace`
-            object in the DataSet's `taxon_namespaces` collection will *not* be written
-            as a "TAXA" block
-        file_comments: iterable [`str`]
+            If `True`, then when writing |DataSet| objects, any
+            |TaxonNamespace| object in the DataSet's ``taxon_namespaces``
+            collection will *not* be written as a "TAXA" block if it is not
+            referenced by any character matrix (``char_matrices``) or tree list
+            (``tree_lists``).
+        suppress_block_titles : bool or `None`
+            If `True` then 'TITLE' element to blocks will not be written. Note
+            that this may make the file impossible to parse if there are
+            multiple taxon namespaces in the data. If `False`, then the
+            'TITLE' element will always be written. Default is `None`: the
+            'TITLE' element will only be written if needed because there is
+            more than on taxon namespace in the data.
+        file_comments: iterable [``str``]
             List of lines of text to be added as comments to the file.
-        preamble_blocks: iterable [`str`]
+        preamble_blocks: iterable [``str``]
             List of strings to be written before data (e.g., PAUP blocks
             suppressing warnings etc.).
-        supplemental_blocks: iterable [`str`]
+        supplemental_blocks: iterable [``str``]
             List of strings to be written after data (e.g., PAUP blocks,
             MrBayes blocks etc.).
+        allow_multiline_comments : bool
+            If `False` then comments will be merged into a single string before
+            being written. Default is `True`: each comment element will be
+            written on its own line.
+        continuous_character_state_value_format_fn : function object
+            When writing |ContinuousCharacterMatrix| data: a function that
+            takes a continuous character value and returns the string
+            representation of it.
+        discrete_character_state_value_format_fn : function object
+            When writing discrete character data (e.g., a
+            |StandardCharacterMatrix|): a function that takes a
+            standard character state value (i.e., a |StateIdentity| instance)
+            and returns the string representation of it.
         suppress_leaf_taxon_labels : boolean, default: `False`
             If `True`, then taxon labels will not be rendered for leaves.
             Default is `False`: render leaf taxon labels. See notes below for
@@ -103,13 +127,13 @@ class NexusWriter(ioservice.DataWriter):
             and referenced in tree statements (instead of using the taxon
             labels). If `True`, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be :class:`Taxon` objects and the
+            given, then the keys should be |Taxon| objects and the
             values should be the token (strings).
         suppress_annotations : boolean, default: `False`
             If `True`, metadata annotations will be ignored.
             Defaults to `False`: metadata annotations will be written.
         annotations_as_nhx : boolean, default: `False`
-            If `True`, and if `suppress_annotations` is `False`, will write
+            If `True`, and if ``suppress_annotations`` is `False`, will write
             annotations as NHX statements. Default is `False`: annotations
             will not be written as NHX statements.
         suppress_item_comments : boolean, default: `False`
@@ -117,22 +141,33 @@ class NexusWriter(ioservice.DataWriter):
             additional comments associated with trees, nodes, edges, etc. will
             be written.
         node_label_element_separator : string, default: ' '
-            If both `suppress_leaf_taxon_labels` and
-            `suppress_leaf_node_labels` are `False`, then this will be the
+            If both ``suppress_leaf_taxon_labels`` and
+            ``suppress_leaf_node_labels`` are `False`, then this will be the
             string used to join them. Defaults to ' ' (space).
         node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a :class:`Node`
+            If not `None`, should be a function that takes a |Node|
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
-            labelling function, ignoring `suppress_leaf_taxon_labels`,
-            `suppress_leaf_node_labels=True`, `suppress_internal_taxon_labels`,
-            `suppress_internal_node_labels`, etc. Defaults to `None`.
+            labelling function, ignoring ``suppress_leaf_taxon_labels``,
+            ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``,
+            ``suppress_internal_node_labels``, etc. Defaults to `None`.
         edge_label_compose_fn : function object or `None`, default: `None`
             If not `None`, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
+        real_value_format_specifier : string, default: ''
+            Format specification for real/float values. Will be applied to edge
+            lengths (if ``edge_label_compose_fn`` is not given) as well as
+            annotations. The format specifier should be given in Python's
+            string format specification mini-language. E.g. ".8f", ".4E",
+            "8.4f".
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
+
         """
         # base
         ioservice.DataWriter.__init__(self)
@@ -144,12 +179,22 @@ class NexusWriter(ioservice.DataWriter):
         self.suppress_taxa_blocks = kwargs.pop("suppress_taxa_block", None)
         self.suppress_block_titles = kwargs.pop("suppress_block_titles", None)
         self.file_comments = kwargs.pop("file_comments", [])
+        if self.file_comments is None:
+            self.file_comments = []
         self.preamble_blocks = kwargs.pop("preamble_blocks", [])
+        if self.preamble_blocks is None:
+            self.preamble_blocks = []
         self.supplemental_blocks = kwargs.pop("supplemental_blocks", [])
+        if self.supplemental_blocks is None:
+            self.supplemental_blocks = []
         self.allow_multiline_comments = kwargs.pop("allow_multiline_comments", True)
         self.suppress_unreferenced_taxon_namespaces = kwargs.pop("suppress_unreferenced_taxon_namespaces", False)
         self.continuous_character_state_value_format_fn = kwargs.pop("continuous_character_state_value_format_fn", self._format_continuous_character_value)
+        if self.continuous_character_state_value_format_fn is None:
+            self.continuous_character_state_value_format_fn = self._format_continuous_character_value
         self.discrete_character_state_value_format_fn = kwargs.pop("discrete_character_state_value_format_fn", self._format_discrete_character_value)
+        if self.discrete_character_state_value_format_fn is None:
+            self.discrete_character_state_value_format_fn = self._format_discrete_character_value
         self.translate_tree_taxa = kwargs.pop("translate_tree_taxa", None)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
@@ -435,7 +480,7 @@ class NexusWriter(ioservice.DataWriter):
         if block in self._block_title_map:
             return self._block_title_map[block]
         if not block.label:
-            title = id(block)
+            title = str(id(block))
         else:
             title = block.label
         idx = 1

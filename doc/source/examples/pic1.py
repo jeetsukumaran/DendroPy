@@ -1,18 +1,16 @@
-#! /usr/bin/env python
-
 import dendropy
-from dendropy import continuous
+from dendropy.model import continuous
 
 taxa = dendropy.TaxonNamespace()
-tree = dendropy.Tree.get_from_path(
-        "primates.cc.tre",
-        "newick",
+tree = dendropy.Tree.get(
+        path="primates.cc.tre",
+        schema="newick",
         taxon_namespace=taxa)
 chars = dendropy.ContinuousCharacterMatrix.get_from_path(
         "primates.cc.nex",
         "nexus",
         taxon_namespace=taxa)
-pic = dendropy.continuous.PhylogeneticIndependentConstrasts(
+pic = continuous.PhylogeneticIndependentConstrasts(
         tree=tree,
         char_matrix=chars)
 for cidx in range(chars.vector_size):
@@ -25,6 +23,8 @@ for cidx in range(chars.vector_size):
                 suppress_leaf_node_labels=False,
                 suppress_internal_taxon_labels=True,
                 suppress_internal_node_labels=False))
+
+
 
 
 

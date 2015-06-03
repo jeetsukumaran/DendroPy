@@ -48,7 +48,7 @@ div.bodywrapper {
     background-color: #ffffff;
     border-left: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
-    margin: 0 0 0 16em;
+    margin: 0 0 0 18em;
 }
 
 div.body {
@@ -121,7 +121,8 @@ h5 a.anchor:hover, h6 a.anchor:hover {
 
 /* Normal links get a pseudo-underline */
 a {
-    color: #444;
+    /* color: #6688aa; */
+    color: #206088;
     text-decoration: none;
     border-bottom: 1px solid #ccc;
 }
@@ -131,7 +132,7 @@ a {
 .toctree-wrapper a,
 .indextable a,
 #indices-and-tables a {
-    color: #444;
+    color: #206088;
     text-decoration: none;
     border-bottom: none;
 }
@@ -141,9 +142,9 @@ a:hover,
 div.toctree-wrapper a:hover,
 .indextable a:hover,
 #indices-and-tables a:hover {
-    color: #111;
+    color: #cc4400;
     text-decoration: none;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #cc4400;
 }
 
 /* Footer links */
@@ -250,14 +251,10 @@ div.sphinxsidebar {
     top: 3em;
     left: 0;
     padding: 0 1em;
-    width: 14em;
-    font-size: 1em;
+    width: 20em;
+    font-size: 0.80em;
     text-align: left;
     background-color: #e8ecef;
-}
-
-div.sphinxsidebar img {
-    max-width: 12em;
 }
 
 div.sphinxsidebar h3, div.sphinxsidebar h4 {
@@ -283,7 +280,7 @@ div.sphinxsidebar p {
 /* No bullets for nested lists, but a little extra indentation */
 div.sphinxsidebar ul ul {
     list-style-type: none;
-    margin-left: 1.5em;
+    margin-left: 1em;
     padding: 0;
 }
 
@@ -384,9 +381,9 @@ div.sphinxsidebar p a {
 }
 div.sphinxsidebar li a:hover,
 div.sphinxsidebar p a:hover {
-    color: #111;
+    color: #cc4400;
     text-decoration: none;
-    border: 1px solid #888;
+    border: 1px solid #cc4400;
 }
 
 /* Tweak any link appearing in a heading */
@@ -771,3 +768,8 @@ p {
     }
 
 }
+
+/* SPECIAL ELEMENTS  -------------------------------------------------------------- */
+
+.copyrightblock { font-size: 80% }
+.licenseblock { font-weight: bold; text-align: center; }

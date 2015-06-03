@@ -11,7 +11,9 @@ def evolve_char(tree, start=1.0):
             node.value = random.gauss(node.parent_node.value, node.edge.length)
     return tree
 
-mle = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
+mle = dendropy.Tree.get(
+        path='pythonidae.mle.nex',
+        schema='nexus')
 evolve_char(mle)
 for node in mle.leaf_iter():
     print("%s : %s" % (node.taxon, node.value))

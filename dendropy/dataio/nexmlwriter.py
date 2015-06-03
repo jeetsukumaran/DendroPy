@@ -76,7 +76,7 @@ def _to_nexml_chartype(chartype):
 def _to_nexml_tree_length_type(length_type):
     """
     Returns attribute string for nexml tree type depending on whether
-    `length_type` is an int or a float.
+    ``length_type`` is an int or a float.
     """
     if length_type == int:
         return "nex:IntTree"
@@ -100,6 +100,16 @@ class NexmlWriter(ioservice.DataWriter):
         markup_as_sequences : boolean
             If `True`, then character data will be marked up as sequences
             instead of individual cells. Defaults to `False`.
+        suppress_unreferenced_taxon_namespaces: boolean, default: `False`
+            If `True`, then when writing |DataSet| objects, any
+            |TaxonNamespace| object in the DataSet's ``taxon_namespaces``
+            collection will *not* be written as a "TAXA" block if it is not
+            referenced by any character matrix (``char_matrices``) or tree list
+            (``tree_lists``).
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
 
         """
 

@@ -17,8 +17,8 @@ citation = """\
 """
 
 
-dataset = dendropy.DataSet.get_from_string(
-        "(A,(B,(C,(D,E))));",
-        "newick")
+dataset = dendropy.DataSet.get(
+        data="(A,(B,(C,(D,E))));",
+        schema="newick")
 dataset.annotations.add_citation(citation)
-print dataset.as_string("nexml")
+print dataset.as_string(schema="nexml")

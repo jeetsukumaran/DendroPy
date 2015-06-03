@@ -24,7 +24,7 @@ import copy
 import math
 import itertools
 from dendropy.utility import GLOBAL_RNG
-from dendropy.mathlib import probability
+from dendropy.calculate import probability
 import dendropy
 
 ############################################################################
@@ -36,7 +36,7 @@ class DiscreteCharacterEvolutionModel(object):
     def __init__(self, state_alphabet, stationary_freqs=None, rng=None):
         """
         __init__ initializes the state_alphabet to define the character type on which
-        this model acts.  The objects random number generator will be `rng` or `GLOBAL_RNG`
+        this model acts.  The objects random number generator will be ``rng`` or 'GLOBAL_RNG'
         """
         self.state_alphabet = state_alphabet
         if rng is None:
@@ -98,13 +98,13 @@ class DiscreteCharacterEvolver(object):
             in_place=True,
             rng=None):
         """
-        Appends a new sequence of length `seq_len` to a list at each node
-        in `tree`.  The attribute name of this list in each node is given
-        by `seq_attr`. If `seq_model` is None, `tree.seq_model` or
-        `seq_model` at each node must be specified. If `in_place` is
+        Appends a new sequence of length ``seq_len`` to a list at each node
+        in ``tree``.  The attribute name of this list in each node is given
+        by ``seq_attr``. If ``seq_model`` is None, ``tree.seq_model`` or
+        ``seq_model`` at each node must be specified. If ``in_place`` is
         False, the tree is copied first, otherwise original tree is modified.
-        If `root_states` is given, this will be used as the sequence for the root.
-        If not, and if `simulate_root_states` is True, then the sequence for the
+        If ``root_states`` is given, this will be used as the sequence for the root.
+        If not, and if ``simulate_root_states`` is True, then the sequence for the
         root will be drawn from the stationary distribution of the character model.
         """
         if rng is None:
@@ -150,13 +150,13 @@ class DiscreteCharacterEvolver(object):
             exclude=None):
         """
         Creates a character matrix with new sequences (or extends sequences of
-        an existing character matrix if provided via `char_matrix`),
+        an existing character matrix if provided via ``char_matrix``),
         where the the sequence for each taxon corresponds to the concatenation
         of all sequences in the list of sequences associated with tip that
         references the given taxon.
         Specific sequences to be included/excluded can be fine-tuned using the
-        `include` and `exclude` args, where `include`=None means to include all
-        by default, and `exclude`=None means to exclude all by default.
+        ``include`` and ``exclude`` args, where ``include=None`` means to include all
+        by default, and ``exclude=None`` means to exclude all by default.
         """
         for leaf in tree.leaf_nodes():
             cvec = char_matrix[leaf.taxon]
@@ -194,7 +194,7 @@ class NucleotideCharacterEvolutionModel(DiscreteCharacterEvolutionModel):
 
     def stationary_sample(self, seq_len, rng=None):
         """
-        Returns a NucleotideSequence() object with length `length`
+        Returns a NucleotideSequence() object with length ``length``
         representing a sample of characters drawn from this model's
         stationary distribution.
         """
@@ -340,7 +340,7 @@ class Hky85(NucleotideCharacterEvolutionModel):
     def pvector(self, state, tlen, rate=1.0):
         """
         Returns a vector of transition probabilities for a given state
-        over time `tlen` at rate `rate` for `state`. (tlen * rate =
+        over time ``tlen`` at rate ``rate`` for ``state``. (tlen * rate =
         nu, expected number of substitutions)
         """
         pvec = []
@@ -391,20 +391,35 @@ def simulate_discrete_char_dataset(seq_len,
     """
     Wrapper to conveniently generate a DataSet simulated under
     the given tree and character model.
-    `seq_len`       : length of sequence (number of characters)
-    `tree_model`    : dendropy.Tree object
-    `seq_model`     : dendropy.model.discrete.DiscreteCharacterEvolutionModel object
-    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
-                      on tree reflect true expected number of changes
-    `root_states`   : vector of root states (length must equal `seq_len`)
-    `dataset`       : a dendropy.DataSet object.
-                      if given, the new
-                      dendropy.CharacterMatrix object will be added to
-                      this (along with a new taxon_namespace if required). Otherwise,
-                      a new dendropy.DataSet object will be created.
-    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
-                      used
-    Returns: a dendropy.DataSet object object.
+
+    Parameters
+    ----------
+
+    seq_len       : int
+        Length of sequence (number of characters).
+    tree_model    : |Tree|
+        Tree on which to simulate.
+    seq_model     : dendropy.model.discrete.DiscreteCharacterEvolutionModel
+        The character substitution model under which to to evolve the
+        characters.
+    mutation_rate : float
+        Mutation *modifier* rate (should be 1.0 if branch lengths on tree
+        reflect true expected number of changes).
+    root_states``   : list
+        Vector of root states (length must equal ``seq_len``).
+    dataset       : |DataSet|
+        If given, the new dendropy.CharacterMatrix object will be
+        added to this (along with a new taxon_namespace if
+        required). Otherwise, a new dendropy.DataSet
+        object will be created.
+    rng           : random number generator
+        If not given, 'GLOBAL_RNG' will be used.
+
+    Returns
+    -------
+
+    d : |DataSet|
+
     """
     if dataset is None:
         dataset = dendropy.DataSet()
@@ -435,30 +450,42 @@ def simulate_discrete_chars(
     """
     Wrapper to conveniently generate a characters simulated under
     the given tree and character model.
-    `seq_len`       : length of sequence (number of characters)
-    `tree_model`    : dendropy.Tree object
-    `seq_model`    : dendropy.model.discrete.DiscreteCharacterEvolutionModel object
-    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
-                      on tree reflect true expected number of changes
-    `root_states`   : vector of root states (length must equal `seq_len`)
-    `char_matrix`    : dendropy.CharacterMatrix object.
-                      if given, new sequences for taxa on `tree_model` leaf_nodes
-                      will be appended to existing sequences of corresponding
-                      taxa in char_matrix; if not, a new
-                      dendropy.CharacterMatrix object will be created
-    `retain_sequences_on_tree` : if `False`, sequence annotations will be cleared from tree
-                   after simulation. Set to `True` if you want to, e.g.,
-                   evolve and accumulate different sequences on tree, or retain information
-                   for other purposes.
-    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
-                      used
-
-    Returns: a dendropy.CharacterMatrix object.
 
     Since characters will be appended to existing sequences, you can simulate a
     sequences under a mixed model by calling this method multiple times with
     different character models and/or different mutation rates, passing
-    in the same `char_matrix` object each time.
+    in the same ``char_matrix`` object each time.
+
+    Parameters
+    ----------
+
+    seq_len       : int
+        Length of sequence (number of characters).
+    tree_model    : |Tree|
+        Tree on which to simulate.
+    seq_model     : dendropy.model.discrete.DiscreteCharacterEvolutionModel
+        The character substitution model under which to to evolve the
+        characters.
+    mutation_rate : float
+        Mutation *modifier* rate (should be 1.0 if branch lengths on tree
+        reflect true expected number of changes).
+    root_states``   : list
+        Vector of root states (length must equal ``seq_len``).
+    char_matrix   : |DnaCharacterMatrix|
+        If given, new sequences for taxa on ``tree_model`` leaf_nodes will be
+        appended to existing sequences of corresponding taxa in char_matrix; if
+        not, a new |DnaCharacterMatrix| object will be created.
+    retain_sequences_on_tree : bool
+        If `False`, sequence annotations will be cleared from tree after
+        simulation. Set to `True` if you want to, e.g., evolve and accumulate
+        different sequences on tree, or retain information for other purposes.
+    rng           : random number generator
+        If not given, 'GLOBAL_RNG' will be used.
+
+    Returns
+    -------
+    d : a dendropy.datamodel.CharacterMatrix object.
+
     """
     seq_evolver = DiscreteCharacterEvolver(seq_model=seq_model,
                                mutation_rate=mutation_rate)
@@ -492,28 +519,39 @@ def hky85_chars(
     """
     Convenience class to wrap generation of characters (as a CharacterBlock
     object) based on the HKY model.
-    `seq_len`       : length of sequence (number of characters)
-    `tree_model`    : dendropy.Tree object
-    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
-                      on tree reflect true expected number of changes
-    `root_states`   : vector of root states (length must equal `seq_len`)
-    `char_matrix`    : dendropy.DnaCharacterMatrix object.
-                      if given, new sequences for taxa on `tree_model` leaf_nodes
-                      will be appended to existing sequences of corresponding
-                      taxa in char_matrix; if not, a new
-                      dendropy.CharacterMatrix object will be created
-    `retain_sequences_on_tree` : if `False`, sequence annotations will be cleared from tree
-                   after simulation. Set to `True` if you want to, e.g.,
-                   evolve and accumulate different sequences on tree, or retain information
-                   for other purposes.
-    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
-                      used
-    Returns: a dendropy.CharacterMatrix object.
+
+    Parameters
+    ----------
+
+    seq_len       : int
+        Length of sequence (number of characters).
+    tree_model    : |Tree|
+        Tree on which to simulate.
+    mutation_rate : float
+        Mutation *modifier* rate (should be 1.0 if branch lengths on tree
+        reflect true expected number of changes).
+    root_states``   : list
+        Vector of root states (length must equal ``seq_len``).
+    char_matrix   : |DnaCharacterMatrix|
+        If given, new sequences for taxa on ``tree_model`` leaf_nodes will be
+        appended to existing sequences of corresponding taxa in char_matrix; if
+        not, a new |DnaCharacterMatrix| object will be created.
+    retain_sequences_on_tree : bool
+        If `False`, sequence annotations will be cleared from tree after
+        simulation. Set to `True` if you want to, e.g., evolve and accumulate
+        different sequences on tree, or retain information for other purposes.
+    rng           : random number generator
+        If not given, 'GLOBAL_RNG' will be used.
+
+    Returns
+    -------
+    d : |DnaCharacterMatrix|
+        The simulated alignment.
 
     Since characters will be appended to existing sequences, you can simulate a
     sequences under a mixed model by calling this method multiple times with
     different character model parameter values and/or different mutation
-    rates, passing in the same `char_matrix` object each time.
+    rates, passing in the same ``char_matrix`` object each time.
     """
     if char_matrix is None:
         char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree_model.taxon_namespace)

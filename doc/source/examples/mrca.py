@@ -1,8 +1,6 @@
-#! /usr/bin/env python
-
 import dendropy
 
-tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+tree = dendropy.Tree.get(path="pythonidae.mle.nex", schema="nexus")
 taxon_labels=['Python sebae',
               'Python regius',
               'Python curtus',

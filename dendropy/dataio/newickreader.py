@@ -128,35 +128,35 @@ class NewickReader(ioservice.DataReader):
             Specifies how trees in the data source should be intepreted with
             respect to their rooting:
 
-                '``default-unrooted``' [default]:
-                    All trees are interpreted as unrooted unless a '``[&R]``'
+                'default-unrooted' [default]:
+                    All trees are interpreted as unrooted unless a '[&R]'
                     comment token explicitly specifies them as rooted.
-                '``default-rooted``'
-                    All trees are interpreted as rooted unless a '``[&U]``'
+                'default-rooted'
+                    All trees are interpreted as rooted unless a '[&U]'
                     comment token explicitly specifies them as unrooted.
-                '``force-unrooted``'
+                'force-unrooted'
                     All trees are unconditionally interpreted as unrooted.
-                '``force-rooted``'
+                'force-rooted'
                     All trees are unconditionally interpreted as rooted.
 
-        edge_len_type : type, default: `float`
-            Specifies the type of the edge lengths (`int` or `float`). Tokens
+        edge_length_type : type, default: ``float``
+            Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
-            Defaults to `float`.
+            Defaults to ``float``.
         suppress_edge_lengths : boolean, default: `False`
             If `True`, edge length values will not be processed. If `False`,
             edge length values will be processed.
         extract_comment_metadata : boolean, default: `True`
             If `True` (default), any comments that begin with '&' or '&&' will
             be parsed and stored as part of the annotation set of the
-            corresponding object (accessible through the `annotations`
+            corresponding object (accessible through the ``annotations``
             attribute of the object). This requires that the comment
             contents conform to a particular format (NHX or BEAST: 'field =
             value'). If `False`, then the comments will not be parsed,
-            but will be instead stored directly as elements of the `comments`
+            but will be instead stored directly as elements of the ``comments``
             list attribute of the associated object.
         store_tree_weights : boolean, default: `False`
-            If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
+            If `True`, process the tree weight (e.g. "[&W 1/2]") comment
             associated with each tree, if any. Defaults to `False`.
         encode_splits : boolean, default: `False`
             If `True`, split hash bitmasks will be calculated and attached to
@@ -165,8 +165,8 @@ class NewickReader(ioservice.DataReader):
             If specified, this function will be applied to each node after
             it has been constructed.
         case_sensitive_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels are case sensitive (e.g., "``P.regius``"
-            and "``P.REGIUS``" wil be treated as different operation taxonomic
+            If `True`, then taxon labels are case sensitive (e.g., "P.regius"
+            and "P.REGIUS" wil be treated as different operation taxonomic
             unit concepts). Otherwise, taxon label intepretation will be made
             without regard for case.
         preserve_underscores : boolean, default: `False`
@@ -175,15 +175,19 @@ class NewickReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiated into
-            :class:`Taxon` objects. If `True`, internal node labels
+            |Taxon| objects. If `True`, internal node labels
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: `False`
             If `False`, leaf (external) node labels will be instantantiated
-            into :class:`Taxon` objects. If `True`, leaff (external) node
+            into |Taxon| objects. If `True`, leaff (external) node
             labels will *not* be instantantiated as strings.
         terminating_semicolon_required : boolean, default: `True`
             If `True` [default], then a tree statement that does not end in a
             semi-colon is an error. If `False`, then no error will be raised.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
         """
 
         # base
@@ -241,7 +245,7 @@ class NewickReader(ioservice.DataReader):
             )
         # self.rooting = kwargs.pop("rooting", "default-unrooted")
         self.rooting = kwargs.pop("rooting", self.__class__._default_rooting_directive)
-        self.edge_len_type = kwargs.pop("edge_len_type", float)
+        self.edge_length_type = kwargs.pop("edge_length_type", float)
         self.suppress_edge_lengths = kwargs.pop("suppress_edge_lengths", False)
         self.extract_comment_metadata = kwargs.pop('extract_comment_metadata', True)
         self.store_tree_weights = kwargs.pop("store_tree_weights", False)
@@ -271,17 +275,17 @@ class NewickReader(ioservice.DataReader):
         ----------
         stream : file or file-like object
             A file or file-like object opened for reading.
-        taxon_namespace : :class:`TaxonNamespace`
+        taxon_namespace : |TaxonNamespace|
             Operational taxonomic unit namespace to use for taxon management.
         tree_factory : function object
-            A function that returns a new :class:`Tree` object when called
+            A function that returns a new |Tree| object when called
             without arguments.
 
         Returns
         -------
-        iter : :py:class:`collections.Iterator` [:class:`Tree`]
-            An iterator yielding :class:`Tree` objects constructed based on
-            data in `stream`.
+        iter : :py`collections.Iterator` [|Tree|]
+            An iterator yielding |Tree| objects constructed based on
+            data in ``stream``.
         """
         nexus_tokenizer = nexusprocessing.NexusTokenizer(stream,
                 preserve_unquoted_underscores=self.preserve_unquoted_underscores)
@@ -451,7 +455,7 @@ class NewickReader(ioservice.DataReader):
     def _parse_tree_rooting_state(self, rooting_comment=None):
         """
         Returns rooting state for tree with given rooting comment token, taking
-        into account `rooting` configuration.
+        into account ``rooting`` configuration.
         """
         if self._rooting == "force-unrooted":
             return False
@@ -553,7 +557,7 @@ class NewickReader(ioservice.DataReader):
         label_parsed = False
         self._tree_statement_complete = False
         if is_internal_node is None:
-            # Initial call using `seed_node` does not set `is_internal_node` to
+            # Initial call using ``seed_node`` does not set ``is_internal_node`` to
             # `True` or `False`, explicitly, but rather `None`. If this is the
             # case, the rest of the tree has be constructed, and we simply look
             # at whether there are children or not to determine if it is an
@@ -570,7 +574,7 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer.require_next_token()
                 if not self.suppress_edge_lengths:
                     try:
-                        edge_length = self.edge_len_type(nexus_tokenizer.current_token)
+                        edge_length = self.edge_length_type(nexus_tokenizer.current_token)
                     except ValueError:
                         raise NewickReader.NewickReaderMalformedStatementError(
                                 message="Invalid edge length: '{}'".format(nexus_tokenizer.current_token),
@@ -578,7 +582,16 @@ class NewickReader(ioservice.DataReader):
                                 col_num=nexus_tokenizer.token_column_num,
                                 stream=nexus_tokenizer.src)
                     current_node.edge.length = edge_length
-                nexus_tokenizer.require_next_token()
+                try:
+                    nexus_tokenizer.require_next_token()
+                except tokenizer.Tokenizer.UnexpectedEndOfStreamError as e:
+                    message = e.message + ". (Perhaps the terminating semicolon for the tree statement is missing? If so, add a semicolon to the tree statement or specify 'terminating_semicolon_required=False' to allow for missing semicolons)"
+                    raise tokenizer.Tokenizer.UnexpectedEndOfStreamError(
+                            message=message,
+                            line_num=e.line_num,
+                            col_num=e.col_num,
+                            stream=e.stream)
+
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
                 # self._parenthesis_nesting_level -= 1 # handled by calling code

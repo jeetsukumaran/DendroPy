@@ -16,11 +16,7 @@
 ##
 ##############################################################################
 
-"""
-Imports into the `dendropy` namespace all fundamental
-classes and methods for instantiating objects in the
-`dendropy.dataobject` subpackage to for usage by client code.
-"""
+import sys
 
 ###############################################################################
 ## Populate the 'dendropy' namespace
@@ -72,6 +68,7 @@ from dendropy.utility.error import TaxonNamespaceReconstructionError
 from dendropy.utility.error import UltrametricityError
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.utility.error import SeedNodeDeletionException
+from dendropy.utility import deprecate
 
 
 ###############################################################################
@@ -108,6 +105,22 @@ __copyright__ = "Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
+def _get_revision_object():
+    from dendropy.utility import vcsinfo
+    __revision__ = vcsinfo.Revision(repo_path=homedir())
+    return __revision__
+
+def revision_description():
+    __revision__ = _get_revision_object()
+    if __revision__.is_available:
+        revision_text = " ({})".format(__revision__)
+    else:
+        revision_text = ""
+    return revision_text
+
+def name():
+    return "{} {}{}".format(__project__, __version__, revision_description())
+
 def homedir():
     import os
     try:
@@ -123,10 +136,23 @@ def homedir():
         __homedir__ = None
     return __homedir__
 
-def revision():
-    from dendropy.utility import vcsinfo
-    __revision__ = vcsinfo.Revision(repo_path=homedir())
-    return __revision__
+def description(dest=None):
+    import sys
+    import site
+    if dest is None:
+        dest = sys.stdout
+    fields = collections.OrderedDict()
+    fields["DendroPy version"] = name()
+    fields["DendroPy location"] = homedir()
+    fields["Python version"] = sys.version.replace("\n", "")
+    fields["Python executable"] = sys.executable
+    fields["Python site packages"] = site.getsitepackages()
+    max_fieldname_len = max(len(fieldname) for fieldname in fields)
+    for fieldname, fieldvalue in fields.items():
+        dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
+            fieldname=fieldname,
+            fieldnamewidth=max_fieldname_len + 2,
+            fieldvalue=fieldvalue))
 
 def citation_info(include_preamble=True, width=76):
     import textwrap
@@ -152,19 +178,16 @@ def citation_info(include_preamble=True, width=76):
     citation_lines.extend(citation)
     return citation_lines
 
-def revision_description():
-    __revision__ = revision()
-    if __revision__.is_available:
-        revision_text = " ({})".format(__revision__)
-    else:
-        revision_text = ""
-    return revision_text
+def tree_source_iter(*args, **kwargs):
+    s = "No longer supported in DendroPy 4: Instead of 'tree_source_iter()', use 'Tree.yield_from_files()' instead"
+    raise NotImplementedError(s)
 
-def description():
-    return "{} {}{}".format(__project__, __version__, revision_description())
+def multi_tree_source_iter(*args, **kwargs):
+    s = "No longer supported in DendroPy 4: Instead of 'multi_tree_source_iter()', use 'Tree.yield_from_files()' instead"
+    raise NotImplementedError(s)
 
 if __name__ == "__main__":
-    import sys
-    sys.stdout.write("{}\n".format(description()))
+    description(sys.stdout)
+
 
 

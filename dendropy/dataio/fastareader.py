@@ -22,13 +22,31 @@ Implementation of FASTA-format data reader.
 
 from dendropy.dataio import ioservice
 from dendropy.utility.error import DataParseError
+from dendropy.utility import deprecate
 
 class FastaReader(ioservice.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, **kwargs):
+        """
+        Keyword Arguments
+        -----------------
+        data_type: str
+            When reading into a |DataSet| object, the type of data must be
+            specified: "dna", "rna", "protein", "restriction", "infinite",
+            "standard", or "continuous".
+        default_state_alphabet: |StateAlphabet| instance
+            A |StateAlphabet| object to be used to manage the alphabet of the
+            characters (|StandardCharacterMatrix| **only**).
+        """
         ioservice.DataReader.__init__(self)
         self.data_type = kwargs.pop("data_type", None)
+        self.default_state_alphabet = kwargs.pop("default_state_alphabet", None)
+        if self.default_state_alphabet is not None:
+            if self.data_type is None:
+                self.data_type = "standard"
+            elif self.data_type != "standard":
+                raise ValueError("Cannot specify 'default_state_alphabet' with data type of '{}'".format(self.data_type))
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _read(self,
@@ -41,10 +59,18 @@ class FastaReader(ioservice.DataReader):
         taxon_namespace = taxon_namespace_factory(label=None)
         if self.data_type is None:
             raise TypeError("Data type must be specified for this schema")
-        char_matrix = char_matrix_factory(
-                self.data_type,
-                label=None,
-                taxon_namespace=taxon_namespace)
+        if self.data_type == "standard" and self.default_state_alphabet is not None:
+            char_matrix = char_matrix_factory(
+                    self.data_type,
+                    label=None,
+                    taxon_namespace=taxon_namespace,
+                    default_state_alphabet=self.default_state_alphabet,
+                    )
+        else:
+            char_matrix = char_matrix_factory(
+                    self.data_type,
+                    label=None,
+                    taxon_namespace=taxon_namespace)
         symbol_state_map = char_matrix.default_state_alphabet.full_symbol_state_map
         curr_vec = None
         curr_taxon = None
@@ -80,32 +106,40 @@ class FastaReader(ioservice.DataReader):
                 char_matrices=[char_matrix])
         return product
 
+
 class DnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='dnafasta', ...)\nd = dendropy.DataSet.get_from_path(schema='dnafasta', ...)",
+                new_construct="d = dendropy.DnaCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='dna', ...)",
+                stacklevel=7)
+        # raise TypeError("'dnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'DnaCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "dna"
         FastaReader.__init__(self, **kwargs)
-        if self.data_type is not None:
-            if self.data_type.lower() != "dna":
-                raise TypeError("'data_type' must be equal to 'dna', but instead found: '{}'".format(self.data_type))
-        else:
-            self.data_type = "dna"
 
 class RnaFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='rnafasta', ...)\nd = dendropy.DataSet.get_from_path(schema='rnafasta', ...)",
+                new_construct="d = dendropy.RnaCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='rna', ...)",
+                stacklevel=7)
+        # raise TypeError("'rnafasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'RnaCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "rna"
         FastaReader.__init__(self, **kwargs)
-        if self.data_type is not None:
-            if self.data_type.lower() != "rna":
-                raise TypeError("'data_type' must be equal to 'rna', but instead found: '{}'".format(self.data_type))
-        else:
-            self.data_type = "rna"
 
 class ProteinFastaReader(FastaReader):
 
     def __init__(self, **kwargs):
+        deprecate.dendropy_deprecation_warning(
+                preamble="Deprecated since DendroPy 4:",
+                old_construct="d = dendropy.CharacterMatrix.get_from_path(schema='proteinfasta', ...)\nd = dendropy.DataSet.get_from_path(schema='proteinfasta', ...)",
+                new_construct="d = dendropy.ProteinCharacterMatrix.get(path=..., schema='fasta', ...)\nd = dendropy.DataSet.get(path=..., schema='fasta', data_type='protein', ...)",
+                stacklevel=7)
+        # raise TypeError("'proteinfasta' is no longer a supported schema: use 'schema=\"fasta\"' with the 'ProteinCharacterMatrix.get()' method instead or 'schema=\"fasta\"' and 'data_type=\"dna\" with the 'DataSet.get()' or 'DataSet.read()' methods")
+        kwargs["data_type"] = "protein"
         FastaReader.__init__(self, **kwargs)
-        if self.data_type is not None:
-            if self.data_type.lower() != "protein":
-                raise TypeError("'data_type' must be equal to 'protein', but instead found: '{}'".format(self.data_type))
-        else:
-            self.data_type = "protein"
+

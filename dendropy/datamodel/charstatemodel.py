@@ -83,9 +83,9 @@ class StateAlphabet(
         and non-polymorphic states of this alphabet), with a 1-to-1
         correspodence between symbols and states. Each state will also be
         automatically indexed base on its position in this list. For DNA, this
-        would be something like: `'ACGT'` or `('A', 'C', 'G', T')`. For
-        "standard" characters, this would be something like `'01'` or `('0',
-        '1')`.
+        would be something like: ``'ACGT'`` or ``('A', 'C', 'G', T')``. For
+        "standard" characters, this would be something like ``'01'`` or ``('0',
+        '1')``.
 
     no_data_symbol : string
         If specified, automatically creates a "no data" ambiguous state,
@@ -93,7 +93,7 @@ class StateAlphabet(
         "no_data_symbol", which maps to all fundamental states.
         This will also insert `None` into all symbol look-up maps, which, when
         dereferenced will return this state. Furthermore, the attribute
-        `self.no_data_symbol` will return this symbol and `self.no_data_state`
+        ``self.no_data_symbol`` will return this symbol and ``self.no_data_state``
         will return this state. The 'no data' state will be an ambiguous
         multistate type.
 
@@ -106,7 +106,7 @@ class StateAlphabet(
         alphabet is case-insensitive).  The second element is an
         iterable of fundamental state symbols to which this ambiguous state
         maps. The fundamental state symbols *must* have already been defined,
-        i.e. given in the value passed to `fundamental_states`. Note: a
+        i.e. given in the value passed to ``fundamental_states``. Note: a
         dictionary may seem like a more tractable structure than iterable of
         tuples, but we may need to specify multiple anonymous or blank
         ambiguous states.
@@ -120,7 +120,7 @@ class StateAlphabet(
         alphabet is case-insensitive).  The second element is an
         iterable of fundamental state symbols to which this polymorphic state
         maps. The fundamental state symbols *must* have already been defined,
-        i.e. given in the value passed to `fundamental_states`. Note: a
+        i.e. given in the value passed to ``fundamental_states``. Note: a
         dictionary may seem like a more tractable structure than iterable of
         tuples, but we may need to specify multiple anonymous or blank
         polymorphic states.
@@ -234,7 +234,7 @@ class StateAlphabet(
 
     def _direct_get_state_for_symbol(self, symbol):
         """
-        Returns the :class:`StateIdentity` instance corresponding to `symbol`.
+        Returns the |StateIdentity| instance corresponding to ``symbol``.
         """
         for state_symbol, state in self.symbol_state_pair_iter(include_synonyms=True):
             if state_symbol == symbol:
@@ -243,9 +243,9 @@ class StateAlphabet(
 
     def _direct_get_fundamental_states_for_symbols(self, symbols):
         """
-        Returns the list of :class:`StateIdentity` instances corresponding to
-        the iterable of symbols given by `symbols`, with each element in
-        `symbols` corresponding to a single symbol.
+        Returns the list of |StateIdentity| instances corresponding to
+        the iterable of symbols given by ``symbols``, with each element in
+        ``symbols`` corresponding to a single symbol.
         """
         ss = []
         for symbol in symbols:
@@ -278,7 +278,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity`
+        s : |StateIdentity|
             The new state created and added.
         """
         if symbol is None or symbol == "":
@@ -321,12 +321,12 @@ class StateAlphabet(
                     representing multistates will taken to refer to the set of
                     fundamental states to which they, in turn, map.
 
-                member_states : iterable of :class:`StateIdentity` objects
-                    List of :class:`StateIdentity` representing states to which this state maps.
+                member_states : iterable of |StateIdentity| objects
+                    List of |StateIdentity| representing states to which this state maps.
 
         Returns
         -------
-        s : :class:`StateIdentity`
+        s : |StateIdentity|
             The new state created and added.
         """
         return self.new_multistate(
@@ -358,12 +358,12 @@ class StateAlphabet(
                     representing multistates will taken to refer to the set of
                     fundamental states to which they, in turn, map.
 
-                member_states : iterable of :class:`StateIdentity` objects
-                    List of :class:`StateIdentity` representing states to which this state maps.
+                member_states : iterable of |StateIdentity| objects
+                    List of |StateIdentity| representing states to which this state maps.
 
         Returns
         -------
-        s : :class:`StateIdentity`
+        s : |StateIdentity|
             The new state created and added.
         """
         return self.new_multistate(
@@ -399,12 +399,12 @@ class StateAlphabet(
                     representing multistates will taken to refer to the set of
                     fundamental states to which they, in turn, map.
 
-                member_states : iterable of :class:`StateIdentity` objects
-                    List of :class:`StateIdentity` representing states to which this state maps.
+                member_states : iterable of |StateIdentity| objects
+                    List of |StateIdentity| representing states to which this state maps.
 
         Returns
         -------
-        s : :class:`StateIdentity`
+        s : |StateIdentity|
             The new state created and added.
         """
         if symbol is not None and symbol != "":
@@ -454,7 +454,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity`
+        s : |StateIdentity|
             The state to which this synonym maps.
         ------
         """
@@ -568,12 +568,12 @@ class StateAlphabet(
     def set_state_as_attribute(self, state, attr_name=None):
         """
         Sets the given state as an attribute of this alphabet.
-        The name of the attribute will be `attr_name` if specified,
+        The name of the attribute will be ``attr_name`` if specified,
         or the state symbol otherwise.
 
         Parameters
         ----------
-        state : :class:`StateIdentity`
+        state : |StateIdentity|
             The state to be made an attribute of this alphabet.
         attr_name : string
             The name of the attribute. If not specified, the state
@@ -682,7 +682,7 @@ class StateAlphabet(
     def fundamental_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `include_synonyms` is `False`) that map to fundamental states.
+        ``include_synonyms`` is `False`) that map to fundamental states.
         """
         for state in self.fundamental_state_iter():
             yield state.symbol
@@ -693,7 +693,7 @@ class StateAlphabet(
     def ambiguous_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `include_synonyms` is `False`) that map to ambiguous states.
+        ``include_synonyms`` is `False`) that map to ambiguous states.
         """
         for state in self.ambiguous_state_iter():
             yield state.symbol
@@ -704,7 +704,7 @@ class StateAlphabet(
     def polymorphic_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `include_synonyms` is `False`) that map to polymorphic states.
+        ``include_synonyms`` is `False`) that map to polymorphic states.
         """
         for state in self.polymorphic_state_iter():
             yield state.symbol
@@ -715,7 +715,7 @@ class StateAlphabet(
     def multistate_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        `include_synonyms` is `False`) that map to multistate states.
+        ``include_synonyms`` is `False`) that map to multistate states.
         """
         for state in self.multistate_state_iter():
             yield state.symbol
@@ -766,7 +766,7 @@ class StateAlphabet(
 
     def __getitem__(self, key):
         """
-        Returns state identity corresponding to `key`.
+        Returns state identity corresponding to ``key``.
 
         Parameters
         ----------
@@ -776,12 +776,12 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity` instance
-            Returns a :class:`StateIdentity` corresponding to `key`.
+        s : |StateIdentity| instance
+            Returns a |StateIdentity| corresponding to ``key``.
 
         Raises
         ------
-        KeyError if `key` is not valid.
+        KeyError if ``key`` is not valid.
 
         """
         if isinstance(key, int):
@@ -799,9 +799,9 @@ class StateAlphabet(
 
         Returns
         -------
-        s : list of :class:`StateIdentity`
-            A list of :class:`StateIdentity` instances corresponding to symbols
-            given in `symbols`.
+        s : list of |StateIdentity|
+            A list of |StateIdentity| instances corresponding to symbols
+            given in ``symbols``.
         """
         states = [self.full_symbol_state_map[s] for s in symbols]
         return states
@@ -816,9 +816,9 @@ class StateAlphabet(
 
         Returns
         -------
-        s : list of :class:`StateIdentity`
-            A list of fundamental :class:`StateIdentity` instances corresponding
-            to symbols given in `symbols`, with multi-state states expanded
+        s : list of |StateIdentity|
+            A list of fundamental |StateIdentity| instances corresponding
+            to symbols given in ``symbols``, with multi-state states expanded
             into their fundamental symbols.
         """
         states = []
@@ -829,7 +829,7 @@ class StateAlphabet(
 
     def get_canonical_symbol_for_symbol(self, symbol):
         """
-        Returns the canonical state symbol for the state to which `symbol`
+        Returns the canonical state symbol for the state to which ``symbol``
         maps. E.g., in a DNA alphabet, return 'A' for 'a'.
 
         Parameters
@@ -840,14 +840,14 @@ class StateAlphabet(
         -------
         s : string
             Canonical symbol for state with symbol or synonym symbol of
-            `symbol`.
+            ``symbol``.
         """
         return self[symbol].symbol
 
     def match_ambiguous_state(self, symbols):
         """
         Returns ambiguous state with fundamental member states
-        represented by symbols given in `symbols`.
+        represented by symbols given in ``symbols``.
 
         Parameters
         ----------
@@ -855,7 +855,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity` instance
+        s : |StateIdentity| instance
         """
         states = frozenset(self.get_fundamental_states_for_symbols(symbols))
         return self._fundamental_states_to_ambiguous_state_map[states]
@@ -863,7 +863,7 @@ class StateAlphabet(
     def match_polymorphic_state(self, symbols):
         """
         Returns polymorphic state with fundamental member states
-        represented by symbols given in `symbols`.
+        represented by symbols given in ``symbols``.
 
         Parameters
         ----------
@@ -871,7 +871,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity` instance
+        s : |StateIdentity| instance
         """
         states = frozenset(self.get_fundamental_states_for_symbols(symbols))
         return self._fundamental_states_to_polymorphic_state_map[states]
@@ -879,7 +879,7 @@ class StateAlphabet(
     def match_state(self, symbols, state_denomination):
         """
         Returns ambiguous or polymorphic state with fundamental member states
-        represented by symbols given in `symbols`.
+        represented by symbols given in ``symbols``.
 
         Parameters
         ----------
@@ -889,7 +889,7 @@ class StateAlphabet(
 
         Returns
         -------
-        s : :class:`StateIdentity` instance
+        s : |StateIdentity| instance
         """
         if state_denomination == StateAlphabet.AMBIGUOUS_STATE:
             return self.match_ambiguous_state(symbols=symbols)
@@ -932,11 +932,11 @@ class StateIdentity(
             '0', 1 = '1'. Note that ambiguous and polymorphic state definitions
             typically are not indexed.
         state_denomination : 'enum'
-            One of: `StateAlphabet.FUNDAMENTAL_STATE`,
-            `StateAlphabet.AMBIGUOUS_STATE`, or
-            `StateAlphabet.POLYMORPHIC_STATE`.
-        member_states : iterable of :class:`StateIdentity` instances.
-            If a multi-state, then a collection of :class:`StateIdentity`
+            One of: ``StateAlphabet.FUNDAMENTAL_STATE``,
+            ``StateAlphabet.AMBIGUOUS_STATE``, or
+            ``StateAlphabet.POLYMORPHIC_STATE``.
+        member_states : iterable of |StateIdentity| instances.
+            If a multi-state, then a collection of |StateIdentity|
             instances to which this state maps.
         """
         basemodel.DataObject.__init__(self, label=symbol)

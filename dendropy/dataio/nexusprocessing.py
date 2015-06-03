@@ -132,7 +132,7 @@ class NexusTokenizer(Tokenizer):
 
 class NexusTaxonSymbolMapper(object):
     """
-    Manages :class:`TaxonNamespace` and :class:`Taxon` object look-ups when
+    Manages |TaxonNamespace| and |Taxon| object look-ups when
     parsing NEXUS and NEWICK formatted data.
 
     Operational taxonomic unit concepts in NEXUS files can be referenced using
@@ -145,27 +145,27 @@ class NexusTaxonSymbolMapper(object):
     In the event of redundant over overdetermined symbols, the resolution order
     is as given above.
 
-    This class encapsulates creating, looking-up and retrieving :class:`Taxon`
+    This class encapsulates creating, looking-up and retrieving |Taxon|
     objects corresponding to operation taxonomic unit concept references
     encountered when reading NEXUS or NEWICK data sources from the
-    :class:`TaxonNamespace` that it wraps and manages. It keeps track of
+    |TaxonNamespace| that it wraps and manages. It keeps track of
     "TRANSLATE" block tokens, operational taxonomic unit labels, and
     operational taxonomic unit indexes in mapping containers that allow for
-    quick retrieval of corresponding :class:`Taxon` objects. The symbol look-up
+    quick retrieval of corresponding |Taxon| objects. The symbol look-up
     is case-insensitive, as per NEXUS/NEWICK convention.
 
-    If a :class:`Taxon` object is not found for a particular symbol, it will
-    create a new :class:`Taxon` object with that symbol for its label, and
+    If a |Taxon| object is not found for a particular symbol, it will
+    create a new |Taxon| object with that symbol for its label, and
     register it in all the other supplemental mappings appropriately.
 
-    Note that the :class:`TaxonNamespace` object passed to this class and the
-    member :class:`Taxon` objects should not be modified during the lifespan of
+    Note that the |TaxonNamespace| object passed to this class and the
+    member |Taxon| objects should not be modified during the lifespan of
     this class or, at least, the tenure of the management of
-    :class:`TaxonNamespace` and member :class:`Taxon` objects by this class.
+    |TaxonNamespace| and member |Taxon| objects by this class.
     This is to ensure that the various supplementatl mappings (in particular,
     the label mapping and the taxon number mapping) are synchronized.
-    To this end, the of the :class:`TaxonNamespace` object is locked, and all
-    :class:`Taxon` object creation should be through this class's native
+    To this end, the of the |TaxonNamespace| object is locked, and all
+    |Taxon| object creation should be through this class's native
     methods.
     """
 
@@ -284,30 +284,30 @@ def parse_comment_metadata_to_annotations(
         field_value_types=None,
         strip_leading_trailing_spaces=True):
     """
-    Returns set of :class:`Annotation` objects corresponding to metadata
+    Returns set of |Annotation| objects corresponding to metadata
     given in comments.
 
     Parameters
     ----------
-    `comment` : string
+    ``comment`` : string
         A comment token.
-    `annotations` : :class:`AnnotationSet` or `set`
-        Set of :class:`Annotation` objects to which to add this annotation.
-    `field_name_map` : dict
+    ``annotations`` : |AnnotationSet| or ``set``
+        Set of |Annotation| objects to which to add this annotation.
+    ``field_name_map`` : dict
         A dictionary mapping field names (as given in the comment string)
         to strings that should be used to represent the field in the
         metadata dictionary; if not given, no mapping is done (i.e., the
         comment string field name is used directly).
-    `field_value_types` : dict
+    ``field_value_types`` : dict
         A dictionary mapping field names (as given in the comment
         string) to the value type (e.g. {"node-age" : float}.
-    `strip_leading_trailing_spaces` : boolean
+    ``strip_leading_trailing_spaces`` : boolean
         Remove whitespace from comments.
 
     Returns
     -------
-    metadata : :py:class::`set` [:class:`Annotation`]
-        Set of :class:`Annotation` objects corresponding to metadata
+    metadata : :py:``set`` [|Annotation|]
+        Set of |Annotation| objects corresponding to metadata
         parsed.
     """
     if annotations is None:
@@ -412,19 +412,19 @@ def format_item_annotations_as_comments(
         real_value_format_specifier=None,
         override_annotation_format_specifier=False):
     """
-    `annotated` - Annotated object
-    `nhx`       - render as NHX '[&& ...]'? Otherwise as '[& ...]'
-    `real_value_format_specifier` - Format specification for real/float values.
+    ``annotated`` - Annotated object
+    ``nhx``       - render as NHX '[&& ...]'? Otherwise as '[& ...]'
+    ``real_value_format_specifier`` - Format specification for real/float values.
                    The format specifier should be given in Python's string
                    format specification mini-language. E.g. ".8f", ".4E",
-                   "8.4f". If the annotation has its `format_specifier`
+                   "8.4f". If the annotation has its ``format_specifier``
                    attribute set, then this argument is ignored for rendering
                    that particular annotation unless
-                   `override_annotation_format_specifier` is `True`. Defaults to "".
-    `override_annotation_format_specifier`
-                    If the annotation has its `format_specifier` attribute set,
+                   ``override_annotation_format_specifier`` is `True`. Defaults to "".
+    ``override_annotation_format_specifier``
+                    If the annotation has its ``format_specifier`` attribute set,
                     then this it will be used in preference to the
-                    `real_value_format_specifier` above unless this argument is
+                    ``real_value_format_specifier`` above unless this argument is
                     `True`. Defaults to `False`.
     """
     if not annotated.annotations:

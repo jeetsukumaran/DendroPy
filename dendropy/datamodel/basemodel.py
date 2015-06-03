@@ -34,6 +34,26 @@ from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
 from dendropy.utility import urlio
 from dendropy.utility import error
+from dendropy.utility import deprecate
+
+##############################################################################
+## Keyword Processor
+
+def _extract_serialization_target_keyword(kwargs, target_type):
+    target_type_keywords = ["file", "path", "url", "data", "stream", "string"]
+    found_kw = []
+    for kw in target_type_keywords:
+        if kw in kwargs:
+            found_kw.append(kw)
+    if not found_kw:
+        raise TypeError("{} not specified; exactly one of the following keyword arguments required to be specified: {}".format(target_type, target_type_keywords))
+    if len(found_kw) > 1:
+        raise TypeError("{} specified multiple times: {}".format(target_type, found_kw))
+    target = kwargs.pop(found_kw[0])
+    if "schema" not in kwargs:
+        raise TypeError("Mandatory keyword argument 'schema' not specified")
+    schema = kwargs.pop("schema")
+    return found_kw[0], target, schema
 
 ##############################################################################
 ## DataObject
@@ -58,7 +78,7 @@ class DataObject(object):
 
     def clone(self, depth=1):
         """
-        Creates and returns a copy of `self`.
+        Creates and returns a copy of ``self``.
 
         Parameters
         ----------
@@ -66,14 +86,14 @@ class DataObject(object):
             The depth of the copy:
 
                 - 0: shallow-copy: All member objects are references,
-                  except for :attr:`annotation_set` of top-level object and
-                  member :class:`Annotation` objects: these are full,
+                  except for :attr:``annotation_set`` of top-level object and
+                  member |Annotation| objects: these are full,
                   independent instances (though any complex objects in the
-                  `value` field of :class:`Annotation` objects are also
+                  ``value`` field of |Annotation| objects are also
                   just references).
                 - 1: taxon-namespace-scoped copy: All member objects are full
-                  independent instances, *except* for :class:`TaxonNamespace`
-                  and :class:`Taxon` instances: these are references.
+                  independent instances, *except* for |TaxonNamespace|
+                  and |Taxon| instances: these are references.
                 - 2: Exhaustive deep-copy: all objects are cloned.
         """
         if depth == 0:
@@ -89,32 +109,64 @@ class DataObject(object):
         """
         Cloning level: 1.
         Taxon-namespace-scoped copy: All member objects are full independent
-        instances, *except* for :class:`TaxonNamespace` and :class:`Taxon`
+        instances, *except* for |TaxonNamespace| and |Taxon|
         objects: these are preserved as references.
         """
         raise NotImplementedError
 
 ##############################################################################
-## Readable
+## Deserializable
 
-class Readable(object):
+class Deserializable(object):
     """
     Mixin class which all classes that require deserialization should subclass.
     """
 
-    def _parse_from_stream(cls, stream, schema, **kwargs):
+    def _parse_and_create_from_stream(cls, stream, schema, **kwargs):
         """
         Subclasses need to implement this method to create
         and return and instance of themselves read from the
         stream.
         """
         raise NotImplementedError
-    _parse_from_stream = classmethod(_parse_from_stream)
+    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
+
+    def _get_from(cls, **kwargs):
+        """
+        Factory method to return new object of this class from an external
+        source by dispatching calls to more specialized ``get_from_*`` methods.
+        Implementing classes will have a publically-exposed method, ``get()``,
+        that wraps a call to this method. This allows for class-specific
+        documentation of keyword arguments. E.g.::
+
+            @classmethod
+            def get(cls, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return cls._get_from(**kwargs)
+
+        """
+        try:
+            src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
+        except Exception as e:
+            raise e
+        if src_type == "file" or src_type == "stream":
+            return cls.get_from_stream(src=src, schema=schema, **kwargs)
+        elif src_type == "path":
+            return cls.get_from_path(src=src, schema=schema, **kwargs)
+        elif src_type == "data" or src_type == "string":
+            return cls.get_from_string(src=src, schema=schema, **kwargs)
+        elif src_type == "url":
+            return cls.get_from_url(src=src, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(src_type))
+    _get_from = classmethod(_get_from)
 
     def get_from_stream(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file-like object
-        `src`.
+        ``src``.
 
         Parameters
         ----------
@@ -134,7 +186,7 @@ class Readable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        return cls._parse_from_stream(stream=src,
+        return cls._parse_and_create_from_stream(stream=src,
                 schema=schema,
                 **kwargs)
     get_from_stream = classmethod(get_from_stream)
@@ -142,7 +194,7 @@ class Readable(object):
     def get_from_path(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file
-        specified by string `src`.
+        specified by string ``src``.
 
         Parameters
         ----------
@@ -163,14 +215,14 @@ class Readable(object):
             in source.
         """
         with open(src, "r", newline=None) as fsrc:
-            return cls._parse_from_stream(stream=fsrc,
+            return cls._parse_and_create_from_stream(stream=fsrc,
                     schema=schema,
                     **kwargs)
     get_from_path = classmethod(get_from_path)
 
     def get_from_string(cls, src, schema, **kwargs):
         """
-        Factory method to return new object of this class from string `src`.
+        Factory method to return new object of this class from string ``src``.
 
         Parameters
         ----------
@@ -191,7 +243,7 @@ class Readable(object):
             in source.
         """
         ssrc = StringIO(src)
-        return cls._parse_from_stream(stream=ssrc,
+        return cls._parse_and_create_from_stream(stream=ssrc,
                 schema=schema,
                 **kwargs)
     get_from_string = classmethod(get_from_string)
@@ -199,7 +251,7 @@ class Readable(object):
     def get_from_url(cls, src, schema, strip_markup=False, **kwargs):
         """
         Factory method to return a new object of this class from
-        URL given by `src`.
+        URL given by ``src``.
 
         Parameters
         ----------
@@ -222,7 +274,7 @@ class Readable(object):
         text = urlio.read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
         try:
-            return cls._parse_from_stream(
+            return cls._parse_and_create_from_stream(
                     stream=ssrc,
                     schema=schema,
                     **kwargs)
@@ -231,41 +283,19 @@ class Readable(object):
             raise
     get_from_url = classmethod(get_from_url)
 
-    def _process_source_kwargs(self, **kwargs):
-        """
-        If `stream` is specified, then _process_source_kwargs:
 
-            # checks that `schema` keyword argument is specified, and then
-            # calls self.read()
+##############################################################################
+## MultiReadabe
 
-        If `stream` is not specified, then nothing happens: unless the
-        data object was populated through other means, and empty data
-        object will the result (typically used as a starting point
-        for population unit by unit).
-        """
-        if "stream" in kwargs:
-            stream = kwargs["stream"]
-            del(kwargs["stream"])
-            schema = require_format_from_kwargs(kwargs)
-            self.read(stream=stream, schema=schema, **kwargs)
-        # else:
-        #     from pudb import set_trace; set_trace()
-        # elif "source_string" in kwargs:
-        #     as_str = kwargs["source_string"]
-        #     del(kwargs["source_string"])
-        #     kwargs["stream"] = StringIO(as_str)
-        #     return self._process_source_kwargs(**kwargs)
-        # elif "source_file" in kwargs:
-        #     fp = kwargs["source_filepath"]
-        #     fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
-        #     del(kwargs["source_filepath"])
-        #     kwargs["stream"] = fo
-        #     return self._process_source_kwargs(**kwargs)
+class MultiReadable(object):
+    """
+    Mixin class which all classes that support multiple (e.g., aggregative) deserialization should subclass.
+    """
 
-    def read(self, stream, schema, **kwargs):
+    def _parse_and_add_from_stream(self, stream, schema, **kwargs):
         """
-        Populates/constructs objects of this type from `schema`-formatted
-        data in the file-like object source `stream`.
+        Populates/constructs objects of this type from ``schema``-formatted
+        data in the file-like object source ``stream``.
 
         Parameters
         ----------
@@ -281,21 +311,51 @@ class Readable(object):
 
         Returns
         -------
-        n : `int` or :py:class:`tuple` [`int`]
+        n : ``int`` or ``tuple`` [``int``]
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - :class:`Tree`: **undefined**
-                - :class:`TreeList`: number of trees
-                - :class:`CharacterMatrix`: number of sequences
-                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
         """
         raise NotImplementedError
 
-    def read_from_stream(self, fileobj, schema, **kwargs):
+    def _read_from(self, **kwargs):
         """
-        Reads from file (exactly equivalent to just `read()`, provided
+        Add data to objects of this class from an external
+        source by dispatching calls to more specialized ``read_from_*`` methods.
+        Implementing classes will have a publically-exposed method, ``read()``,
+        that wraps a call to this method. This allows for class-specific
+        documentation of keyword arguments. E.g.::
+
+            def read(self, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return MultiReadable._read_from(self, **kwargs)
+
+        """
+        try:
+            src_type, src, schema = _extract_serialization_target_keyword(kwargs, "Source")
+        except Exception as e:
+            raise e
+        if src_type == "file" or src_type == "stream":
+            return self.read_from_stream(src=src, schema=schema, **kwargs)
+        elif src_type == "path":
+            return self.read_from_path(src=src, schema=schema, **kwargs)
+        elif src_type == "data" or src_type == "string":
+            return self.read_from_string(src=src, schema=schema, **kwargs)
+        elif src_type == "url":
+            return self.read_from_url(src=src, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(src_type))
+
+    def read_from_stream(self, src, schema, **kwargs):
+        """
+        Reads from file (exactly equivalent to just ``read()``, provided
         here as a separate method for completeness.
 
         Parameters
@@ -312,20 +372,21 @@ class Readable(object):
 
         Returns
         -------
-        n : :py:class:`tuple` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - :class:`Tree`: **undefined**
-                - :class:`TreeList`: number of trees
-                - :class:`CharacterMatrix`: number of sequences
-                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
-        """
-        return self.read(stream=fileobj, schema=schema, **kwargs)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
 
-    def read_from_path(self, filepath, schema, **kwargs):
         """
-        Reads data from file specified by `filepath`.
+        return self._parse_and_add_from_stream(stream=src, schema=schema, **kwargs)
+
+    def read_from_path(self, src, schema, **kwargs):
+        """
+        Reads data from file specified by ``filepath``.
 
         Parameters
         ----------
@@ -341,19 +402,19 @@ class Readable(object):
 
         Returns
         -------
-        n : :py:class:`tuple` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - :class:`Tree`: **undefined**
-                - :class:`TreeList`: number of trees
-                - :class:`CharacterMatrix`: number of sequences
-                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        with open(filepath, "r", newline=None) as fsrc:
-            return self.read(stream=fsrc, schema=schema, **kwargs)
+        with open(src, "r", newline=None) as fsrc:
+            return self._parse_and_add_from_stream(stream=fsrc, schema=schema, **kwargs)
 
-    def read_from_string(self, src_str, schema, **kwargs):
+    def read_from_string(self, src, schema, **kwargs):
         """
         Reads a string.
 
@@ -371,19 +432,19 @@ class Readable(object):
 
         Returns
         -------
-        n : :py:class:`tuple` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - :class:`Tree`: **undefined**
-                - :class:`TreeList`: number of trees
-                - :class:`CharacterMatrix`: number of sequences
-                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        s = StringIO(src_str)
-        return self.read(stream=s, schema=schema, **kwargs)
+        s = StringIO(src)
+        return self._parse_and_add_from_stream(stream=s, schema=schema, **kwargs)
 
-    def read_from_url(self, url, schema, **kwargs):
+    def read_from_url(self, src, schema, **kwargs):
         """
         Reads a URL source.
 
@@ -401,53 +462,166 @@ class Readable(object):
 
         Returns
         -------
-        n : :py:class:`tuple` [integer]
+        n : ``tuple`` [integer]
             A value indicating size of data read, where "size" depends on
             the object:
 
-                - :class:`Tree`: **undefined**
-                - :class:`TreeList`: number of trees
-                - :class:`CharacterMatrix`: number of sequences
-                - :class:`DataSet`: :class:`tuple`(number of taxon namespaces, number of tree lists, number of matrices)
+                - |Tree|: **undefined**
+                - |TreeList|: number of trees
+                - |CharacterMatrix|: number of sequences
+                - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        src_str = urlio.read_url(url)
+        src_str = urlio.read_url(src)
         s = StringIO(src_str)
-        return self.read(stream=s, schema=schema, **kwargs)
+        return self._parse_and_add_from_stream(stream=s, schema=schema, **kwargs)
 
 ##############################################################################
-## Writeable
+## NonMultiReadable
 
-class Writeable(object):
+class NonMultiReadable(object):
+    """
+    Mixin to enforce transition from DendroPy 3 to DendroPy 4 API
+    """
+
+    def error(self, funcname):
+        read_from_func = funcname
+        get_from_func = funcname.replace("read", "get")
+        raise TypeError(("\n".join((
+                "The '{classname}' class no longer supports           ",
+                "(re-)population by re-reading data from an external  ",
+                "source. Instantiate a new object using, for example, ",
+                "'{classname}.{get_from_func}()' and bind it to",
+                "the variable name instead. That is, instead of:",
+                "",
+                "    x.{read_from_func}(...)",
+                "",
+                "use:",
+                "",
+                "    x = {classname}.{get_from_func}(...)",
+                "",
+                "",
+                ))).format(classname=self.__class__.__name__, get_from_func=get_from_func, read_from_func=read_from_func))
+    def read(self, stream, schema, **kwargs):
+        raise NotImplementedError()
+    def read_from_stream(self, fileobj, schema, **kwargs):
+        self.error("read_from_stream")
+    def read_from_path(self, filepath, schema, **kwargs):
+        self.error("read_from_path")
+    def read_from_string(self, src_str, schema, **kwargs):
+        self.error("read_from_string")
+    def read_from_url(self, url, schema, **kwargs):
+        self.error("read_from_url")
+
+##############################################################################
+## Serializable
+
+class Serializable(object):
     """
     Mixin class which all classes that require serialization should subclass.
     """
 
-    def write(self, stream, schema, **kwargs):
+    def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
-        Writes the object to the file-like object `stream` in `schema`
+        Writes the object to the file-like object ``stream`` in ``schema``
         schema.
         """
         raise NotImplementedError
 
+    def _write_to(self, **kwargs):
+        """
+        Write this object to an external resource by dispatching calls to more
+        specialized ``write_to_*`` methods. Implementing classes will have a
+        publically-exposed method, ``write()``, that wraps a call to this
+        method. This allows for class-specific documentation of keyword
+        arguments. E.g.::
+
+            def write(self, **kwargs):
+                '''
+                ... (documentation) ...
+                '''
+                return Serializable._write_to(self, **kwargs)
+
+        """
+        try:
+            dest_type, dest, schema = _extract_serialization_target_keyword(kwargs, "Destination")
+        except Exception as e:
+            raise e
+        if dest_type == "file":
+            return self.write_to_stream(dest=dest, schema=schema, **kwargs)
+        elif dest_type == "path":
+            return self.write_to_path(dest=dest, schema=schema, **kwargs)
+        else:
+            raise ValueError("Unsupported source type: {}".format(dest_type))
+
+    def write(self, **kwargs):
+        """
+        Writes out ``self`` in ``schema`` format.
+
+        **Mandatory Destination-Specification Keyword Argument (Exactly One of the Following Required):**
+
+            - **file** (*file*) -- File or file-like object opened for writing.
+            - **path** (*str*) -- Path to file to which to write.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data. See
+              "|Schemas|" for more details.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is formatted, and supported
+            argument names and values depend on the schema as specified by the
+            value passed as the "``schema``" argument. See "|Schemas|" for more
+            details.
+
+        Examples
+        --------
+
+        ::
+
+                d.write(path="path/to/file.dat",
+                        schema="nexus",
+                        preserve_underscores=True)
+                f = open("path/to/file.dat")
+                d.write(file=f,
+                        schema="nexus",
+                        preserve_underscores=True)
+
+        """
+        return Serializable._write_to(self, **kwargs)
+
     def write_to_stream(self, dest, schema, **kwargs):
         """
-        Writes to file-like object `dest`.
+        Writes to file-like object ``dest``.
         """
-        return self.write(stream=dest, schema=schema, **kwargs)
+        return self._format_and_write_to_stream(stream=dest, schema=schema, **kwargs)
 
     def write_to_path(self, dest, schema, **kwargs):
         """
-        Writes to file specified by `dest`.
+        Writes to file specified by ``dest``.
         """
         with open(os.path.expandvars(os.path.expanduser(dest)), "w") as f:
-            return self.write(stream=f, schema=schema, **kwargs)
+            return self._format_and_write_to_stream(stream=f, schema=schema, **kwargs)
 
     def as_string(self, schema, **kwargs):
         """
         Composes and returns string representation of the data.
+
+        **Mandatory Schema-Specification Keyword Argument:**
+
+            - **schema** (*str*) -- Identifier of format of data. See
+              "|Schemas|" for more details.
+
+        **Optional Schema-Specific Keyword Arguments:**
+
+            These provide control over how the data is formatted, and supported
+            argument names and values depend on the schema as specified by the
+            value passed as the "``schema``" argument. See "|Schemas|" for more
+            details.
+
         """
         s = StringIO()
-        self.write(stream=s, schema=schema, **kwargs)
+        self._format_and_write_to_stream(stream=s, schema=schema, **kwargs)
         return s.getvalue()
 
 ##############################################################################
@@ -486,46 +660,46 @@ class Annotable(object):
             other,
             attribute_object_mapper=None):
         """
-        Copies annotations from `other`, which must be of :class:`Annotable`
+        Copies annotations from ``other``, which must be of |Annotable|
         type.
 
-        Copies are deep-copies, in that the :class:`Annotation` objects added
-        to the `annotation_set` :class:`AnnotationSet` collection of `self` are
-        independent copies of those in the `annotate_set` collection of
-        `other`. However, dynamic bound-attribute annotations retain references
-        to the original objects as given in `other`, which may or may not be
+        Copies are deep-copies, in that the |Annotation| objects added
+        to the ``annotation_set`` |AnnotationSet| collection of ``self`` are
+        independent copies of those in the ``annotate_set`` collection of
+        ``other``. However, dynamic bound-attribute annotations retain references
+        to the original objects as given in ``other``, which may or may not be
         desirable. This is handled by updated the objects to which attributes
-        are bound via mappings found in `attribute_object_mapper`.
-        In dynamic bound-attribute annotations, the `_value` attribute of the
+        are bound via mappings found in ``attribute_object_mapper``.
+        In dynamic bound-attribute annotations, the ``_value`` attribute of the
         annotations object (:attr:`Annotation._value`) is a tuple consisting of
-        "`(obj, attr_name)`", which instructs the :class:`Annotation` object to
-        return "`getattr(obj, attr_name)`" (via: "`getattr(*self._value)`")
-        when returning the value of the Annotation. "`obj`" is typically the object
-        to which the :class:`AnnotationSet` belongs (i.e., `self`). When a copy
-        of :class:`Annotation` is created, the object reference given in the
-        first element of the `_value` tuple of dynamic bound-attribute
+        "``(obj, attr_name)``", which instructs the |Annotation| object to
+        return "``getattr(obj, attr_name)``" (via: "``getattr(*self._value)``")
+        when returning the value of the Annotation. "``obj``" is typically the object
+        to which the |AnnotationSet| belongs (i.e., ``self``). When a copy
+        of |Annotation| is created, the object reference given in the
+        first element of the ``_value`` tuple of dynamic bound-attribute
         annotations are unchanged, unless the id of the object reference is fo
 
         Parameters
         ----------
 
-        `other` : :class:`Annotable`
+        ``other`` : |Annotable|
             Source of annotations to copy.
 
-        `attribute_object_mapper` : dict
-            Like the `memo` of `__deepcopy__`, maps object id's to objects. The
+        ``attribute_object_mapper`` : dict
+            Like the ``memo`` of ``__deepcopy__``, maps object id's to objects. The
             purpose of this is to update the parent or owner objects of dynamic
             attribute annotations.
-            If a dynamic attribute :class:`Annotation`
-            gives object `x` as the parent or owner of the attribute (that is,
+            If a dynamic attribute |Annotation|
+            gives object ``x`` as the parent or owner of the attribute (that is,
             the first element of the :attr:`Annotation._value` tuple is
-            `other`) and `id(x)` is found in `attribute_object_mapper`,
+            ``other``) and ``id(x)`` is found in ``attribute_object_mapper``,
             then in the copy the owner of the attribute is changed to
-            `attribute_object_mapper[id(x)]`.
-            If `attribute_object_mapper` is `None` (default), then the
+            ``attribute_object_mapper[id(x)]``.
+            If ``attribute_object_mapper`` is `None` (default), then the
             following mapping is automatically inserted: ``id(other): self``.
-            That is, any references to `other` in any :class:`Annotation`
-            object will be remapped to `self`.  If really no reattribution
+            That is, any references to ``other`` in any |Annotation|
+            object will be remapped to ``self``.  If really no reattribution
             mappings are desired, then an empty dictionary should be passed
             instead.
 
@@ -541,9 +715,9 @@ class Annotable(object):
 
     def deep_copy_annotations_from(self, other, memo=None):
         """
-        Note that all references to `other` in any annotation value (and
+        Note that all references to ``other`` in any annotation value (and
         sub-annotation, and sub-sub-sub-annotation, etc.) will be
-        replaced with references to `self`. This may not always make sense
+        replaced with references to ``self``. This may not always make sense
         (i.e., a reference to a particular entity may be absolute regardless of
         context).
         """
@@ -572,10 +746,10 @@ class Annotable(object):
     def __copy__(self, memo=None):
         """
         Cloning level: 0.
-        :attr:`annotation_set` of top-level object and member :class:`Annotation`
+        :attr:``annotation_set`` of top-level object and member |Annotation|
         objects are full, independent instances. All other member objects (include
         objects referenced by dynamically-bound attribute values of
-        :class:`Annotation` objects) are references.
+        |Annotation| objects) are references.
         All member objects are references, except for
         """
         if memo is None:
@@ -623,14 +797,14 @@ class Annotation(Annotable):
     """
     Metadata storage, composition and persistance, with the following attributes:
 
-        * `name`
-        * `value`
-        * `datatype_hint`
-        * `name_prefix`
-        * `namespace`
-        * `annotate_as_reference`
-        * `is_hidden`
-        * `real_value_format_specifier` - format specifier for printing or rendering
+        * ``name``
+        * ``value``
+        * ``datatype_hint``
+        * ``name_prefix``
+        * ``namespace``
+        * ``annotate_as_reference``
+        * ``is_hidden``
+        * ``real_value_format_specifier`` - format specifier for printing or rendering
           values as string, given in Python's format specification
           mini-language. E.g., '.8f', '4E', '>04d'.
 
@@ -710,9 +884,9 @@ class Annotation(Annotable):
 
     def clone(self, attribute_object_mapper=None):
         """
-        Essentially a shallow-copy, except that any objects in the `_value`
-        field with an `id` found in `attribute_object_mapper` will be replaced
-        with `attribute_object_mapper[id]`.
+        Essentially a shallow-copy, except that any objects in the ``_value``
+        field with an ``id`` found in ``attribute_object_mapper`` will be replaced
+        with ``attribute_object_mapper[id]``.
         """
         o = self.__class__.__new__(self.__class__)
         if attribute_object_mapper is None:
@@ -792,7 +966,7 @@ class AnnotationSet(container.OrderedSet):
                 #and self.target is other.target) # we consider two
                 # AnnotationSet objects equal even if their targets are
                 # different; this is because (a) the target is convenience
-                # artifact, so client code calls to `add_bound_attribute` do
+                # artifact, so client code calls to ``add_bound_attribute`` do
                 # not need to specify an owner, and (b) the target is not part
                 # of the contents of the AnnotationSet
 
@@ -869,7 +1043,7 @@ class AnnotationSet(container.OrderedSet):
         is_attribute : boolean, optional
             If value is passed as a tuple of (object, "attribute_name") and this
             is True, then actual content will be the result of calling
-            getattr(object, "attribute_name").
+            ``getattr(object, "attribute_name")``.
         annotate_as_reference : boolean, optional
             The value should be interpreted as a URI that points to content.
         is_hidden : boolean, optional
@@ -881,8 +1055,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : :class:`Annotation`
-            The new :class:`Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if not name_is_prefixed:
             if name_prefix is None and namespace is None:
@@ -949,12 +1123,12 @@ class AnnotationSet(container.OrderedSet):
             Do not write or print this annotation when writing data.
         owner_instance : object, optional
             The object whose attribute is to be used as the value of the
-            annotation. Defaults to `self.target`.
+            annotation. Defaults to ``self.target``.
 
         Returns
         -------
-        annotation : :class:`Annotation`
-            The new :class:`Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if annotation_name is None:
             annotation_name = attr_name
@@ -999,7 +1173,7 @@ class AnnotationSet(container.OrderedSet):
 
         Parameters
         ----------
-        citation : string or dict or :class:`BibTexEntry`
+        citation : string or dict or `BibTexEntry`
             The citation to be added. If a string, then it must be a
             BibTex-formatted entry. If a dictionary, then it must have
             BibTex fields as keys and contents as values.
@@ -1008,18 +1182,11 @@ class AnnotationSet(container.OrderedSet):
             only supports 'bibtex'.
         store_as : string, optional
             Specifies how to record the citation, with one of the
-            following strings as values:
-
-                "bibtex"
-                    A set of annotations, where each BibTex field becomes a
-                    separate annotation.
-                "prism"
-                    A set of of PRISM (Publishing Requirements for Industry
-                    Standard Metadata) annotations.
-                "dublin"
-                    A set of of Dublic Core annotations.
-
-            Defaults to "bibtex".
+            following strings as values: "bibtex" (a set of annotations, where
+            each BibTex field becomes a separate annotation); "prism"
+            (a set of PRISM [Publishing Requirements for Industry Standard
+            Metadata] annotations); "dublin" (A set of of Dublic Core
+            annotations). Defaults to "bibtex".
         name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
@@ -1029,8 +1196,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : :class:`Annotation`
-            The new :class:`Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         if read_as == "bibtex":
             return self.add_bibtex(citation=citation,
@@ -1052,24 +1219,17 @@ class AnnotationSet(container.OrderedSet):
 
         Parameters
         ----------
-        citation : string or dict or :class:`BibTexEntry`
+        citation : string or dict or `BibTexEntry`
             The citation to be added. If a string, then it must be a
             BibTex-formatted entry. If a dictionary, then it must have
             BibTex fields as keys and contents as values.
         store_as : string, optional
             Specifies how to record the citation, with one of the
-            following strings as values:
-
-                "bibtex"
-                    A set of annotations, where each BibTex field becomes a
-                    separate annotation.
-                "prism"
-                    A set of of PRISM (Publishing Requirements for Industry
-                    Standard Metadata) annotations.
-                "dublin"
-                    A set of of Dublic Core annotations.
-
-            Defaults to "bibtex".
+            following strings as values: "bibtex" (a set of annotations, where
+            each BibTex field becomes a separate annotation); "prism"
+            (a set of PRISM [Publishing Requirements for Industry Standard
+            Metadata] annotations); "dublin" (A set of of Dublic Core
+            annotations). Defaults to "bibtex".
         name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
@@ -1079,8 +1239,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        annotation : :class:`Annotation`
-            The new :class:`Annotation` created.
+        annotation : |Annotation|
+            The new |Annotation| created.
         """
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
@@ -1208,8 +1368,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : :class:`AnotationSet` or `None`
-            :class:`AnnotationSet` containing :class:`Annotation` objects that
+        results : |AnnotationSet| or `None`
+            |AnnotationSet| containing |Annotation| objects that
             match criteria, or `None` if no matching annotations found.
         """
         results = []
@@ -1234,8 +1394,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : :class:`Anotation` or `None`
-            First :class:`Annotation` object found that matches criteria, or
+        results : |Annotation| or `None`
+            First |Annotation| object found that matches criteria, or
             `None` if no matching annotations found.
         """
         if "default" in kwargs:
@@ -1253,22 +1413,22 @@ class AnnotationSet(container.OrderedSet):
     def get_value(self, name, default=None):
         """
         Returns the *value* of the *first* Annotation associated with
-        self.target which has `name` in the name field.
+        self.target which has ``name`` in the name field.
 
-        If no match is found, then `default` is returned.
+        If no match is found, then ``default`` is returned.
 
         Parameters
         ----------
         name : string
-            Name of :class:`Annotation` object whose value is to be returned.
+            Name of |Annotation| object whose value is to be returned.
 
         default : any, optional
-            Value to return if no matching :class:`Annotation` object found.
+            Value to return if no matching |Annotation| object found.
 
         Returns
         -------
-        results : :class:`Annotation` or `None`
-            `value` of first :class:`Annotation` object found that matches
+        results : |Annotation| or `None`
+            ``value`` of first |Annotation| object found that matches
             criteria, or `None` if no matching annotations found.
         """
         for a in self:
@@ -1279,19 +1439,19 @@ class AnnotationSet(container.OrderedSet):
     def require_value(self, name):
         """
         Returns the *value* of the *first* Annotation associated with
-        self.target which has `name` in the name field.
+        self.target which has ``name`` in the name field.
 
-        If no match is found, then `KeyError` is raised.
+        If no match is found, then KeyError is raised.
 
         Parameters
         ----------
         name : string
-            Name of :class:`Annotation` object whose value is to be returned.
+            Name of |Annotation| object whose value is to be returned.
 
         Returns
         -------
-        results : :class:`Annotation` or `None`
-            `value` of first :class:`Annotation` object found that matches
+        results : |Annotation| or `None`
+            ``value`` of first |Annotation| object found that matches
             criteria.
         """
         v = self.get_value(name, default=None)
@@ -1304,27 +1464,27 @@ class AnnotationSet(container.OrderedSet):
         Removes Annotation objects that match based on *all* criteria specified
         in keyword arguments.
 
-        Remove all annotation objects with `name` ==
+        Remove all annotation objects with ``name`` ==
         "color"::
 
             >>> tree.annotations.drop(name="color")
 
-        Remove all annotation objects with `namespace` ==
+        Remove all annotation objects with ``namespace`` ==
         "http://packages.python.org/DendroPy/"::
 
             >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/")
 
-        Remove all annotation objects with `namespace` ==
-        "http://packages.python.org/DendroPy/" *and* `name` == "color"::
+        Remove all annotation objects with ``namespace`` ==
+        "http://packages.python.org/DendroPy/" *and* ``name`` == "color"::
 
             >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/",
                     name="color")
 
-        Remove all annotation objects with `name_prefix` == "dc"::
+        Remove all annotation objects with ``name_prefix`` == "dc"::
 
             >>> tree.annotations.drop(name_prefix="dc")
 
-        Remove all annotation objects with `prefixed_name` == "dc:color"::
+        Remove all annotation objects with ``prefixed_name`` == "dc:color"::
 
             >>> tree.annotations.drop(prefixed_name="dc:color")
 
@@ -1335,8 +1495,8 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : :class:`AnotationSet`
-            :class:`AnnotationSet` containing :class:`Annotation` objects that
+        results : |AnnotationSet|
+            |AnnotationSet| containing |Annotation| objects that
             were removed.
         """
         to_remove = []

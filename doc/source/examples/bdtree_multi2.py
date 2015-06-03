@@ -2,12 +2,12 @@
 
 import random
 import dendropy
-from dendropy import treesim
+from dendropy.simulate import treesim
 
 def generate(mean, sd, num_periods):
     tree = dendropy.Tree()
     for i in range(num_periods):
-        tree = treesim.birth_death(birth_rate=random.gauss(mean, sd),
+        tree = treesim.birth_death_tree(birth_rate=random.gauss(mean, sd),
                                    death_rate=random.gauss(mean, sd),
                                    max_time=random.randint(1,5),
                                    tree=tree,
@@ -17,4 +17,4 @@ def generate(mean, sd, num_periods):
     return tree
 
 tree = generate(0.1, 0.01, 100)
-print(tree.as_string('newick'))
+print(tree.as_string(schema='newick'))

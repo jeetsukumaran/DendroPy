@@ -45,7 +45,8 @@ class DataError(Exception):
         Exception.__init__(self)
         self.line_num = line_num
         self.col_num = col_num
-        self.msg = message
+        self.message = message
+        self.stream = stream
         self.filename = None
         self.decorate_with_name(filename=filename, stream=stream)
 
@@ -68,7 +69,7 @@ class DataError(Exception):
             l =  " on line {}".format(self.line_num)
         if self.col_num is not None:
             c =  " at column {}".format(self.col_num)
-        return "Error parsing data source{}{}{}: {}".format(f, l, c, self.msg)
+        return "Error parsing data source{}{}{}: {}".format(f, l, c, self.message)
 
 class DataParseError(DataError):
 

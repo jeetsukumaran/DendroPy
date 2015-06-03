@@ -10,9 +10,9 @@ categories = {
     "D" : "N/A",
     "E" : "N/A"
 }
-tree = dendropy.Tree.get_from_string(
-        "(A,(B,(C,(D,E))));",
-        "newick")
+tree = dendropy.Tree.get(
+        data="(A,(B,(C,(D,E))));",
+        schema="newick")
 for taxon in tree.taxon_namespace:
     taxon.category = categories[taxon.label]
     taxon.annotations.add_bound_attribute("category")
@@ -30,5 +30,5 @@ for node in tree.postorder_node_iter():
             node.taxon.category = "small"
         elif node.pop_size >= 2000:
             node.taxon.category = "tiny"
-print tree.as_string("nexml")
+print tree.as_string(schema="nexml")
 

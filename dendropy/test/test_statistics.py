@@ -22,14 +22,14 @@ Tests statistical routines.
 
 import unittest
 from dendropy.test.support import dendropytest
-from dendropy.mathlib import statistics
+from dendropy.calculate import statistics
 from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
 
 class HpdCalculationTests(dendropytest.ExtendedTestCase):
     """
-    Test reference values as given by `hpd.emp`, in the "TeachingDemos" package
+    Test reference values as given by ``hpd.emp``, in the "TeachingDemos" package
     of R.
     """
 

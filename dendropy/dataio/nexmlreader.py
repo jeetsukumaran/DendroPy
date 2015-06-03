@@ -227,17 +227,27 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
 
     def __init__(self, **kwargs):
         """
-        See `ioservice.IOService.__init__` and `ioservice.DataReader.__init__` for
-        kwargs.
-        ``default_namespace`` allows for parsing of NeXML files with
-        different base or default namespaces.
+        Keyword Arguments
+        -----------------
+
+        default_namespace : str
+            Default namespace to use for elements.
+        case_sensitive_taxon_labels: boolean, default: `False`
+            If `True`, then case is respected when matching taxon names.
+            Default is `False`: case is ignored.
+        ignore_unrecognized_keyword_arguments : boolean, default: `False`
+            If `True`, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is `False`: unsupported keyword
+            arguments will result in an error.
+
         """
         _AnnotationParser.__init__(self)
         ioservice.DataReader.__init__(self)
         self.default_namespace = kwargs.pop("default_namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
         self.case_sensitive_taxon_labels = kwargs.pop('case_sensitive_taxon_labels', False)
 
-        ### NOTE: following are not actually supported
+        ### NOTE: following are not actually supported.
+        ### They are here because some tests automatically add include them on calls.
         ### TODO: remove these keywords from generic tests
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)

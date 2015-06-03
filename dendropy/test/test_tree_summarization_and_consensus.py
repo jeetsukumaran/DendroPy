@@ -27,7 +27,7 @@ import random
 import itertools
 from dendropy.calculate import treecompare
 from dendropy.test.support import pathmap
-from dendropy.mathlib import statistics
+from dendropy.calculate import statistics
 from dendropy.test.support import dendropytest
 
 class TestConsensusTree(unittest.TestCase):

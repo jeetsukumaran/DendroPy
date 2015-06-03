@@ -32,14 +32,38 @@ class DocStringOnlyMethodDocumenter(autodoc.MethodDocumenter):
     objtype = "docstringonly"
 
     # do not indent the content
-    content_indent = ""
+    content_indent = "    "
 
     # do not add a header to the docstring
     def add_directive_header(self, sig):
         pass
 
+    # def add_line(self, line, source, *lineno):
+    #     """Append one line of generated reST to the output."""
+    #     print self.indent + line
+    #     self.directive.result.append(self.indent + line, source, *lineno)
+
+class KeywordArgumentsOnlyMethodDocumenter(autodoc.MethodDocumenter):
+    objtype = "keywordargumentsonly"
+    priority = 0 # do not override normal autodocumenter
+
+    # do not indent the content
+    content_indent = "    "
+
+    # do not add a header to the docstring
+    def add_directive_header(self, sig):
+        pass
+
+    def add_line(self, line, source, *lineno):
+        if ":Keyword Arguments:" in line:
+            line = line.replace(":Keyword Arguments:", "                   ")
+            self._emit_line = True
+        if getattr(self, "_emit_line", False):
+            self.directive.result.append(self.indent + line, source, *lineno)
+
 def setup(app):
-    app.add_autodocumenter(DocStringOnlyMethodDocumenter)
+#     app.add_autodocumenter(DocStringOnlyMethodDocumenter)
+    app.add_autodocumenter(KeywordArgumentsOnlyMethodDocumenter)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -90,7 +114,7 @@ napoleon_include_special_with_doc = True
 # napoleon_use_admonition_for_references = False
 # napoleon_use_ivar = False
 # napoleon_use_param = False
-# napoleon_use_rtype = False
+napoleon_use_rtype = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -133,7 +157,7 @@ exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-#default_role = None
+default_role = "any"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = False
@@ -155,7 +179,7 @@ pygments_style = 'sphinx'
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
 
-rst_epilog = """
+rst_prolog = """
 .. |js| replace:: Jeet Sukumaran
 .. _js: http://www.jeetworks.org/about
 .. |mth| replace:: Mark T. Holder
@@ -164,7 +188,7 @@ rst_epilog = """
 .. |DendroPy| replace:: DendroPy
 .. _DendroPy: http://www.dendropy.org/
 .. |dendropy_homepage_url| replace:: http://www.dendropy.org/
-.. |dendropy_tutorial_url| replace:: http://www.dendropy.org/tutorial/index.html
+.. |dendropy_primer_url| replace:: http://www.dendropy.org/primer/index.html
 .. |dendropy_library_url| replace:: http://www.dendropy.org/library/index.html
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
@@ -190,32 +214,54 @@ rst_epilog = """
 
 .. |dendropy_logo| replace:: /_static/dendropy_logo.png
 .. |dendropy_library_doc| replace:: /library/index
-.. |dendropy_tutorial_doc| replace:: /tutorial/index
-.. |sumtrees_doc| replace:: /scripts/sumtrees
+.. |dendropy_primer_doc| replace:: /primer/index
+.. |sumtrees_doc| replace:: /programs/sumtrees
 
-.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
-.. |dendropy_copyright| replace:: **Copyright 2009-2010 Jeet Sukumaran and Mark T. Holder**
 .. |dendropy_announce| replace:: DendroPy Announcements
 .. _dendropy_announce: http://groups.google.com/group/dendropy-announce
 .. |dendropy_users| replace:: DendroPy Users
 .. _dendropy_users: http://groups.google.com/group/dendropy-users
+.. |dendropy_issues| replace:: DendroPy Issues
+.. _dendropy_issues: https://github.com/jeetsukumaran/DendroPy/issues
 
 .. |Taxon| replace:: :class:`~dendropy.datamodel.taxonmodel.Taxon`
 .. |TaxonNamespace| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespace`
+.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
 .. |Tree| replace:: :class:`~dendropy.datamodel.treemodel.Tree`
-.. |TreeList| replace:: :class:`~dendropy.datamodel.treemodel.TreeList`
 .. |Node| replace:: :class:`~dendropy.datamodel.treemodel.Node`
 .. |Edge| replace:: :class:`~dendropy.datamodel.treemodel.Edge`
-.. |TaxonNamespaceMapping| replace:: :class:`~dendropy.datamodel.taxonmodel.TaxonNamespaceMapping`
+.. |Bipartition| replace:: :class:`~dendropy.datamodel.treemodel.Bipartition`
+.. |TreeList| replace:: :class:`~dendropy.datamodel.treecollectionmodel.TreeList`
+.. |TreeArray| replace:: :class:`~dendropy.datamodel.treecollectionmodel.TreeArray`
+.. |SplitDistribution| replace:: :class:`~dendropy.datamodel.treecollectionmodel.SplitDistribution`
+.. |SplitDistributionSummarizer| replace:: :class:`~dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer`
 .. |DataSet| replace:: :class:`~dendropy.datamodel.datasetmodel.DataSet`
-.. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmodel.CharacterMatrix`
+.. |StateIdentity| replace:: :class:`~dendropy.datamodel.charstatemodel.StateIdentity`
+.. |StateAlphabet| replace:: :class:`~dendropy.datamodel.charstatemodel.StateAlphabet`
+.. |CharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterMatrix`
 .. |DnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix`
 .. |RnaCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix`
 .. |ProteinCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix`
+.. |InfiniteSitesCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix`
+.. |RestrictionSitesCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix`
 .. |StandardCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix`
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix`
-.. |CharacterDataVector| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataVector`
-.. |CharacterDataCell| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataCell`
+.. |CharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterDataSequence`
+.. |ContinuousCharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.ContinuousCharacterDataSequence`
+.. |DnaCharacterDataSequence| replace:: :class:`~dendropy.datamodel.charmatrixmodel.DnaCharacterDataSequence`
+.. |CharacterType| replace:: :class:`~dendropy.datamodel.charmatrixmodel.CharacterType`
+.. |Annotation| replace:: :class:`~dendropy.datamodel.basemodel.Annotation`
+.. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
+.. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
+
+.. |get| replace::  :py:meth:`get`
+.. |put| replace::  :py:meth:`put`
+.. |read| replace::  :py:meth:`read`
+.. |write| replace::  :py:meth:`write`
+
+.. |get_from_methods| replace::  :py:meth:`get_from_*() <get_from_*>`
+.. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
+.. |write_to_methods| replace::  :py:meth:`write_to_*() <read_from_*>`
 
 .. |True| replace:: `True`
 .. |False| replace:: `False`
@@ -229,15 +275,27 @@ rst_epilog = """
 .. _SeqGen: http://tree.bio.ed.ac.uk/software/seqgen/
 .. |GenBank| replace:: GenBank
 .. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
+
+.. |Schemas| replace:: :doc:`/schemas/index`
+.. |FASTA| replace:: :doc:`/schemas/fasta`
+.. |Newick| replace:: :doc:`/schemas/newick`
+.. |Nexus| replace:: :doc:`/schemas/nexus`
+.. |NeXML| replace:: :doc:`/schemas/nexml`
+.. |Phylip| replace:: :doc:`/schemas/phylip`
+
 """
 
-_source_archive_url = """
+rst_prolog += """\
 .. |dendropy_source_archive_url| replace:: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
 .. |dendropy_source_archive| replace:: DendroPy source code archive
 .. _dendropy_source_archive: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
 """ % (version, version)
 
-rst_epilog += _source_archive_url
+rst_prolog += """\
+.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
+.. |dendropy_copyright| replace:: Copyright {copyright}. All rights reserved.
+.. |
+""".format(copyright=copyright)
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -262,7 +320,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/dendropy_logo.png"
+# html_logo = "_static/dendropy_logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -289,7 +347,7 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    "**" : ["searchbox.html", "localtoc.html", "relations.html", "side_supplemental.html"],
+    "**" : ["logo.html", "searchbox.html", "localtoc.html", "relations.html", "side_supplemental.html"],
 }
 
 # Additional templates that should be rendered to pages, maps page names to
@@ -349,11 +407,11 @@ latex_elements = {
 latex_documents = [
   ('index', 'DendroPy.tex', u'DendroPy Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
-  ('tutorial/index', 'DendroPy-Tutorial.tex', u'DendroPy Tutorial',
+  ('primer/index', 'DendroPy-Primer.tex', u'DendroPy Primer',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
   ('library/index', 'DendroPy-Library-API.tex', u'DendroPy Library API Reference',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
-  ('scripts/sumtrees', 'DendroPy-SumTrees.tex', u'SumTrees User Manual',
+  ('programs/sumtrees', 'DendroPy-SumTrees.tex', u'SumTrees User Manual',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
 ]
 
@@ -387,9 +445,9 @@ man_pages = [
     #  [u'Jeet Sukumaran and Mark T. Holder'], 1),
     ('library/index', 'dendropy', u'DendroPy Library API Reference',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
-    ('tutorial/index', 'dendropy-tutorial', u'DendroPy Tutorial',
+    ('primer/index', 'dendropy-primer', u'DendroPy Primer',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
-    ('scripts/sumtrees', 'sumtrees', u'SumTrees User Manual',
+    ('programs/sumtrees', 'sumtrees', u'SumTrees User Manual',
      [u'Jeet Sukumaran and Mark T. Holder'], 1),
 ]
 
@@ -406,10 +464,10 @@ texinfo_documents = [
   ('library/index', 'DendroPy', u'DendroPy Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
-  ('tutorial/index', 'DendroPy-Tutorial', u'DendroPy Tutorial',
+  ('primer/index', 'DendroPy-Primer', u'DendroPy Primer',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
-  ('scripts/sumtrees', 'SumTrees', u'SumTrees Documentation',
+  ('programs/sumtrees', 'SumTrees', u'SumTrees Documentation',
    u'Jeet Sukumaran and Mark T. Holder', 'DendroPy', 'Python library for phylogenetic computing',
    'Miscellaneous'),
 ]
@@ -433,7 +491,7 @@ texinfo_documents = [
 epub_title = u'DendroPy'
 epub_author = u'Jeet Sukumaran and Mark T. Holder'
 epub_publisher = u'Jeet Sukumaran and Mark T. Holder'
-epub_copyright = u'2014, Jeet Sukumaran and Mark T. Holder'
+epub_copyright = u'2015, Jeet Sukumaran and Mark T. Holder'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'DendroPy'

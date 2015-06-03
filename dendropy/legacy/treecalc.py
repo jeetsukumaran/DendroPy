@@ -18,8 +18,8 @@
 
 """
 DEPRECATED IN DENDROPY 4: USE
-:class:`dendropy.calculate.treecompare`,:class:`dendropy.calculate.treemeasure`,
-or :class:`dendropy.calculate.treescore`,
+`dendropy.calculate.treecompare`,`dendropy.calculate.treemeasure`,
+or `dendropy.calculate.treescore`,
 """
 
 import dendropy

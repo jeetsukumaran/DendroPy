@@ -19,7 +19,10 @@
 """
 This module provides a convenient interface that aggregates, wraps, and/or
 implements functions and classes that simulate trees under various
-models and processes.
+models and processes. This module just exposes these function and classes under
+the ``dendropy.simulate.treesim`` namespace. The actual functions and classes
+are defined under the the appropriate model namespace in the ``dendropy.model``
+sub-package.
 """
 
 import dendropy
@@ -36,3 +39,13 @@ from dendropy.model.coalescent import mean_kingman_tree
 from dendropy.model.coalescent import constrained_kingman_tree
 from dendropy.model.treeshape import star_tree
 
+## Required for Sphix auto-documentation of this module
+__all__ = [
+    "birth_death_tree",
+    "discrete_birth_death_tree",
+    "contained_coalescent_tree",
+    "pure_kingman_tree",
+    "mean_kingman_tree",
+    "constrained_kingman_tree",
+    "star_tree",
+    ]

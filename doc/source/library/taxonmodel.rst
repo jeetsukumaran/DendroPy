@@ -1,6 +1,6 @@
-**************************************************
-:mod:`dendropy.datamodel.taxonmodel` -- Taxon Data
-**************************************************
+**********************************************************************************
+:mod:`dendropy.datamodel.taxonmodel`: Taxonomic Namespace Reference and Management
+**********************************************************************************
 
 .. module:: dendropy.datamodel.taxonmodel
 
@@ -15,4 +15,9 @@ The :class:`TaxonNamespace` Class
 The :class:`Taxon` Class
 ========================
 .. autoclass:: dendropy.datamodel.taxonmodel.Taxon
+    :members:
+
+The :class:`TaxonNamespaceAssociated` Class
+===========================================
+.. autoclass:: dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated
     :members:

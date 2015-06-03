@@ -46,12 +46,12 @@ class NexusTreeDataYielder(
             a string (``isinstance(i,str) == True``), then it is assumed to be
             a path to a file. Otherwise, the source is assumed to be a file-like
             object.
-        taxon_namespace : :class:`TaxonNamespace` instance
+        taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
         \*\*kwargs : keyword arguments
-            These will be passed directly to the base :class:`nexusreader.NexusReader`
-            class. See :class:`nexusreader.NexusReader` for details.
+            These will be passed directly to the base `nexusreader.NexusReader`
+            class. See `nexusreader.NexusReader` for details.
         """
         ioservice.TreeDataYielder.__init__(self,
                 files=files,

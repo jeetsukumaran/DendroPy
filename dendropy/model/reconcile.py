@@ -43,50 +43,50 @@ class ContainingTree(dendropy.Tree):
             ignore_root_deep_coalescences=True,
             **kwargs):
         """
-        __init__ converts `self` to ContainingTree class, embedding the trees
+        __init__ converts ``self`` to ContainingTree class, embedding the trees
         given in the list, ``contained_trees.``
 
 
         Mandatory Arguments:
 
             ``containing_tree``
-                A ``Tree`` or ``Tree``-like object that describes the topological
+                A |Tree| or |Tree|-like object that describes the topological
                 constraints or conditions of the containing tree (e.g., species,
                 host, or biogeographical area trees).
 
             ``contained_taxon_namespace``
-                A ``TaxonNamespace`` object that will be used to manage the taxa of
+                A |TaxonNamespace| object that will be used to manage the taxa of
                 the contained trees.
 
             ``contained_to_containing_taxon_map``
-                A ``TaxonNamespaceMapping`` object mapping ``Taxon`` objects in the
-                contained ``TaxonNamespace`` to corresponding ``Taxon`` objects in the
+                A |TaxonNamespaceMapping| object mapping |Taxon| objects in the
+                contained |TaxonNamespace| to corresponding |Taxon| objects in the
                 containing tree.
 
         Optional Arguments:
 
             ``contained_trees``
-                An iterable container of ``Tree`` or ``Tree``-like objects that
+                An iterable container of |Tree| or |Tree|-like objects that
                 will be contained into ``containing_tree``; e.g. gene or
                 parasite trees.
 
             ``fit_containing_edge_lengths``
-                If ``True`` [default], then the branch lengths of
+                If `True` [default], then the branch lengths of
                 ``containing_tree`` will be adjusted to fit the contained tree
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
 
             ``collapse_empty_edges``
-                If ``True`` [default], after edge lengths are adjusted,
+                If `True` [default], after edge lengths are adjusted,
                 zero-length branches will be collapsed.
 
             ``ultrametricity_precision``
-                If ``False`` [default], then trees will not be checked for
+                If `False` [default], then trees will not be checked for
                 ultrametricity. Otherwise this is the threshold within which
                 all node to tip distances for sister nodes must be equal.
 
             ``ignore_root_deep_coalescences``
-                If ``True`` [default], then deep coalescences in the root will
+                If `True` [default], then deep coalescences in the root will
                 not be counted.
 
         Other Keyword Arguments: Will be passed to Tree().
@@ -128,11 +128,11 @@ class ContainingTree(dendropy.Tree):
 
     def _set_contained_to_containing_taxon_map(self, contained_to_containing_taxon_map):
         """
-        Sets mapping of ``Taxon`` objects of the genes/parasite/etc. to that of
+        Sets mapping of |Taxon| objects of the genes/parasite/etc. to that of
         the population/species/host/etc.
         Creates mapping (e.g., species to genes) and decorates edges of self
-        with sets of both containing ``Taxon`` objects and the contained
-        ``Taxon`` objects that map to them.
+        with sets of both containing |Taxon| objects and the contained
+        |Taxon| objects that map to them.
         """
         if isinstance(contained_to_containing_taxon_map, dendropy.TaxonNamespaceMapping):
             if self._contained_taxon_namespace is not contained_to_containing_taxon_map.domain_taxon_namespace:
@@ -335,7 +335,7 @@ class ContainingTree(dendropy.Tree):
         conditional on self.
 
             ``rng``
-                Random number generator to use. If ``None``, the default will
+                Random number generator to use. If `None`, the default will
                 be used.
 
             ``edge_pop_size_attr``
@@ -366,7 +366,7 @@ class ContainingTree(dendropy.Tree):
         conditional on self.
 
             ``rng``
-                Random number generator to use. If ``None``, the default will
+                Random number generator to use. If `None`, the default will
                 be used.
 
             ``edge_pop_size_attr``
@@ -384,7 +384,7 @@ class ContainingTree(dendropy.Tree):
         # corresponding nodes on gene tree, initially populated with leaf
         # nodes.
         contained_nodes = {}
-        for nd in self.leaf_iter():
+        for nd in self.leaf_node_iter():
             contained_nodes[nd] = []
             for gt in nd.edge.contained_taxa:
                 gn = dendropy.Node(taxon=gt)
@@ -400,7 +400,7 @@ class ContainingTree(dendropy.Tree):
                 else:
                     pop_size = default_pop_size
                 if len(contained_nodes[edge.head_node]) > 1:
-                    final = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
+                    final = coalescent.coalesce_nodes(nodes=contained_nodes[edge.head_node],
                             pop_size=pop_size,
                             period=None,
                             rng=rng,
@@ -414,7 +414,7 @@ class ContainingTree(dendropy.Tree):
                     pop_size = getattr(edge, edge_pop_size_attr)
                 else:
                     pop_size = default_pop_size
-                remaining = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
+                remaining = coalescent.coalesce_nodes(nodes=contained_nodes[edge.head_node],
                         pop_size=pop_size,
                         period=edge.length,
                         rng=rng,
@@ -532,10 +532,10 @@ def reconciliation_discordance(gene_tree, species_tree):
 
 def monophyletic_partition_discordance(tree, taxon_namespace_partition):
     """
-    Returns the number of deep coalescences on tree `tree` that would result
-    if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,
+    Returns the number of deep coalescences on tree ``tree`` that would result
+    if the taxa in ``tax_sets`` formed K mutually-exclusive monophyletic groups,
     where K = len(tax_sets)
-    `taxon_namespace_partition` == TaxonNamespacePartition
+    ``taxon_namespace_partition`` == TaxonNamespacePartition
     """
 
     tax_sets = taxon_namespace_partition.subsets()

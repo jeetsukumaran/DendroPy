@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -64,7 +64,7 @@ def show_splash(
         dest=sys.stderr,
         ):
     wrap_width = width - 2
-    dendropy_description = dendropy.description()
+    dendropy_description = dendropy.name()
     lines = []
     lines.append("^"+prog_name)
     lines.append("^"+prog_subtitle)

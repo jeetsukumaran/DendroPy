@@ -37,8 +37,8 @@ def bytes_to_text(s):
     Converts a byte string (as read from, e.g., standard input)
     to a text string.
 
-    In Python 3, this is from type `bytes` to `str`.
-    In Python 2, this is, confusingly, from type `str` to `unicode`.
+    In Python 3, this is from type ``bytes`` to ``str``.
+    In Python 2, this is, confusingly, from type ``str`` to ``unicode``.
 
     """
     s = codecs.decode(s, ENCODING)
@@ -69,9 +69,9 @@ def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=N
     """
     Given a list of taxa, returns a dictionary with the Taxon objects as
     keys and string labels as values, where the labels are guaranteed to
-    be unique. If `taxon_label_map` is pre-populated (as <Taxon> : 'label'),
+    be unique. If ``taxon_label_map`` is pre-populated (as <Taxon> : 'label'),
     then those labels will be used as the basis for the label composition,
-    otherwise the original taxon object label will be used. `max_label_len`
+    otherwise the original taxon object label will be used. ``max_label_len``
     can be used to restrict the maximum length of the labels.
     """
     if taxon_label_map is None:

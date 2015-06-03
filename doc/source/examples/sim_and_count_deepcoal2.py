@@ -1,25 +1,25 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import treesim
-from dendropy import reconcile
+from dendropy.simulate import treesim
+from dendropy.model import reconcile
 
 # simulation parameters and output
 num_reps = 10
 
 # population tree descriptions
-stepwise_tree_str = "[&R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000"
-frag_tree_str = "[&R](A:120000,B:120000,C:120000,D:120000):100000"
+stepwise_tree_str = "[&R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000;"
+frag_tree_str = "[&R](A:120000,B:120000,C:120000,D:120000):100000;"
 
 # taxa and trees
 containing_taxa = dendropy.TaxonNamespace()
-stepwise_tree = dendropy.Tree.get_from_string(
-        stepwise_tree_str,
-        "newick",
+stepwise_tree = dendropy.Tree.get(
+        data=stepwise_tree_str,
+        schema="newick",
         taxon_namespace=containing_taxa)
-frag_tree = dendropy.Tree.get_from_string(
-        frag_tree_str,
-        "newick",
+frag_tree = dendropy.Tree.get(
+        data=frag_tree_str,
+        schema="newick",
         taxon_namespace=containing_taxa)
 
 # taxon set association

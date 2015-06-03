@@ -33,7 +33,7 @@ class TaxonIdentity(compare_and_validate.Comparator, unittest.TestCase):
         self.t2 = Taxon("a")
 
     def test_equal(self):
-        # two distinct :class:`Taxon` objects are never equal, even if all
+        # two distinct |Taxon| objects are never equal, even if all
         # member values are the same.
         self.assertNotEqual(self.t1, self.t2)
 
@@ -717,10 +717,10 @@ class TaxonNamespaceIdentity(unittest.TestCase):
     #     self.assertEqual(self.tns1, self.tns2)
     #     self.tns1.annotations.add_new("hello", 0)
     #     self.tns2.annotations.add_new("hello", 0)
-    #     # not equal because each :class:`AnnotationSet` has a `target`
+    #     # not equal because each |AnnotationSet| has a ``target``
     #     # attribute that holds reference to the object being annotated. As
     #     # these the target objects are necessarily different (even if they
-    #     # evaluate being equal), the :class:`AnnotationSet` objects are not
+    #     # evaluate being equal), the |AnnotationSet| objects are not
     #     # considered equal, and thus the target objects that have the
     #     # AnnotationSets are not equal.
     #     self.assertNotEqual(self.tns1, self.tns2)
