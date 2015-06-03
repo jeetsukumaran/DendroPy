@@ -26,8 +26,7 @@ import os
 ###############################################################################
 # Identification
 
-from dendropy import __version__, revision, description
-__revision__ = revision()
+from dendropy import __version__, revision_description, description
 sys.stderr.write("-setup.py: {}\n".format(description()))
 
 ###############################################################################
@@ -125,10 +124,7 @@ long_description = long_description.replace("DendroPy-4.x.x", "DendroPy-{}".form
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-{}.tar.gz>`_""".format(__version__))
 
-if __revision__.is_available:
-    revision_text = " (revision: {}, {})".format(__revision__.commit_id, str(__revision__.commit_date))
-else:
-    revision_text = ""
+revision_text = revision_description()
 long_description = long_description + ("""\
 
 Current Release
