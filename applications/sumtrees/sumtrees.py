@@ -89,6 +89,7 @@ def _read_into_tree_array(
         info_message_func,
         error_message_func,
         log_frequency,
+        debug_mode,
         ):
     if not log_frequency:
         tree_array.read_from_files(
@@ -150,6 +151,8 @@ def _read_into_tree_array(
                     _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
                 current_tree_offset += 1
         except (Exception, KeyboardInterrupt) as e:
+            if debug_mode and not isinstance(e, KeyboardInterrupt):
+                raise
             e.exception_tree_source_name = tree_yielder.current_file_name
             e.exception_tree_offset = current_tree_offset
             raise e
@@ -172,6 +175,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
             log_frequency,
             messenger,
             messenger_lock,
+            debug_mode,
             ):
         multiprocessing.Process.__init__(self, name=name)
         self.work_queue = work_queue
@@ -203,6 +207,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
         self.tree_array.worker_name = self.name
         self.num_tasks_received = 0
         self.num_tasks_completed = 0
+        self.debug_mode = debug_mode
 
     def send_message(self, msg, level, wrap=True):
         if self.messenger is None:
@@ -258,6 +263,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
                         info_message_func=self.send_info,
                         error_message_func=self.send_error,
                         log_frequency=self.log_frequency,
+                        debug_mode=self.debug_mode,
                         )
             except (KeyboardInterrupt, Exception) as e:
                 e.worker_name = self.name
@@ -286,6 +292,7 @@ class TreeProcessor(object):
             num_processes,
             log_frequency,
             messenger,
+            debug_mode,
             ):
         self.is_source_trees_rooted = is_source_trees_rooted
         self.rooting_interpretation = dendropy.get_rooting_argument(is_rooted=self.is_source_trees_rooted)
@@ -296,6 +303,7 @@ class TreeProcessor(object):
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
+        self.debug_mode = debug_mode
 
     def info_message(self, msg, wrap=True, prefix=""):
         if self.messenger:
@@ -364,6 +372,7 @@ class TreeProcessor(object):
                 info_message_func=self.info_message,
                 error_message_func=self.error_message,
                 log_frequency=self.log_frequency,
+                debug_mode=self.debug_mode,
                 )
         return tree_array
 
@@ -423,7 +432,8 @@ class TreeProcessor(object):
                     ultrametricity_precision=self.ultrametricity_precision,
                     messenger=self.messenger,
                     messenger_lock=messenger_lock,
-                    log_frequency=self.log_frequency)
+                    log_frequency=self.log_frequency,
+                    debug_mode=self.debug_mode)
             tree_analysis_worker.start()
             workers.append(tree_analysis_worker)
 
@@ -736,7 +746,7 @@ def main():
                         )
                 ))
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
-    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq",
+    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq", "--min-clade-freq",
             type=float,
             default=constants.GREATER_THAN_HALF,
             metavar="#.##",
@@ -913,7 +923,7 @@ def main():
     #         help="Do not summarize edge lengths.")
 
     output_options = parser.add_argument_group("Output Options")
-    output_options.add_argument("-o","--output-tree-filepath",
+    output_options.add_argument("-o","--output-tree-filepath", "--output",
             metavar="FILEPATH",
             default=None,
             help="Path to output file (if not specified, will print to standard output).")
@@ -992,6 +1002,11 @@ def main():
             dest="trprobs_filepath",
             default=None,
             metavar="FILEPATH",
+            help=argparse.SUPPRESS,
+            )
+    deprecated_output_options.add_argument("--support-as-labels",
+            action="store_true",
+            default=None,
             help=argparse.SUPPRESS,
             )
     deprecated_output_options.add_argument("--extract-edges",
@@ -1345,6 +1360,7 @@ def main():
             num_processes=num_processes,
             log_frequency=args.log_frequency if not args.quiet else 0,
             messenger=messenger,
+            debug_mode=args.debug_mode,
             )
     analysis_time_start = datetime.datetime.now()
     # messenger.info("Processing of source trees starting at {}".format(
@@ -1400,6 +1416,10 @@ def main():
     ## Post-Processing
 
     ### post-analysis reports
+
+    if len(tree_array) == 0:
+        messenger.error("No trees retained for processing (is the burn-in too high?)")
+        sys.exit(1)
 
     _message_and_log("Total of {} trees analyzed for summarization:".format(len(tree_array)))
     if args.weighted_trees:
@@ -1543,6 +1563,12 @@ def main():
         _bulleted_message_and_log("Support values expressed as percentages")
     split_summarization_kwargs["support_as_percentages"] = args.support_as_percentages
     split_summarization_kwargs["support_label_decimals"] = args.support_label_decimals
+    if args.support_as_labels:
+        split_summarization_kwargs["set_support_as_node_label"] = True
+    if args.node_labels == "support":
+        split_summarization_kwargs["set_support_as_node_label"] = True
+    else:
+        split_summarization_kwargs["set_support_as_node_label"] = False
 
     if args.edge_length_summarization is None:
         if target_treefile:
@@ -1599,6 +1625,9 @@ def main():
                 tree=tree,
                 is_bipartitions_updated=True,
                 **split_summarization_kwargs)
+        if args.node_labels == "clear":
+            for nd in tree:
+                nd.label = None
 
     main_time_end = datetime.datetime.now()
 

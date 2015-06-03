@@ -332,8 +332,8 @@ def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULT
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
         by setting the ``ultrametricity_precision`` parameter. E.g., use
-        `ultrametricity_precision=0.01` for a more relaxed precision, down to
-        2 decimal places. Use `ultrametricity_precision=False` to disable
+        ``ultrametricity_precision=0.01`` for a more relaxed precision, down to
+        2 decimal places. Use ``ultrametricity_precision=False`` to disable
         checking of ultrametricity.
 
     Returns
@@ -370,8 +370,8 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
         not ultrametric. This error may be due to floating-point or numerical
         imprecision. You can set the precision of the ultrametricity validation
         by setting the ``ultrametricity_precision`` parameter. E.g., use
-        `ultrametricity_precision=0.01` for a more relaxed precision, down to
-        2 decimal places. Use `ultrametricity_precision=False` to disable
+        ``ultrametricity_precision=0.01`` for a more relaxed precision, down to
+        2 decimal places. Use ``ultrametricity_precision=False`` to disable
         checking of ultrametricity.
 
     Returns

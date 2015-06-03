@@ -12,12 +12,16 @@ The proportion of trees out of the samples in which a particular split is found 
 The samples that are the basis of the support can be distributed across multiple files, and a burn-in option allows for an initial number of trees in each file to be excluded from the analysis if they are not considered to be drawn from the true support distribution.
 
 The support for the splits will be mapped onto one or more target trees either in terms of node labels or branch lengths.
-The target trees can be supplied by yourself, or, if no target trees are given, then a majority-rule clade consensus tree will be constructed based on the samples given.
-In the latter case, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
+The target trees can be supplied by yourself, or, if no target trees are given, then a
+a *summary* tree can be constructed.
+This summary tree can be a Maximum Credibility Tree (i.e., a MCT, a tree that maximizes the product of the the clade posterior probabilities, also known as a Maximum Clade Credibility Tree or MCCT), the majority-rule clade consensus tree, or some other type.
+If a majority-rule consensus tree is selected, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
 
-.. versionadded:: 3.3.1 (with DendroPy 3.8.0)
+By default SumTrees will provide summaries of edge lengths (i.e., mean, median, standard deviation, range, 95% HPD, 5% and 95% quantiles, etc.) as special node comments. These can be visualized in `FigTree <http://tree.bio.ed.ac.uk/software/figtree/>`_ by, for example, checking "Node Labels", then selecting one of "length_mean", "length_median", "length_sd", "length_hpd95", etc.
+If the trees are ultrametric and the "``--summarize-node-ages``" flag is used, or edge lengths are set so that node ages on the output trees correspond to be mean or median of the node ages of the input trees ("``--edges=mean-age``" or "``--edges=median-age``"), then node ages will be summarized as well. In all cases, the flag "``--suppress-annotations``" will suppress calculation and output of these summaries.
 
-By default SumTrees will now provide summaries of edge lengths (i.e., mean, median, standard deviation, range, 95% HPD, 5% and 95% quantiles, etc.) as special node comments. These can be visualized in `FigTree <http://tree.bio.ed.ac.uk/software/figtree/>`_ by, for example, checking "Node Labels", then selecting one of "length_mean", "length_median", "length_sd", "length_hpd95", etc. If the trees are ultrametric and the "``--ultrametric``" flag is used, or edge lengths are set so that node ages on the output trees correspond to be mean or median of the node ages of the input trees ("``--edges=mean-age``" or "``--edges=median-age``"), then node ages will be summarized as well. In all cases, the flag "``--no-summary-metadata``" will suppress calculation and output of these summaries.
+If you are processing multiple source files and you have multiple cores available on your machine, you can specify the "``-M``" flag to use all the cores or, e.g., "``-m 4``" to use 4 cores.
+Using multiple cores will, of course, speed up processing of your files.
 
 Where to Find the Package
 =========================
@@ -33,75 +37,74 @@ with the main download page here:
 How to Install the Package
 ==========================
 
-The Easy Way
-------------
+DendroPy is fully easy-installable and can be installed using |pip|_::
 
-Simply type the following command in your shell/terminal::
+    $ pip install dendropy
 
-    sudo easy_install -U dendropy
+or |setuptools|_::
 
-And that is all it takes!
+    $ easy_install -U dendropy
 
-This requires you have |setuptools|_ already installed. If you get an error message about "``easy_install``" not being found, then you do *not* have |setuptools|_ installed, and you need to install it first.
-It is *highly recommended* that you use this method, even if it means that you have to pre-install |setuptools|_.
+if these are available on your system.
 
-The Not So Easy Way
--------------------
+These, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`/downloading`" section.
 
-Alternatively, you can install |DendroPy|_ yourself, by following these steps.
+Checking the Installation
+=========================
 
-1.  Download the latest release of |DendroPy|_ from:
+If the installation was successful, you should be able to type "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number)::
 
-    |dendropy_source_archive_url|
+    /==========================================================================\
+    |                                 SumTrees                                 |
+    |                     Phylogenetic Tree Summarization                      |
+    |                       Version 4.0.0 (Jan 31 2015)                        |
+    |                   By Jeet Sukumaran and Mark T. Holder                   |
+    |    Using: DendroPy 4.0.0.dev (DendroPy4-feea2b0, 2015-06-02 20:13:49)    |
+    +--------------------------------------------------------------------------+
+    |                                 Citation                                 |
+    |                                 ~~~~~~~~                                 |
+    | If any stage of your work or analyses relies on code or programs from    |
+    | this library, either directly or indirectly (e.g., through usage of your |
+    | own or third-party programs, pipelines, or toolkits which use, rely on,  |
+    | incorporate, or are otherwise primarily derivative of code/programs in   |
+    | this library), please cite:                                              |
+    |                                                                          |
+    |   Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for       |
+    |     phylogenetic computing. Bioinformatics 26: 1569-1571.                |
+    |                                                                          |
+    |   Sukumaran, J and MT Holder. SumTrees: Phylogenetic Tree Summarization. |
+    |     4.0.0 (Jan 31 2015). Available at                                    |
+    |     https://github.com/jeetsukumaran/DendroPy.                           |
+    |                                                                          |
+    | Note that, in the interests of scientific reproducibility, you should    |
+    | describe in the text of your publications not only the specific          |
+    | version of the SumTrees program, but also the DendroPy library used in   |
+    | your analysis. For your information, you are running DendroPy            |
+    | 4.0.0.dev (DendroPy4-feea2b0, 2015-06-02 20:13:49).                      |
+    \==========================================================================/
 
-#.  Expand the downloaded archive
+    usage: sumtrees.py [-i FORMAT] [-b BURNIN] [--force-rooted] [--force-unrooted]
+                    [-v] [--weighted-trees] [--preserve-underscores]
+                    [--taxon-name-file FILEPATH] [-t FILE] [-s SUMMARY-TYPE]
+                    [-f #.##] [--allow-unknown-target-tree-taxa]
+                    [--root-target-at-outgroup TAXON-LABEL]
+                    [--root-target-at-midpoint] [--set-outgroup TAXON-LABEL]
+                    [-e STRATEGY]
+                    [--force-minimum-edge-length FORCE_MINIMUM_EDGE_LENGTH]
+                    [--collapse-negative-edges] [--summarize-node-ages]
+                    [-l {support,keep,clear}] [--suppress-annotations] [-p]
+                    [-d #] [-o FILEPATH] [-F {nexus,newick,phylip,nexml}]
+                    [-x PREFIX] [--no-taxa-block]
+                    [--no-analysis-metainformation] [-c ADDITIONAL_COMMENTS]
+                    [-r] [-M] [-m NUM-PROCESSES] [-g LOG-FREQUENCY] [-q]
+                    [--ignore-missing-support] [-h] [--citation]
+                    [--usage-examples] [--describe]
+                    [TREE-FILEPATH [TREE-FILEPATH ...]]
 
-    This step varies depending on the operating system and the particular programs that you have installed.
-    In most cases, simply double-clicking on the file that you have downloaded should kick off the process.
-    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type:
+    Type 'sumtrees.py --help' for details on usage.
+    Type 'sumtrees.py --usage-examples' for examples of usage.
 
-        .. parsed-literal::
-
-            tar -xvzf DendroPy-|version|.tar.gz
-
-    For example, say you saved the downloaded file on your desktop.
-    Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive:
-
-        .. parsed-literal::
-
-            $ cd ~/Desktop
-            $ tar -xvzf DendroPy-|version|.tar.gz
-
-    One way or another, you should end up with a directory called "DendroPy-|version|" or something similar, which contains the entire Dendropy package.
-
-#.  Install the library
-
-    In the terminal shell, go to the directory of the package that you have just archived and type "``sudo python setup.py install``".
-    Continuing the example from above:
-
-        .. parsed-literal::
-
-            $ cd DendroPy-|version|
-            $ sudo python setup.py install
-
-    The library installation will automatically create an executable script called "``sumtrees.py``" and place it on your system path for you, so that you can call it from anywhere.
-
-#.  If the installation was successful, you should be able to type "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number):
-
-        .. parsed-literal::
-
-            ======================================================================
-            SumTrees - Phylogenetic Tree Split Support Summarization
-            Version 3.0.0 (Aug 22 2010)
-            By Jeet Sukumaran and Mark T. Holder
-            (using the DendroPy Phylogenetic Computing Library Version |version|)
-            ======================================================================
-
-            SumTrees: No sources of input trees specified. Please provide the path to at
-                      least one (valid and existing) file containing tree samples to
-                      summarize. See '--help' for other options.
-
-    You can now delete the original downloaded archive and unpacked directory if you want.
+You can now delete the original downloaded archive and unpacked directory if you want.
 
 How to Use the Program
 ======================
@@ -110,7 +113,7 @@ SumTrees is typically invoked by providing it a list of one or more tree files t
 
     $ sumtrees.py [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
 
-Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
+Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), a summary tree to use (e.g., "``-s mct``" or "``--summary-target=mct``" an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
 
 Full help on program usage and options is given by using the "``--help``" option::
 
@@ -122,18 +125,24 @@ Quick Recipes
 
 Summarization of Posterior Probabilities of Clades with a Consensus Tree
 ------------------------------------------------------------------------
-Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
+Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths being the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
+
+Summarization of Posterior Probabilities of Clades with a Maximum Credibility Tree (MCT)
+----------------------------------------------------------------------------------------
+Summarize a set of tree files using a tree in the input set that maximizes the product of clade support, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
+
+    $ sumtrees.py --summary-target=mct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -s mct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 Non-parametric Bootstrap Support of a Model Tree
 ------------------------------------------------
 Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --decimals=0 --percentages --output=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
-
 
 Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tree
 ----------------------------------------------------------------------------------
@@ -142,12 +151,12 @@ Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tr
 
 Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=mean-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
 
 To use the median age instead::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=median-age --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre -l -e median-age treefile1.tre treefile2.tre treefile3.tre
 
 Running in Parallel Mode
@@ -164,9 +173,9 @@ This will analyze each input source in its own independent process, with multipl
 Multiprocessing analysis is invoked by adding the "``-m``" or "``--multiprocessing``"  flag to the SumTrees command, and passing in the maximum number of processes to run in parallel.
 For example, if your machine has two cores, and you want to run the previous analyses using both of them, you would specify that SumTrees run in parallel mode with two processes by adding "``-m2``" or "``--multiprocessing=2``" to the SumTrees command invocation::
 
-    $ sumtrees.py --multiprocessing=2 --decimals=0 --percentages --output=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --multiprocessing=2 --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 You can specify as many processes as you want, up to the total number of tree support files passed as input sources.
@@ -195,11 +204,11 @@ This can be done in one of two ways, either by redirecting the screen output to 
 
 or by using the or "``--output``" option::
 
-    $ sumtrees.py --output=phylo.consensus.sumtrees phylo.tre
+    $ sumtrees.py --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
 
 If the files are in different directories, or you are not in the same directory as the files, you should use the full directory path specification::
 
-    $ sumtrees.py --output=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
+    $ sumtrees.py --output-tree-filepath=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
 
 More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be Newick), whether support is indicated in terms of proportions or percentages etc.
 All of these options are specified on the command line when invoking the program, with multiple options separated by spaces.
@@ -230,7 +239,7 @@ Note that even if you instruct SumTrees to report the support in terms of percen
 
 Again, if we want to actually save the results to the file, we should use the "``--output``" option::
 
-    $ sumtrees.py --output=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+    $ sumtrees.py --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
 
 Summarizing Non-Parametric Bootstrap Support of an Estimated Tree
@@ -282,18 +291,18 @@ Again, instead of displaying the tree to the screen we can save it directly to a
 
 or by using the "``-o``" or "``--output``" option::
 
-    $ sumtrees.py --ultrametric --output=phylo.trees.sumtrees --burnin=200 phylo.trees
+    $ sumtrees.py --ultrametric --output-tree-filepath=phylo.trees.sumtrees --burnin=200 phylo.trees
 
 We might also have split up our analysis into multiple independent runs, resulting in multiple MCMC tree sample files (e.g., "``phylo1.trees``", "``phylo2.trees``" and "``phylo3.trees``").
 We can ask SumTrees to summarize posterior probability from across all these runs, treating the first 200 trees in *each* sample file as a burn-in by typing the following::
 
-    $ sumtrees.py --ultrametric --output=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
+    $ sumtrees.py --ultrametric --output-tree-filepath=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
 
 Alternatively, we might be quite happy with the MCCT tree produced by BEAST, and in fact we want to see how the MCMC samples produced by Mr. Bayes map onto this tree (i.e., the posterior probability of the splits on the MCCT as given by the Mr. Bayes samples).
 To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples to be summarized, and use the "``-t``" or "``--target``" option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
 Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
 
-    $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.
+    $ sumtrees.py --target=phylo.beast.tree --output-tree-filepath=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.
 
 Summarizing Rooted and Ultrametric Trees
 ----------------------------------------
@@ -371,7 +380,7 @@ Other options as described above, can, of course be added as needed::
     $ sumtrees.py --multiprocessing=4 --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
     $ sumtrees.py -m 4 -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --multiprocessing=4 --burnin=200 --min-clade-freq=0.75 --output=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multiprocessing=4 --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
     $ sumtrees.py -m 4 -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Parallelization Strategy: Deciding on the Number of Processes

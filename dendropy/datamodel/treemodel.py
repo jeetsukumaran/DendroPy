@@ -4974,7 +4974,11 @@ class Tree(
                 node.age = first_child.age + first_child.edge.length
                 if not (ultrametricity_precision is None or ultrametricity_precision is False or ultrametricity_precision < 0):
                     for nnd in ch[1:]:
-                        ocnd = nnd.age + nnd.edge.length
+                        try:
+                            ocnd = nnd.age + nnd.edge.length
+                        except TypeError:
+                            nnd.edge.length = 0.0
+                            ocnd = nnd.age
                         d = abs(node.age - ocnd)
                         if  d > ultrametricity_precision:
                             # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))

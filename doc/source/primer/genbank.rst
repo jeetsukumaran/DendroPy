@@ -334,8 +334,8 @@ Adding the GenBank Record as an Attribute
 
 It is sometimes useful to maintain a handle on the original GenBank record in the |CharacterMatrix| resulting from "``generate_char_matrix()``".
 The "``set_taxon_attr``"  and "``set_seq_attr``" arguments of the "``generate_char_matrix()``" method allow you to this.
-The values supplied to these arguments should be strings that specify the name of the attribute that will be created on the |Taxon| or |CharacterDataVector| objects, respectively.
-The value of this attribute will be the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` that underlies the |Taxon| or |CharacterDataVector| sequence.
+The values supplied to these arguments should be strings that specify the name of the attribute that will be created on the |Taxon| or |CharacterDataSequence| objects, respectively.
+The value of this attribute will be the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` that underlies the |Taxon| or |CharacterDataSequence| sequence.
 For example::
 
     #! /usr/bin/env python
@@ -376,7 +376,7 @@ will result in::
 Annotating with GenBank Data and Metadata
 -----------------------------------------
 
-To persist the information in a the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object through serialization and deserialization, you can request that this information gets added as an  :class:`~dendropy.datamodel.basemodel.Annotation` (see ":doc:`Working with Metadata Annotations </primer/working_with_metadata_annotations>`") to the corresponding |Taxon| or |CharacterDataVector| object.
+To persist the information in a the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object through serialization and deserialization, you can request that this information gets added as an  :class:`~dendropy.datamodel.basemodel.Annotation` (see ":doc:`Working with Metadata Annotations </primer/working_with_metadata_annotations>`") to the corresponding |Taxon| or |CharacterDataSequence| object.
 
 Reference Annotation
 ....................
@@ -461,7 +461,7 @@ will result in::
 Full Annotation
 ...............
 
-Specifying "`add_full_annotation_to_taxa=True`" or "`add_full_annotation_to_seqs=True`" will result in the entire GenBank record being added as a set of annotations to the |Taxon| or |CharacterDataVector| object, respectively.
+Specifying "`add_full_annotation_to_taxa=True`" or "`add_full_annotation_to_seqs=True`" will result in the entire GenBank record being added as a set of annotations to the |Taxon| or |CharacterDataSequence| object, respectively.
 
 For example::
 
