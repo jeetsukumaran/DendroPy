@@ -144,32 +144,23 @@ Calculate support for nodes on a specific tree, "``best.tre``" as given by a set
     $ sumtrees.py --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
-Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tree
-----------------------------------------------------------------------------------
+Set Node Ages of Target or Summary Tree(s) to Mean/Median Node Age of Input Trees
+---------------------------------------------------------------------------------
 
-.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
+Summarize a set of ultrametric tree files using a 95% majority-rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths adjusted so the ages of internal nodes are the mean across all trees, dropping the first 200 trees in each file as a burn-in::
 
-Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees::
-
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
 
 To use the median age instead::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --support-as-labels --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -o result.tre -l -e median-age treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.tre treefile3.tre
 
 Running in Parallel Mode
 ------------------------
 
-.. versionadded:: DendroPy 3.6.0 / SumTrees 3.0.0
-
-.. note::
-
-    This feature is only available when running under Python 2.6 of greater.
-
-Starting with DendroPy version 3.6 (SumTrees version 3.0), and when running Python 2.6 or greater, you can run SumTrees in parallel mode.
-This will analyze each input source in its own independent process, with multiple processes running in parallel.
+Running in parallel mode will analyze each input source in its own independent process, with multiple processes running in parallel.
 Multiprocessing analysis is invoked by adding the "``-m``" or "``--multiprocessing``"  flag to the SumTrees command, and passing in the maximum number of processes to run in parallel.
 For example, if your machine has two cores, and you want to run the previous analyses using both of them, you would specify that SumTrees run in parallel mode with two processes by adding "``-m2``" or "``--multiprocessing=2``" to the SumTrees command invocation::
 
@@ -179,7 +170,13 @@ For example, if your machine has two cores, and you want to run the previous ana
     $ sumtrees.py -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 You can specify as many processes as you want, up to the total number of tree support files passed as input sources.
+If you want to use *all* the available cores on your machine, you can use the "``-M``" or "``--maximum-multiprocessing``" flag::
+
+    $ sumtrees.py --maximum-multiprocessing --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+
 If you specify fewer processes than input sources, then the files will be cycled through the processes.
+
 
 Primers and Examples
 ======================
@@ -188,7 +185,8 @@ At its most basic, you will need to supply SumTrees with the path to one or more
 
     $ sumtrees.py phylo.tre
 
-The above command will construct a 50% majority-rule consensus tree of the all trees found in the file "``phylo.tre``", with the internal node labels of the resulting consensus tree indicating the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
+As no target tree was provided and no summary tree type was specified, SumTrees will, by default construct ad 50% majority-rule clade consensus tree of all the trees found in the file "``phylo.tre``" as  the summarization target.
+The internal node labels of the resulting consensus tree will, by default, indicate the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
 
 If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files ("``phylo.run1.tre``", "``phylo.run2.tre``", "``phylo.run3.tre``", ...), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces::
 
@@ -202,7 +200,7 @@ This can be done in one of two ways, either by redirecting the screen output to 
 
     $ sumtrees.py phylo.tre > phylo.consensus.sumtrees
 
-or by using the or "``--output``" option::
+or by using the or "``--output-tree-filepath``" option::
 
     $ sumtrees.py --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
 
