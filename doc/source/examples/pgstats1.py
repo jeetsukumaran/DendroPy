@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy import popgenstat
+from dendropy.calculate import popgenstat
 
-seqs = dendropy.DnaCharacterMatrix.get_from_path("orti1994.nex", schema="nexus")
+seqs = dendropy.DnaCharacterMatrix.get(
+        path="orti1994.nex",
+        schema="nexus")
 p1 = []
 p2 = []
-for idx, t in enumerate(seqs.taxon_set):
+for idx, t in enumerate(seqs.taxon_namespace):
     if t.label.startswith('EPAC'):
         p1.append(seqs[t])
     else:

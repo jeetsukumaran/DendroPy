@@ -1,0 +1,28 @@
+#NEXUS
+
+begin taxa;
+	dimensions ntax=15;
+	taxlabels
+        a b c e f g h i j k l m n o p
+	;
+end;
+
+BEGIN TREES;
+    tree 'the first tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'the SECOND tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'The Third Tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+END;
+
+BEGIN TREES;
+    tree 'the first tree'  = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'the SECOND tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'The Third Tree'  = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+END;
+
+
+BEGIN TREES;
+    tree 'the first tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'the SECOND tree'= ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+    tree 'The Third Tree' = ((i:1,(j:2,k:3)e:4)b:5,((l:6,m:7)g:8,(n:9,(o:10,p:11)h:12)f:13)c:14)a:15;
+END;
+

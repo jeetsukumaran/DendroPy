@@ -1,11 +1,10 @@
-******************************************
-:mod:`dendropy.treesim` -- Tree Simulation
-******************************************
+**********************************************************************************************************
+:mod:`dendropy.simulate.treesim`: Unified Namespace Aggregating Functions and Classes for Tree Simulations
+**********************************************************************************************************
 
-.. module:: treesim
-
-.. toctree::
-    :maxdepth: 2
-
-.. automodule:: dendropy.treesim
+.. automodule:: dendropy.simulate.treesim
     :members:
+    :inherited-members:
+
+
+

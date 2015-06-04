@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -28,6 +28,7 @@ import dendropy
 import random
 
 from dendropy.utility.messaging import ConsoleMessenger
+from dendropy.utility import processio
 
 def get_messenger(verbosity=1):
     if verbosity == 0:
@@ -384,7 +385,7 @@ class RaxmlRunner(object):
 
     def _check_overwrite(self, path):
         if os.path.exists(path) and not self.replace:
-            ok = raw_input("Overwrite existing file '{}'? (y/n/all [n])? ".format(path))
+            ok = input("Overwrite existing file '{}'? (y/n/all [n])? ".format(path))
             if not ok:
                 return False
             ok = ok[0].lower()
@@ -406,11 +407,11 @@ class RaxmlRunner(object):
     # def _send_error(self, msg):
     #     self.messenger.send_info(msg, wrap=False)
 
-    def _write_dummy_seqs(self, taxon_set, out):
+    def _write_dummy_seqs(self, taxon_namespace, out):
         nchar = 19
-        out.write("{} {}\n".format(len(taxon_set), nchar))
+        out.write("{} {}\n".format(len(taxon_namespace), nchar))
         bases = ["A", "C", "G", "T"]
-        for idx, taxon in enumerate(taxon_set):
+        for idx, taxon in enumerate(taxon_namespace):
             base_seq = [random.choice(bases) for x in range(nchar)]
             out.write("{}    {}\n".format(taxon.label, "".join(base_seq)))
 
@@ -459,7 +460,7 @@ class RaxmlRunner(object):
             raxml_args=None):
 
         # set up taxa
-        taxa = char_matrix.taxon_set
+        taxa = char_matrix.taxon_namespace
 
         # create working directory
         self._create_working_dir()
@@ -491,7 +492,7 @@ class RaxmlRunner(object):
                 'GTRCAT',
                 '-s', raxml_seqs_filepath,
                 '-n', self.name,
-                '-p', str(random.randint(0, sys.maxint))] + raxml_args
+                '-p', str(random.randint(0, sys.maxsize))] + raxml_args
         # self._send_info("Executing: {}".format(" ".join(cmd)))
         if self.verbosity >= 2:
             stdout_pipe = None
@@ -503,7 +504,7 @@ class RaxmlRunner(object):
             stdout=stdout_pipe,
             stderr=stderr_pipe,
             cwd=self.working_dir_path)
-        stdout, stderr = p.communicate()
+        stdout, stderr = processio.communicate(p)
         if p.returncode != 0:
             sys.stderr.write("[RAxML run failed]:\n\n%s\n\n" % (" ".join(cmd)))
             sys.stdout.write(stdout)
@@ -517,10 +518,10 @@ class RaxmlRunner(object):
             sys.exit(1)
         best_tree = dendropy.Tree.get_from_path(raxml_best_tree_fpath,
                 "newick",
-                taxon_set=taxa)
+                taxon_namespace=taxa)
 
         # remap labels
-        for taxon in best_tree.taxon_set:
+        for taxon in best_tree.taxon_namespace:
             taxon.label = self.taxon_label_map[taxon.label]
 
         # # write results
@@ -535,20 +536,20 @@ class RaxmlRunner(object):
     def map_bipartitions(self, target_tree_fpath, bootstrap_trees_fpaths):
 
         # set up taxa
-        taxa = dendropy.TaxonSet()
+        taxa = dendropy.TaxonNamespace()
         taxon_label_map = {}
 
         # read target tree
         target_tree_fpath = self._expand_path(target_tree_fpath)
         # self._send_info("Reading target tree file: {}".format(target_tree_fpath))
-        target_tree = self._get_trees(target_tree_fpath, taxon_set=taxa)[0]
+        target_tree = self._get_trees(target_tree_fpath, taxon_namespace=taxa)[0]
 
         # read boostrap trees
         boot_trees = dendropy.TreeList()
         for fpath in bootstrap_trees_fpaths:
             fpath = self._expand_path(fpath)
             # self._send_info("Reading bootstrap tree file: {}".format(fpath))
-            self._get_trees(tree_filepath=fpath, tree_list=boot_trees, taxon_set=taxa)
+            self._get_trees(tree_filepath=fpath, tree_list=boot_trees, taxon_namespace=taxa)
         # self._send_info("Read: {} taxa, {} bootstrap trees".format(len(taxa), len(boot_trees)))
 
         # create working directory
@@ -606,7 +607,7 @@ class RaxmlRunner(object):
             stdout=stdout_pipe,
             stderr=stderr_pipe,
             cwd=self.working_dir_path)
-        stdout, stderr = p.communicate()
+        stdout, stderr = processio.communicate(p)
         if p.returncode != 0:
             self._send_error("RAxML run failed")
             if self.verbosity < 2:
@@ -622,7 +623,7 @@ class RaxmlRunner(object):
         mapped_tree = dendropy.Tree.get_from_path(raxml_mapped_tree_fpath, "newick")
 
         # remap labels
-        for taxon in mapped_tree.taxon_set:
+        for taxon in mapped_tree.taxon_namespace:
             taxon.label = taxon_label_map[taxon.label]
 
 #         # write results
@@ -664,7 +665,7 @@ class RaxmlRunner(object):
     #             stdin=subprocess.PIPE,
     #             stdout=subprocess.PIPE,
     #             stderr=subprocess.PIPE)
-    #     stdout, stderr = run.communicate()
+    #     stdout, stderr = processio.communicate(run)
     #     results = stdout.split("\n")
     #     if run.returncode:
     #         sys.stderr.write("\n*** ERROR FROM RAxML:\n")

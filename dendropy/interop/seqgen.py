@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -21,7 +21,10 @@ Wrappers for interacting with SeqGen. Originally part of PySeqGen.
 """
 
 import subprocess
-from cStringIO import StringIO
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
 import uuid
 import tempfile
 import socket
@@ -34,6 +37,7 @@ from optparse import OptionParser
 
 import dendropy
 from dendropy.utility.messaging import get_logger
+from dendropy.utility import processio
 _LOG = get_logger("interop.seqgen")
 
 HOSTNAME = socket.gethostname()
@@ -174,14 +178,14 @@ class SeqGen(object):
         # silent running
         args.append("-q")
         # we explicitly pass a random number seed on each call
-        args.append("-z%s" % self.rng.randint(0, sys.maxint))
+        args.append("-z%s" % self.rng.randint(0, sys.maxsize))
         # force nexus
         args.append("-on")
         # force one dataset at a time
         args.append("-n1")
         return args
 
-    def generate(self, trees, dataset=None, taxon_set=None, **kwargs):
+    def generate(self, trees, dataset=None, taxon_namespace=None, **kwargs):
         args=self._compose_arguments()
         tree_inputf = self.get_tempfile()
         trees.write_to_path(tree_inputf.name,
@@ -192,18 +196,16 @@ class SeqGen(object):
         args.append(tree_inputf.name)
         #_LOG.debug("seq-gen args: = %s" % " ".join(args))
         run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = run.communicate()
+        stdout, stderr = processio.communicate(run)
         if stderr or run.returncode != 0:
             raise RuntimeError("Seq-gen error: %s" % stderr)
-        if taxon_set is None:
-            taxon_set = trees.taxon_set
+        if taxon_namespace is None:
+            taxon_namespace = trees.taxon_namespace
         if dataset is None:
-            dataset = dendropy.DataSet(taxon_set=taxon_set, **kwargs)
-        results = StringIO(stdout)
-        #_LOG.debug('stderr = ' + stderr)
-        #_LOG.debug('stdout = ' + stdout)
-
-        dataset.read(results, "nexus")
+            dataset = dendropy.DataSet(**kwargs)
+            if taxon_namespace is not None:
+                dataset.attach_taxon_namespace(taxon_namespace)
+        dataset.read(data=stdout, schema="nexus")
         return dataset
 
 

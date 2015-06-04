@@ -1,12 +1,9 @@
-************************************************************
-:mod:`dendropy.reconcile` -- Tree Reconciliation and Fitting
-************************************************************
+*********************************************************************************
+:mod:`dendropy.model.reconcile`: Tree-Fitting (Gene/Species, Parasite/Host, etc.)
+*********************************************************************************
 
-.. module:: reconcile
-
-.. toctree::
-    :maxdepth: 2
-
-.. automodule:: dendropy.reconcile
+.. automodule:: dendropy.model.reconcile
     :members:
+
+
 

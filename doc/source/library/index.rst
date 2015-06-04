@@ -2,18 +2,58 @@
 DendroPy Library Reference
 ##########################
 
+
+.. contents::
+    :local:
+    :backlinks: none
+
+Data Model
+==========
+
 .. toctree::
     :maxdepth: 2
 
-    base.rst
-    taxon.rst
-    tree.rst
-    dataset.rst
-    char.rst
+    basemodel.rst
+    taxonmodel.rst
+    treemodel.rst
+    treecollectionmodel.rst
+    charstatemodel.rst
+    charmatrixmodel.rst
+    datasetmodel.rst
+
+Process Models
+==============
+
+.. toctree::
+    :maxdepth: 2
+
+    birthdeath.rst
     coalescent.rst
-    reconcile.rst
-    treecalc.rst
-    treemanip.rst
-    treesim.rst
     continuous.rst
-    genbank.rst
+    discrete.rst
+    parsimony.rst
+    reconcile.rst
+    treeshape.rst
+
+Calculations, Statistics, and Metrics
+=====================================
+
+.. toctree::
+    :maxdepth: 2
+
+    treemeasure.rst
+    treecompare.rst
+    treescore.rst
+    popgenstat.rst
+    probability.rst
+    statistics.rst
+
+Simulations
+===========
+
+.. toctree::
+    :maxdepth: 2
+
+    treesim.rst
+    popgensim.rst
+

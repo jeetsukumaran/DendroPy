@@ -10,11 +10,11 @@ Installing From the Python Package Index
 DendroPy is "easy_installable" directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_.
 If you have |pip|_ set up on your system, you can install the latest release of DendroPy by running::
 
-    $ sudo pip install dendropy
+    $ pip install dendropy
 
 Alternatively, if you have |setuptools|_ installed, you can run::
 
-    $ sudo easy_install -U dendropy
+    $ easy_install -U dendropy
 
 Source Download and Installation
 ================================

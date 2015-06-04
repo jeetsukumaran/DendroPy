@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -20,11 +20,17 @@
 Wrappers for interacting with GBIF.
 """
 
-from urllib import urlopen
-from dendropy.dataobject import base
-from dendropy.dataio import xmlparser
+import sys
+if sys.version_info.major < 3:
+    from urllib import urlencode
+    from urllib import urlopen
+else:
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
+from dendropy.datamodel import basemodel
+from dendropy.dataio import xmlprocessing
 
-class GbifXmlElement(xmlparser.XmlElement):
+class GbifXmlElement(xmlprocessing.XmlElement):
 
     GBIF_NAMESPACE = "http://portal.gbif.org/ws/response/gbif"
     TAXON_OCCURRENCE_NAMESPACE = "http://rs.tdwg.org/ontology/voc/TaxonOccurrence#"
@@ -35,7 +41,7 @@ class GbifXmlElement(xmlparser.XmlElement):
     def __init__(self, element, default_namespace=None):
         if default_namespace is None:
             default_namespace = GbifXmlElement.GBIF_NAMESPACE
-        xmlparser.XmlElement.__init__(self,
+        xmlprocessing.XmlElement.__init__(self,
                 element=element,
                 default_namespace=default_namespace)
 
@@ -103,7 +109,7 @@ class GbifDataProvenance(object):
 class GbifOccurrenceRecord(object):
 
     def parse_from_stream(stream):
-        xml_doc = xmlparser.XmlDocument(file_obj=stream,
+        xml_doc = xmlprocessing.XmlDocument(file_obj=stream,
                 subelement_factory=GbifXmlElement)
         gb_recs = []
         for txo in xml_doc.root.iter_taxon_occurrence():
@@ -194,7 +200,7 @@ class GbifOccurrenceRecord(object):
     #     else:
     #         is_attribute = False
     #         value = self.coordinates_as_string
-    #     annote = base.Annotation(
+    #     annote = basemodel.Annotation(
     #             name="pos",
     #             value=value,
     #             name_prefix=name_prefix,
@@ -208,7 +214,7 @@ class GbifOccurrenceRecord(object):
     #             value = (self, "uri")
     #         else:
     #             value = self.uri
-    #         subannote = base.Annotation(
+    #         subannote = basemodel.Annotation(
     #                 name="source",
     #                 value=value,
     #                 # name_prefix="dc",
@@ -231,7 +237,7 @@ class GbifOccurrenceRecord(object):
     #                 value = (self, attr[0])
     #             else:
     #                 value = getattr(self, attr[0])
-    #             subannote = base.Annotation(
+    #             subannote = basemodel.Annotation(
     #                     name=attr[1],
     #                     value=value,
     #                     name_prefix="dwc",
@@ -265,7 +271,7 @@ class GbifOccurrenceRecord(object):
         """
         # name_prefix="dwc",
         # namespace="http://rs.tdwg.org/dwc/terms/",
-        top_node = base.Annotation(
+        top_node = basemodel.Annotation(
                 name=name,
                 value=None,
                 name_prefix=name_prefix,
@@ -283,7 +289,7 @@ class GbifOccurrenceRecord(object):
                 value = (self, "uri")
             else:
                 value = self.uri
-            subannote = base.Annotation(
+            subannote = basemodel.Annotation(
                     name="source",
                     value=value,
                     # name_prefix="dc",
@@ -309,7 +315,7 @@ class GbifOccurrenceRecord(object):
             else:
                 value = getattr(self, attr[0])
                 is_attribute=False
-            subannote = base.Annotation(
+            subannote = basemodel.Annotation(
                     name=attr[1],
                     value=value,
                     datatype_hint=attr[2],
@@ -362,7 +368,7 @@ class GbifOccurrenceDb(GbifDb):
 
     def parse_list_keys(self, stream):
         keys = []
-        xml_doc = xmlparser.XmlDocument(file_obj=stream,
+        xml_doc = xmlprocessing.XmlDocument(file_obj=stream,
                 subelement_factory=GbifXmlElement)
         xml_root = xml_doc.root
         for txml in xml_root.iter_taxon_occurrence():
@@ -372,7 +378,7 @@ class GbifOccurrenceDb(GbifDb):
     def parse_occurrence_records(self, stream):
         occurrences = GbifOccurrenceRecord.parse_from_stream(stream)
         return occurrences
-    #     xml_doc = xmlparser.XmlDocument(file_obj=stream,
+    #     xml_doc = xmlprocessing.XmlDocument(file_obj=stream,
     #             subelement_factory=GbifXmlElement)
     #     xml_root = xml_doc.root
     #     gbif_recs = []

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nex:nexml
+    version="0.9"
+    xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+    xmlns="http://www.nexml.org/2009"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:nex="http://www.nexml.org/2009"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+    <otus id="d4368295640">
+        <otu id="d4368287056" label="t1" />
+        <otu id="d4368286736" label="t2" />
+        <otu id="d4368286992" label="t3" />
+        <otu id="d4368286928" label="t4" />
+        <otu id="d4368286864" label="t5" />
+        <otu id="d4368286800" label="t6" />
+        <otu id="d4368286672" label="t7" />
+        <otu id="d4368286544" label="t8" />
+        <otu id="d4368286224" label="t9" />
+        <otu id="d4368286480" label="t10" />
+        <otu id="d4368286416" label="t11" />
+        <otu id="d4368286352" label="t12" />
+    </otus>
+    <trees id="d4368297048" otus="d4368295640">
+        <tree id="d4368285968" label="Tree1" xsi:type="nex:FloatTree">
+            <node id="d4368285840" label="internal1" />
+            <node id="d4368215312" label="internal2" />
+            <node id="d4368216016" label="internal3" />
+            <node id="d4368215632" label="internal4" />
+            <node id="d4368215760" label="internal5" />
+            <node id="d4368215376" label="t9" otu="d4368286224" />
+            <node id="d4368215504" label="t12" otu="d4368286352" />
+            <node id="d4368212560" label="t11" otu="d4368286416" />
+            <node id="d4368212688" label="internal6" />
+            <node id="d4368214800" label="internal7" />
+            <node id="d4368214992" label="t7" otu="d4368286672" />
+            <node id="d4368214864" label="t4" otu="d4368286928" />
+            <node id="d4368214736" label="internal8" />
+            <node id="d4368214608" label="internal9" />
+            <node id="d4368214480" label="t10" otu="d4368286480" />
+            <node id="d4368214416" label="t3" otu="d4368286992" />
+            <node id="d4368214288" label="t6" otu="d4368286800" />
+            <node id="d4368213904" label="t2" otu="d4368286736" />
+            <node id="d4368214032" label="internal10" />
+            <node id="d4368213840" label="t8" otu="d4368286544" />
+            <node id="d4368213712" label="t5" otu="d4368286864" />
+            <node id="d4368213648" label="t1" otu="d4368287056" />
+            <rootedge id="d4368285776" target="d4368285840" length="0.0098" label="internal1" />
+            <edge id="d4368215888" source="d4368285840" target="d4368215312" length="23.3747" label="internal2" />
+            <edge id="d4368215952" source="d4368215312" target="d4368216016" length="0.0057" label="internal3" />
+            <edge id="d4368215824" source="d4368216016" target="d4368215632" length="344.9032" label="internal4" />
+            <edge id="d4368215696" source="d4368215632" target="d4368215760" length="0.0017" label="internal5" />
+            <edge id="d4368215568" source="d4368215760" target="d4368215376" length="0.0013" label="t9" />
+            <edge id="d4368215440" source="d4368215760" target="d4368215504" length="0.0093" label="t12" />
+            <edge id="d4368212624" source="d4368215632" target="d4368212560" length="0.0092" label="t11" />
+            <edge id="d4368215120" source="d4368216016" target="d4368212688" length="0.0031" label="internal6" />
+            <edge id="d4368215056" source="d4368212688" target="d4368214800" length="0.0078" label="internal7" />
+            <edge id="d4368214928" source="d4368214800" target="d4368214992" length="777.3926" label="t7" />
+            <edge id="d4368214544" source="d4368214800" target="d4368214864" length="353.4995" label="t4" />
+            <edge id="d4368214672" source="d4368212688" target="d4368214736" length="0.0001" label="internal8" />
+            <edge id="d4368213776" source="d4368214736" target="d4368214608" length="0.0003" label="internal9" />
+            <edge id="d4368214160" source="d4368214608" target="d4368214480" length="0.0099" label="t10" />
+            <edge id="d4368214352" source="d4368214608" target="d4368214416" length="0.0015" label="t3" />
+            <edge id="d4368214224" source="d4368214736" target="d4368214288" length="0.0008" label="t6" />
+            <edge id="d4368214096" source="d4368215312" target="d4368213904" length="0.0002" label="t2" />
+            <edge id="d4368213968" source="d4368285840" target="d4368214032" length="0.0007" label="internal10" />
+            <edge id="d4368212752" source="d4368214032" target="d4368213840" length="0.0004" label="t8" />
+            <edge id="d4368213392" source="d4368214032" target="d4368213712" length="0.0058" label="t5" />
+            <edge id="d4368213584" source="d4368285840" target="d4368213648" length="0.0051" label="t1" />
+        </tree>
+        <tree id="d4368285904" label="Tree2" xsi:type="nex:FloatTree">
+            <node id="d4368213328" label="internal1" />
+            <node id="d4368213264" label="t12" otu="d4368286352" />
+            <node id="d4368286096" label="internal2" />
+            <node id="d4368287632" label="internal3" />
+            <node id="d4368287696" label="t11" otu="d4368286416" />
+            <node id="d4368213456" label="internal4" />
+            <node id="d4368213136" label="internal5" />
+            <node id="d4368212944" label="t9" otu="d4368286224" />
+            <node id="d4368212496" label="internal6" />
+            <node id="d4368212432" label="t8" otu="d4368286544" />
+            <node id="d4368212304" label="t7" otu="d4368286672" />
+            <node id="d4368212112" label="t10" otu="d4368286480" />
+            <node id="d4367567312" label="internal7" />
+            <node id="d4367567888" label="internal8" />
+            <node id="d4367567760" label="t5" otu="d4368286864" />
+            <node id="d4367567504" label="internal9" />
+            <node id="d4367567568" label="internal10" />
+            <node id="d4367567376" label="t2" otu="d4368286736" />
+            <node id="d4367568144" label="t3" otu="d4368286992" />
+            <node id="d4367568784" label="t4" otu="d4368286928" />
+            <node id="d4367568528" label="t6" otu="d4368286800" />
+            <node id="d4367568656" label="t1" otu="d4368287056" />
+            <rootedge id="d4368213008" target="d4368213328" length="0.0072" label="internal1" />
+            <edge id="d4368213200" source="d4368213328" target="d4368213264" length="0.0087" label="t12" />
+            <edge id="d4368286160" source="d4368213328" target="d4368286096" length="353.0451" label="internal2" />
+            <edge id="d4368287376" source="d4368286096" target="d4368287632" length="0.0013" label="internal3" />
+            <edge id="d4300590992" source="d4368287632" target="d4368287696" length="0.0081" label="t11" />
+            <edge id="d4368213520" source="d4368287632" target="d4368213456" length="0.0014" label="internal4" />
+            <edge id="d4368213072" source="d4368213456" target="d4368213136" length="0.0057" label="internal5" />
+            <edge id="d4368212816" source="d4368213136" target="d4368212944" length="69.9751" label="t9" />
+            <edge id="d4368212176" source="d4368213136" target="d4368212496" length="0.0085" label="internal6" />
+            <edge id="d4368212368" source="d4368212496" target="d4368212432" length="0.001" label="t8" />
+            <edge id="d4368212240" source="d4368212496" target="d4368212304" length="0.0059" label="t7" />
+            <edge id="d4368212048" source="d4368213456" target="d4368212112" length="0.0012" label="t10" />
+            <edge id="d4367567952" source="d4368286096" target="d4367567312" length="0.0077" label="internal7" />
+            <edge id="d4367567824" source="d4367567312" target="d4367567888" length="229.2447" label="internal8" />
+            <edge id="d4367567696" source="d4367567888" target="d4367567760" length="0.0072" label="t5" />
+            <edge id="d4367567632" source="d4367567888" target="d4367567504" length="0.0095" label="internal9" />
+            <edge id="d4367567440" source="d4367567504" target="d4367567568" length="0.007" label="internal10" />
+            <edge id="d4367568080" source="d4367567568" target="d4367567376" length="0.0075" label="t2" />
+            <edge id="d4367568208" source="d4367567568" target="d4367568144" length="0.0025" label="t3" />
+            <edge id="d4367568848" source="d4367567504" target="d4367568784" length="0.0027" label="t4" />
+            <edge id="d4367568720" source="d4367567312" target="d4367568528" length="0.0044" label="t6" />
+            <edge id="d4367568592" source="d4368213328" target="d4367568656" length="0.0065" label="t1" />
+        </tree>
+    </trees>
+</nex:nexml>

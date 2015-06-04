@@ -1,56 +1,76 @@
 #! /usr/bin/env python
 
-############################################################################
-##  Part of the DendroPy library for phylogenetic computing.
+##############################################################################
+##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
+##  All rights reserved.
 ##
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 3 of the License, or
-##  (at your option) any later version.
+##  See "LICENSE.txt" for terms and conditions of usage.
 ##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
+##  If you use this work or any portion thereof in published work,
+##  please cite it as:
 ##
-##  You should have received a copy of the GNU General Public License along
-##  with this program. If not, see <http://www.gnu.org/licenses/>.
+##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
 ##
-############################################################################
+##############################################################################
 
 """
-Tests coalescence calculations.
+Tests of birth-death model fitting.
 """
 
 import unittest
-from dendropy.utility.messaging import get_logger
-_LOG = get_logger(__name__)
 import dendropy
-from dendropy import coalescent
+from dendropy.test.support.mockrandom import MockRandom
+from dendropy.test.support import pathmap
+from dendropy.model import coalescent
+from dendropy.simulate import popgensim
 
-class CalcIntervalsTest(unittest.TestCase):
+class TruncatedCoalescentTreeTest(unittest.TestCase):
 
-    def testSimple1(self):
+    def get_species_tree(self, ntax=10):
+        _RNG = MockRandom()
+        ages = [_RNG.randint(1000,10000) for age in range(ntax)]
+        ages.sort()
+        pop_sizes = [_RNG.randint(1000,10000) for pop in range(2*ntax+1)]
+        taxon_namespace = dendropy.TaxonNamespace(["t{}".format(i+1) for i in range(ntax)])
+        species_tree = popgensim.pop_gen_tree(taxon_namespace=taxon_namespace,
+                                                 ages=ages,
+                                                 num_genes=4,
+                                                 pop_sizes=pop_sizes,
+                                                 rng=_RNG)
+        ages2 = []
+        for node in species_tree.postorder_node_iter():
+            distance_from_tip = node.distance_from_tip()
+            if distance_from_tip > 0:
+                ages2.append(distance_from_tip)
+        ages2.sort()
+        for index in range(len(ages2)):
+            assert (ages[index] - ages2[index]) < 10e-6
 
-        t = dendropy.Tree.get_from_string("((((a:1, b:1):1, c:2):1, d:3, e:3):2, (f:4, g:4):1)", "newick")
-        i1 = coalescent.node_waiting_time_pairs(t)
-        assert [x[1] for x in i1] == [1.0, 1.0, 1.0, 1.0, 1.0]
-        i2 = coalescent.extract_coalescent_frames(t)
-        assert i2 == {7: 1.0, 6:1.0, 5:1.0, 3:1.0, 2:1.0}
-        check = coalescent.log_probability_of_coalescent_tree(t, 10)
+        pop_sizes2 = []
+        for edge in species_tree.postorder_edge_iter():
+            pop_sizes2.append(edge.pop_size)
+        pop_sizes2.sort()
 
+        return species_tree
 
-#    if coalescent.de_hoon_statistics:
-#        def testKLDiv(self):
-#            from dendropy import treegen
-#            taxa_block = treegen.random_taxa_block(100)
-#            ctrees = [treegen.pure_kingman(taxa_block, 20000) for i in range(10)]
-#            _LOG.info("KL divergence from Kingman coalescent of trees generated under pure Kingman process: %s" % coalescent.kl_divergence_coalescent_trees(ctrees, 20000))
-#            ytrees = [treegen.uniform_pure_birth(taxa_block) for i in range(10)]
-#            _LOG.info("KL divergence from Kingman coalescent of trees generated under Yule process: %s" % coalescent.kl_divergence_coalescent_trees(ytrees, 20000))
+    def runTest(self, ntax=10):
+        """TruncatedCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
+        species_tree = self.get_species_tree(ntax)
+        gene_trees = []
+        while len(gene_trees) < 20:
+            gene_trees.append(coalescent.constrained_kingman_tree(species_tree)[0])
+
+class PureCoalescentTreeTest(unittest.TestCase):
+
+    def runTest(self):
+        """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
+        _RNG = MockRandom()
+        tns = dendropy.TaxonNamespace(["t{}".format(i+1) for i in range(100)])
+        t = coalescent.pure_kingman_tree(tns, rng=_RNG)
+        assert t._debug_tree_is_valid()
 
 if __name__ == "__main__":
     unittest.main()
-

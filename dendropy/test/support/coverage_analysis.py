@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -41,7 +41,7 @@ else:
         _LOG.info("coverage imported successfully: test coverage analysis available")
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
-        from dendropy.test import get_test_suite
+        from dendropy.test.support.dendropytest import get_test_suite
         from dendropy.test.support import pathmap
 
         class CoverageAnalysis(Command):

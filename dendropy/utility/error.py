@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -17,21 +17,42 @@
 ##############################################################################
 
 """
-Exceptions and error.
+Errors, exceptions, warnings, etc.
 """
+
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
 import sys
+import re
+import warnings
+import inspect
+import subprocess
+
+class ImmutableTaxonNamespaceError(TypeError):
+    def __init__(self, message):
+        TypeError.__init__(self, message)
 
 class DataError(Exception):
 
-    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
+    def __init__(self,
+            message=None,
+            line_num=None,
+            col_num=None,
+            filename=None,
+            stream=None):
         Exception.__init__(self)
-        self.row = row
-        self.column = column
-        self.msg = message
+        self.line_num = line_num
+        self.col_num = col_num
+        self.message = message
+        self.stream = stream
         self.filename = None
         self.decorate_with_name(filename=filename, stream=stream)
 
-    def decorate_with_name(self, filename=None, stream=None):
+    def decorate_with_name(self,
+            filename=None,
+            stream=None):
         if filename is not None:
             self.filename = filename
         if stream is not None:
@@ -43,17 +64,27 @@ class DataError(Exception):
     def __str__(self):
         f, l, c = "", "", ""
         if self.filename:
-            f =  ' "%s"' % self.filename
-        if self.row is not None:
-            l =  " on line %d" % self.row
-        if self.column is not None:
-            c =  " at column %d" % self.column
-        return 'Error parsing data source%s%s%s: %s' % (f, l, c, self.msg)
+            f =  " '{}'".format(self.filename)
+        if self.line_num is not None:
+            l =  " on line {}".format(self.line_num)
+        if self.col_num is not None:
+            c =  " at column {}".format(self.col_num)
+        return "Error parsing data source{}{}{}: {}".format(f, l, c, self.message)
 
 class DataParseError(DataError):
 
-    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
-        DataError.__init__(self, message=message, row=row, column=column, filename=filename, stream=stream)
+    def __init__(self,
+            message=None,
+            line_num=None,
+            col_num=None,
+            filename=None,
+            stream=None):
+        DataError.__init__(self,
+                message=message,
+                line_num=line_num,
+                col_num=col_num,
+                filename=filename,
+                stream=stream)
 
 class UnsupportedSchemaError(NotImplementedError):
 
@@ -72,22 +103,90 @@ class UnspecifiedSourceError(Exception):
 
 class TooManyArgumentsError(TypeError):
 
-    def __init__(self, message=None, func_name=None, max_args=None, args=None):
+    def __init__(self,
+            message=None,
+            func_name=None,
+            max_args=None,
+            args=None):
         if message is None and (func_name is not None and max_args):
-            message = "%s() takes a maximum of %d arguments (%d given)" % (func_name, max_args, len(args))
+            message = "{}() takes a maximum of {} arguments ({} given)".format(func_name, max_args, len(args))
         TypeError.__init__(self, message)
 
 class InvalidArgumentValueError(ValueError):
 
     def __init__(self, message=None, func_name=None, arg=None):
         if message is None and (func_name is not None and arg is not None):
-            message = "%s() does not accept objects of type '%s' as an argument" % (func_name, arg.__class__.__name__)
+            message = "{}() does not accept objects of type '{}' as an argument".format(func_name, arg.__class__.__name__)
         ValueError.__init__(self, message)
 
 class MultipleInitializationSourceError(TypeError):
     def __init__(self, message=None, class_name=None, arg=None):
         if message is None and (class_name is not None and arg is not None):
-            message = "%s() does not accept data 'stream' or 'schema' arguments when initializing with another object" % (class_name)
+            message = "{}() does not accept data 'stream' or 'schema' arguments when initializing with another object".format(class_name)
         TypeError.__init__(self, message)
 
+class TaxonNamespaceIdentityError(ValueError):
+    def __init__(self, o1, o2):
+        message = "Non-identical taxon namespace references: {} is not {}".format(
+                "<TaxonNamespace object at {}>".format(str(hex(id((o1.taxon_namespace))))),
+                "<TaxonNamespace object at {}>".format(str(hex(id((o2.taxon_namespace))))),
+                )
+        ValueError.__init__(self, message)
 
+class MixedRootingError(ValueError):
+    def __init__(self, message=None):
+        ValueError.__init__(self, message)
+
+class TaxonNamespaceReconstructionError(ValueError):
+    def __init__(self, message=None):
+        ValueError.__init__(self, message)
+
+class UltrametricityError(ValueError):
+    def __init__(self, message=None):
+        ValueError.__init__(self, message)
+
+class TreeSimTotalExtinctionException(Exception):
+    """Exception to be raised when branching process results in all lineages going extinct."""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+class SeedNodeDeletionException(Exception):
+
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+class ExternalServiceError(Exception):
+
+    def __init__(self,
+            service_name,
+            invocation_command,
+            service_input,
+            returncode,
+            stdout,
+            stderr):
+        self.service_name = service_name
+        self.invocation_command = invocation_command
+        self.service_input = service_input
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+        self.message = self.compose_message()
+
+    def __str__(self):
+        return self.compose_message()
+
+    def compose_message(self):
+        parts = []
+        parts.append("- Service process {} exited with return code: {}".format(self.service_name, self.returncode))
+        parts.append("- Service invoked with command:")
+        parts.append("   {}".format(self.invocation_command))
+        parts.append("<<<<<<< (SERVICE STANDARD INPUT)")
+        parts.append(self.service_input)
+        parts.append(">>>>>>>")
+        parts.append("<<<<<<< (SERVICE STANDARD OUTPUT)")
+        parts.append(self.stdout)
+        parts.append(">>>>>>>")
+        parts.append("<<<<<<< (SERVICE STANDARD ERROR)")
+        parts.append(self.stderr)
+        parts.append(">>>>>>>")
+        return "\n".join(parts)

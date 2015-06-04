@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -21,15 +21,19 @@ Tests of ascii tree plots.
 """
 
 import unittest
-from cStringIO import StringIO
-from dendropy.test.support.datagen import reference_tree_list
+from dendropy.test.support import curated_test_tree
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 
-class TreePHGammTest(unittest.TestCase):
+class AsciiTreeTest(
+        curated_test_tree.CuratedTestTree,
+        unittest.TestCase):
 
     def setUp(self):
-        self.tree = reference_tree_list()[0]
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=False,
+                suppress_leaf_node_taxa=False)
+        self.tree = tree1
 
     def test_plot_by_depth(self):
         _LOG.debug(self.tree.as_ascii_plot(plot_metric='depth'))

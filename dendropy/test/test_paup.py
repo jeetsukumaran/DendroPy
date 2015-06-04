@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -23,16 +23,20 @@ Test the PAUP* wrapper
 import os
 import sys
 import csv
-
+import collections
 import unittest
+
 from dendropy.test.support import pathmap
-from dendropy.test.support.extendedtest import ExtendedTestCase
-from dendropy.utility import containers
+from dendropy.test.support import paupsplitsreference
+from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
 _LOG = messaging.get_logger(__name__)
 
-from dendropy import treesplit
+from dendropy.utility import bitprocessing
 from dendropy.interop import paup
+from dendropy import Bipartition
 
 if not paup.DENDROPY_PAUP_INTEROPERABILITY:
     _LOG.warn("PAUP interoperability not available: skipping PAUP tests")
@@ -40,86 +44,172 @@ else:
 
     class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
 
+        def setUp(self):
+            self.ps = paup.PaupService()
+
         def testUnnormalized(self):
-            for i in xrange(0xFF):
-                s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
-                r = paup.paup_group_to_mask(s, normalized=False)
+            for i in range(0xFF):
+                s = bitprocessing.int_as_bitstring(i, 8, ".", "*")[::-1]
+                r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=False)
                 self.assertEqual(r, i, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(r, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(r, 8)))
 
         def testNormalized0(self):
-            for i in xrange(0xFF):
-                s = treesplit.split_as_string(i, 8, "*", ".")[::-1]
-                r = paup.paup_group_to_mask(s, normalized=True)
-                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
+            for i in range(0xFF):
+                s = bitprocessing.int_as_bitstring(i, 8, "*", ".")[::-1]
+                r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=True)
+                normalized = Bipartition.normalize_bitmask(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(normalized, 8)))
 
         def testNormalized1(self):
-            for i in xrange(0xFF):
-                s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
-                r = paup.paup_group_to_mask(s, normalized=True)
-                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
+            for i in range(0xFF):
+                s = bitprocessing.int_as_bitstring(i, 8, ".", "*")[::-1]
+                r = paup.PaupService.bipartition_groups_to_split_bitmask(s, normalized=True)
+                normalized = Bipartition.normalize_bitmask(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                    % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
+                    % (bitprocessing.int_as_bitstring(i, 8), s, bitprocessing.int_as_bitstring(normalized, 8)))
 
     class PaupWrapperSplitsParse(ExtendedTestCase):
 
-        def setUp(self):
-            self.tree_filepath = None
-            self.taxa_filepath = None
-            self.splitscsv_filepath = None
-            self.expected_num_trees = None
-            self.expected_split_freqs = None
+        def check_splits_counting(self,
+                tree_filename,
+                taxa_definition_filepath,
+                splits_filename,
+                paup_as_rooted,
+                paup_use_tree_weights,
+                paup_burnin,
+                expected_taxon_labels,
+                expected_is_rooted,
+                expected_num_trees,
+                ):
+            tree_filepath = pathmap.tree_source_path(tree_filename)
+            paup_service = paup.PaupService()
+            result = paup_service.count_splits_from_files(
+                    tree_filepaths=[tree_filepath],
+                    taxa_definition_filepath=taxa_definition_filepath,
+                    is_rooted=paup_as_rooted,
+                    use_tree_weights=paup_use_tree_weights,
+                    burnin=paup_burnin,
+                    )
+            num_trees = result["num_trees"]
+            bipartition_counts = result["bipartition_counts"]
+            bipartition_freqs = result["bipartition_freqs"]
+            taxon_namespace = result["taxon_namespace"]
+            is_rooted = result["is_rooted"]
 
-        def populate_test(self, tree_filepath, splitscsv_filepath, expected_num_trees):
-            self.tree_filepath = pathmap.data_source_path(tree_filepath)
-            self.taxa_filepath = self.tree_filepath
-            self.splitscsv_filepath = pathmap.data_source_path(splitscsv_filepath)
-            self.expected_num_trees = expected_num_trees
-            self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
+            # check taxon namespace
+            self.assertEqual(len(taxon_namespace), len(expected_taxon_labels))
+            for taxon, expected_label in zip(taxon_namespace, expected_taxon_labels):
+                self.assertEqual(taxon.label, expected_label)
 
-        def count_splits(self, is_rooted=False):
-            if self.tree_filepath is None:
-                _LOG.warning("Null Test Case")
-                return
-            p = paup.PaupRunner()
-            p.stage_execute_file(self.taxa_filepath, clear_trees=True)
-            p.stage_list_taxa()
-            p.stage_load_trees(tree_filepaths=[self.tree_filepath], is_rooted=is_rooted)
-            p.stage_count_splits()
-            p.run()
-            taxon_set = p.parse_taxon_set()
-            tree_count, bipartition_counts = p.parse_group_freqs()
+            # check general tree state
+            self.assertEqual(num_trees, expected_num_trees)
+            self.assertIs(is_rooted, expected_is_rooted)
 
-            self.assertEqual(self.expected_num_trees, tree_count)
-            self.assertEqual(len(self.expected_split_freqs), len(bipartition_counts))
-            for g in self.expected_split_freqs:
-                self.assertIn(g, bipartition_counts)
-                self.assertEqual(self.expected_split_freqs[g], bipartition_counts[g])
+            splits_ref = paupsplitsreference.get_splits_reference(
+                    splits_filename=splits_filename,
+                    key_column_index=0,
+                    )
+            self.assertEqual(len(splits_ref), len(bipartition_counts))
+            self.assertEqual(len(splits_ref), len(bipartition_freqs))
+            if is_rooted:
+                splits_ref_bitmasks = set([splits_ref[x]["unnormalized_split_bitmask"] for x in splits_ref])
+            else:
+                splits_ref_bitmasks = set([splits_ref[x]["normalized_split_bitmask"] for x in splits_ref])
+            counts_keys = set(bipartition_counts.keys())
+            freqs_keys = set(bipartition_freqs.keys())
+            self.assertEqual(len(counts_keys), len(splits_ref_bitmasks))
+            self.assertEqual(counts_keys, splits_ref_bitmasks, "\n    {}\n\n    {}\n\n".format(sorted(counts_keys), sorted(splits_ref_bitmasks)))
+            for split_str_rep in splits_ref:
+                ref = splits_ref[split_str_rep]
+                self.assertEqual(split_str_rep, ref["bipartition_string"])
+                self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=False),
+                        ref["unnormalized_split_bitmask"])
+                self.assertEqual(paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=True),
+                        ref["normalized_split_bitmask"])
+                split_bitmask = paup.PaupService.bipartition_groups_to_split_bitmask(split_str_rep, normalized=not is_rooted)
+                self.assertEqual(bipartition_counts[split_bitmask], ref["count"])
+                # self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"])
+                self.assertAlmostEqual(bipartition_freqs[split_bitmask], ref["frequency"], 2) # PAUP* 4.10b: no very precise
 
-            sd = paup.build_split_distribution(bipartition_counts,
-                                               tree_count,
-                                               taxon_set,
-                                               is_rooted=is_rooted)
-            sf = sd.split_frequencies
-            for g in bipartition_counts:
-                s = paup.paup_group_to_mask(g, normalized=not is_rooted)
-                self.assertIn(s, sd.splits)
-                self.assertIn(s, sd.split_counts)
-                self.assertEqual(sd.split_counts[s], bipartition_counts[g])
-                self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
-                self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
-
-    class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
-
-        def setUp(self):
-            self.populate_test(["trees","feb032009.trees.nexus"],
-                                    ["trees", "feb032009.splits.csv"],
-                                    100)
-
-        def runTest(self):
-            self.count_splits()
+        def test_group1(self):
+            cetacean_taxon_labels = [
+                "Bos taurus",
+                "Balaena mysticetus",
+                "Balaenoptera physalus",
+                "Cephalorhynchus eutropia",
+                "Delphinapterus leucas",
+                "Delphinus delphis",
+                "Eschrichtius robustus",
+                "Globicephala melas",
+                "Inia geoffrensis",
+                "Kogia breviceps",
+                "Kogia simus",
+                "Lagenorhynchus albirostris",
+                "Lagenorhynchus obscurus",
+                "Lissodelphis peronii",
+                "Megaptera novaeangliae",
+                "Mesoplodon europaeus",
+                "Mesoplodon peruvianus",
+                "Phocoena phocoena",
+                "Phocoena spinipinnis",
+                "Physeter catodon",
+                "Tursiops truncatus",
+                "Ziphius cavirostris",
+            ]
+            issue_mth_taxon_labels = ["T{:02d}".format(i) for i in range(1, 60)]
+            sources = [
+                    ("cetaceans.mb.no-clock.mcmc.trees"    , 251, False, False), # Trees explicitly unrooted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-01.trees" , 251, False , True), # Weighted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-02.trees" , 251, False , True), # Weighted
+                    ("cetaceans.mb.no-clock.mcmc.weighted-03.trees" , 251, False , True), # Weighted
+                    ("cetaceans.mb.strict-clock.mcmc.trees", 251, True , False), # Trees explicitly rooted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees" , 251, True , True), # Weighted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-02.trees" , 251, True , True), # Weighted
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-03.trees" , 251, True , True), # Weighted
+                    ("cetaceans.raxml.bootstraps.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-01.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-02.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("cetaceans.raxml.bootstraps.weighted-03.trees"    , 250, True , False), # No tree rooting statement; PAUP defaults to rooted, DendroPy defaults to unrooted
+                    ("issue_mth_2009-02-03.rooted.nexus"   , 100, True , False), # 100 trees (frequency column not reported by PAUP)
+                    ("issue_mth_2009-02-03.unrooted.nexus" , 100, False , False), # 100 trees (frequency column not reported by PAUP)
+            ]
+            splits_filename_template = "{stemname}.is-rooted-{is_rooted}.use-tree-weights-{use_weights}.burnin-{burnin}.splits.txt"
+            for tree_filename, num_trees, treefile_is_rooted, treefile_is_weighted in sources:
+                stemname = tree_filename
+                if "cetacean" in tree_filename:
+                    expected_taxon_labels = cetacean_taxon_labels
+                    taxa_definition_filepath = pathmap.tree_source_path("cetaceans.taxa.nex")
+                else:
+                    expected_taxon_labels = issue_mth_taxon_labels
+                    taxa_definition_filepath = pathmap.tree_source_path("issue_mth_2009-02-03.unrooted.nexus")
+                for use_weights in (False, True, None):
+                    for paup_read_as_rooted in (None, True, False):
+                        for paup_burnin in (0, 150):
+                            if tree_filename.startswith("issue_mth") and paup_burnin > 0:
+                                continue
+                            if paup_read_as_rooted is None:
+                                expected_is_rooted = treefile_is_rooted
+                            elif paup_read_as_rooted:
+                                expected_is_rooted = True
+                            else:
+                                expected_is_rooted = False
+                            splits_filename = splits_filename_template.format(
+                                    stemname=stemname,
+                                    is_rooted=paup_read_as_rooted,
+                                    use_weights=use_weights,
+                                    burnin=paup_burnin)
+                            self.check_splits_counting(
+                                    tree_filename=tree_filename,
+                                    taxa_definition_filepath=taxa_definition_filepath,
+                                    splits_filename=splits_filename,
+                                    paup_as_rooted=paup_read_as_rooted,
+                                    paup_use_tree_weights=use_weights,
+                                    paup_burnin=paup_burnin,
+                                    expected_taxon_labels=expected_taxon_labels,
+                                    expected_is_rooted=expected_is_rooted,
+                                    expected_num_trees=num_trees-paup_burnin)
 
     class PaupWrapperTaxaParse(ExtendedTestCase):
 
@@ -132,9 +222,9 @@ else:
             p.stage_execute_file(self.taxa_filepath)
             p.stage_list_taxa()
             p.run()
-            taxon_set = p.parse_taxon_set()
-            self.assertEqual(len(taxon_set), len(self.expected_taxlabels))
-            for i, t in enumerate(taxon_set):
+            taxon_namespace = p.parse_taxon_namespace()
+            self.assertEqual(len(taxon_namespace), len(self.expected_taxlabels))
+            for i, t in enumerate(taxon_namespace):
                 self.assertEqual(t.label, self.expected_taxlabels[i])
 
     class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):

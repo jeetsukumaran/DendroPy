@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -24,26 +24,24 @@ import sys
 import os
 import logging
 import textwrap
+from dendropy.utility import metavar
 
 ###############################################################################
-## LOGGING
-
-_LOGGING_LEVEL_ENVAR="DENDROPY_LOGGING_LEVEL"
-_LOGGING_FORMAT_ENVAR="DENDROPY_LOGGING_FORMAT"
+## metavar.LOGGING
 
 def get_logging_level():
-    if _LOGGING_LEVEL_ENVAR in os.environ:
-        if os.environ[_LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
+    if metavar.LOGGING_LEVEL_ENVAR in os.environ:
+        if os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
             level = logging.NOTSET
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
+        elif os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
             level = logging.DEBUG
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "INFO":
+        elif os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "INFO":
             level = logging.INFO
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "WARNING":
+        elif os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "WARNING":
             level = logging.WARNING
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "ERROR":
+        elif os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "ERROR":
             level = logging.ERROR
-        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
+        elif os.environ[metavar.LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
             level = logging.CRITICAL
         else:
             level = logging.NOTSET
@@ -54,11 +52,11 @@ def get_logging_level():
 def get_logger(name="dendropy"):
     """
     Returns a logger with name set as given, and configured
-    to the level given by the environment variable _LOGGING_LEVEL_ENVAR.
+    to the level given by the environment variable metavar.LOGGING_LEVEL_ENVAR.
     """
 
 #     package_dir = os.path.dirname(module_path)
-#     config_filepath = os.path.join(package_dir, _LOGGING_CONFIG_FILE)
+#     config_filepath = os.path.join(package_dir, metavar.LOGGING_CONFIG_FILE)
 #     if os.path.exists(config_filepath):
 #         try:
 #             logging.config.fileConfig(config_filepath)
@@ -75,12 +73,12 @@ def get_logger(name="dendropy"):
         raw_formatter = logging.Formatter("%(message)s")
         default_formatter = None
         logging_formatter = default_formatter
-        if _LOGGING_FORMAT_ENVAR in os.environ:
-            if os.environ[_LOGGING_FORMAT_ENVAR].upper() == "RICH":
+        if metavar.LOGGING_FORMAT_ENVAR in os.environ:
+            if os.environ[metavar.LOGGING_FORMAT_ENVAR].upper() == "RICH":
                 logging_formatter = rich_formatter
-            elif os.environ[_LOGGING_FORMAT_ENVAR].upper() == "SIMPLE":
+            elif os.environ[metavar.LOGGING_FORMAT_ENVAR].upper() == "SIMPLE":
                 logging_formatter = simple_formatter
-            elif os.environ[_LOGGING_FORMAT_ENVAR].upper() == "NONE":
+            elif os.environ[metavar.LOGGING_FORMAT_ENVAR].upper() == "NONE":
                 logging_formatter = None
             else:
                 logging_formatter = default_formatter
@@ -95,14 +93,6 @@ def get_logger(name="dendropy"):
         logger.addHandler(ch)
         logger.is_configured = True
     return logger
-
-def deprecation(message, logger_obj=None, stacklevel=3):
-    try:
-        import warnings
-        warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
-    except:
-        if logger_obj:
-            logger_obj.warning(message)
 
 class ConsoleMessenger(object):
 
@@ -120,7 +110,7 @@ class ConsoleMessenger(object):
         else:
             self.messaging_level = messaging_level
         self.primary_out = dest
-        self.text_wrapper = textwrap.TextWrapper(width=78, subsequent_indent=" " * (len(self.name) + 2))
+        self.text_wrapper = textwrap.TextWrapper(width=78, initial_indent= "", subsequent_indent=" " * (len(self.name) + 2))
         self.message_leader = {
                 ConsoleMessenger.ERROR_MESSAGING_LEVEL : self.error_leader,
                 ConsoleMessenger.WARNING_MESSAGING_LEVEL : self.warning_leader,
@@ -129,46 +119,59 @@ class ConsoleMessenger(object):
         self.silent = False
 
     def error_leader(self):
-        return self.name + ": *** ERROR *** "
+        return self.name + ": [ERROR] "
 
     def warning_leader(self):
-        return self.name + ": [[[ WARNING ]]] "
+        return self.name + ": [WARNING] "
 
     def info_leader(self):
         return self.name + ": "
 
-    def format_message(self, msg, level, wrap=True):
-        msg = self.message_leader[level]() + msg
-        if wrap:
-            msg = self.text_wrapper.fill(msg)
+    def format_message(self, msg, level, wrap=True, prefix=""):
+        if not wrap:
+            msg = self.message_leader[level]() + prefix + msg
+        else:
+            if prefix:
+                full_leader = self.message_leader[level]() + prefix
+                msg = textwrap.fill(
+                    msg,
+                    width=self.text_wrapper.width,
+                    initial_indent=full_leader,
+                    subsequent_indent=" " * len(full_leader))
+            else:
+                msg = self.text_wrapper.fill(self.message_leader[level]() + msg)
         return msg
 
-    def send(self, msg, level=0, wrap=True, newline=True):
+    def log(self, msg, level=0, wrap=True, prefix="", newline=True):
         if self.silent:
             return
         if level >= self.messaging_level:
-            msg = self.format_message(msg, level, wrap=wrap)
+            msg = self.format_message(msg, level, wrap=wrap, prefix=prefix)
             self.primary_out.write(msg)
             if newline:
                 self.primary_out.write("\n")
 
-    def send_lines(self, msg, level=None, wrap=True, prefix=""):
+    def log_lines(self, msg, level=None, wrap=True, prefix=""):
         for line in msg:
-            self.send(msg=prefix+line, level=level, wrap=wrap)
+            self.log(msg=line, level=level, wrap=wrap, prefix=prefix)
 
-    def send_error(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+    def error(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def send_warning(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+    def warning(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def send_info(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+    def info(self, msg, wrap=True, prefix=""):
+        self.log(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def send_info_lines(self, msg, wrap=True, prefix=""):
+    def info_lines(self, msg, wrap=True, prefix=""):
         for line in msg:
-            self.send(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+            self.log(msg=line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap, prefix=prefix)
 
-    def write_info(self, msg):
+    def info_raw(self, msg):
         if self.messaging_level <= ConsoleMessenger.INFO_MESSAGING_LEVEL:
             self.primary_out.write(self.info_leader() + msg)
+
+
+
+

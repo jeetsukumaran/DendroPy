@@ -1,14 +1,13 @@
-#! /usr/bin/env python
-
 import dendropy
-trees = dendropy.TreeList()
-trees.read_from_path('pythonidae.mb.run1.t', 'nexus', tree_offset=200)
-trees.read_from_path('pythonidae.mb.run2.t', 'nexus', tree_offset=200)
-trees.read_from_path('pythonidae.mb.run3.t', 'nexus', tree_offset=200)
-trees.read_from_path('pythonidae.mb.run4.t', 'nexus', tree_offset=200)
-ds = dendropy.DataSet(trees)
-ds.read_from_path('pythonidae_cytb.fasta',
-                  schema='fasta',
-                  data_type='dna',
-                  taxon_set=ds.taxon_sets[0])
-ds.write_to_path('pythonidae_combined.nex', 'nexus')
+taxa = dendropy.TaxonNamespace()
+trees = dendropy.TreeList(taxon_namespace=taxa)
+trees.read(path='pythonidae.mb.run1.t', schema='nexus', tree_offset=10)
+trees.read(path='pythonidae.mb.run2.t', schema='nexus', tree_offset=10)
+trees.read(path='pythonidae.mb.run3.t', schema='nexus', tree_offset=10)
+trees.read(path='pythonidae.mb.run4.t', schema='nexus', tree_offset=10)
+ds = dendropy.DataSet([trees])
+ds.read(path='pythonidae_cytb.fasta',
+        schema='fasta',
+        data_type='dna',
+        )
+ds.write(path='pythonidae_combined.nex', schema='nexus')

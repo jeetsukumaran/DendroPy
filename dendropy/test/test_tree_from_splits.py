@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -22,44 +22,34 @@ NEXUS data read/write parse/format tests.
 
 import unittest
 from dendropy.test.support import pathmap
-from dendropy.test.support import datagen
-from dendropy.test.support import datatest
 from dendropy.utility.messaging import get_logger
-from dendropy import treesplit
+from dendropy.calculate import treecompare
 import dendropy
 
 _LOG = get_logger(__name__)
 
-class NexusTreeListReaderTest(datatest.AnnotatedDataObjectVerificationTestCase):
-
-    def testReferenceTree(self):
-        ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList()
-        for ref_tree in ref_tree_list:
-            treesplit.encode_splits(ref_tree)
-            splits = ref_tree.split_edges.keys()
-            t_tree = treesplit.tree_from_splits(splits=splits,
-                    taxon_set=ref_tree_list.taxon_set,
-                    is_rooted=ref_tree.is_rooted)
-            self.assertEqual(ref_tree.symmetric_difference(t_tree), 0)
-
-    def testUltrametricTrees(self):
+class TreeFromBipartitionsTest(unittest.TestCase):
+    def testTrees(self):
         tree_files = [
-                "pythonidae.beast.summary.tre",
-                "primates.beast.mcct.medianh.tre"
+                ("dendropy-test-trees-n33-unrooted-x100a.nexus", "force-unrooted", False),
+                ("dendropy-test-trees-multifurcating-unrooted.nexus", "force-unrooted", False),
+                ("pythonidae.beast.summary.tre", "force-rooted", True),
+                ("primates.beast.mcct.medianh.tre", "force-rooted", True),
                 ]
-
-        for tree_file in tree_files:
+        for tree_file, rooting, is_rooted in tree_files:
             ref_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path(tree_file),
                     "nexus",
-                    as_rooted=True)
-            treesplit.encode_splits(ref_tree)
-            splits = ref_tree.split_edges.keys()
-            t_tree = treesplit.tree_from_splits(splits=splits,
-                    taxon_set=ref_tree.taxon_set,
+                    rooting=rooting)
+            bipartition_encoding = ref_tree.encode_bipartitions()
+            t_tree = dendropy.Tree.from_bipartition_encoding(
+                    bipartition_encoding,
+                    taxon_namespace=ref_tree.taxon_namespace,
                     is_rooted=ref_tree.is_rooted)
-            treesplit.encode_splits(t_tree)
-            self.assertEqual(ref_tree.symmetric_difference(t_tree), 0)
+            # t_tree.encode_bipartitions()
+            _LOG.debug("--\n       File: {} ({})".format(tree_file, ref_tree.is_rooted))
+            _LOG.debug("     Original: {}".format(ref_tree.as_string("newick")))
+            _LOG.debug("Reconstructed: {}".format(t_tree.as_string("newick")))
+            self.assertEqual(treecompare.symmetric_difference(ref_tree, t_tree), 0)
 
 if __name__ == "__main__":
     unittest.main()

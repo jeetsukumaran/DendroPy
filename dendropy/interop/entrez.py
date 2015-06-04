@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -21,7 +21,13 @@ Low-level wrappers around the NCBI E-Utilities. Primarily meant to open
 file-like object handles on responses.
 """
 
-import urllib
+import sys
+if sys.version_info.major < 3:
+    from urllib import urlencode
+    from urllib import urlopen
+else:
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
 
 ENTREZ_EUTILS_BASE_URL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
@@ -40,8 +46,8 @@ def efetch(db, ids, rettype, retmode="xml", email=None):
             'retmode': retmode}
     if email is not None:
         params["email"] = email
-    query_url = ENTREZ_EUTILS_BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
-    response = urllib.urlopen(query_url)
+    query_url = ENTREZ_EUTILS_BASE_URL + "/efetch.fcgi?" + urlencode(params)
+    response = urlopen(query_url)
     return response
 
 def get_taxonomy(**kwargs):
@@ -53,8 +59,8 @@ def get_taxonomy(**kwargs):
         params["retmode"] = "xml"
     if "email" in kwargs and kwargs["email"] is None:
         del params["email"]
-    query_url = "http://www.ncbi.nlm.nih.gov/sites/entrez?" + urllib.urlencode(params)
-    response = urllib.urlopen(query_url)
+    query_url = "http://www.ncbi.nlm.nih.gov/sites/entrez?" + urlencode(params)
+    response = urlopen(query_url)
     return response
 
 # # def efetch(db, ids, rettype, retmode="xml", email=None):

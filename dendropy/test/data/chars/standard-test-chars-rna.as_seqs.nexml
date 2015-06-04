@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nex:nexml
+    version="0.9"
+    xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+    xmlns="http://www.nexml.org/2009"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:nex="http://www.nexml.org/2009"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+    <otus id="d4334487256" label="DEFAULT">
+        <otu id="d4334480016" label="a" />
+        <otu id="d4334479888" label="b" />
+        <otu id="d4334479952" label="c" />
+        <otu id="d4334667792" label="e" />
+        <otu id="d4334667856" label="f" />
+        <otu id="d4334667920" label="g" />
+        <otu id="d4334667984" label="h" />
+        <otu id="d4334668048" label="i" />
+        <otu id="d4334668112" label="j" />
+        <otu id="d4334668176" label="k" />
+        <otu id="d4334668240" label="l" />
+        <otu id="d4334668304" label="m" />
+        <otu id="d4334668368" label="n" />
+        <otu id="d4334668432" label="o" />
+        <otu id="d4334668496" label="p" />
+    </otus>
+    <characters id="d4334668560" otus="d4334487256" xsi:type="nex:RnaSeqs">
+        <format>
+            <states id="d4321628768">
+                <state id="d4321599440" symbol="A" />
+                <state id="d4321632336" symbol="C" />
+                <state id="d4321632400" symbol="G" />
+                <state id="d4321632464" symbol="U" />
+                <state id="d4321632528" symbol="-" />
+                <uncertain_state_set id="d4321632592" symbol="?">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                    <member state="d4321632528"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632656" symbol="N">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632720" symbol="M">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632784" symbol="R">
+                    <member state="d4321599440"/>
+                    <member state="d4321632400"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632848" symbol="W">
+                    <member state="d4321599440"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632912" symbol="S">
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321632976" symbol="Y">
+                    <member state="d4321632336"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633040" symbol="K">
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633104" symbol="V">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633168" symbol="H">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633232" symbol="D">
+                    <member state="d4321599440"/>
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633296" symbol="B">
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4321633360" symbol="X">
+                    <member state="d4321599440"/>
+                    <member state="d4321632336"/>
+                    <member state="d4321632400"/>
+                    <member state="d4321632464"/>
+                </uncertain_state_set>
+            </states>
+        <char id="d4325153936" states="d4321628768" />
+        <char id="d4325154000" states="d4321628768" />
+        <char id="d4325154064" states="d4321628768" />
+        <char id="d4325154128" states="d4321628768" />
+        <char id="d4325154192" states="d4321628768" />
+        <char id="d4325154256" states="d4321628768" />
+        <char id="d4325154320" states="d4321628768" />
+        <char id="d4325154384" states="d4321628768" />
+        <char id="d4325154448" states="d4321628768" />
+        <char id="d4325154512" states="d4321628768" />
+        <char id="d4325154576" states="d4321628768" />
+        <char id="d4325154640" states="d4321628768" />
+        <char id="d4325154704" states="d4321628768" />
+        <char id="d4325154768" states="d4321628768" />
+        <char id="d4325138384" states="d4321628768" />
+        <char id="d4325138320" states="d4321628768" />
+        <char id="d4325138256" states="d4321628768" />
+        <char id="d4325138192" states="d4321628768" />
+        <char id="d4325138128" states="d4321628768" />
+        <char id="d4325138064" states="d4321628768" />
+        <char id="d4325138000" states="d4321628768" />
+        <char id="d4325137936" states="d4321628768" />
+        <char id="d4325137872" states="d4321628768" />
+        <char id="d4325137808" states="d4321628768" />
+        <char id="d4325137744" states="d4321628768" />
+        <char id="d4325137680" states="d4321628768" />
+        <char id="d4325137616" states="d4321628768" />
+        <char id="d4325137552" states="d4321628768" />
+        <char id="d4325137488" states="d4321628768" />
+        <char id="d4325137424" states="d4321628768" />
+        <char id="d4325137360" states="d4321628768" />
+        <char id="d4325137296" states="d4321628768" />
+        <char id="d4325137232" states="d4321628768" />
+        <char id="d4325137168" states="d4321628768" />
+        <char id="d4325137104" states="d4321628768" />
+        <char id="d4325137040" states="d4321628768" />
+        <char id="d4325136976" states="d4321628768" />
+        <char id="d4325136912" states="d4321628768" />
+        <char id="d4325136848" states="d4321628768" />
+        <char id="d4325136784" states="d4321628768" />
+        <char id="d4325136720" states="d4321628768" />
+        <char id="d4325136656" states="d4321628768" />
+        <char id="d4325136592" states="d4321628768" />
+        <char id="d4325136528" states="d4321628768" />
+        <char id="d4325136464" states="d4321628768" />
+        <char id="d4325136400" states="d4321628768" />
+        <char id="d4325136336" states="d4321628768" />
+        <char id="d4325136272" states="d4321628768" />
+        <char id="d4325136208" states="d4321628768" />
+        <char id="d4325136144" states="d4321628768" />
+        <char id="d4325136080" states="d4321628768" />
+        <char id="d4325136016" states="d4321628768" />
+        <char id="d4325135952" states="d4321628768" />
+        <char id="d4325135888" states="d4321628768" />
+        <char id="d4325135824" states="d4321628768" />
+        <char id="d4325135760" states="d4321628768" />
+        <char id="d4325135696" states="d4321628768" />
+        <char id="d4325135632" states="d4321628768" />
+        <char id="d4325135568" states="d4321628768" />
+        <char id="d4325135504" states="d4321628768" />
+        <char id="d4325135440" states="d4321628768" />
+        <char id="d4325135376" states="d4321628768" />
+        <char id="d4325135312" states="d4321628768" />
+        <char id="d4325135248" states="d4321628768" />
+        <char id="d4325135184" states="d4321628768" />
+        <char id="d4325135120" states="d4321628768" />
+        <char id="d4325135056" states="d4321628768" />
+        <char id="d4325134992" states="d4321628768" />
+        <char id="d4325134928" states="d4321628768" />
+        <char id="d4325134864" states="d4321628768" />
+        <char id="d4325134800" states="d4321628768" />
+        <char id="d4325134736" states="d4321628768" />
+        <char id="d4325134672" states="d4321628768" />
+        <char id="d4325134608" states="d4321628768" />
+        <char id="d4325134544" states="d4321628768" />
+        <char id="d4325134480" states="d4321628768" />
+        <char id="d4325134416" states="d4321628768" />
+        <char id="d4325126224" states="d4321628768" />
+        <char id="d4325126288" states="d4321628768" />
+        <char id="d4325126352" states="d4321628768" />
+        <char id="d4325126416" states="d4321628768" />
+        <char id="d4325126480" states="d4321628768" />
+        <char id="d4325126544" states="d4321628768" />
+        <char id="d4325126608" states="d4321628768" />
+        <char id="d4325126672" states="d4321628768" />
+        <char id="d4325126736" states="d4321628768" />
+        <char id="d4325126800" states="d4321628768" />
+        <char id="d4325126864" states="d4321628768" />
+        <char id="d4325126928" states="d4321628768" />
+        <char id="d4325126992" states="d4321628768" />
+        <char id="d4325127056" states="d4321628768" />
+        <char id="d4325127120" states="d4321628768" />
+        <char id="d4325127184" states="d4321628768" />
+        <char id="d4325127248" states="d4321628768" />
+        <char id="d4325127312" states="d4321628768" />
+        <char id="d4325127376" states="d4321628768" />
+        <char id="d4325127440" states="d4321628768" />
+        <char id="d4325127504" states="d4321628768" />
+        <char id="d4325127568" states="d4321628768" />
+        <char id="d4325127632" states="d4321628768" />
+        <char id="d4325127696" states="d4321628768" />
+        <char id="d4325127760" states="d4321628768" />
+        <char id="d4325127824" states="d4321628768" />
+        <char id="d4325127888" states="d4321628768" />
+        <char id="d4325127952" states="d4321628768" />
+        <char id="d4325128016" states="d4321628768" />
+        <char id="d4325128080" states="d4321628768" />
+        <char id="d4325128144" states="d4321628768" />
+        <char id="d4325128208" states="d4321628768" />
+        <char id="d4325128272" states="d4321628768" />
+        <char id="d4325128336" states="d4321628768" />
+        <char id="d4325128400" states="d4321628768" />
+        <char id="d4325128464" states="d4321628768" />
+        <char id="d4325128528" states="d4321628768" />
+        <char id="d4325128592" states="d4321628768" />
+        <char id="d4325128656" states="d4321628768" />
+        <char id="d4325128720" states="d4321628768" />
+        <char id="d4325128784" states="d4321628768" />
+        <char id="d4325128848" states="d4321628768" />
+        <char id="d4325128912" states="d4321628768" />
+        <char id="d4325128976" states="d4321628768" />
+        <char id="d4325129040" states="d4321628768" />
+        <char id="d4325129104" states="d4321628768" />
+        <char id="d4325129168" states="d4321628768" />
+        <char id="d4325129232" states="d4321628768" />
+        <char id="d4325129296" states="d4321628768" />
+        <char id="d4325129360" states="d4321628768" />
+        <char id="d4325129424" states="d4321628768" />
+        <char id="d4325129488" states="d4321628768" />
+        <char id="d4325129552" states="d4321628768" />
+        <char id="d4325129616" states="d4321628768" />
+        <char id="d4325129680" states="d4321628768" />
+        <char id="d4325129744" states="d4321628768" />
+        <char id="d4325129808" states="d4321628768" />
+        <char id="d4325129872" states="d4321628768" />
+        <char id="d4325129936" states="d4321628768" />
+        <char id="d4325130000" states="d4321628768" />
+        <char id="d4325130064" states="d4321628768" />
+        <char id="d4325130128" states="d4321628768" />
+        <char id="d4325130192" states="d4321628768" />
+        <char id="d4324888656" states="d4321628768" />
+        <char id="d4324888720" states="d4321628768" />
+        <char id="d4324888784" states="d4321628768" />
+        <char id="d4324888848" states="d4321628768" />
+        <char id="d4324888912" states="d4321628768" />
+        <char id="d4324888976" states="d4321628768" />
+        <char id="d4324889040" states="d4321628768" />
+        <char id="d4324889104" states="d4321628768" />
+        <char id="d4324889168" states="d4321628768" />
+        <char id="d4324889232" states="d4321628768" />
+        <char id="d4324889296" states="d4321628768" />
+        <char id="d4324889360" states="d4321628768" />
+        <char id="d4324889424" states="d4321628768" />
+        <char id="d4324889488" states="d4321628768" />
+        <char id="d4324889552" states="d4321628768" />
+        <char id="d4324889616" states="d4321628768" />
+        <char id="d4324889680" states="d4321628768" />
+        <char id="d4324889744" states="d4321628768" />
+        <char id="d4324889808" states="d4321628768" />
+        <char id="d4324889872" states="d4321628768" />
+        <char id="d4324889936" states="d4321628768" />
+        <char id="d4324890000" states="d4321628768" />
+        <char id="d4324890064" states="d4321628768" />
+        <char id="d4324890128" states="d4321628768" />
+        <char id="d4324890192" states="d4321628768" />
+        <char id="d4324890256" states="d4321628768" />
+        <char id="d4324890320" states="d4321628768" />
+        <char id="d4324890384" states="d4321628768" />
+        <char id="d4324890448" states="d4321628768" />
+        <char id="d4324890512" states="d4321628768" />
+        <char id="d4324890576" states="d4321628768" />
+        <char id="d4324890640" states="d4321628768" />
+        <char id="d4324890704" states="d4321628768" />
+        <char id="d4324890768" states="d4321628768" />
+        <char id="d4324890832" states="d4321628768" />
+        <char id="d4324890896" states="d4321628768" />
+        <char id="d4324890960" states="d4321628768" />
+        <char id="d4324891024" states="d4321628768" />
+        <char id="d4324891088" states="d4321628768" />
+        <char id="d4324891152" states="d4321628768" />
+        <char id="d4324891216" states="d4321628768" />
+        <char id="d4324891280" states="d4321628768" />
+        <char id="d4324891344" states="d4321628768" />
+        <char id="d4324891408" states="d4321628768" />
+        <char id="d4324891472" states="d4321628768" />
+        <char id="d4324891536" states="d4321628768" />
+        <char id="d4324891600" states="d4321628768" />
+        <char id="d4324891664" states="d4321628768" />
+        <char id="d4324891728" states="d4321628768" />
+        <char id="d4324891792" states="d4321628768" />
+        <char id="d4324891856" states="d4321628768" />
+        <char id="d4324891920" states="d4321628768" />
+        <char id="d4324891984" states="d4321628768" />
+        <char id="d4324892048" states="d4321628768" />
+        <char id="d4324892112" states="d4321628768" />
+        <char id="d4324892176" states="d4321628768" />
+        <char id="d4324892240" states="d4321628768" />
+        <char id="d4324892304" states="d4321628768" />
+        <char id="d4324892368" states="d4321628768" />
+        <char id="d4324892432" states="d4321628768" />
+        <char id="d4324892496" states="d4321628768" />
+        <char id="d4324892560" states="d4321628768" />
+        <char id="d4324892624" states="d4321628768" />
+        <char id="d4324872272" states="d4321628768" />
+        <char id="d4324872336" states="d4321628768" />
+        <char id="d4324872400" states="d4321628768" />
+        <char id="d4324872464" states="d4321628768" />
+        <char id="d4324872528" states="d4321628768" />
+        <char id="d4324872592" states="d4321628768" />
+        <char id="d4324872656" states="d4321628768" />
+        <char id="d4324872720" states="d4321628768" />
+        <char id="d4324872784" states="d4321628768" />
+        <char id="d4324872848" states="d4321628768" />
+        <char id="d4324872912" states="d4321628768" />
+        <char id="d4324872976" states="d4321628768" />
+        <char id="d4324873040" states="d4321628768" />
+        <char id="d4324873104" states="d4321628768" />
+        <char id="d4324873168" states="d4321628768" />
+        <char id="d4324873232" states="d4321628768" />
+        <char id="d4324873296" states="d4321628768" />
+        <char id="d4324873360" states="d4321628768" />
+        <char id="d4324873424" states="d4321628768" />
+        <char id="d4324873488" states="d4321628768" />
+        <char id="d4324873552" states="d4321628768" />
+        <char id="d4324873616" states="d4321628768" />
+        <char id="d4324873680" states="d4321628768" />
+        <char id="d4324873744" states="d4321628768" />
+        <char id="d4324873808" states="d4321628768" />
+        <char id="d4324873872" states="d4321628768" />
+        <char id="d4324873936" states="d4321628768" />
+        <char id="d4324874000" states="d4321628768" />
+        <char id="d4324874064" states="d4321628768" />
+        <char id="d4324874128" states="d4321628768" />
+        <char id="d4324874192" states="d4321628768" />
+        <char id="d4324874256" states="d4321628768" />
+        <char id="d4324874320" states="d4321628768" />
+        <char id="d4324874384" states="d4321628768" />
+        <char id="d4324874448" states="d4321628768" />
+        <char id="d4324874512" states="d4321628768" />
+        <char id="d4324874576" states="d4321628768" />
+        <char id="d4324874640" states="d4321628768" />
+        <char id="d4324874704" states="d4321628768" />
+        <char id="d4324874768" states="d4321628768" />
+        <char id="d4324874832" states="d4321628768" />
+        <char id="d4324874896" states="d4321628768" />
+        <char id="d4324874960" states="d4321628768" />
+        <char id="d4324875024" states="d4321628768" />
+        <char id="d4324875088" states="d4321628768" />
+        <char id="d4324875152" states="d4321628768" />
+        <char id="d4324875216" states="d4321628768" />
+        <char id="d4324875280" states="d4321628768" />
+        <char id="d4324875344" states="d4321628768" />
+        <char id="d4324875408" states="d4321628768" />
+        <char id="d4324875472" states="d4321628768" />
+        <char id="d4324875536" states="d4321628768" />
+        <char id="d4324875600" states="d4321628768" />
+        </format>
+        <matrix>
+            <row id="d4334509672" otu="d4334667792">
+                <seq>DRSWABUBMUNNDSAHDBUNBHC-VHRSUSUHDXDSBAVYKR-
+                    MVGCNBMCHVCYBMMHUNCDRGNGYCAHUGCMRBN-UDMUAXMGKBGDRV
+                    DWXSWMRSDNGWVRNDBBDWGSWWKDUSXCWCCWBABYNSHBR-YRYMWM
+                    GWVAUDDDNCC?RYGNNYYUKYDDBSYBACUNUBCKHVAUNUMWAYCUUR
+                    KBVDUBVCVADVXSDNR?KAUAABRCXKNSCAYVRSSNXY-
+                    YKBNYSUWUSCBASRRCUYWA?</seq>
+            </row>
+            <row id="d4334622776" otu="d4334667856">
+                <seq>BRDGB-YVAANKBGBHDCCXBXNVYVRSUUMVCWRW?GWUWCD?ACXVG
+                    BHHUDVM?GBMDMXYGYMMUNWCSD?CYBSKGCVHXYVCC
+                    ?RAVYVSSAKDGYWWKCACWBHDUGBKWWNKCNDBWBNA-
+                    BKWKWRDCHRKXVMCCWHCARNCSDAKVHUYGKV-SXDN-
+                    CMWKVXKUKBSB?MGCUXNSUCWNNCKRGW-VV
+                    ?VANRNVDHKHRWBVUBWR-HN-
+                    WKUCGANGNRRCBRSUUSBNWVXCDKUDGRN</seq>
+            </row>
+            <row id="d4334672544" otu="d4334479888">
+                <seq>DB-NRNBGRUAVNWMHAGBXHVUMAMD-UXMXKXWDCUAYSBSGAGNND
+                    UGHYCBBMHBUUCHCGCNHSVSNUMWWSYADCWSSHMRGDYDXWNAYNBR
+                    MG-VBBUNNDU?YYXW-?ARKYDXCWAWBYVK-SUY
+                    ?CXWBHHCWGNMSCVNSUWNNWMVUMAVNAXVCBAAXUGDANNDNVYUC-
+                    MMMHSUGRBWVDCBMSWNXRKNGADHVXCWSBBHRGHSNANSUHSYNBNG
+                    DBUH-VUUCWVSNDM-UMWCM</seq>
+            </row>
+            <row id="d4334487344" otu="d4334480016">
+                <seq>DG-ARMGGYUAVDRAHHABXBUNMVURSUUWYDWUWRSWYKCVCAMXNM
+                    MHHYCVKAGBUDVXRDWNYSVGUUDSNNBSUNAVSXAGYNGDVVDHDSBM
+                    YGCMGUV?CDB-DRWDBCWVKG
+                    ?XVYAWBAVVWSDCDUXMUUVYCWNBCAW-CCKSNKHYHUAV-UXDBDCM
+                    BYXGGMNYNVXKVUKVBRCUWVKCVDBWVHKASSNCDWD?VBYWHBKCRS
+                    DHNAWVC-S-NGHURBHRSKUSWWYMHYRUUYWRV</seq>
+            </row>
+            <row id="d4325290768" otu="d4334668432">
+                <seq>WNKUSDHGYR?VHUYHD?SXBKUMRURMVCWADBUVDKNHDCVWHBXKK
+                    RWMVDMKKACSG?YHHSXWSBMXAGM?NHC?ND?RX?GKMRVMNDCNNC?
+                    YGRUCMVHUABSHRVYYC?BWARXRVBAMAGVDMDUDUDW-AWCDXMKHD
+                    ?KCCSSU-RUDUGGW-XSCDAWUW?YANDRRYHVCVCNVVSBGKWDUKBW
+                    GHRKRXVDYMA?YUGWDBCCYVCRVVSHU-S-GVHUGBWBURRYBNSBRU
+                    RWU-S-R</seq>
+            </row>
+            <row id="d4334746536" otu="d4334667984">
+                <seq>RHDYR-GSKUABW?GHHHXDHUKDRUGCUU?YD
+                    ?GSUSAYCCVSWAVHCXAHGMH-VGRY-BNRD-XH-
+                    AGKUDCCMNUDVKVVNAGSDHDSKBNWSSKSGBMUNHHAD-GCRWVHYWA
+                    KGWASWBYBYCYWADCXNWVHSMYHVNBDSNBVVDGNHRBHDHA-
+                    NHDCRAHXWBGGKNKGDCKXYYYRGCSUCKCXMMGBNBS-
+                    YNXVSCDRBYWUWSMC?DHXNWVGAA-DCVB-
+                    BGDDMUSWKWCUGRUUWSHH</seq>
+            </row>
+            <row id="d4325244080" otu="d4334668496">
+                <seq>DGKVWMRSDHABWVAMWBDXUCVHKRHXCUWXRW
+                    ?MVWUUCAVGAMNWRSRHGDWKRBBHMHRW-
+                    WWDVBANUCSNMKUVSMU?BGRYNBHWVAUMSYXYDNMHGGNY?M
+                    ?CHWDBB-VRBYSMHRWBAVXXGBCUA
+                    ?MMHSYSDNGYBGVSCWHACHSDHCVHVBASYCHBRMXG-
+                    BYRNRMHAMRWD?W?CKCWDVYHC-HGWGHWND-
+                    NRGSSWBMUXSWBNWVVVYDYGYUCYH?VUHRNW?YRUSRGYWUN</seq>
+            </row>
+            <row id="d4334802296" otu="d4334668048">
+                <seq>DSYGDWKARWA-DAKGGAKHWYASRKCRWACWDGUWNUDDKMUCAYKYS
+                    MHHYHABAWSUWYSRXKUGMVVCDHGMVDVAGAYSNGGYRWDWBR?YSBC
+                    YRCXWKDRXKNDDBKNHKWBGN?SVKAABRWRWSRURUXRWRVYCCCSCM
+                    GGKVGVNKMWDVASNRYDBNMMBYRGDYNC-KXHD-
+                    YW?SGXWKUBVKVWGDUAMGVCDGM?VBDYGNGY?XSAKUYVMVA-
+                    DGMCANAXSHUSWBHYSUNCUYVRR</seq>
+            </row>
+            <row id="d4346300736" otu="d4334668368">
+                <seq>?DSA-UGKUUHKAUAGBANNBCNMC?GSSCWVDWWBKS?HKCVAM-
+                    CMAKCA-HVNDGBUHNSRGADYSWBVACSRUS-
+                    NKRVSXNCYNGNYCSHHCA-YGYHSYACHCW-
+                    MYVNKCHVCSUUVMUBBHUNRRRHDHXRKGA
+                    ?DUWKVWYCCWAUMKVNHRAH-UXAMDYMGKYNGNNGGVXDV
+                    ?WCNCSBHVNHC-UWRHKDWNMKWKDRVMXSSBK?VASAWUWGXR?BNGH
+                    CRCHXUMKMWWKMARRCSYNVS</seq>
+            </row>
+            <row id="d4346122008" otu="d4334668112">
+                <seq>RWAGAHSNYHRVHRRRRMBBWBDHDURHDGNUMMUNHVNHHAVCKSBKK
+                    GUHKAYDAGBWVVDNDWRVHUBHRKNNDAB-NMBHKDG-
+                    NURGVDHDHCSVYAMVKNDSDMWCNGDRCS-KG
+                    ?YWVYWRYVMWCACDWWYGUVR-DGDK-RDCUBWRNYGHMVWVC
+                    ?MDBMMBHXGVNY-NCCCKV?HBSWBWUYKMRBCMBCHSSVDDAS?KSAW
+                    MBDVWCDNNABNVYRADADNYRCYYHCBWAYDGCVVUBKCW</seq>
+            </row>
+            <row id="d4334699016" otu="d4334667920">
+                <seq>DGURCDGCYYGWGUDHHADXMUSMVCRGSURADNNHWSCN
+                    ?WVCDNWADBHW-BUGNSBXURVKS?KHSYYMYKSNAHMSCASGGAVYNR
+                    RAYWHGAHMGWDMYUYRDDSSUDVSHDSYKYKKNSDGSMRDXNRDGKGMC
+                    ?AY-CGVBNXKMDAUWKHY?WAGYAXNDDKRMHXKCMWYRYBSVNMRBDC
+                    URKY-V?GBS-K?HHC?NG-YW-
+                    AKAACGVWGM-?WVKCDXG?DYDBCCBKNAGVYYUACWYAARC</seq>
+            </row>
+            <row id="d4346177768" otu="d4334668176">
+                <seq>VHDAWMY?KNSGGNYARAAVHGSXVU?URBYUWSUKD?AKKCVYBMSVM
+                    CB?VBKRAGV?HUXVWBWYAHGVVAUKNDSUXXVCMMHYBBDMMYXH-
+                    MMUXWMBACHSYM-DRWBBUBVKKVSYVCMRKVVUMDHGUWHUNMYMVVN
+                    C?BXMSXSAMHNNGUV--XNNS?VBG-
+                    XDNXCNMSBWGAGDVHRWSDNVNCBBCMARSRCSAVSVUYN-AU-
+                    GW?DMGCVAKDKUSBVKWBHGVUSCYUVNYCSVCMKV</seq>
+            </row>
+            <row id="d4346253168" otu="d4334668304">
+                <seq>-BAX-RKWGBAHVAAC?HKXBCSNHUBBKWWHDUURCGWYVKGNVVABY
+                    MRA?GVVASKGDARDKWNCSVBMAVYVNBHCKMWSXRVGYUCCVNDDYBS
+                    VWSYCCNCCHUYYWWUVCDRRS?SHBGWHBVHMABDDUXUCMXYCUBMCX
+                    GSKKG--BHRBUAUGMRNVAHNCVDYBBNKHVCKHXKNHGDAGVKCBYBS
+                    KVKMKXVMVUUVVBYACWBNDHARHHYRCANVG-
+                    HCRH?RDKHSWWCUYXXCDDCYV</seq>
+            </row>
+            <row id="d4346229432" otu="d4334668240">
+                <seq>MMBYBMHGMVGVGNVWHHNWNDUSSVVDCYWYXYRXRNAYGKGUAMBSK
+                    MCWM?AKBWNUARGHDANNUVSBURSDHBXSNCMRYNGDYWNHAKXDSYM
+                    YYCHGBS?MDB-ARX-USSDNRKAYWCWBAYSUBDAHCS-
+                    HUVGWWDBCVR-RCKVMKMYNUDCKYGHWRVYDMKDKRMRNSY
+                    ?HDKGRHCVWXYCBRKG-CSMXXDANWNCRSURARCGBSDMUWWKXAB?K
+                    CNNRBHMMKUKGHGMVGRVHYVDY</seq>
+            </row>
+            <row id="d4325348552" otu="d4334479952">
+                <seq>MWCASMYNGUBBYRWUCHBMUBNNYWWMUNBSDBYMUGWBKSRCVHXNB
+                    MGHSHWRMRAMMUBKAUNHAVHMDNRAYWSUNRUAVAGYNGM?VNHDCS?
+                    VGKXGYVUCD?KDMRMV?UVKW?RGDAWGUMGH-
+                    WGUGAMDYHGSKBRCUCV-CRSSDVMYUW?GHVWYDWMHYDBSMDMRCKU
+                    SUKVRUMVWXSCUUUWWKKVK?RCDXXMNDYXCBKCUSDVRYHHCSCVNV
+                    HDRBXNRUKHWXHRVYRMBYWWX</seq>
+            </row>
+        </matrix>
+    </characters>
+</nex:nexml>

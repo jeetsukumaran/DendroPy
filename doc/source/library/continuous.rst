@@ -1,11 +1,8 @@
-**************************************************************************
-:mod:`dendropy.continuous` -- Continuous Character Simulation and Analysis
-**************************************************************************
+****************************************************************
+:mod:`dendropy.model.continuous`: Continuous Character Evolution
+****************************************************************
 
-.. module:: continuous
-
-.. toctree::
-    :maxdepth: 2
-
-.. automodule:: dendropy.continuous
+.. automodule:: dendropy.model.continuous
     :members:
+
+

@@ -1,0 +1,31 @@
+#NEXUS
+
+begin taxa;
+	dimensions ntax=15;
+	taxlabels
+        a b c e f g h i j k l m n o p
+	;
+end;
+
+begin characters;
+	dimensions nchar=256;
+	format datatype=dna gap=- interleave=no;
+	matrix
+a    CaY?dbdNYWkKN?kHMXtKWXRYYwATrRbD-?hTacgSRNbkdgNSRymmNWwnKVkYGAkmRAXXhNtgwnmGramYH-ms?vNb-Ca?DNAsdwRDc-KYd-HTCvNyRsXVwmDbBYRaXd?mcRdyKwgrbdswmSGAYndNYVbbtAKCgK-KykswasSYmmNGYGNNKR-dwgMGGTgBdhSdsWvAGKBnMK--TVc-KMWkHdXgBAVTtwVntrcRNwCRVdVamYXYvhbh-GnswKRYtscr
+b    kvYYWbTKYCMKNHkdsXbHsaCTYHtXN-TDSk?AaggSrAhrX?YbBWNmWVtBGGSXBARmYAVMcwtgadmsraWtwXasTYX-s?asDmXDAbRDb?RYWNwRdYXyMGdB?R-ABKCRbMaacBcSyw-adddBvGKAYddNVcAHWAwtVAbKycXgVKdYAkNWDGXAvrvsHgBtGGsBKh-RnBRmr??RTCwAmwDBbGVarMCkBADChh-cbAc?NGCdtdwCcmHYvmVtRTccSScYtYcV
+c    rNarTVWSTXTKDhNSGbGKhXwwTsGvwDMDN?agmcXBNKbVdRN-K?mtwWBnWDks-hkBwaS-kvcDRVmarVmRX-s?raSAhDaGDmmgRwRScnWYwvmTnSNyRsXVtMYbBdRKSAywhRdKwyVBAAAwDNaySrvNyTYYVAWCXymKSssNVsmGvdNkYrywYRBvwTNBGDgwRhMBBW?TrKVgVSG-?BcvKdanrvDgSAVvMrvCwybwNhMG?WVagBXwNwrcytWmgBgSt-kk
+e    sgC?dsaBYhkrV?kYwmDKaXRYYwvT-?YD-mXhVmnKGMTkdSKsKkrmcdskKRkRAATSwCYXvNWkbSNGrSXdtvC??kcgMGaWMyAWdBHHvMYad-HVyGNCHVXDWWwrrYHtanYNcM?yKSVrdWsVrKSnT?tXvgbDrMaCgKarDrKwskHmgyXGYhmRK-asm-Xnt-WbG-gGTKvcNKgntNrnNHBWMrMkHGg?d?VVGvcTt-cgbwdHndsAmXYYAVdt-GnkgvRYdRcH
+f    kaAcdGnNwmgcGkXXMKNyAXwRV-KTsRyTWw?TMwgSRvRVtyycGYAtHWmhXVWYkAcMtCybwNtmWw-sKRXrydmdrvX?NkY?cscYmKtdc-KaKr-NTkNydKGRthSbTyRmkdbv?RvrKwBDS--wBdDARndba-S-tKRygKcKWraSsmXvbgmdmbMmcshAwnbGSTsCXrSGsTkWnKasRyhMTcgWYBTSsdmwSAVM?tmhWScRn?kRBcHcmSkYccdhSGwr-?SRC-Bn
+g    CgH?dcCwY?VTWvgCACShvNRXY?dHs?BTSYHdaMgcRSCdYgcSt???VWTXhDvdyAgmAsWDnASNRn-GWttSKkGN?yND-SXYYbAcdmR-mwmaCsHnmkbyBmHDKXDkWYGtYDcTvCvcSvGwbkbHymAkBKhNYayhckYhcy-GXhRnGBSKVANdAgDSnDmdH?MGNbnBXhThKHvaMNnGDKNKdAMSKMSTgHwcvyYcwYdrtDVVtDAHVdkyWyCsvAGWtGkVVMya-Gbr
+h    DRcwhbdwsDs-yMKsHThKdwKYsvAArcvwT?MTAMgmRntHdTNknwSCNvnrWKkXMCKtvrXYknSwMWvarRnAsVHsbvNbKHcXKbHMdGDTBW?w-dGcsvHWXsKVdKVnBvnNcYCWks-kyyWwaCsrdGXNvsNHyVDaHAtCbnXThAnwaBSXHhVskXNtygVdTdMcsNWnaMkwckaXwt-hWKWBwG?-rMb-HAvyDArbtRVNBRkggmNHHd-DXYasWASd-rmVkKwVthsa
+i    raYsbGsYBaWKkgkHSWCKGkmCWwwTvRbD?RhwvcNkR-GGbYASVDRmg?vn-?CCGHtmWgXghCtmhdHGWNtHKdmkchDbSSNgDMAsnrRDYdkhDC?HXCgRdmXKSyKrWdYVGYBmBaGNkmgrchWdmXGdNGGnkThStWmNkV-mVKasCnBYRmN-YkyGHCW-wwM?XGVaMkSvgWAAnKwMkWM?DHyaKR-GAYXkmRCVtRbywCvVwGWT-C?aHnhtWHkHmCysXXRbtMcr
+j    cHgKdtkgKKXygnsCtTGmVdRHXD?TAkmDrHsTdhVnwstkdXCGwy?ms?wnsVkYkYkYccXXTNtbwr?GM?yXn-msbvBwWRB?XNSSmcRHB--RbHywBaNnrMgrDD-n-wrKXy?mcN-MrnDrnKgs?StSBbVGtNaBvvYCw-VrM?sGasSCm?WdYXsWmABCwgMYBmhXMBtwmANyNGydGcsgyVXVrDRwXwX?BGXKtrkCtWKm?wCrhDgvmwSWsCCk-GmsKWVYtaca
+k    ryTBakDTwVwd-?kHMArVrXGbrGbCAVbaH?nTrygYMCbRhsaSby?rgBBngVCNmAk?KRdXb?VgGnNGgatYGBmsmvNS-Mw-wHACSvAKcgvWWNHtbvaaTbXXwcDYktgaXc-KXRMCacgybR--k-KNvAdNYVrTCGDv-d-KwwKKayRGDmn-VyDHnNWdnSkGGhSwAkNdhWAGCKwnhBw-TYXBKkW-HdXhdhnmdCGnTTcRwrXs?mmnXwVNrgmhkgMRgKantsct
+l    gvYXAkgCVryKdaYRHTdKW?crbwaTYnbDSbgcmRgXaNw-YkRS?dsBNWWwgmsNVGkwHHyBvbhXwH-Dr-SGDSwN-hvbMVawDTSYgwRWV-WYvTHTBvKTrdXVvbgbckTWhN?R?ndygwg-mdsVghV-YcKNsVcbTAR--mhTyAcwMbnCsAyKYMw-bVAdwmBXGKMyahSAAWSVTvB-MAGYmSs-KXykHt-gkKVvSdrnKHAaGwTRXnVrdwmHvamcvHtawYNTksSc
+m    GgYXWRTtbGhw??r?MyGHWcRwM?mRrkbm-mhTWvgMgNvgygMScyAwNYknnKaGmVGYRAX?htMT?kb?GCkbMVHs?NTysCD?hvHgwVTDkRWnmyHSyvDDRHRVXnRY-HRaCd?XMRYYTS?dHHVmmYbvaRRNDKXGtbhWsakrrakYDsKYmCGvtnNybhAhyNVgkydsctDkTnvAHtyAmXWtaCmGKGBNH-SMMKVTsNtrVbYRyccSWdhKCMV-a?sY-RnSWydYWWSr
+n    CrCAsCndkdmcSmvyTtdTWXdTAtAHTABXWhhGKcgaMcY?N??SGMbsncwvKVDWMXhmDMN-hNvXKHtNWGmYStm??aVX-GSYmS?sdnyDAMmvtXnnCrKynT?WwkydXYDaBcCTGrCvVm-RMwsTmbsyy-sWYwBmtDKhVKrX?a?masbYTmdYkGNADbXdKSygMKmrdMgdb?SGAKBnHK--TVckKSksgDvgAA-wkwR?mHXgswCbgkVY?YHAAhNkvygnd?RYdsht
+o    tWB?d?akmWw?ARCHVTKDCvarAvr-YabdbmrTawYDVNwkHXNNdhWrkW?nkBBTkSgcHHyXctwgwDSnGhVSH-yCgghbhgyMgmCtXwRdrRYVdMvYbVcBgRwyHmbvSdXAb-?GwsYtHwWAbDtkWrGw-KVvYhabM-WCWbBKbBsTaySGTsKGvGYtHHbdGYybW-gBAdWdhCKCKYanswvbsgsvSnhHRKAgb?yKtwKmtYMBHYHWMB?RmYSYnmWhCmVswdGSVsHM
+p    hWYKRNdvRWHKHWwHywkdXXKYYmbByWbbmThTvcySRnrk-sDYGV?sMHMkwKYdtcDVdVrTtSnCRnHyR?YYbNGGNvWbvagvDHTgMS?cc-KYv-HTCbDyRCwVaHCTYKsarAvKcygycVyhNKDyraGgH?mNMTDbD?NTgYtbtckwSbWCaaWtYDNCKRTdwKKwSnhyBASHsWbWRKKrW-bBdbS-ahnkHmXvdAVnmwVgBTGR?VgXCAHVmYX-VcNhVhgHwrgBkwtd
+	;
+end;
+

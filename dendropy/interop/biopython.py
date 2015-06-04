@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -37,7 +37,7 @@ else:
 
     def as_biopython_object(o):
         """
-        Returns `o` as an biopython object.
+        Returns ``o`` as an biopython object.
         """
         if isinstance(o, dendropy.CharacterMatrix):
             if isinstance(o, dendropy.DnaCharacterMatrix):

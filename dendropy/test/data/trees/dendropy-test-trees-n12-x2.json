@@ -1,0 +1,931 @@
+{
+    "0": {
+        "comments": [],
+        "edges": {
+            "internal1": {
+                "comments": [],
+                "head_node": "internal1",
+                "label": "internal1",
+                "length": 0.0098,
+                "metadata": {},
+                "tail_node": null
+            },
+            "internal10": {
+                "comments": [],
+                "head_node": "internal10",
+                "label": "internal10",
+                "length": 0.0007,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "internal2": {
+                "comments": [],
+                "head_node": "internal2",
+                "label": "internal2",
+                "length": 23.3747,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "internal3": {
+                "comments": [],
+                "head_node": "internal3",
+                "label": "internal3",
+                "length": 0.0057,
+                "metadata": {},
+                "tail_node": "internal2"
+            },
+            "internal4": {
+                "comments": [],
+                "head_node": "internal4",
+                "label": "internal4",
+                "length": 344.9032,
+                "metadata": {},
+                "tail_node": "internal3"
+            },
+            "internal5": {
+                "comments": [],
+                "head_node": "internal5",
+                "label": "internal5",
+                "length": 0.0017,
+                "metadata": {},
+                "tail_node": "internal4"
+            },
+            "internal6": {
+                "comments": [],
+                "head_node": "internal6",
+                "label": "internal6",
+                "length": 0.0031,
+                "metadata": {},
+                "tail_node": "internal3"
+            },
+            "internal7": {
+                "comments": [],
+                "head_node": "internal7",
+                "label": "internal7",
+                "length": 0.0078,
+                "metadata": {},
+                "tail_node": "internal6"
+            },
+            "internal8": {
+                "comments": [],
+                "head_node": "internal8",
+                "label": "internal8",
+                "length": 0.0001,
+                "metadata": {},
+                "tail_node": "internal6"
+            },
+            "internal9": {
+                "comments": [],
+                "head_node": "internal9",
+                "label": "internal9",
+                "length": 0.0003,
+                "metadata": {},
+                "tail_node": "internal8"
+            },
+            "t1": {
+                "comments": [],
+                "head_node": "t1",
+                "label": "t1",
+                "length": 0.0051,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "t10": {
+                "comments": [],
+                "head_node": "t10",
+                "label": "t10",
+                "length": 0.0099,
+                "metadata": {},
+                "tail_node": "internal9"
+            },
+            "t11": {
+                "comments": [],
+                "head_node": "t11",
+                "label": "t11",
+                "length": 0.0092,
+                "metadata": {},
+                "tail_node": "internal4"
+            },
+            "t12": {
+                "comments": [],
+                "head_node": "t12",
+                "label": "t12",
+                "length": 0.0093,
+                "metadata": {},
+                "tail_node": "internal5"
+            },
+            "t2": {
+                "comments": [],
+                "head_node": "t2",
+                "label": "t2",
+                "length": 0.0002,
+                "metadata": {},
+                "tail_node": "internal2"
+            },
+            "t3": {
+                "comments": [],
+                "head_node": "t3",
+                "label": "t3",
+                "length": 0.0015,
+                "metadata": {},
+                "tail_node": "internal9"
+            },
+            "t4": {
+                "comments": [],
+                "head_node": "t4",
+                "label": "t4",
+                "length": 353.4995,
+                "metadata": {},
+                "tail_node": "internal7"
+            },
+            "t5": {
+                "comments": [],
+                "head_node": "t5",
+                "label": "t5",
+                "length": 0.0058,
+                "metadata": {},
+                "tail_node": "internal10"
+            },
+            "t6": {
+                "comments": [],
+                "head_node": "t6",
+                "label": "t6",
+                "length": 0.0008,
+                "metadata": {},
+                "tail_node": "internal8"
+            },
+            "t7": {
+                "comments": [],
+                "head_node": "t7",
+                "label": "t7",
+                "length": 777.3926,
+                "metadata": {},
+                "tail_node": "internal7"
+            },
+            "t8": {
+                "comments": [],
+                "head_node": "t8",
+                "label": "t8",
+                "length": 0.0004,
+                "metadata": {},
+                "tail_node": "internal10"
+            },
+            "t9": {
+                "comments": [],
+                "head_node": "t9",
+                "label": "t9",
+                "length": 0.0013,
+                "metadata": {},
+                "tail_node": "internal5"
+            }
+        },
+        "edgeset": [
+            "internal1",
+            "internal2",
+            "internal3",
+            "internal4",
+            "internal5",
+            "t9",
+            "t12",
+            "t11",
+            "internal6",
+            "internal7",
+            "t7",
+            "t4",
+            "internal8",
+            "internal9",
+            "t10",
+            "t3",
+            "t6",
+            "t2",
+            "internal10",
+            "t8",
+            "t5",
+            "t1"
+        ],
+        "is_rooted": false,
+        "label": "Tree1",
+        "metadata": {},
+        "nodes": {
+            "internal1": {
+                "children": [
+                    "internal2",
+                    "internal10",
+                    "t1"
+                ],
+                "comments": [],
+                "edge": "internal1",
+                "label": "internal1",
+                "metadata": {},
+                "parent": null,
+                "taxon_label": null
+            },
+            "internal10": {
+                "children": [
+                    "t8",
+                    "t5"
+                ],
+                "comments": [],
+                "edge": "internal10",
+                "label": "internal10",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": null
+            },
+            "internal2": {
+                "children": [
+                    "internal3",
+                    "t2"
+                ],
+                "comments": [],
+                "edge": "internal2",
+                "label": "internal2",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": null
+            },
+            "internal3": {
+                "children": [
+                    "internal4",
+                    "internal6"
+                ],
+                "comments": [],
+                "edge": "internal3",
+                "label": "internal3",
+                "metadata": {},
+                "parent": "internal2",
+                "taxon_label": null
+            },
+            "internal4": {
+                "children": [
+                    "internal5",
+                    "t11"
+                ],
+                "comments": [],
+                "edge": "internal4",
+                "label": "internal4",
+                "metadata": {},
+                "parent": "internal3",
+                "taxon_label": null
+            },
+            "internal5": {
+                "children": [
+                    "t9",
+                    "t12"
+                ],
+                "comments": [],
+                "edge": "internal5",
+                "label": "internal5",
+                "metadata": {},
+                "parent": "internal4",
+                "taxon_label": null
+            },
+            "internal6": {
+                "children": [
+                    "internal7",
+                    "internal8"
+                ],
+                "comments": [],
+                "edge": "internal6",
+                "label": "internal6",
+                "metadata": {},
+                "parent": "internal3",
+                "taxon_label": null
+            },
+            "internal7": {
+                "children": [
+                    "t7",
+                    "t4"
+                ],
+                "comments": [],
+                "edge": "internal7",
+                "label": "internal7",
+                "metadata": {},
+                "parent": "internal6",
+                "taxon_label": null
+            },
+            "internal8": {
+                "children": [
+                    "internal9",
+                    "t6"
+                ],
+                "comments": [],
+                "edge": "internal8",
+                "label": "internal8",
+                "metadata": {},
+                "parent": "internal6",
+                "taxon_label": null
+            },
+            "internal9": {
+                "children": [
+                    "t10",
+                    "t3"
+                ],
+                "comments": [],
+                "edge": "internal9",
+                "label": "internal9",
+                "metadata": {},
+                "parent": "internal8",
+                "taxon_label": null
+            },
+            "t1": {
+                "children": [],
+                "comments": [],
+                "edge": "t1",
+                "label": "t1",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": "t1"
+            },
+            "t10": {
+                "children": [],
+                "comments": [],
+                "edge": "t10",
+                "label": "t10",
+                "metadata": {},
+                "parent": "internal9",
+                "taxon_label": "t10"
+            },
+            "t11": {
+                "children": [],
+                "comments": [],
+                "edge": "t11",
+                "label": "t11",
+                "metadata": {},
+                "parent": "internal4",
+                "taxon_label": "t11"
+            },
+            "t12": {
+                "children": [],
+                "comments": [],
+                "edge": "t12",
+                "label": "t12",
+                "metadata": {},
+                "parent": "internal5",
+                "taxon_label": "t12"
+            },
+            "t2": {
+                "children": [],
+                "comments": [],
+                "edge": "t2",
+                "label": "t2",
+                "metadata": {},
+                "parent": "internal2",
+                "taxon_label": "t2"
+            },
+            "t3": {
+                "children": [],
+                "comments": [],
+                "edge": "t3",
+                "label": "t3",
+                "metadata": {},
+                "parent": "internal9",
+                "taxon_label": "t3"
+            },
+            "t4": {
+                "children": [],
+                "comments": [],
+                "edge": "t4",
+                "label": "t4",
+                "metadata": {},
+                "parent": "internal7",
+                "taxon_label": "t4"
+            },
+            "t5": {
+                "children": [],
+                "comments": [],
+                "edge": "t5",
+                "label": "t5",
+                "metadata": {},
+                "parent": "internal10",
+                "taxon_label": "t5"
+            },
+            "t6": {
+                "children": [],
+                "comments": [],
+                "edge": "t6",
+                "label": "t6",
+                "metadata": {},
+                "parent": "internal8",
+                "taxon_label": "t6"
+            },
+            "t7": {
+                "children": [],
+                "comments": [],
+                "edge": "t7",
+                "label": "t7",
+                "metadata": {},
+                "parent": "internal7",
+                "taxon_label": "t7"
+            },
+            "t8": {
+                "children": [],
+                "comments": [],
+                "edge": "t8",
+                "label": "t8",
+                "metadata": {},
+                "parent": "internal10",
+                "taxon_label": "t8"
+            },
+            "t9": {
+                "children": [],
+                "comments": [],
+                "edge": "t9",
+                "label": "t9",
+                "metadata": {},
+                "parent": "internal5",
+                "taxon_label": "t9"
+            }
+        },
+        "nodeset": [
+            "internal1",
+            "internal2",
+            "internal3",
+            "internal4",
+            "internal5",
+            "t9",
+            "t12",
+            "t11",
+            "internal6",
+            "internal7",
+            "t7",
+            "t4",
+            "internal8",
+            "internal9",
+            "t10",
+            "t3",
+            "t6",
+            "t2",
+            "internal10",
+            "t8",
+            "t5",
+            "t1"
+        ]
+    },
+    "1": {
+        "comments": [],
+        "edges": {
+            "internal1": {
+                "comments": [],
+                "head_node": "internal1",
+                "label": "internal1",
+                "length": 0.0072,
+                "metadata": {},
+                "tail_node": null
+            },
+            "internal10": {
+                "comments": [],
+                "head_node": "internal10",
+                "label": "internal10",
+                "length": 0.007,
+                "metadata": {},
+                "tail_node": "internal9"
+            },
+            "internal2": {
+                "comments": [],
+                "head_node": "internal2",
+                "label": "internal2",
+                "length": 353.0451,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "internal3": {
+                "comments": [],
+                "head_node": "internal3",
+                "label": "internal3",
+                "length": 0.0013,
+                "metadata": {},
+                "tail_node": "internal2"
+            },
+            "internal4": {
+                "comments": [],
+                "head_node": "internal4",
+                "label": "internal4",
+                "length": 0.0014,
+                "metadata": {},
+                "tail_node": "internal3"
+            },
+            "internal5": {
+                "comments": [],
+                "head_node": "internal5",
+                "label": "internal5",
+                "length": 0.0057,
+                "metadata": {},
+                "tail_node": "internal4"
+            },
+            "internal6": {
+                "comments": [],
+                "head_node": "internal6",
+                "label": "internal6",
+                "length": 0.0085,
+                "metadata": {},
+                "tail_node": "internal5"
+            },
+            "internal7": {
+                "comments": [],
+                "head_node": "internal7",
+                "label": "internal7",
+                "length": 0.0077,
+                "metadata": {},
+                "tail_node": "internal2"
+            },
+            "internal8": {
+                "comments": [],
+                "head_node": "internal8",
+                "label": "internal8",
+                "length": 229.2447,
+                "metadata": {},
+                "tail_node": "internal7"
+            },
+            "internal9": {
+                "comments": [],
+                "head_node": "internal9",
+                "label": "internal9",
+                "length": 0.0095,
+                "metadata": {},
+                "tail_node": "internal8"
+            },
+            "t1": {
+                "comments": [],
+                "head_node": "t1",
+                "label": "t1",
+                "length": 0.0065,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "t10": {
+                "comments": [],
+                "head_node": "t10",
+                "label": "t10",
+                "length": 0.0012,
+                "metadata": {},
+                "tail_node": "internal4"
+            },
+            "t11": {
+                "comments": [],
+                "head_node": "t11",
+                "label": "t11",
+                "length": 0.0081,
+                "metadata": {},
+                "tail_node": "internal3"
+            },
+            "t12": {
+                "comments": [],
+                "head_node": "t12",
+                "label": "t12",
+                "length": 0.0087,
+                "metadata": {},
+                "tail_node": "internal1"
+            },
+            "t2": {
+                "comments": [],
+                "head_node": "t2",
+                "label": "t2",
+                "length": 0.0075,
+                "metadata": {},
+                "tail_node": "internal10"
+            },
+            "t3": {
+                "comments": [],
+                "head_node": "t3",
+                "label": "t3",
+                "length": 0.0025,
+                "metadata": {},
+                "tail_node": "internal10"
+            },
+            "t4": {
+                "comments": [],
+                "head_node": "t4",
+                "label": "t4",
+                "length": 0.0027,
+                "metadata": {},
+                "tail_node": "internal9"
+            },
+            "t5": {
+                "comments": [],
+                "head_node": "t5",
+                "label": "t5",
+                "length": 0.0072,
+                "metadata": {},
+                "tail_node": "internal8"
+            },
+            "t6": {
+                "comments": [],
+                "head_node": "t6",
+                "label": "t6",
+                "length": 0.0044,
+                "metadata": {},
+                "tail_node": "internal7"
+            },
+            "t7": {
+                "comments": [],
+                "head_node": "t7",
+                "label": "t7",
+                "length": 0.0059,
+                "metadata": {},
+                "tail_node": "internal6"
+            },
+            "t8": {
+                "comments": [],
+                "head_node": "t8",
+                "label": "t8",
+                "length": 0.001,
+                "metadata": {},
+                "tail_node": "internal6"
+            },
+            "t9": {
+                "comments": [],
+                "head_node": "t9",
+                "label": "t9",
+                "length": 69.9751,
+                "metadata": {},
+                "tail_node": "internal5"
+            }
+        },
+        "edgeset": [
+            "internal1",
+            "t12",
+            "internal2",
+            "internal3",
+            "t11",
+            "internal4",
+            "internal5",
+            "t9",
+            "internal6",
+            "t8",
+            "t7",
+            "t10",
+            "internal7",
+            "internal8",
+            "t5",
+            "internal9",
+            "internal10",
+            "t2",
+            "t3",
+            "t4",
+            "t6",
+            "t1"
+        ],
+        "is_rooted": false,
+        "label": "Tree2",
+        "metadata": {},
+        "nodes": {
+            "internal1": {
+                "children": [
+                    "t12",
+                    "internal2",
+                    "t1"
+                ],
+                "comments": [],
+                "edge": "internal1",
+                "label": "internal1",
+                "metadata": {},
+                "parent": null,
+                "taxon_label": null
+            },
+            "internal10": {
+                "children": [
+                    "t2",
+                    "t3"
+                ],
+                "comments": [],
+                "edge": "internal10",
+                "label": "internal10",
+                "metadata": {},
+                "parent": "internal9",
+                "taxon_label": null
+            },
+            "internal2": {
+                "children": [
+                    "internal3",
+                    "internal7"
+                ],
+                "comments": [],
+                "edge": "internal2",
+                "label": "internal2",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": null
+            },
+            "internal3": {
+                "children": [
+                    "t11",
+                    "internal4"
+                ],
+                "comments": [],
+                "edge": "internal3",
+                "label": "internal3",
+                "metadata": {},
+                "parent": "internal2",
+                "taxon_label": null
+            },
+            "internal4": {
+                "children": [
+                    "internal5",
+                    "t10"
+                ],
+                "comments": [],
+                "edge": "internal4",
+                "label": "internal4",
+                "metadata": {},
+                "parent": "internal3",
+                "taxon_label": null
+            },
+            "internal5": {
+                "children": [
+                    "t9",
+                    "internal6"
+                ],
+                "comments": [],
+                "edge": "internal5",
+                "label": "internal5",
+                "metadata": {},
+                "parent": "internal4",
+                "taxon_label": null
+            },
+            "internal6": {
+                "children": [
+                    "t8",
+                    "t7"
+                ],
+                "comments": [],
+                "edge": "internal6",
+                "label": "internal6",
+                "metadata": {},
+                "parent": "internal5",
+                "taxon_label": null
+            },
+            "internal7": {
+                "children": [
+                    "internal8",
+                    "t6"
+                ],
+                "comments": [],
+                "edge": "internal7",
+                "label": "internal7",
+                "metadata": {},
+                "parent": "internal2",
+                "taxon_label": null
+            },
+            "internal8": {
+                "children": [
+                    "t5",
+                    "internal9"
+                ],
+                "comments": [],
+                "edge": "internal8",
+                "label": "internal8",
+                "metadata": {},
+                "parent": "internal7",
+                "taxon_label": null
+            },
+            "internal9": {
+                "children": [
+                    "internal10",
+                    "t4"
+                ],
+                "comments": [],
+                "edge": "internal9",
+                "label": "internal9",
+                "metadata": {},
+                "parent": "internal8",
+                "taxon_label": null
+            },
+            "t1": {
+                "children": [],
+                "comments": [],
+                "edge": "t1",
+                "label": "t1",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": "t1"
+            },
+            "t10": {
+                "children": [],
+                "comments": [],
+                "edge": "t10",
+                "label": "t10",
+                "metadata": {},
+                "parent": "internal4",
+                "taxon_label": "t10"
+            },
+            "t11": {
+                "children": [],
+                "comments": [],
+                "edge": "t11",
+                "label": "t11",
+                "metadata": {},
+                "parent": "internal3",
+                "taxon_label": "t11"
+            },
+            "t12": {
+                "children": [],
+                "comments": [],
+                "edge": "t12",
+                "label": "t12",
+                "metadata": {},
+                "parent": "internal1",
+                "taxon_label": "t12"
+            },
+            "t2": {
+                "children": [],
+                "comments": [],
+                "edge": "t2",
+                "label": "t2",
+                "metadata": {},
+                "parent": "internal10",
+                "taxon_label": "t2"
+            },
+            "t3": {
+                "children": [],
+                "comments": [],
+                "edge": "t3",
+                "label": "t3",
+                "metadata": {},
+                "parent": "internal10",
+                "taxon_label": "t3"
+            },
+            "t4": {
+                "children": [],
+                "comments": [],
+                "edge": "t4",
+                "label": "t4",
+                "metadata": {},
+                "parent": "internal9",
+                "taxon_label": "t4"
+            },
+            "t5": {
+                "children": [],
+                "comments": [],
+                "edge": "t5",
+                "label": "t5",
+                "metadata": {},
+                "parent": "internal8",
+                "taxon_label": "t5"
+            },
+            "t6": {
+                "children": [],
+                "comments": [],
+                "edge": "t6",
+                "label": "t6",
+                "metadata": {},
+                "parent": "internal7",
+                "taxon_label": "t6"
+            },
+            "t7": {
+                "children": [],
+                "comments": [],
+                "edge": "t7",
+                "label": "t7",
+                "metadata": {},
+                "parent": "internal6",
+                "taxon_label": "t7"
+            },
+            "t8": {
+                "children": [],
+                "comments": [],
+                "edge": "t8",
+                "label": "t8",
+                "metadata": {},
+                "parent": "internal6",
+                "taxon_label": "t8"
+            },
+            "t9": {
+                "children": [],
+                "comments": [],
+                "edge": "t9",
+                "label": "t9",
+                "metadata": {},
+                "parent": "internal5",
+                "taxon_label": "t9"
+            }
+        },
+        "nodeset": [
+            "internal1",
+            "t12",
+            "internal2",
+            "internal3",
+            "t11",
+            "internal4",
+            "internal5",
+            "t9",
+            "internal6",
+            "t8",
+            "t7",
+            "t10",
+            "internal7",
+            "internal8",
+            "t5",
+            "internal9",
+            "internal10",
+            "t2",
+            "t3",
+            "t4",
+            "t6",
+            "t1"
+        ]
+    },
+    "num_trees": 2,
+    "tree_list_comments": [],
+    "tree_list_metadata": {}
+}

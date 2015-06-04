@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -21,15 +21,15 @@ Tests statistical routines.
 """
 
 import unittest
-from dendropy.test.support import extendedtest
-from dendropy.mathlib import statistics
+from dendropy.test.support import dendropytest
+from dendropy.calculate import statistics
 from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
 
-class HpdCalculationTests(extendedtest.ExtendedTestCase):
+class HpdCalculationTests(dendropytest.ExtendedTestCase):
     """
-    Test reference values as given by `hpd.emp`, in the "TeachingDemos" package
+    Test reference values as given by ``hpd.emp``, in the "TeachingDemos" package
     of R.
     """
 
@@ -616,7 +616,7 @@ class TestVarianceCovariance(unittest.TestCase):
             for j, y in enumerate(x):
                 self.assertAlmostEqual(cov[i][j], e[i][j])
 
-class FishersExactTests(extendedtest.ExtendedTestCase):
+class FishersExactTests(dendropytest.ExtendedTestCase):
     """
     Fisher's exact test.
     """

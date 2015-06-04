@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -25,8 +25,8 @@ import re
 import urllib
 import dendropy
 from dendropy.interop import entrez
-from dendropy.dataio.xmlparser import ElementTree
-from dendropy.utility import containers
+from xml.etree import ElementTree
+from dendropy.utility import container
 from dendropy.utility import error
 
 GENBANK_ANNOTATION_PREFIX = "genbank"
@@ -254,8 +254,8 @@ class GenBankResourceStore(object):
     def generate_char_matrix(self,
             label_components=None,
             label_component_separator=" ",
-            taxon_set=None,
-            gb_to_taxon_func=None,
+            taxon_namespace=None,
+            gb_to_taxon_fn=None,
             add_full_annotation_to_taxa=False,
             add_ref_annotation_to_taxa=False,
             add_full_annotation_to_seqs=False,
@@ -268,29 +268,29 @@ class GenBankResourceStore(object):
 
             - ``label_components``: list of strings giving names of GenBankAccessionRecord attributes to be used to compose label.
             - ``label_component_separator``: a string used to separate label components.
-            - ``taxon_set``: TaxonSet object to be used as the ``taxon_set`` of the resulting CharacterMatrix.
-            - ``gb_to_taxon_func``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
+            - ``taxon_namespace``: TaxonNamespace object to be used as the ``taxon_namespace`` of the resulting CharacterMatrix.
+            - ``gb_to_taxon_fn``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
             - ``add_full_annotation_to_taxa``: If True, add link to record as metadata annotation to Taxon objects.
             - ``add_ref_annotation_to_taxa``: If True, add full GenBank record as metadata annotations to Taxon objects.
-            - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataVector) objects.
-            - ``add_ref_annotation_to_seqs``: If True, add full GenBank record as metadata annotations to sequence (CharacterDataVector) objects.
+            - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataSequence) objects.
+            - ``add_ref_annotation_to_seqs``: If True, add full GenBank record as metadata annotations to sequence (CharacterDataSequence) objects.
             - ``set_taxon_attr``: Name of attribute (string) to create on Taxon objects pointing to GenBank record object (GenBankAccessionRecord).
             - ``set_seq_attr``: Name of attribute (string) to create on sequence objects pointing to GenBank record object (GenBankAccessionRecord).
             - ``matrix_label``: Label of character matrix.
 
         """
-        if gb_to_taxon_func is not None and taxon_set is None:
-            raise TypeError("Cannot specify 'gb_to_taxon_func' without 'taxon_set'")
-        if taxon_set is None:
-            taxon_set = dendropy.TaxonSet()
+        if gb_to_taxon_fn is not None and taxon_namespace is None:
+            raise TypeError("Cannot specify 'gb_to_taxon_fn' without 'taxon_namespace'")
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
         data_str = []
-        char_matrix = self.char_matrix_type(label=matrix_label, taxon_set=taxon_set)
+        char_matrix = self.char_matrix_type(label=matrix_label, taxon_namespace=taxon_namespace)
         for gb_idx, gb_rec in enumerate(self._recs):
             taxon = None
             # if gb_rec.request_key in id_to_taxon_map:
             #     taxon = id_to_taxon_map[gb_rec.request_key]
-            if gb_to_taxon_func is not None:
-                taxon = gb_to_taxon_func(gb_rec)
+            if gb_to_taxon_fn is not None:
+                taxon = gb_to_taxon_fn(gb_rec)
             else:
                 if label_components is not None:
                     label = gb_rec.compose_taxon_label(
@@ -300,7 +300,7 @@ class GenBankResourceStore(object):
                     label = gb_rec.request_key
                 assert label is not None
                 assert str(label) != "None"
-                taxon = taxon_set.require_taxon(label=label)
+                taxon = taxon_namespace.require_taxon(label=label)
             assert taxon is not None
             if add_ref_annotation_to_taxa:
                 taxon.annotations.add(gb_rec.as_reference_annotation())
@@ -308,7 +308,7 @@ class GenBankResourceStore(object):
                 taxon.annotations.add(gb_rec.as_annotation())
             if set_taxon_attr is not None:
                 setattr(taxon, set_taxon_attr, gb_rec)
-            curr_vec = dendropy.CharacterDataVector(taxon=taxon)
+            curr_vec = char_matrix.new_sequence(taxon=taxon)
             char_matrix[taxon] = curr_vec
             if add_ref_annotation_to_seqs:
                 curr_vec.annotations.add(gb_rec.as_reference_annotation())
@@ -316,18 +316,17 @@ class GenBankResourceStore(object):
                 curr_vec.annotations.add(gb_rec.as_annotation())
             if set_seq_attr is not None:
                 setattr(curr_vec, set_seq_attr, gb_rec)
-            symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
             seq_text = gb_rec.sequence_text.upper()
             for col_ind, c in enumerate(seq_text):
                 c = c.strip()
                 if not c:
                     continue
                 try:
-                    state = symbol_state_map[c]
+                    state = char_matrix.default_state_alphabet[c]
                 except KeyError:
                     raise ValueError('Accession %d of %d (%s, GI %s, acquired using key: %s): Unrecognized sequence symbol "%s" in position %d: %s'
                             % (gb_idx+1, len(self._recs), gb_rec.primary_accession, gb_rec.gi, gb_rec.request_key, c, col_ind+1, seq_text))
-                curr_vec.append(dendropy.CharacterDataCell(value=state))
+                curr_vec.append(state)
         return char_matrix
 
 class GenBankNucleotide(GenBankResourceStore):
@@ -414,7 +413,7 @@ class GenBankAccessionReference(object):
         self.medline_id = None
         self.pubmed_id = None
         self.remark = None
-        self.db_ids = containers.OrderedCaselessDict()
+        self.db_ids = container.OrderedCaselessDict()
         if xml is not None:
             self.parse_xml(xml)
 

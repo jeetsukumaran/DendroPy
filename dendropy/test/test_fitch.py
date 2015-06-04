@@ -4,7 +4,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -24,30 +24,68 @@ Tests of tree metrics.
 import random
 import unittest
 import math
-from cStringIO import StringIO
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
+import sys
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
 
 import dendropy
-from dendropy.treecalc import fitch_down_pass
+from dendropy.calculate.treescore import fitch_down_pass
 from dendropy.test.support import pathmap
-
-from dendropy import treecalc
 
 class FitchTest(unittest.TestCase):
 
-    def testPScore(self):
-        expected_scores = [370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 671, 670, 678, 687, 633, 675, 689, 668, 652, 644]
-        dataset = dendropy.DataSet(stream=open(pathmap.char_source_path("apternodus.chars.nexus"), "rU"),
-                                   schema='NEXUS')
-        dataset.read(stream=open(pathmap.tree_source_path("apternodus.tre"), "rU"),
-                     schema='NEXUS',
-                     taxon_set=dataset.taxon_sets[0])
+    def test_pscores_with_gaps_as_new_state(self):
+        # #NEXUS
+        # begin paup;
+        #     set warnroot = no;
+        #     exe apternodus.chars.nexus;
+        #     gett file = apternodus.tre;
+        #     set criterion = parsimony;
+        #     pset gap = newstate;
+        #     pscore;
+        # end;
+        expected_scores = [396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 396, 713, 715, 723, 733, 672, 719, 734, 709, 695, 686]
+        self.verify_pscores("apternodus.chars.nexus", "apternodus.tre", False, expected_scores)
+
+    def test_pscores_with_gaps_as_missing(self):
+        # #NEXUS
+        # begin paup;
+        #     set warnroot = no;
+        #     exe apternodus.chars.nexus;
+        #     gett file = apternodus.tre;
+        #     set criterion = parsimony;
+        #     pset gap = missing;
+        #     pscore;
+        # end;
+        expected_scores = [ 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 671, 670, 678, 687, 633, 675, 689, 668, 652, 644]
+        self.verify_pscores("apternodus.chars.nexus", "apternodus.tre", True, expected_scores)
+
+
+    def verify_pscores(self, char_fname, trees_fname, gaps_as_missing, expected_scores):
+        dataset = dendropy.DataSet.get_from_path(
+                pathmap.char_source_path(char_fname),
+                "nexus")
+        dataset.read_from_path(
+                pathmap.tree_source_path(trees_fname),
+                schema='NEXUS',
+                taxon_namespace=dataset.taxon_namespaces[0])
         char_mat = dataset.char_matrices[0]
-        taxa_to_state_set_map = char_mat.create_taxon_to_state_set_map()
+        # sa = char_mat.default_state_alphabet
+        # for x in sa:
+        #     print("{}: {}".format(x, x.is_gap_state))
+        # for x in sa:
+        #     print("{}\t{}\t{}\t\t\t\t{}".format(x, x._index, x.fundamental_indexes, x.fundamental_indexes_with_gaps_as_missing))
+        taxon_state_sets_map = char_mat.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
         tree_list = dataset.tree_lists[0]
         self.assertEqual(len(expected_scores), len(tree_list))
         for n, tree in enumerate(tree_list):
             node_list = tree.postorder_node_iter()
-            pscore = fitch_down_pass(node_list, taxa_to_state_set_map=taxa_to_state_set_map)
+            pscore = fitch_down_pass(node_list, taxon_state_sets_map=taxon_state_sets_map)
+            # print("{} vs. {}".format(expected_scores[n], pscore))
             self.assertEqual(expected_scores[n], pscore)
 
 if __name__ == "__main__":

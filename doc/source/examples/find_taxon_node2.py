@@ -2,6 +2,6 @@
 
 import dendropy
 
-tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+tree = dendropy.Tree.get(path="pythonidae.mle.nex", schema="nexus")
 node = tree.find_node_with_taxon_label('Antaresia maculosa')
 print(node.description())

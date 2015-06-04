@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -22,9 +22,13 @@ Wraps up source version control system system information.
 
 import os
 import sys
-from cStringIO import StringIO
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
 import subprocess
 import datetime
+from dendropy.utility import processio
 
 class Revision(object):
     """
@@ -150,9 +154,9 @@ class Revision(object):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
+            stdout, stderr = processio.communicate(p)
             retcode = p.returncode
-        except OSError, e:
+        except OSError as e:
             return -999, "", str(e)
         return retcode, stdout, stderr
 
@@ -238,3 +242,5 @@ class Revision(object):
             return ", ".join(parts)
         else:
             return None
+
+

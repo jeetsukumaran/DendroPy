@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nex:nexml
+    version="0.9"
+    xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+    xmlns="http://www.nexml.org/2009"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:nex="http://www.nexml.org/2009"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+    <otus id="d4334605336" label="taxa">
+        <otu id="d4325153808" label="a" />
+        <otu id="d4325153680" label="b" />
+        <otu id="d4325153744" label="c" />
+        <otu id="d4324916560" label="e" />
+        <otu id="d4324916624" label="f" />
+        <otu id="d4324916688" label="g" />
+        <otu id="d4324916752" label="h" />
+        <otu id="d4324916816" label="i" />
+        <otu id="d4324916880" label="j" />
+        <otu id="d4324916944" label="k" />
+        <otu id="d4324917008" label="l" />
+        <otu id="d4324917072" label="m" />
+        <otu id="d4324917136" label="n" />
+        <otu id="d4324917200" label="o" />
+        <otu id="d4324864080" label="p" />
+    </otus>
+    <characters id="d4324864144" label="matrix #1 simulated by evolve continuous characters" otus="d4334605336" xsi:type="nex:ContinuousCells">
+        <format>
+        <char id="d4324957648" />
+        <char id="d4324957712" />
+        <char id="d4324957776" />
+        <char id="d4324957840" />
+        <char id="d4324957904" />
+        <char id="d4324957968" />
+        <char id="d4324958032" />
+        <char id="d4324958096" />
+        <char id="d4324958160" />
+        <char id="d4324896848" />
+        <char id="d4324896912" />
+        <char id="d4324896976" />
+        <char id="d4324897040" />
+        <char id="d4324897104" />
+        <char id="d4324897168" />
+        </format>
+        <matrix>
+            <row id="d4334606920" otu="d4325153808">
+                <cell char="d4324957648" state="-231.6391"/>
+                <cell char="d4324957712" state="972.4189"/>
+                <cell char="d4324957776" state="626.6717"/>
+                <cell char="d4324957840" state="-328.6811"/>
+                <cell char="d4324957904" state="-213.5738"/>
+                <cell char="d4324957968" state="464.3897"/>
+                <cell char="d4324958032" state="-91.3483"/>
+                <cell char="d4324958096" state="349.8176"/>
+                <cell char="d4324958160" state="333.48"/>
+                <cell char="d4324896848" state="521.497"/>
+                <cell char="d4324896912" state="-371.4108"/>
+                <cell char="d4324896976" state="-821.429"/>
+                <cell char="d4324897040" state="-86.9872"/>
+                <cell char="d4324897104" state="-804.4891"/>
+                <cell char="d4324897168" state="275.3547"/>
+            </row>
+            <row id="d4325121200" otu="d4324916816">
+                <cell char="d4324957648" state="-962.4392"/>
+                <cell char="d4324957712" state="-453.7332"/>
+                <cell char="d4324957776" state="-451.0608"/>
+                <cell char="d4324957840" state="341.5584"/>
+                <cell char="d4324957904" state="394.6056"/>
+                <cell char="d4324957968" state="-923.0757"/>
+                <cell char="d4324958032" state="-746.9843"/>
+                <cell char="d4324958096" state="-965.4329"/>
+                <cell char="d4324958160" state="-947.0617"/>
+                <cell char="d4324896848" state="-773.1573"/>
+                <cell char="d4324896912" state="730.2412"/>
+                <cell char="d4324896976" state="375.6009"/>
+                <cell char="d4324897040" state="915.0743"/>
+                <cell char="d4324897104" state="359.0937"/>
+                <cell char="d4324897168" state="-399.3825"/>
+            </row>
+            <row id="d4325119704" otu="d4324916752">
+                <cell char="d4324957648" state="988.9931"/>
+                <cell char="d4324957712" state="-654.4159"/>
+                <cell char="d4324957776" state="-767.1182"/>
+                <cell char="d4324957840" state="-91.8658"/>
+                <cell char="d4324957904" state="588.7146"/>
+                <cell char="d4324957968" state="184.9196"/>
+                <cell char="d4324958032" state="115.9319"/>
+                <cell char="d4324958096" state="-52.5935"/>
+                <cell char="d4324958160" state="-418.1644"/>
+                <cell char="d4324896848" state="633.3638"/>
+                <cell char="d4324896912" state="736.8064"/>
+                <cell char="d4324896976" state="-967.5157"/>
+                <cell char="d4324897040" state="-107.9049"/>
+                <cell char="d4324897104" state="352.968"/>
+                <cell char="d4324897168" state="-70.6195"/>
+            </row>
+            <row id="d4325126840" otu="d4324916880">
+                <cell char="d4324957648" state="-296.762"/>
+                <cell char="d4324957712" state="410.327"/>
+                <cell char="d4324957776" state="-350.8748"/>
+                <cell char="d4324957840" state="-780.7118"/>
+                <cell char="d4324957904" state="-175.8489"/>
+                <cell char="d4324957968" state="309.5648"/>
+                <cell char="d4324958032" state="423.9918"/>
+                <cell char="d4324958096" state="969.7167"/>
+                <cell char="d4324958160" state="-244.873"/>
+                <cell char="d4324896848" state="-373.5084"/>
+                <cell char="d4324896912" state="-604.9683"/>
+                <cell char="d4324896976" state="-897.4527"/>
+                <cell char="d4324897040" state="-534.231"/>
+                <cell char="d4324897104" state="-281.9905"/>
+                <cell char="d4324897168" state="-869.7215"/>
+            </row>
+            <row id="d4325142472" otu="d4324917200">
+                <cell char="d4324957648" state="-501.6849"/>
+                <cell char="d4324957712" state="249.9836"/>
+                <cell char="d4324957776" state="389.5901"/>
+                <cell char="d4324957840" state="-239.3963"/>
+                <cell char="d4324957904" state="-701.4142"/>
+                <cell char="d4324957968" state="-25.8607"/>
+                <cell char="d4324958032" state="-56.0275"/>
+                <cell char="d4324958096" state="531.3697"/>
+                <cell char="d4324958160" state="-133.7667"/>
+                <cell char="d4324896848" state="-973.9617"/>
+                <cell char="d4324896912" state="480.1729"/>
+                <cell char="d4324896976" state="776.4012"/>
+                <cell char="d4324897040" state="413.0529"/>
+                <cell char="d4324897104" state="-456.9224"/>
+                <cell char="d4324897168" state="-772.2399"/>
+            </row>
+            <row id="d4325128336" otu="d4324916944">
+                <cell char="d4324957648" state="911.3894"/>
+                <cell char="d4324957712" state="-989.9314"/>
+                <cell char="d4324957776" state="749.8109"/>
+                <cell char="d4324957840" state="137.4197"/>
+                <cell char="d4324957904" state="-586.6819"/>
+                <cell char="d4324957968" state="-153.674"/>
+                <cell char="d4324958032" state="-380.2316"/>
+                <cell char="d4324958096" state="916.4085"/>
+                <cell char="d4324958160" state="-999.7195"/>
+                <cell char="d4324896848" state="-893.5339"/>
+                <cell char="d4324896912" state="-89.0466"/>
+                <cell char="d4324896976" state="-35.9522"/>
+                <cell char="d4324897040" state="-90.6951"/>
+                <cell char="d4324897104" state="776.4369"/>
+                <cell char="d4324897168" state="-537.6624"/>
+            </row>
+            <row id="d4334607712" otu="d4325153744">
+                <cell char="d4324957648" state="-613.2947"/>
+                <cell char="d4324957712" state="-600.7053"/>
+                <cell char="d4324957776" state="-700.514"/>
+                <cell char="d4324957840" state="438.6092"/>
+                <cell char="d4324957904" state="615.5268"/>
+                <cell char="d4324957968" state="640.7933"/>
+                <cell char="d4324958032" state="503.8948"/>
+                <cell char="d4324958096" state="-159.7922"/>
+                <cell char="d4324958160" state="866.8036"/>
+                <cell char="d4324896848" state="274.0275"/>
+                <cell char="d4324896912" state="462.5738"/>
+                <cell char="d4324896976" state="-506.4329"/>
+                <cell char="d4324897040" state="-445.4251"/>
+                <cell char="d4324897104" state="-343.7987"/>
+                <cell char="d4324897168" state="-285.283"/>
+            </row>
+            <row id="d4325129832" otu="d4324917008">
+                <cell char="d4324957648" state="557.6844"/>
+                <cell char="d4324957712" state="582.3857"/>
+                <cell char="d4324957776" state="-284.0375"/>
+                <cell char="d4324957840" state="-93.6579"/>
+                <cell char="d4324957904" state="832.2125"/>
+                <cell char="d4324957968" state="417.9069"/>
+                <cell char="d4324958032" state="597.3379"/>
+                <cell char="d4324958096" state="617.9041"/>
+                <cell char="d4324958160" state="256.8092"/>
+                <cell char="d4324896848" state="-174.4282"/>
+                <cell char="d4324896912" state="489.6727"/>
+                <cell char="d4324896976" state="657.5248"/>
+                <cell char="d4324897040" state="216.8542"/>
+                <cell char="d4324897104" state="-751.1718"/>
+                <cell char="d4324897168" state="-398.9243"/>
+            </row>
+            <row id="d4325132872" otu="d4324917136">
+                <cell char="d4324957648" state="-332.0693"/>
+                <cell char="d4324957712" state="332.9506"/>
+                <cell char="d4324957776" state="-955.3792"/>
+                <cell char="d4324957840" state="-988.5815"/>
+                <cell char="d4324957904" state="-603.7497"/>
+                <cell char="d4324957968" state="691.1748"/>
+                <cell char="d4324958032" state="-20.4197"/>
+                <cell char="d4324958096" state="436.6508"/>
+                <cell char="d4324958160" state="31.5305"/>
+                <cell char="d4324896848" state="-791.689"/>
+                <cell char="d4324896912" state="-796.3053"/>
+                <cell char="d4324896976" state="309.7812"/>
+                <cell char="d4324897040" state="-138.6499"/>
+                <cell char="d4324897104" state="866.3018"/>
+                <cell char="d4324897168" state="-657.6447"/>
+            </row>
+            <row id="d4325140976" otu="d4324864080">
+                <cell char="d4324957648" state="-708.9703"/>
+                <cell char="d4324957712" state="374.4682"/>
+                <cell char="d4324957776" state="688.2557"/>
+                <cell char="d4324957840" state="-818.8122"/>
+                <cell char="d4324957904" state="111.4564"/>
+                <cell char="d4324957968" state="-770.8261"/>
+                <cell char="d4324958032" state="-838.9334"/>
+                <cell char="d4324958096" state="-483.0598"/>
+                <cell char="d4324958160" state="335.7136"/>
+                <cell char="d4324896848" state="650.429"/>
+                <cell char="d4324896912" state="-957.3401"/>
+                <cell char="d4324896976" state="-773.5307"/>
+                <cell char="d4324897040" state="539.6006"/>
+                <cell char="d4324897104" state="321.6839"/>
+                <cell char="d4324897168" state="366.9738"/>
+            </row>
+            <row id="d4325115168" otu="d4324916560">
+                <cell char="d4324957648" state="-654.7695"/>
+                <cell char="d4324957712" state="103.3806"/>
+                <cell char="d4324957776" state="-971.8866"/>
+                <cell char="d4324957840" state="853.9164"/>
+                <cell char="d4324957904" state="653.5797"/>
+                <cell char="d4324957968" state="823.6672"/>
+                <cell char="d4324958032" state="-476.6859"/>
+                <cell char="d4324958096" state="325.9331"/>
+                <cell char="d4324958160" state="456.0902"/>
+                <cell char="d4324896848" state="-399.7095"/>
+                <cell char="d4324896912" state="-930.677"/>
+                <cell char="d4324896976" state="762.7456"/>
+                <cell char="d4324897040" state="851.4525"/>
+                <cell char="d4324897104" state="66.4253"/>
+                <cell char="d4324897168" state="914.3272"/>
+            </row>
+            <row id="d4325189248" otu="d4325153680">
+                <cell char="d4324957648" state="104.4199"/>
+                <cell char="d4324957712" state="669.7402"/>
+                <cell char="d4324957776" state="-68.6082"/>
+                <cell char="d4324957840" state="975.4302"/>
+                <cell char="d4324957904" state="-874.451"/>
+                <cell char="d4324957968" state="-191.3305"/>
+                <cell char="d4324958032" state="-179.8437"/>
+                <cell char="d4324958096" state="655.5611"/>
+                <cell char="d4324958160" state="-657.4532"/>
+                <cell char="d4324896848" state="-563.7863"/>
+                <cell char="d4324896912" state="39.0321"/>
+                <cell char="d4324896976" state="317.0017"/>
+                <cell char="d4324897040" state="887.7048"/>
+                <cell char="d4324897104" state="342.7651"/>
+                <cell char="d4324897168" state="-184.7631"/>
+            </row>
+            <row id="d4325116664" otu="d4324916624">
+                <cell char="d4324957648" state="-762.4904"/>
+                <cell char="d4324957712" state="808.3665"/>
+                <cell char="d4324957776" state="522.5775"/>
+                <cell char="d4324957840" state="250.6523"/>
+                <cell char="d4324957904" state="-287.9786"/>
+                <cell char="d4324957968" state="-995.4612"/>
+                <cell char="d4324958032" state="571.9263"/>
+                <cell char="d4324958096" state="-793.3975"/>
+                <cell char="d4324958160" state="-42.7027"/>
+                <cell char="d4324896848" state="186.8869"/>
+                <cell char="d4324896912" state="-1.5874"/>
+                <cell char="d4324896976" state="-758.0643"/>
+                <cell char="d4324897040" state="-69.9948"/>
+                <cell char="d4324897104" state="-395.9015"/>
+                <cell char="d4324897168" state="-109.9725"/>
+            </row>
+            <row id="d4325118208" otu="d4324916688">
+                <cell char="d4324957648" state="399.7389"/>
+                <cell char="d4324957712" state="31.6152"/>
+                <cell char="d4324957776" state="372.6323"/>
+                <cell char="d4324957840" state="-573.5724"/>
+                <cell char="d4324957904" state="-505.0045"/>
+                <cell char="d4324957968" state="-375.2316"/>
+                <cell char="d4324958032" state="454.9046"/>
+                <cell char="d4324958096" state="-217.4422"/>
+                <cell char="d4324958160" state="-434.9173"/>
+                <cell char="d4324896848" state="-454.7752"/>
+                <cell char="d4324896912" state="-597.9571"/>
+                <cell char="d4324896976" state="-47.6864"/>
+                <cell char="d4324897040" state="326.4957"/>
+                <cell char="d4324897104" state="545.6246"/>
+                <cell char="d4324897168" state="437.5032"/>
+            </row>
+            <row id="d4325131376" otu="d4324917072">
+                <cell char="d4324957648" state="-520.3224"/>
+                <cell char="d4324957712" state="76.4691"/>
+                <cell char="d4324957776" state="440.5944"/>
+                <cell char="d4324957840" state="-55.3567"/>
+                <cell char="d4324957904" state="-53.8396"/>
+                <cell char="d4324957968" state="-936.0467"/>
+                <cell char="d4324958032" state="-609.4023"/>
+                <cell char="d4324958096" state="-120.8625"/>
+                <cell char="d4324958160" state="679.0885"/>
+                <cell char="d4324896848" state="-647.1835"/>
+                <cell char="d4324896912" state="-864.9598"/>
+                <cell char="d4324896976" state="-470.3704"/>
+                <cell char="d4324897040" state="153.9019"/>
+                <cell char="d4324897104" state="844.2103"/>
+                <cell char="d4324897168" state="567.2804"/>
+            </row>
+        </matrix>
+    </characters>
+</nex:nexml>

@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -21,23 +21,23 @@ Path mapping for various test resources.
 """
 
 import os
-from dendropy.utility import textutils
+import sys
+import tempfile
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 try:
     import pkg_resources
+    # TESTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "tests"))
     TESTS_DIR = pkg_resources.resource_filename("dendropy", "test")
-    SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "scripts"))
+    APPLICATIONS_DIR = pkg_resources.resource_filename("dendropy", os.path.join(os.pardir, "applications"))
     _LOG.info("using pkg_resources path mapping")
 except:
     LOCAL_DIR = os.path.dirname(__file__)
     TESTS_DIR = os.path.join(LOCAL_DIR, os.path.pardir)
     PACKAGE_DIR = os.path.join(TESTS_DIR, os.path.pardir)
-    SCRIPTS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "scripts")
+    APPLICATIONS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "applications")
     _LOG.info("using local filesystem path mapping")
-
-
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
 TESTS_COVERAGE_DIR = os.path.join(TESTS_DIR, "coverage")
@@ -45,7 +45,10 @@ TESTS_COVERAGE_REPORT_DIR = os.path.join(TESTS_COVERAGE_DIR, "report")
 TESTS_COVERAGE_SOURCE_DIR = os.path.join(TESTS_COVERAGE_DIR, "source")
 
 def tree_source_stream(filename):
-    return open(tree_source_path(filename), "rU")
+    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+        return open(tree_source_path(filename), "rU")
+    else:
+        return open(tree_source_path(filename), "r")
 
 def tree_source_path(filename=None):
     if filename is None:
@@ -67,6 +70,17 @@ def mixed_source_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(TESTS_DATA_DIR, "mixed", filename)
+
+def splits_source_stream(filename):
+    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+        return open(splits_source_path(filename), "rU")
+    else:
+        return open(splits_source_path(filename), "r")
+
+def splits_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    return os.path.join(TESTS_DATA_DIR, "splits", filename)
 
 def data_source_stream(filename):
     return open(data_source_path(filename), "rU")
@@ -93,7 +107,34 @@ def named_output_path(filename=None, suffix_timestamp=True):
         os.makedirs(TESTS_OUTPUT_DIR)
     return os.path.join(TESTS_OUTPUT_DIR, filename)
 
-def script_source_path(filename=None):
+def application_source_path(filename=None):
     if filename is None:
         filename = ""
-    return os.path.join(SCRIPTS_DIR, filename)
+    return os.path.join(APPLICATIONS_DIR, filename)
+
+class SandboxedFile(object):
+
+    def __init__(self, mode="w"):
+        self.mode = mode
+        self.fileobj = None
+        self.filepath = None
+
+    def __enter__(self):
+        self.fileobj = tempfile.NamedTemporaryFile(
+                mode=self.mode,
+                delete=False)
+        self.filepath = self.fileobj.name
+        return self.fileobj
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            self.fileobj.flush()
+            self.fileobj.close()
+        except ValueError:
+            # If client code closes:
+            #   ValueError: I/O operation on closed file.
+            pass
+        try:
+            os.remove(self.filepath)
+        except OSError:
+            pass

@@ -1,0 +1,129 @@
+#NEXUS
+
+Begin Taxa;
+	Dimensions Ntax=15;
+	Taxlabels
+        a b c e f g h i j k l m n o p
+	;
+End;
+
+Begin Characters;
+	Dimensions Nchar=512;
+	Format Datatype=Protein Gap=- Interleave=Yes;
+	Matrix
+
+a    PGSD*nCdNZ-Pa?kDyNxtPdiXh-zNnmYyAgEqmZyXrkYXzhAWMWSwyRSTRGDkItcmXNhyKAnfYlvTRqwQXrapf
+b    ReMQIDvVAvwA.vnawMZhglS.YnkY.fV.N.pivi.yN.ffr.Gf*c..VHzELYh.DGD.eZmzLKBHPD.ztkDaHa*NA
+c    .dpZ.BxHs.A*.rThBiw.k.*..WSm.y.?SVa..pWeREG?*.D.VA.b.XWLn.WXWnePREz.xp..Hi.mvrC.KZrkc
+e    .w..v.a.zFfEby-H.ep.wmLP.*c.x..Ck...kcCdkz.geiTgbQsTi...Bn.EnL?iehcXm.?.BdCwbD..Fp.de
+f    D.AQn.Z.PkEk.p.i*S.mF-q.mZpaE.yvPTPTeVMqP.ztVnbTQQdd..LM.C?.mSTMyTgaBKs.zSHxwLtPn?N.s
+g    sWz.C..i.yR.esGQM.gGcsH.a?FX.hXI.l.vphYAAm.GDaXwRPBR...IQE.r.MQlqXI.exIGaAx.kx.dn*zcT
+h    Rf.kGggaVrATryL.A.bsi.mkSP-L.YM....WahZ*F..tv.h?-BnarWGK*Ka..IvTk.Y.Fa.*.b..l?VB.P.x.
+i    yEws..lbes?.x.IS.WBBAyt-drGgm.L.aZ.mN..EcZL.p..ls.QPHL.LG.HqCIyDwQIMv.G..z.ZtVTfpWyhP
+j    ixAgx.ct.kzIVp..kXDVBADeZWf.VE.wVXbyI.qBP.rAQvEK.Mqg-wE.qD.hqAaLdYZg.L.bx..c.x...M.R.
+k    FcfID.L.Q..hQw*..p.NNN.Y.xp.Vy.gCsHPnE...Tc.DDQyaaVYI*sS.dYf.Cgly?.wh.gNiFHyPTzYQMY.F
+l    xyVIPHSMEt.V*rCv-rs.hbAYEWV.vvWF.t.LZ.It.PybcFxIHfd?D.Hwp*f.GZxiaBDxF.IN..*YlL.PWfb..
+m    hb-t.LxhiqptnHX-eQayxaVsMzyP..sTxhBMgBN.hIfR.Y.wc.QSqHdMWHd.vKYNbL.vv.l.m.s.nzI.?Xi.s
+n    lQq.MRn.BArwrny.MFh.DlLM?crYtk.m.HH.aXT-R.bNQxhh.tmX.Y.xV.LhreqdvwvSV.Gzn.NKIHcL.-.tB
+o    HhPiT.gnKhBItWt.fezSL.ePWp.aVFyvqEftLMtq?-*AZRwTWCe.*.yH..gA.DCskXgskp.v.yCmlmgbAyPRw
+p    .k.KIPpe.Rhe.wRmfkR.sBx..kHXGK.dgF.t.k..?Ge..zacbYaF.tKwngt.vFy.kwBpnRycWAtx-Iz?SNPfd
+
+a    mLkvibbXQGleGksliC-EmNewqgcARSlZDWnAzXwEaSGK*Vz?yVYDvMQABZNrCCrqEmCFmiShDrpWZBqCSQybl
+b    ..B.-.NfEcTM*L.zffdFH.f.WFInt.AaqAzDKcf.AHMaiQlfqpwlKdYgl.lC.tPb.EXEWf..LVqC.f...K.yg
+c    gpG.V.ln*Pylgf.rLZhRtsizYyVIFYfP.v.MqKnam.A...rW.E?-GzysNrcRN.zyCTK..fa.s.ayrzb.q..C*
+e    dB.ikz.V.rRmz.GxC.PlpRTC.Hdh.DL.QHyXy.vPe-.x.aVlBavM-Z.W-x.hi*MrZbmw.QR.aqNk.al?vhDwp
+f    wBrAQeS...qI.MYCPmrGiCb.hcCqm.r.q.lMYv.h.vtMBMCaF.yaqFNqgW..z.AImVbbhy.v.xq?rWvb.fh.m
+g    .gmLZ*.ElnBBXg.z.YLiD.FPBpf.v..htSvg?N.h?YvCkIy..vnYPmmpygLtVQighxq.zA.wx..-.DdsRPbt.
+h    DF.myCeGk.Bskl.x..ZK..Xt.a.zrrZW.?a-V?AslNwEKy.weae.S.KGSXv.acMFagnWA.T..hd.egtdP-sk.
+i    gwvxPzG.BmI*Ny..VZSaT..ZD.myELMxlcEv.dV...A..T.....mR.e.LEYGsryDVQF.kHMXka.DfYkWX.qQc
+j    WH.exVsSe..w.By-..d.rgFpwG.ke.DVFZMLZ.*l.xggInX.kf.cGq?qlb..IkMh..iYirVwX.PHidvBPVL.Q
+k    Ghxq.hY.mDb.KLbN.rXkE..NE.WFQLZImZXVSl....arK?Dd.Q.*w.*Vhg.ln.SI.-l*B.cSryZFYbtpVKxr.
+l    cvgLvBfdrT*.-ENY.l*mVkvmFMN.pfKix-b.eb.wR..Xa.F.ReGRr.F.RdvlIHc...SXE*k.KalYgn.IhC.fD
+m    YhIEcrelCq.hS..M...TVftPG.TC*cTAmv*LkRG..M.bB.AF.fQ.srB.*aqFXPwwYt.Cwh.LgCVnppH.WeFsa
+n    Z..ha.D.Ahx.AMPyGA.ChmqzR.X.AD?YkXZD*WRy.McwBWPvQ.r.iF.cE.g.sPlYyf..qXsSVPh.xV.pmD.TY
+o    *I.lv.d.svdZda.exwB.FnEL.N.QEQ...tMtScSy..ipGqn-RXQ.*srtW-.EtnIG.w.BCxakW.IkxbfIIIcKh
+p    wrDD.RDlCfXgmHyH-Y.tKZiTGKTzAR.xdbH*XQ*P*fciQZM.mPKKNLLi..HwKmQMBTIYvWm.I.-L.?AaQAXM.
+
+a    BEVSlCHhl?FITpyXklyxihtA*mcbCLnMq*pZprTSGRDregeEC-SIGNwZb?tHRxqCibZeAEAGnYeCk-TVSDgND
+b    .MBaDQFB.a.YYCKCDX.fLHHqINem.vXa.axX..wLeBhp.zz.EtPcWqtWMgBf-NKPPt.Wv.rFlq.w.K.Tr.wcs
+c    .CyIAZNWR.Ta*Tp.A.G.T-iVB...N.wXQv.cIieqMPXly.Wd*.NnqQbvXVah...gHsY?ba...ICs.RLdi.aym
+e    Exyr..GP.sts.W?ZLNXFSGBH.QnYbwP.IF.zx.i*Pln.wly.viR.mw.?XsydA.xNd.vz.AGAQBvxTEHh?y.W.
+f    E.adr.wzGxPmp.NgP.?dVYqeWvSTqBIY.Psqb.r.WqH.m..IdwEVhXp-Xt..AnWtbfFkglY.KnKtMtCMH.tG*
+g    K.PGAgqH.yY.ndL.T.tFRmwnhD.yL.gTw..*NpDfPpszaRfs.v...WE.SeyktHbA..RlwLdtDxDkVNdYiPvQW
+h    ?Z.RSccn.QtG*--.GFld.xQRr-Lw.RMEZr..hGnYtkMEk.Bq...GV.zs..y*.WQc.Lkvv.fwExqziwdFfsCyv
+i    A.z.StD.nQyLHX.QMw.v.AZHRiNWI.F*W.XkC.SwiT.x?CQi.pvTf.DvqbHx*pd..HrbW..iSQG?BH.fXgcw.
+j    b.QC.babs.....qP-Y.vyaYsZ.NCm.I.dhL.fH..-.IcGbwkpH.Ekmtnr.bnmwBdR.v.ZKy.QhY.?f.*.IxQ.
+k    DIZFK.tykQX.F.t?z..H.Kwmw?KZNSw.S.Zl?TZk.qE.p.V.vq.BT.nKhh.Yp*TrD.Cg-..bp.WeM.Hs.sik.
+l    NqnZsEsN.EE.PIrZ..SCNK-?..mDDZ.fQZ..QCr.LrpP?y-yG*WrNW.Rw.-.z.zlYp.Rlbfaef.eGYYYkxqvN
+m    H-Ih.BF...lQ--MiCr?V*fkCQ.DR.aHKffd.t.-y..i?.tfSmIZ.?DgRVlYtI.Bbz...HYEHaia.iP.SyfNi.
+n    .gFXGvZ..-Rn.Xm.F.Qkw?yzVd.vc*KzsZEC*Wf?MYHc.XM.Xtt...e..*vFaf.DqLVIVB.-.K.?ar...CB.I
+o    *s..MZT.wcHn.d.rWyPdlqghdDn.wkkKQ.N.VVyCYI?DEd..EpeCL-nLdCVW*MW.xRtE.WBXvBc.xs..llmi-
+p    gfPE.DWizAfpy.va.eQCbE.RgR.KMWNP.HNeTd.iwl?ZTwfl.EFelxTVZL.Z..ZF*.KXa?.g?Zk-tA.byHFen
+
+a    egPcXfwKCMziIPbnAltrFzwxFksB?yChwaZ-XpLEyDZdPB*qFip-dGtWHeyLGm?iPPvdkRnbEaht?yIVCrXhQ
+b    flS..BN?A.tZfHYPtan.ED.TiqHGWlaW-.n.ZDr.azQ.i.qBgtEXlrw.t.IgnS-K..fXmzzXrWiCn.w..*E.l
+c    ..khVQyix*.cw?YqFYwMCq.r.LxQKg.WH.sii*Qix.fM.VL.Ql.RvrWZg.nfLRC.y..pfNBZeSvse?XrICDcw
+e    L.Qar.xrL.LnBXs.I.VbG.tTIT.RX.sfY.*isaRgderEdy.GadxbZydFVbbN-v.qMn.cLKhNWdBLhH.gr.vA.
+f    .NYCKbnPH.?rygDW.F.*??.bxfNAH.A.Ae.Xay...MSt.PVF*BiwsbDntfqZcqs.yETwaSNIreikWXkDI.eFE
+g    *Qfib*AEemy.kE.SbzZtVNYItE..GX.rtTD*..p-I.zMYrXIE.dntMQv.r.TEsgIIkShqdKB.QsYhVTQFM?z.
+h    .pivLEPA..PR*Hlxnxp.dZtbv-DQ.l.krA.C.yGH-b.ZSPr.kmtvM.P.*Em.-NBTtIEHZeNhHMcP..Gvpak.E
+i    .M.Y...*Wwi.xTlY.b.Twp.XLX.l.Wxlygwli.tm.z..nYm.t.GbVYQlyYhnRdEdv.GBzk.Z*xmpz.eCLX.X.
+j    BZmdZpH.DYgZXH.d.m.czt.?.vQTcD.zFe.cgNFyNVpqahMPSfz...NdIpK.KG.dH.w.M.MXK.G.X.Fm...Z.
+k    QyLQMBEx.ihv.eGEkeeaLYhSbHVsTqwSzZrAg.myS.Na.*h.ezMmzeRfD.FZaRRq.tdl..vT.HWaNF*fWlgfx
+l    p*zlFbVqLt.YbZY..BQ.Q.?kQwh*WGbXDN*s.EC..gEBwLrylwsr..iD.NRd.S-nprNXrL..LCXmc.iKxQLB.
+m    .w.p?GcW.RC.GtvAB.l.gPDbZBDizMKZnsFX-KB?wi.qa-btyTATYBeg.Vm.VAVPY....LWTQTX.kx..PG.HF
+n    HC.atziIqk.GsIWzE.lzvDl.SHfQFvWMNitK.eyts.d..Rk.-dw..teFN.x.Lgg..aIYC.S.wF...Z.?cc*?.
+o    mTIbpxIbDqI.x??XPRfby.Gav.Ht.N.lHibXSS.t.lNGMsrVq.AXqQH.r*-C.erqqh.Y-m.BgEc..ErRQbSlS
+p    A.w.N*..bNn.C.-.-S....gkmQhyPEhrFly..QiC.c.l.Filr.ILeISChLRHqHF..x*hGq.A.HmKWMVR.Ms..
+
+a    swSwgCykeYChEgVKDLLKzmgxqmhkQ*KAbfKiFVXkt?HveNZbDExKWdctQDQvpVHIYHtXzNWNE?lFtenNrMAnX
+b    rxAP...ZR..TxNW.pVW.w.az*KM*.t-LAi-SbIziTxzAtacF.-...m.HY.exie.cAIwHTGN.RTAqwyrG.wHd.
+c    Zq..v.rtl.*K...CAfzDI.QMIn.fTAqRpLaZv...XgPiwMqqELQ.dDrQgElKz.Layw.EGegsa.CC.AcQpP.GR
+e    Z..yzT.WpBecACsnBx.dh..g.K.c.i.nII.lNzE-y*lA-qE.l.T.F.sdwXcATDaY.d.dWA.vWzaW-PHksD?WW
+f    .ZihaIPx.nvp..MRlkssxhxPRQ..sXvRLXqcSavdC...RQBElMVkx-z.KbM..sGrHzme.eL...a.P?.HDvpv*
+g    T.arSL*iftEr..-B.qkPDD..Q.Tr.GX.q.wDV*x.hEKBLeSvcstYN.t.gpRAbGrC.mFnmyikk.fq.s.b..D.W
+h    LfG.lGbsCwd.x*lzSyxPylLv.fF..XLnGA.NKXcMd.BdmzxSbg.RPEPMiIZlYtsmr...yVlSbaBc.dc.cwicz
+i    L..lSB..?.N..KprmskFC.Qbmg.Nk..esAQcmWs.b.LagwsDLPCP.qawHyK.aTB.?.kwMPqlTcP-GXKzk.EFG
+j    SBAH*XhMbbKX.ym.nt.YCqca.ANCWQYPVipvn.ZbDM.D.EiMekL..k.PLMdnhPD.hydC.TV.TP?zr.FLcXpMe
+k    bNn.hqK.slbWVF.?IYty.cG..rYMR.bX*MW..dLiFy.BfewsMg.N..g.CFkwZH.exB*nI.an..A.AQ?d.SG*x
+l    .b.Few.E.KlmN.h.VRrZFyFb*lRmXs..-.*PIpBLzebit..YLl*.K.Q.gHf..RW.?v.qt.FRmyvtQX.Fwb..I
+m    fAIWp.E.FPf.xHyMwDxtT.b.mi.Gq.WHm.yCni.?EtYSG.fpnL.iPerxc..hxYD.cCQLbilIyAThPFqCCXeGy
+n    HI..e...fyL.Ayfxs.P.L.YIgbc.B..qc.cDX?tzkX.eIDa.B.dFbkyM.cZ.yhkrFflGIdM.bcn.BLyXdXqNi
+o    q*Qih.IKfP.T?.BNVIkb.aIG*.XDpK..h.cy.XCsg.WDLSgy.fWy.R*yeRhYXxVV.VZZkW.Mb.I..g...mFiF
+p    GaY..n.b.E.?emb..-sgXaz.gyYp.zppQe.v.lr..W-.TwlN.rYSbpMydlDy.?AV.mPS.DtPigi*.F.fTm.Qb
+
+a    *XkrtVRvpptYQeKwDKxgcnXKtzB-TDHyHd-MiqaDvAFqatQ*??KlnVyaDAHkhkDkFKcrTiAq?a?mDige-aV-i
+b    TSvK..wBH.Vm.SCmNkKl*.b.pLKI.WW.i?acQsmL.zN.QRkb....daPzkhCtxQEZ.z.qIqkdKM.YlXnTqm.hP
+c    cGlkHQe.sn.bmWiiX....GkIIbm.LR..n.S.-DwNhXb.PzmnrFSH*s*z.g.-X.I..L.WqNL.W.G.b?Qd.Pay.
+e    QVPiH.INnwYt.mFeFi.eWQdAbBV..iQf.aYr.IDb.nAncCcm.F..z?.D.lksvnp.dHnQlvvi...eqyVqAyRYI
+f    xd*S*meaiXm.catS.k.mb.bdBQa.pn.aGEsP.AEE.iAScrbyBDv..XnVmBGDEzeYXhfBc?..LI..*.?.wf.k.
+g    .WVpnaKt.iwI.bS.Xx.y.IZ...*.hQpQ.W.?.RI.EIL.evYFtG.EqI.S.MM?Yp.dIiW.eTRMX..nk.T.VTknG
+h    -.ZeAEkdbepzEYEG-..pt.WYQnLN.pghVItIy..il..?nEr.*-?M-gL.W.XS.d..Re.ALLIY.e-GhZFs..FR.
+i    .-*MBD...H?t.pNmkFwctWbiHtg.vMGY.N.f.CYr.XGlheH.iMbha?mpKLYXcaPpMZb.QZh.ETiDz.QN.mcIQ
+j    WpTy.aEg....pM..b.H.WZ.B.*z.LGvCI*thyweq.fY.-d.dLdfI.qP.XQw.tSiyADwezqNQziY-.HE*.AhhN
+k    dk.EZsL..Mb.yaT.csGmKwyMTtwQLgcNf?.GSmXvLbHmTpgBTPXTi.ww.g..Hgzts.kpxM.d*TYImIW.Le.y.
+l    A.Rm*AD.VzIfwC..eyCK*Y.yeKDL.vXKyzVE.NmK?W-nvLs..ldn.R.lAsfg.v.I..*y.sNAf.dSMef.AymBe
+m    t..gn.wIk..ddIl.*nYITwWC.MXybHEslNLk?fK**...BT.eyi.CfYBAC.AiGZwrxxi.EBfCgP.Zsm.DFGEwX
+n    FpLmxBs.mxVVNB.zfs.agKCnMWQVpr.VmhFCt..RWCBQ*.pft.?.yWf.a.wXl-.x.SN*YT.fME.Bw.*gbX-Ch
+o    Gv?PWhe.qVpQ.D.ZkzAMs.yM.L*i.np.fMqpG.-hH.ke.LlnlEVc.LQK.*pENX.KraV*pKqFMVtQM..TkgvYh
+p    I-.S.y?Mqm.BT.BA..PpkbNwdhyY.a.S.L.L.IScq.K*Cm.ctsnhyhc.wfe.vvElYBQ*ADL..KCcXL.lxckeQ
+
+a    Bh
+b    HH
+c    wC
+e    mc
+f    ..
+g    nb
+h    .b
+i    MF
+j    ..
+k    fL
+l    ?.
+m    .B
+n    Z.
+o    IK
+p    wl
+
+	;
+end;
+

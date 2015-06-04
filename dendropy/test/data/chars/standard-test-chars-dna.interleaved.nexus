@@ -1,0 +1,128 @@
+#NEXUS
+
+
+begin taxa;
+	dimensions ntax=15;
+	taxlabels
+        a b c e f g h i j k l m n o p
+	;
+end;
+
+begin characters;
+	dimensions nchar=256;
+	format datatype=dna gap=- interleave=yes;
+	matrix
+a    CaY?dbdNYWkKN?kHMXtKWXRYYwATrRbD-?hTacgSRN
+b    kv.YW.TK.CM..H.ds.bHsaCT.HtXN-T.Sk?A.g..rA
+c    rNarTVWSTXT.DhNSGbG.h.wwTsGvwDM.N.agm.XBNK
+e    sgC..saB.h.rV..YwmD.a.....v.-?Y..mXhVmnKGM
+f    k.Ac.Gn.wmgcGkXX.KNyA.wRV-K.s.yTWw?.Mw...v
+g    .gH..cCw.?VTWvgCACShvN.X.?dHs?BTSYHd.M.c.S
+h    DRcwh..wsDs-yMKsHTh.dwK.sv.A.cvwT.M.AM.m.n
+i    r..sbGsYBaW.kg..SWC.GkmCW.w.v...?R.wv.Nk.-
+j    cHgK.tkgKKXygnsCtTGmVd.HXD?.Akm.rHs.dhVnws
+k    ryTBakDTwVwd-....ArVr.GbrGbCAV.aH.n.ry.YMC
+l    gv.XAkgCVry.daYRHTd..?crb.a.Yn..SbgcmR.Xa.
+m    Gg.XWRTtbGhw?.r?.yGH.c.wM?mR.k.m.m..Wv.Mg.
+n    .rCAsCndkdmcSmvyTtdT..dTAt.HTABXWh.GK..aMc
+o    tWB..?akm.w?ARC.VTKDCvarAvr-Ya.dbmr..wYDV.
+p    hW.KRN.vR.H.HWw.ywkdX.K..mbByW.bmT..v.y..n
+
+a    bkdgNSRymmNWwnKVkYGAkmRAXXhNtgwnmGramYH-ms
+b    hrX?YbBWN.WVtBGGSXB.R.Y.VMcw..ad.s..WtwXa.
+c    .V.R.-K?.tw.B.WD.s-h.BwaS-kvcDRV.a.V.RX.s?
+e    T..SKsKkr.cdsk.R.RA.TSwCY.v.WkbSN..SXdtvC?
+f    RVtyycGYAtH.mhX.W.k.cMtCybw..mWw-sKRXryd.d
+g    CdY.c.t???V.TXhDvdy.g.AsWDnASNR.-.WttSKkGN
+h    tH.T.knwSC.vnrWK.XMCKtvr.YknSwMWva.RnAsVH.
+i    GGbYA.VDR.g?v.-?CC.Ht.Wg.g.C.mhdH.WNtHKd.k
+j    t..XCGw.?.s?..s...kY.Ycc..T..b.r?.M?yXn...
+k    .Rhsa.b.?rgBB.g.CNm..?KRd.b?V.G.N.g.t.GB..
+l    w-YkR.?dsB..WwgmsNVG.wHHyBvbhX.H-D.-SGDSwN
+m    vgy.M.c.Aw.Yk.nKaGmVGY...?.tMT?kb?GCkbMVH.
+n    Y?N??.GMbsnc.v..DWMXh.DMN-..vXKHtNWG..St.?
+o    w.HX.NdhWrk.?.kBBTkSgcHHy.ctw..DSnGhVS..yC
+p    r.-sDYGV?sMHMkwKYdtcDVdVrTtSnCR.HyR?Y.bNGG
+
+a    ?vNb-Ca?DNAsdwRDc-KYd-HTCvNyRsXVwmDbBYRaXd
+b    TYX-s?.s.mXDAb..b?R.WNwRdYX.MGdB?R-A.KCRbM
+c    raSAhD.G.mmgR..S.nW.wvm.nS......tMY..d.KSA
+e    .kcgMG.WMy.W.BHHvMYa...VyG.CHV.DWWwrr.Htan
+f    r.X?NkY.cscYmKtd...aKr-NTk..dKGRthS.Ty.mk.
+g    .y.D.SXYYb.c.m.-mwmaCs.nmkb.BmHDKX.kW.GtYD
+h    b...KHcXKbHM.GDTBW?w-dGcs.HWX.K.dKVn.vnNcY
+i    chD.SSNg.M..nr..YdkhDC?HXCgRdm.KSyKrWdYVGY
+j    b.BwWRB.X.SSmc.HB.-RbHywBa.nrMgrDD-n-wrK.y
+k    m..S.Mw-wH.CSvAK.gvWWN.tb.aaTb.X.c.Yktg..c
+l    -hv.MV.w.TSYg..WV.W.vT..B.KTrd..vbg.ckTWhN
+m    .NTys.D.hvHgwVT.kRWnmy.Sy.DD.HR.XnRY-H..C.
+n    .aVX.GSYmS?..ny.AMmvtXnn.rK.nT?W.kydX.D.Bc
+o    ggh.hgyMgmCtX..drRYV.MvYbVcBgRwyH.bvSdXAb-
+p    N.W.vagv.HTgMS?c....v....bD..Cw.aHCTYKs.rA
+
+a    ?mcRdyKwgrbdswmSGAYndNYVbbtAKCgK-KykswasSY
+b    aa.BcSy.-ad.dBvGK..d..VcAHW.wtVAb..cXgVKd.
+c    ywh..KwyVBAAA.DNaySrv.yTYYV.W.Xym.Ss.NV.mG
+e    YN.M?..SV.dW.VrKSnT?tXvg.DrMa...arDrK.skHm
+f    bv?.vr..BDS--.BdD.R..ba-S-.KRy..c.WraSsmXv
+g    cTvCvcSvGw.kbHymAkBKh..ayhckYhcy.GXhRnGB.K
+h    CWks-kyyWwaC.rdGXNvsNHy.DaH.t.bnXThAn..B.X
+i    B.BaGNkm..chWd.X.dNGGnkThS.WmNkV.mVKasCnB.
+j    ...N-MrnD.nKgs?.tSBbVGtNaBvvY.w-VrM?.G...C
+k    -KX.MCac.y.R--k-KNvA....rTCGDv-d..wwKK.yRG
+l    .R?n..g..-m..VghV-.cK.s.c.T.R--mhT.Ac.MbnC
+m    .XM.YYTS?dHHVm.YbvaRR.DKXG.bhWsakrrakYD.K.
+n    CTGrCvVm-RMw.T.bsyy-sW.wBm.D.hV.rX?a?m..b.
+o    .GwsYtH.WA.DtkWr.w-KVv.ha.M-W.WbB.bB.T.y.G
+p    vK.yg.cVyhNKDyra.gH?m.MTD.D?NT.Ytbtck.SbWC
+
+a    mmNGYGNNKR-dwgMGGTgBdhSdsWvAGKBnMK--TVc-KM
+b    Ak.WD.XAvrvsH.Bt.Gs.K.-RnBRmr??RTCwAmwDBbG
+c    vd.k.rywY.Bv.TNB.D.wR.MBB.?Tr.VgVSG.?B.v.d
+e    gyX..hmR.-asm-Xnt-WbG-gGTK.cN.g.tNrnNHBWMr
+f    bgmdmbMmcshA.nb.S.sCXr.G.TkWn.asRyhM.cgWYB
+g    VA.dAgDSnDm.H?..Nbn.X.ThKH.aMNnGD.NKdAMS..
+h    HhVskX.tygV.Td.csNWnaMkwckaXwt-hW.WBwG?.r.
+i    R..-.kyGHCW-.w.?XGVaMk.vg.A.n.wMkWM?DHya.R
+j    .?Wd.XsWmABC...YBmhXMBtwmANyNGydGcsgy.XVrD
+k    D.n-VyDHnNW.nSk..hSwAkN.h.AGC.w.hBw..YXB.k
+l    sAyK.Mw-bVA..mBX.KMya..AA.SVTv.-.AGYmSs..X
+m    .CGvtn.ybhAhyNVgkydsctDkTn..HtyAmXWtaCmG.G
+n    T.dYk..ADbX.KSygMKmr.Mg.b?SGA...H......k.S
+o    TsK.v.YtHHb.GYybW-..AdW.hCKCKYa.swvbsgsvSn
+p    aaWt.D.C..T..KKwSnhyBA.H..bWR.KrW-bBdbS.ah
+
+a    WkHdXgBAVTtwVntrcRNwCRVdVamYXYvhbh-GnswKRY
+b    VarMCk..DChh-cbA.?.G.dt.wCcmH..mVtRTccSSc.
+c    anrvD.S..vMrvCwybw.hMG?W..gB.wNwrcytWmgBgS
+e    M..Gg?d?.VGvcT.-.gb.dHn.sA.XY.AVdt...kgv..
+f    TSs.mwS..M?tmhWS..n?k.BcHc.Sk.ccd.S.wr-?SR
+g    STgHwcvyYcwYdr.DVVtDAH..kyWyCs.AGWt.kVVMya
+h    b-.AvyD.rb.R.NBRkggmNHH.-DX.asWASd.rmVk.wV
+i    -GAY.kmRCV.RbywCvVwGWT-C?.HnhtWHkHmCy.XX.b
+j    RwXw.?.GXK.rkC.WKm?..rhDgv.wSWsCCk..m.KWV.
+k    .-...hdhnmdCG.TT..wrXs?mmnXwVNrgm.kgMRg.an
+l    y..t-.kK.vSdr.KHAaG.T.Xn.rdwmH.amcvHta.YNT
+m    BN.-SMMK..sNtrVbY.yccSW.hKCMV-a?sY.R.SWyd.
+n    ksgDv.A.-wk.R?mHXgs..bgk.Y?.HAA.Nkvygnd?..
+o    hHRKA.b?yK..Km.YMBHYHWMB?R..S.nmW.CmV..dGS
+p    n..m.vd..nm..gBTG.?VgXCAHV...-VcN.VhgH.rgB
+
+a    tscr
+b    .Y.V
+c    .-kk
+e    dR.H
+f    C-Bn
+g    -Gb.
+h    .hsa
+i    .M..
+j    .a.a
+k    ...t
+l    k.Sc
+m    WWS.
+n    d.ht
+o    V.HM
+p    kwtd
+	;
+end;
+

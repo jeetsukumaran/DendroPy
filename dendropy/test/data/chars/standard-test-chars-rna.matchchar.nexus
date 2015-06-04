@@ -1,0 +1,32 @@
+
+#NEXUS
+
+BEGIN TAXA;
+	DIMENSIONS NTAX=15;
+	TAXLABELS
+        a b c e f g h i j k l m n o p
+	;
+END;
+
+BEGIN CHARACTERS;
+	DIMENSIONS NCHAR=256;
+	FORMAT DATATYPE=RNA GAP=- INTERLEAVE=NO;
+	MATRIX
+a    Dg-aRmgGyUAVdrahhAbXbUnmvURSUuwyDWUwRSWykcvcAMXnmMhhYcvKAGbuDvXRDwnYSVGUudSNnBsUNAVSXAGYNGDVvDhdSBMygCmgUv?cdB-DRwdbcwvKG?XvYAWBavVWSdcDuXmuuvyCWnBCAw-CcksNKHYHUaV-UXdbdcmbYXGGmnyNVXKvukvbRCuWvKCVdBwvHKaSSNcDwD?VbYWHbkCrSDhnAwVc-S-NGhurbhrsKusWWyMHYRuuYWRV
+b    .B.n.nB.ru..nWM.aG..hVu.AMD-.XmXKXwDCua.sBsG.Gn.duG...bbMHB.UcHcgC.h..sN.mWwSYADcws.hMrGDY.XwNAYN.rm.-vbbUNn.u?yyXW-?Ar.YD.cW...y.K-.uy?c.WbHHCWg.MScVNsUwN.WmvUM..NA.vCBaaXUGDan.D..YuC-MmMHS.gRBw..CBMswNXRKnGA.h.Xc.S.bh.ghS..nSuh.Y.bngd.UH-V.uC.vSndM-.M.cM
+c    MWC.s.yng.Bby.WUCH.mUb.nyWWm.nbS.bYmUg.B.SR.Vh..B.G.shWRMRAmmuBkAU.Ha.HMDnRaYW..nRuaV....gm?.N..Cs?V.kX.yVUC.?k.mRMV?U.kw.rGd..gUmgh-WgUgA.dyHGskBR.UCv-Cr.SdvmY.w?GHvwY.w.h.Dbs.DMrcKUs...RuMV.XS.UUu.Wk.vK?r..XXMNd.XcB..U..VrYHh.scV.V.d..XnRUkH.XhrV..Mb..wX
+e    dRswabUBm.nn.s..DBun.hc-.h...SUH.XDSbaV..r-mVgc.B.C.v.YBMmh.nCD.gNG.CaH.gcmrBn-.DMUa.MgKB..r..WX.WmRsdN.w.rN..B.WgSwwkDUsXCWCc..AByn.HbR-yRYmWmgwvaUdddn.C?RygNnyyUkyD..syBAcUNubckH.AUN.Mway..uR.b..ub.cV.DVXs.Nr.KAUAa.R.Xknsc.y.rs.NXY-YK.NY.UWUScbASr.cU..a?
+f    BRdGb-yvaanKbgb.dcC..X.VYv....Mvc.R.?G.uW.D?.c.vGB..UD.M?..m.M.ygYmmunWCs.?Cy..kGC.H.YvCC?RA.YVs.AKD.ywwkca.w.h.uGBkW.NkCnDBWbNA-bK.kWR.CHrKXVm.CwHc.RN.sDAKV.uYgk..s..N-..WkvXkuKBSb?mgCuXnSUC.Nn.krg.-vV?vA.RnVdhkHr.BvUBwR-..-.kUCGA..NR.CB..u..bNWvXcDk.dg.n
+g    ..urCD.C.YgWGuD...D.M.S..C.GS.ra.NnhwsCN?W..dNWADB.W-bUgnS.XuRvkS?Kh.YyMyK..AhMsC.sgg.V..rrAYw.gAh.Gwd.y.yRd.SSUdVsHDSY.YKknSDGSMRdXNRdgKG.C?A.-CgvBnXkMdauw...?w.GYA.ND.kRMh.kc.W.ryBs.nmr.d.URky-.?gBs-.?HHC?nG-yw-aKAACGvwGM-?..kcDXg?dyDBCCb.NaGv.YUaCWYaa.c
+h    RHdY.-.skuabW?G.HHXDh.Kdr.gc..?..?gsu.a.c..SWAVHCXA.gMh-VgRy-Bn.d-XH-A.K..cCmnUDvK.Vn..SDH.SkbNw.SkS.b.UNHha.-Gc..Vhy.A..wasWby.ycy.a..XNWvHsM.HV..DsnbVVDGnhrB.DHA.nH.crAHXWB..K.kgdC.XYYYrg.Suc..XmmgBnBs-Y.XVScdr...uWsMc?..Xn..gaa.dCvb-.gdDm...kWCUG...WSHH
+i    .sYgDWKArw.-.AKgG.kHWyAsrkCRWaCW.g..nUdD.MU..yKys....HAb.Ws.wYS.XKUGm.vCDhGmvDVag.Y.nG..rw.WBr?y..c.r.XWkDrXknD.bKNHK.bgN.s.k.A.rWrw.rUR..RWR...cCS.MGgKVGV..mwdV.snrY..nM...R.DY.c-K.HD-yW?SgX.kUb.Kv.Gdu.Mgv..GM...dYgnGy?XsaKUY.mvA.dgMCANaX.h...BHYSunC..v.r
+j    rWagAhsn.hr.H.RRRm.bWBDhd..Hdgnumm.NHVNhHa..KSbKKgu.kAYD...WV.dN..rvhubhRKn.DaB-.mBHkD.-nUrg...DHCSvyAMvKnDS.MwcNgDR.s-k..YWvy.ry.m.cA..WwyG..R-dGdK-rD.uBWrNYg.MVWvc?mdbM..h..Vny-.cCCkV?H.SWb.UYKMr.cmbcH..Vd.as.kSA.M.DvWC.n..bNVYRADADNyrCyYHCB.A.DGcvV.bKcw
+k    vhDAw.Y?knSgGNyar.AVHgsXV.?uRbyuws.kD?Ak...YB.sv.Cb?VBkr..v?HU.vWBW.aH.vvAuK.D..XX.cMMH.bB.MMYXH-m.UXWMBaCHSYm....B.UbV.kVsYVCmrk..UM.HgUWh.nm.MVVn.?BXmSX.AM.nngU..-.Nns?v.g-XDnXC.MsBWGAgdVhrwsdN.NcbBCM.rsR.saVS.U.N-au-GW?dMgCvAkDKUSBVkWBhgv.SCyuvN.CsvCmk.
+l    mmBybMh.mvG.GNVW.hnWNdUSsVvDcy..XyRXrNa.GkGU..BsK.CWM?A.bWn.argh.a.nU.SB.r.dH.Xs.CmRYN.dYwnhakX..Y.Yy.h.Bs.m.b.A.X-USSDnRkaYwc.b.ySUB.AhCs-h..gw.D..Vr.r..vm.M.n.dCkYghwrvyDMKdkrmr.SY?HD.GRH.V.Xy.brKG-cSmXXdAN.nCrsuraRcGB..MUWWKXAb?kCnn...mm..KGhg.vG.Vh.VDy
+m    -baX-rKwGb.HVa.C?HK..cSNH.BBKw.H.u.rCG..vKgNVvabY.RA?G.VasKG.ARdk..c..bmAVyv..HCkMW..rVGYUCc.nD.Y.sVwsYcCnc.hUYYW.uV.DRrS.sHBGwHB.hMAbd...ucmX.cubM.XgSkKg--BhRB..UGMRNvaHNcVDyBb.kH.C.HX.NhGdAG...bYbsKV.MkXVmVuUV...aCWbnDhaRHhyr.aNVg-.cRh?.d.h...CUYXXcddCY.
+n    ?dS.-u.KU.HkAUAGb.nn.C..c?G.sc.V..WBKs?H...aM-CmaKca-H.Nd...HNs.GAd..WBVac.RUS-NKrv..NC...nYCS.Hca-..YHSyAcHCw.mYVNK.H.csuu.mUb.HUNrrRH.h.RKGA?duWKvWyc.waUM.vnhR.h...am.Y.GKYn.N.gg..D.?WCnCsbH.nhC-u.R..DWNmKWK.r.mXSs..?vasawU.gXr?b...c.c.XUmKmw.K.aR.CS.NVs
+o    WnkUsdh..R?.HUy.D?S..KU.R.rMvC.Adb.VDKnHd.VwHB.KKRWmvDm.kacSg?YHHsXw.bmXaGm?.hc?.d?r.?.kmrvmN.CnNC?..ruCM.HUA.SH.vYY.?bWAR.RVBamAg.dM.U..DW-aWCdXmkHd?K..s.u-ruD.Ggw-.SC.awUW?yANdrRYHvcVCnVvSbgkwduK..G.RKRXvDyMa.yUg.DBc.yvcRvVshU...GVH.g.WbUrrYBnSBrU.w.-s-r
+p    ..kVw.rSdh.BWv.MWbd.uCvHKRHXC..Xr.?mvWuuCA.g..nwrSR.GdWkrb.Hmhrw-.wdvBan.C..MkuVsMU?Bgr.nBhW.aum.YX.dn.HGGNy?M?CHW..b-.rBYSMHR....XXgB.ua?.Mhs.sd.gyBgVS.wHAc.sDHC.HvBASY.H.RmXg-b.RnRMhAmRwD?w?c..w.VYhC-hgwghWN.-nrgSsWBmUXsWbnW.VVYdy.Y.cY.?vUHrN.?YRUSrGy.un
+	;
+END;
+

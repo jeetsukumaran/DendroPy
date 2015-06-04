@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -41,7 +41,7 @@ else:
 
     def as_ape_object(o):
         """
-        Returns `o` as an ape object.
+        Returns ``o`` as an ape object.
         """
         kwargs = {}
         if isinstance(o, dendropy.TreeList):
@@ -84,9 +84,9 @@ else:
 
     def as_dendropy_object(o, taxon_set=None):
         """
-        Returns a DendroPy object corresponding to the ape object `o`. If `o` is
-        a single tree (i.e., `phylo`), then a DendroPy Tree is returned. If `o` is
-        a list of trees (i.e., a `multiPhylo` object, or list of `phylo` objects),
+        Returns a DendroPy object corresponding to the ape object ``o``. If ``o`` is
+        a single tree (i.e., ``phylo``), then a DendroPy Tree is returned. If ``o`` is
+        a list of trees (i.e., a ``multiPhylo`` object, or list of ``phylo`` objects),
         then a DendroPy TreeList is returned.
         """
         if o.rclass[0] == "multiPhylo":
@@ -130,8 +130,8 @@ else:
         """
         This function fits by maximum likelihood a birth-death model to
         the combined phylogenetic and taxonomic data of a given clade. The
-        phylogenetic data are given by a tree, `t`, and the taxonomic data by
-        an attribute `num_species` of each of the taxa in the tree.
+        phylogenetic data are given by a tree, ``t``, and the taxonomic data by
+        an attribute ``num_species`` of each of the taxa in the tree.
         Returns dictionary, where keys are param names and values are param
         values.
         """

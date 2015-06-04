@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -16,62 +16,91 @@
 ##
 ##############################################################################
 
-"""
-Infrastructure for phylogenetic data object serialization and deserialization.
-Provides support for reading/parsing and formatting/writing phylogenetic data
-in various formats.
-"""
-
-import os
-from dendropy.utility import messaging
-from dendropy.dataio import ioclient
-from dendropy.dataio import newick
-from dendropy.dataio import nexusreader_py
-from dendropy.dataio import nexustreeiter
+import collections
+from dendropy.dataio import newickreader
+from dendropy.dataio import newickwriter
+from dendropy.dataio import newickyielder
+from dendropy.dataio import fastareader
+from dendropy.dataio import fastawriter
+from dendropy.dataio import nexusreader
 from dendropy.dataio import nexuswriter
-from dendropy.dataio import fasta
-from dendropy.dataio import phylip
-from dendropy.dataio import nexml
-from dendropy.dataio import beast
-from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
+from dendropy.dataio import nexusyielder
+from dendropy.dataio import nexmlreader
+from dendropy.dataio import nexmlwriter
+from dendropy.dataio import nexmlyielder
+from dendropy.dataio import phylipreader
+from dendropy.dataio import phylipwriter
+from dendropy.utility import container
 
-_LOG = messaging.get_logger(__name__)
+_IOServices = collections.namedtuple(
+        "_IOServices",
+        ["reader", "writer", "tree_yielder"]
+        )
 
-###############################################################################
-## Data Schema Handlers
-##
-## Syntax is:
-##   ioclient.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
-##
-ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
-ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
-ioclient.register("nexus/newick", None, None, nexustreeiter.generalized_tree_source_iter)
-ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
-ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
-ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
-ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
-ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
-ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
-ioclient.register("beast-summary-tree", beast.BeastSummaryTreeReader, None, beast.summary_tree_source_iter)
+_IO_SERVICE_REGISTRY = container.CaseInsensitiveDict()
+_IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, newickyielder.NewickTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, nexuswriter.NexusWriter, nexusyielder.NexusTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexus/newick"] = _IOServices(None, None, nexusyielder.NexusNewickTreeDataYielder)
+_IO_SERVICE_REGISTRY["nexml"] = _IOServices(nexmlreader.NexmlReader, nexmlwriter.NexmlWriter, nexmlyielder.NexmlTreeDataYielder)
+_IO_SERVICE_REGISTRY["fasta"] = _IOServices(fastareader.FastaReader, fastawriter.FastaWriter, None)
+_IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, fastawriter.FastaWriter, None)
+_IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, fastawriter.FastaWriter, None)
+_IO_SERVICE_REGISTRY["proteinfasta"] = _IOServices(fastareader.ProteinFastaReader, fastawriter.FastaWriter, None)
+_IO_SERVICE_REGISTRY["phylip"] = _IOServices(phylipreader.PhylipReader, phylipwriter.PhylipWriter, None)
 
-###############################################################################
-## NEXUS Parser Implementation Selection
-##
+def get_reader(schema, **kwargs):
+    try:
+        reader_type =_IO_SERVICE_REGISTRY[schema].reader
+        if reader_type is None:
+            raise KeyError
+        reader = reader_type(**kwargs)
+        return reader
+    except KeyError:
+        raise NotImplementedError("'{}' is not a supported data reading schema".format(schema))
 
-def disable_ncl():
-    _LOG.debug('Disabling Nexus Class Library bindings: using native Python NEXUS parser')
-    from dendropy.dataio import nexusreader_py
-    ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
+def get_writer(
+        schema,
+        **kwargs):
+    try:
+        writer_type =_IO_SERVICE_REGISTRY[schema].writer
+        if writer_type is None:
+            raise KeyError
+        writer = writer_type(**kwargs)
+        return writer
+    except KeyError:
+        raise NotImplementedError("'{}' is not a supported data writing schema".format(schema))
 
-def enable_ncl():
-    from dendropy.dataio import nexusreader_ncl
-    if nexusreader_ncl.DENDROPY_NCL_AVAILABILITY:
-        _LOG.debug('Enabling Nexus Class Library bindings: using NCL NEXUS parser')
-        ioclient.register("nexus", nexusreader_ncl.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
-    else:
-        _LOG.debug('Nexus Class Library bindings are not available: using native Python NEXUS parser')
+def get_tree_yielder(
+        files,
+        schema,
+        taxon_namespace,
+        tree_type,
+        **kwargs):
+    try:
+        yielder_type =_IO_SERVICE_REGISTRY[schema].tree_yielder
+        if yielder_type is None:
+            raise KeyError
+        yielder = yielder_type(
+                files=files,
+                taxon_namespace=taxon_namespace,
+                tree_type=tree_type,
+                **kwargs)
+        return yielder
+    except KeyError:
+        raise NotImplementedError("'{}' is not a supported data yielding schema".format(schema))
 
-## set default ##
-if "DENDROPY_ENABLE_NCL" in os.environ:
-    enable_ncl()
+def register_service(schema, reader=None, writer=None, tree_yielder=None):
+    global _IO_SERVICE_REGISTRY
+    _IO_SERVICE_REGISTRY[schema] = _IOServices(reader, writer, tree_yielder)
+
+def register_reader(schema, reader):
+    global _IO_SERVICE_REGISTRY
+    try:
+        current = _IO_SERVICE_REGISTRY[schema]
+        register_service(schema=schema,
+                reader=reader,
+                writer=current.writer,
+                tree_yielder=current.tree_yielder)
+    except KeyError:
+        register_service(schema=schema, reader=reader)
 

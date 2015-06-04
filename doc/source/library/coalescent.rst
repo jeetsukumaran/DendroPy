@@ -1,11 +1,9 @@
-********************************************************************
-:mod:`dendropy.coalescent` -- Coalescent Calculations and Statistics
-********************************************************************
+************************************************
+:mod:`dendropy.model.coalescent`: The Coalescent
+************************************************
 
-.. module:: coalescent
-
-.. toctree::
-    :maxdepth: 2
-
-.. automodule:: dendropy.coalescent
+.. automodule:: dendropy.model.coalescent
     :members:
+
+
+

@@ -27,16 +27,15 @@ Tests population genetic statistic calculation.
 """
 
 import unittest
-import StringIO
 import math
 import dendropy
-from dendropy.test.support import extendedtest
+from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 from dendropy.utility import messaging
-from dendropy import popgenstat
+from dendropy.calculate import popgenstat
 _LOG = messaging.get_logger(__name__)
 
-class TajimasDTests(extendedtest.ExtendedTestCase):
+class TajimasDTests(dendropytest.ExtendedTestCase):
 
     def setUp(self):
         s = """\
@@ -65,7 +64,7 @@ class TajimasDTests(extendedtest.ExtendedTestCase):
     def testTajimasD(self):
         self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix), -1.44617198561, 4)
 
-class SinglePopTest(extendedtest.ExtendedTestCase):
+class SinglePopTest(dendropytest.ExtendedTestCase):
 
     data = dendropy.DnaCharacterMatrix.get_from_path(pathmap.char_source_path('COII_Apes.nex'), schema="nexus")
 
@@ -84,13 +83,13 @@ class SinglePopTest(extendedtest.ExtendedTestCase):
     def test_wattersons_theta(self):
         self.assertAlmostEqual(popgenstat.wattersons_theta(self.data, ignore_uncertain=True), 49.00528, 4)
 
-class PopulationPairSummaryStatisticsTests(extendedtest.ExtendedTestCase):
+class PopulationPairSummaryStatisticsTests(dendropytest.ExtendedTestCase):
 
     def testPopulationPairSummaryStatistics(self):
         seqs = dendropy.DnaCharacterMatrix.get_from_path(pathmap.char_source_path('orti.nex'), schema="nexus")
         p1 = []
         p2 = []
-        for idx, t in enumerate(seqs.taxon_set):
+        for idx, t in enumerate(seqs.taxon_namespace):
             if t.label.startswith('EPAC'):
                 p1.append(seqs[t])
             else:

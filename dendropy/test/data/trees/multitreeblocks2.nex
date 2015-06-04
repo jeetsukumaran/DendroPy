@@ -1,0 +1,29 @@
+#NEXUS
+
+BEGIN TAXA;
+	TITLE X2; DIMENSIONS NTAX=4; TAXLABELS x2.1 x2.2 x2.3 x2.4;
+END;
+
+BEGIN TREES;
+	TITLE x2.trees1;
+	LINK Taxa = X2;
+	TRANSLATE
+	    1 x2.1,
+	    2 x2.2,
+	    3 x2.3,
+	    4 x2.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN TREES;
+	TITLE x2.trees2;
+	LINK Taxa = X2;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+
+
+
