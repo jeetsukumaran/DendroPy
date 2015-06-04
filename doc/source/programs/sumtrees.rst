@@ -373,16 +373,8 @@ For example::
 Parallelizing SumTrees
 ======================
 
-.. versionadded:: 3.6
-
-.. note::
-
-    This feature is only available when running under Python 2.6 of greater.
-
 Basics
 ------
-
-DendroPy version 3.6 (SumTrees version 3.0) added support for running multiple parallel processes when running under Python 2.6 or greater.
 
 If you have multiple input (support) files, you can greatly increase the performance of SumTrees by running it in parallel mode.
 In parallel mode, each input source will be handled in a separate process, resulting in a speed-up linearly proportional to the total number of processes running in parallel.
@@ -397,16 +389,22 @@ Or, to run in four processes simultaneously::
     $ sumtrees.py --multiprocessing=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
     $ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
+If you want to use all the available cores on the current machine, use the "``-M``" or "``--maximum-multiprocessing``" flag::
+
+    $ sumtrees.py --maximum-multiprocessing phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -M phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+
+
 Other options as described above, can, of course be added as needed::
 
     $ sumtrees.py --multiprocessing=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
     $ sumtrees.py -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --multiprocessing=4 --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m 4 -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -M -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --multiprocessing=4 --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m 4 -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -M -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Parallelization Strategy: Deciding on the Number of Processes
 -------------------------------------------------------------
@@ -427,6 +425,8 @@ In reality, however, the operating system is actually cycling the processes thro
 While your run should complete without problems when oversubscribing the hardware in this way, there is going to be some degree of performance hit due to the overhead involved in managing the cycling of the processes through the processors.
 On some operating systems and hardware contexts, depending on the magnitude of oversubscription, this can be considerable.
 Thus it probably is a good idea to match the number of processes to the number of processors available.
+
+If you do not mind using all the available cores on your machine, you can use the "``--maximum-multiprocessing``" or "``-M``" flag to request this, instead of using a specific number.
 
 Another issue to consider is an even distribution of workload.
 Assuming that each of your input support files have the same number of trees, then it makes sense to specify a number of processes that is a factor of the number of input files.
