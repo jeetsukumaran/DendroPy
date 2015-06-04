@@ -15,6 +15,10 @@ scripting "glue" that assembles and drives such pipelines.
 
 The primary home page for DendroPy, with detailed tutorials and documentation, is at:
 
+    http://dendropy.org/
+
+DendroPy is also hosted in the official Python repository:
+
     http://packages.python.org/DendroPy/
 
 Requirements and Installation
@@ -22,9 +26,28 @@ Requirements and Installation
 
 DendroPy 4.x runs under Python 3 (all versions > 3.1) and Python 2 (Python 2.7 only).
 
-DendroPy 4.x is under development, and is not suitable yet for public or production use.
+You can install DendroPy by running::
 
-But it will soon be!
+    $ sudo pip install dendropy
+
+More information is available here:
+
+    http://dendropy.org/downloading.html
+
+Documentation
+=============
+
+Full documentation is available here:
+
+    http://dendropy.org/
+
+This includes:
+
+    -   `A comprehensive "getting started" primer <http://dendropy.org/primer/index.html>`_ .
+    -   `API documentation <http://dendropy.org/library/index.html>`_ .
+    -   `Descriptions of data formats supported for reading/writing <http://dendropy.org/schemas/index.html>`_ .
+
+and more.
 
 Testing
 =======

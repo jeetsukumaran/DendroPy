@@ -96,10 +96,10 @@ version_info = collections.namedtuple("dendropy_version_info",
                 major=4,
                 minor=0,
                 micro=0,
-                releaselevel="rc1"
+                releaselevel=""
                 )
 __project__ = "DendroPy"
-__version__ = ".".join(str(s) for s in version_info[:4])
+__version__ = ".".join(str(s) for s in version_info[:4] if s != "")
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
