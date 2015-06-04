@@ -900,7 +900,7 @@ class TaxonNamespace(
             first_match_only=False,
             ):
         """
-        Removes |Taxon| objects with label matching ``label`` from the
+        Removes *all* |Taxon| objects with label matching ``label`` from the
         collection in this namespace.
 
         Parameters
@@ -948,7 +948,7 @@ class TaxonNamespace(
             first_match_only=False,
             ):
         """
-        Removes |Taxon| objects with label matching ``label`` from the
+        Removes *all* |Taxon| objects with label matching ``label`` from the
         collection in this namespace.
 
         Parameters
@@ -973,8 +973,8 @@ class TaxonNamespace(
 
         See Also
         --------
-        :meth:`TaxonNamespace.discard_taxon_labels` : Similar, but does not
-            raise an error if no matching |Taxon| objects are found.
+        :meth:`TaxonNamespace.remove_taxon_label` : Similar, but
+            raises an error if no matching |Taxon| objects are found.
         """
         taxa = self._lookup_label(label,
                 is_case_sensitive=is_case_sensitive,

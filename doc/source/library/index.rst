@@ -55,4 +55,5 @@ Simulations
     :maxdepth: 2
 
     treesim.rst
+    popgensim.rst
 
