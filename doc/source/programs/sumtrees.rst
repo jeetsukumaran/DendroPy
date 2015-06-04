@@ -324,6 +324,7 @@ If a target topology has been specified using the "``--target-tree-filepath``" o
 Otherwise, if the input trees are ultrametric and the "``--summarize-node-ages``" option is given, then by default SumTrees will adjust the edge lengths of the target topology so that the ages of the internal nodes are the mean of the ages of the corresponding nodes in the input set of trees.
 Otherwise, if no target trees are specified and the "``--summarize-node-ages``" is not given, the edge lengths of the target topology will be set to the mean lengths of the corresponding edges of the input set.
 In all cases, these defaults can be overridden by using the "``--set-edges``" or "``-e``" option, which takes one of the following values:
+
         - ``mean-length``: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
         - ``median-length``: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
         - ``median-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
@@ -370,7 +371,7 @@ For example::
         $ sumtrees.py --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 
 Parallelizing SumTrees
-----------------------
+======================
 
 .. versionadded:: 3.6
 
@@ -379,7 +380,7 @@ Parallelizing SumTrees
     This feature is only available when running under Python 2.6 of greater.
 
 Basics
-^^^^^^
+------
 
 DendroPy version 3.6 (SumTrees version 3.0) added support for running multiple parallel processes when running under Python 2.6 or greater.
 
@@ -408,7 +409,7 @@ Other options as described above, can, of course be added as needed::
     $ sumtrees.py -m 4 -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Parallelization Strategy: Deciding on the Number of Processes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------------------
 
 In parallel mode, SumTrees parallelizes by input files, which means that the maximum number of processes that can be run is limited to the number of input files.
 If you have four support tree files as input sources, as in the above example ("``phylo.run1.tre``", "``phylo.run2.tre``","``phylo.run3.tre``", and "``phylo.run4.tre``"), then you can run from 2 up to 4 processes in parallel.
@@ -432,7 +433,7 @@ Assuming that each of your input support files have the same number of trees, th
 So, for example, if you have 8 input files to be summarized, you will get the best performance out of SumTrees by specifying 2, 4, or 8 processes, with the actual number given by the maximum number of processors available or that you want to dedicate to this task.
 
 Running Parallel-Mode SumTrees in a Parallel Environment on a High-Performance Computing (HPC) Cluster
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------------------------------------------------------------
 
 Unfortunately, the diversity and idiosyncracies in various HPC configurations and set-ups are so great that it is very difficult to provide general recipes on how to run parallel-mode SumTrees in a parallel environment on an HPC cluster.
 However, in all cases, all you really need to do is to set up an appropriate parallel execution environment on the cluster, requesting a specific number of processors from the cluster scheduler software, and then tell SumTrees to run the same number of processes.
