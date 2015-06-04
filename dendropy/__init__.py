@@ -96,7 +96,7 @@ version_info = collections.namedtuple("dendropy_version_info",
                 major=4,
                 minor=0,
                 micro=0,
-                releaselevel="dev"
+                releaselevel="rc1"
                 )
 __project__ = "DendroPy"
 __version__ = ".".join(str(s) for s in version_info[:4])
