@@ -35,22 +35,22 @@ that you update to the latest configuration.
       whether the statistic or value being calculated is on a single tree, a
       single tree and a dataset, or two trees:
 
-        *   `dendropy.calculate.treemeasure`
+        *   :mod:`dendropy.calculate.treemeasure`
             For calculation of statistics, metrics, and values on a single tree.
-        *   `dendropy.calculate.treecompare`
+        *   :mod:`dendropy.calculate.treecompare`
             For calculation of statistics, metrics, and values of two trees
             (e.g., Robinson-Fould's distances).
-        *   `dendropy.calculate.treescore`
+        *   :mod:`dendropy.calculate.treescore`
             For calculation of statistics, metrics, and values of a tree with
             reference to a dataset under some criterion.
 
-    * ``dendropy.treesplit`` has been moved to `dendropy.calculate.treesplit`.
-    * ``dendropy.treesum`` has been moved to `dendropy.calculate.treesum`.
-    * ``dendropy.reconcile`` has been moved to `dendropy.calculate.reconcile`.
-    * ``dendropy.coalescent`` has been moved to `dendropy.calculate.coalescent`.
-    * ``dendropy.popgenstat`` has been moved to `dendropy.calculate.popgenstat`.
-    * ``dendropy.treesim`` has been moved to `dendropy.simulate.treesim`.
-    * ``dendropy.popgensim`` has been moved to `dendropy.simulate.popgensim`.
+    * ``dendropy.treesplit`` has been moved to :mod:`dendropy.calculate.treesplit`.
+    * ``dendropy.treesum`` has been moved to :mod:`dendropy.calculate.treesum`.
+    * ``dendropy.reconcile`` has been moved to :mod:`dendropy.calculate.reconcile`.
+    * ``dendropy.coalescent`` has been moved to :mod:`dendropy.calculate.coalescent`.
+    * ``dendropy.popgenstat`` has been moved to :mod:`dendropy.calculate.popgenstat`.
+    * ``dendropy.treesim`` has been moved to :mod:`dendropy.simulate.treesim`.
+    * ``dendropy.popgensim`` has been moved to :mod:`dendropy.simulate.popgensim`.
 
 Behind-the-Scenes Module Reorganization
 ---------------------------------------
@@ -62,22 +62,23 @@ Behind-the-Scenes Module Reorganization
   (or meant to be exposed) for public usage in the first place. A list of
   module changes:
 
-        +------------------+---------------------------+
-        | DendroPy 3       | DendroPy 4                |
-        +==================+===========================+
-        | dataobject.base  | datamodel.basemodel       |
-        +------------------+---------------------------+
-        | dataobject.taxon | datamodel.taxonmodel      |
-        +------------------+---------------------------+
-        | dataobject.tree  | datamodel.treemodel       |
-        +------------------+---------------------------+
-        | dataobject.char  | datamodel.charstatemodel, |
-        |                  | datamodel.charmatrixmodel |
-        +------------------+---------------------------+
+        +----------------------------------+-----------------------------------------------+
+        | DendroPy 3                       | DendroPy 4                                    |
+        +==================================+===============================================+
+        | :mod:`dendropy.dataobject.base`  | :mod:`dendropy.datamodel.basemodel`           |
+        +----------------------------------+-----------------------------------------------+
+        | :mod:`dendropy.dataobject.taxon` | :mod:`dendropy.datamodel.taxonmodel`          |
+        +----------------------------------+-----------------------------------------------+
+        | :mod:`dendropy.dataobject.tree`  | :mod:`dendropy.datamodel.treemodel`           |
+        |                                  | :mod:`dendropy.datamodel.treecollectionmodel` |
+        +----------------------------------+-----------------------------------------------+
+        | :mod:`dendropy.dataobject.char`  | :mod:`dendropy.datamodel.charstatemodel`,     |
+        |                                  | :mod:`dendropy.datamodel.charmatrixmodel`     |
+        +----------------------------------+-----------------------------------------------+
 
 
-Unique Object Identifier ("`oid`") Attributes Removed
------------------------------------------------------
+Unique Object Identifier ("``oid``") Attributes Removed
+-------------------------------------------------------
 
 * The entire ``oid`` system ("object identifier"), i.e., the unique id assigned
   to every data object, has been removed. This was an implementation artifact
@@ -87,7 +88,7 @@ Unique Object Identifier ("`oid`") Attributes Removed
 :class:`TaxonSet` is now :class:`TaxonNamespace`
 ================================================
 
-* The ``dendropy.TaxonSet`` class has been renamed |TaxonNamspace|,
+* The ``dendropy.TaxonSet`` class has been renamed |TaxonNamespace|,
   (and the corresponding ``taxon_set`` attribute of phylogenetic data objects
   that reference a taxonomic context has been renamed ``taxon_namespace``).
 
@@ -106,8 +107,8 @@ Unique Object Identifier ("`oid`") Attributes Removed
         :meth:`TaxonNamespace.has_taxa_labels()` respectively.
 
     * Various new methods for accessing and managing the collection of
-        :class:`Taxon` objects (e.g., `findall`, `drop_taxon`, `remove_taxon`,
-        `discard_taxon`, `__delitem__`, etc.)
+        :class:`Taxon` objects (e.g., :meth:`dendropy.datamodel.taxonmodel.TaxonNamespace.findall`, :meth:`dendropy.datamodel.taxonmodel.TaxonNamespace.drop_taxon`, :meth:`dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon`,
+        :meth:`dendropy.datamodel.taxonmodel.TaxonNamespace.discard_taxon`, :meth:`dendropy.datamodel.taxonmodel.TaxonNamespace.__delitem__`, etc.)
 
     * Numerous look-up methods took '``case_insensitive``' as an argument that
       determined whether the look-up was case sensitive or not (when
@@ -144,9 +145,9 @@ The :class:`Node` Class
 
 * Constructor now only accepts keyword arguments (and ``oid`` is *not* one of them!).
 
-* :meth:`Node.add_child()` no longer accepts `pos` as an argument to indicate
+* :meth:`Node.add_child()` no longer accepts ``pos`` as an argument to indicate
   position in which a child should be inserted. Use :meth:`Node.insert_child()`
-  which takes a position specified by `index` and a node specified by `node`
+  which takes a position specified by ``index`` and a node specified by ``node``
   for this functionality instead.
 
 The :class:`Edge` Class
@@ -176,11 +177,11 @@ The :class:`Tree` Class
   the new :class:`Tree` object from a data source. Use the factory class
   method: :meth:`Tree.get_from_stream()` instead.
 
-* :meth:`Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
+* :meth:`Tree.nodes()` : sorting option removed; use :func:`sorted(tree.nodes())` instead.
 
-* `Tree.node_set()` : removed; use `set(tree.nodes())` instead.
+* :meth:`Tree.node_set()` : removed; use :func:`set(tree.nodes())` instead.
 
-* `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
+* :meth:`Tree.edge_set()` : removed; use :func:`set(tree.edges())` instead.
 
 * For consistency with :meth:`Tree.preorder_node_iter()`,
   :meth:`Tree.postorder_node_iter()`, a number of iteration methods have been renamed.
