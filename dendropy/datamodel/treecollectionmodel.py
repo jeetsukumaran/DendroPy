@@ -1102,11 +1102,8 @@ class TreeList(
             include_external_splits=False,
             score_attr="log_product_of_split_support"):
         """
-        Return the tree with that maximizes the product of split supports.
-        The tree with the maximum log product of the split support is the
-        'maximum credibility tree' (MCT) or the 'maximum clade credibility
-        tree' (MCCT), though sometimes one or both these terms are used to
-        refer to the tree with the highest *sum* of split support.
+        Return the tree with that maximizes the product of split supports, also
+        known as the "Maximum Clade Credibility Tree" or MCCT.
 
         Parameters
         ----------
@@ -1118,7 +1115,7 @@ class TreeList(
 
         Returns
         -------
-        mct_tree : Tree
+        mcct_tree : Tree
             Tree that maximizes the product of split supports.
         """
         ta = self._get_tree_array({})
@@ -1135,11 +1132,7 @@ class TreeList(
             include_external_splits=False,
             score_attr="sum_of_split_support"):
         """
-        Return the tree with that maximizes the sum of split supports.
-        The tree with the maximum log sum of the split support is the
-        'maximum credibility tree' (MCT) or the 'maximum clade credibility
-        tree' (MCCT), though sometimes one or both these terms are used to
-        refer to the tree with the highest *sum* of split support.
+        Return the tree with that maximizes the *sum* of split supports.
 
         Parameters
         ----------
@@ -1151,7 +1144,7 @@ class TreeList(
 
         Returns
         -------
-        mct_tree : Tree
+        mcct_tree : Tree
             Tree that maximizes the sum of split supports.
         """
         ta = self._get_tree_array({})
@@ -2648,11 +2641,8 @@ class TreeArray(
             include_external_splits=False,
             ):
         """
-        Calculates the log product of split support for all trees in the
-        collection. The tree with the maximum log product of the split support
-        is the 'maximum credibility tree' (MCT) or the 'maximum clade
-        credibility tree' (MCCT), though sometimes one or both these terms
-        are used to refer to the tree with the highest *sum* of split support.
+        Calculates the log product of split support for each of the trees in
+        the collection.
 
         Parameters
         ----------
@@ -2696,11 +2686,8 @@ class TreeArray(
             **split_summarization_kwargs
             ):
         """
-        Return the tree with that maximizes the product of split supports.
-        The tree with the maximum log product of the split support is the
-        'maximum credibility tree' (MCT) or the 'maximum clade credibility
-        tree' (MCCT), though sometimes one or both these terms are used to
-        refer to the tree with the highest *sum* of split support.
+        Return the tree with that maximizes the product of split supports, also
+        known as the "Maximum Clade Credibility Tree" or MCCT.
 
         Parameters
         ----------
@@ -2712,7 +2699,7 @@ class TreeArray(
 
         Returns
         -------
-        mct_tree : Tree
+        mcct_tree : Tree
             Tree that maximizes the product of split supports.
         """
         scores, max_score_tree_idx = self.calculate_log_product_of_split_supports(
@@ -2778,11 +2765,7 @@ class TreeArray(
             **split_summarization_kwargs
             ):
         """
-        Return the tree with that maximizes the sum of split supports.
-        The tree with the maximum log sum of the split support is the
-        'maximum credibility tree' (MCT) or the 'maximum clade credibility
-        tree' (MCCT), though sometimes one or both these terms are used to
-        refer to the tree with the highest *sum* of split support.
+        Return the tree with that maximizes the *sum* of split supports.
 
         Parameters
         ----------
@@ -2794,7 +2777,7 @@ class TreeArray(
 
         Returns
         -------
-        mct_tree : Tree
+        mst_tree : Tree
             Tree that maximizes the sum of split supports.
         """
         scores, max_score_tree_idx = self.calculate_sum_of_split_supports(

@@ -564,11 +564,11 @@ trees in each file as a burn-in, and saving the result to "``result.tre``"::
             treefile1.tre treefile2.tre treefile3.tre
 
 To use a different type of summary tree, e.g., the tree that maximizes the
-product of posterior probabilities, you can specify 'mct' for the
+product of posterior probabilities, you can specify 'mcct' for the
 '--summary-tree' option:
 
     $ sumtrees.py \\
-            --summary-tree mct \\
+            --summary-tree mcct \\
             --min-clade-freq=0.95 \\
             --edges mean-length \\
             --burnin=200 \\
@@ -580,7 +580,7 @@ If the input trees are ultrametric and you want to set the node ages to the
 median node age, set the '--edges' argument to 'median-age':
 
     $ sumtrees.py \\
-            --summary-tree mct \\
+            --summary-tree mcct \\
             --edges median-age \\
             --burnin=200 \\
             --output=result.tre \\
@@ -674,7 +674,7 @@ def main():
                 "Do not convert unprotected (unquoted) underscores to spaces"
                 " when reading NEXUS/NEWICK format trees."
                 ))
-    source_options.add_argument("--taxon-name-file",
+    source_options.add_argument("--taxon-name-filepath",
             metavar="FILEPATH",
             default=None,
             help=(
@@ -697,7 +697,7 @@ def main():
 
     target_tree_options = parser.add_argument_group("Target Tree Topology Options")
     target_tree_options.add_argument(
-            "-t", "--target-treefile",
+            "-t", "--target-tree-filepath",
             default=None,
             metavar="FILE",
             help=(
@@ -711,7 +711,7 @@ def main():
     target_tree_options.add_argument(
             "-s", "--summary-target",
             default=None,
-            choices=["consensus", "mct", "msct"],
+            choices=["consensus", "mcct", "msct"],
             metavar="SUMMARY-TYPE",
             help=cli.CustomFormatter.format_definition_list_help(
                     preamble=
@@ -728,10 +728,10 @@ def main():
                                 "can be specified using the '-f' or            "
                                 "'--min-clade-freq' flags. This is the DEFAULT "
                                 "if a user- specified target tree is not given "
-                                "through the '-t' or '--target-treefile'       "
+                                "through the '-t' or '--target-tree-filepath'       "
                                 "options.                                      "
                             ),
-                            ("'mct'",
+                            ("'mcct'",
                                 "The maximum clade credibility tree.   "
                                 "The tree from the source set that     "
                                 "maximizes the *product* of clade      "
@@ -836,7 +836,7 @@ def main():
                                 "lengths. This is the DEFAULT if       "
                                 "target tree(s) are sourced from an    "
                                 "external file using the '-t' or       "
-                                "'--target-treefile' option            "
+                                "'--target-tree-filepath' option            "
                             ),
                             ("'clear'",
                                 "Edge lengths will be cleared from the "
@@ -847,7 +847,7 @@ def main():
                             "<pre>Note the default settings varies according to the ",
                             "following, in order of preference:                  ",
                             "(1) If target trees are specified using the '-t' or ",
-                            "    '--target-treefile' option, then the default edge ",
+                            "    '--target-tree-filepath' option, then the default edge ",
                             "    summarization strategy is: 'keep'. ",
                             "(2) If target trees are not specified, but the ",
                             "    '--summarize-node-ages' option is specified, ",
@@ -1204,15 +1204,15 @@ def main():
     ######################################################################
     ## Target Validation
 
-    if args.summary_target is not None and args.target_treefile is not None:
+    if args.summary_target is not None and args.target_tree_filepath is not None:
         messenger.error("Cannot specify both '-s'/'--summary-tree-target' and '-t'/'--target-tree-filepath' simultaneously")
-    elif args.target_treefile is not None:
-        target_treefile = os.path.expanduser(os.path.expandvars(args.target_treefile))
-        if not os.path.exists(target_treefile):
-            messenger.error("Target tree file not found: '{}'".format(target_treefile))
+    elif args.target_tree_filepath is not None:
+        target_tree_filepath = os.path.expanduser(os.path.expandvars(args.target_tree_filepath))
+        if not os.path.exists(target_tree_filepath):
+            messenger.error("Target tree file not found: '{}'".format(target_tree_filepath))
             sys.exit(1)
     else:
-        target_treefile = None
+        target_tree_filepath = None
         if args.summary_target is None:
             args.summary_target = "consensus"
 
@@ -1340,8 +1340,8 @@ def main():
     ######################################################################
     ## Taxon Discovery
 
-    if args.taxon_name_file is not None:
-        with open(os.path.expanduser(os.path.expandvars(args.taxon_name_file)), "r") as tnf:
+    if args.taxon_name_filepath is not None:
+        with open(os.path.expanduser(os.path.expandvars(args.taxon_name_filepath)), "r") as tnf:
             taxon_labels = [name.strip() for name in tnf.read().split("\n") if name]
             taxon_labels = [name for name in taxon_labels if name]
         taxon_namespace = dendropy.TaxonNamespace(taxon_labels)
@@ -1452,7 +1452,7 @@ def main():
 
     ### build target tree(s)
     target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
-    if target_treefile is None:
+    if target_tree_filepath is None:
         args.include_external_splits_when_scoring_clade_credibility_tree = False
         if args.include_external_splits_when_scoring_clade_credibility_tree:
             coda = ", including tip clades"
@@ -1463,7 +1463,7 @@ def main():
         if args.summary_target == "consensus":
             tree = tree_array.consensus_tree(min_consensus_freq=args.min_consensus_freq, summarize_splits=False)
             msg = "Summarized onto consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
-        elif args.summary_target == "mct":
+        elif args.summary_target == "mcct" or args.summary_target == "mcc":
             tree = tree_array.maximum_product_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
                     summarize_splits=False)
@@ -1485,7 +1485,7 @@ def main():
             # schema; TreeList.get_from_*() etc. does not (yet)
             is_target_trees_rooted = None
             for tree_idx, tree in enumerate(dendropy.Tree.yield_from_files(
-                    files=[target_treefile],
+                    files=[target_tree_filepath],
                     schema=args.input_format,
                     rooting=dendropy.get_rooting_argument(is_rooted=args.is_source_trees_rooted),
                     preserve_underscores=args.preserve_underscores,
@@ -1516,7 +1516,7 @@ def main():
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
-        msg += " defined in '{}':".format(target_treefile)
+        msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
 
     ###  rooting
@@ -1571,7 +1571,7 @@ def main():
         split_summarization_kwargs["set_support_as_node_label"] = False
 
     if args.edge_length_summarization is None:
-        if target_treefile:
+        if target_tree_filepath:
             args.edge_length_summarization = "keep"
         elif args.summarize_node_ages:
             args.edge_length_summarization = "mean-age"

@@ -14,7 +14,7 @@ The samples that are the basis of the support can be distributed across multiple
 The support for the splits will be mapped onto one or more target trees either in terms of node labels or branch lengths.
 The target trees can be supplied by yourself, or, if no target trees are given, then a
 a *summary* tree can be constructed.
-This summary tree can be a Maximum Credibility Tree (i.e., a MCT, a tree that maximizes the product of the the clade posterior probabilities, also known as a Maximum Clade Credibility Tree or MCCT), the majority-rule clade consensus tree, or some other type.
+This summary tree can be a Maximum Clade Credibility Topology (i.e., MCCT, a topology that maximizes the product of the the clade posterior probabilities), the majority-rule clade consensus tree, or some other type.
 If a majority-rule consensus tree is selected, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
 
 By default SumTrees will provide summaries of edge lengths (i.e., mean, median, standard deviation, range, 95% HPD, 5% and 95% quantiles, etc.) as special node comments. These can be visualized in `FigTree <http://tree.bio.ed.ac.uk/software/figtree/>`_ by, for example, checking "Node Labels", then selecting one of "length_mean", "length_median", "length_sd", "length_hpd95", etc.
@@ -113,7 +113,7 @@ SumTrees is typically invoked by providing it a list of one or more tree files t
 
     $ sumtrees.py [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
 
-Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), a summary tree to use (e.g., "``-s mct``" or "``--summary-target=mct``" an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
+Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), a summary tree to use (e.g., "``-s mcct``" or "``--summary-target=mcct``" an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
 
 Full help on program usage and options is given by using the "``--help``" option::
 
@@ -130,12 +130,13 @@ Summarize a set of tree files using a 95% rule consensus tree, with support for 
     $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
-Summarization of Posterior Probabilities of Clades with a Maximum Credibility Tree (MCT)
-----------------------------------------------------------------------------------------
+Summarization of Posterior Probabilities of Clades with a Maximum Clade Credibility Tree (MCCT)
+-----------------------------------------------------------------------------------------------
+
 Summarize a set of tree files using a tree in the input set that maximizes the product of clade support, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --summary-target=mct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -s mct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --summary-target=mcct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -s mcct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 Non-parametric Bootstrap Support of a Model Tree
 ------------------------------------------------
@@ -177,9 +178,8 @@ If you want to use *all* the available cores on your machine, you can use the "`
 
 If you specify fewer processes than input sources, then the files will be cycled through the processes.
 
-
 Primers and Examples
-======================
+====================
 
 At its most basic, you will need to supply SumTrees with the path to one or more tree files in Newick or NEXUS format that you want to summarize::
 
@@ -216,18 +216,39 @@ Most of the options have default values that will be used if not explicitly set 
 The order that the options are given does *not* matter, i.e., "``sumtrees.py --option1=something --option2=something``" is the same as "``sumtrees.py --option2=something --option1=something``".
 As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the "``--help``" or "``-h``" option: "``sumtrees.py --help``".
 
-Summarizing Non-Parametric Bootstrap Support with a Consensus Tree
-------------------------------------------------------------------
+Specifying and Customization of the Summarization Target
+========================================================
 
-Say you have completed a 1000-replicate non-parametric analysis of your dataset using a program such as GARLI or RAxML.
+SumTrees maps support values calculated from the input set of trees onto a *target* topology.
+This target topology can be a *summary* topology constructed from the input set of trees based on a strategy specified by the user (using the the "``--summary-target``" or "``-s``" flag to specify, for example, a majority-rule consensus tree or a maximum credbility tree) or a topology provided by the user (using the "``--target-tree-filepath``" or "``-t``" option to provide, e.g., a maximum-likehood estimate or some other topology sourced by other means).
+
+Specifying a Summarization Topology Type
+----------------------------------------
+
+You can specify the type of summary topology onto which the support values are mapped using the "``--summary-target``" or "``-s``" option.
+This option takes one of three values as an argument:
+
++-------------+---------------------------------------------------------------------------------------------------------------------------+
++-------------+---------------------------------------------------------------------------------------------------------------------------+
+| "consensus" | The majority-rule consensus tree (default)                                                                                |
++-------------+---------------------------------------------------------------------------------------------------------------------------+
+| "mcct"      | The Maximum Credibility Tree: the topology from the input set that maximizes the *product* of the support of the clades   |
++-------------+---------------------------------------------------------------------------------------------------------------------------+
+| "msct"      | The Maximum Sum of Credibilities Tree: the topology from the input set that maximizes the *sum* of support of the clades. |
++-------------+---------------------------------------------------------------------------------------------------------------------------+
+
+Majority-Rule Consensus Topology
+................................
+
+For example, say you have completed a 1000-replicate non-parametric analysis of your dataset using a program such as GARLI or RAxML.
 You want to construct a 70% majority-rule consensus tree of the replicates, with support indicated as percentages on the node labels.
 If the bootstrap replicates are in the file "``phylo-boots.tre``", you would then enter the following command::
 
-    $ sumtrees.py --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+    $ sumtrees.py --summary-target=consensus --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
 
 Or, using the short option syntax::
 
-    $ sumtrees.py -f0.7 -p -d0 phylo-boots.tre
+    $ sumtrees.py -s consensus -f0.7 -p -d0 phylo-boots.tre
 
 Here, the "``--min-clade-freq=0.7``" or "``-f0.7``" option lowers the minimum threshold for clade inclusion to 70%.
 If you want a 95% majority-rule consensus tree instead, you would use "``--min-clade-freq=0.95``" or "``-f0.95``".
@@ -235,113 +256,118 @@ The default threshold if none is specified is 0.5 (50%).
 The "``--percentages``" or "``-p``" option instructs SumTrees to report the support in terms of percentages, while the "``--decimals=0``" or "``-d 0``" option instructs SumTrees not to bother reporting any decimals.
 Note that even if you instruct SumTrees to report the support in terms of percentages, the minimum clade inclusion threshold is still given in terms of proportions.
 
-Again, if we want to actually save the results to the file, we should use the "``--output``" option::
+.. note::
+
+    As noted, if no target topology is specified (either using the "``--summary-target``"/"``-s``" or "``--target-tree-filepath``"/"``-t``" options), then SumTrees by default will construct and use a majority-rule consensus topology as a target, and hence the explicit specification of this as a target is not needed. Thus, the following will produce exactly the same results as above::
+
+        $ sumtrees.py --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+        $ sumtrees.py -f0.7 -p -d0 phylo-boots.tre
+
+Again, if we want to actually save the results to the file, we should use the "``--output-tree-filepath``" option::
 
     $ sumtrees.py --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
 
-Summarizing Non-Parametric Bootstrap Support of an Estimated Tree
------------------------------------------------------------------
+Maximum Clade Credibility Topology
+..................................
+
+The Maximum Clade Credibility Topology, or MCCT, is the topology that maximizes the *product* of the split support. You can use this as the target topology by specifying "``--summary-target=mcct``" or "``-s mcct``"::
+
+    $ sumtrees.py --summary-target=mcct phylo-boots.tre
+    $ sumtrees.py -s mcct phylo-boots.tre
+
+As might be expected, in can be combined with other options. For example, to discard the first 200 trees from each of the input sources and write the results to a file, "``results.tre``::
+
+    $ sumtrees.py --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
+
+
+.. .. note::
+
+        Unfortunately, there is a *lot* of confusion regarding the terminology of this topology. The earlier versions of *BEAST* manual described a summary topology they called the "Maximum Clade Credibility Tree" or MCCT, which is the topology amongst the input set that maximized the *sum* of the clade credibilities. Later versions of *BEAST* introduced a summarization approach that used the topology amongst the input set that maximized the *product* of the clade credibilities. In *some* places in the *BEAST* documentation, discussion, and literature, this was referred to as the "Maximum Credibility Tree" or MCT, while in others the previous term, i.e., "MCCT" was re-defined to refer to this new approach. The terminological confusion is made worse due to the fact that, while the latest versions of TreeAnnotator of *BEAST* uses the term "Maximum Clade Credibility Tree" in its dialogs, the manual that ships with it is for an older version that retains the definition of the MCCT being the tree that maximizes the sum rather than the product of the clade credibilities. In the paper by Heled and Bouckaert ("Looking for trees in the forest: summary tree from posterior samples", BMC Evolutionary Biology, 2013, 13:221;  doi:10.1186/1471-2148-13-221), the term "Clade Credibility" was defined to the be the product of the posterior frequencies of the clades on a tree, and thus the "Maximum Clade Credibility" tree or topology is the tree or topology that maximizes this score. This is the definition we use throughout DendroPy.
+
+
+Specifying a Custom Topology or Set of Topologies
+-------------------------------------------------
 
 Say you also have a maximum likelihood estimate of the phylogeny, and want to annotate the nodes of the maximum likelihood tree with the proportion of trees out of the bootstrap replicates in which the node is found.
-Then, assuming your maximum likelihood tree is in the file, "``phylo-mle.tre``", and the bootstrap tree file is "``phylo-boots.tre``", you would use the "``--target``" options, as in the following command::
+Then, assuming your maximum likelihood tree is in the file, "``phylo-mle.tre``", and the bootstrap tree file is "``phylo-boots.tre``", you would use the "``--target-tree-filepath``" options, as in the following command::
 
-    $ sumtrees.py --target=phylo-mle.tre phylo-boots.tre
+    $ sumtrees.py --target-tree-filepath=phylo-mle.tre phylo-boots.tre
 
-Here, "``--target``" specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support.
+Here, "``--target-tree-filepath``" specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support.
 An equivalent form of the same command, using the short option syntax is::
 
     $ sumtrees.py -t phylo-mle.tre phylo-boots.tre
 
 If you want the support expressed in percentages instead of proportions, and the final tree saved to a file, you would enter::
 
-    $ sumtrees.py --output phylo-mle-support.sumtrees --target phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
+    $ sumtrees.py --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
 
-Summarizing MCMC Trees
-----------------------
-
-Say you have just completed a BEAST analysis resulting in a file of MCMC tree samples called "``phylo.trees``".
-While the program TreeAnnotator that is distributed along with BEAST does construct a tree summarizing the split support for you, it produces a MCCT topology as the summary tree.
-This is not the same summarization strategy as used by Mr. Bayes using its "``sumt``" command, and thus the two summary trees are not truly directly comparable.
-You can use SumTrees to construct a majority-rule clade consensus tree out of your BEAST MCMC samples, which you can then use to compare with your Mr. Bayes tree::
-
-    $ sumtrees.py phylo.trees
-
-This command will construct a 50% majority rule clade consensus tree out of the all the trees found in "``phylo.trees``", label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
-
-However as, this is a BEAST analysis, the trees are going to be rooted and ultrametric. We can tell SumTrees this by passing it the "``--ultrametric``" flag::
-
-    $ sumtrees.py --ultrametric phylo.trees
-
-This will result in node ages being summarized as well as edge lengths.
-
-Of course, we want to discard the first few samples of trees, as these were probably not drawn in frequencies in proportion to the stationary distribution of the chain.
-To do this::
-
-    $ sumtrees.py --ultrametric --burnin=200 phylo.trees
-
-The above command will cause SumTrees to ignore the first 200 trees it finds in the file for all its calculations.
-
-Again, instead of displaying the tree to the screen we can save it directly to a file, either by redirecting the screen output to a file::
-
-    $ sumtrees.py --ultrametric --burnin=200 phylo.trees > phylo.trees.sumtrees
-
-or by using the "``-o``" or "``--output``" option::
-
-    $ sumtrees.py --ultrametric --output-tree-filepath=phylo.trees.sumtrees --burnin=200 phylo.trees
-
-We might also have split up our analysis into multiple independent runs, resulting in multiple MCMC tree sample files (e.g., "``phylo1.trees``", "``phylo2.trees``" and "``phylo3.trees``").
-We can ask SumTrees to summarize posterior probability from across all these runs, treating the first 200 trees in *each* sample file as a burn-in by typing the following::
-
-    $ sumtrees.py --ultrametric --output-tree-filepath=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
-
-Alternatively, we might be quite happy with the MCCT tree produced by BEAST, and in fact we want to see how the MCMC samples produced by Mr. Bayes map onto this tree (i.e., the posterior probability of the splits on the MCCT as given by the Mr. Bayes samples).
-To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples to be summarized, and use the "``-t``" or "``--target``" option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
-Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
-
-    $ sumtrees.py --target=phylo.beast.tree --output-tree-filepath=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.
 
 Summarizing Rooted and Ultrametric Trees
 ----------------------------------------
 
-.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
+SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--force-rooted``" flag::
 
-SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--rooted``" flag::
+    $ sumtrees.py --force-rooted phylo.trees
 
-    $ sumtrees.py --rooted phylo.trees
+If the trees are rooted **and** ultrametric, the "``--summarize-node-ages``" flag will result in SumTrees summarizing node age information as well::
 
-If the trees are rooted **and** ultrametric, the "``--ultrametric``" flag will result in SumTrees summarizing node age information as well::
-
-    $ sumtrees.py --ultrametric phylo.trees
+    $ sumtrees.py --summarize-node-ages phylo.trees
 
 Summarizing Edge Lengths and Node Ages
 --------------------------------------
 
-.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
-
-When constructing a consensus tree onto which to map support, by default SumTrees sets the edge lengths of the consensus tree to the mean of the lengths of corresponding edges of the input trees.
-However, if the "``--ultrametric``" flag is given (which requires the input trees to be rooted and ultrametric), then by default SumTrees adjusts the edge lengths of the consensus tree such that the ages of the subtended nodes are equal to the median of the ages of the corresponding nodes of the input trees.
-If target trees are given, then SumTrees will *not* change the original target tree edges unless instructed otherwise.
-
-You can explicitly request an alternate edge summarization strategy using the "``-e``"/"``--edges``" flag. This will result in the edge lengths of all target trees being adjusted, whether the target tree is the consensus tree constructed by SumTrees, or one or more trees specified by the "``-t``"/"``--target``" flag.
-
-The "``-e``"/"``--edges``" flag can take one of the following values:
-
+If a target topology has been specified using the "``--target-tree-filepath``" or the "``-t``" option, then by default SumTrees retains the edge lengths of the target topologies.
+Otherwise, if the input trees are ultrametric and the "``--summarize-node-ages``" option is given, then by default SumTrees will adjust the edge lengths of the target topology so that the ages of the internal nodes are the mean of the ages of the corresponding nodes in the input set of trees.
+Otherwise, if no target trees are specified and the "``--summarize-node-ages``" is not given, the edge lengths of the target topology will be set to the mean lengths of the corresponding edges of the input set.
+In all cases, these defaults can be overridden by using the "``--set-edges``" or "``-e``" option, which takes one of the following values:
         - ``mean-length``: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
         - ``median-length``: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
         - ``median-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
         - ``mean-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - ``support``: edge lengths will be set to the support value for the split represented by the edge.
+        - ``keep``: do not change the existing edge lengths of the target topology.
+        - ``clear``: all edge lengths will be removed
 
 So, for example, to construct a consensus tree of a post-burnin set of ultrametric trees, with the node ages set to the *mean* instead of the median node age::
 
-    $ sumtrees.py --edges=mean-age --burnin=200 beast1.trees beast2.trees beast3.trees
-    $ sumtrees.py --e mean-age --b 200 beast1.trees beast2.trees beast3.trees
+    $ sumtrees.py --set-edges=mean-age --summarize-node-ages --burnin=200 beast1.trees beast2.trees beast3.trees
+    $ sumtrees.py --e mean-age --summarize-node-ages --b 200 beast1.trees beast2.trees beast3.trees
 
 Or to set the edges of a user-specifed tree to the median edge length of the input trees::
 
-    $ sumtrees.py --edges=median-length --target=mle.tre boots1.tre boots2.tre
+    $ sumtrees.py --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
     $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
+
+Rooting the Target Topology
+---------------------------
+
+The following options allow for re-rooting of the target topology or topologies::
+
+  --root-target-at-outgroup TAXON-LABEL
+                        Root target tree(s) using specified taxon as outgroup.
+  --root-target-at-midpoint
+                        Root target tree(s) at midpoint.
+  --set-outgroup TAXON-LABEL
+                        Rotate the target trees such the specified taxon is in
+                        the outgroup position, but do not explicitly change
+                        the target tree rooting.
+
+For example::
+
+    $ sumtrees.py --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
+    $ sumtrees.py --root-target-at-midpoint -s mcct trees1.tre trees2.tre
+    $ sumtrees.py --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
+
+.. note:
+
+    Note that, under the Nexus/Newick standards, underscores are automatically converted to spaces. So the taxon label in the above specification is read by DendroPy *not* as "Python_regius", but "Python regius". The same holds for the input tree files. If want to suppress this conversion of underscores to spaces, specify the "``--preserve-underscores``" flag::
+
+        $ sumtrees.py --preserve-underscores --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
+        $ sumtrees.py --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 
 Parallelizing SumTrees
 ----------------------
