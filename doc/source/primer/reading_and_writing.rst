@@ -167,11 +167,11 @@ while the following accumulates data from a variety of sources into a single |Da
 
         simply rebind the new object returned by "|get|"::
 
-            x = dendropy.Tree.get(path="tree1.nex", "nexus")
+            x = dendropy.Tree.get(path="tree1.nex", schema="nexus")
             .
             .
             .
-            x = dendropy.Tree.get(path="tree2.nex", "nexus")
+            x = dendropy.Tree.get(path="tree2.nex", schema="nexus")
 
 .. note:: The |TreeList|, |TreeArray|, and |DataSet| classes
     also support a "|read_from_methods|" family of instance methods that

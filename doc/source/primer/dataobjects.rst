@@ -78,8 +78,8 @@ For example::
     ...     suppress_edge_lengths=True,
     ...     schema="newick")
 
-These are covered in detail in the ":doc:`/primer/reading`" and
-":doc:`/primer/writing`" chapters respectively.
+These are covered in detail in the next chapter, ":doc:`/primer/reading_and_writing`".
+
 
 Support is also available for adding, accessing, and managing rich and
 expressive metadata annotations to many of the above objects and components of
