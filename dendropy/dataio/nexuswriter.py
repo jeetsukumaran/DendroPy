@@ -123,12 +123,14 @@ class NexusWriter(ioservice.DataWriter):
             If `True`, tree weights are written. Default is `False`: tree
             weights will not be written.
         translate_tree_taxa : boolean or dict or `None`, default: `None`.
-            If not `False` or `None`, a "TRANSLATE" statement will be written
-            and referenced in tree statements (instead of using the taxon
-            labels). If `True`, then a default translate statement will
-            be used, with tokens given by the taxon indexes. If a dictionary is
-            given, then the keys should be |Taxon| objects and the
-            values should be the token (strings).
+            If `False` or `None`, then a "TRANSLATE" statement will not be
+            used, and tree statements will contain the full taxon labels. If
+            not `False` or `None`, a "TRANSLATE" statement will be written and
+            referenced in tree statements (instead of using the taxon labels).
+            If `True`, then a default translate statement will be used, with
+            tokens given by the taxon indexes. If a dictionary is given, then
+            the keys should be |Taxon| objects and the values should be the
+            token (strings).
         suppress_annotations : boolean, default: `False`
             If `True`, metadata annotations will be ignored.
             Defaults to `False`: metadata annotations will be written.
