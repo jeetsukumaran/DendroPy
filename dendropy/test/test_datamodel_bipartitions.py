@@ -37,6 +37,7 @@ from dendropy.interop import paup
 from dendropy.calculate import treecompare
 import dendropy
 
+@unittest.skip('BipartitionEncodingTestCase skipped. Test in development')
 class BipartitionEncodingTestCase(ExtendedTestCase):
 
     @classmethod

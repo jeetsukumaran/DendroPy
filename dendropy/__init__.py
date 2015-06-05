@@ -146,7 +146,10 @@ def description(dest=None):
     fields["DendroPy location"] = homedir()
     fields["Python version"] = sys.version.replace("\n", "")
     fields["Python executable"] = sys.executable
-    fields["Python site packages"] = site.getsitepackages()
+    try:
+        fields["Python site packages"] = site.getsitepackages()
+    except:
+        pass
     max_fieldname_len = max(len(fieldname) for fieldname in fields)
     for fieldname, fieldvalue in fields.items():
         dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
