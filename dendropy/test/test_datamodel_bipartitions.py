@@ -37,12 +37,13 @@ from dendropy.interop import paup
 from dendropy.calculate import treecompare
 import dendropy
 
-@unittest.skip('BipartitionEncodingTestCase skipped. Test in development')
+# @unittest.skip('BipartitionEncodingTestCase skipped. Test in development')
 class BipartitionEncodingTestCase(ExtendedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        ref_path = "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy-development-and-testing-support/test-data-generation/split-encoding/results/bipartition_encoding_fixture.json"
+        # ref_path = "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy-development-and-testing-support/test-data-generation/split-encoding/results/bipartition_encoding_fixture.json"
+        ref_path = pathmap.tree_source_path("bipartition_encoding_fixture.json")
         with open(ref_path, "r") as src:
             cls.reference = json.load(src)
 
