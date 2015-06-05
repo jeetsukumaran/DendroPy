@@ -134,8 +134,12 @@ def main():
         sys.exit(0)
 
     tests = unittest.defaultTestLoader.loadTestsFromNames(test_names)
-    test_suite = unittest.TestSuite(tests)
     test_runner = unittest.TextTestRunner(verbosity=args.verbosity, failfast=args.fail_fast)
+    try:
+        from xconcurrencytest import ConcurrentTestSuite, fork_for_tests
+        test_suite = ConcurrentTestSuite(tests, fork_for_tests(4))
+    except ImportError:
+        test_suite = unittest.TestSuite(tests)
     test_runner.run(test_suite)
 
 if __name__ == '__main__':
