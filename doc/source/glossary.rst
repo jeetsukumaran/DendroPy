@@ -277,12 +277,12 @@ Glossary and Terminological Reference
             1. All its :term:`edges <edge>` are directional.
             2. It has no `directed cycles <http://en.wikipedia.org/wiki/Cycle_graph#Directed_cycle_graph>`_ .
             3. The directionality is from the :term:`root <seed node>` (or
-               ":term:`seed node`" in DendroPy's parlance) in which the
-               direction to the :term:`tips <leaf node>`.
+               ":term:`seed node`" in DendroPy's parlance) to the
+               :term:`tips <leaf node>`.
 
         The first and second constraints alone result in a `directed acylic graph
         <http://en.wikipedia.org/wiki/Directed_acyclic_graph>`_ .
-        The third addition of the constraint results in an `arborescence
+        The addition of the third constraint results in an `arborescence
         <http://en.wikipedia.org/wiki/Arborescence_(graph_theory)>`_, which is
         strictly synonymous with "tree".
 

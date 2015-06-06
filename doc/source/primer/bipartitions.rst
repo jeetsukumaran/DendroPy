@@ -130,7 +130,7 @@ This would be encoded as::
                         \------- 10000 (E)
 
 The leaves are assigned bitmasks based on the indexes of the taxa, while the
-internal nodes represented a logical AND'ing of the bitmasks of their children.
+internal nodes are given by a `bitwise OR <http://en.wikipedia.org/wiki/Bitwise_operation#OR>`_-ing of the bitmasks of their children.
 
 Modeling Bipartitions Using Leafset Bitmasks and Split Bitmasks
 ---------------------------------------------------------------
