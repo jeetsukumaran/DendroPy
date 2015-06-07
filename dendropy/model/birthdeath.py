@@ -21,6 +21,8 @@ Models, modeling and model-fitting of birth-death processes.
 """
 
 import math
+import collections
+import itertools
 from dendropy.calculate import probability
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import TreeSimTotalExtinctionException
@@ -644,4 +646,223 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
 
     """
     return fit_pure_birth_model(tree=tree, ultrametricity_precision=ultrametricity_precision)
+
+
+class ProtractedSpeciationModel(object):
+
+    def __init__(self,
+            full_species_birth_rate,
+            full_species_extinction_rate,
+            incipient_species_birth_rate,
+            incipient_species_conversion_rate,
+            incipient_species_extinction_rate,
+            rng=None,
+            ):
+        self.full_species_birth_rate = full_species_birth_rate
+        self.full_species_extinction_rate = full_species_extinction_rate
+        self.incipient_species_birth_rate = incipient_species_birth_rate
+        self.incipient_species_conversion_rate = incipient_species_conversion_rate
+        self.incipient_species_extinction_rate = incipient_species_extinction_rate
+        if rng is None:
+            self.rng = GLOBAL_RNG
+        else:
+            self.rng = rng
+        self.tree_factory = dendropy.Tree
+        self.node_factory = dendropy.Node
+        self.reset()
+
+    def reset(self):
+        self.current_time = 0.0
+        self.current_lineage_index = 0
+        self.current_full_species = []
+        self.current_incipient_species = []
+
+    def generate_tree(self, **kwargs):
+        """
+
+        Samples from the Protracted Speciation Model process. Nodes on the tree which
+        represent full/good/true speciation events will have the attribute
+        ``is_full_speciation`` set to `True`, while this attribute will be set
+        to `False` otherwise.
+
+        Parameters
+        ----------
+
+        max_time : float
+            Length of time for which to run process.
+        is_initial_species_incipient : bool
+            Whether the first lineage that initialies the process is an
+            incipient or full species. Defaults to `False`: first species on
+            the tree is a full species.
+        is_retry_on_total_extinction : bool
+            If ``False``, then a TreeSimTotalExtinctionException will be raised
+            if all lineages go extinct before the termination conditions are
+            met. Defaults to ``True``: if all lineages go extinct before the
+            termination conditions are met, then the simulation is rerun, up to
+            a maximum of ``max_retries``.
+        max_retries : int
+            Maximum number of runs to execute in the event of
+            prematurely-terminated simulations due to all lineages going
+            extinct. Once this number or re-runs is exceed, then
+            TreeSimTotalExtinctionException is raised. Defaults to 1000. Set to
+            ``None`` to never quit trying.
+        collapse_incipient_speciation_nodes : bool
+            If `True`, then nodes that are not full speciation events will be
+            collapsed. Defaults to `False`, incomplete speciation nodes are
+            retained on the tree.
+        prune_incipient_species : bool
+            If `True`, then incipient species will be removed from the tree.
+            Defaults to `False`, incipient species are retained on the tree.
+            Note: if `True`, this requires that
+            ``collapse_incipient_speciation_nodes`` is also ``True``.
+
+        Returns
+        -------
+        t1 : |Tree| instance
+            A tree resulting from sampling the protracted speciation process.
+
+        """
+        is_retry_on_total_extinction = kwargs.pop("is_retry_on_total_extinction", True)
+        max_retries = kwargs.pop("max_retries", 1000)
+        collapse_incipient_speciation_nodes = kwargs.pop("collapse_incipient_speciation_nodes", False)
+        prune_incipient_species = kwargs.pop("prune_incipient_species", False)
+        num_retries = 0
+        result = None
+        while True:
+            try:
+                result = self._run_protracted_speciation_process(**kwargs)
+                break
+            except TreeSimTotalExtinctionException:
+                if not is_retry_on_total_extinction:
+                    raise
+                num_retries += 1
+                if max_retries is not None and num_retries > max_retries:
+                    raise
+        assert result is not None
+        if collapse_incipient_speciation_nodes:
+            raise NotImplementedError()
+        if prune_incipient_species:
+            if not collapse_incipient_speciation_nodes:
+                raise TypeError("'prune_incipient_species=True' requires that 'collapse_incipient_speciation_nodes=True' as well")
+            raise NotImplementedError()
+        return result
+
+    def _run_protracted_speciation_process(self, **kwargs):
+        self.reset()
+        max_time = kwargs.get("max_time", None)
+        taxon_namespace = kwargs.get("taxon_namespace", None)
+
+        if kwargs.get("is_initial_species_incipient", False):
+            seed_node = self._add_new_lineage(parent_lineage=None, is_incipient=True)
+        else:
+            seed_node = self._add_new_lineage(parent_lineage=None, is_incipient=False)
+        tree = self.tree_factory(
+                taxon_namespace=taxon_namespace,
+                seed_node=seed_node)
+        tree.is_rooted = True
+
+        while True:
+
+            ## Draw time to next event
+            event_rates = []
+            num_full_species = len(self.current_full_species)
+            num_incipient_species = len(self.current_incipient_species)
+
+            # Event type 0
+            event_rates.append(self.full_species_birth_rate * num_full_species)
+
+            # Event type 1
+            event_rates.append(self.full_species_extinction_rate * num_full_species)
+
+            # Event type 2
+            event_rates.append(self.incipient_species_birth_rate * num_incipient_species)
+
+            # Event type 3
+            event_rates.append(self.incipient_species_conversion_rate * num_incipient_species)
+
+            # Event type 4
+            event_rates.append(self.incipient_species_extinction_rate * num_incipient_species)
+
+            # All events
+            rate_of_any_event = sum(event_rates)
+
+            # Waiting time
+            waiting_time = self.rng.expovariate(rate_of_any_event)
+            self.current_time += waiting_time
+            if max_time and self.current_time > max_time:
+                break
+            for nd in itertools.chain(self.current_full_species, self.current_incipient_species):
+                nd.edge.length += waiting_time
+
+            # Select event
+            event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
+            assert (event_type_idx >= 0 and event_type_idx <= 4)
+            # print("time {}: {}, selected = {}".format(self.current_time, event_rates, event_type_idx))
+
+            if event_type_idx == 0:
+                self._process_full_species_birth(tree)
+            elif event_type_idx == 1:
+                self._process_full_species_extinction(tree)
+            elif event_type_idx == 2:
+                self._process_incipient_species_birth(tree)
+            elif event_type_idx == 3:
+                self._process_incipient_species_conversion(tree)
+            elif event_type_idx == 4:
+                self._process_incipient_species_extinction(tree)
+            else:
+                raise Exception("Unexpected event type index: {}".format(event_type_idx))
+
+            if len(self.current_full_species) + len(self.current_incipient_species) == 0:
+                raise TreeSimTotalExtinctionException()
+
+        return tree
+
+    def _process_full_species_birth(self, tree):
+        parent = self.rng.choice(self.current_full_species)
+        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
+        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
+        self.current_full_species.remove(parent)
+
+    def _process_full_species_extinction(self, tree):
+        sp = self.rng.choice(self.current_full_species)
+        self.current_full_species.remove(sp)
+        self._make_lineage_extinct_on_phylogeny(tree, sp)
+
+    def _process_incipient_species_birth(self, tere):
+        parent = self.rng.choice(self.current_incipient_species)
+        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
+        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
+        self.current_incipient_species.remove(parent)
+
+    def _process_incipient_species_conversion(self, tree):
+        sp = self.rng.choice(self.current_incipient_species)
+        sp.is_incipient = False
+        self.current_incipient_species.remove(sp)
+        self.current_full_species.append(sp)
+
+    def _process_incipient_species_extinction(self, tree):
+        sp = self.rng.choice(self.current_incipient_species)
+        self.current_incipient_species.remove(sp)
+        self._make_lineage_extinct_on_phylogeny(tree, sp)
+
+    def _add_new_lineage(self,
+            parent_lineage,
+            is_incipient):
+        self.current_lineage_index += 1
+        sp_idx = self.current_lineage_index
+        node = self.node_factory()
+        node.edge.length = 0.0
+        node.parent_node = parent_lineage
+        if is_incipient:
+            node.is_full_speciation = False
+            self.current_incipient_species.append(node)
+        else:
+            node.is_full_speciation = True
+            self.current_full_species.append(node)
+        return node
+
+    def _make_lineage_extinct_on_phylogeny(self, tree, sp):
+        if len(self.current_full_species) == 0 and len(self.current_incipient_species) == 0:
+            raise TreeSimTotalExtinctionException()
+        tree.prune_subtree(sp)
 
