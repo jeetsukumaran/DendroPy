@@ -682,7 +682,7 @@ class ProtractedSpeciationModel(object):
 
         Samples from the Protracted Speciation Model process. Nodes on the tree which
         represent full/good/true speciation events will have the attribute
-        ``is_full_speciation`` set to `True`, while this attribute will be set
+        ``is_parent_of_full_species`` set to `True`, while this attribute will be set
         to `False` otherwise.
 
         Parameters
@@ -727,10 +727,10 @@ class ProtractedSpeciationModel(object):
         collapse_incipient_speciation_nodes = kwargs.pop("collapse_incipient_speciation_nodes", False)
         prune_incipient_species = kwargs.pop("prune_incipient_species", False)
         num_retries = 0
-        result = None
+        tree = None
         while True:
             try:
-                result = self._run_protracted_speciation_process(**kwargs)
+                tree = self._run_protracted_speciation_process(**kwargs)
                 break
             except TreeSimTotalExtinctionException:
                 if not is_retry_on_total_extinction:
@@ -738,14 +738,8 @@ class ProtractedSpeciationModel(object):
                 num_retries += 1
                 if max_retries is not None and num_retries > max_retries:
                     raise
-        assert result is not None
-        if collapse_incipient_speciation_nodes:
-            raise NotImplementedError()
-        if prune_incipient_species:
-            if not collapse_incipient_speciation_nodes:
-                raise TypeError("'prune_incipient_species=True' requires that 'collapse_incipient_speciation_nodes=True' as well")
-            raise NotImplementedError()
-        return result
+        assert tree is not None
+        return tree
 
     def _run_protracted_speciation_process(self, **kwargs):
         self.reset()
@@ -836,7 +830,9 @@ class ProtractedSpeciationModel(object):
 
     def _process_incipient_species_conversion(self, tree):
         sp = self.rng.choice(self.current_incipient_species)
-        sp.is_full_speciation = True
+        if sp.parent_node is not None:
+            sp.parent_node.is_parent_of_full_species = True
+            sp.parent_node.speciation_time = self.current_time
         self.current_incipient_species.remove(sp)
         self.current_full_species.append(sp)
 
@@ -853,11 +849,10 @@ class ProtractedSpeciationModel(object):
         node = self.node_factory()
         node.edge.length = 0.0
         node.parent_node = parent_lineage
+        node.is_parent_of_full_species = None
         if is_incipient:
-            node.is_full_speciation = False
             self.current_incipient_species.append(node)
         else:
-            node.is_full_speciation = True
             self.current_full_species.append(node)
         return node
 
@@ -865,4 +860,23 @@ class ProtractedSpeciationModel(object):
         if len(self.current_full_species) == 0 and len(self.current_incipient_species) == 0:
             raise TreeSimTotalExtinctionException()
         tree.prune_subtree(sp)
+
+    def filter_incipient_species(self,
+            tree,
+            collapse_incipient_speciation_nodes=True,
+            prune_incipient_species=True,
+            as_copy=True):
+        if not collapse_incipient_speciation_nodes and not prune_incipient_species:
+            return
+        if as_copy:
+            tree = dendropy.Tree(tree)
+        if prune_incipient_species and not collapse_incipient_speciation_nodes:
+            raise TypeError("'prune_incipient_species=True' requires that 'collapse_incipient_speciation_nodes=True' as well")
+        for nd in tree.postorder_node_iter():
+            if nd.is_leaf():
+                continue
+            else:
+                if not nd.is_parent_of_full_species:
+                    nd.edge.collapse()
+        return tree
 

@@ -820,17 +820,23 @@ class Edge(
         part of the tree.
         """
         to_del = self.head_node
-        p = self.tail_node
-        if not p:
+        parent = self.tail_node
+        if not parent:
             return
         children = to_del.child_nodes()
         if not children:
             raise ValueError('collapse_self called with a terminal.')
-        pos = p.child_nodes().index(to_del)
-        p.remove_child(to_del)
+        pos = parent.child_nodes().index(to_del)
+        parent.remove_child(to_del)
         for child in children:
-            p.insert_child(pos, child)
+            parent.insert_child(pos, child)
             pos += 1
+            if self.length is not None:
+                if child.edge.length is None:
+                    child.edge.length = self.length
+                else:
+                    child.edge.length += self.length
+
 
     def invert(self, update_bipartitions=False):
         """
