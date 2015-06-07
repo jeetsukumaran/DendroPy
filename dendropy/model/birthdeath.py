@@ -836,7 +836,7 @@ class ProtractedSpeciationModel(object):
 
     def _process_incipient_species_conversion(self, tree):
         sp = self.rng.choice(self.current_incipient_species)
-        sp.is_incipient = False
+        sp.is_full_speciation = True
         self.current_incipient_species.remove(sp)
         self.current_full_species.append(sp)
 
