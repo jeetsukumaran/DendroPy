@@ -650,6 +650,42 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
 
 class ProtractedSpeciationModel(object):
 
+    # @staticmethod
+    # def filter_incipient_species(
+    #         source_tree,
+    #         collapse_incipient_speciation_nodes=True,
+    #         prune_incipient_species=True,
+    #         as_copy=True):
+    #     if not collapse_incipient_speciation_nodes and not prune_incipient_species:
+    #         return
+    #     if prune_incipient_species and not collapse_incipient_speciation_nodes:
+    #         raise TypeError("'prune_incipient_species=True' requires that 'collapse_incipient_speciation_nodes=True' as well")
+    #     for source_node in source_tree.leaf_node_iter():
+        # if as_copy:
+        #     tree = dendropy.Tree(tree)
+        # for nd in tree.postorder_node_iter():
+        #     if nd.is_leaf():
+        #         continue
+        #     else:
+        #         if not nd.is_parent_of_full_species:
+        #             nd.edge.collapse()
+        # return tree
+
+    class ProtractedSpeciationModelLineage(object):
+
+        def __init__(self,
+                index,
+                parent_lineage,
+                speciation_initiation_time,
+                is_incipient):
+            self.index = index
+            self.is_incipient = is_incipient
+            self.parent_lineage = parent_lineage
+            self.speciation_initiation_time = speciation_initiation_time
+            self.speciation_completion_time = None
+            self.extinction_time = None
+            self.node = None
+
     def __init__(self,
             full_species_birth_rate,
             full_species_extinction_rate,
@@ -674,8 +710,9 @@ class ProtractedSpeciationModel(object):
     def reset(self):
         self.current_time = 0.0
         self.current_lineage_index = 0
-        self.current_full_species = []
-        self.current_incipient_species = []
+        self.current_full_species_lineages = []
+        self.current_incipient_species_lineages = []
+        self.lineage_table = {}
 
     def generate_tree(self, **kwargs):
         """
@@ -746,21 +783,21 @@ class ProtractedSpeciationModel(object):
         max_time = kwargs.get("max_time", None)
         taxon_namespace = kwargs.get("taxon_namespace", None)
 
-        if kwargs.get("is_initial_species_incipient", False):
-            seed_node = self._add_new_lineage(parent_lineage=None, is_incipient=True)
+        is_incipient = kwargs.get("is_initial_species_incipient", False)
+        if is_incipient:
+            initial_lineage = self._new_lineage(parent_lineage=None, is_incipient=True)
         else:
-            seed_node = self._add_new_lineage(parent_lineage=None, is_incipient=False)
-        tree = self.tree_factory(
-                taxon_namespace=taxon_namespace,
-                seed_node=seed_node)
+            initial_lineage = self._new_lineage(parent_lineage=None, is_incipient=False)
+        seed_node = self._new_node(lineage=initial_lineage)
+        tree = self.tree_factory( taxon_namespace=taxon_namespace, seed_node=seed_node)
         tree.is_rooted = True
 
         while True:
 
             ## Draw time to next event
             event_rates = []
-            num_full_species = len(self.current_full_species)
-            num_incipient_species = len(self.current_incipient_species)
+            num_full_species = len(self.current_full_species_lineages)
+            num_incipient_species = len(self.current_incipient_species_lineages)
 
             # Event type 0
             event_rates.append(self.full_species_birth_rate * num_full_species)
@@ -785,8 +822,8 @@ class ProtractedSpeciationModel(object):
             self.current_time += waiting_time
             if max_time and self.current_time > max_time:
                 break
-            for nd in itertools.chain(self.current_full_species, self.current_incipient_species):
-                nd.edge.length += waiting_time
+            for lineage in itertools.chain(self.current_full_species_lineages, self.current_incipient_species_lineages):
+                lineage.node.edge.length += waiting_time
 
             # Select event
             event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
@@ -806,40 +843,48 @@ class ProtractedSpeciationModel(object):
             else:
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
 
-            if len(self.current_full_species) + len(self.current_incipient_species) == 0:
+            if len(self.current_full_species_lineages) + len(self.current_incipient_species_lineages) == 0:
                 raise TreeSimTotalExtinctionException()
 
         return tree
 
     def _process_full_species_birth(self, tree):
-        parent = self.rng.choice(self.current_full_species)
-        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
-        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
-        self.current_full_species.remove(parent)
+        parent_lineage = self.rng.choice(self.current_full_species_lineages)
+        parent_node = parent_lineage.node
+        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_incipient=True)
+        c1 = self._new_node(lineage=parent_lineage)
+        c2 = self._new_node(lineage=new_lineage)
+        parent_node.add_child(c1)
+        parent_node.add_child(c2)
 
     def _process_full_species_extinction(self, tree):
-        sp = self.rng.choice(self.current_full_species)
-        self.current_full_species.remove(sp)
-        self._make_lineage_extinct_on_phylogeny(tree, sp)
+        sp = self.rng.choice(self.current_full_species_lineages)
+        sp.extinction_time = self.current_time
+        self.current_full_species_lineages.remove(sp)
+        self._make_lineage_extinct_on_phylogeny(tree, sp.node)
 
-    def _process_incipient_species_birth(self, tere):
-        parent = self.rng.choice(self.current_incipient_species)
-        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
-        self._add_new_lineage(parent_lineage=parent, is_incipient=True)
-        self.current_incipient_species.remove(parent)
+    def _process_incipient_species_birth(self, tree):
+        parent_lineage = self.rng.choice(self.current_incipient_species_lineages)
+        parent_node = parent_lineage.node
+        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_incipient=True)
+        c1 = self._new_node(lineage=parent_lineage)
+        c2 = self._new_node(lineage=new_lineage)
+        parent_node.add_child(c1)
+        parent_node.add_child(c2)
 
     def _process_incipient_species_conversion(self, tree):
-        sp = self.rng.choice(self.current_incipient_species)
-        if sp.parent_node is not None:
-            sp.parent_node.is_parent_of_full_species = True
-            sp.parent_node.speciation_time = self.current_time
-        self.current_incipient_species.remove(sp)
-        self.current_full_species.append(sp)
+        lineage = self.rng.choice(self.current_incipient_species_lineages)
+        self.current_incipient_species_lineages.remove(lineage)
+        self.current_full_species_lineages.append(lineage)
+        lineage.speciation_completion_time = self.current_time
+        if lineage.node.parent_node is not None:
+            lineage.node.parent_node.is_parent_of_full_species = True
 
     def _process_incipient_species_extinction(self, tree):
-        sp = self.rng.choice(self.current_incipient_species)
-        self.current_incipient_species.remove(sp)
-        self._make_lineage_extinct_on_phylogeny(tree, sp)
+        sp = self.rng.choice(self.current_incipient_species_lineages)
+        sp.extinction_time = self.current_time
+        self.current_incipient_species_lineages.remove(sp)
+        self._make_lineage_extinct_on_phylogeny(tree, sp.node)
 
     def _add_new_lineage(self,
             parent_lineage,
@@ -850,6 +895,7 @@ class ProtractedSpeciationModel(object):
         node.edge.length = 0.0
         node.parent_node = parent_lineage
         node.is_parent_of_full_species = None
+        node.speciation_initiation_time = None
         if is_incipient:
             self.current_incipient_species.append(node)
         else:
@@ -857,26 +903,30 @@ class ProtractedSpeciationModel(object):
         return node
 
     def _make_lineage_extinct_on_phylogeny(self, tree, sp):
-        if len(self.current_full_species) == 0 and len(self.current_incipient_species) == 0:
+        if len(self.current_full_species_lineages) == 0 and len(self.current_incipient_species_lineages) == 0:
             raise TreeSimTotalExtinctionException()
         tree.prune_subtree(sp)
 
-    def filter_incipient_species(self,
-            tree,
-            collapse_incipient_speciation_nodes=True,
-            prune_incipient_species=True,
-            as_copy=True):
-        if not collapse_incipient_speciation_nodes and not prune_incipient_species:
-            return
-        if as_copy:
-            tree = dendropy.Tree(tree)
-        if prune_incipient_species and not collapse_incipient_speciation_nodes:
-            raise TypeError("'prune_incipient_species=True' requires that 'collapse_incipient_speciation_nodes=True' as well")
-        for nd in tree.postorder_node_iter():
-            if nd.is_leaf():
-                continue
-            else:
-                if not nd.is_parent_of_full_species:
-                    nd.edge.collapse()
-        return tree
+    def _new_lineage(self, parent_lineage, is_incipient):
+        self.current_lineage_index += 1
+        lineage_index = self.current_lineage_index
+        new_lineage = ProtractedSpeciationModel.ProtractedSpeciationModelLineage(
+                index=lineage_index,
+                parent_lineage=parent_lineage,
+                speciation_initiation_time=self.current_time,
+                is_incipient=is_incipient)
+        if is_incipient:
+            self.current_incipient_species_lineages.append(new_lineage)
+        else:
+            self.current_full_species_lineages.append(new_lineage)
+        return new_lineage
 
+    def _new_node(self,
+            lineage,
+            ):
+        node = self.node_factory()
+        node.edge.length = 0.0
+        node.is_parent_of_full_species = None
+        node._protracted_speciation_model_lineage = lineage
+        lineage.node = node
+        return node
