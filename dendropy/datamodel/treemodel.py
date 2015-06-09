@@ -812,7 +812,7 @@ class Edge(
     ###########################################################################
     ### Structural Manipulation
 
-    def collapse(self):
+    def collapse(self, adjust_collapsed_head_children_edge_lengths=False):
         """
         Inserts all children of the head_node of self as children of the
         tail_node of self in the same place in the child_node list that
@@ -831,12 +831,12 @@ class Edge(
         for child in children:
             parent.insert_child(pos, child)
             pos += 1
-            if self.length is not None:
+            if adjust_collapsed_head_children_edge_lengths and self.length is not None:
+                # print id(child), child.edge.length, self.length
                 if child.edge.length is None:
                     child.edge.length = self.length
                 else:
                     child.edge.length += self.length
-
 
     def invert(self, update_bipartitions=False):
         """
@@ -4350,7 +4350,8 @@ class Tree(
             to_keep.edge.length += to_del_edge.length
         except:
             pass
-        to_del_edge.collapse()
+        # print to_keep.edge.length, to_del_edge.length, [id(c) for c in to_del_edge.head_node.child_nodes()]
+        to_del_edge.collapse(adjust_collapsed_head_children_edge_lengths=False)
         if set_as_unrooted_tree:
             self.is_rooted = False
         return self.seed_node

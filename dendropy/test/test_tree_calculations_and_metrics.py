@@ -844,7 +844,7 @@ class TreePatristicDistTest(unittest.TestCase):
             tax1 = self.tree.taxon_namespace.require_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.require_taxon(label=t2)
             pd = pdm(tax1, tax2)
-            self.assertEqual(pd, exp_distance)
+            self.assertEqual(pd, exp_distance, "{}: {} <-> {}: {} instead of {}".format(self.tree, t1, t2, pd, exp_distance))
         _chk_distance(pdm, "a", "b", 2)
         _chk_distance(pdm, "a", "c", 4)
         _chk_distance(pdm, "b", "c", 4)
