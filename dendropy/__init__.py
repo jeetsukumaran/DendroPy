@@ -95,7 +95,7 @@ version_info = collections.namedtuple("dendropy_version_info",
         ["major", "minor", "micro", "releaselevel"])(
                 major=4,
                 minor=0,
-                micro=0,
+                micro=1,
                 releaselevel=""
                 )
 __project__ = "DendroPy"
