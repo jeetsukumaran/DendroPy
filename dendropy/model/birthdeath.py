@@ -938,10 +938,10 @@ class ProtractedSpeciationModel(object):
         lineage_set = set(self.current_incipient_species_lineages + self.current_full_species_lineages)
         sorted_lineages = sorted(lineage_set,
                 key = lambda x: -x.speciation_initiation_time)
-        sys.stderr.write("\n--- full ---\n")
-        self._debug_dump_lineages(self._all_lineages)
-        sys.stderr.write("\n\n--- operational ---\n")
-        self._debug_dump_lineages(sorted_lineages)
+        # sys.stderr.write("\n--- full ---\n")
+        # self._debug_dump_lineages(self._all_lineages)
+        # sys.stderr.write("\n\n--- operational ---\n")
+        # self._debug_dump_lineages(sorted_lineages)
         branching_points = {}
         while sorted_lineages:
             lineage = sorted_lineages.pop(0)
@@ -950,29 +950,34 @@ class ProtractedSpeciationModel(object):
             if parent_lineage is None:
                 break
             if lineage.is_full_species:
-                sys.stderr.write("\n")
+                # sys.stderr.write("\n")
                 try:
                     full_species_tree_node = branching_points[lineage]
-                    sys.stderr.write("Lineage node already in dictionary, with child lineages: {}\n".format((ch.label for ch in full_species_tree_node.child_node_iter())))
+                    # sys.stderr.write("Lineage node already in dictionary, with child lineages: {}\n".format((ch.label for ch in full_species_tree_node.child_node_iter())))
                 except KeyError:
-                    sys.stderr.write("Creating new lineage node: {}\n".format(lineage.index))
+                    # sys.stderr.write("Creating new lineage node: {}\n".format(lineage.index))
                     full_species_tree_node = dendropy.Node()
                     full_species_tree_node.label = lineage.index
+                    full_species_tree_node._protracted_speciation_model_lineage = lineage
+                    full_species_tree_node.age = 0 # if creating new, then it is not a parent
                     branching_points[lineage] = full_species_tree_node
                 if lineage.is_full_species:
                     parent_lineage.is_full_species = True
-                sys.stderr.write("\n")
-                sys.stderr.write("Lineage: {}\n".format(lineage.index))
+                # sys.stderr.write("\n")
+                # sys.stderr.write("Lineage: {}\n".format(lineage.index))
                 # lineage_set.add(parent_lineage)
                 # sorted_lineages = sorted(lineage_set,
                 #         key = lambda x: -x.speciation_initiation_time)
                 try:
                     full_species_tree_parent_node = branching_points[parent_lineage]
-                    sys.stderr.write("{}: Parent lineage node {} already in dictionary, with child lineages: {}\n".format(lineage.index, parent_lineage.index, (ch.label for ch in full_species_tree_node.child_node_iter())))
+                    # sys.stderr.write("{}: Parent lineage node {} already in dictionary, with child lineages: {}\n".format(lineage.index, parent_lineage.index, (ch.label for ch in full_species_tree_node.child_node_iter())))
                 except KeyError:
-                    sys.stderr.write("{}: Creating new parent lineage node: {}\n".format(lineage.index, parent_lineage.index))
+                    # sys.stderr.write("{}: Creating new parent lineage node: {}\n".format(lineage.index, parent_lineage.index))
                     full_species_tree_parent_node = dendropy.Node()
                     full_species_tree_parent_node.label = parent_lineage.index
+                    full_species_tree_parent_node._protracted_speciation_model_lineage = lineage
+                    # note that the age is the speciation initiation time of the *daughter*
+                    full_species_tree_parent_node.age = self.current_time - lineage.speciation_initiation_time
                     branching_points[parent_lineage] = full_species_tree_parent_node
                 full_species_tree_parent_node.add_child(full_species_tree_node)
                 if parent_lineage not in lineage_set:
@@ -987,6 +992,7 @@ class ProtractedSpeciationModel(object):
         assert seed_node is not None
         pruned_tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
         pruned_tree.suppress_unifurcations()
+        pruned_tree.set_edge_lengths_from_node_ages()
         return pruned_tree
 
     def _debug_dump_lineages(self, lineages):
@@ -999,10 +1005,10 @@ class ProtractedSpeciationModel(object):
             else:
                 pi = k.parent_lineage.index
                 pt = k.parent_lineage.is_full_species
-            sys.stderr.write("{:10.5f} : {:4} ({}) => {} ({})\n".format(
-                    k.speciation_initiation_time,
-                    k.index,
-                    k.is_full_species,
-                    pi,
-                    pt))
-        sys.stderr.write("\n")
+            # sys.stderr.write("{:10.5f} : {:4} ({}) => {} ({})\n".format(
+            #         k.speciation_initiation_time,
+            #         k.index,
+            #         k.is_full_species,
+            #         pi,
+            #         pt))
+        # sys.stderr.write("\n")
