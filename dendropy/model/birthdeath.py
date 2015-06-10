@@ -836,6 +836,7 @@ class ProtractedSpeciationModel(object):
             if len(self.current_full_species_lineages) + len(self.current_incipient_species_lineages) == 0:
                 raise TreeSimTotalExtinctionException()
 
+        psm_tree.calc_node_ages()
         pruned_tree = self._assemble_pruned_tree(taxon_namespace=taxon_namespace)
         return psm_tree, pruned_tree
 
@@ -925,7 +926,7 @@ class ProtractedSpeciationModel(object):
         node.is_parent_of_full_species = None
         node._protracted_speciation_model_lineage = lineage
         self.current_node_index += 1
-        node.label = "n{}.L{}".format(self.current_node_index, lineage.index)
+        node.label = "L{}.n{}".format(lineage.index, self.current_node_index)
         lineage.node = node
         return node
 
@@ -954,7 +955,7 @@ class ProtractedSpeciationModel(object):
                     full_species_tree_node = dendropy.Node()
                     full_species_tree_node.label = "L{}".format(lineage.index)
                     full_species_tree_node._protracted_speciation_model_lineage = lineage
-                    full_species_tree_node.age = 0 # if creating new, then it is not a parent
+                    # full_species_tree_node.age = 0 # if creating new, then it is not a parent
                     branching_points[lineage] = full_species_tree_node
                 if lineage.is_full_species:
                     parent_lineage.is_full_species = True
@@ -970,9 +971,9 @@ class ProtractedSpeciationModel(object):
                     # sys.stderr.write("{}: Creating new parent lineage node: {}\n".format(lineage.index, parent_lineage.index))
                     full_species_tree_parent_node = dendropy.Node()
                     full_species_tree_parent_node.label = "L{}".format(parent_lineage.index)
-                    full_species_tree_parent_node._protracted_speciation_model_lineage = lineage
+                    full_species_tree_parent_node._protracted_speciation_model_lineage = parent_lineage
                     # note that the age is the speciation initiation time of the *daughter*
-                    full_species_tree_parent_node.age = self.current_time - lineage.speciation_initiation_time
+                    # full_species_tree_parent_node.age = self.current_time - lineage.speciation_initiation_time
                     branching_points[parent_lineage] = full_species_tree_parent_node
                 full_species_tree_parent_node.add_child(full_species_tree_node)
                 if parent_lineage not in lineage_set:
@@ -987,7 +988,7 @@ class ProtractedSpeciationModel(object):
         assert seed_node is not None
         pruned_tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
         pruned_tree.is_rooted = True
-        pruned_tree.suppress_unifurcations()
+        # pruned_tree.suppress_unifurcations()
         # pruned_tree.set_edge_lengths_from_node_ages()
 
         for nd in pruned_tree.postorder_node_iter():
@@ -1000,6 +1001,7 @@ class ProtractedSpeciationModel(object):
             else:
                 nd.age = self.current_time - min(ch._protracted_speciation_model_lineage.speciation_initiation_time for ch in nd.child_node_iter())
         pruned_tree.set_edge_lengths_from_node_ages()
+        pruned_tree.suppress_unifurcations()
 
         # for nd in pruned_tree.postorder_node_iter():
         #     if nd.is_leaf():
