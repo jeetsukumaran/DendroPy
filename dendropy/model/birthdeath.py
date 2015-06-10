@@ -665,12 +665,12 @@ class ProtractedSpeciationModel(object):
             self.speciation_initiation_time = speciation_initiation_time
             self.speciation_completion_time = None
             self.extinction_time = None
-            self.node_history = []
+            self.psm_tree_node_history = []
 
         def _get_node(self):
-            return self.node_history[-1]
+            return self.psm_tree_node_history[-1]
         def _set_node(self, node):
-            self.node_history.append(node)
+            self.psm_tree_node_history.append(node)
         node = property(_get_node, _set_node)
 
     def __init__(self,
@@ -710,7 +710,7 @@ class ProtractedSpeciationModel(object):
         -   The unpruned PSM tree: this tree has all nodes/lineages, i.e. both
             full species as well as incipient species. Nodes on the tree which
             represent full/good/true speciation events will have the attribute
-            ``is_parent_of_full_species`` set to `True`, while this attribute will
+            ``is_full_speciation_event`` set to `True`, while this attribute will
             be set to `False` otherwise.
 
         -   The pruned tree: the tree only has full species.
@@ -836,8 +836,19 @@ class ProtractedSpeciationModel(object):
             if len(self.current_full_species_lineages) + len(self.current_incipient_species_lineages) == 0:
                 raise TreeSimTotalExtinctionException()
 
-        psm_tree.calc_node_ages()
         pruned_tree = self._assemble_pruned_tree(taxon_namespace=taxon_namespace)
+        psm_tree.calc_node_ages()
+        for pruned_tree_nd in pruned_tree:
+            if pruned_tree_nd.is_leaf():
+                continue
+            # sys.stderr.write("{}: {}\n".format(pruned_tree_nd.age, list(nd.age for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history)))
+            psm_tree_node = pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history[0]
+            for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history:
+                if nd.age is not None and nd.age > psm_tree_node.age:
+                    psm_tree_node = nd
+                # nd.is_full_speciation_event = True
+            psm_tree_node.is_full_speciation_event = True
+
         return psm_tree, pruned_tree
 
     def _process_full_species_birth(self, tree):
@@ -870,32 +881,12 @@ class ProtractedSpeciationModel(object):
         self.current_full_species_lineages.append(lineage)
         lineage.is_full_species = True
         lineage.speciation_completion_time = self.current_time
-        if lineage.node.parent_node is not None:
-            lineage.node.parent_node.is_parent_of_full_species = True
-            lineage.node.annotations["species_status"] = "Full"
 
     def _process_incipient_species_extinction(self, tree):
         sp = self.rng.choice(self.current_incipient_species_lineages)
         sp.extinction_time = self.current_time
         self.current_incipient_species_lineages.remove(sp)
         self._make_lineage_extinct_on_phylogeny(tree, sp.node)
-
-    def _add_new_lineage(self,
-            parent_lineage,
-            is_full_species):
-        self.current_lineage_index += 1
-        sp_idx = self.current_lineage_index
-        node = self.node_factory()
-        node.edge.length = 0.0
-        node.parent_node = parent_lineage
-        node.is_parent_of_full_species = None
-        node.speciation_initiation_time = None
-        node.annotations["species_status"] = "Incipient"
-        if is_full_species:
-            self.current_full_species.append(node)
-        else:
-            self.current_incipient_species.append(node)
-        return node
 
     def _make_lineage_extinct_on_phylogeny(self, tree, sp):
         if len(self.current_full_species_lineages) == 0 and len(self.current_incipient_species_lineages) == 0:
@@ -923,8 +914,9 @@ class ProtractedSpeciationModel(object):
             ):
         node = self.node_factory()
         node.edge.length = 0.0
-        node.is_parent_of_full_species = None
-        node._protracted_speciation_model_lineage = lineage
+        node.protracted_speciation_model_lineage = lineage
+        node.is_full_speciation_event = False
+        node.annotations.add_bound_attribute("is_full_speciation_event")
         self.current_node_index += 1
         node.label = "L{}.n{}".format(lineage.index, self.current_node_index)
         lineage.node = node
@@ -954,7 +946,7 @@ class ProtractedSpeciationModel(object):
                     # sys.stderr.write("Creating new lineage node: {}\n".format(lineage.index))
                     full_species_tree_node = dendropy.Node()
                     full_species_tree_node.label = "L{}".format(lineage.index)
-                    full_species_tree_node._protracted_speciation_model_lineage = lineage
+                    full_species_tree_node.protracted_speciation_model_lineage = lineage
                     # full_species_tree_node.age = 0 # if creating new, then it is not a parent
                     branching_points[lineage] = full_species_tree_node
                 if lineage.is_full_species:
@@ -971,7 +963,7 @@ class ProtractedSpeciationModel(object):
                     # sys.stderr.write("{}: Creating new parent lineage node: {}\n".format(lineage.index, parent_lineage.index))
                     full_species_tree_parent_node = dendropy.Node()
                     full_species_tree_parent_node.label = "L{}".format(parent_lineage.index)
-                    full_species_tree_parent_node._protracted_speciation_model_lineage = parent_lineage
+                    full_species_tree_parent_node.protracted_speciation_model_lineage = parent_lineage
                     # note that the age is the speciation initiation time of the *daughter*
                     # full_species_tree_parent_node.age = self.current_time - lineage.speciation_initiation_time
                     branching_points[parent_lineage] = full_species_tree_parent_node
@@ -993,13 +985,13 @@ class ProtractedSpeciationModel(object):
 
         for nd in pruned_tree.postorder_node_iter():
             # if nd.is_leaf():
-            #     nd.edge.length = self.current_time - nd._protracted_speciation_model_lineage.speciation_initiation_time
+            #     nd.edge.length = self.current_time - nd.protracted_speciation_model_lineage.speciation_initiation_time
             # else:
-            #     nd.edge.length = nd._child_nodes[1]._protracted_speciation_model_lineage.speciation_initiation_time - nd._protracted_speciation_model_lineage.speciation_initiation_time
+            #     nd.edge.length = nd._child_nodes[1].protracted_speciation_model_lineage.speciation_initiation_time - nd.protracted_speciation_model_lineage.speciation_initiation_time
             if nd.is_leaf():
                 nd.age = 0
             else:
-                nd.age = self.current_time - min(ch._protracted_speciation_model_lineage.speciation_initiation_time for ch in nd.child_node_iter())
+                nd.age = self.current_time - min(ch.protracted_speciation_model_lineage.speciation_initiation_time for ch in nd.child_node_iter())
         pruned_tree.set_edge_lengths_from_node_ages()
         pruned_tree.suppress_unifurcations()
 
@@ -1009,7 +1001,7 @@ class ProtractedSpeciationModel(object):
         #     else:
         #         ages = []
         #         for ch in nd.child_node_iter():
-        #             age = ch._protracted_speciation_model_lineage.speciation_initiation_time - ch.age
+        #             age = ch.protracted_speciation_model_lineage.speciation_initiation_time - ch.age
         #             ages.append(age)
         #             nd.age = age
         # for nd in pruned_tree.preorder_node_iter():
@@ -1019,9 +1011,9 @@ class ProtractedSpeciationModel(object):
         #         ch.age = 0
         # for nd in pruned_tree.preorder_node_iter():
         #     if nd.parent_node is None:
-        #         nd.edge.length = nd._protracted_speciation_model_lineage.speciation_initiation_time
+        #         nd.edge.length = nd.protracted_speciation_model_lineage.speciation_initiation_time
         #     else:
-        #         nd.edge.length = nd._protracted_speciation_model_lineage.speciation_initiation_time - nd.parent_node._protracted_speciation_model_lineage.speciation_initiation_time
+        #         nd.edge.length = nd.protracted_speciation_model_lineage.speciation_initiation_time - nd.parent_node.protracted_speciation_model_lineage.speciation_initiation_time
 
         return pruned_tree
 
