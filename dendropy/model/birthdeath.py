@@ -848,6 +848,7 @@ class ProtractedSpeciationModel(object):
                     psm_tree_node = nd
                 # nd.is_full_speciation_event = True
             psm_tree_node.is_full_speciation_event = True
+            pruned_tree_nd.protracted_speciation_model_tree_node = psm_tree_node
 
         return psm_tree, pruned_tree
 
