@@ -711,9 +711,18 @@ class ProtractedSpeciationModel(object):
             full species as well as incipient species. Nodes on the tree which
             represent full/good/true speciation events will have the attribute
             ``is_full_speciation_event`` set to `True`, while this attribute will
-            be set to `False` otherwise.
+            be set to `False` otherwise. Each node has an attribute added,
+            ``protracted_speciation_model_lineage``, which is a reference to a
+            :class:`~dendropy.model.birthdeath.ProtractedSpeciationModel.ProtractedSpeciationModelLineage`
+            instance which represents the lineage associated with this node
+            (note that each node can only be associated with a single lineage,
+            but a lineage might span several nodes).
 
-        -   The pruned tree: the tree only has full species.
+        -   The pruned tree: the tree only has full species. Each node has an
+            ``protracted_speciation_model_lineage`` attribute, as above, and
+            also a ``protracted_speciation_model_tree_node`` attribute, which
+            points to the corresponding node on the unpruned protracted
+            speciation tree, anove.
 
         Parameters
         ----------
