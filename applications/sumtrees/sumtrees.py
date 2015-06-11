@@ -102,13 +102,13 @@ def _read_into_tree_array(
             ignore_unrecognized_keyword_arguments=True,
             )
     else:
-        def _log_progress(source_name, current_tree_offset, aggregate_tree_idx):
+        def _log_progress(source_name, current_tree_offset):
             if (
                     info_message_func is not None
                     and (
                         (log_frequency == 1)
                         or (tree_offset > 0 and current_tree_offset == tree_offset)
-                        or (aggregate_tree_idx > 0 and log_frequency > 0 and (aggregate_tree_idx % log_frequency) == 0)
+                        or (current_tree_offset >= 0 and log_frequency > 0 and (current_tree_offset % log_frequency) == 0)
                         )
                     ):
                 if current_tree_offset >= tree_offset:
@@ -146,9 +146,9 @@ def _read_into_tree_array(
                         info_message_func("Analyzing: '{}'".format(source_name), wrap=False)
                 if current_tree_offset >= tree_offset:
                     tree_array.add_tree(tree=tree, is_bipartitions_updated=False)
-                    _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+                    _log_progress(source_name, current_tree_offset)
                 else:
-                    _log_progress(source_name, current_tree_offset, aggregate_tree_idx)
+                    _log_progress(source_name, current_tree_offset)
                 current_tree_offset += 1
         except (Exception, KeyboardInterrupt) as e:
             if debug_mode and not isinstance(e, KeyboardInterrupt):
