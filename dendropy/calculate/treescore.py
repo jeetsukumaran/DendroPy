@@ -23,5 +23,6 @@ reference to external data of some kind under various criteria.
 
 from dendropy.model.parsimony import fitch_down_pass
 from dendropy.model.parsimony import fitch_up_pass
+from dendropy.model.parsimony import parsimony_score
 
 

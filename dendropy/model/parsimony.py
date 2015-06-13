@@ -23,6 +23,7 @@ Models, modeling and model-fitting of parsimony.
 from functools import reduce
 import operator
 import dendropy
+from dendropy.utility.error import TaxonNamespaceIdentityError
 
 class _NodeStateSetMap(dict):
     def __init__(self, taxon_state_sets_map=None):
@@ -288,4 +289,19 @@ def fitch_up_pass(
             result.append(final_ss)
         setattr(nd, state_sets_attr_name, result)
 
+
+def parsimony_score(
+        tree,
+        chars,
+        gaps_as_missing=True,
+        ):
+    if tree.taxon_namespace is not chars.taxon_namespace:
+        raise TaxonNamespaceIdentityError(tree, data)
+    # Generate a map of taxa to state sets
+    # Set ``gaps_as_missing=True`` to treat gaps as missing data,
+    # or ``gaps_as_missing=False`` to treat gaps as new states.
+    taxon_state_sets_map = chars.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
+    nodes = tree.postorder_node_iter()
+    pscore = fitch_down_pass(nodes, taxon_state_sets_map=taxon_state_sets_map)
+    return pscore
 
