@@ -2,6 +2,8 @@
 :mod:`dendropy.coalescent` -- Coalescent Calculations and Statistics
 ********************************************************************
 
+.. include:: /obsolete.inc
+
 .. module:: coalescent
 
 .. toctree::

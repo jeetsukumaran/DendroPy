@@ -2,6 +2,9 @@
 Writing Phylogenetic Data
 *************************
 
+
+.. include:: /obsolete.inc
+
 Writing to Streams, Filepaths, or Strings
 =========================================
 

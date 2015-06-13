@@ -2,6 +2,9 @@
 Population Genetic Summary Statistics
 *************************************
 
+
+.. include:: /obsolete.inc
+
 The :mod:`popgenstat` module provides functions that calculate some common population genetic summary statistics.
 
 For example, given a |DnaCharacterMatrix| as an argument, the :func:`~dendropy.popgenstat.num_segregating_sites()` function returns the raw number of segregating sites, :func:`~dendropy.popgenstat.average_number_of_pairwise_differences()` returns the average number of pairwise differences, and :func:`~dendropy.popgenstat.nucleotide_diversity()` returns the nucleotide diversity.

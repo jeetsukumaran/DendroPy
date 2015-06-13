@@ -2,6 +2,8 @@
 :mod:`dendropy.dataobject.char` -- Character Data
 *************************************************
 
+.. include:: /obsolete.inc
+
 .. module:: char
 
 .. toctree::

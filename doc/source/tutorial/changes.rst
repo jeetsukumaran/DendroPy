@@ -2,6 +2,9 @@
 What's New in the DendroPy Tutorial
 ***********************************
 
+
+.. include:: /obsolete.inc
+
 2011-05-26
 ==========
 

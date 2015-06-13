@@ -2,6 +2,9 @@
 :mod:`dendropy.treecalc` -- Tree Statistics, Metrics and Calculations
 *********************************************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: treecalc
 
 .. toctree::

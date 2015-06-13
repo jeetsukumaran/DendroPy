@@ -2,6 +2,9 @@
 [***deprecated***] NCBI (National Center for Biotechnology Information) Databases
 *********************************************************************************
 
+
+.. include:: /obsolete.inc
+
 .. deprecated:: 3.12.0
     This module has been deprecated. Use the ":doc:`genbank module </tutorial/genbank>`" instead.
 

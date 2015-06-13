@@ -2,6 +2,8 @@
 :mod:`dendropy.dataobject.taxon` -- Taxon Data
 **********************************************
 
+.. include:: /obsolete.inc
+
 .. module:: dendropy.dataobject.taxa
 
 .. toctree::

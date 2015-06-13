@@ -2,6 +2,9 @@
 :mod:`dendropy.interop.genbank` -- GenBank Database Interoperability
 ********************************************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: genbank
 
 .. toctree::

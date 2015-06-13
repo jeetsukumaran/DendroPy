@@ -2,6 +2,8 @@
 :mod:`dendropy.dataobject.dataset` -- Primary Data Manager
 **********************************************************
 
+.. include:: /obsolete.inc
+
 .. module:: dataset
 
 .. toctree::

@@ -2,6 +2,9 @@
 RAxML
 *****
 
+
+.. include:: /obsolete.inc
+
 The :mod:`~dendropy.interop.raxml` module provides the :class:`~dendropy.interop.raxml.RaxmlRunner` class, which is a lighweight (i.e., mostly "pass-through") wrapper to the |RAxML| maximum-likelihood tree estimation program. |RAxML| needs to be installed in the system for this class to be used.
 
 The class handles the exporting of the |DendroPy| dataset in a format suitable for |RAxML| analysis, and re-reading the resulting tree back into a |DendroPy| object.

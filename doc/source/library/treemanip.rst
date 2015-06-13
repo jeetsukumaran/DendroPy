@@ -2,6 +2,9 @@
 :mod:`dendropy.treemanip` -- Tree Manipulation
 ***********************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: treemanip
 
 .. toctree::

@@ -2,6 +2,9 @@
 Converting Between Data Formats
 *******************************
 
+
+.. include:: /obsolete.inc
+
 Any data in a schema that can be read by DendroPy, can be saved to files in any schema that can be written by DendroPy.
 Converting data between formats is simply a matter of calling readers and writers of the appropriate type.
 

@@ -2,6 +2,9 @@
 Reading Phylogenetic Data
 *************************
 
+
+.. include:: /obsolete.inc
+
 Creating and Populating New Objects
 ===================================
 

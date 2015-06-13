@@ -2,6 +2,9 @@
 Tree Traversal and Navigation
 *****************************
 
+
+.. include:: /obsolete.inc
+
 Tree Traversal
 ==============
 

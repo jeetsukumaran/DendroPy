@@ -2,6 +2,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Interoperability with Other Programs, Libraries and Applications
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

@@ -2,6 +2,9 @@
 Phylogenetic Character Analyses
 *******************************
 
+
+.. include:: /obsolete.inc
+
 Phylogenetic Independent Contrasts (PIC)
 ========================================
 

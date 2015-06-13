@@ -2,6 +2,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Phylogenetic Data in DendroPy
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

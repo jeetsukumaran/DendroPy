@@ -2,6 +2,9 @@
 SumTrees: Phylogenetic Tree Summarization and Annotation
 ########################################################
 
+
+.. include:: /obsolete.inc
+
 Introduction
 ============
 

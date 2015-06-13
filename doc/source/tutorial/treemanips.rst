@@ -2,6 +2,8 @@
 Tree Manipulation and Restructuring
 ***********************************
 
+.. include:: /obsolete.inc
+
 The |Tree| class provides both low-level and high-level methods for manipulating tree structure.
 
 .. note::

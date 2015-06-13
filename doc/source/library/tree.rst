@@ -2,6 +2,9 @@
 :mod:`dendropy.dataobject.tree` -- Tree Data
 ********************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: dendropy.dataobject.tree
 
 .. toctree::

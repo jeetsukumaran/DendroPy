@@ -2,6 +2,9 @@
 DendroPy Library Reference
 ##########################
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

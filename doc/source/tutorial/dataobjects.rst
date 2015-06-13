@@ -2,6 +2,9 @@
 Introduction to Phylogenetic Data Objects
 *****************************************
 
+
+.. include:: /obsolete.inc
+
 Types of Phylogenetic Data Objects
 ==================================
 

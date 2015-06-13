@@ -2,6 +2,9 @@
 Working with Metadata Annotations
 *********************************
 
+
+.. include:: /obsolete.inc
+
 |DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
 These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`dendropy.utility.containers.OrderedSet`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
 Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annotation element.

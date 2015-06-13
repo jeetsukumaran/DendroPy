@@ -2,6 +2,8 @@
 Seq-Gen
 *******
 
+.. include:: /obsolete.inc
+
 |DendroPy| includes native infrastructure for phylogenetic sequence simulation
 on DendroPy trees under the HKY model. Being pure-Python, however, it is a
 little slow. If |SeqGen| is installed on your system, though, you can take

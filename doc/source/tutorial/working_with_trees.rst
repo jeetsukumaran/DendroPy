@@ -2,6 +2,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Working with Trees and Tree Lists
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

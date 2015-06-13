@@ -2,6 +2,9 @@
 PAUP
 ****
 
+
+.. include:: /obsolete.inc
+
 The :mod:`~dendropy.interop.paup` module provides functions to estimate a tree given a data matrix, or a substitution model given a tree and a data model.
 
 Trees can be estimated using likelihood:

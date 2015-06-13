@@ -2,6 +2,9 @@ $$$$$$$$$$$$$$$$$
 Working with Taxa
 $$$$$$$$$$$$$$$$$
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

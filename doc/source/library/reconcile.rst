@@ -2,6 +2,9 @@
 :mod:`dendropy.reconcile` -- Tree Reconciliation and Fitting
 ************************************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: reconcile
 
 .. toctree::

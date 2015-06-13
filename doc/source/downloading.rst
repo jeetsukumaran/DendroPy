@@ -2,6 +2,8 @@
 Downloading and Installing DendroPy
 ###################################
 
+.. include:: /obsolete.inc
+
 DendroPy can be installed directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ using a package manager such as |pip|_ or |setuptools|_, or alternatively the source code can be downloaded and manually installed.
 
 Installing From the Python Package Index

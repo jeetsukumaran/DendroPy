@@ -2,6 +2,8 @@
 Trees and Collections of Trees
 ******************************
 
+.. include:: /obsolete.inc
+
 Trees and Tree Lists
 ====================
 

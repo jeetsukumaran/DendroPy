@@ -2,6 +2,8 @@ $$$$$$$$$$$$$$$$$$$$$$$
 Working with Characters
 $$$$$$$$$$$$$$$$$$$$$$$
 
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 

@@ -2,6 +2,8 @@
 :mod:`dendropy.continuous` -- Continuous Character Simulation and Analysis
 **************************************************************************
 
+.. include:: /obsolete.inc
+
 .. module:: continuous
 
 .. toctree::

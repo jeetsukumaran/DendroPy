@@ -2,6 +2,9 @@
 Character Matrices
 ******************
 
+
+.. include:: /obsolete.inc
+
 Types of Character Matrices
 ===========================
 

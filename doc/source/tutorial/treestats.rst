@@ -2,6 +2,8 @@
 Tree Statistics, Metrics, and Calculations
 ******************************************
 
+.. include:: /obsolete.inc
+
 Tree Length
 ===========
 

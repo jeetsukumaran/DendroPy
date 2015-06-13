@@ -2,6 +2,9 @@
 :mod:`dendropy.treesim` -- Tree Simulation
 ******************************************
 
+
+.. include:: /obsolete.inc
+
 .. module:: treesim
 
 .. toctree::

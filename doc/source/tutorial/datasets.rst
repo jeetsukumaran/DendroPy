@@ -2,6 +2,9 @@
 Data Sets
 *********
 
+
+.. include:: /obsolete.inc
+
 The |DataSet| class provides for objects that allow you to manage multiple types of phylogenetic data.
 
 It has three primary attributes:

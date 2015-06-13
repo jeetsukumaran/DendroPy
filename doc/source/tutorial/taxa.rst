@@ -2,6 +2,9 @@
 Taxa and Taxon Management
 *************************
 
+.. include:: /obsolete.inc
+
+
 Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonSet| objects.
 
 Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonSet| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.

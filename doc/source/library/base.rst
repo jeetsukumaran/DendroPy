@@ -2,6 +2,8 @@
 :mod:`dendropy.dataobject.base` -- Core Infrastructure for Phylogenetic Data Objects
 ************************************************************************************
 
+.. include:: /obsolete.inc
+
 .. module:: dendropy.dataobject.base
 
 .. toctree::

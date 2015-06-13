@@ -2,6 +2,8 @@
 DendroPy Phylogenetic Computing Library
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 3
     :hidden:

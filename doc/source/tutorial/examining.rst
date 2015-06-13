@@ -2,6 +2,8 @@
 Examining Data Objects
 **********************
 
+.. include:: /obsolete.inc
+
 High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes.
 This method optionally takes a numeric value as its first argument that determines the level of detail (or depth) of the summary::
 

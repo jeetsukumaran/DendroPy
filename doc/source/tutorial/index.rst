@@ -2,6 +2,9 @@
 The DendroPy Tutorial
 #####################
 
+
+.. include:: /obsolete.inc
+
 .. toctree::
     :maxdepth: 2
 
