@@ -549,7 +549,7 @@ The |DendroPy|_ public-access |Git|_ repository can be cloned from:
 Bugs, Suggestions, Comments, etc.
 =================================
 
-If you encounter any problems, errors, crashes etc. while using this program, please let me (|js|_) know at jeet@ku.edu. If you include the term "sumtrees" anywhere on the subject line (e.g. "Problem such-and-such with bootscore), it would help greatly with getting through the spam filter. Please include all the datafiles involved, as
+If you encounter any problems, errors, crashes etc. while using this program, please let me (|js|_) know at jeetsukumaran@gmail.com. If you include the term "sumtrees" anywhere on the subject line (e.g. "Problem such-and-such with bootscore), it would help greatly with getting through the spam filter. Please include all the datafiles involved, as
 well the complete command used (with all the options and parameters) and the complete error message returned (simply cutting-and-pasting the terminal text should work fine).
 Please feel free to contact me if you have any other questions, suggestions or comments as well.
 
