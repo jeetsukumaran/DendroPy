@@ -52,6 +52,7 @@ def fitch_down_pass(
         state_sets_attr_name="state_sets",
         taxon_state_sets_map=None,
         weights=None,
+        score_by_character_list=None,
         ):
     """
     Returns the parsimony score given a list of nodes in postorder and
@@ -73,6 +74,10 @@ def fitch_down_pass(
         leaves of a tree that has not yet been processed).
     weights : iterable
         A list of weights for each pattern.
+    score_by_character_list : None or list
+        If not `None`, should be a reference to a list object.
+        This list will be populated by the scores on a character-by-character
+        basis.
 
     Returns
     -------
@@ -157,6 +162,8 @@ def fitch_down_pass(
         print(score)
 
     """
+    if score_by_character_list is not None:
+        assert len(score_by_character_list) == 0
     score = 0
     if state_sets_attr_name is None:
         node_state_set_map = _NodeStateSetMap(taxon_state_sets_map)
@@ -188,6 +195,11 @@ def fitch_down_pass(
                         wt = weights[n]
                     score += wt
                     result.append(left_ss.union(left_ss, right_ss))
+                    if score_by_character_list is not None:
+                        try:
+                            score_by_character_list[n] += wt
+                        except IndexError:
+                            score_by_character_list.append(wt)
             if remaining:
                 right_c = remaining.pop(0)
                 left_ssl = result
@@ -294,6 +306,7 @@ def parsimony_score(
         tree,
         chars,
         gaps_as_missing=True,
+        score_by_character_list=None,
         ):
     if tree.taxon_namespace is not chars.taxon_namespace:
         raise TaxonNamespaceIdentityError(tree, data)
@@ -302,6 +315,8 @@ def parsimony_score(
     # or ``gaps_as_missing=False`` to treat gaps as new states.
     taxon_state_sets_map = chars.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
     nodes = tree.postorder_node_iter()
-    pscore = fitch_down_pass(nodes, taxon_state_sets_map=taxon_state_sets_map)
+    pscore = fitch_down_pass(nodes,
+            taxon_state_sets_map=taxon_state_sets_map,
+            score_by_character_list=score_by_character_list)
     return pscore
 
