@@ -167,6 +167,14 @@ class ParsimonyScoringTest(unittest.TestCase):
             self.assertEqual(len(score_by_character_list), len(expected_per_site_scores[tree_idx]))
             for obs, exp in zip(score_by_character_list, expected_per_site_scores[tree_idx]):
                 self.assertEqual(obs, exp)
+            self.assertEqual(sum(score_by_character_list), pscore)
+
+            # just to be sure it works without passing in `score_by_character_list`:
+            pscore = treescore.parsimony_score(
+                    tree,
+                    chars,
+                    gaps_as_missing=gaps_as_missing)
+            self.assertEqual(pscore, expected_scores[tree_idx])
 
 if __name__ == "__main__":
     unittest.main()
