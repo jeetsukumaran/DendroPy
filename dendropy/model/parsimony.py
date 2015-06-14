@@ -164,6 +164,8 @@ def fitch_down_pass(
     """
     if score_by_character_list is not None:
         assert len(score_by_character_list) == 0
+        for idx in range(len(taxon_state_sets_map.values()[0])):
+            score_by_character_list.append(0)
     score = 0
     if state_sets_attr_name is None:
         node_state_set_map = _NodeStateSetMap(taxon_state_sets_map)
@@ -196,10 +198,11 @@ def fitch_down_pass(
                     score += wt
                     result.append(left_ss.union(left_ss, right_ss))
                     if score_by_character_list is not None:
-                        try:
-                            score_by_character_list[n] += wt
-                        except IndexError:
-                            score_by_character_list.append(wt)
+                        # try:
+                        #     score_by_character_list[n] += wt
+                        # except IndexError:
+                        #     score_by_character_list.append(wt)
+                        score_by_character_list[n] += wt
             if remaining:
                 right_c = remaining.pop(0)
                 left_ssl = result
