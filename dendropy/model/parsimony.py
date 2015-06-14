@@ -309,17 +309,99 @@ def parsimony_score(
         tree,
         chars,
         gaps_as_missing=True,
+        weights=None,
         score_by_character_list=None,
         ):
+    """
+    Calculates the score of a tree, ``tree``, given some character data,
+    ``chars``, under the parsimony model using the Fitch algorithm.
+
+    Parameters
+    ----------
+    tree : a |Tree| instance
+        A |Tree| to be scored. Must reference the same |TaxonNamespace| as
+        ``chars``.
+    chars : a |CharacterMatrix| instance
+        A |CharacterMatrix|-derived object with data to be scored. Must have
+        the same |TaxonNamespace| as ``tree``.
+    gap_as_missing : bool
+        If `True` [default], then gaps will be treated as missing data.
+        If `False`, then gaps will be treated as a new/additional state.
+    weights : iterable
+        A list of weights for each pattern/column in the matrix.
+    score_by_character_list : None or list
+        If not `None`, should be a reference to a list object.
+        This list will be populated by the scores on a character-by-character
+        basis.
+
+    Returns
+    -------
+    pscore : int
+        The parsimony score of the tree given the data.
+
+    Examples
+    --------
+
+    ::
+
+        import dendropy
+        from dendropy.calculate import treescore
+
+        # establish common taxon namespace
+        taxon_namespace = dendropy.TaxonNamespace()
+
+        # Read data; if data is, e.g., "standard", use StandardCharacterMatrix.
+        # If unsure of data type, can do:
+        #       dataset = dendropy.DataSet.get(
+        #               path="path/to/file.nex",
+        #               schema="nexus",
+        #               taxon_namespace=tns,)
+        #       chars = dataset.char_matrices[0]
+        chars = dendropy.DnaCharacterMatrix.get(
+                path="pythonidae.chars.nexus",
+                schema="nexus",
+                taxon_namespace=taxon_namespace)
+        tree = dendropy.Tree.get(
+                path="pythonidae.mle.newick",
+                schema="newick",
+                taxon_namespace=taxon_namespace)
+
+        # We store the site-specific scores here
+        # This is optional; if we do not want to
+        # use the per-site scores, just pass in ``None``
+        # for the ``score_by_character_list`` argument
+        # or do not specify this argument at all.
+        score_by_character_list = []
+
+        score = treescore.parsimony_score(
+                tree,
+                chars,
+                gaps_as_missing=False,
+                score_by_character_list=score_by_character_list)
+
+        # Print the results: the score
+        print("Score: {}".format(score))
+
+        # Print the results: the per-site scores
+        for idx, x in enumerate(score_by_character_list):
+            print("{}: {}".format(idx+1, x))
+
+    Notes
+    -----
+
+    If the same data is going to be used to score multiple trees or multiple times,
+    it is probably better to generate the 'taxon_state_sets_map' once and call
+    "fitch_down_pass" directly yourself, as this function generates a new map
+    each time.
+
+    """
     if tree.taxon_namespace is not chars.taxon_namespace:
         raise TaxonNamespaceIdentityError(tree, data)
-    # Generate a map of taxa to state sets
-    # Set ``gaps_as_missing=True`` to treat gaps as missing data,
-    # or ``gaps_as_missing=False`` to treat gaps as new states.
     taxon_state_sets_map = chars.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
     nodes = tree.postorder_node_iter()
     pscore = fitch_down_pass(nodes,
             taxon_state_sets_map=taxon_state_sets_map,
+            weights=weights,
             score_by_character_list=score_by_character_list)
     return pscore
 
