@@ -32,6 +32,9 @@ import codecs
 
 ENCODING = locale.getdefaultlocale()[1]
 
+if ENCODING == None:
+    ENCODING = 'UTF-8'
+
 def bytes_to_text(s):
     """
     Converts a byte string (as read from, e.g., standard input)
