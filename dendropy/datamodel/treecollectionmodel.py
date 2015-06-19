@@ -1167,6 +1167,9 @@ class TreeList(
 
         this function returns the proportion of trees in self
         in which the split is found.
+
+        If the tree(s) in the collection are unrooted, then the bipartition
+        will be normalized for the comparison.
         """
         split = None
         if "split_bitmask" in kwargs:
@@ -1182,6 +1185,11 @@ class TreeList(
             if bitprocessing.num_set_bits(split) != k:
                 raise IndexError('Not all taxa could be mapped to bipartition (%s): %s' \
                     % (self.taxon_namespace.bitmask_as_bitstring(split), k))
+        unnormalized_split = split
+        normalized_split = treemodel.Bipartition.normalize_bitmask(
+            bitmask=split,
+            fill_bitmask=self.taxon_namespace.all_taxa_bitmask(),
+            lowest_relevant_bit=1)
         found = 0
         total = 0
         is_bipartitions_updated = kwargs.get("is_bipartitions_updated", False)
@@ -1190,8 +1198,11 @@ class TreeList(
                 tree.encode_bipartitions()
             bipartition_encoding = set(b.split_bitmask for b in tree.bipartition_encoding)
             total += 1
-            if split in bipartition_encoding:
+            if tree.is_unrooted and (normalized_split in bipartition_encoding):
                 found += 1
+            elif (not tree.is_unrooted) and (unnormalized_split in bipartition_encoding):
+                found += 1
+
         try:
             return float(found)/total
         except ZeroDivisionError:
