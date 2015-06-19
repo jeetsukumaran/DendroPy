@@ -17,8 +17,14 @@
 ##############################################################################
 
 """
-Models, modeling and model-fitting of birth-death processes.
+Models, modeling and model-fitting of the Protracted Speciation Process.
 """
+
+import itertools
+import dendropy
+from dendropy.utility import GLOBAL_RNG
+from dendropy.utility.error import TreeSimTotalExtinctionException
+from dendropy.calculate import probability
 
 class ProtractedSpeciationModel(object):
 
