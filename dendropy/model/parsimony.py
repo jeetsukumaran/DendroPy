@@ -164,7 +164,7 @@ def fitch_down_pass(
     """
     if score_by_character_list is not None:
         assert len(score_by_character_list) == 0
-        for idx in range(len(taxon_state_sets_map.values()[0])):
+        for idx in range(len(list(taxon_state_sets_map.values())[0])): # this is unacceptable!
             score_by_character_list.append(0)
     score = 0
     if state_sets_attr_name is None:
