@@ -141,111 +141,115 @@ class SplitDistributionTestCases(ExtendedTestCase):
                         use_tree_weights=use_weights,
                         expected_num_trees=num_trees)
 
-class SplitCountTest(ExtendedTestCase):
+if not paup.DENDROPY_PAUP_INTEROPERABILITY:
+    _LOG.warn("PAUP interoperability not available: skipping split counting tests")
+else:
 
-    @classmethod
-    def setUpClass(cls):
-        if sys.version_info.major < 3:
-            cls.assertRaisesRegex = cls.assertRaisesRegexp
+    class SplitCountTest(ExtendedTestCase):
 
-    def check_split_counting(self,
-            tree_filename,
-            test_as_rooted,
-            parser_rooting_interpretation,
-            test_ignore_tree_weights=False,
-            dp_ignore_tree_weights=False,
-            ):
-        tree_filepath = pathmap.tree_source_path(tree_filename)
-        ps = paup.PaupService()
-        paup_sd = ps.get_split_distribution_from_files(
-                tree_filepaths=[tree_filepath],
-                is_rooted=test_as_rooted,
-                use_tree_weights=not test_ignore_tree_weights,
-                burnin=0,
-                taxa_definition_filepath=tree_filepath
+        @classmethod
+        def setUpClass(cls):
+            if sys.version_info.major < 3:
+                cls.assertRaisesRegex = cls.assertRaisesRegexp
+
+        def check_split_counting(self,
+                tree_filename,
+                test_as_rooted,
+                parser_rooting_interpretation,
+                test_ignore_tree_weights=False,
+                dp_ignore_tree_weights=False,
+                ):
+            tree_filepath = pathmap.tree_source_path(tree_filename)
+            ps = paup.PaupService()
+            paup_sd = ps.get_split_distribution_from_files(
+                    tree_filepaths=[tree_filepath],
+                    is_rooted=test_as_rooted,
+                    use_tree_weights=not test_ignore_tree_weights,
+                    burnin=0,
+                    taxa_definition_filepath=tree_filepath
+                    )
+            taxon_namespace = paup_sd.taxon_namespace
+            dp_sd = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
+            dp_sd.ignore_edge_lengths = True
+            dp_sd.ignore_node_ages = True
+            dp_sd.ignore_tree_weights = dp_ignore_tree_weights
+            taxa_mask = taxon_namespace.all_taxa_bitmask()
+            taxon_namespace.is_mutable = False
+            trees = dendropy.TreeList.get_from_path(tree_filepath,
+                    "nexus",
+                    rooting=parser_rooting_interpretation,
+                    taxon_namespace=taxon_namespace)
+            for tree in trees:
+                self.assertIs(tree.taxon_namespace, taxon_namespace)
+                self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
+                dp_sd.count_splits_on_tree(
+                        tree,
+                        is_bipartitions_updated=False)
+            self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
+            taxa_mask = taxon_namespace.all_taxa_bitmask()
+            for split in dp_sd.split_counts:
+                if not dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
+                    # if split not in paup_sd.split_counts:
+                    #     print("{}: {}".format(split, split in paup_sd.split_counts))
+                    #     s2 = taxon_namespace.normalize_bitmask(split)
+                    #     print("{}: {}".format(s2, s2 in paup_sd.split_counts))
+                    #     s3 = ~split & taxon_namespace.all_taxa_bitmask()
+                    #     print("{}: {}".format(s3, s3 in paup_sd.split_counts))
+                    self.assertIn(split, paup_sd.split_counts, "split not found")
+                    self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split], "incorrect split frequency")
+                    del paup_sd.split_counts[split]
+            remaining_splits = list(paup_sd.split_counts.keys())
+            for split in remaining_splits:
+                if dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
+                    del paup_sd.split_counts[split]
+            self.assertEqual(len(paup_sd.split_counts), 0)
+
+        def test_basic_split_count_with_incorrect_rootings_raises_error(self):
+            assertion_error_regexp1 = re.compile("(incorrect split frequency|split not found)")
+            test_cases = (
+                ('pythonidae.reference-trees.nexus', True, "force-unrooted", assertion_error_regexp1),
+                ('feb032009.trees.nexus', False, "force-rooted", assertion_error_regexp1),
                 )
-        taxon_namespace = paup_sd.taxon_namespace
-        dp_sd = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
-        dp_sd.ignore_edge_lengths = True
-        dp_sd.ignore_node_ages = True
-        dp_sd.ignore_tree_weights = dp_ignore_tree_weights
-        taxa_mask = taxon_namespace.all_taxa_bitmask()
-        taxon_namespace.is_mutable = False
-        trees = dendropy.TreeList.get_from_path(tree_filepath,
-                "nexus",
-                rooting=parser_rooting_interpretation,
-                taxon_namespace=taxon_namespace)
-        for tree in trees:
-            self.assertIs(tree.taxon_namespace, taxon_namespace)
-            self.assertIs(tree.taxon_namespace, dp_sd.taxon_namespace)
-            dp_sd.count_splits_on_tree(
-                    tree,
-                    is_bipartitions_updated=False)
-        self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
-        taxa_mask = taxon_namespace.all_taxa_bitmask()
-        for split in dp_sd.split_counts:
-            if not dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
-                # if split not in paup_sd.split_counts:
-                #     print("{}: {}".format(split, split in paup_sd.split_counts))
-                #     s2 = taxon_namespace.normalize_bitmask(split)
-                #     print("{}: {}".format(s2, s2 in paup_sd.split_counts))
-                #     s3 = ~split & taxon_namespace.all_taxa_bitmask()
-                #     print("{}: {}".format(s3, s3 in paup_sd.split_counts))
-                self.assertIn(split, paup_sd.split_counts, "split not found")
-                self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split], "incorrect split frequency")
-                del paup_sd.split_counts[split]
-        remaining_splits = list(paup_sd.split_counts.keys())
-        for split in remaining_splits:
-            if dendropy.Bipartition.is_trivial_bitmask(split, taxa_mask):
-                del paup_sd.split_counts[split]
-        self.assertEqual(len(paup_sd.split_counts), 0)
+            for test_case, test_as_rooted, parser_rooting_interpretation, assertion_error_regexp in test_cases:
+                with self.assertRaisesRegex(AssertionError, assertion_error_regexp):
+                    self.check_split_counting(
+                            test_case,
+                            test_as_rooted=test_as_rooted,
+                            parser_rooting_interpretation=parser_rooting_interpretation)
 
-    def test_basic_split_count_with_incorrect_rootings_raises_error(self):
-        assertion_error_regexp1 = re.compile("(incorrect split frequency|split not found)")
-        test_cases = (
-            ('pythonidae.reference-trees.nexus', True, "force-unrooted", assertion_error_regexp1),
-            ('feb032009.trees.nexus', False, "force-rooted", assertion_error_regexp1),
-            )
-        for test_case, test_as_rooted, parser_rooting_interpretation, assertion_error_regexp in test_cases:
-            with self.assertRaisesRegex(AssertionError, assertion_error_regexp):
-                self.check_split_counting(
-                        test_case,
-                        test_as_rooted=test_as_rooted,
-                        parser_rooting_interpretation=parser_rooting_interpretation)
+        def test_basic_split_count_with_incorrect_weight_treatment_raises_error(self):
+            assertion_error_regexp1 = re.compile("incorrect split frequency")
+            test_cases = (
+                    ("cetaceans.mb.no-clock.mcmc.weighted-01.trees", False),
+                    ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees", True),
+                )
+            for test_case, test_as_rooted in test_cases:
+                with self.assertRaisesRegex(AssertionError, assertion_error_regexp1):
+                    self.check_split_counting(
+                            test_case,
+                            test_as_rooted=test_as_rooted,
+                            parser_rooting_interpretation="default-rooted",
+                            test_ignore_tree_weights=False,
+                            dp_ignore_tree_weights=False,
+                            )
 
-    def test_basic_split_count_with_incorrect_weight_treatment_raises_error(self):
-        assertion_error_regexp1 = re.compile("incorrect split frequency")
-        test_cases = (
-                ("cetaceans.mb.no-clock.mcmc.weighted-01.trees", False),
-                ("cetaceans.mb.strict-clock.mcmc.weighted-01.trees", True),
-            )
-        for test_case, test_as_rooted in test_cases:
-            with self.assertRaisesRegex(AssertionError, assertion_error_regexp1):
-                self.check_split_counting(
-                        test_case,
-                        test_as_rooted=test_as_rooted,
-                        parser_rooting_interpretation="default-rooted",
-                        test_ignore_tree_weights=False,
-                        dp_ignore_tree_weights=False,
-                        )
-
-    def test_basic_split_counting_under_different_rootings(self):
-        test_cases = (
-            'pythonidae.reference-trees.nexus',
-            'feb032009.trees.nexus',
-            'maj-rule-bug1.trees.nexus',
-            'maj-rule-bug2.trees.nexus',
-            )
-        for is_rooted in (True, False):
-            if is_rooted:
-                rooting = "force-rooted"
-            else:
-                rooting = "force-unrooted"
-            for test_case in test_cases:
-                self.check_split_counting(
-                        test_case,
-                        test_as_rooted=is_rooted,
-                        parser_rooting_interpretation=rooting)
+        def test_basic_split_counting_under_different_rootings(self):
+            test_cases = (
+                'pythonidae.reference-trees.nexus',
+                'feb032009.trees.nexus',
+                'maj-rule-bug1.trees.nexus',
+                'maj-rule-bug2.trees.nexus',
+                )
+            for is_rooted in (True, False):
+                if is_rooted:
+                    rooting = "force-rooted"
+                else:
+                    rooting = "force-unrooted"
+                for test_case in test_cases:
+                    self.check_split_counting(
+                            test_case,
+                            test_as_rooted=is_rooted,
+                            parser_rooting_interpretation=rooting)
 
 class CladeMaskTest(unittest.TestCase):
 
@@ -374,7 +378,8 @@ class TestTreeSplitSupportCredibilityScoring(unittest.TestCase):
                 30.89000000000001 + len(self.trees.taxon_namespace))
 
 if __name__ == "__main__":
-    if paup.DENDROPY_PAUP_INTEROPERABILITY:
-        unittest.main()
-    else:
-        _LOG.warn("PAUP interoperability not available: skipping split counting tests")
+    unittest.main()
+    # if paup.DENDROPY_PAUP_INTEROPERABILITY:
+    #     unittest.main()
+    # else:
+    #     _LOG.warn("PAUP interoperability not available: skipping split counting tests")

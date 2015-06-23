@@ -52,6 +52,21 @@ and more.
 Testing
 =======
 
+.. note::
+
+    Note that some tests rely on PAUP* being available on your system.
+    You will need to set the environmental variable ``DENDROPY_PAUP_EXECUTABLE_PATH`` to the path
+    of the PAUP* executable for these tests to be run, e.g.::
+
+        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python setup.py test
+
+    or::
+
+        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python -m unittest
+
+    If this variable is not set or set to "NONE", then any tests that rely on
+    PAUP* will NOT be run.
+
 Tests can be run by typing::
 
     $ python -m dendropy.test

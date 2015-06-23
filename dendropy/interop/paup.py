@@ -43,7 +43,7 @@ _LOG = messaging.get_logger(__name__)
 
 import dendropy
 
-PAUP_PATH = os.environ.get(metavar.DENDROPY_PAUP_PATH_ENVAR, "paup")
+PAUP_PATH = os.environ.get(metavar.DENDROPY_PAUP_PATH_ENVAR, "NONE")
 if PAUP_PATH == "NONE":
     DENDROPY_PAUP_INTEROPERABILITY = False
 else:
