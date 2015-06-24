@@ -995,6 +995,13 @@ class Node(
         if kwargs:
             raise TypeError("Unsupported keyword arguments: {}".format(kwargs))
         self.comments = []
+    @property
+    def parent(self):
+        return self._parent_node
+    @property
+    def children(self):
+        return self.child_nodes()
+
 
     def __copy__(self, memo=None):
         raise TypeError("Cannot directly copy Edge")
@@ -3043,6 +3050,9 @@ class Tree(
                 self.update_taxon_namespace()
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+    @property
+    def root(self):
+        return self.seed_node
 
     ##############################################################################
     ## Bipartitions
