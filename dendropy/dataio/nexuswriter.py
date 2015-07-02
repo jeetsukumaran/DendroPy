@@ -527,10 +527,10 @@ class NexusWriter(ioservice.DataWriter):
             return
         stream.write("BEGIN SETS;\n")
         for label, char_set in char_matrix.character_subsets.items():
-            label = textutils.escape_nexus_token(char_set.label,
+            label = nexusprocessing.escape_nexus_token(char_set.label,
                     preserve_spaces=self.preserve_spaces,
                     quote_underscores=not self.unquoted_underscores)
-            ranges = textutils.group_ranges(char_set.character_indices)
+            ranges = nexusprocessing.group_ranges(char_set.character_indices)
             pos = " ".join("-".join(str(c+1) for c in r) for r in ranges)
-            stream.write("    charset {} = {};\n".format((label, pos)))
+            stream.write("    charset {} = {};\n".format(label, pos))
         stream.write("END;\n\n\n")

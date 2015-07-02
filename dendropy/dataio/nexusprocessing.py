@@ -22,6 +22,7 @@ Specialized tokenizer for processing NEXUS/Newick streams.
 
 import re
 import io
+import itertools
 import numbers
 import decimal
 from dendropy.dataio.tokenizer import Tokenizer
