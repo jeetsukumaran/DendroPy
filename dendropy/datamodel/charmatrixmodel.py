@@ -1602,6 +1602,10 @@ class CharacterMatrix(
         Note that this new matrix will still reference the same taxon set.
         """
         clone = self.__class__(self)
+        # clear out character subsets; otherwise all indices will have to be
+        # recalculated, which will require some careful and perhaps arbitrary
+        # handling of corner cases
+        clone.character_subsets = []
         # clone.clone_from(self)
         for vec in clone.values():
             for cell_idx in range(len(vec)-1, -1, -1):
