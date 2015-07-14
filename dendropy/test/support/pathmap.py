@@ -24,6 +24,7 @@ import os
 import sys
 import tempfile
 from dendropy.utility import messaging
+from dendropy.utility.timeprocessing import pretty_timestamp
 _LOG = messaging.get_logger(__name__)
 
 try:
@@ -102,7 +103,7 @@ def named_output_path(filename=None, suffix_timestamp=True):
         if isinstance(filename, list):
             filename = os.path.sep.join(filename)
         if suffix_timestamp:
-            filename = "%s.%s" % (filename, textutils.pretty_timestamp(style=1))
+            filename = "%s.%s" % (filename, pretty_timestamp(style=1))
     if not os.path.exists(TESTS_OUTPUT_DIR):
         os.makedirs(TESTS_OUTPUT_DIR)
     return os.path.join(TESTS_OUTPUT_DIR, filename)
