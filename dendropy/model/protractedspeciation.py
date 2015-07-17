@@ -182,7 +182,6 @@ class ProtractedSpeciationModel(object):
             ## Draw time to next event
             event_rates = []
             num_full_species = len(self.current_full_species_lineages)
-            assert max_full_species_leaf_nodes is not None
             if max_full_species_leaf_nodes is not None:
                 ## note: expensive operation to count leaves!
                 try:
