@@ -115,8 +115,19 @@ class ProtractedSpeciationModel(object):
         Parameters
         ----------
 
-        max_time : float
-            Length of time for which to run process.
+        max_time : float or `None`
+            Terminate and return results when this time is reached. If `None`,
+            then do not terminated based on run time.
+        max_full_species_tree_leaf_nodes : int or `None`
+            Terminate and return results when this number of tips are found in
+            the full-species tree (i.e., the pruned tree consisting of only
+            "full" or "good" species). If `None`, then do not terminate
+            based on the number of tipes on the full-species tree.
+        max_protracted_speciation_tree_leaf_nodes : int or `None`
+            Terminate and return results when this number of tips are found in
+            the incipient tree (i.e. the tree with both incipient and full
+            species). If `None`, then do not terminate based on the
+            number of tipes on the incipient species tree.
         is_initial_species_incipient : bool
             Whether the first lineage that initialies the process is an
             incipient or full species. Defaults to `False`: first species on
@@ -164,8 +175,8 @@ class ProtractedSpeciationModel(object):
     def _run_protracted_speciation_process(self, **kwargs):
         self.reset()
         max_time = kwargs.get("max_time", None)
-        max_incipient_species_leaf_nodes = kwargs.get("max_incipient_species_leaf_nodes", None)
-        max_full_species_leaf_nodes = kwargs.get("max_full_species_leaf_nodes", None)
+        max_protracted_speciation_tree_leaf_nodes = kwargs.get("max_protracted_speciation_tree_leaf_nodes", None)
+        max_full_species_tree_leaf_nodes = kwargs.get("max_full_species_tree_leaf_nodes", None)
         taxon_namespace = kwargs.get("taxon_namespace", None)
 
         is_full_species = not kwargs.get("is_initial_species_incipient", False)
@@ -182,12 +193,12 @@ class ProtractedSpeciationModel(object):
             ## Draw time to next event
             event_rates = []
             num_full_species = len(self.current_full_species_lineages)
-            if max_full_species_leaf_nodes is not None:
+            if max_full_species_tree_leaf_nodes is not None:
                 ## note: expensive operation to count leaves!
                 try:
                     pruned_tree = self._assemble_pruned_tree(taxon_namespace=taxon_namespace)
                     num_leaves = len(pruned_tree.leaf_nodes())
-                    if num_leaves >= max_full_species_leaf_nodes:
+                    if num_leaves >= max_full_species_tree_leaf_nodes:
                         return self._postprocess_pruned_and_psm_trees(
                                 pruned_tree=pruned_tree,
                                 psm_tree=psm_tree)
@@ -195,7 +206,7 @@ class ProtractedSpeciationModel(object):
                     pass
 
             num_incipient_species = len(self.current_incipient_species_lineages)
-            if max_incipient_species_leaf_nodes is not None and num_incipient_species >= max_incipient_species_leaf_nodes:
+            if max_protracted_speciation_tree_leaf_nodes is not None and (num_incipient_species + num_full_species) >= max_protracted_speciation_tree_leaf_nodes:
                 break
 
             # Event type 0
