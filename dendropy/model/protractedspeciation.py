@@ -28,6 +28,9 @@ from dendropy.calculate import probability
 
 class ProtractedSpeciationModel(object):
 
+    class ProcessFailedException(TreeSimTotalExtinctionException):
+        pass
+
     class ProtractedSpeciationModelLineage(object):
 
         def __init__(self,
@@ -161,6 +164,8 @@ class ProtractedSpeciationModel(object):
     def _run_protracted_speciation_process(self, **kwargs):
         self.reset()
         max_time = kwargs.get("max_time", None)
+        max_incipient_species_leaf_nodes = kwargs.get("max_incipient_species_leaf_nodes", None)
+        max_full_species_leaf_nodes = kwargs.get("max_full_species_leaf_nodes", None)
         taxon_namespace = kwargs.get("taxon_namespace", None)
 
         is_full_species = not kwargs.get("is_initial_species_incipient", False)
@@ -177,7 +182,22 @@ class ProtractedSpeciationModel(object):
             ## Draw time to next event
             event_rates = []
             num_full_species = len(self.current_full_species_lineages)
+            assert max_full_species_leaf_nodes is not None
+            if max_full_species_leaf_nodes is not None:
+                ## note: expensive operation to count leaves!
+                try:
+                    pruned_tree = self._assemble_pruned_tree(taxon_namespace=taxon_namespace)
+                    num_leaves = len(pruned_tree.leaf_nodes())
+                    if num_leaves >= max_full_species_leaf_nodes:
+                        return self._postprocess_pruned_and_psm_trees(
+                                pruned_tree=pruned_tree,
+                                psm_tree=psm_tree)
+                except ProtractedSpeciationModel.ProcessFailedException:
+                    pass
+
             num_incipient_species = len(self.current_incipient_species_lineages)
+            if max_incipient_species_leaf_nodes is not None and num_incipient_species >= max_incipient_species_leaf_nodes:
+                break
 
             # Event type 0
             event_rates.append(self.full_species_birth_rate * num_full_species)
@@ -231,20 +251,9 @@ class ProtractedSpeciationModel(object):
                 raise TreeSimTotalExtinctionException()
 
         pruned_tree = self._assemble_pruned_tree(taxon_namespace=taxon_namespace)
-        psm_tree.calc_node_ages()
-        for pruned_tree_nd in pruned_tree:
-            if pruned_tree_nd.is_leaf():
-                continue
-            # sys.stderr.write("{}: {}\n".format(pruned_tree_nd.age, list(nd.age for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history)))
-            psm_tree_node = pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history[0]
-            for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history:
-                if nd.age is not None and nd.age > psm_tree_node.age:
-                    psm_tree_node = nd
-                # nd.is_full_speciation_event = True
-            psm_tree_node.is_full_speciation_event = True
-            pruned_tree_nd.protracted_speciation_model_tree_node = psm_tree_node
-
-        return psm_tree, pruned_tree
+        return self._postprocess_pruned_and_psm_trees(
+                pruned_tree=pruned_tree,
+                psm_tree=psm_tree)
 
     def _process_full_species_birth(self, tree):
         parent_lineage = self.rng.choice(self.current_full_species_lineages)
@@ -367,7 +376,8 @@ class ProtractedSpeciationModel(object):
             if nd.parent_node is None:
                 seed_node = nd
                 break
-        assert seed_node is not None
+        if seed_node is None:
+            raise ProtractedSpeciationModel.ProcessFailedException()
         pruned_tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
         pruned_tree.is_rooted = True
         # pruned_tree.suppress_unifurcations()
@@ -395,6 +405,22 @@ class ProtractedSpeciationModel(object):
             node.annotations.add_new(name="lineage_label", value=lineage.label)
             lineage_pruned_tree_node_map[lineage] = node
             return node
+
+    def _postprocess_pruned_and_psm_trees(self, pruned_tree, psm_tree):
+        psm_tree.calc_node_ages()
+        for pruned_tree_nd in pruned_tree:
+            if pruned_tree_nd.is_leaf():
+                continue
+            # sys.stderr.write("{}: {}\n".format(pruned_tree_nd.age, list(nd.age for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history)))
+            psm_tree_node = pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history[0]
+            for nd in pruned_tree_nd.protracted_speciation_model_lineage.psm_tree_node_history:
+                if nd.age is not None and nd.age > psm_tree_node.age:
+                    psm_tree_node = nd
+                # nd.is_full_speciation_event = True
+            psm_tree_node.is_full_speciation_event = True
+            pruned_tree_nd.protracted_speciation_model_tree_node = psm_tree_node
+
+        return psm_tree, pruned_tree
 
     def _debug_dump_lineages(self, lineages):
         sorted_lineages = sorted(lineages,
