@@ -44,13 +44,13 @@ class ProtractedSpeciationModel(object):
             self.speciation_initiation_time = speciation_initiation_time
             self.speciation_completion_time = None
             self.extinction_time = None
-            self.incipient_species_tree_node_history = []
+            self.protracted_speciation_tree_node_history = []
             self._label = "L{}".format(self._index)
 
         def _get_node(self):
-            return self.incipient_species_tree_node_history[-1]
+            return self.protracted_speciation_tree_node_history[-1]
         def _set_node(self, node):
-            self.incipient_species_tree_node_history.append(node)
+            self.protracted_speciation_tree_node_history.append(node)
         node = property(_get_node, _set_node)
 
         def _get_index(self):
@@ -110,7 +110,7 @@ class ProtractedSpeciationModel(object):
             node has the following addition attributes:
 
                 - ``protracted_speciation_model_lineage``: as above
-                - ``protracted_speciation_model_tree_node``: the corresponding
+                - ``protracted_speciation_tree``: the corresponding
                   node on the unpruned protracted speciation tree, above.
                 - ``included_protracted_speciation_tree_leaf_nodes``: (only on leaf
                 nodes of the full species tree) a list of tips on the
@@ -162,11 +162,11 @@ class ProtractedSpeciationModel(object):
         is_retry_on_total_extinction = kwargs.pop("is_retry_on_total_extinction", True)
         max_retries = kwargs.pop("max_retries", 1000)
         num_retries = 0
-        incipient_species_tree = None
+        protracted_speciation_tree = None
         full_species_tree = None
         while True:
             try:
-                incipient_species_tree, full_species_tree = self._run_protracted_speciation_process(**kwargs)
+                protracted_speciation_tree, full_species_tree = self._run_protracted_speciation_process(**kwargs)
                 break
             except TreeSimTotalExtinctionException:
                 if not is_retry_on_total_extinction:
@@ -174,8 +174,8 @@ class ProtractedSpeciationModel(object):
                 num_retries += 1
                 if max_retries is not None and num_retries > max_retries:
                     raise
-        assert incipient_species_tree is not None
-        return incipient_species_tree, full_species_tree
+        assert protracted_speciation_tree is not None
+        return protracted_speciation_tree, full_species_tree
 
     def _run_protracted_speciation_process(self, **kwargs):
         self.reset()
@@ -190,8 +190,8 @@ class ProtractedSpeciationModel(object):
         else:
             initial_lineage = self._new_lineage(parent_lineage=None, is_full_species=False)
         seed_node = self._new_node(lineage=initial_lineage)
-        incipient_species_tree = self.tree_factory( taxon_namespace=taxon_namespace, seed_node=seed_node)
-        incipient_species_tree.is_rooted = True
+        protracted_speciation_tree = self.tree_factory( taxon_namespace=taxon_namespace, seed_node=seed_node)
+        protracted_speciation_tree.is_rooted = True
 
         while True:
 
@@ -206,7 +206,7 @@ class ProtractedSpeciationModel(object):
                     if num_leaves >= max_full_species:
                         return self._postprocess_psm_and_full_species_trees(
                                 full_species_tree=full_species_tree,
-                                incipient_species_tree=incipient_species_tree,
+                                protracted_speciation_tree=protracted_speciation_tree,
                                 )
                 except ProtractedSpeciationModel.ProcessFailedException:
                     pass
@@ -251,15 +251,15 @@ class ProtractedSpeciationModel(object):
             # print("time {}: {}, selected = {}".format(self.current_time, event_rates, event_type_idx))
 
             if event_type_idx == 0:
-                self._process_full_species_birth(incipient_species_tree)
+                self._process_full_species_birth(protracted_speciation_tree)
             elif event_type_idx == 1:
-                self._process_full_species_extinction(incipient_species_tree)
+                self._process_full_species_extinction(protracted_speciation_tree)
             elif event_type_idx == 2:
-                self._process_incipient_species_birth(incipient_species_tree)
+                self._process_incipient_species_birth(protracted_speciation_tree)
             elif event_type_idx == 3:
-                self._process_incipient_species_conversion(incipient_species_tree)
+                self._process_incipient_species_conversion(protracted_speciation_tree)
             elif event_type_idx == 4:
-                self._process_incipient_species_extinction(incipient_species_tree)
+                self._process_incipient_species_extinction(protracted_speciation_tree)
             else:
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
 
@@ -268,7 +268,7 @@ class ProtractedSpeciationModel(object):
 
         full_species_tree = self._assemble_full_species_tree(taxon_namespace=taxon_namespace)
         return self._postprocess_psm_and_full_species_trees(
-                incipient_species_tree=incipient_species_tree,
+                protracted_speciation_tree=protracted_speciation_tree,
                 full_species_tree=full_species_tree,
                 )
 
@@ -418,13 +418,13 @@ class ProtractedSpeciationModel(object):
         # for lineage in branching_points:
         #     full_species_node = branching_points[lineage]
         #     if full_species_node.is_leaf():
-        #         for incipient_species_tree_tip in lineage.incipient_species_tree_node_history:
-        #             if incipient_species_tree_tip.is_leaf():
+        #         for protracted_speciation_tree_tip in lineage.protracted_speciation_tree_node_history:
+        #             if protracted_speciation_tree_tip.is_leaf():
         #                 try:
-        #                     full_species_node.included_protracted_speciation_tree_leaf_nodes.append(incipient_species_tree_tip)
+        #                     full_species_node.included_protracted_speciation_tree_leaf_nodes.append(protracted_speciation_tree_tip)
         #                 except AttributeError:
-        #                     full_species_node.included_protracted_speciation_tree_leaf_nodes = [incipient_species_tree_tip]
-        #                 incipient_species_tree_tip.full_species_tree_node = incipient_species_tree_tip
+        #                     full_species_node.included_protracted_speciation_tree_leaf_nodes = [protracted_speciation_tree_tip]
+        #                 protracted_speciation_tree_tip.full_species_tree_node = protracted_speciation_tree_tip
         #     else:
         #         full_species_node.included_protracted_speciation_tree_leaf_nodes = []
 
@@ -444,40 +444,41 @@ class ProtractedSpeciationModel(object):
             lineage_full_species_tree_node_map[lineage] = node
             return node
 
-    def _postprocess_psm_and_full_species_trees(self, incipient_species_tree, full_species_tree):
-        incipient_species_tree.calc_node_ages()
+    def _postprocess_psm_and_full_species_trees(self, protracted_speciation_tree, full_species_tree):
+        protracted_speciation_tree.calc_node_ages()
         for full_species_tree_nd in full_species_tree:
 
-            # full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes = set()
-            # for incipient_species_tree_node in full_species_tree_nd.protracted_speciation_model_lineage.incipient_species_tree_node_history:
-            #     if incipient_species_tree_node.is_leaf():
-            #         full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes.add( incipient_species_tree_node )
+            full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes = set()
+
+            # for protracted_speciation_tree_node in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history:
+            #     if protracted_speciation_tree_node.is_leaf():
+            #         full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes.add( protracted_speciation_tree_node )
             #     else:
-            #         full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes.update( incipient_species_tree_node.leaf_iter() )
+            #         full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes.update( protracted_speciation_tree_node.leaf_iter() )
 
             if not full_species_tree_nd.is_leaf():
                 continue
-            # sys.stderr.write("{}: {}\n".format(full_species_tree_nd.age, list(nd.age for nd in full_species_tree_nd.protracted_speciation_model_lineage.incipient_species_tree_node_history)))
-            incipient_species_tree_node = full_species_tree_nd.protracted_speciation_model_lineage.incipient_species_tree_node_history[0]
-            for nd in full_species_tree_nd.protracted_speciation_model_lineage.incipient_species_tree_node_history:
-                if nd.age is not None and nd.age > incipient_species_tree_node.age:
-                    incipient_species_tree_node = nd
+            # sys.stderr.write("{}: {}\n".format(full_species_tree_nd.age, list(nd.age for nd in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history)))
+            protracted_speciation_tree_node = full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history[0]
+            for nd in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history:
+                if nd.age is not None and nd.age > protracted_speciation_tree_node.age:
+                    protracted_speciation_tree_node = nd
                 # nd.is_full_speciation_event = True
-            incipient_species_tree_node.is_full_speciation_event = True
-            full_species_tree_nd.protracted_speciation_model_tree_node = incipient_species_tree_node
+            protracted_speciation_tree_node.is_full_speciation_event = True
+            full_species_tree_nd.protracted_speciation_tree = protracted_speciation_tree_node
 
-        # for incipient_species_tree_nd in incipient_species_tree.leaf_node_iter():
-        #     lineage = incipient_species_tree_nd.protracted_speciation_model_lineage
+        # for protracted_speciation_tree_nd in protracted_speciation_tree.leaf_node_iter():
+        #     lineage = protracted_speciation_tree_nd.protracted_speciation_model_lineage
         #     try:
         #         full_species_tree_node = lineage_full_species_tree_node_map[lineage]
         #         try:
-        #             full_species_tree_node.included_protracted_speciation_tree_leaf_nodes.append(incipient_species_tree_nd)
+        #             full_species_tree_node.included_protracted_speciation_tree_leaf_nodes.append(protracted_speciation_tree_nd)
         #         except AttributeError:
-        #             full_species_tree_node.included_protracted_speciation_tree_leaf_nodes = [incipient_species_tree_nd]
+        #             full_species_tree_node.included_protracted_speciation_tree_leaf_nodes = [protracted_speciation_tree_nd]
         #     except KeyError:
         #         pass
 
-        return incipient_species_tree, full_species_tree
+        return protracted_speciation_tree, full_species_tree
 
     def _debug_dump_lineages(self, lineages):
         sorted_lineages = sorted(lineages,
