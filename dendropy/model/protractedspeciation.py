@@ -3,10 +3,10 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
-##  See "LICENSE.txt" for terms and conditions of usage.
+##  See "LICENSE.rst" for terms and conditions of usage.
 ##
 ##  If you use this work or any portion thereof in published work,
 ##  please cite it as:
@@ -60,6 +60,9 @@ class ProtractedSpeciationModel(object):
         def _get_label(self):
             return self._label
         label = property(_get_label)
+
+        def __str__(self):
+            return self._get_label()
 
     def __init__(self,
             full_species_birth_rate,
@@ -446,9 +449,11 @@ class ProtractedSpeciationModel(object):
 
     def _postprocess_psm_and_full_species_trees(self, protracted_speciation_tree, full_species_tree):
         protracted_speciation_tree.calc_node_ages()
+
+        assigned_node_sets = {}
+
         for full_species_tree_nd in full_species_tree:
 
-            full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes = set()
 
             # for protracted_speciation_tree_node in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history:
             #     if protracted_speciation_tree_node.is_leaf():
@@ -458,6 +463,7 @@ class ProtractedSpeciationModel(object):
 
             if full_species_tree_nd.is_leaf():
                 continue
+
             # sys.stderr.write("{}: {}\n".format(full_species_tree_nd.age, list(nd.age for nd in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history)))
             protracted_speciation_tree_node = full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history[0]
             for nd in full_species_tree_nd.protracted_speciation_model_lineage.protracted_speciation_tree_node_history:
@@ -467,28 +473,40 @@ class ProtractedSpeciationModel(object):
             protracted_speciation_tree_node.is_full_speciation_event = True
             full_species_tree_nd.protracted_speciation_tree = protracted_speciation_tree_node
 
-            # full_species_tree_child_leaf_nodes = []
-            # for ch in full_species_tree_nd.child_node_iter():
-            #     if ch.is_leaf():
-            #         full_species_tree_child_leaf_nodes.append(ch)
+            full_species_tree_nd.included_protracted_speciation_tree_leaf_nodes = set()
+            full_species_tree_child_leaf_nodes = []
+            for ch in full_species_tree_nd.child_node_iter():
+                if ch.is_leaf():
+                    full_species_tree_child_leaf_nodes.append(ch)
+            print("*** {}: {}".format(full_species_tree_nd, ",".join(str(n) for n in full_species_tree_nd.child_node_iter())))
+            print("*** {}: {}".format(full_species_tree_nd, ",".join(str(n) for n in full_species_tree_child_leaf_nodes)))
+            if full_species_tree_child_leaf_nodes:
+                lineage_sets = []
+                psm_ch_node_sets = []
+                for psm_ch in protracted_speciation_tree_node.child_node_iter():
+                    psm_ch_node_set = set()
+                    psm_ch_lineage_set = set()
+                    for psm_leaf in psm_ch.leaf_iter():
+                        psm_ch_node_set.add(psm_leaf)
+                        psm_ch_lineage_set.add(psm_leaf.protracted_speciation_model_lineage)
+                    psm_ch_node_sets.append(psm_ch_node_set)
+                    lineage_sets.append(psm_ch_lineage_set)
+                    print("shared: {}".format(list(str(i) for i in psm_ch_lineage_set)))
+                lineage_psm_node_set_map = {}
+                for lineage_set, psm_node_set in zip(lineage_sets, psm_ch_node_sets):
+                    for lineage in lineage_set:
+                        lineage_psm_node_set_map[lineage] = psm_node_set
+                for full_species_tree_child_leaf_node in full_species_tree_child_leaf_nodes:
+                    node_set = frozenset(lineage_psm_node_set_map[full_species_tree_child_leaf_node.protracted_speciation_model_lineage])
+                    if node_set in assigned_node_sets:
+                        print("(for node {}, child of {}) Node set already assigned via lineage {}, but trying again through lineage {}: {}".format(full_species_tree_child_leaf_node, full_species_tree_nd, assigned_node_sets[node_set], full_species_tree_child_leaf_node.protracted_speciation_model_lineage, node_set))
+                        print("\n\n{}\n".format(protracted_speciation_tree.as_string("newick", suppress_internal_node_labels=False, suppress_leaf_node_labels=False)))
+                        print("\n\n{}\n".format(full_species_tree.as_string("newick", suppress_internal_node_labels=False, suppress_leaf_node_labels=False)))
+                        assert False
+                    full_species_tree_child_leaf_node.included_protracted_speciation_tree_leaf_nodes = node_set
+                    print("Assigned to {} (child of {}) via lineage {}: {}".format(full_species_tree_child_leaf_node, full_species_tree_nd, full_species_tree_child_leaf_node.protracted_speciation_model_lineage, node_set))
+                    assigned_node_sets[node_set] = full_species_tree_child_leaf_node.protracted_speciation_model_lineage
 
-            # if full_species_tree_child_leaf_nodes:
-            #     lineage_sets = []
-            #     node_sets = []
-            #     for psm_ch in protracted_speciation_tree_node.child_node_iter():
-            #         psm_ch_node_set = set()
-            #         psm_ch_lineage_set = set()
-            #         for psm_leaf in psm_ch.leaf_iter():
-            #             psm_ch_node_set.add(psm_leaf)
-            #             psm_ch_lineage_set.add(psm_leaf.protracted_speciation_model_lineage)
-            #         node_sets.append(psm_ch_node_set)
-            #         lineage_sets.append(psm_ch_lineage_set)
-            #     lineage_node_set_map = {}
-            #     for lineage_set, psm_node_set in zip(lineage_sets, psm_node_set):
-            #         for lineage in lineage_set:
-            #             lineage_psm_node_set_map[lineage] = psm_node_set
-            #     for full_species_tree_child_leaf_node in full_species_tree_child_leaf_nodes:
-            #         full_species_tree_child_leaf_node.included_protracted_speciation_tree_leaf_nodes = lineage_psm_node_set_map[full_species_tree_child_leaf_node.protracted_speciation_model_lineage]
 
         # for protracted_speciation_tree_nd in protracted_speciation_tree.leaf_node_iter():
         #     lineage = protracted_speciation_tree_nd.protracted_speciation_model_lineage

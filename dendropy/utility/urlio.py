@@ -3,10 +3,10 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
-##  See "LICENSE.txt" for terms and conditions of usage.
+##  See "LICENSE.rst" for terms and conditions of usage.
 ##
 ##  If you use this work or any portion thereof in published work,
 ##  please cite it as:

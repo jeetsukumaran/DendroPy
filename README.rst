@@ -99,3 +99,7 @@ For all options, type::
 
     $ python -m dendropy.test --help
 
+License and Warranty
+====================
+
+Please see the file "LICENSE.rst" for details.
