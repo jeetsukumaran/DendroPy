@@ -1574,7 +1574,7 @@ class Node(
             The (iterable) collection of child nodes to be assigned this node
             as a parent.
         """
-        del self._child_nodes[:] # list.clear() is not in Python 2.7
+        self.clear_child_nodes()
         # Go through add to ensure book-keeping
         # (e.g. avoiding multiple adds) takes
         # place.
@@ -1754,6 +1754,12 @@ class Node(
         else:
             raise ValueError("Tried to remove a node that is not listed as a child")
         return node
+
+    def clear_child_nodes(self):
+        """
+        Removes all child nodes.
+        """
+        del self._child_nodes[:] # list.clear() is not in Python 2.7
 
     def reversible_remove_child(self, node, suppress_unifurcations=False):
         """
