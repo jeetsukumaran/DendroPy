@@ -1461,7 +1461,7 @@ def main():
         if args.summary_target is None:
             args.summary_target = "consensus"
         if args.summary_target == "consensus":
-            tree = tree_array.consensus_tree(min_consensus_freq=args.min_consensus_freq, summarize_splits=False)
+            tree = tree_array.consensus_tree(min_freq=args.min_consensus_freq, summarize_splits=False)
             msg = "Summarized onto consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
         elif args.summary_target == "mcct" or args.summary_target == "mcc":
             tree = tree_array.maximum_product_of_split_support_tree(
