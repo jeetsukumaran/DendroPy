@@ -532,6 +532,22 @@ def contained_coalescent_tree(containing_tree,
 def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     """
     Generates a tree under the unconstrained Kingman's coalescent process.
+
+    Parameters
+    ----------
+    taxon_namespace: |TaxonNamespace| instance
+        A pre-populated |TaxonNamespace| where the contained |Taxon| instances
+        represent the genes or individuals sampled from the population.
+    pop_size : numeric
+        The size of the population from the which the coalescent process is
+        sampled.
+
+
+    Returns
+    -------
+    t : |Tree|
+        A tree sampled from the Kingman's neutral coalescent.
+
     """
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
@@ -542,6 +558,35 @@ def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
                                     rng=rng,
                                     use_expected_tmrca=False)[0]
     tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
+    return tree
+
+def pure_kingman_tree_shape(num_leaves, pop_size=1, rng=None):
+    """
+    Like :func:`dendropy.model.pure_kingman_tree`, but does not assign taxa to tips.
+
+    Parameters
+    ----------
+    num_leaves : int
+        Number of individuals/genes sampled.
+    pop_size : numeric
+        The size of the population from the which the coalescent process is
+        sampled.
+
+    Returns
+    -------
+    t : |Tree|
+        A tree sampled from the Kingman's neutral coalescent.
+
+    """
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
+    nodes = [dendropy.Node() for t in range(num_leaves)]
+    seed_node = coalesce_nodes(nodes=nodes,
+                                    pop_size=pop_size,
+                                    period=None,
+                                    rng=rng,
+                                    use_expected_tmrca=False)[0]
+    tree = dendropy.Tree(seed_node=seed_node)
     return tree
 
 def mean_kingman_tree(taxon_namespace, pop_size=1, rng=None):
