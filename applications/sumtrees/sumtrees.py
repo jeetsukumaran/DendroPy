@@ -656,6 +656,7 @@ def main():
             default=None,
             help="Treat source trees as unrooted.")
     source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
+            type=float,
             default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
     source_options.add_argument("--weighted-trees",
@@ -1239,6 +1240,15 @@ def main():
 
     if args.edge_length_summarization in ("mean-age", "median-age"):
         args.summarize_node_ages = True
+
+    ######################################################################
+    ## Ultrametricity Precision
+
+    if args.ultrametricity_precision == 0:
+        # underlying function expects negative value to disable, but SumTrees
+        # API uses 0
+        args.ultrametricity_precision = -1
+
 
     ######################################################################
     ## Output File Setup
