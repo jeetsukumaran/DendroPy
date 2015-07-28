@@ -655,8 +655,7 @@ def main():
             action="store_false",
             default=None,
             help="Treat source trees as unrooted.")
-    source_options.add_argument("-v", "--ultrametricity-precision", "--branch-length-epsilon",
-            action="store_true",
+    source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
             default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
     source_options.add_argument("--weighted-trees",
