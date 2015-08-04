@@ -5317,7 +5317,7 @@ class Tree(
         Returns true if the |Bipartition| ``bipartition`` is compatible
         with all bipartitions of this tree.
         """
-        if not is_bipartitions_updated or not self.bipartitions_encoding:
+        if not is_bipartitions_updated or not self.bipartition_encoding:
             self.encode_bipartitions()
         if bipartition in self.bipartition_encoding:
             return True
