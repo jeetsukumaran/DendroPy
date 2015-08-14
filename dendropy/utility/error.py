@@ -145,10 +145,15 @@ class UltrametricityError(ValueError):
     def __init__(self, message=None):
         ValueError.__init__(self, message)
 
-class TreeSimTotalExtinctionException(Exception):
+class ProcessFailedException(Exception):
     """Exception to be raised when branching process results in all lineages going extinct."""
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
+class TreeSimTotalExtinctionException(ProcessFailedException):
+    """Exception to be raised when branching process results in all lineages going extinct."""
+    def __init__(self, *args, **kwargs):
+        ProcessFailedException.__init__(self, *args, **kwargs)
 
 class SeedNodeDeletionException(Exception):
 

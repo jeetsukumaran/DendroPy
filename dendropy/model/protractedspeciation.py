@@ -23,15 +23,13 @@ Models, modeling and model-fitting of the Protracted Speciation Process.
 import itertools
 import dendropy
 from dendropy.utility import GLOBAL_RNG
+from dendropy.utility.error import ProcessFailedException
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.calculate import probability
 
-class ProtractedSpeciationModel(object):
+class ProtractedSpeciationProcess(object):
 
-    class ProcessFailedException(TreeSimTotalExtinctionException):
-        pass
-
-    class ProtractedSpeciationModelLineage(object):
+    class ProtractedSpeciationProcessLineage(object):
 
         def __init__(self,
                 index,
@@ -105,14 +103,14 @@ class ProtractedSpeciationModel(object):
         Each node on the protracted speciation tree as will as the full species
         tree will have an attribute, ``protracted_speciation_model_lineage``,
         which is a reference to a
-        :class:`~dendropy.model.birthdeath.ProtractedSpeciationModel.ProtractedSpeciationModelLineage`
+        :class:`~dendropy.model.birthdeath.ProtractedSpeciationProcess.ProtractedSpeciationProcessLineage`
         instance which represents the lineage associated with this node. Note
         that each node can only be associated with a single lineage, but a
         lineage might span several nodes.
 
         If ``is_correlate_protracted_speciation_and_full_speciation_trees`` is ``True``,
         then additional attributes will be added. See
-        :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationModel.correlate_protracted_speciation_and_full_speciation_trees`
+        :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_protracted_speciation_and_full_speciation_trees`
         for details.
 
         Parameters
@@ -150,7 +148,7 @@ class ProtractedSpeciationModel(object):
         is_correlate_protracted_speciation_and_full_speciation_trees: bool
             If ``True`` then additional attributes will be added to the
             resulting trees to relate them. See
-            :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationModel.correlate_protracted_speciation_and_full_speciation_trees`
+            :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_protracted_speciation_and_full_speciation_trees`
             for details.
 
         Returns
@@ -253,7 +251,7 @@ class ProtractedSpeciationModel(object):
                                 protracted_speciation_tree=protracted_speciation_tree,
                                 is_correlate_protracted_speciation_and_full_speciation_trees=is_correlate_protracted_speciation_and_full_speciation_trees,
                                 )
-                except ProtractedSpeciationModel.ProcessFailedException:
+                except ProcessFailedException:
                     pass
 
             num_incipient_species = len(self.current_incipient_species_lineages)
@@ -364,7 +362,7 @@ class ProtractedSpeciationModel(object):
         self.current_lineage_index += 1
         lineage_index = self.current_lineage_index
         speciation_initiation_time = self.current_time
-        new_lineage = ProtractedSpeciationModel.ProtractedSpeciationModelLineage(
+        new_lineage = ProtractedSpeciationProcess.ProtractedSpeciationProcessLineage(
                 index=lineage_index,
                 parent_lineage=parent_lineage,
                 speciation_initiation_time=speciation_initiation_time,
@@ -442,7 +440,7 @@ class ProtractedSpeciationModel(object):
                 seed_node = nd
                 break
         if seed_node is None:
-            raise ProtractedSpeciationModel.ProcessFailedException()
+            raise ProcessFailedException()
 
         # create pruned tree
         full_species_tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
