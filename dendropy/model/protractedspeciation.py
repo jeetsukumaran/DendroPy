@@ -17,15 +17,108 @@
 ##############################################################################
 
 """
-Models, modeling and model-fitting of the Protracted Speciation Process.
+Models, modeling and model-fitting of the protracted speciation, as described in::
+
+        Etienne, R.S., Morlon, H., and Lambert, A. 2014. Estimating the
+        duration of speciation from phylogenies. Evolution 2014: 2430-2440.
+        doi:10.1111/evo.12433
+
 """
 
+import math
 import itertools
 import dendropy
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import ProcessFailedException
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.calculate import probability
+
+
+def _D(speciation_initiation_rate,
+       speciation_completion_rate,
+       incipient_species_extinction_rate):
+    """
+    Returns value of D, as given in eqs. 5 in Etienne et al.
+    (2014).
+
+    Parameters
+    ----------
+
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+
+    Returns
+    -------
+    t : float
+        The duration of speciation.
+
+    """
+    D = math.sqrt(
+            pow(speciation_completion_rate + speciation_initiation_rate - incipient_species_extinction_rate, 2)
+            + (4.0 * speciation_completion_rate * incipient_species_extinction_rate)
+        )
+    return D
+
+def expected_duration_of_speciation(
+        speciation_initiation_rate,
+        speciation_completion_rate,
+        incipient_species_extinction_rate,
+        D=None,
+        ):
+    """
+    Returns mean duration of speciation, following Eqs. 4 in Etienne et al.
+    (2014):
+
+        The duration of speciation differs from the speciation-completion
+        time in that the latter is the waiting time until a single
+        incipient lineage completes the speciation process if extinction
+        was zero, whereas the former is the time needed for an incipient
+        species or one of its descendants to complete speciation, condi-
+        tional on the fact that speciation completes, that is, this is the
+        time taken by any species that succeeded in speciating completely.
+
+    Parameters
+    ----------
+
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+    D : float
+        Value of ``D`` (as given in Eq. 5 in Etienne et al. 2014). Will be
+        calculated if not specified.
+
+    Returns
+    -------
+    t : float
+        The duration of speciation.
+
+    """
+    if D is None:
+        D = _D(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    t1 = 2.0/(D - speciation_completion_rate + speciation_initiation_rate - incipient_species_extinction_rate )
+    t2 = math.log(2.0/(1+((speciation_completion_rate - speciation_initiation_rate + incipient_species_extinction_rate)/D)))
+    t = t1 * t2
+    return t
 
 class ProtractedSpeciationProcess(object):
 

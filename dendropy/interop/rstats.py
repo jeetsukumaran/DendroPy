@@ -41,29 +41,9 @@ class RService(object):
             rscript_path=RSCRIPT_EXECUTABLE,
             ):
         """
-        Executes a sequence of commans in R and returns the results.
-
-        Note that newlines ('\n') and other special characters will be
-        converted before being passed to the R interpreter, so need to
-        be escaped or entered as raw string expressions.
-
-        That is, instead of, e.g.:
-
-            returncode, stdout, stderr = RService.call([
-                "cat('hello, world\n')",
-            ])
-
-        use this:
-
-            returncode, stdout, stderr = RService.call([
-                "cat('hello, world\\n')",
-            ])
-
-        or:
-
-            returncode, stdout, stderr = RService.call([
-                r"cat('hello, world\n')",
-            ])
+        Executes a sequence of commands in R and returns the results. All the
+        noise is sunk into the stderr return variable, and just the output
+        comes out cleanly in the stdout return variable.
 
         Parameters
         ----------
@@ -86,6 +66,74 @@ class RService(object):
             Contents of the R process standard output.
         stderr : string
             Contents of the R process standard error.
+
+        Examples
+        --------
+
+        Build up a script (``s``) to calculate a range of values, print them
+        to the standard output, and then post-process this to extract the
+        values::
+
+            import itertools
+            from dendropy.interop import rstats
+
+            bb = [0.01, 0.05, 0.10, 0.50, 1.0]
+            cc = [0.01, 0.05, 0.10, 0.50, 1.0]
+            ee = [0.0, 0.1, 0.2]
+
+            # store commands of script as a list
+            # to be passed to the ``call()``
+            s = []
+
+            # set options, load required libraries, etc.
+            s.append("options(digits=22)")
+            s.append("library(PBD)")
+
+            # build up list of commands in script
+            params = []
+            for b, c, e in itertools.product(bb, cc, ee):
+                s.append("print(pbd_durspec_mean(pars=c({},{},{})))".format(b, c, e))
+
+            # execute script
+            returncode, stdout, stderr  = rstats.call(s)
+
+            # peek at the results
+            print(stdout)
+
+            # [1] 69.31472
+            # [1] 9.853723
+            # [1] 4.981369
+            # [1] 0.9950331
+            # ...
+
+            # post-process the stdout to extract values
+            results = [float(x.split(" ")[1]) for x in stdout.split("\n") if x]
+
+        Notes
+        -----
+
+        Note that newlines ('\n') and other special characters will be
+        converted before being passed to the R interpreter, so need to
+        be escaped or entered as raw string expressions.
+
+        That is, instead of, e.g.::
+
+            returncode, stdout, stderr = RService.call([
+                "cat('hello, world\n')",
+            ])
+
+        use this::
+
+            returncode, stdout, stderr = RService.call([
+                "cat('hello, world\\n')",
+            ])
+
+        or::
+
+            returncode, stdout, stderr = RService.call([
+                r"cat('hello, world\n')",
+            ])
+
         """
         if not isinstance(r_commands, str):
             r_commands = "\n".join(r_commands)
