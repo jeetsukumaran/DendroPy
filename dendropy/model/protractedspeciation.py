@@ -38,7 +38,7 @@ def _D(speciation_initiation_rate,
        speciation_completion_rate,
        incipient_species_extinction_rate):
     """
-    Returns value of D, as given in eqs. 5 in Etienne et al.
+    Returns value of D, as given in eq. 5 in Etienne et al.
     (2014).
 
     Parameters
@@ -67,6 +67,37 @@ def _D(speciation_initiation_rate,
             + (4.0 * speciation_completion_rate * incipient_species_extinction_rate)
         )
     return D
+
+def _phi(speciation_initiation_rate,
+       speciation_completion_rate,
+       incipient_species_extinction_rate):
+    """
+    Returns value of $\varphi$, as given in eq. 6 in Etienne et al.
+    (2014).
+
+    Parameters
+    ----------
+
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+
+    Returns
+    -------
+    t : float
+        The duration of speciation.
+
+    """
+    phi = speciation_completion_rate - speciation_initiation_rate + incipient_species_extinction_rate
+    return phi
 
 def expected_duration_of_speciation(
         speciation_initiation_rate,
@@ -119,6 +150,113 @@ def expected_duration_of_speciation(
     t2 = math.log(2.0/(1+((speciation_completion_rate - speciation_initiation_rate + incipient_species_extinction_rate)/D)))
     t = t1 * t2
     return t
+
+def probability_of_duration_of_speciation(
+        tau,
+        speciation_initiation_rate,
+        speciation_completion_rate,
+        incipient_species_extinction_rate,
+        D=None,
+        phi=None,
+        ):
+    """
+    Returns probability of duration of speciation, tau, following Eqs. 6
+    in Etienne et al.
+
+    Parameters
+    ----------
+
+    tau : float
+        The duration of speciation.
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+    D : float
+        Value of ``D`` (as given in Eq. 5 in Etienne et al. 2014). Will be
+        calculated if not specified.
+    phi : float
+        Value of ``phi`` (as given in Eq. 7 in Etienne et al. 2014). Will be
+        calculated if not specified.
+
+    Returns
+    -------
+    p : float
+        The probability of the duration of speciation, tau.
+
+    """
+    if D is None:
+        D = _D(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    if phi is None:
+        phi = _phi(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    n1 = 2.0 * pow(D, 2) * math.exp(-D * tau) * (D + phi)
+    d1 = pow(D + phi + math.exp(-D * tau) * (D-phi), 2)
+    return n1/d1
+
+def maximum_probability_duration_of_speciation(
+        speciation_initiation_rate,
+        speciation_completion_rate,
+        incipient_species_extinction_rate,
+        D=None,
+        phi=None,
+        ):
+    """
+    Returns duration of speciation that maximizes probability under given
+    process parameters, following eq. 8 of Etienne et al (2014).
+
+    Parameters
+    ----------
+
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+    D : float
+        Value of ``D`` (as given in Eq. 5 in Etienne et al. 2014). Will be
+        calculated if not specified.
+    phi : float
+        Value of ``phi`` (as given in Eq. 7 in Etienne et al. 2014). Will be
+        calculated if not specified.
+
+    Returns
+    -------
+    t : float
+        The duration of speciation with the maximum probability under the
+        given process parameters.
+
+    """
+    if D is None:
+        D = _D(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    if phi is None:
+        phi = _phi(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    x = 1.0/D * math.log((D-phi)/(D+phi))
+    return max(0, x)
 
 class ProtractedSpeciationProcess(object):
 
