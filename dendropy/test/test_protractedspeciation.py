@@ -232,6 +232,13 @@ class ProtractedSpeciationCalcs(unittest.TestCase):
                     incipient_species_extinction_rate=params[2],
                     )
             self.assertAlmostEqual(obs_result, exp_result)
+            obs_result = protractedspeciation.log_probability_of_duration_of_speciation(
+                    tau=params[3],
+                    speciation_initiation_rate=params[0],
+                    speciation_completion_rate=params[1],
+                    incipient_species_extinction_rate=params[2],
+                    )
+            self.assertAlmostEqual(obs_result, math.log(exp_result))
 
     def test_maximum_probability_duration_of_speciation(self):
         refs = [

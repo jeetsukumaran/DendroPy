@@ -206,6 +206,61 @@ def probability_of_duration_of_speciation(
     d1 = pow(D + phi + math.exp(-D * tau) * (D-phi), 2)
     return n1/d1
 
+def log_probability_of_duration_of_speciation(
+        tau,
+        speciation_initiation_rate,
+        speciation_completion_rate,
+        incipient_species_extinction_rate,
+        D=None,
+        phi=None,
+        ):
+    """
+    Returns probability of duration of speciation, tau, following Eqs. 6
+    in Etienne et al.
+
+    Parameters
+    ----------
+
+    tau : float
+        The duration of speciation.
+    speciation_initiation_rate : float
+        The birth rate, b (the incipient species birth
+        rate and the good species birth rate are assumed to be equal):
+        the rate at which new (incipient) species are produced from
+        either incipient or good species lineages.
+    speciation_completion_rate : float
+        The rate at which incipient species get converted to good or full
+        species, $\lambda_1$.
+    incipient_species_extinction_rate : float
+        The incipient species exctinction rate, $\mu_1$: the rate at which
+        incipient species go extinct.
+    D : float
+        Value of ``D`` (as given in Eq. 5 in Etienne et al. 2014). Will be
+        calculated if not specified.
+    phi : float
+        Value of ``phi`` (as given in Eq. 7 in Etienne et al. 2014). Will be
+        calculated if not specified.
+
+    Returns
+    -------
+    p : float
+        The probability of the duration of speciation, tau.
+
+    """
+    if D is None:
+        D = _D(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    if phi is None:
+        phi = _phi(
+            speciation_initiation_rate=speciation_initiation_rate,
+            speciation_completion_rate=speciation_completion_rate,
+            incipient_species_extinction_rate=incipient_species_extinction_rate)
+    n1 = math.log(2.0) + (2 * math.log(D)) - (D * tau) + math.log(D + phi)
+    d1 = 2 * (math.log(D + phi + math.exp(-D * tau)*(D-phi)))
+    return n1 - d1
+
 def maximum_probability_duration_of_speciation(
         speciation_initiation_rate,
         speciation_completion_rate,
