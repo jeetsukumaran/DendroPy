@@ -46,11 +46,11 @@ def _D(speciation_initiation_rate,
 
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -80,11 +80,11 @@ def _phi(speciation_initiation_rate,
 
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -122,11 +122,11 @@ def expected_duration_of_speciation(
 
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -170,11 +170,11 @@ def probability_of_duration_of_speciation(
         The duration of speciation.
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -225,11 +225,11 @@ def log_probability_of_duration_of_speciation(
         The duration of speciation.
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -277,11 +277,11 @@ def maximum_probability_duration_of_speciation(
 
     speciation_initiation_rate : float
         The birth rate, b (the incipient species birth
-        rate and the good species birth rate are assumed to be equal):
+        rate and the "good" species birth rate are assumed to be equal):
         the rate at which new (incipient) species are produced from
-        either incipient or good species lineages.
+        either incipient or "good" species lineages.
     speciation_completion_rate : float
-        The rate at which incipient species get converted to good or full
+        The rate at which incipient species get converted to good
         species, $\lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
@@ -349,17 +349,17 @@ class ProtractedSpeciationProcess(object):
             return self._get_label()
 
     def __init__(self,
-            full_species_birth_rate,
-            full_species_extinction_rate,
-            incipient_species_birth_rate,
-            incipient_species_conversion_rate,
+            speciation_initiation_from_orthospecies_rate,
+            speciation_initiation_from_incipient_species_rate,
+            speciation_completion_rate,
+            orthospecies_extinction_rate,
             incipient_species_extinction_rate,
             rng=None,
             ):
-        self.full_species_birth_rate = full_species_birth_rate
-        self.full_species_extinction_rate = full_species_extinction_rate
-        self.incipient_species_birth_rate = incipient_species_birth_rate
-        self.incipient_species_conversion_rate = incipient_species_conversion_rate
+        self.speciation_initiation_from_orthospecies_rate = speciation_initiation_from_orthospecies_rate
+        self.orthospecies_extinction_rate = orthospecies_extinction_rate
+        self.speciation_initiation_from_incipient_species_rate = speciation_initiation_from_incipient_species_rate
+        self.speciation_completion_rate = speciation_completion_rate
         self.incipient_species_extinction_rate = incipient_species_extinction_rate
         if rng is None:
             self.rng = GLOBAL_RNG
@@ -373,7 +373,7 @@ class ProtractedSpeciationProcess(object):
         self.current_time = 0.0
         self.current_lineage_index = 0
         self.current_node_index = 0
-        self.current_full_species_lineages = []
+        self.current_orthospecies_lineages = []
         self.current_incipient_species_lineages = []
         self._all_lineages = []
 
@@ -383,12 +383,12 @@ class ProtractedSpeciationProcess(object):
         Samples from the Protracted Speciation Model process, returning a tuple of trees:
 
             -   the lineage tree: this tree has all nodes/lineages, i.e. both
-                full species as well as incipient species.
+                "good" species as well as incipient species.
             -   the (ortho- or confirmed- or "good"-)species tree: the tree
-                only has good or full species, i.e. with all incipient species
+                only has "good" species, i.e. with all incipient species
                 pruned out.
 
-        Each node on the protracted speciation tree as will as the full species
+        Each node on the protracted speciation tree as will as the "good" species
         tree will have an attribute, ``protracted_speciation_model_lineage``,
         which is a reference to a
         :class:`~dendropy.model.birthdeath.ProtractedSpeciationProcess.ProtractedSpeciationProcessLineage`
@@ -407,20 +407,20 @@ class ProtractedSpeciationProcess(object):
         max_time : float or `None`
             Terminate and return results when this time is reached. If `None`,
             then do not terminated based on run time.
-        max_full_species : int or `None`
+        max_extant_orthospecies : int or `None`
             Terminate and return results when this number of tips are found in
             the confirmed-species tree (i.e., the pruned tree consisting of only
-            "full" or "good" species). If `None`, then do not terminate
+            "good" species). If `None`, then do not terminate
             based on the number of tipes on the confirmed-species tree.
-        max_extant_protracted_speciation_lineages : int or `None`
+        max_extant_lineages : int or `None`
             Terminate and return results when this number of tips are found in
-            the incipient tree (i.e. the tree with both incipient and full
+            the lineage tree (i.e. the tree with both incipient and good
             species). If `None`, then do not terminate based on the
             number of tipes on the incipient species tree.
-        is_initial_species_incipient : bool
+        is_initial_lineage_incipient_species : bool
             Whether the first lineage that initialies the process is an
-            incipient or full species. Defaults to `False`: first species on
-            the tree is a full species.
+            incipient species. Defaults to `False`: first species on
+            the tree is a "good" species.
         is_retry_on_total_extinction : bool
             If ``False``, then a TreeSimTotalExtinctionException will be raised
             if all lineages go extinct before the termination conditions are
@@ -443,9 +443,9 @@ class ProtractedSpeciationProcess(object):
         -------
         lineage_tree : |Tree| instance
             A tree from the protracted speciation process, with all lineages
-            (full species as well as incipient species).
+            (good species as well as incipient species).
         orthospecies_tree : |Tree| instance
-            A tree from the protracted speciation process with only full species.
+            A tree from the protracted speciation process with only "good" species.
 
         """
         is_retry_on_total_extinction = kwargs.pop("is_retry_on_total_extinction", True)
@@ -471,22 +471,22 @@ class ProtractedSpeciationProcess(object):
             orthospecies_tree):
         """
         Correlates the protracted speciation tree and the corresponding pruned
-        full species tree from a single sample of the protracted speciation
+        "good" species tree from a single sample of the protracted speciation
         process (i.e., a call to ``generate_sample()``).
 
         Each node on the protracted speciation tree will have the following
         attributes added:
 
-            - ``is_full_speciation_event`` : ``True`` if the node represents a
-             full/good speciation event, ``False`` otherwise.
+            - ``is_parent_of_orthospecies`` : ``True`` if the node represents a
+             "good" speciation event, ``False`` otherwise.
 
-        Each internal node on the full species tree will have the following
+        Each internal node on the "good" species tree will have the following
         attributes added:
 
             - ``lineage_tree_node``: a reference to the node on
               the protratcted speciation tree to which it corresponds.
 
-        Each leaf node on the full species tree will have the following
+        Each leaf node on the orthospecies tree will have the following
         attributes added:
 
             - ``included_lineage_tree_leaf_nodes``: the set of
@@ -502,23 +502,23 @@ class ProtractedSpeciationProcess(object):
             for nd in orthospecies_tree_nd.protracted_speciation_model_lineage.lineage_tree_node_history:
                 if nd.age is not None and nd.age > lineage_tree_node.age:
                     lineage_tree_node = nd
-            lineage_tree_node.is_full_speciation_event = True
+            lineage_tree_node.is_parent_of_orthospecies = True
             orthospecies_tree_nd.lineage_tree_node = lineage_tree_node
         return lineage_tree, orthospecies_tree
 
     def _run_protracted_speciation_process(self, **kwargs):
         self.reset()
         max_time = kwargs.get("max_time", None)
-        max_extant_protracted_speciation_lineages = kwargs.get("max_extant_protracted_speciation_lineages", None)
-        max_full_species = kwargs.get("max_full_species", None)
+        max_extant_lineages = kwargs.get("max_extant_lineages", None)
+        max_extant_orthospecies = kwargs.get("max_extant_orthospecies", None)
         is_correlate_lineage_and_species_trees = kwargs.get("is_correlate_lineage_and_species_trees", False)
         taxon_namespace = kwargs.get("taxon_namespace", None)
 
-        is_full_species = not kwargs.get("is_initial_species_incipient", False)
-        if is_full_species:
-            initial_lineage = self._new_lineage(parent_lineage=None, is_full_species=True)
+        is_orthospecies = not kwargs.get("is_initial_lineage_incipient_species", False)
+        if is_orthospecies:
+            initial_lineage = self._new_lineage(parent_lineage=None, is_orthospecies=True)
         else:
-            initial_lineage = self._new_lineage(parent_lineage=None, is_full_species=False)
+            initial_lineage = self._new_lineage(parent_lineage=None, is_orthospecies=False)
         seed_node = self._new_node(lineage=initial_lineage)
         lineage_tree = self.tree_factory( taxon_namespace=taxon_namespace, seed_node=seed_node)
         lineage_tree.is_rooted = True
@@ -527,13 +527,13 @@ class ProtractedSpeciationProcess(object):
 
             ## Draw time to next event
             event_rates = []
-            num_full_species = len(self.current_full_species_lineages)
-            if max_full_species is not None:
+            num_orthospecies = len(self.current_orthospecies_lineages)
+            if max_extant_orthospecies is not None:
                 ## note: expensive operation to count leaves!
                 try:
                     orthospecies_tree = self._assemble_orthospecies_tree(taxon_namespace=taxon_namespace)
                     num_leaves = len(orthospecies_tree.leaf_nodes())
-                    if num_leaves >= max_full_species:
+                    if num_leaves >= max_extant_orthospecies:
                         return self._postprocess_psm_and_orthospecies_trees(
                                 orthospecies_tree=orthospecies_tree,
                                 lineage_tree=lineage_tree,
@@ -543,20 +543,20 @@ class ProtractedSpeciationProcess(object):
                     pass
 
             num_incipient_species = len(self.current_incipient_species_lineages)
-            if max_extant_protracted_speciation_lineages is not None and (num_incipient_species + num_full_species) >= max_extant_protracted_speciation_lineages:
+            if max_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= max_extant_lineages:
                 break
 
             # Event type 0
-            event_rates.append(self.full_species_birth_rate * num_full_species)
+            event_rates.append(self.speciation_initiation_from_orthospecies_rate * num_orthospecies)
 
             # Event type 1
-            event_rates.append(self.full_species_extinction_rate * num_full_species)
+            event_rates.append(self.orthospecies_extinction_rate * num_orthospecies)
 
             # Event type 2
-            event_rates.append(self.incipient_species_birth_rate * num_incipient_species)
+            event_rates.append(self.speciation_initiation_from_incipient_species_rate * num_incipient_species)
 
             # Event type 3
-            event_rates.append(self.incipient_species_conversion_rate * num_incipient_species)
+            event_rates.append(self.speciation_completion_rate * num_incipient_species)
 
             # Event type 4
             event_rates.append(self.incipient_species_extinction_rate * num_incipient_species)
@@ -568,12 +568,12 @@ class ProtractedSpeciationProcess(object):
             waiting_time = self.rng.expovariate(rate_of_any_event)
             if max_time and (self.current_time + waiting_time) > max_time:
                 t = max_time - self.current_time
-                for lineage in itertools.chain(self.current_full_species_lineages, self.current_incipient_species_lineages):
+                for lineage in itertools.chain(self.current_orthospecies_lineages, self.current_incipient_species_lineages):
                     lineage.node.edge.length += t
                 self.current_time = max_time
                 break
             self.current_time += waiting_time
-            for lineage in itertools.chain(self.current_full_species_lineages, self.current_incipient_species_lineages):
+            for lineage in itertools.chain(self.current_orthospecies_lineages, self.current_incipient_species_lineages):
                 lineage.node.edge.length += waiting_time
 
             # Select event
@@ -582,9 +582,9 @@ class ProtractedSpeciationProcess(object):
             # print("time {}: {}, selected = {}".format(self.current_time, event_rates, event_type_idx))
 
             if event_type_idx == 0:
-                self._process_full_species_birth(lineage_tree)
+                self._process_orthospecies_birth(lineage_tree)
             elif event_type_idx == 1:
-                self._process_full_species_extinction(lineage_tree)
+                self._process_orthospecies_extinction(lineage_tree)
             elif event_type_idx == 2:
                 self._process_incipient_species_birth(lineage_tree)
             elif event_type_idx == 3:
@@ -594,7 +594,7 @@ class ProtractedSpeciationProcess(object):
             else:
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
 
-            if len(self.current_full_species_lineages) + len(self.current_incipient_species_lineages) == 0:
+            if len(self.current_orthospecies_lineages) + len(self.current_incipient_species_lineages) == 0:
                 raise TreeSimTotalExtinctionException()
 
         orthospecies_tree = self._assemble_orthospecies_tree(taxon_namespace=taxon_namespace)
@@ -604,25 +604,25 @@ class ProtractedSpeciationProcess(object):
                 is_correlate_lineage_and_species_trees=is_correlate_lineage_and_species_trees,
                 )
 
-    def _process_full_species_birth(self, tree):
-        parent_lineage = self.rng.choice(self.current_full_species_lineages)
+    def _process_orthospecies_birth(self, tree):
+        parent_lineage = self.rng.choice(self.current_orthospecies_lineages)
         parent_node = parent_lineage.node
-        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_full_species=False)
+        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_orthospecies=False)
         c1 = self._new_node(lineage=parent_lineage)
         c2 = self._new_node(lineage=new_lineage)
         parent_node.add_child(c1)
         parent_node.add_child(c2)
 
-    def _process_full_species_extinction(self, tree):
-        sp = self.rng.choice(self.current_full_species_lineages)
+    def _process_orthospecies_extinction(self, tree):
+        sp = self.rng.choice(self.current_orthospecies_lineages)
         sp.extinction_time = self.current_time
-        self.current_full_species_lineages.remove(sp)
+        self.current_orthospecies_lineages.remove(sp)
         self._make_lineage_extinct_on_phylogeny(tree, sp.node)
 
     def _process_incipient_species_birth(self, tree):
         parent_lineage = self.rng.choice(self.current_incipient_species_lineages)
         parent_node = parent_lineage.node
-        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_full_species=False)
+        new_lineage = self._new_lineage(parent_lineage=parent_lineage, is_orthospecies=False)
         c1 = self._new_node(lineage=parent_lineage)
         c2 = self._new_node(lineage=new_lineage)
         parent_node.add_child(c1)
@@ -631,8 +631,8 @@ class ProtractedSpeciationProcess(object):
     def _process_incipient_species_conversion(self, tree):
         lineage = self.rng.choice(self.current_incipient_species_lineages)
         self.current_incipient_species_lineages.remove(lineage)
-        self.current_full_species_lineages.append(lineage)
-        lineage.is_full_species = True
+        self.current_orthospecies_lineages.append(lineage)
+        lineage.is_orthospecies = True
         lineage.speciation_completion_time = self.current_time
 
     def _process_incipient_species_extinction(self, tree):
@@ -642,11 +642,11 @@ class ProtractedSpeciationProcess(object):
         self._make_lineage_extinct_on_phylogeny(tree, sp.node)
 
     def _make_lineage_extinct_on_phylogeny(self, tree, sp):
-        if len(self.current_full_species_lineages) == 0 and len(self.current_incipient_species_lineages) == 0:
+        if len(self.current_orthospecies_lineages) == 0 and len(self.current_incipient_species_lineages) == 0:
             raise TreeSimTotalExtinctionException()
         tree.prune_subtree(sp)
 
-    def _new_lineage(self, parent_lineage, is_full_species):
+    def _new_lineage(self, parent_lineage, is_orthospecies):
         self.current_lineage_index += 1
         lineage_index = self.current_lineage_index
         speciation_initiation_time = self.current_time
@@ -654,10 +654,10 @@ class ProtractedSpeciationProcess(object):
                 index=lineage_index,
                 parent_lineage=parent_lineage,
                 speciation_initiation_time=speciation_initiation_time,
-                is_full_species=is_full_species)
+                is_orthospecies=is_orthospecies)
         self._all_lineages.append(new_lineage)
-        if is_full_species:
-            self.current_full_species_lineages.append(new_lineage)
+        if is_orthospecies:
+            self.current_orthospecies_lineages.append(new_lineage)
         else:
             self.current_incipient_species_lineages.append(new_lineage)
         return new_lineage
@@ -668,8 +668,8 @@ class ProtractedSpeciationProcess(object):
         node = self.node_factory()
         node.edge.length = 0.0
         node.protracted_speciation_model_lineage = lineage
-        node.is_full_speciation_event = False
-        node.annotations.add_bound_attribute("is_full_speciation_event")
+        node.is_parent_of_orthospecies = False
+        node.annotations.add_bound_attribute("is_parent_of_orthospecies")
         self.current_node_index += 1
         node.label = "{}.n{}".format(lineage.label, self.current_node_index)
         node.annotations.add_new(name="lineage_index", value=lineage.index)
@@ -678,13 +678,9 @@ class ProtractedSpeciationProcess(object):
         return node
 
     def _assemble_orthospecies_tree(self, taxon_namespace=None):
-        lineage_set = set(self.current_incipient_species_lineages + self.current_full_species_lineages)
+        lineage_set = set(self.current_incipient_species_lineages + self.current_orthospecies_lineages)
         sorted_lineages = sorted(lineage_set,
                 key = lambda x: -x.speciation_initiation_time)
-        # sys.stderr.write("\n--- full ---\n")
-        # self._debug_dump_lineages(self._all_lineages)
-        # sys.stderr.write("\n\n--- operational ---\n")
-        # self._debug_dump_lineages(sorted_lineages)
         branching_points = {}
         while sorted_lineages:
             lineage = sorted_lineages.pop(0)
@@ -692,7 +688,7 @@ class ProtractedSpeciationProcess(object):
             parent_lineage = lineage.parent_lineage
             if parent_lineage is None:
                 break
-            if lineage.is_full_species:
+            if lineage.is_orthospecies:
                 orthospecies_tree_node = self._require_orthospecies_tree_node(
                         lineage_orthospecies_tree_node_map=branching_points,
                         lineage=lineage)
@@ -703,8 +699,8 @@ class ProtractedSpeciationProcess(object):
                 #     orthospecies_tree_node.label = "L{}".format(lineage.index)
                 #     orthospecies_tree_node.protracted_speciation_model_lineage = lineage
                 #     branching_points[lineage] = orthospecies_tree_node
-                if lineage.is_full_species:
-                    parent_lineage.is_full_species = True
+                if lineage.is_orthospecies:
+                    parent_lineage.is_orthospecies = True
                 # try:
                 #     orthospecies_tree_parent_node = branching_points[parent_lineage]
                 # except KeyError:
@@ -737,7 +733,7 @@ class ProtractedSpeciationProcess(object):
         # orthospecies_tree.suppress_unifurcations()
         # orthospecies_tree.set_edge_lengths_from_node_ages()
 
-        ## assign ages to full species tree
+        ## assign ages to orthospecies tree
         for nd in orthospecies_tree.postorder_node_iter():
             if nd.is_leaf():
                 nd.age = 0
@@ -745,21 +741,6 @@ class ProtractedSpeciationProcess(object):
                 nd.age = self.current_time - min(ch.protracted_speciation_model_lineage.speciation_initiation_time for ch in nd.child_node_iter())
         orthospecies_tree.set_edge_lengths_from_node_ages()
         orthospecies_tree.suppress_unifurcations()
-
-        # point to tips on psm tree that are included in each full species
-        # for lineage in branching_points:
-        #     full_species_node = branching_points[lineage]
-        #     if full_species_node.is_leaf():
-        #         for lineage_tree_tip in lineage.lineage_tree_node_history:
-        #             if lineage_tree_tip.is_leaf():
-        #                 try:
-        #                     full_species_node.included_lineage_tree_leaf_nodes.append(lineage_tree_tip)
-        #                 except AttributeError:
-        #                     full_species_node.included_lineage_tree_leaf_nodes = [lineage_tree_tip]
-        #                 lineage_tree_tip.orthospecies_tree_node = lineage_tree_tip
-        #     else:
-        #         full_species_node.included_lineage_tree_leaf_nodes = []
-
         return orthospecies_tree
 
     def _postprocess_psm_and_orthospecies_trees(self,
@@ -788,7 +769,6 @@ class ProtractedSpeciationProcess(object):
             lineage_orthospecies_tree_node_map[lineage] = node
             return node
 
-
     def _debug_dump_lineages(self, lineages):
         sorted_lineages = sorted(lineages,
                 key = lambda x: -x.speciation_initiation_time)
@@ -798,11 +778,11 @@ class ProtractedSpeciationProcess(object):
                 pt = "NA"
             else:
                 pi = k.parent_lineage.index
-                pt = k.parent_lineage.is_full_species
+                pt = k.parent_lineage.is_orthospecies
             sys.stderr.write("{:10.5f} : {:4} ({}) => {} ({})\n".format(
                     k.speciation_initiation_time,
                     k.index,
-                    k.is_full_species,
+                    k.is_orthospecies,
                     pi,
                     pt))
         sys.stderr.write("\n")
