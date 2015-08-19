@@ -418,9 +418,9 @@ class ProtractedSpeciationProcess(object):
             the lineage tree (i.e. the tree with both incipient and good
             species). If `None`, then do not terminate based on the
             number of tipes on the incipient species tree.
-        is_initial_lineage_incipient_species : bool
-            Whether the first lineage that initialies the process is an
-            incipient species. Defaults to `False`: first species on
+        is_initial_lineage_orthospecies : bool
+            Whether the first lineage that initialies the process is a
+            "good" species or not. Defaults to `True`: first species on
             the tree is a "good" species.
         is_retry_on_total_extinction : bool
             If ``False``, then a TreeSimTotalExtinctionException will be raised
@@ -514,25 +514,35 @@ class ProtractedSpeciationProcess(object):
 
         for ln_nd in lineage_tree.leaf_node_iter():
             cur_nd = ln_nd
+            if cur_nd.parent_node is None:
+                raise ProcessFailedException()
+            focal_nd_siblings = [snd for snd in ln_nd.parent_node.child_node_iter() if snd is not ln_nd]
+            focal_nd_parents = [pnd for pnd in ln_nd.ancestor_iter(inclusive=False)]
+            chain = []
+            age_found = False
             found = None
             while True:
                 if cur_nd is None:
+                    print("!!! {}: current is None".format(" > ".join(chain)) )
                     break
+                chain.append(cur_nd.label)
                 if cur_nd.parent_node is None:
+                    print("!!! {}: parent is None".format(" > ".join(chain)) )
                     break
                 age = str(cur_nd.parent_node.age)
                 if age in orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map:
+                    age_found = True
                     cur_nd_desc_lineages = set([sch.protracted_speciation_model_lineage for sch in cur_nd.preorder_iter()])
-                    print(orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age])
                     for orthospecies_nd, orthospecies_lineage in orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age]:
-                        print("{}: {}".format(orthospecies_lineage.label, [x.label for x in cur_nd_desc_lineages]))
                         if orthospecies_lineage in cur_nd_desc_lineages:
                             orthospecies_nd.included_lineage_tree_leaf_nodes.add(ln_nd)
                             found = orthospecies_nd
                             break
                     break
                 cur_nd = cur_nd.parent_node
-            if not found:
+            if not age_found:
+                print("Age not found: {}".format(ln_nd.label))
+            elif not found:
                 print("Not found: {}".format(ln_nd.label))
             else:
                 print("Found: {} => {}".format(ln_nd.label, found.label))
@@ -645,7 +655,7 @@ class ProtractedSpeciationProcess(object):
         is_correlate_lineage_and_species_trees = kwargs.get("is_correlate_lineage_and_species_trees", False)
         taxon_namespace = kwargs.get("taxon_namespace", None)
 
-        is_orthospecies = not kwargs.get("is_initial_lineage_incipient_species", False)
+        is_orthospecies = kwargs.get("is_initial_lineage_orthospecies", True)
         if is_orthospecies:
             initial_lineage = self._new_lineage(parent_lineage=None, is_orthospecies=True)
         else:
@@ -898,7 +908,7 @@ class ProtractedSpeciationProcess(object):
             node.annotations.add_new(name="lineage_label", value=lineage.label)
             node.included_lineage_tree_leaf_nodes = set()
             self.lineage_to_orthospecies_tree_node_map[lineage] = node
-        node.included_lineage_tree_leaf_nodes.add(lineage.lineage_tree_node_history[-1])
+        # node.included_lineage_tree_leaf_nodes.add(lineage.lineage_tree_node_history[-1])
         return node
 
     def _debug_dump_lineages(self, lineages):
