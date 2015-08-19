@@ -478,7 +478,7 @@ class ProtractedSpeciationProcess(object):
         Each node on the lineage tree will have the following
         attributes added:
 
-            - ``is_parent_of_orthospecies`` : ``True`` if the node represents a
+            - ``is_orthospeciation_event`` : ``True`` if the node represents a
              "good" speciation event, ``False`` otherwise.
 
         Each internal node on the "good" species tree will have the following
@@ -496,32 +496,120 @@ class ProtractedSpeciationProcess(object):
 
         """
         lineage_tree.calc_node_ages()
-        # self.lineage_to_orthospecies_tree_node_map = {}
-        lineage_orthospecies_leaf_map = {}
-        for orthospecies_tree_nd in orthospecies_tree:
-            if orthospecies_tree_nd.is_leaf():
-                lineage_orthospecies_leaf_map[nd.protracted_speciation_model_lineage] = orthospecies_tree_nd
-            #     continue
-            lineage_tree_node = orthospecies_tree_nd.protracted_speciation_model_lineage.lineage_tree_node_history[0]
-            orthospecies_tree_nd.included_lineage_tree_leaf_nodes = []
-            for nd in orthospecies_tree_nd.protracted_speciation_model_lineage.lineage_tree_node_history:
-                # orthospecies_tree_nd.included_lineage_tree_leaf_nodes.append(nd)
-                # self.lineage_to_orthospecies_tree_node_map[nd.protracted_speciation_model_lineage] = orthospecies_tree_nd
-                if nd.age is not None and nd.age > lineage_tree_node.age:
-                    lineage_tree_node = nd
-            lineage_tree_node.is_parent_of_orthospecies = True
-            orthospecies_tree_nd.lineage_tree_node = lineage_tree_node
+
+        orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map = {}
+        for os_nd in orthospecies_tree.leaf_node_iter():
+            if os_nd.parent_node is None:
+                raise ProcessFailedException()
+            age = str(os_nd.parent_node.age)
+            orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age] = []
+            for ch1 in os_nd.parent_node.child_node_iter():
+                if not ch1._child_nodes:
+                    # desc_lineages = set([sch1.protracted_speciation_model_lineage for sch1 in ch1.preorder_node_iter])
+                    orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age].append((ch1, ch1.protracted_speciation_model_lineage))
 
 
-        for lineage_tree_leaf in lineage_tree.leaf_node_iter():
-            lineage = lineage_tree_leaf.protracted_speciation_model_lineage
-            while lineage is not None and lineage not in lineage_orthospecies_leaf_map:
-                lineage = lineage.parent_lineage
-            if lineage is None:
-                orthospecies_tree.seed_node.included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
-                print("<<< {} >>>".format(lineage_tree_leaf.label))
+                # desc_lineages = set([sch1.protracted_speciation_model_lineage for sch1 in ch1.preorder_node_iter])
+                # orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map.append( (ch1, desc_lineages) )
+
+        for ln_nd in lineage_tree.leaf_node_iter():
+            cur_nd = ln_nd
+            found = None
+            while True:
+                if cur_nd is None:
+                    break
+                if cur_nd.parent_node is None:
+                    break
+                age = str(cur_nd.parent_node.age)
+                if age in orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map:
+                    cur_nd_desc_lineages = set([sch.protracted_speciation_model_lineage for sch in cur_nd.preorder_iter()])
+                    print(orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age])
+                    for orthospecies_nd, orthospecies_lineage in orthospecies_tree_leaf_node_parent_age_to_desc_node_and_lineages_map[age]:
+                        print("{}: {}".format(orthospecies_lineage.label, [x.label for x in cur_nd_desc_lineages]))
+                        if orthospecies_lineage in cur_nd_desc_lineages:
+                            orthospecies_nd.included_lineage_tree_leaf_nodes.add(ln_nd)
+                            found = orthospecies_nd
+                            break
+                    break
+                cur_nd = cur_nd.parent_node
+            if not found:
+                print("Not found: {}".format(ln_nd.label))
             else:
-                lineage_orthospecies_leaf_map[lineage].included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
+                print("Found: {} => {}".format(ln_nd.label, found.label))
+        # lineage_tree_node_to_orthospecies_leaf_map = {}
+        # lineage_orthospecies_leaf_map = {}
+        # for orthospecies_tree_nd in orthospecies_tree:
+        #     if not orthospecies_tree_nd._child_nodes:
+        #         lineage_orthospecies_leaf_map[orthospecies_tree_nd.protracted_speciation_model_lineage] = orthospecies_tree_nd
+        #         continue
+        #     lineage_tree_node = sorted(orthospecies_tree_nd.protracted_speciation_model_lineage.lineage_tree_node_history, key=lambda x: x.age)[-1]
+        #     for history_nd in orthospecies_tree_nd.protracted_speciation_model_lineage.lineage_tree_node_history:
+        #         if not orthospecies_tree_nd._child_nodes:
+        #             lineage_tree_node_to_orthospecies_leaf_map[history_nd] = orthospecies_tree_nd
+        #         # if history_nd.age is not None and history_nd.age >= lineage_tree_node.age:
+        #         #     lineage_tree_node = history_nd
+        #     lineage_tree_node.is_orthospeciation_event = True
+        #     orthospecies_tree_nd.lineage_tree_node = lineage_tree_node
+
+        # for lineage_tree_leaf in lineage_tree.leaf_node_iter():
+        #     nd = lineage_tree_leaf
+        #     print("#### {}: {}".format(lineage_tree_leaf.label, nd.protracted_speciation_model_lineage.is_orthospecies))
+        #     while nd and nd.protracted_speciation_model_lineage.speciation_completion_time is not None:
+        #         print(">>>> {}: {}".format(lineage_tree_leaf.label, nd.label))
+        #         nd = nd.parent_node
+        #     if not nd:
+        #         print("!!! Failed: {}".format(lineage_tree_leaf.label))
+        #     elif not nd.protracted_speciation_model_lineage.is_orthospecies:
+        #         print("!!! Failed 2: {}".format(lineage_tree_leaf.label))
+        #     else:
+        #         current_lineages = [desc.protracted_speciation_model_lineage for desc in nd.preorder_iter()]
+        #         print("set for {}: {}".format(lineage_tree_leaf.label, [x.label for x in current_lineages]))
+        #         for lineage in current_lineages:
+        #             if lineage in lineage_orthospecies_leaf_map:
+        #                 lineage_orthospecies_leaf_map[lineage].included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
+        #                 break
+        #         else:
+        #             print("Not found: {}".format(lineage_tree_leaf.label))
+
+
+        # for lineage_tree_leaf in lineage_tree.leaf_node_iter():
+        #     lineage = lineage_tree_leaf.protracted_speciation_model_lineage
+        #     while lineage is not None and not lineage.is_orthospecies:
+        #         lineage = lineage.parent_lineage
+        #     if lineage is None:
+        #         ## TODO: special case
+        #         pass
+        #     for orthospecies_tree_nd in orthospecies_tree:
+        #         if orthospecies_tree_nd.protracted_speciation_model_lineage is lineage:
+        #             if orthospecies_tree_nd._child_nodes:
+        #                 print("Internal node {} for: {}".format(orthospecies_tree_nd.label, lineage_tree_leaf.label))
+        #             else:
+        #                 print("OK {} for: {}".format(orthospecies_tree_nd.label, lineage_tree_leaf.label))
+        #             break
+        #     else:
+        #         print("Not found: {}".format(lineage_tree_leaf.label))
+
+
+
+        # for lineage_tree_leaf in lineage_tree.leaf_node_iter():
+        #     print("....{}".format(lineage_tree_leaf.label))
+        #     if lineage_tree_leaf in lineage_tree_node_to_orthospecies_leaf_map:
+        #         print("516: {}: {} => {}".format(lineage_tree_node_to_orthospecies_leaf_map[lineage_tree_leaf].label, lineage_tree_leaf.label, list(x.label for x in lineage_tree_node_to_orthospecies_leaf_map[lineage_tree_leaf].included_lineage_tree_leaf_nodes)))
+        #         lineage_tree_node_to_orthospecies_leaf_map[lineage_tree_leaf].included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
+        #         print("518: {}: {} => {}".format(lineage_tree_node_to_orthospecies_leaf_map[lineage_tree_leaf].label, lineage_tree_leaf.label, list(x.label for x in lineage_tree_node_to_orthospecies_leaf_map[lineage_tree_leaf].included_lineage_tree_leaf_nodes)))
+        #     else:
+        #         print("519")
+        #         lineage = lineage_tree_leaf.protracted_speciation_model_lineage
+        #         while lineage is not None and lineage not in lineage_orthospecies_leaf_map:
+        #             lineage = lineage.parent_lineage
+        #         if lineage is None:
+        #             print("524")
+        #             orthospecies_tree.seed_node.included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
+        #             print("<<< {} >>>".format(lineage_tree_leaf.label))
+        #         else:
+        #             print("528")
+        #             lineage_orthospecies_leaf_map[lineage].included_lineage_tree_leaf_nodes.append(lineage_tree_leaf)
+
             # # while lineage is not None and not lineage.is_orthospecies:
             # #     lineage = lineage.parent_lineage
             # if lineage is None:
@@ -711,8 +799,8 @@ class ProtractedSpeciationProcess(object):
         node = self.node_factory()
         node.edge.length = 0.0
         node.protracted_speciation_model_lineage = lineage
-        node.is_parent_of_orthospecies = False
-        node.annotations.add_bound_attribute("is_parent_of_orthospecies")
+        node.is_orthospeciation_event = False
+        node.annotations.add_bound_attribute("is_orthospeciation_event")
         self.current_node_index += 1
         node.label = "{}.n{}".format(lineage.label, self.current_node_index)
         node.annotations.add_new(name="lineage_index", value=lineage.index)
@@ -782,6 +870,7 @@ class ProtractedSpeciationProcess(object):
                 if nd.parent_node is not None:
                     self.lineage_to_orthospecies_tree_node_map[nd.protracted_speciation_model_lineage] = nd.parent_node
                     nd.parent_node.protracted_speciation_model_lineage = nd.protracted_speciation_model_lineage
+                    nd.parent_node.included_lineage_tree_leaf_nodes.update(nd.included_lineage_tree_leaf_nodes)
         orthospecies_tree.set_edge_lengths_from_node_ages()
         orthospecies_tree.suppress_unifurcations()
         return orthospecies_tree
@@ -800,15 +889,17 @@ class ProtractedSpeciationProcess(object):
 
     def _require_orthospecies_tree_node(self, lineage):
         try:
-            return self.lineage_to_orthospecies_tree_node_map[lineage]
+            node = self.lineage_to_orthospecies_tree_node_map[lineage]
         except KeyError:
             node = self.node_factory()
             node.label = lineage.label
             node.protracted_speciation_model_lineage = lineage
             node.annotations.add_new(name="lineage_index", value=lineage.index)
             node.annotations.add_new(name="lineage_label", value=lineage.label)
+            node.included_lineage_tree_leaf_nodes = set()
             self.lineage_to_orthospecies_tree_node_map[lineage] = node
-            return node
+        node.included_lineage_tree_leaf_nodes.add(lineage.lineage_tree_node_history[-1])
+        return node
 
     def _debug_dump_lineages(self, lineages):
         sorted_lineages = sorted(lineages,
