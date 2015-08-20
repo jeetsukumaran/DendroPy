@@ -383,7 +383,7 @@ class ProtractedSpeciationProcess(object):
     def generate_sample(self, **kwargs):
         """
 
-        Samples from the Protracted Speciation Model process, returning a tuple of trees:
+        Samples from the Protracted Speciation Model process, returning a tuple:
 
             -   the lineage tree: this tree has all nodes/lineages, i.e. both
                 "good" species as well as incipient species.
@@ -461,7 +461,7 @@ class ProtractedSpeciationProcess(object):
             try:
                 lineage_tree, orthospecies_tree = self._run_protracted_speciation_process(**kwargs)
                 break
-            except TreeSimTotalExtinctionException:
+            except ProcessFailedException, TreeSimTotalExtinctionException:
                 if not is_retry_on_total_extinction:
                     raise
                 num_retries += 1
