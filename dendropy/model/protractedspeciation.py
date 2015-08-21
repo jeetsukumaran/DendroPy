@@ -1009,7 +1009,7 @@ class ProtractedSpeciationProcess(object):
                         ):
         # lineage_tree.suppress_unifurcations()
         for nd in lineage_tree:
-            nd.annotations.add_new(name="speciation_initiation_age", value=self.current_time - nd.annotations["speciation_initiation_time"])
+            nd.annotations.add_new(name="speciation_initiation_age", value=self.current_time - nd.annotations["speciation_initiation_time"].value)
             nd.annotations.add_new(name="lineage_group", value=nd.protracted_speciation_model_lineage.group_index)
         if is_correlate_lineage_and_species_trees:
             raise NotImplementedError()

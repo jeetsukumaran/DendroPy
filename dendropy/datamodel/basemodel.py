@@ -993,8 +993,9 @@ class AnnotationSet(container.OrderedSet):
             return container.OrderedSet.__getitem__(self, name)
         for a in self:
             if a.name == name:
-                return a.value
-        return self.add_new(name, "")
+                return a
+        a = self.add_new(name, "")
+        return a
 
     def __setitem__(self, name, value):
         """
