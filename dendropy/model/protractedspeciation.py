@@ -322,7 +322,7 @@ class ProtractedSpeciationProcess(object):
                 parent_lineage,
                 speciation_initiation_time,
                 is_orthospecies,
-                group_index):
+                orthospecies_index):
             self._index = index
             self.is_orthospecies = is_orthospecies
             self.parent_lineage = parent_lineage
@@ -331,7 +331,7 @@ class ProtractedSpeciationProcess(object):
             self.extinction_time = None
             self.lineage_tree_node_history = []
             self._label = "L{}".format(self._index)
-            self.group_index = group_index
+            self.orthospecies_index = orthospecies_index
 
         def _get_node(self):
             return self.lineage_tree_node_history[-1]
@@ -374,7 +374,7 @@ class ProtractedSpeciationProcess(object):
     def reset(self):
         self.current_time = 0.0
         self.current_lineage_index = 0
-        self.current_group_index = 0
+        self.current_orthospecies_index = 0
         self.current_node_index = 0
         self.current_orthospecies_lineages = []
         self.current_incipient_species_lineages = []
@@ -661,7 +661,7 @@ class ProtractedSpeciationProcess(object):
         taxon_namespace = kwargs.get("taxon_namespace", None)
         initial_lineage = self._new_lineage(
                 parent_lineage=None,
-                group_index=self.current_group_index,
+                orthospecies_index=self.current_orthospecies_index,
                 is_orthospecies=kwargs.get("is_initial_lineage_orthospecies", True),
                 )
         seed_node = self._new_node(lineage=initial_lineage)
@@ -754,7 +754,7 @@ class ProtractedSpeciationProcess(object):
         # parent_node = parent_lineage.node
         # new_lineage = self._new_lineage(
         #         parent_lineage=parent_lineage,
-        #         group_index=parent_lineage.group_index,
+        #         orthospecies_index=parent_lineage.orthospecies_index,
         #         is_orthospecies=False)
         # c1 = self._new_node(lineage=parent_lineage)
         # c2 = self._new_node(lineage=new_lineage)
@@ -768,7 +768,7 @@ class ProtractedSpeciationProcess(object):
         # parent_node = parent_lineage.node
         # new_lineage = self._new_lineage(
         #         parent_lineage=parent_lineage,
-        #         group_index=parent_lineage.group_index,
+        #         orthospecies_index=parent_lineage.orthospecies_index,
         #         is_orthospecies=False)
         # c1 = self._new_node(lineage=parent_lineage)
         # c2 = self._new_node(lineage=new_lineage)
@@ -781,7 +781,7 @@ class ProtractedSpeciationProcess(object):
         parent_node = parent_lineage.node
         new_lineage = self._new_lineage(
                 parent_lineage=parent_lineage,
-                group_index=parent_lineage.group_index,
+                orthospecies_index=parent_lineage.orthospecies_index,
                 is_orthospecies=False)
         c1 = self._new_node(lineage=parent_lineage)
         c2 = self._new_node(lineage=new_lineage)
@@ -791,12 +791,12 @@ class ProtractedSpeciationProcess(object):
         # parent_node = parent_lineage.node
         # new_lineage1 = self._new_lineage(
         #         parent_lineage=parent_lineage,
-        #         group_index=parent_lineage.group_index,
+        #         orthospecies_index=parent_lineage.orthospecies_index,
         #         is_orthospecies=False,
         #         add_to_current_lineages=True)
         # new_lineage2 = self._new_lineage(
         #         parent_lineage=parent_lineage,
-        #         group_index=parent_lineage.group_index,
+        #         orthospecies_index=parent_lineage.orthospecies_index,
         #         is_orthospecies=parent_lineage.is_orthospecies,
         #         add_to_current_lineages=False)
         # new_lineage2.lineage_tree_node_history = parent_lineage.lineage_tree_node_history
@@ -810,20 +810,20 @@ class ProtractedSpeciationProcess(object):
         lineage = self.rng.choice(self.current_incipient_species_lineages)
         self.current_incipient_species_lineages.remove(lineage)
         self.current_orthospecies_lineages.append(lineage)
-        self.current_group_index += 1
-        lineage.group_index = self.current_group_index
+        self.current_orthospecies_index += 1
+        lineage.orthospecies_index = self.current_orthospecies_index
         lineage.is_orthospecies = True
         lineage.speciation_completion_time = self.current_time
 
         # original_lineage = self.rng.choice(self.current_incipient_species_lineages)
         # self.current_incipient_species_lineages.remove(original_lineage)
-        # self.current_group_index += 1
+        # self.current_orthospecies_index += 1
         # converted_lineage = self._new_lineage(
         #         parent_lineage=original_lineage,
-        #         group_index=self.current_group_index,
+        #         orthospecies_index=self.current_orthospecies_index,
         #         is_orthospecies=True,
         #         add_to_current_lineages=False)
-        # converted_lineage.group_index = self.current_group_index
+        # converted_lineage.orthospecies_index = self.current_orthospecies_index
         # converted_lineage.is_orthospecies = True
         # converted_lineage.speciation_completion_time = self.current_time
         # self.current_orthospecies_lineages.append(converted_lineage)
@@ -831,13 +831,13 @@ class ProtractedSpeciationProcess(object):
 
         # original_lineage = self.rng.choice(self.current_incipient_species_lineages)
         # self.current_incipient_species_lineages.remove(original_lineage)
-        # self.current_group_index += 1
+        # self.current_orthospecies_index += 1
         # converted_lineage = self._new_lineage(
         #         parent_lineage=original_lineage,
-        #         group_index=self.current_group_index,
+        #         orthospecies_index=self.current_orthospecies_index,
         #         is_orthospecies=True,
         #         add_to_current_lineages=False)
-        # converted_lineage.group_index = self.current_group_index
+        # converted_lineage.orthospecies_index = self.current_orthospecies_index
         # converted_lineage.is_orthospecies = True
         # converted_lineage.speciation_completion_time = self.current_time
         # self.current_orthospecies_lineages.append(converted_lineage)
@@ -846,13 +846,13 @@ class ProtractedSpeciationProcess(object):
 
         # original_lineage = self.rng.choice(self.current_incipient_species_lineages)
         # self.current_incipient_species_lineages.remove(original_lineage)
-        # self.current_group_index += 1
+        # self.current_orthospecies_index += 1
         # converted_lineage = self._new_lineage(
         #         parent_lineage=original_lineage,
-        #         group_index=self.current_group_index,
+        #         orthospecies_index=self.current_orthospecies_index,
         #         is_orthospecies=True,
         #         add_to_current_lineages=False)
-        # converted_lineage.group_index = self.current_group_index
+        # converted_lineage.orthospecies_index = self.current_orthospecies_index
         # converted_lineage.is_orthospecies = True
         # converted_lineage.speciation_completion_time = self.current_time
         # self.current_orthospecies_lineages.append(converted_lineage)
@@ -864,19 +864,19 @@ class ProtractedSpeciationProcess(object):
 
         # original_lineage = self.rng.choice(self.current_incipient_species_lineages)
         # self.current_incipient_species_lineages.remove(original_lineage)
-        # self.current_group_index += 1
+        # self.current_orthospecies_index += 1
         # converted_lineage = original_lineage
-        # converted_lineage.group_index = self.current_group_index
+        # converted_lineage.orthospecies_index = self.current_orthospecies_index
         # converted_lineage.is_orthospecies = True
         # converted_lineage.speciation_completion_time = self.current_time
         # self.current_orthospecies_lineages.append(converted_lineage)
 
         # lineage = self.rng.choice(self.current_incipient_species_lineages)
         # self.current_incipient_species_lineages.remove(lineage)
-        # self.current_group_index += 1
+        # self.current_orthospecies_index += 1
         # converted_lineage = self._new_lineage(
         #         parent_lineage=lineage.parent_lineage,
-        #         group_index=self.current_group_index,
+        #         orthospecies_index=self.current_orthospecies_index,
         #         is_orthospecies =True)
         # converted_lineage.speciation_completion_time = self.current_time
         # self.current_orthospecies_lineages.append(converted_lineage)
@@ -906,7 +906,7 @@ class ProtractedSpeciationProcess(object):
 
     def _new_lineage(self,
             parent_lineage,
-            group_index,
+            orthospecies_index,
             is_orthospecies,
             add_to_current_lineages=True):
         self.current_lineage_index += 1
@@ -917,7 +917,7 @@ class ProtractedSpeciationProcess(object):
                 parent_lineage=parent_lineage,
                 speciation_initiation_time=speciation_initiation_time,
                 is_orthospecies=is_orthospecies,
-                group_index=group_index)
+                orthospecies_index=orthospecies_index)
         if add_to_current_lineages:
             if is_orthospecies:
                 self.current_orthospecies_lineages.append(new_lineage)
@@ -934,6 +934,7 @@ class ProtractedSpeciationProcess(object):
         node.is_orthospeciation_event = False
         self.current_node_index += 1
         node.label = "{}.n{}".format(lineage.label, self.current_node_index)
+        node.index = self.current_node_index
         node.annotations.add_new(name="lineage_index", value=lineage.index)
         node.annotations.add_new(name="lineage_label", value=lineage.label)
         node.annotations.add_new(name="speciation_initiation_time", value=lineage.speciation_initiation_time)
@@ -1010,7 +1011,8 @@ class ProtractedSpeciationProcess(object):
         # lineage_tree.suppress_unifurcations()
         for nd in lineage_tree:
             nd.annotations.add_new(name="speciation_initiation_age", value=self.current_time - nd.annotations["speciation_initiation_time"].value)
-            nd.annotations.add_new(name="lineage_group", value=nd.protracted_speciation_model_lineage.group_index)
+            nd.annotations.add_new(name="lineage_orthospecies_index", value=nd.protracted_speciation_model_lineage.orthospecies_index)
+            nd.label = "S{}.L{}.n{}".format(nd.protracted_speciation_model_lineage.orthospecies_index, nd.protracted_speciation_model_lineage.index, nd.index)
         if is_correlate_lineage_and_species_trees:
             raise NotImplementedError()
             # return self.correlate_lineage_and_species_trees(
@@ -1024,11 +1026,15 @@ class ProtractedSpeciationProcess(object):
             node = self.lineage_to_orthospecies_tree_node_map[lineage]
         except KeyError:
             node = self.node_factory()
-            node.label = lineage.label
+            node.label = "S{}".format(lineage.orthospecies_index)
+
+            ## this might be misleading, as, technically, multiple lineages
+            ## might be associated with this node; remove?
             node.protracted_speciation_model_lineage = lineage
             node.annotations.add_new(name="lineage_index", value=lineage.index)
             node.annotations.add_new(name="lineage_label", value=lineage.label)
-            node.annotations.add_new(name="lineage_group", value=lineage.group_index)
+            node.annotations.add_new(name="lineage_orthospecies_index", value=lineage.orthospecies_index)
+
             self.lineage_to_orthospecies_tree_node_map[lineage] = node
         return node
 
