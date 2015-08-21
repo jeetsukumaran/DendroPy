@@ -339,7 +339,7 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
         raise error.TaxonNamespaceIdentityError(reference_tree, comparison_tree)
     if not is_bipartitions_updated:
         reference_tree.encode_bipartitions()
-        comparision_tree.encode_bipartitions()
+        comparison_tree.encode_bipartitions()
     else:
         if reference_tree.bipartition_encoding is None:
             reference_tree.encode_bipartitions()
