@@ -678,7 +678,7 @@ class Bipartition(object):
                 preserve_spaces=preserve_spaces,
                 quote_underscores=quote_underscores)
 
-    def leafset_taxa(self, taxon_namespace):
+    def leafset_taxa(self, taxon_namespace, index=0):
         """
         Returns list of |Taxon| objects in the leafset of this
         bipartition.
