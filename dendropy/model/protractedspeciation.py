@@ -461,7 +461,7 @@ class ProtractedSpeciationProcess(object):
             try:
                 lineage_tree, orthospecies_tree = self._run_protracted_speciation_process(**kwargs)
                 break
-            except ProcessFailedException, TreeSimTotalExtinctionException:
+            except ProcessFailedException:
                 if not is_retry_on_total_extinction:
                     raise
                 num_retries += 1
