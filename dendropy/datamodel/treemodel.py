@@ -1109,10 +1109,10 @@ class Node(
         """
         Post-order iterator over nodes of subtree rooted at this node.
 
-        Visits self and all descendant nodes, with each node visited first
-        followed by its children. Nodes can optionally be filtered by
-        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
-        called with the node as an argument are yielded.
+        Visits self and all descendant nodes, with each node visited after its
+        children. Nodes can optionally be filtered by ``filter_fn``: only nodes
+        for which ``filter_fn`` returns `True` when called with the node as an
+        argument are yielded.
 
         Parameters
         ----------
@@ -3662,7 +3662,7 @@ class Tree(
         """
         Post-order iterator over nodes of tree.
 
-        Visits nodes in ``self``, with each node visited first followed by its
+        Visits self and all descendant nodes, with each node visited after its
         children. Nodes can optionally be filtered by ``filter_fn``: only nodes
         for which ``filter_fn`` returns `True` when called with the node as an
         argument are yielded.
@@ -4000,10 +4000,10 @@ class Tree(
         """
         Post-order iterator over edges of tree.
 
-        Visits edges in ``self``, with each edge visited first followed by its
-        children. Edges can optionally be filtered by ``filter_fn``: only edges
-        for which ``filter_fn`` returns `True` when called with the edge as an
-        argument are yielded.
+        Visits edges in ``self``, with each edge visited after its children.
+        Edges can optionally be filtered by ``filter_fn``: only edges for which
+        ``filter_fn`` returns `True` when called with the edge as an argument
+        are yielded.
 
         Parameters
         ----------
