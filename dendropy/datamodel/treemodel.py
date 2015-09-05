@@ -3366,10 +3366,10 @@ class Tree(
 
         then::
 
-            t.find_node(filter_fn=filter_fn)
+            node = t.find_node(filter_fn=filter_fn)
 
-        will return all nodes which have an attribute 'genes' and this value
-        is not None.
+        will return the first node which has the attribute 'genes' and this
+        value is not None.
 
         Parameters
         ----------
@@ -3387,6 +3387,35 @@ class Tree(
         for node in self.preorder_node_iter(filter_fn):
             return node
         return None
+
+    def find_nodes(self, filter_fn):
+        """
+        Find all nodes for which ``filter_fn(node) == True``.
+
+        For example, if::
+
+            filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
+
+        then::
+
+            nodes = t.find_node(filter_fn=filter_fn)
+
+        will return all nodes which have the attribute 'genes' and this
+        value is not None.
+
+        Parameters
+        ----------
+        filter_fn : function object
+            Takes a single |Node| object as an argument and returns
+            `True` if the node should be returned.
+
+        Returns
+        -------
+        nodes : list of |Node| instances
+            Returns list of |Node| objects for which the filter function
+            ``filter_fn`` returns `True`.
+        """
+        return [node for node in self.preorder_node_iter(filter_fn)]
 
     def find_node_with_label(self, label):
         """
