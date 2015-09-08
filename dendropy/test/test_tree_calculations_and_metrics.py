@@ -1098,22 +1098,52 @@ class TreeCompareTests(dendropytest.ExtendedTestCase):
 #                if (i * i+j+1) % 6 == 0:
 #                    print
 
-class FrequencyOfSplitsTest(unittest.TestCase):
-
-    def setUp(self):
-        self.trees = dendropy.TreeList.get_from_path(
-                src=pathmap.tree_source_path('pythonidae.random.bd0301.tre'),
-                schema='nexus')
+class FrequencyOfBipartitionsTests(unittest.TestCase):
 
     def testCount1(self):
+        trees = dendropy.TreeList.get_from_path(
+                src=pathmap.tree_source_path('pythonidae.random.bd0301.tre'),
+                schema='nexus')
         bipartition_leaves = ['Python regius', 'Apodora papuana']
-        f = self.trees.frequency_of_bipartition(labels=bipartition_leaves)
+        f = trees.frequency_of_bipartition(labels=bipartition_leaves)
         self.assertAlmostEqual(f, 0.04)
 
     def testRaisesIndexError(self):
+        trees = dendropy.TreeList.get_from_path(
+                src=pathmap.tree_source_path('pythonidae.random.bd0301.tre'),
+                schema='nexus')
         bipartition_leaves = ['Bad Taxon', 'Apodora papuana']
-        self.assertRaises(IndexError, self.trees.frequency_of_bipartition, labels=bipartition_leaves)
+        self.assertRaises(IndexError, trees.frequency_of_bipartition, labels=bipartition_leaves)
 
+    def test_freqs2(self):
+        trees = dendropy.TreeList.get(
+                path=pathmap.tree_source_path("pythonidae.mb.run1.t"),
+                schema='nexus')
+        test_sets = [
+                # labels, split bitmask, frequency
+                ( ["Python molurus", "Python regius"],                                24576, 0.00990099009901 ),
+                ( ["Morelia clastolepis", "Morelia nauta", "Morelia kinghorni"],  536877056,   0.990099009901 ),
+                ( ["Liasis olivaceus", "Apodora papuana"],                          4194432,   0.346534653465 ),
+                ]
+        for labels, split_bitmask, exp_freq in test_sets:
+            self.assertAlmostEqual(trees.frequency_of_bipartition(labels=labels), exp_freq)
+            taxa = trees.taxon_namespace.get_taxa(labels=labels)
+            self.assertAlmostEqual(trees.frequency_of_bipartition(taxa=taxa), exp_freq)
+            split_bitmask = trees.taxon_namespace.taxa_bitmask(labels=labels)
+            self.assertEqual(split_bitmask, split_bitmask)
+            self.assertAlmostEqual(trees.frequency_of_bipartition(split_bitmask=split_bitmask), exp_freq)
+            bipartition = dendropy.Bipartition(bitmask=split_bitmask)
+            self.assertAlmostEqual(trees.frequency_of_bipartition(bipartition=bipartition), exp_freq)
+
+    def test_tree_bipartitions_encoding(self):
+        trees = dendropy.TreeList.get(
+                path=pathmap.tree_source_path("pythonidae.mb.run1.t"),
+                schema='nexus')
+        labels = ["Liasis olivaceus", "Apodora papuana"]
+        freq = trees.frequency_of_bipartition(
+                labels=labels,
+                is_bipartitions_updated=True) # this will be ignore as the member `Tree.bipartition_encoding` are not populated
+        self.assertAlmostEqual(freq, 0.346534653465)
 
 if __name__ == "__main__":
     unittest.main()

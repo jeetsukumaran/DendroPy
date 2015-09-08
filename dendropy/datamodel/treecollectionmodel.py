@@ -1172,6 +1172,7 @@ class TreeList(
         will be normalized for the comparison.
         """
         split = None
+        is_bipartitions_updated = kwargs.pop("is_bipartitions_updated", False)
         if "split_bitmask" in kwargs:
             split = kwargs["split_bitmask"]
         elif "bipartition" in kwargs:
@@ -1185,6 +1186,8 @@ class TreeList(
             if bitprocessing.num_set_bits(split) != k:
                 raise IndexError('Not all taxa could be mapped to bipartition (%s): %s' \
                     % (self.taxon_namespace.bitmask_as_bitstring(split), k))
+        else:
+            raise TypeError("Need to specify one of the following keyword arguments: 'split_bitmask', 'bipartition', 'taxa', or 'labels'")
         unnormalized_split = split
         normalized_split = treemodel.Bipartition.normalize_bitmask(
             bitmask=split,
@@ -1192,9 +1195,8 @@ class TreeList(
             lowest_relevant_bit=1)
         found = 0
         total = 0
-        is_bipartitions_updated = kwargs.get("is_bipartitions_updated", False)
         for tree in self:
-            if not is_bipartitions_updated or not tree.bipartitions:
+            if not is_bipartitions_updated or not tree.bipartition_encoding:
                 tree.encode_bipartitions()
             bipartition_encoding = set(b.split_bitmask for b in tree.bipartition_encoding)
             total += 1
