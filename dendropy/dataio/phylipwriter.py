@@ -49,6 +49,9 @@ class PhylipWriter(ioservice.DataWriter):
         force_unique_taxon_labels : bool
             If `True`, then taxon labels will be modified to avoid duplicate
             labels. Default is `False`: taxon labels will not be modified.
+        suppress_missing_taxa : bool
+            If `True`, then taxa with zero characters will not be printed
+            Default is `False`: all taxa will be printed
         ignore_unrecognized_keyword_arguments : boolean, default: `False`
             If `True`, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is `False`: unsupported keyword
@@ -58,6 +61,7 @@ class PhylipWriter(ioservice.DataWriter):
         self.strict = kwargs.pop("strict", False)
         self.spaces_to_underscores = kwargs.pop("spaces_to_underscores", False)
         self.force_unique_taxon_labels = kwargs.pop("force_unique_taxon_labels", False)
+        self.suppress_missing_taxa = kwargs.pop("suppress_missing_taxa", False)
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _write(self,
@@ -95,11 +99,12 @@ class PhylipWriter(ioservice.DataWriter):
         stream.write("%d %d\n" % (n_seqs, n_sites))
         for taxon in char_matrix.taxon_namespace:
             label = taxon_label_map[taxon]
-            try:
-                seq_vec = char_matrix[taxon]
-            except KeyError:
-                continue
-            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec.symbols_as_string())))
+            if taxon in char_matrix:
+                seq_vec = char_matrix[taxon].symbols_as_string()
+            else:
+                seq_vec = ""
+            if len(seq_vec) or (not self.suppress_missing_taxa):
+                stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec)))
 
     def get_taxon_label_map(self, taxon_namespace):
         taxon_label_map = {}
