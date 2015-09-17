@@ -555,7 +555,7 @@ labels and branch lengths the mean across all trees, dropping the first 200
 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
     $ sumtrees.py \\
-            --summary-tree consensus \\
+            --summary-target consensus \\
             --min-clade-freq=0.95 \\
             --edges mean-length \\
             --burnin=200 \\
@@ -568,7 +568,7 @@ product of posterior probabilities, you can specify 'mcct' for the
 '--summary-tree' option:
 
     $ sumtrees.py \\
-            --summary-tree mcct \\
+            --summary-target mcct \\
             --min-clade-freq=0.95 \\
             --edges mean-length \\
             --burnin=200 \\
@@ -580,7 +580,7 @@ If the input trees are ultrametric and you want to set the node ages to the
 median node age, set the '--edges' argument to 'median-age':
 
     $ sumtrees.py \\
-            --summary-tree mcct \\
+            --summary-target mcct \\
             --edges median-age \\
             --burnin=200 \\
             --output=result.tre \\
@@ -738,9 +738,9 @@ def main():
                                 "posterior probabilities.              "
                             ),
                             ("'msct'",
-                                "The maximum clade credibility tree.   "
+                                "The maximum sum of clade credibilities tree.   "
                                 "The tree from the source set that     "
-                                "maximizes the *product* of clade      "
+                                "maximizes the *sum* of clade      "
                                 "posterior probabilities.              "
                             ),
                         )
