@@ -4610,6 +4610,7 @@ class Tree(
                 cur_node = cur_node._parent_node
             else:
                 break_on_node = cur_node
+                break
 
         assert break_on_node is not None or target_edge is not None
 
