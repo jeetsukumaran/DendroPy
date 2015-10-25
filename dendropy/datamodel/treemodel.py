@@ -4799,21 +4799,29 @@ class Tree(
             encountered.
         update_bipartitions : bool
             If `True`, then bipartitions will be calculated.
+
+        Returns
+        -------
+        nds : list[|Node|]
+            List of nodes removed.
         """
+        nodes_removed = []
         while True:
-            nodes_deleted = False
+            is_nodes_deleted = False
             for nd in self.leaf_node_iter():
                 if not filter_fn(nd):
                     if nd.edge.tail_node is None:
                         raise error.SeedNodeDeletionException("Attempting to remove seed node or node without parent")
                     nd.edge.tail_node.remove_child(nd)
-                    nodes_deleted = True
-            if not nodes_deleted or not recursive:
+                    nodes_removed.append(nd)
+                    is_nodes_deleted = True
+            if not is_nodes_deleted or not recursive:
                 break
         if suppress_unifurcations:
             self.suppress_unifurcations()
         if update_bipartitions:
             self.update_bipartitions()
+        return nodes_removed
 
     def prune_leaves_without_taxa(self,
             update_bipartitions=False,
