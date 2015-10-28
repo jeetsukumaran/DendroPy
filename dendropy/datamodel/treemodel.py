@@ -4808,13 +4808,14 @@ class Tree(
         nodes_removed = []
         while True:
             is_nodes_deleted = False
-            for nd in self.leaf_node_iter():
-                if not filter_fn(nd):
-                    if nd.edge.tail_node is None:
-                        raise error.SeedNodeDeletionException("Attempting to remove seed node or node without parent")
-                    nd.edge.tail_node.remove_child(nd)
-                    nodes_removed.append(nd)
-                    is_nodes_deleted = True
+            nodes_to_remove = [nd for nd in self.leaf_node_iter() if not filter_fn(nd)]
+            for nd in nodes_to_remove:
+                if nd.edge.tail_node is None:
+                    raise error.SeedNodeDeletionException("Attempting to remove seed node or node without parent")
+                nd.edge.tail_node.remove_child(nd)
+            if nodes_to_remove:
+                nodes_removed += nodes_to_remove
+                is_nodes_deleted = True
             if not is_nodes_deleted or not recursive:
                 break
         if suppress_unifurcations:
@@ -4824,19 +4825,29 @@ class Tree(
         return nodes_removed
 
     def prune_leaves_without_taxa(self,
+            recursive=True,
             update_bipartitions=False,
             suppress_unifurcations=True):
         """
         Removes all terminal nodes that have their ``taxon`` attribute set to
         `None`.
         """
-        for nd in self.leaf_node_iter():
-            if nd.taxon is None:
+        nodes_removed = []
+        while True:
+            nodes_to_remove = []
+            for nd in self.leaf_node_iter():
+                if nd.taxon is None:
+                    nodes_to_remove.append(nd)
+            for nd in nodes_to_remove:
                 nd.edge.tail_node.remove_child(nd)
+            nodes_removed += nodes_to_remove
+            if not nodes_to_remove or not recursive:
+                break
         if suppress_unifurcations:
             self.suppress_unifurcations()
         if update_bipartitions:
             self.update_bipartitions()
+        return nodes_removed
 
     def prune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
         """
