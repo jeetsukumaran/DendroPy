@@ -303,6 +303,15 @@ class Bipartition(object):
     def __str__(self):
         return bin(self._split_bitmask)[2:].rjust(bitprocessing.bit_length(self._tree_leafset_bitmask), '0')
 
+    def __int__(self):
+        return self._split_bitmask
+
+    def split_as_int(self):
+        return self._split_bitmask
+
+    def leafset_as_int(self):
+        return self._leafset_bitmask
+
     def split_as_bitstring(self, symbol0="0", symbol1="1", reverse=False):
         """
         Composes and returns and representation of the bipartition as a
