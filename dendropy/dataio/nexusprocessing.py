@@ -515,7 +515,7 @@ def group_ranges(L):
     >>> [list(x) for x in group_ranges([1, 2, 3, 5, 6, 8])]
     [[1, 3], [5, 6], [8]]
     """
-    for w, z in itertools.groupby(L, lambda x, y=itertools.count(): next(y)-x):
+    for w, z in itertools.groupby(sorted(L), lambda x, y=itertools.count(): next(y)-x):
         grouped = list(z)
         yield (x for x in [grouped[0], grouped[-1]][:len(grouped)])
 

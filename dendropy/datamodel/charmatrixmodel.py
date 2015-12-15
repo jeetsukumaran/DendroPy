@@ -1605,7 +1605,7 @@ class CharacterMatrix(
         # clear out character subsets; otherwise all indices will have to be
         # recalculated, which will require some careful and perhaps arbitrary
         # handling of corner cases
-        clone.character_subsets = []
+        clone.character_subsets = container.OrderedCaselessDict()
         # clone.clone_from(self)
         for vec in clone.values():
             for cell_idx in range(len(vec)-1, -1, -1):
@@ -1739,7 +1739,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 symbol = value
             else:
                 symbol = str(value)
-            self[taxon].append(CharacterDataCell(value=self.default_symbol_state_map[symbol]))
+            self[taxon].append(self.default_symbol_state_map[symbol])
 
     def remap_to_state_alphabet_by_symbol(self,
             state_alphabet,
@@ -1751,14 +1751,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         reassigned to any state alphabet element in ``sa`` that has the same
         symbol. Raises KeyError if no matching symbol can be found.
         """
-        symbol_state_map = state_alphabet.symbol_state_map()
         for vi, vec in enumerate(self._taxon_sequence_map.values()):
             for ci, cell in enumerate(vec):
-                cell.value = symbol_state_map[cell.value.symbol]
+                vec[ci] = state_alphabet[cell.symbol]
         for ct in self.character_types:
-            ct.state_alphabet = state_alphabet
+            if ct is not None:
+                ct.state_alphabet = state_alphabet
         if purge_other_state_alphabets:
-            self.state_alphabets = [state_alphabet]
             self.default_state_alphabet = state_alphabet
 
     def remap_to_default_state_alphabet_by_symbol(self,
@@ -1961,6 +1960,7 @@ data_type_matrix_map = {
     'continuous' : ContinuousCharacterMatrix,
     'dna' : DnaCharacterMatrix,
     'rna' : RnaCharacterMatrix,
+    'nucleotide' : NucleotideCharacterMatrix,
     'protein' : ProteinCharacterMatrix,
     'standard' : StandardCharacterMatrix,
     'restriction' : RestrictionSitesCharacterMatrix,
