@@ -997,7 +997,7 @@ class ContinuousCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.ContinuousCharacterMatrix
-        cls.sequence_type = dendropy.ContinuousCharacterMatrix.ContinuousCharacterDataSequence
+        cls.sequence_type = dendropy.ContinuousCharacterDataSequence
         cls.sequence_source = [-1.0e-1, 42, 2.5e-6, 3.14e5, -1]
         cls.nseqs = 1000
         cls.build()
@@ -1009,7 +1009,7 @@ class DnaCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.DnaCharacterMatrix
-        cls.sequence_type = dendropy.DnaCharacterMatrix.DnaCharacterDataSequence
+        cls.sequence_type = dendropy.DnaCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()
@@ -1021,7 +1021,7 @@ class RnaCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.RnaCharacterMatrix
-        cls.sequence_type = dendropy.RnaCharacterMatrix.RnaCharacterDataSequence
+        cls.sequence_type = dendropy.RnaCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()
@@ -1033,7 +1033,7 @@ class NucleotideCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.NucleotideCharacterMatrix
-        cls.sequence_type = dendropy.NucleotideCharacterMatrix.NucleotideCharacterDataSequence
+        cls.sequence_type = dendropy.NucleotideCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()
@@ -1045,7 +1045,7 @@ class ProteinCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.ProteinCharacterMatrix
-        cls.sequence_type = dendropy.ProteinCharacterMatrix.ProteinCharacterDataSequence
+        cls.sequence_type = dendropy.ProteinCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()
@@ -1057,7 +1057,7 @@ class RestrictionSitesCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.RestrictionSitesCharacterMatrix
-        cls.sequence_type = dendropy.RestrictionSitesCharacterMatrix.RestrictionSitesCharacterDataSequence
+        cls.sequence_type = dendropy.RestrictionSitesCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()
@@ -1069,7 +1069,7 @@ class InfiniteSitesCharacterMatrixCreatingAndCloningTestCase(
     @classmethod
     def setUpClass(cls):
         cls.matrix_type = dendropy.InfiniteSitesCharacterMatrix
-        cls.sequence_type = dendropy.InfiniteSitesCharacterMatrix.InfiniteSitesCharacterDataSequence
+        cls.sequence_type = dendropy.InfiniteSitesCharacterDataSequence
         cls.sequence_source = list(cls.matrix_type.datatype_alphabet)
         cls.nseqs = 100
         cls.build()

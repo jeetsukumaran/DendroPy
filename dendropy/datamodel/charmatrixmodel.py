@@ -1665,6 +1665,31 @@ class CharacterMatrix(
 ###############################################################################
 ## Specialized Matrices
 
+### Continuous Characters ##################################################
+
+class ContinuousCharacterDataSequence(CharacterDataSequence):
+    """
+    A sequence of continuous character values for a particular taxon or entry
+    in a data matrix. Specializes `CharacterDataSequence` by assuming all
+    values are primitive numerics (i.e., either floats or integers) when
+    copying or representing self.
+    """
+
+    def symbols_as_list(self):
+        """
+        Returns list of string representation of values of this vector.
+
+        Returns
+        -------
+        v : list
+            List of string representation of values making up this vector.
+        """
+        return [str(v) for v in self]
+
+    def symbols_as_string(self, sep=" "):
+        # different default
+        return CharacterDataSequence.symbols_as_string(self, sep=sep)
+
 class ContinuousCharacterMatrix(CharacterMatrix):
     """
     Specializes |CharacterMatrix| for continuous data.
@@ -1673,39 +1698,19 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     elements assumed to be ``float`` .
     """
 
-    class ContinuousCharacterDataSequence(CharacterDataSequence):
-        """
-        A sequence of continuous character values for a particular taxon or entry
-        in a data matrix. Specializes `CharacterDataSequence` by assuming all
-        values are primitive numerics (i.e., either floats or integers) when
-        copying or representing self.
-        """
-
-        def symbols_as_list(self):
-            """
-            Returns list of string representation of values of this vector.
-
-            Returns
-            -------
-            v : list
-                List of string representation of values making up this vector.
-            """
-            return [str(v) for v in self]
-
-        def symbols_as_string(self, sep=" "):
-            # different default
-            return CharacterDataSequence.symbols_as_string(self, sep=sep)
-
     character_sequence_type = ContinuousCharacterDataSequence
     data_type = "continuous"
 
     def __init__(self, *args, **kwargs):
         CharacterMatrix.__init__(self, *args, **kwargs)
 
+### Discrete Characters ##################################################
+
+class DiscreteCharacterDataSequence(CharacterDataSequence):
+    pass
+
 class DiscreteCharacterMatrix(CharacterMatrix):
 
-    class DiscreteCharacterDataSequence(CharacterDataSequence):
-        pass
     character_sequence_type = DiscreteCharacterDataSequence
 
     data_type = "discrete"
@@ -1850,10 +1855,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
             taxon_to_state_indices[t] = v
         return taxon_to_state_indices
 
+### Fixed Alphabet Characters ##################################################
+
+class FixedAlphabetCharacterDataSequence(CharacterDataSequence):
+    pass
+
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    class FixedAlphabetCharacterDataSequence(CharacterDataSequence):
-        pass
     character_sequence_type = FixedAlphabetCharacterDataSequence
     data_type = "fixed"
     datatype_alphabet = None
@@ -1863,65 +1871,88 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
         self.state_alphabets.append(self.__class__.datatype_alphabet)
         self._default_state_alphabet = self.__class__.datatype_alphabet
 
+### DNA Characters ##################################################
+
+class DnaCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
+
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for DNA data.
     """
-    class DnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = DnaCharacterDataSequence
     data_type = "dna"
     datatype_alphabet = DNA_STATE_ALPHABET
+
+### RNA Characters ##################################################
+
+class RnaCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for DNA data.
     """
-    class RnaCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = RnaCharacterDataSequence
     data_type = "rna"
     datatype_alphabet = RNA_STATE_ALPHABET
+
+### Nucleotide Characters ##################################################
+
+class NucleotideCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
 
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for RNA data.
     """
-    class NucleotideCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = NucleotideCharacterDataSequence
     data_type = "nucleotide"
     datatype_alphabet = NUCLEOTIDE_STATE_ALPHABET
+
+### Protein Characters ##################################################
+
+class ProteinCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for protein or amino acid data.
     """
-    class ProteinCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = ProteinCharacterDataSequence
     data_type = "protein"
     datatype_alphabet = PROTEIN_STATE_ALPHABET
+
+### Restricted Site Characters ##################################################
+
+class RestrictionSitesCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
 
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for restriction site data.
     """
-    class RestrictionSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = RestrictionSitesCharacterDataSequence
     data_type = "restriction"
     datatype_alphabet = RESTRICTION_SITES_STATE_ALPHABET
+
+### Infinite Sites Characters ##################################################
+
+class InfiniteSitesCharacterDataSequence(FixedAlphabetCharacterDataSequence):
+    pass
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     """
     Specializes |CharacterMatrix| for infinite sites data.
     """
-    class InfiniteSitesCharacterDataSequence(FixedAlphabetCharacterMatrix.FixedAlphabetCharacterDataSequence):
-        pass
     character_sequence_type = InfiniteSitesCharacterDataSequence
     data_type = "infinite"
     datatype_alphabet = INFINITE_SITES_STATE_ALPHABET
+
+### Standard Characters ##################################################
+
+class StandardCharacterDataSequence(DiscreteCharacterDataSequence):
+    pass
 
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     """
@@ -1929,8 +1960,6 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
     character data).
 
     """
-    class StandardCharacterDataSequence(DiscreteCharacterMatrix.DiscreteCharacterDataSequence):
-        pass
     character_sequence_type = StandardCharacterDataSequence
 
     data_type = "standard"
