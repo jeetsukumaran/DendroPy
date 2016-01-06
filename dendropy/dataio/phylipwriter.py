@@ -123,6 +123,7 @@ class PhylipWriter(ioservice.DataWriter):
                         stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec)))
                     else:
                         stream.write(str(seq_vec))
+                        stream.write('\n')
 
             position += self.max_line_length
     def get_taxon_label_map(self, taxon_namespace):
