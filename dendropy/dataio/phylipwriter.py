@@ -56,12 +56,15 @@ class PhylipWriter(ioservice.DataWriter):
             If `True`, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is `False`: unsupported keyword
             arguments will result in an error.
+        max_line_length : int, default: 0
+            Maximum characters per line. If 0, unlimited. Otherwise used interleaved format.
         """
         ioservice.DataWriter.__init__(self, **kwargs)
         self.strict = kwargs.pop("strict", False)
         self.spaces_to_underscores = kwargs.pop("spaces_to_underscores", False)
         self.force_unique_taxon_labels = kwargs.pop("force_unique_taxon_labels", False)
         self.suppress_missing_taxa = kwargs.pop("suppress_missing_taxa", False)
+        self.max_line_length = kwargs.pop("max_line_length", 0)
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _write(self,
@@ -96,16 +99,32 @@ class PhylipWriter(ioservice.DataWriter):
         maxlen = max([len(str(label)) for label in taxon_label_map.values()])
         n_seqs = len(char_matrix)
         n_sites = char_matrix.max_sequence_size
-        stream.write("%d %d\n" % (n_seqs, n_sites))
-        for taxon in char_matrix.taxon_namespace:
-            label = taxon_label_map[taxon]
-            if taxon in char_matrix:
-                seq_vec = char_matrix[taxon].symbols_as_string()
-            else:
-                seq_vec = ""
-            if len(seq_vec) or (not self.suppress_missing_taxa):
-                stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec)))
 
+        if self.max_line_length == 0:
+            self.max_line_length = n_sites
+        
+        stream.write("%d %d\n" % (n_seqs, n_sites))
+
+        position = 0
+        
+        
+        while position < n_sites:
+            for taxon in char_matrix.taxon_namespace:
+                label = taxon_label_map[taxon]
+                if taxon in char_matrix:
+
+                    seq_subset = char_matrix[taxon].symbols_as_list()[position:position+self.max_line_length]
+                    seq_vec = ''.join([str(i) for i in seq_subset]])
+                    
+                else:
+                    seq_vec = ""
+                if len(seq_vec) or (not self.suppress_missing_taxa):
+                    if position == 0:
+                        stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec)))
+                    else:
+                        stream.write(str(seq_vec))
+
+            position += self.max_line_length
     def get_taxon_label_map(self, taxon_namespace):
         taxon_label_map = {}
         if self.strict:
