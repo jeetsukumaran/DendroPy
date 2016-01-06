@@ -126,6 +126,8 @@ class PhylipWriter(ioservice.DataWriter):
                         stream.write('\n')
 
             position += self.max_line_length
+            if position < n_sites:
+                stream.write('\n')
     def get_taxon_label_map(self, taxon_namespace):
         taxon_label_map = {}
         if self.strict:
