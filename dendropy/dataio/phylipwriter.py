@@ -114,7 +114,7 @@ class PhylipWriter(ioservice.DataWriter):
                 if taxon in char_matrix:
 
                     seq_subset = char_matrix[taxon].symbols_as_list()[position:position+self.max_line_length]
-                    seq_vec = ''.join([str(i) for i in seq_subset]])
+                    seq_vec = ''.join([str(i) for i in seq_subset])
                     
                 else:
                     seq_vec = ""
