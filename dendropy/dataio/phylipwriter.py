@@ -122,6 +122,7 @@ class PhylipWriter(ioservice.DataWriter):
                     if position == 0:
                         stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec)))
                     else:
+                        stream.write(' ')
                         stream.write(str(seq_vec))
                         stream.write('\n')
 
