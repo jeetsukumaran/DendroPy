@@ -929,7 +929,11 @@ class MatrixCreatingAndCloningTester(
             self.assertIs(tcopy, toriginal)
             seq_copy = char_matrix2[tcopy]
             seq_original = char_matrix1[toriginal]
-            self.assertIs(seq_copy, seq_original)
+            ### changed, 2016-01-09: lists not longer the same object
+            # self.assertIs(seq_copy, seq_original)
+            self.assertEqual(len(seq_copy), len(seq_original))
+            for c1, c2 in zip(seq_copy, seq_original):
+                self.assertIs(c1, c2)
 
     def test_clone0(self):
         char_matrix1 = self.get_char_matrix()

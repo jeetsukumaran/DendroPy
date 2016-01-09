@@ -1422,4 +1422,19 @@ def new_standard_state_alphabet(
         s.set_state_as_attribute(state, attr_name)
     return s
 
+###############################################################################
+## Convenience Functions
+
+def coerce_to_state_identities(state_alphabet, values):
+    coerced_values = []
+    for v in values:
+        if isinstance(v, StateIdentity):
+            coerced_values.append(v)
+        elif isinstance(v, str) or isinstance(v, int):
+            s = state_alphabet[v]
+            coerced_values.append(s)
+        else:
+            raise ValueError(v)
+    return coerced_values
+
 

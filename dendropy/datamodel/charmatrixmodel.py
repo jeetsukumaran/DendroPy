@@ -1866,6 +1866,14 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
     data_type = "fixed"
     datatype_alphabet = None
 
+    @classmethod
+    def coerce_values(cls, values):
+        if cls.datatype_alphabet is None:
+            raise ValueError("'datatype_alphabet' not set")
+        return charstatemodel.coerce_to_state_identities(
+                state_alphabet=cls.datatype_alphabet,
+                values=values)
+
     def __init__(self, *args, **kwargs):
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
         self.state_alphabets.append(self.__class__.datatype_alphabet)
