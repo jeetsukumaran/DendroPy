@@ -755,38 +755,10 @@ class CharacterMatrix(
                 taxon = key
                 if taxon not in char_matrix.taxon_namespace:
                     char_matrix.taxon_namespace.add_taxon(taxon)
-            s = cls.coerce_values(source_dict[key])
+            s = char_matrix.coerce_values(source_dict[key])
             char_matrix[taxon] = s
         return char_matrix
     from_dict = classmethod(from_dict)
-
-    def coerce_values(cls, values):
-        """
-        Converts elements of ``values`` to type of matrix.
-
-        This method is called by :meth:`CharacterMatrix.from_dict` to create
-        sequences from iterables of values.  This method should be overridden
-        by derived classes to ensure that ``values`` consists of types compatible
-        with the particular type of matrix. For example, a CharacterMatrix type
-        with a fixed state alphabet (such as |DnaCharacterMatrix|) would
-        dereference the string elements of ``values`` to return a list of
-        |StateIdentity| objects corresponding to the symbols represented
-        by the strings.  If there is no value-type conversion done, then
-        ``values`` should be returned as-is. If no value-type conversion is
-        possible (e.g., when the type of a value is dependent on positionaly
-        information), then a TypeError should be raised.
-
-        Parameters
-        ----------
-        values : iterable
-            Iterable of values to be converted.
-
-        Returns
-        -------
-        v : list of values.
-        """
-        return values
-    coerce_values = classmethod(coerce_values)
 
     ###########################################################################
     ### Lifecycle and Identity
@@ -1152,6 +1124,36 @@ class CharacterMatrix(
         deprecate.dendropy_deprecation_warning(
                 message="Deprecated since DendroPy 4: 'vectors()' will no longer be supported in future releases; use 'sequences()' instead")
         return self.sequences()
+
+    ###########################################################################
+    ### Symbol/alphabet management
+
+    def coerce_values(self, values):
+        """
+        Converts elements of ``values`` to type of matrix.
+
+        This method is called by :meth:`CharacterMatrix.from_dict` to create
+        sequences from iterables of values.  This method should be overridden
+        by derived classes to ensure that ``values`` consists of types compatible
+        with the particular type of matrix. For example, a CharacterMatrix type
+        with a fixed state alphabet (such as |DnaCharacterMatrix|) would
+        dereference the string elements of ``values`` to return a list of
+        |StateIdentity| objects corresponding to the symbols represented
+        by the strings.  If there is no value-type conversion done, then
+        ``values`` should be returned as-is. If no value-type conversion is
+        possible (e.g., when the type of a value is dependent on positionaly
+        information), then a TypeError should be raised.
+
+        Parameters
+        ----------
+        values : iterable
+            Iterable of values to be converted.
+
+        Returns
+        -------
+        v : list of values.
+        """
+        return values
 
     ###########################################################################
     ### Sequence Access Iteration
@@ -1866,18 +1868,17 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
     data_type = "fixed"
     datatype_alphabet = None
 
-    @classmethod
-    def coerce_values(cls, values):
-        if cls.datatype_alphabet is None:
-            raise ValueError("'datatype_alphabet' not set")
-        return charstatemodel.coerce_to_state_identities(
-                state_alphabet=cls.datatype_alphabet,
-                values=values)
-
     def __init__(self, *args, **kwargs):
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
         self.state_alphabets.append(self.__class__.datatype_alphabet)
         self._default_state_alphabet = self.__class__.datatype_alphabet
+
+    def coerce_values(self, values):
+        if self.datatype_alphabet is None:
+            raise ValueError("'datatype_alphabet' not set")
+        return charstatemodel.coerce_to_state_identities(
+                state_alphabet=self.datatype_alphabet,
+                values=values)
 
 ### DNA Characters ##################################################
 
@@ -1989,6 +1990,14 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         DiscreteCharacterMatrix.__init__(self, *args, **kwargs)
         if default_state_alphabet is not None:
             self.default_state_alphabet = default_state_alphabet
+
+    def coerce_values(self, values):
+        if self.default_state_alphabet is None:
+            raise ValueError("'default_state_alphabet' not set")
+        return charstatemodel.coerce_to_state_identities(
+                state_alphabet=self.default_state_alphabet,
+                values=values)
+
 
 ###############################################################################
 ## Main Character Matrix Factory Function
