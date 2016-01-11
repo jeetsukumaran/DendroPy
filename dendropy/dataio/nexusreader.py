@@ -352,7 +352,11 @@ class NexusReader(ioservice.DataReader):
         """
         self._taxon_namespace_factory = taxon_namespace_factory
         self._tree_list_factory = tree_list_factory
+        if self._tree_list_factory is None:
+            self.exclude_trees = True
         self._char_matrix_factory = char_matrix_factory
+        if self._char_matrix_factory is None:
+            self.exclude_chars = True
         self._state_alphabet_factory = state_alphabet_factory
         self._global_annotations_target = global_annotations_target
         self._parse_nexus_stream(stream)
