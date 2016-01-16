@@ -21,6 +21,7 @@ import collections
 import warnings
 from dendropy.datamodel import taxonmodel
 from dendropy.utility import deprecate
+from dendropy.utility import textprocessing
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 
@@ -529,7 +530,7 @@ class DataYielder(IOService):
                 yield item
 
     def iterate_over_file(self, current_file):
-        if isinstance(current_file, str):
+        if textprocessing.is_str_type(current_file):
             self._current_file = open(current_file, "r")
             self._current_file_name = current_file
         else:

@@ -36,6 +36,7 @@ from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.utility import constants
+from dendropy.utility import textprocessing
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy import dataio

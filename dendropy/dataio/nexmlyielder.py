@@ -43,9 +43,8 @@ class NexmlTreeDataYielder(
         files : iterable of sources
             Iterable of sources, which can either be strings specifying file
             paths or file-like objects open for reading. If a source element is
-            a string (``isinstance(i,str) == True``), then it is assumed to be
-            a path to a file. Otherwise, the source is assumed to be a file-like
-            object.
+            a string, then it is assumed to be a path to a file. Otherwise, the
+            source is assumed to be a file-like object.
         taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.

@@ -23,6 +23,7 @@ from dendropy.utility import error
 from dendropy.utility import metavar
 from dendropy.utility import libexec
 from dendropy.utility import processio
+from dendropy.utility import textprocessing
 
 RSCRIPT_EXECUTABLE = os.environ.get(metavar.DENDROPY_RSCRIPT_PATH_ENVAR, "Rscript")
 if RSCRIPT_EXECUTABLE == "NONE":
@@ -135,7 +136,7 @@ class RService(object):
             ])
 
         """
-        if not isinstance(r_commands, str):
+        if not textprocessing.is_str_type(r_commands):
             r_commands = "\n".join(r_commands)
         r_commands += "\n"
         invocation_command = [RSCRIPT_EXECUTABLE, rsubprocess_pipe_path]

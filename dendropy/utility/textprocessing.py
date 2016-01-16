@@ -54,6 +54,18 @@ def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
         raise ValueError("'{}' is not a valid CURIE-standard qualified name".format(prefixed_name))
     return prefixed_name.split(":", 1)
 
+## From:
+    # The Peyotl module of the Open Tree of Life Project
+    # Mark T. Holder
+    # https://github.com/mtholder/peyotl
+    # https://github.com/mtholder/peyotl/blob/c3a544211edc669e664bae28095d52cecfa004f3/peyotl/utility/str_util.py#L5-L25
+if sys.version_info.major == 2:
+    def is_str_type(x):
+        return isinstance(x, basestring)
+else:
+    def is_str_type(x):
+        return isinstance(x, str)
+
 ###############################################################################
 ##
 

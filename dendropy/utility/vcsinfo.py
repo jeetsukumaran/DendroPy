@@ -28,6 +28,7 @@ except ImportError:
     from io import StringIO # Python 3
 import subprocess
 import datetime
+from dendropy.utility import textprocessing
 from dendropy.utility import processio
 
 class Revision(object):
@@ -143,7 +144,7 @@ class Revision(object):
         self._is_available = True
 
     def _run_vcs(self, cmd):
-        if isinstance(cmd, str):
+        if textprocessing.is_str_type(cmd):
             cmd = self.vcs_app_path + " " + cmd
         else:
             cmd.insert(0, self.vcs_app_path)

@@ -27,6 +27,7 @@ try:
 except ImportError:
     from io import StringIO # Python 3
 from dendropy.utility import error
+from dendropy.utility import textprocessing
 from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -331,7 +332,7 @@ class NewickWriter(ioservice.DataWriter):
     def _compose_comment_string(self, item):
         if not self.suppress_item_comments and item.comments:
             item_comments = []
-            if isinstance(item.comments, str):
+            if textprocessing.is_str_type(item.comments):
                 item.comments = [item.comments]
             for comment in item.comments:
                 item_comments.append("[{}]".format(comment))

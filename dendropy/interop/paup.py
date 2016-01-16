@@ -32,6 +32,7 @@ except ImportError:
     from io import StringIO # Python 3
 
 import dendropy
+from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.utility import metavar
 from dendropy.utility import container
@@ -103,7 +104,7 @@ class PaupService(object):
         stderr : string
             Contents of the PAUP process standard error.
         """
-        if isinstance(paup_commands, str):
+        if textprocessing.is_str_type(paup_commands):
             commands = [paup_commands]
         else:
             commands = list(paup_commands)
@@ -334,7 +335,7 @@ class PaupService(object):
         Composes commands to load a set of trees into PAUP*, with the specified
         number of burnin dropped.
         """
-        if isinstance(tree_filepaths, str):
+        if textprocessing.is_str_type(tree_filepaths):
             raise Exception("expecting list of filepaths, not string")
         if is_rooted is None:
             rooting = ""
@@ -705,13 +706,13 @@ def estimate_tree(char_matrix,
     output_tree_filepath = output_tree_file_handle.name
     paup_args['est_tree_file'] = output_tree_filepath
     if extra_pre_est_commands:
-        if isinstance(extra_pre_est_commands, str):
+        if textprocessing.is_str_type(extra_pre_est_commands):
             extra_pre_est_commands = [extra_pre_est_commands]
         paup_args["pre_est_commands"] = ";\n".join(extra_pre_est_commands)
     else:
         paup_args["pre_est_commands"] = ""
     if extra_post_est_commands:
-        if isinstance(extra_post_est_commands, str):
+        if textprocessing.is_str_type(extra_post_est_commands):
             extra_post_est_commands = [extra_post_est_commands]
         paup_args["post_est_commands"] = ";\n".join(extra_post_est_commands)
     else:

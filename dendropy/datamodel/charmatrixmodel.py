@@ -27,6 +27,7 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
+from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.utility import deprecate
 from dendropy.utility import container
@@ -748,7 +749,7 @@ class CharacterMatrix(
         if char_matrix is None:
             char_matrix = cls(**kwargs)
         for key in source_dict:
-            if isinstance(key, str):
+            if textprocessing.is_str_type(key):
                 taxon = char_matrix.taxon_namespace.require_taxon(key,
                         is_case_sensitive=case_sensitive_taxon_labels)
             else:
@@ -962,7 +963,7 @@ class CharacterMatrix(
                 taxon = self.taxon_namespace[key]
             else:
                 raise IndexError(key)
-        elif isinstance(key, str):
+        elif textprocessing.is_str_type(key):
             taxon = self.taxon_namespace.get_taxon(label=key)
             if taxon is None:
                 raise KeyError(key)
@@ -1590,7 +1591,7 @@ class CharacterMatrix(
         of columns given by the CharacterSubset, ``character_subset``.
         Note that this new matrix will still reference the same taxon set.
         """
-        if isinstance(character_subset, str):
+        if textprocessing.is_str_type(character_subset):
             if character_subset not in self.character_subsets:
                 raise KeyError(character_subset)
             else:
@@ -1742,7 +1743,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         if taxon not in self:
             self[taxon] = CharacterDataSequence()
         for value in state_symbols:
-            if isinstance(value, str):
+            if textprocessing.is_str_type(value):
                 symbol = value
             else:
                 symbol = str(value)

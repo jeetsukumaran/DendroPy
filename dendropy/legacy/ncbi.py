@@ -25,6 +25,7 @@ dendropy.interop.genbank.GenBankProtein instead ***
 
 import warnings
 from dendropy.utility import messaging
+from dendropy.utility import textprocessing
 from dendropy.utility import urlio
 _LOG = messaging.get_logger(__name__)
 
@@ -224,7 +225,7 @@ class Entrez(object):
         Raw fetch. Returns file-like object opened for reading on string
         returned by query.
         """
-        if isinstance(ids, str):
+        if textprocessing.is_str_type(ids):
             id_list = ids
         else:
             id_list = ",".join([str(i) for i in set(ids)])

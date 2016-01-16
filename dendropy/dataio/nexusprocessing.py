@@ -26,6 +26,7 @@ import itertools
 import numbers
 import decimal
 from dendropy.dataio.tokenizer import Tokenizer
+from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.datamodel import basemodel
 
@@ -221,7 +222,7 @@ class NexusTaxonSymbolMapper(object):
             self.number_taxon_label_map[s] = taxon.label
 
     def add_translate_token(self, token, taxon):
-        if not isinstance(token, str):
+        if not textprocessing.is_str_type(token):
             token = str(token)
         self.token_taxon_map[token] = taxon
 
@@ -232,7 +233,7 @@ class NexusTaxonSymbolMapper(object):
         #     return self.label_taxon_map[symbol]
         # if symbol in self.number_taxon_map:
         #     return self.number_taxon_map[symbol]
-        if not isinstance(symbol, str):
+        if not textprocessing.is_str_type(symbol):
             symbol = str(symbol)
         try:
             return self.token_taxon_map[symbol]

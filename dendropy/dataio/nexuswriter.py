@@ -27,6 +27,7 @@ except ImportError:
     from io import StringIO # Python 3
 import warnings
 import collections
+from dendropy.utility import textprocessing
 from dendropy.dataio import ioservice
 from dendropy.dataio import newick
 from dendropy.dataio import nexusprocessing
@@ -433,13 +434,13 @@ class NexusWriter(ioservice.DataWriter):
 
     def _write_comments(self, stream, comments):
         if self.allow_multiline_comments:
-            if isinstance(comments, str):
+            if textprocessing.is_str_type(comments):
                 stream.write("[{}]\n".format(comments))
             else:
                 comments = "\n".join([str(c) for c in comments])
                 stream.write("[\n{}\n]\n".format(comments))
         else:
-            if isinstance(comments, str):
+            if textprocessing.is_str_type(comments):
                 comments = comments.replace("\r\n", "\n").replace("\n\r","\n").replace("\r","\n")
                 # comments = re.split(r'[\r\n]+', comments)
                 comments = [c for c in re.split(r'[\r\n]+', comments) if c]

@@ -28,6 +28,7 @@ if sys.version_info.major < 3:
 else:
     from urllib.parse import urlencode
     from urllib.request import urlopen
+from dendropy.utility import textprocessing
 
 ENTREZ_EUTILS_BASE_URL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
@@ -36,7 +37,7 @@ def efetch(db, ids, rettype, retmode="xml", email=None):
     Raw fetch. Returns file-like object opened for reading on string
     returned by query.
     """
-    if isinstance(ids, str):
+    if textprocessing.is_str_type(ids):
         id_list = ids
     else:
         id_list = ",".join([str(i) for i in set(ids)])
@@ -82,7 +83,7 @@ def get_taxonomy(**kwargs):
 #         params["retmode"] = "xml"
 #     if "ids" in params:
 #         ids = params["ids"]
-#         if isinstance(ids, str):
+#         if textprocessing.is_str_type(ids):
 #             id_list = ids
 #         else:
 #             id_list = ",".join([str(i) for i in list(ids)])

@@ -32,6 +32,7 @@ import sys
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
+from dendropy.utility import textprocessing
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel import treecollectionmodel
@@ -642,7 +643,7 @@ class DataSet(
                     repr(self.attached_taxon_namespace), repr(kwargs["taxon_namespace"])))
             else:
                 kwargs["taxon_namespace"] = self.attached_taxon_namespace
-        if isinstance(char_matrix_type, str):
+        if textprocessing.is_str_type(char_matrix_type):
             char_matrix = charmatrixmodel.new_char_matrix(
                     data_type=char_matrix_type,
                     *args,

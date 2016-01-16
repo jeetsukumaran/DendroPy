@@ -28,6 +28,7 @@ of the state alphabet and state alphabet elements).
 import collections
 import itertools
 from dendropy.datamodel import basemodel
+from dendropy.utility import textprocessing
 from dendropy.utility import container
 
 ###############################################################################
@@ -1430,7 +1431,7 @@ def coerce_to_state_identities(state_alphabet, values):
     for v in values:
         if isinstance(v, StateIdentity):
             coerced_values.append(v)
-        elif isinstance(v, str) or isinstance(v, int):
+        elif textprocessing.is_str_type(v) or isinstance(v, int):
             s = state_alphabet[v]
             coerced_values.append(s)
         else:
