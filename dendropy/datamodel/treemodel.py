@@ -1042,7 +1042,7 @@ class Node(
         return self is other
 
     def __repr__(self):
-        return "<Node object at {}: '{}' ({})>".format(hex(id(self)), self._label, repr(self.taxon))
+        return "<{} object at {}: '{}' ({})>".format(self.__class__.__name__, hex(id(self)), self._label, repr(self.taxon))
 
     ###########################################################################
     ### Iterators
@@ -5528,7 +5528,7 @@ class Tree(
         return "%s" % self._as_newick_string()
 
     def __repr__(self):
-        return "<Tree object at %s>" % (hex(id(self)))
+        return "<{} object at {}>".format(self.__class__.__name__, hex(id(self)))
 
     def description(self, depth=1, indent=0, itemize="", output=None):
         """
