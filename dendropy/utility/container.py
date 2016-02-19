@@ -676,6 +676,92 @@ class FrozenOrderedDict(collections.OrderedDict):
         temp._is_frozen = True
         return temp
 
+##############################################################################
+## DataTable
+
+class DataTable(object):
+
+    def __init__(self):
+        self._row_names = []
+        self._row_name_set = set()
+        self._column_names = []
+        self._column_name_set = set()
+        self._data = {}
+
+    def add_column(self, column_name=None, pos=None):
+        column_name = self._validate_column_name(column_name)
+        assert column_name not in self._column_name_set
+        if pos is None:
+            pos = len(self._column_names)
+        self._column_names.insert(pos, column_name)
+        self._column_name_set.add(column_name)
+
+    def add_row(self, row_name=None, pos=None):
+        row_name = self._validate_row_name(row_name)
+        assert row_name not in self._row_name_set
+        if pos is None:
+            pos = len(self._row_names)
+        self._row_names.insert(pos, row_name)
+        self._row_name_set.add(row_name)
+
+    def __getitem__(self, key):
+        row_name = key[0]
+        column_name = key[1]
+        if row_name not in self._row_names:
+            raise KeyError(row_name)
+        if column_name not in self._column_names:
+            raise KeyError(column_name)
+        if row_name not in self._data:
+            return None
+        if column_name not in self._data[row_name]:
+            return None
+        return self._data[row_name][column_name]
+
+    def __setitem__(self, key, value):
+        row_name = key[0]
+        column_name = key[1]
+        if row_name not in self._row_names:
+            raise KeyError(row_name)
+        if column_name not in self._column_names:
+            raise KeyError(column_name)
+        if row_name not in self._data:
+            self._data[row_name] = {}
+        self._data[row_name][column_name] = value
+
+    def iter_row_names(self):
+        for row_name in self._row_names:
+            yield row_name
+
+    def iter_column_names(self):
+        for column_name in self._column_names:
+            yield column_name
+
+    def iter_row_values(self, column_name):
+        if column_name not in self._column_names:
+            raise KeyError(column_name)
+        for row_name in self._row_names:
+            yield self[row_name, column_name]
+
+    def iter_column_values(self, row_name):
+        if row_name not in self._row_names:
+            raise KeyError(row_name)
+        for column_name in self._column_names:
+            yield self[row_name, column_name]
+
+    def _validate_column_name(self, column_name=None):
+        if column_name is None:
+            column_name = "V{}".format(len(self._columns)+1)
+        else:
+            column_name = str(column_name)
+        return column_name
+
+    def _validate_row_name(self, row_name=None):
+        if row_name is None:
+            row_name = "V{}".format(len(self._rows)+1)
+        else:
+            row_name = str(row_name)
+        return row_name
+
 ###############################################################################
 ## Generic Container Interace (for reference)
 
