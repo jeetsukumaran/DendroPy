@@ -63,7 +63,7 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
                 if f1 != f2:
                     diff += 1
             sum_diff += float(diff)
-            mean_diff += float(diff) / counted
+            mean_diff += (float(diff) / counted) if counted>0 else float(diff)
             sq_diff += (diff ** 2)
     return sum_diff, mean_diff / comps, sq_diff
 
