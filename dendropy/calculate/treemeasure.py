@@ -150,6 +150,12 @@ class PatristicDistanceMatrix(object):
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
 
+        The mean pairwise distance (mpd) is given by:
+        $$$
+            mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n},
+        $$$
+        where $i \neq j$, \delta_{i,j} is the phylogenetic distance between
+        species $i$ and $j$, and $n$ is the number of comparisons.
 
         Parameters
         ----------
