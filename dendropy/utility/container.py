@@ -681,6 +681,56 @@ class FrozenOrderedDict(collections.OrderedDict):
 
 class DataTable(object):
 
+    @classmethod
+    def get_from_csv_reader(cls,
+            csv_reader,
+            is_first_row_column_names=True,
+            is_first_column_row_names=True,
+            ):
+        """
+        Returns table from a full-configured csv.Reader instance.
+
+        Parameters
+        -----------
+        csv_reader : a csv.Reader instance
+            The source of the data.
+        is_first_row_column_names : bool
+            If True, then the first row is interpreted as column names;
+            otherwise, treated as data row.
+        is_first_column_row_names : bool
+            If True, then the first column is interpreted as row names;
+            otherwise, treated as data column.
+        """
+        ncols = None
+        data_table = cls()
+        if is_first_row_column_names:
+            first_data_row_offset = 1
+        else:
+            first_data_row_offset = 0
+        if is_first_column_row_names:
+            first_data_column_offset = 1
+        else:
+            first_data_column_offset = 0
+        for row_idx, row in enumerate(csv_reader):
+            if ncols is None:
+                ncols = len(row)
+            else:
+                assert ncols == len(row)
+            for cell_idx, cell in enumerate(row):
+                if row_idx == 0 and is_first_row_column_names:
+                    if cell_idx == 0:
+                        continue
+                    data_table.add_column(cell)
+                elif cell_idx == 0 and is_first_column_row_names:
+                    data_table.add_row(cell)
+                else:
+                    effective_row_idx = row_idx - first_data_row_offset
+                    assert effective_row_idx < len(data_table._row_names), "{}: {}".format(effective_row_idx, data_table._row_names)
+                    effective_column_idx = cell_idx - first_data_column_offset
+                    assert effective_column_idx < len(data_table._column_names), "{}: {}".format(effective_column_idx, data_table._column_names)
+                    data_table[effective_row_idx, effective_column_idx] = cell
+        return data_table
+
     def __init__(self):
         self._row_names = []
         self._row_name_set = set()
@@ -689,7 +739,7 @@ class DataTable(object):
         self._data = {}
 
     def add_column(self, column_name=None, pos=None):
-        column_name = self._validate_column_name(column_name)
+        column_name = self._validate_new_column_name(column_name)
         assert column_name not in self._column_name_set
         if pos is None:
             pos = len(self._column_names)
@@ -697,7 +747,7 @@ class DataTable(object):
         self._column_name_set.add(column_name)
 
     def add_row(self, row_name=None, pos=None):
-        row_name = self._validate_row_name(row_name)
+        row_name = self._validate_new_row_name(row_name)
         assert row_name not in self._row_name_set
         if pos is None:
             pos = len(self._row_names)
@@ -705,12 +755,14 @@ class DataTable(object):
         self._row_name_set.add(row_name)
 
     def __getitem__(self, key):
-        row_name = key[0]
-        column_name = key[1]
-        if row_name not in self._row_names:
-            raise KeyError(row_name)
-        if column_name not in self._column_names:
-            raise KeyError(column_name)
+        row_name = self._dereference_key(
+                key=key[0],
+                name_list=self._row_names,
+                name_set=self._row_name_set)
+        column_name = self._dereference_key(
+                key=key[1],
+                name_list=self._column_names,
+                name_set=self._column_name_set)
         if row_name not in self._data:
             return None
         if column_name not in self._data[row_name]:
@@ -718,12 +770,14 @@ class DataTable(object):
         return self._data[row_name][column_name]
 
     def __setitem__(self, key, value):
-        row_name = key[0]
-        column_name = key[1]
-        if row_name not in self._row_names:
-            raise KeyError(row_name)
-        if column_name not in self._column_names:
-            raise KeyError(column_name)
+        row_name = self._dereference_key(
+                key=key[0],
+                name_list=self._row_names,
+                name_set=self._row_name_set)
+        column_name = self._dereference_key(
+                key=key[1],
+                name_list=self._column_names,
+                name_set=self._column_name_set)
         if row_name not in self._data:
             self._data[row_name] = {}
         self._data[row_name][column_name] = value
@@ -737,30 +791,43 @@ class DataTable(object):
             yield column_name
 
     def iter_row_values(self, column_name):
-        if column_name not in self._column_names:
-            raise KeyError(column_name)
+        column_name = self._dereference_key(
+                key=column_name,
+                name_list=self._column_names,
+                name_set=self._column_name_set)
         for row_name in self._row_names:
             yield self[row_name, column_name]
 
     def iter_column_values(self, row_name):
-        if row_name not in self._row_names:
-            raise KeyError(row_name)
+        row_name = self._dereference_key(
+                key=row_name,
+                name_list=self._row_names,
+                name_set=self._row_name_set)
         for column_name in self._column_names:
             yield self[row_name, column_name]
 
-    def _validate_column_name(self, column_name=None):
+    def _validate_new_column_name(self, column_name=None):
         if column_name is None:
-            column_name = "V{}".format(len(self._columns)+1)
+            column_name = "V{}".format(len(self._columns))
         else:
             column_name = str(column_name)
         return column_name
 
-    def _validate_row_name(self, row_name=None):
+    def _validate_new_row_name(self, row_name=None):
         if row_name is None:
-            row_name = "V{}".format(len(self._rows)+1)
+            row_name = "V{}".format(len(self._rows))
         else:
             row_name = str(row_name)
         return row_name
+
+    def _dereference_key(self, key, name_list, name_set):
+        if isinstance(key, int):
+            return name_list[key]
+        else:
+            if key not in name_set:
+                raise KeyError(key)
+            else:
+                return key
 
 ###############################################################################
 ## Generic Container Interace (for reference)
