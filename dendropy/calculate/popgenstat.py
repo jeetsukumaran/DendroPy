@@ -63,7 +63,14 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
                 if f1 != f2:
                     diff += 1
             sum_diff += float(diff)
-            mean_diff += (float(diff) / counted) if counted>0 else float(diff)
+            # If counted < 0, this means that there is sites between these sequences
+            # in which both are not ignored: i.e., one or the other has a gap
+            # or an uncertain character. We consider this to mean (maybe
+            # somewhat paradoxically) that there are no sites that are
+            # different between the sequences. Put less paradoxically: there
+            # are no non-ignored sites that are different between the
+            # sequences.
+            mean_diff += (float(diff) / counted) if counted > 0 else float(diff)
             sq_diff += (diff ** 2)
     return sum_diff, mean_diff / comps, sq_diff
 
