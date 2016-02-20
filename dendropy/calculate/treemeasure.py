@@ -144,6 +144,85 @@ class PatristicDistanceMatrix(object):
         """
         return sum(self.distances())
 
+    def mean_pairwise_distance(self, filter_fn=None, edge_weighted=True):
+        """
+        Calculates the phylogenetic ecology statistic "MPD"[1] for the tree
+        (only considering taxa for which ``filter_fn`` returns True when
+        applied if ``filter_fn`` is specified).
+
+
+        Parameters
+        ----------
+        filter_fn : function object or None
+            If ``None``, then all leaves will be considered. Otherwise should
+            be a function object that takes a Taxon instance as an argument and
+            returns ``True`` if it is to be included in the calculation or
+            ``False`` otherwise.
+            In trees sampled from multiple communites, ``filter_fn`` can be
+            used to restrict the calculation to only one community based on
+            some criteria.
+        edge_weighted : bool
+            If ``True`` then the edge-weighted distance, i.e., considering edge
+            lengths, is returned. Otherwise the the path steps or the number of
+            edges rather then the sum of edge_weighted edges, connecting two
+            taxa is considered.
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+            from dendropy.calculate import treemeasure
+            tree = dendropy.Tree.get(path="data.nex",
+                                     schema="nexus")
+            pdm = treemeasure.PatristicDistanceMatrix(tree)
+
+            # consider all tip
+            mpd1 = pdm.mean_pairwise_distance()
+
+            # only tips within the same community, based on the node annotation
+            # "community"
+            mpds_by_community = {}
+            for community_label in ("1", "2", "3",):
+                filter_fn = lambda x: x.annotations["community"] == community_label
+                mpd = pdm.mean_pairwise_distance(filter_fn=filter_fn)
+                mpds_by_community[community_label] = mpd
+
+        References
+        ----------
+
+        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of ecological
+            communities: An example for rainforest trees. The American Naturalist
+            156: 145-155.
+        """
+        if edge_weighted:
+            dmatrix = self._pat_dists
+        else:
+            dmatrix = self._path_steps
+        sample_taxa = set()
+        seen_comps = set()
+        distances = []
+        for taxon1 in dmatrix:
+            if filter_fn and not filter_fn(taxon1):
+                continue
+            sample_taxa.add(taxon1)
+            for taxon2 in dmatrix:
+                if taxon1 is taxon2:
+                    continue
+                if filter_fn and not filter_fn(taxon2):
+                    continue
+                comp_hash = frozenset([taxon1, taxon2])
+                if comp_hash in seen_comps:
+                    continue
+                sample_taxa.add(taxon2)
+                distances.append(self.__call__(taxon1, taxon2))
+                seen_comps.add( comp_hash )
+        if sample_taxa:
+            return sum(distances) / (len(distances) * 1.0)
+        else:
+            return 0
+
 def patristic_distance(tree, taxon1, taxon2, is_bipartitions_updated=False):
     """
     Given a tree with bipartitions encoded, and two taxa on that tree, returns the

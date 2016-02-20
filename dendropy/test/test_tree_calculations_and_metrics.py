@@ -23,6 +23,7 @@ Tests of tree metrics.
 import random
 import unittest
 import math
+import csv
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
@@ -31,6 +32,7 @@ from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 
 import dendropy
+from dendropy.utility import container
 from dendropy.calculate import treemeasure
 from dendropy.calculate import treecompare
 
@@ -1144,6 +1146,30 @@ class FrequencyOfBipartitionsTests(unittest.TestCase):
                 labels=labels,
                 is_bipartitions_updated=True) # this will be ignore as the member `Tree.bipartition_encoding` are not populated
         self.assertAlmostEqual(freq, 0.346534653465)
+
+class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
+
+    def setUp(self):
+        with open(pathmap.char_source_path("community.data.tsv")) as src:
+            reader = csv.reader(src, delimiter="\t")
+            self.data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=int)
+        self.tree = dendropy.Tree.get_from_path(
+                src=pathmap.tree_source_path("community.tree.newick"),
+                schema="newick")
+        self.pdm = treemeasure.PatristicDistanceMatrix(self.tree)
+
+    def test_mpd(self):
+            expected_results = {
+                    "C1": 3.222570608701905037208,
+                    "C2": 1.915660594305666597492,
+                    "C3": 1.915660594329000154801,
+                    "C4": 1.939592309320466778644,
+                    "C5": 0.1934132401466666650869,
+            }
+            for row_name in self.data_table.iter_row_names():
+                filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
+                d = self.pdm.mean_pairwise_distance(filter_fn=filter_fn)
+                self.assertAlmostEqual(d, expected_results[row_name])
 
 if __name__ == "__main__":
     unittest.main()

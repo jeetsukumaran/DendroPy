@@ -686,6 +686,8 @@ class DataTable(object):
             csv_reader,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
+            default_data_type=None,
+            column_data_types=None,
             ):
         """
         Returns table from a full-configured csv.Reader instance.
@@ -700,6 +702,19 @@ class DataTable(object):
         is_first_column_row_names : bool
             If True, then the first column is interpreted as row names;
             otherwise, treated as data column.
+        default_data_type : type or function object
+            Any callable that, when passed a value, returns the coerced-to-type
+            equivalent for the data.
+        column_data_types : dict
+            A dictionary where the key are the column names and the
+            corresponding value the type (see ``default_data_type`` for
+            description).
+
+        Returns
+        -------
+        t: a DataTable instance
+            Returns table from a full-configured csv.Reader instance.
+
         """
         ncols = None
         data_table = cls()
@@ -711,6 +726,8 @@ class DataTable(object):
             first_data_column_offset = 1
         else:
             first_data_column_offset = 0
+        if column_data_types is None:
+            column_data_types = {}
         for row_idx, row in enumerate(csv_reader):
             if ncols is None:
                 ncols = len(row)
@@ -720,7 +737,9 @@ class DataTable(object):
                 if row_idx == 0 and is_first_row_column_names:
                     if cell_idx == 0:
                         continue
-                    data_table.add_column(cell)
+                    data_table.add_column(
+                            column_name=cell,
+                            data_type=column_data_types.get(cell, default_data_type))
                 elif cell_idx == 0 and is_first_column_row_names:
                     data_table.add_row(cell)
                 else:
@@ -735,16 +754,18 @@ class DataTable(object):
         self._row_names = []
         self._row_name_set = set()
         self._column_names = []
+        self._column_data_types = {}
         self._column_name_set = set()
         self._data = {}
 
-    def add_column(self, column_name=None, pos=None):
+    def add_column(self, column_name=None, pos=None, data_type=None):
         column_name = self._validate_new_column_name(column_name)
         assert column_name not in self._column_name_set
         if pos is None:
             pos = len(self._column_names)
         self._column_names.insert(pos, column_name)
         self._column_name_set.add(column_name)
+        self._column_data_types[column_name] = data_type
 
     def add_row(self, row_name=None, pos=None):
         row_name = self._validate_new_row_name(row_name)
@@ -780,6 +801,8 @@ class DataTable(object):
                 name_set=self._column_name_set)
         if row_name not in self._data:
             self._data[row_name] = {}
+        if self._column_data_types[column_name] is not None:
+            value = self._column_data_types[column_name](value)
         self._data[row_name][column_name] = value
 
     def iter_row_names(self):

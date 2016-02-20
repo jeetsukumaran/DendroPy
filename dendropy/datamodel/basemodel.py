@@ -23,6 +23,7 @@ Infrastructure for phylogenetic data objects.
 import os
 import copy
 import sys
+import collections
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
