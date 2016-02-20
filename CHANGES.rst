@@ -4,9 +4,9 @@ Release 4.1.0 (Pending)
 New or Updated Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-    -   Implementation of the Protracted Speciation model: a Birth-Death process with explicit modeling of speciation-as-a-process rather than speciation-as-an-event by incorporating the lag between speciation initiation and speciation completion.
-    -   Added phylogenetic community ecology statistic calculations.
+    -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), etc.
     -   Added DataTable class to manage community ecology (as well as more general classes of) data.
+    -   Implementation of the Protracted Speciation model: a Birth-Death process with explicit modeling of speciation-as-a-process rather than speciation-as-an-event by incorporating the lag between speciation initiation and speciation completion.
     -   NEWICK terminating semicolon requirement relaxation.
     -   Some more refined node filtering/dropping.
     -   Return list of nodes dropped when filtering out leaves.
@@ -16,6 +16,7 @@ New or Updated Features
 Bug Fixes
 ^^^^^^^^^
 
+    -   Handle sequence comparison where there are no non-ignored sites in common.
     -   Update string type checking to handle unicode etc. under Python 2.
     -   Exclusion of trees from data set reads actually works.
     -   Actually implement symbol to state (alphabet) identity coercion in derived classes.
