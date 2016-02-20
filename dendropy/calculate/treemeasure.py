@@ -200,13 +200,11 @@ class PatristicDistanceMatrix(object):
             dmatrix = self._pat_dists
         else:
             dmatrix = self._path_steps
-        sample_taxa = set()
         seen_comps = set()
         distances = []
         for taxon1 in dmatrix:
             if filter_fn and not filter_fn(taxon1):
                 continue
-            sample_taxa.add(taxon1)
             for taxon2 in dmatrix:
                 if taxon1 is taxon2:
                     continue
@@ -215,10 +213,9 @@ class PatristicDistanceMatrix(object):
                 comp_hash = frozenset([taxon1, taxon2])
                 if comp_hash in seen_comps:
                     continue
-                sample_taxa.add(taxon2)
                 distances.append(self.__call__(taxon1, taxon2))
                 seen_comps.add( comp_hash )
-        if sample_taxa:
+        if distances:
             return sum(distances) / (len(distances) * 1.0)
         else:
             return 0
