@@ -1158,18 +1158,43 @@ class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
                 schema="newick")
         self.pdm = treemeasure.PatristicDistanceMatrix(self.tree)
 
-    def test_mpd(self):
-            expected_results = {
-                    "C1": 3.222570608701905037208,
-                    "C2": 1.915660594305666597492,
-                    "C3": 1.915660594329000154801,
-                    "C4": 1.939592309320466778644,
-                    "C5": 0.1934132401466666650869,
-            }
-            for row_name in self.data_table.iter_row_names():
-                filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
-                d = self.pdm.mean_pairwise_distance(filter_fn=filter_fn)
-                self.assertAlmostEqual(d, expected_results[row_name])
+    def test_nonabundance_weighted_mpd(self):
+        # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)
+        # my.phylo = read.tree("data/PD.example.phylo.txt")
+        # pd.matrix = cophenetic(my.phylo)
+        # mpd(my.sample, cophenetic(my.phylo), abundance.weighted=F)
+        #    [1] 3.2225706087019050372078 1.9156605943056665974922 1.9156605943290001548007
+        #    [4] 1.9395923093204667786438 0.1934132401466666650869
+        expected_results = {
+                "C1": 3.222570608701905037208,
+                "C2": 1.915660594305666597492,
+                "C3": 1.915660594329000154801,
+                "C4": 1.939592309320466778644,
+                "C5": 0.1934132401466666650869,
+        }
+        for row_name in self.data_table.iter_row_names():
+            filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
+            d = self.pdm.mean_pairwise_distance(filter_fn=filter_fn)
+            self.assertAlmostEqual(d, expected_results[row_name])
+
+    def test_nonabundance_weighted_mntd(self):
+        # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)
+        # my.phylo = read.tree("data/PD.example.phylo.txt")
+        # pd.matrix = cophenetic(my.phylo)
+        # mntd(my.sample, cophenetic(my.phylo), abundance.weighted=F)
+        #   [1] 1.6347319809428570991372 1.0891173926393333815099 1.0891173926543333827510
+        #   [4] 0.1180230301583333335502 0.1426761318733333339104
+        expected_results = {
+                "C1": 1.6347319809428570991372,
+                "C2": 1.0891173926393333815099,
+                "C3": 1.0891173926543333827510,
+                "C4": 0.1180230301583333335502,
+                "C5": 0.1426761318733333339104,
+        }
+        for row_name in self.data_table.iter_row_names():
+            filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
+            d = self.pdm.mean_nearest_taxon_distance(filter_fn=filter_fn)
+            self.assertAlmostEqual(d, expected_results[row_name])
 
 if __name__ == "__main__":
     unittest.main()

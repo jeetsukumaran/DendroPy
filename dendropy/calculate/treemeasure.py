@@ -146,15 +146,15 @@ class PatristicDistanceMatrix(object):
 
     def mean_pairwise_distance(self, filter_fn=None, edge_weighted=True):
         """
-        Calculates the phylogenetic ecology statistic "MPD"[1] for the tree
+        Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
 
         The mean pairwise distance (mpd) is given by:
         $$$
-            mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n},
+            mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
         $$$
-        where $i \neq j$, \delta_{i,j} is the phylogenetic distance between
+        where $i \\neq j$, \\delta_{i,j} is the phylogenetic distance between
         species $i$ and $j$, and $n$ is the number of comparisons.
 
         Parameters
@@ -201,6 +201,8 @@ class PatristicDistanceMatrix(object):
         [1] Webb, C.O. 2000. Exploring the phylogenetic structure of ecological
             communities: An example for rainforest trees. The American Naturalist
             156: 145-155.
+        [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
+
         """
         if edge_weighted:
             dmatrix = self._pat_dists
@@ -221,6 +223,88 @@ class PatristicDistanceMatrix(object):
                     continue
                 distances.append(self.__call__(taxon1, taxon2))
                 seen_comps.add( comp_hash )
+        if distances:
+            return sum(distances) / (len(distances) * 1.0)
+        else:
+            return 0
+
+    def mean_nearest_taxon_distance(self, filter_fn=None, edge_weighted=True):
+        """
+        Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
+        (only considering taxa for which ``filter_fn`` returns True when
+        applied if ``filter_fn`` is specified).
+
+        The mean nearest taxon distance (mntd) is given by:
+        $$$
+            mpd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{\\choose{n,2}},
+        $$$
+        where $i \\neq j$, \\delta_{i,j} is the phylogenetic distance between
+        species $i$ and $j$, and $n$ is the number of comparisons.
+
+        Parameters
+        ----------
+        filter_fn : function object or None
+            If ``None``, then all leaves will be considered. Otherwise should
+            be a function object that takes a Taxon instance as an argument and
+            returns ``True`` if it is to be included in the calculation or
+            ``False`` otherwise.
+            In trees sampled from multiple communites, ``filter_fn`` can be
+            used to restrict the calculation to only one community based on
+            some criteria.
+        edge_weighted : bool
+            If ``True`` then the edge-weighted distance, i.e., considering edge
+            lengths, is returned. Otherwise the the path steps or the number of
+            edges rather then the sum of edge_weighted edges, connecting two
+            taxa is considered.
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+            from dendropy.calculate import treemeasure
+            tree = dendropy.Tree.get(path="data.nex",
+                                     schema="nexus")
+            pdm = treemeasure.PatristicDistanceMatrix(tree)
+
+            # consider all tips
+            mntd = pdm.mean_nearest_taxon_distance()
+
+            # only tips within the same community, based on the node annotation
+            # "community"
+            mntds_by_community = {}
+            for community_label in ("1", "2", "3",):
+                filter_fn = lambda x: x.annotations["community"] == community_label
+                mntd = pdm.mean_pairwise_distance(filter_fn=filter_fn)
+                mntds_by_community[community_label] = mntd
+
+        References
+        ----------
+
+        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of ecological
+            communities: An example for rainforest trees. The American Naturalist
+            156: 145-155.
+        [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
+
+        """
+        if edge_weighted:
+            dmatrix = self._pat_dists
+        else:
+            dmatrix = self._path_steps
+        distances = []
+        for taxon1 in dmatrix:
+            if filter_fn and not filter_fn(taxon1):
+                continue
+            subdistances = []
+            for taxon2 in dmatrix:
+                if taxon1 is taxon2:
+                    continue
+                if filter_fn and not filter_fn(taxon2):
+                    continue
+                subdistances.append(self.__call__(taxon1, taxon2))
+            if subdistances:
+                distances.append(min(subdistances))
         if distances:
             return sum(distances) / (len(distances) * 1.0)
         else:
