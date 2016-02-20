@@ -202,13 +202,13 @@ class Entrez(object):
         dendropy.interop.genbank.GenBankRna, or
         dendropy.interop.genbank.GenBankProtein instead ***
         Instantiates a broker that queries NCBI and returns data.  If
-        ``generate_labels`` is `True`, then appropriate labels for sequences
+        ``generate_labels`` is |True|, then appropriate labels for sequences
         will be automatically composed for each sequence based on the GenBank
         FASTA defline. ``label_num_desc_components`` specifies the number of
         components from the defline to use. ``label_separator`` specifies the
         string used to separate the different label components.
         ``label_id_in_front`` specifies whether the GenBank accession number
-        should form the beginning (`True`) or tail (`False`) end of the
+        should form the beginning (|True|) or tail (|False|) end of the
         label. ``sort_taxa_by_label`` specifies whether the sequences should be
         sorted by their final label values.
         """

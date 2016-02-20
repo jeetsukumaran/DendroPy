@@ -83,7 +83,7 @@ class TreeList(
             Identifier of format of data in ``stream``
 
         collection_offset : integer or None
-            0-based index indicating collection of trees to parse. If `None`,
+            0-based index indicating collection of trees to parse. If |None|,
             then all tree collections are retrieved, with each distinct
             collection parsed into a separate |TreeList| object. If the
             tree colleciton offset index is equal or greater than the number of
@@ -98,7 +98,7 @@ class TreeList(
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
             collection of trees at which to begin reading.  If not specified or
-            `None` (default), then all trees are parsed.  Otherwise, must be an
+            |None| (default), then all trees are parsed.  Otherwise, must be an
             integer value up the length of the collection minus 1.  A positive
             offset indicates the number of trees in the collection to skip;
             e.g. a ``tree_offset`` of 20 means to skip the first 20 trees in the
@@ -235,7 +235,7 @@ class TreeList(
 
             - **label** (*str*) -- Name or identifier to be assigned to the new
               object; if not given, will be assigned the one specified in the
-              data source, or `None` otherwise.
+              data source, or |None| otherwise.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created.
@@ -248,9 +248,9 @@ class TreeList(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -540,7 +540,7 @@ class TreeList(
             Identifier of format of data in ``stream``.
 
         collection_offset : integer or None
-            0-based index indicating collection of trees to parse. If `None`,
+            0-based index indicating collection of trees to parse. If |None|,
             then all tree collections are retrieved, with each distinct
             collection parsed into a separate |TreeList| object. If the
             tree colleciton offset index is equal or greater than the number of
@@ -555,7 +555,7 @@ class TreeList(
         tree_offset : integer or None
             0-based index indicating particular tree within a particular
             collection of trees at which to begin reading.  If not specified or
-            `None` (default), then all trees are parsed.  Otherwise, must be an
+            |None| (default), then all trees are parsed.  Otherwise, must be an
             integer value up the length of the collection minus 1.  A positive
             offset indicates the number of trees in the collection to skip;
             e.g. a ``tree_offset`` of 20 means to skip the first 20 trees in the
@@ -646,9 +646,9 @@ class TreeList(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -1040,7 +1040,7 @@ class TreeList(
         and passing on keyword arguments pertaining to TreeArray
         construction, and leaving everything else.
         """
-        # TODO: maybe ignore_node_ages defaults to `False` but ``ultrametricity_precision`` defaults to 0?
+        # TODO: maybe ignore_node_ages defaults to |False| but ``ultrametricity_precision`` defaults to 0?
         ta = TreeArray.from_tree_list(
                 trees=self,
                 # taxon_namespace=self.taxon_namespace,
@@ -1108,8 +1108,8 @@ class TreeList(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -1137,8 +1137,8 @@ class TreeList(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -1333,8 +1333,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         tree : a |Tree| object.
             The tree on which to count the splits.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
 
         Returns
@@ -1508,12 +1508,12 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         tree : |Tree|
             The |Tree| which will be scored.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included.
-            If `False`, then these are skipped. This should only make a
+            If |True|, then non-internal split posteriors will be included.
+            If |False|, then these are skipped. This should only make a
             difference when dealing with splits collected from trees of
             different leaf sets.
         traversal_strategy : str
@@ -1605,11 +1605,11 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         tree : |Tree|
             The tree for which the score should be calculated.
         is_bipartitions_updated : bool
-            If `True`, then the splits are assumed to have already been encoded
+            If |True|, then the splits are assumed to have already been encoded
             and will not be updated on the trees.
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -1644,11 +1644,11 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         tree : |Tree|
             The tree for which the score should be calculated.
         is_bipartitions_updated : bool
-            If `True`, then the splits are assumed to have already been encoded
+            If |True|, then the splits are assumed to have already been encoded
             and will not be updated on the trees.
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -1685,8 +1685,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
         is_rooted : bool
             Should tree be rooted or not? If *all* trees counted for splits are
-            explicitly rooted or unrooted, then this will default to `True` or
-            `False`, respectively. Otherwise it defaults to `None`.
+            explicitly rooted or unrooted, then this will default to |True| or
+            |False|, respectively. Otherwise it defaults to |None|.
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
@@ -1739,7 +1739,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             Tree to be decorated with support values.
 
         is_bipartitions_updated: bool
-            If `True`, then bipartitions will not be recalculated.
+            If |True|, then bipartitions will not be recalculated.
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
@@ -1804,7 +1804,7 @@ class SplitDistributionSummarizer(object):
                 - "median-length": median of edge lengths for split
                 - "mean-age": such that split age is equal to mean of ages
                 - "median-age": such that split age is equal to mean of ages
-                - `None`: do not set edge lengths
+                - |None|: do not set edge lengths
 
         add_support_as_node_attribute: bool
             Adds each node's support value as an attribute of the node,
@@ -1812,7 +1812,7 @@ class SplitDistributionSummarizer(object):
 
         add_support_as_node_annotation: bool
             Adds support as a metadata annotation, "``support``". If
-            ``add_support_as_node_attribute`` is `True`, then the value will be
+            ``add_support_as_node_attribute`` is |True|, then the value will be
             dynamically-bound to the value of the node's "``support``" attribute.
 
         set_support_as_node_label : bool
@@ -1838,7 +1838,7 @@ class SplitDistributionSummarizer(object):
                 - ``age_hpd95``
                 - ``age_range``
 
-            If ``add_node_age_summaries_as_node_attributes`` is `True`, then the
+            If ``add_node_age_summaries_as_node_attributes`` is |True|, then the
             values will be dynamically-bound to the corresponding node
             attributes.
 
@@ -1862,7 +1862,7 @@ class SplitDistributionSummarizer(object):
                 - ``length_hpd95``
                 - ``length_range``
 
-            If ``add_edge_length_summaries_as_edge_attributes`` is `True`, then the
+            If ``add_edge_length_summaries_as_edge_attributes`` is |True|, then the
             values will be dynamically-bound to the corresponding edge
             attributes.
 
@@ -1879,7 +1879,7 @@ class SplitDistributionSummarizer(object):
             set to this.
 
         error_on_negative_edge_lengths : bool
-            If `True`, an inferred edge length that is less than 0 will result
+            If |True|, an inferred edge length that is less than 0 will result
             in a ValueError.
 
         no_data_value : str or float
@@ -2129,17 +2129,17 @@ class TreeArray(
             references.
         is_rooted_trees : bool
             If not set, then it will be set based on the rooting state of the
-            first tree added. If `True`, then trying to add an unrooted tree
-            will result in an error. If `False`, then trying to add a rooted
+            first tree added. If |True|, then trying to add an unrooted tree
+            will result in an error. If |False|, then trying to add a rooted
             tree will result in an error.
         ignore_edge_lengths : bool
-            If `True`, then edge lengths of splits will not be stored. If
-            `False`, then edge lengths will be stored.
+            If |True|, then edge lengths of splits will not be stored. If
+            |False|, then edge lengths will be stored.
         ignore_node_ages : bool
-            If `True`, then node ages of splits will not be stored. If
-            `False`, then node ages will be stored.
+            If |True|, then node ages of splits will not be stored. If
+            |False|, then node ages will be stored.
         use_tree_weights : bool
-            If `False`, then tree weights will not be used to weight splits.
+            If |False|, then tree weights will not be used to weight splits.
         """
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
                 taxon_namespace=taxon_namespace)
@@ -2149,7 +2149,7 @@ class TreeArray(
         self.ignore_edge_lengths = ignore_edge_lengths
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
-        self.default_edge_length_value = 0 # edge.length of `None` gets this value
+        self.default_edge_length_value = 0 # edge.length of |None| gets this value
         self.tree_type = treemodel.Tree
 
         # Storage
@@ -2232,8 +2232,8 @@ class TreeArray(
             all the other trees accessioned into this collection as well as
             that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
         index : integer
             Insert before index.
@@ -2300,8 +2300,8 @@ class TreeArray(
             have the same rooting state as all the other trees accessioned into
             this collection as well as that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
 
         """
@@ -2394,9 +2394,9 @@ class TreeArray(
               specified, then the first tree (offset = 0) is assumed (i.e., no
               trees within the specified collection will be skipped). Use this
               to specify, e.g. a burn-in.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -2473,8 +2473,8 @@ class TreeArray(
             all the other trees accessioned into this collection as well as
             that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
 
         """
@@ -2495,8 +2495,8 @@ class TreeArray(
             all the other trees accessioned into this collection as well as
             that of ``self.is_rooted_trees``.
         is_bipartitions_updated : bool
-            If `False` [default], then the tree will have its splits encoded or
-            updated. Otherwise, if `True`, then the tree is assumed to have its
+            If |False| [default], then the tree will have its splits encoded or
+            updated. Otherwise, if |True|, then the tree is assumed to have its
             splits already encoded and updated.
 
         Returns
@@ -2660,8 +2660,8 @@ class TreeArray(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -2705,8 +2705,8 @@ class TreeArray(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -2740,8 +2740,8 @@ class TreeArray(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -2783,8 +2783,8 @@ class TreeArray(
         Parameters
         ----------
         include_external_splits : bool
-            If `True`, then non-internal split posteriors will be included in
-            the score. Defaults to `False`: these are skipped. This should only
+            If |True|, then non-internal split posteriors will be included in
+            the score. Defaults to |False|: these are skipped. This should only
             make a difference when dealing with splits collected from trees of
             different leaf sets.
 
@@ -2826,8 +2826,8 @@ class TreeArray(
 
         is_rooted : bool
             Should tree be rooted or not? If *all* trees counted for splits are
-            explicitly rooted or unrooted, then this will default to `True` or
-            `False`, respectively. Otherwise it defaults to `None`.
+            explicitly rooted or unrooted, then this will default to |True| or
+            |False|, respectively. Otherwise it defaults to |None|.
 
         \*\*split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
@@ -2955,20 +2955,20 @@ class TreeArray(
         Parameters
         ----------
         sort_descending : bool
-            If `True`, then topologies will be sorted in *descending* frequency
+            If |True|, then topologies will be sorted in *descending* frequency
             order (i.e., topologies with the highest frequencies will be listed
-            first). If `False`, then they will be sorted in *ascending*
-            frequency. If `None` (default), then they will not be sorted.
+            first). If |False|, then they will be sorted in *ascending*
+            frequency. If |None| (default), then they will not be sorted.
         frequency_attr_name : str
             Name of attribute to add to each |Tree| representing
-            the frequency of that topology in the collection. If `None`
+            the frequency of that topology in the collection. If |None|
             then the attribute will not be added.
         frequency_annotation_name : str
             Name of annotation to add to the annotations of each |Tree|,
             representing the frequency of that topology in the collection. The
             value of this annotation will be dynamically-bound to the attribute
-            specified by ``frequency_attr_name`` unless that is `None`. If
-            ``frequency_annotation_name`` is `None` then the annotation will not
+            specified by ``frequency_attr_name`` unless that is |None|. If
+            ``frequency_annotation_name`` is |None| then the annotation will not
             be added.
         """
         if sort_descending is not None and frequency_attr_name is None:

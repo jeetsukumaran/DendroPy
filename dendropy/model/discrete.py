@@ -476,8 +476,8 @@ def simulate_discrete_chars(
         appended to existing sequences of corresponding taxa in char_matrix; if
         not, a new |DnaCharacterMatrix| object will be created.
     retain_sequences_on_tree : bool
-        If `False`, sequence annotations will be cleared from tree after
-        simulation. Set to `True` if you want to, e.g., evolve and accumulate
+        If |False|, sequence annotations will be cleared from tree after
+        simulation. Set to |True| if you want to, e.g., evolve and accumulate
         different sequences on tree, or retain information for other purposes.
     rng           : random number generator
         If not given, 'GLOBAL_RNG' will be used.
@@ -537,8 +537,8 @@ def hky85_chars(
         appended to existing sequences of corresponding taxa in char_matrix; if
         not, a new |DnaCharacterMatrix| object will be created.
     retain_sequences_on_tree : bool
-        If `False`, sequence annotations will be cleared from tree after
-        simulation. Set to `True` if you want to, e.g., evolve and accumulate
+        If |False|, sequence annotations will be cleared from tree after
+        simulation. Set to |True| if you want to, e.g., evolve and accumulate
         different sequences on tree, or retain information for other purposes.
     rng           : random number generator
         If not given, 'GLOBAL_RNG' will be used.

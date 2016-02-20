@@ -102,7 +102,7 @@ class Bipartition(object):
     such, it is crucial that this value does not change once a particular
     |Bipartition| object is stored in a dictionary or set. To this end,
     we impose the constraint that |Bipartition| objects are immutable
-    unless the ``is_mutable`` attribute is explicitly set to `True` as a sort
+    unless the ``is_mutable`` attribute is explicitly set to |True| as a sort
     of waiver signed by the client code. Client code does this at its risk,
     with the warning that anything up to and including the implosion of the
     universe may occur if the |Bipartition| object is a member of an set
@@ -174,7 +174,7 @@ class Bipartition(object):
 
     def is_compatible_bitmasks(m1, m2, fill_bitmask):
         """
-        Returns `True` if ``m1`` is compatible with ``m2``
+        Returns |True| if ``m1`` is compatible with ``m2``
 
         Parameters
         ----------
@@ -186,7 +186,7 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if ``m1`` is compatible with ``m2``. `False` otherwise.
+            |True| if ``m1`` is compatible with ``m2``. |False| otherwise.
         """
         if fill_bitmask != 0:
             m1 = fill_bitmask & m1
@@ -325,7 +325,7 @@ class Bipartition(object):
         symbol1 : str
             The symbol to represent group '1' in the bitmask.
         reverse : bool
-            If `True`, then the first taxon will correspond to the
+            If |True|, then the first taxon will correspond to the
             most-significant bit, instead of the least-significant bit, as is
             the default.
 
@@ -359,7 +359,7 @@ class Bipartition(object):
         symbol1 : str
             The symbol to represent group '1' in the bitmask.
         reverse : bool
-            If `True`, then the first taxon will correspond to the
+            If |True|, then the first taxon will correspond to the
             most-significant bit, instead of the least-significant bit, as is
             the default.
 
@@ -436,7 +436,7 @@ class Bipartition(object):
         the lowest-significant bit (i.e., the group to which the first taxon
         belongs) is set to '0'.
 
-        Also makes this bipartition immutable (unless ``is_mutable`` is `False`),
+        Also makes this bipartition immutable (unless ``is_mutable`` is |False|),
         which facilitates it being used in dictionaries and sets.
 
         Parameters
@@ -447,18 +447,18 @@ class Bipartition(object):
             bipartition is associated. The least-significant bit corresponds to
             the first taxon, the next least-signficant bit corresponds to the
             second taxon, and so on, with the last taxon corresponding to the
-            most-significant bit. If not specified or `None`, the current value
+            most-significant bit. If not specified or |None|, the current value
             of ``self.leafset_bitmask`` is used.
         tree_leafset_bitmask : integer
             The ``leafset_bitmask`` of the root edge of the tree with which this
             bipartition is associated. In, general, this will be $0b1111...n$,
             where $n$ is the number of taxa, *except* in cases of trees with
             incomplete leaf-sets, where the positions corresponding to the
-            missing taxa will have the bits unset. If not specified or `None`,
+            missing taxa will have the bits unset. If not specified or |None|,
             the current value of ``self.tree_leafset_bitmask`` is used.
         is_rooted : bool
             Specifies whether or not the tree with which this bipartition is
-            associated is rooted. If not specified or `None`, the current value
+            associated is rooted. If not specified or |None|, the current value
             of ``self.is_rooted`` is used.
 
         Returns
@@ -499,7 +499,7 @@ class Bipartition(object):
         the lowest-significant bit (i.e., the group to which the first taxon
         belongs) is set to '0'.
 
-        Also makes this bipartition immutable (unless ``is_mutable`` is `False`),
+        Also makes this bipartition immutable (unless ``is_mutable`` is |False|),
         which facilitates it being used in dictionaries and sets.
 
         Note that this requires full population of the following fields:
@@ -535,7 +535,7 @@ class Bipartition(object):
 
     def is_compatible_with(self, other):
         """
-        Returns `True` if ``other`` is compatible with self.
+        Returns |True| if ``other`` is compatible with self.
 
         Parameters
         ----------
@@ -545,7 +545,7 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if ``other`` is compatible with ``self``; `False` otherwise.
+            |True| if ``other`` is compatible with ``self``; |False| otherwise.
         """
         m1 = self._split_bitmask
         if isinstance(other, int):
@@ -556,7 +556,7 @@ class Bipartition(object):
 
     def is_incompatible_with(self, other):
         """
-        Returns `True` if ``other`` conflicts with self.
+        Returns |True| if ``other`` conflicts with self.
 
         Parameters
         ----------
@@ -566,13 +566,13 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if ``other`` conflicts with ``self``; `False` otherwise.
+            |True| if ``other`` conflicts with ``self``; |False| otherwise.
         """
         return not self.is_compatible_with(other)
 
     def is_nested_within(self, other, is_other_masked_for_tree_leafset=False):
         """
-        Returns `True` if the current bipartition is contained
+        Returns |True| if the current bipartition is contained
         within other.
 
         Parameters
@@ -583,7 +583,7 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if the the bipartition is "contained" within ``other``
+            |True| if the the bipartition is "contained" within ``other``
         """
         if self._is_rooted:
             m1 = self._leafset_bitmask
@@ -597,7 +597,7 @@ class Bipartition(object):
 
     def is_leafset_nested_within(self, other):
         """
-        Returns `True` if the leafset of ``self`` is a subset of the leafset of
+        Returns |True| if the leafset of ``self`` is a subset of the leafset of
         ``other``.
 
         Parameters
@@ -608,7 +608,7 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if the leafset of ``self`` is contained in ``other``.
+            |True| if the leafset of ``self`` is contained in ``other``.
         """
         if isinstance(other, int):
             m2 = other
@@ -622,7 +622,7 @@ class Bipartition(object):
         Returns
         -------
         bool
-            `True` if this bipartition divides a leaf and the rest of the
+            |True| if this bipartition divides a leaf and the rest of the
             tree.
         """
         return Bipartition.is_trivial_bitmask(self._split_bitmask,
@@ -640,12 +640,12 @@ class Bipartition(object):
         taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to reference.
         preserve_spaces : boolean, optional
-            If `False` (default), then spaces in taxon labels will be replaced
-            by underscores. If `True`, then taxon labels with spaces will be
+            If |False| (default), then spaces in taxon labels will be replaced
+            by underscores. If |True|, then taxon labels with spaces will be
             wrapped in quotes.
         quote_underscores : boolean, optional
-            If `True` (default), then taxon labels with underscores will be
-            wrapped in quotes. If `False`, then the labels will not be wrapped
+            If |True| (default), then taxon labels with underscores will be
+            wrapped in quotes. If |False|, then the labels will not be wrapped
             in quotes.
 
         Returns
@@ -670,12 +670,12 @@ class Bipartition(object):
         taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to reference.
         preserve_spaces : boolean, optional
-            If `False` (default), then spaces in taxon labels will be replaced
-            by underscores. If `True`, then taxon labels with spaces will be
+            If |False| (default), then spaces in taxon labels will be replaced
+            by underscores. If |True|, then taxon labels with spaces will be
             wrapped in quotes.
         quote_underscores : boolean, optional
-            If `True` (default), then taxon labels with underscores will be
-            wrapped in quotes. If `False`, then the labels will not be wrapped
+            If |True| (default), then taxon labels with underscores will be
+            wrapped in quotes. If |False|, then the labels will not be wrapped
             in quotes.
 
         Returns
@@ -1053,15 +1053,15 @@ class Node(
 
         Visits self and all descendant nodes, with each node visited before its
         children. Nodes can optionally be filtered by ``filter_fn``: only nodes
-        for which ``filter_fn`` returns `True` when called with the node as an
+        for which ``filter_fn`` returns |True| when called with the node as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1084,20 +1084,20 @@ class Node(
         Visits self and all internal descendant nodes, with each node visited
         before its children. In DendroPy, "internal nodes" are nodes that have
         at least one child node, and thus the root or seed node is typically included
-        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
-        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
+        unless ``exclude_seed_node`` is |True|. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns |True| when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
-            If `False` (default), then the seed node or root is visited. If
-            `True`, then the seed node is skipped.
+            If |False| (default), then the seed node or root is visited. If
+            |True|, then the seed node is skipped.
 
         Returns
         -------
@@ -1121,15 +1121,15 @@ class Node(
 
         Visits self and all descendant nodes, with each node visited after its
         children. Nodes can optionally be filtered by ``filter_fn``: only nodes
-        for which ``filter_fn`` returns `True` when called with the node as an
+        for which ``filter_fn`` returns |True| when called with the node as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1178,20 +1178,20 @@ class Node(
         Visits self and all internal descendant nodes, with each node visited
         after its children. In DendroPy, "internal nodes" are nodes that have
         at least one child node, and thus the root or seed node is typically
-        included unless ``exclude_seed_node`` is `True`. Nodes can optionally be
+        included unless ``exclude_seed_node`` is |True|. Nodes can optionally be
         filtered by ``filter_fn``: only nodes for which ``filter_fn`` returns
-        `True` when passed the node as an argument are yielded.
+        |True| when passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
-            If `False` (default), then the seed node or root is visited. If
-            `True`, then the seed node is skipped.
+            If |False| (default), then the seed node or root is visited. If
+            |True|, then the seed node is skipped.
 
         Returns
         -------
@@ -1216,15 +1216,15 @@ class Node(
         Visits self and all descendant nodes, with each node and other nodes at
         the same level (distance from root) visited before their children.
         Nodes can optionally be filtered by ``filter_fn``: only nodes for which
-        ``filter_fn`` returns `True` when called with the node as an argument are
+        ``filter_fn`` returns |True| when called with the node as an argument are
         visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1259,14 +1259,14 @@ class Node(
         Visits self and all descendant nodes, with each node visited in-between
         its children. Only valid for strictly-bifurcating trees. Nodes can
         optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
-        returns `True` when called with the node as an argument are yielded.
+        returns |True| when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1294,14 +1294,14 @@ class Node(
 
         Visits all leaf or tip nodes descended from this node. Nodes can
         optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
-        returns `True` when called with the node as an argument are yielded.
+        returns |True| when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1324,8 +1324,8 @@ class Node(
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -1345,8 +1345,8 @@ class Node(
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
 
         Returns
@@ -1363,20 +1363,20 @@ class Node(
         Iterator over all ancestors of this node.
 
         Visits all nodes that are the ancestors of this node.  If ``inclusive``
-        is `True`, ``self`` is returned as the first item of the sequence;
+        is |True|, ``self`` is returned as the first item of the sequence;
         otherwise ``self`` is skipped. Nodes can optionally be filtered by
-        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
+        ``filter_fn``: only nodes for which ``filter_fn`` returns |True| when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         inclusive : boolean, optional
-            If `True`, includes this node in the sequence. If `False`, this is
+            If |True|, includes this node in the sequence. If |False|, this is
             skipped.
 
         Returns
@@ -1401,25 +1401,25 @@ class Node(
         Iterates over nodes in order of age ('age' is as given by the ``age``
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If ``include_leaves`` is `True` (default), leaves are included in the
-        iteration; if ``include_leaves`` is `False`, leaves will be skipped.
-        If ``descending`` is `False` (default), younger nodes will be returned
-        before older ones; if `True`, older nodes will be returned before
+        If ``include_leaves`` is |True| (default), leaves are included in the
+        iteration; if ``include_leaves`` is |False|, leaves will be skipped.
+        If ``descending`` is |False| (default), younger nodes will be returned
+        before older ones; if |True|, older nodes will be returned before
         younger ones.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (defau
         include_leaves : boolean, optional
-            If `True` (default), then leaf nodes are included in the iteration.
-            If `False`, then leaf nodes are skipped.lt), then all nodes visited will be yielded.
+            If |True| (default), then leaf nodes are included in the iteration.
+            If |False|, then leaf nodes are skipped.lt), then all nodes visited will be yielded.
         descending : boolean, optional
-            If `False` (default), then younger nodes are visited before older
-            ones. If `True`, then older nodes are visited before younger ones.
+            If |False| (default), then younger nodes are visited before older
+            ones. If |True|, then older nodes are visited before younger ones.
 
         Returns
         -------
@@ -1529,11 +1529,11 @@ class Node(
 
         Parameters
         ----------
-        before_fn : function object or `None`
+        before_fn : function object or |None|
             A function object that takes a |Node| as its argument.
-        after_fn : function object or `None`
+        after_fn : function object or |None|
             A function object that takes a |Node| as its argument.
-        leaf_fn : function object or `None`
+        leaf_fn : function object or |None|
             A function object that takes a |Node| as its argument.
 
         Notes
@@ -1697,19 +1697,19 @@ class Node(
         """
         Removes a node from the child set of this node.
 
-        Results in the parent of the node being removed set to `None`.  If
-        ``suppress_unifurcations`` is `True`, if this node ends up having only one
+        Results in the parent of the node being removed set to |None|.  If
+        ``suppress_unifurcations`` is |True|, if this node ends up having only one
         child after removal of the specified node, then this node will be
         removed from the tree, with its single child added to the child node
         set of its parent and the edge length adjusted accordingly.
-        ``suppress_unifurcations`` should only be `True` for unrooted trees.
+        ``suppress_unifurcations`` should only be |True| for unrooted trees.
 
         Parameters
         ----------
         node : |Node|
             The node to be removed.
         suppress_unifurcations : boolean, optional
-            If `False` (default), no action is taken. If `True`, then if the
+            If |False| (default), no action is taken. If |True|, then if the
             node removal results in a node with degree of two (i.e., a single
             parent and a single child), then it will be removed from
             the tree and its (sole) child will be added as a child of its
@@ -2005,25 +2005,25 @@ class Node(
 
     def is_leaf(self):
         """
-        Returns `True` if the node is a tip or a leaf node, i.e. has no child
+        Returns |True| if the node is a tip or a leaf node, i.e. has no child
         nodes.
 
         Returns
         -------
         boolean
-            `True` if the node is a leaf, i.e., has no child nodes. `False`
+            |True| if the node is a leaf, i.e., has no child nodes. |False|
             otherwise.
         """
         return bool(not self._child_nodes)
 
     def is_internal(self):
         """
-        Returns `True` if the node is *not* a tip or a leaf node.
+        Returns |True| if the node is *not* a tip or a leaf node.
 
         Returns
         -------
         boolean
-            `True` if the node is not a leaf. `False` otherwise.
+            |True| if the node is not a leaf. |False| otherwise.
         """
         return bool(self._child_nodes)
 
@@ -2437,7 +2437,7 @@ class Tree(
         used to specify the 0-based index of the tree collection, and
         ``tree_offset`` argument can be used to specify the 0-based index of
         the tree within the collection, as the source. If ``collection_offset``
-        is not specified or `None`, then the first collection (offset=0) is
+        is not specified or |None|, then the first collection (offset=0) is
         assumed. If ``tree_offset`` is not specified, then the first tree
         (offset=0) is returned.
 
@@ -2445,7 +2445,7 @@ class Tree(
         :meth:|TreeList|.read()`, which wraps the actual parsing.
 
         If no tree is found in the source according to the specified criteria,
-        then `None` is returned.
+        then |None| is returned.
 
         Notes
         -----
@@ -2495,9 +2495,9 @@ class Tree(
 
         Returns
         -------
-        |Tree| or `None`
+        |Tree| or |None|
             The |Tree| object corresponding to the tree in the data
-            source, or `None` if no valid tree description was found.
+            source, or |None| if no valid tree description was found.
 
         """
         from dendropy.datamodel.treecollectionmodel import TreeList
@@ -2559,7 +2559,7 @@ class Tree(
 
             - **label** (*str*) -- Name or identifier to be assigned to the new
               object; if not given, will be assigned the one specified in the
-              data source, or `None` otherwise.
+              data source, or |None| otherwise.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created.
@@ -2569,9 +2569,9 @@ class Tree(
             - **tree_offset** (*int*) -- 0-based index of tree within the
               collection specified by ``collection_offset`` to be parsed. If
               not specified, then the first tree (offset = 0) is assumed.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -2730,7 +2730,7 @@ class Tree(
             taxon definitions.
         is_rooted : bool
             Specifies whether or not the tree is rooted.
-        edge_lengths : iterable or `None`
+        edge_lengths : iterable or |None|
             An iterable of edge lengths. This should be in the same order
             as the bipartitions in the bipartition encoding.
 
@@ -2779,8 +2779,8 @@ class Tree(
             taxon definitions.
         is_rooted : bool
             Specifies whether or not the tree is rooted.
-        edge_lengths : dict or `False` or `None`
-            If `False` or `None`, then no edge lengths will be added.
+        edge_lengths : dict or |False| or |None|
+            If |False| or |None|, then no edge lengths will be added.
             Otherwise, this should be a dictionary mapping splits to edge
             lengths.
         Returns
@@ -3168,7 +3168,7 @@ class Tree(
     #     can be used to specify the 0-based index of the tree collection, and
     #     ``tree_offset`` argument can be used to specify the 0-based
     #     index of the tree within the collection, as the source. If
-    #     ``collection_offset`` is not specified or `None`, then all collections in
+    #     ``collection_offset`` is not specified or |None|, then all collections in
     #     the source are merged before considering ``tree_offset``.  If
     #     ``tree_offset`` is not specified, then the first tree (offset=0) is
     #     returned.
@@ -3194,10 +3194,10 @@ class Tree(
 
     #     tree_offset : integer or None
     #         0-based index of tree in source to be parsed. If
-    #         ``collection_offset`` is `None`, then this is the 0-based index of
+    #         ``collection_offset`` is |None|, then this is the 0-based index of
     #         the tree across all collections considered together. Otherwise,
     #         this is the 0-based index within a particular collection. If
-    #         ``tree_offset`` is `None` or not specified, then the first tree is
+    #         ``tree_offset`` is |None| or not specified, then the first tree is
     #         returned.
 
     #     \*\*kwargs : keyword arguments
@@ -3273,8 +3273,8 @@ class Tree(
 
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be included in
-            the list, or `False` if not. If ``filter_fn`` is `None` (default),
+            and returns |True| if the |Node| object is to be included in
+            the list, or |False| if not. If ``filter_fn`` is |None| (default),
             then all nodes visited will be included.
 
         Returns
@@ -3300,13 +3300,13 @@ class Tree(
         """
         Returns list of internal nodes in the tree.
 
-        Root or seed node is included unless ``exclude_seed_node`` is `True`.
+        Root or seed node is included unless ``exclude_seed_node`` is |True|.
 
         Parameters
         ----------
         exclude_seed_node : boolean, optional
-            If `False` (default), then the seed node or root is included. If
-            `True`, then the seed node is omitted.
+            If |False| (default), then the seed node or root is included. If
+            |True|, then the seed node is omitted.
 
         Returns
         -------
@@ -3323,8 +3323,8 @@ class Tree(
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be included,
-            or `False` if not. If ``filter_fn`` is `None` (default), then all
+            and returns |True| if the |Edge| object is to be included,
+            or |False| if not. If ``filter_fn`` is |None| (default), then all
             edges will be included.
 
         Returns
@@ -3353,8 +3353,8 @@ class Tree(
         Parameters
         ----------
         exclude_seed_node : boolean, optional
-            If `False` (default), then the edge subtending the seed node or
-            root is included. If `True`, then the seed node is omitted.
+            If |False| (default), then the edge subtending the seed node or
+            root is included. If |True|, then the seed node is omitted.
 
         Returns
         -------
@@ -3385,13 +3385,13 @@ class Tree(
         ----------
         filter_fn : function object
             Takes a single |Node| object as an argument and returns
-            `True` if the node should be returned.
+            |True| if the node should be returned.
 
         Returns
         -------
-        |Node| or `None`
+        |Node| or |None|
             Returns first |Node| object for which the filter function
-            ``filter_fn`` returns `True`, or `None` if no such node exists on
+            ``filter_fn`` returns |True|, or |None| if no such node exists on
             this tree.
         """
         for node in self.preorder_node_iter(filter_fn):
@@ -3417,13 +3417,13 @@ class Tree(
         ----------
         filter_fn : function object
             Takes a single |Node| object as an argument and returns
-            `True` if the node should be returned.
+            |True| if the node should be returned.
 
         Returns
         -------
         nodes : list of |Node| instances
             Returns list of |Node| objects for which the filter function
-            ``filter_fn`` returns `True`.
+            ``filter_fn`` returns |True|.
         """
         return [node for node in self.preorder_node_iter(filter_fn)]
 
@@ -3438,9 +3438,9 @@ class Tree(
 
         Returns
         -------
-        |Node| or `None`
+        |Node| or |None|
             Returns first |Node| object with ``label`` attribute having value
-            given in ``label``, or `None` if no such node is found.
+            given in ``label``, or |None| if no such node is found.
 
         """
         for node in self.preorder_node_iter():
@@ -3460,9 +3460,9 @@ class Tree(
 
         Returns
         -------
-        |Node| or `None`
+        |Node| or |None|
             Returns first |Node| object with ``taxon`` attribute referencing same
-            object as ``taxon`` argument, or `None` if no such node exists.
+            object as ``taxon`` argument, or |None| if no such node exists.
         """
         for node in self.postorder_node_iter():
             try:
@@ -3475,20 +3475,20 @@ class Tree(
     def find_node_with_taxon(self, taxon_filter_fn=None):
         """
         Returns node associated with |Taxon| object for which ``taxon_filter_fn``
-        returns `True`.
+        returns |True|.
 
         Parameters
         ----------
         taxon_filter_fn : function object
             Takes a single |Taxon| object as an argument and returns
-            `True` if the node associated with that |Taxon| should be
+            |True| if the node associated with that |Taxon| should be
             returned.
 
         Returns
         -------
-        |Node| or `None`
+        |Node| or |None|
             Returns first |Node| object with ``taxon`` attribute passing filter
-            function ``taxon_filter_fn``, or `None` if no such node is found.
+            function ``taxon_filter_fn``, or |None| if no such node is found.
         """
         for node in self.preorder_node_iter():
             if hasattr(node, "taxon") and node.taxon is not None:
@@ -3507,9 +3507,9 @@ class Tree(
 
         Returns
         -------
-        |Node| or `None`
+        |Node| or |None|
             Returns first |Node| object with ``taxon`` attribute having label
-            ``label``, or`None` if no such node is found.
+            ``label``, or|None| if no such node is found.
 
         """
         return self.find_node_with_taxon(lambda x: x.label == label)
@@ -3532,7 +3532,7 @@ class Tree(
             * have the labels specified by the list of strings given by the
               keyword argument ``taxon_labels``
 
-        Returns `None` if no appropriate node is found. Assumes that
+        Returns |None| if no appropriate node is found. Assumes that
         bipartitions have been encoded on the tree. It is possible that the
         leafset bitmask is not compatible with the subtree that is returned!
         (compatibility tests are not fully performed).  This function is used
@@ -3564,8 +3564,8 @@ class Tree(
 
         Returns
         -------
-        |Node| or `None`
-            The most-recent common ancestor of the nodes specified, or `None`
+        |Node| or |None|
+            The most-recent common ancestor of the nodes specified, or |None|
             if no such node exists.
         """
         start_node = kwargs.get("start_node", self.seed_node)
@@ -3649,15 +3649,15 @@ class Tree(
 
         Visits nodes in ``self``, with each node visited before its children.
         Nodes can optionally be filtered by ``filter_fn``: only nodes for which
-        ``filter_fn`` returns `True` when called with the node as an argument are
+        ``filter_fn`` returns |True| when called with the node as an argument are
         yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -3674,20 +3674,20 @@ class Tree(
         Visits internal nodes in ``self``, with each node visited before its
         children. In DendroPy, "internal nodes" are nodes that have at least
         one child node, and thus the root or seed node is typically included
-        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
-        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
+        unless ``exclude_seed_node`` is |True|. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns |True| when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
-            If `False` (default), then the seed node or root is visited. If
-            `True`, then the seed node is skipped.
+            If |False| (default), then the seed node or root is visited. If
+            |True|, then the seed node is skipped.
 
         Returns
         -------
@@ -3703,15 +3703,15 @@ class Tree(
 
         Visits self and all descendant nodes, with each node visited after its
         children. Nodes can optionally be filtered by ``filter_fn``: only nodes
-        for which ``filter_fn`` returns `True` when called with the node as an
+        for which ``filter_fn`` returns |True| when called with the node as an
         argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -3728,20 +3728,20 @@ class Tree(
         Visits internal nodes in ``self``, with each node visited after its
         children. In DendroPy, "internal nodes" are nodes that have at least
         one child node, and thus the root or seed node is typically included
-        unless ``exclude_seed_node`` is `True`. Nodes can optionally be filtered
-        by ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
+        unless ``exclude_seed_node`` is |True|. Nodes can optionally be filtered
+        by ``filter_fn``: only nodes for which ``filter_fn`` returns |True| when
         passed the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         exclude_seed_node : boolean, optional
-            If `False` (default), then the seed node or root is visited. If
-            `True`, then the seed node is skipped.
+            If |False| (default), then the seed node or root is visited. If
+            |True|, then the seed node is skipped.
 
         Returns
         -------
@@ -3759,14 +3759,14 @@ class Tree(
         Visits nodes in ``self``, with each node and other nodes at the same
         level (distance from root) visited before their children.  Nodes can
         optionally be filtered by ``filter_fn``: only nodes for which ``filter_fn``
-        returns `True` when called with the node as an argument are visited.
+        returns |True| when called with the node as an argument are visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -3792,14 +3792,14 @@ class Tree(
         Visits nodes in ``self``, with each node visited in-between its children.
         Only valid for strictly-bifurcating trees. Nodes can optionally be
         filtered by ``filter_fn``: only nodes for which ``filter_fn`` returns
-        `True` when called with the node as an argument are yielded.
+        |True| when called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -3814,15 +3814,15 @@ class Tree(
         Iterate over all tips or leaves of tree.
 
         Visits all leaf or tip in ``self``. Nodes can optionally be filtered by
-        ``filter_fn``: only nodes for which ``filter_fn`` returns `True` when
+        ``filter_fn``: only nodes for which ``filter_fn`` returns |True| when
         called with the node as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -3849,25 +3849,25 @@ class Tree(
         Iterates over nodes in order of age ('age' is as given by the ``age``
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If ``include_leaves`` is `True` (default), leaves are included in the
-        iteration; if ``include_leaves`` is `False`, leaves will be skipped.
-        If ``descending`` is `False` (default), younger nodes will be returned
-        before older ones; if `True`, older nodes will be returned before
+        If ``include_leaves`` is |True| (default), leaves are included in the
+        iteration; if ``include_leaves`` is |False|, leaves will be skipped.
+        If ``descending`` is |False| (default), younger nodes will be returned
+        before older ones; if |True|, older nodes will be returned before
         younger ones.
 
         Parameters
         ----------
         include_leaves : boolean, optional
-            If `True` (default), then leaf nodes are included in the iteration.
-            If `False`, then leaf nodes are skipped.
+            If |True| (default), then leaf nodes are included in the iteration.
+            If |False|, then leaf nodes are skipped.
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
         descending : boolean, optional
-            If `False` (default), then younger nodes are visited before older
-            ones. If `True`, then older nodes are visited before younger ones.
+            If |False| (default), then younger nodes are visited before older
+            ones. If |True|, then older nodes are visited before younger ones.
 
         Returns
         -------
@@ -3944,11 +3944,11 @@ class Tree(
 
         Parameters
         ----------
-        before_fn : function object or `None`
+        before_fn : function object or |None|
             A function object that takes a |Node| as its argument.
-        after_fn : function object or `None`
+        after_fn : function object or |None|
             A function object that takes a |Node| as its argument.
-        leaf_fn : function object or `None`
+        leaf_fn : function object or |None|
             A function object that takes a |Node| as its argument.
 
         Notes
@@ -3970,15 +3970,15 @@ class Tree(
 
         Visits nodes in ``self``, with each node visited before its children.
         Nodes can optionally be filtered by ``filter_fn``: only nodes for which
-        ``filter_fn`` returns `True` when called with the node as an argument are
+        ``filter_fn`` returns |True| when called with the node as an argument are
         yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Node| object as an argument
-            and returns `True` if the |Node| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Node| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all nodes visited will be yielded.
 
         Returns
@@ -4002,20 +4002,20 @@ class Tree(
         Visits internal edges in ``self``, with each edge visited before its
         children. In DendroPy, "internal edges" are edges that have at least
         one child edge, and thus the root or seed edge is typically included
-        unless ``exclude_seed_edge`` is `True`. Edges can optionally be filtered
-        by ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
+        unless ``exclude_seed_edge`` is |True|. Edges can optionally be filtered
+        by ``filter_fn``: only edges for which ``filter_fn`` returns |True| when
         passed the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
         exclude_seed_edge : boolean, optional
-            If `False` (default), then the edge subtending the seed node or
-            root is visited. If `True`, then this edge is skipped.
+            If |False| (default), then the edge subtending the seed node or
+            root is visited. If |True|, then this edge is skipped.
 
         Returns
         -------
@@ -4041,15 +4041,15 @@ class Tree(
 
         Visits edges in ``self``, with each edge visited after its children.
         Edges can optionally be filtered by ``filter_fn``: only edges for which
-        ``filter_fn`` returns `True` when called with the edge as an argument
+        ``filter_fn`` returns |True| when called with the edge as an argument
         are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
 
         Returns
@@ -4093,20 +4093,20 @@ class Tree(
         Visits internal edges in ``self``, with each edge visited after its
         children. In DendroPy, "internal edges" are edges that have at least
         one child edge, and thus the root or seed edge is typically included
-        unless ``exclude_seed_edge`` is `True`. Edges can optionally be filtered
-        by ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
+        unless ``exclude_seed_edge`` is |True|. Edges can optionally be filtered
+        by ``filter_fn``: only edges for which ``filter_fn`` returns |True| when
         passed the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
         exclude_seed_edge : boolean, optional
-            If `False` (default), then the seed edge or root is visited. If
-            `True`, then the seed edge is skipped.
+            If |False| (default), then the seed edge or root is visited. If
+            |True|, then the seed edge is skipped.
 
         Returns
         -------
@@ -4133,14 +4133,14 @@ class Tree(
         Visits edges in ``self``, with each edge and other edges at the same
         level (distance from root) visited before their children.  Edges can
         optionally be filtered by ``filter_fn``: only edges for which ``filter_fn``
-        returns `True` when called with the edge as an argument are visited.
+        returns |True| when called with the edge as an argument are visited.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
 
         Returns
@@ -4171,14 +4171,14 @@ class Tree(
         Visits edges in ``self``, with each edge visited in-between its children.
         Only valid for strictly-bifurcating trees. Edges can optionally be
         filtered by ``filter_fn``: only edges for which ``filter_fn`` returns
-        `True` when called with the edge as an argument are yielded.
+        |True| when called with the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
 
         Returns
@@ -4198,15 +4198,15 @@ class Tree(
         Iterate over all tips or leaves of tree.
 
         Visits all leaf or tip in ``self``. Edges can optionally be filtered by
-        ``filter_fn``: only edges for which ``filter_fn`` returns `True` when
+        ``filter_fn``: only edges for which ``filter_fn`` returns |True| when
         called with the edge as an argument are yielded.
 
         Parameters
         ----------
         filter_fn : function object, optional
             A function object that takes a |Edge| object as an argument
-            and returns `True` if the |Edge| object is to be yielded by
-            the iterator, or `False` if not. If ``filter_fn`` is `None`
+            and returns |True| if the |Edge| object is to be yielded by
+            the iterator, or |False| if not. If ``filter_fn`` is |None|
             (default), then all edges visited will be yielded.
 
         Returns
@@ -4652,7 +4652,7 @@ class Tree(
         Parameters
         ----------
         update_bipartitions : bool
-            If `True` then the bipartitions encoding will be calculated.
+            If |True| then the bipartitions encoding will be calculated.
 
         """
         if update_bipartitions and self.bipartition_encoding:
@@ -4698,7 +4698,7 @@ class Tree(
             update_bipartitions=False):
         """
         Collapse all *internal* edges with edge lengths less than or equal to
-        ``threshold`` (or with `None` for edge length).
+        ``threshold`` (or with |None| for edge length).
         """
         for e in self.postorder_edge_iter():
             if e.length is None or (e.length <= threshold) and e.is_internal():
@@ -4719,13 +4719,13 @@ class Tree(
             The maximum number of children a node can have before being
             resolved.
         update_bipartitions : bool
-            If `True`, then bipartitions will be calculated.
-        rng : ``random.Random`` object or `None`
+            If |True|, then bipartitions will be calculated.
+        rng : ``random.Random`` object or |None|
             If ``rng`` is an object with a ``sample()`` method then the polytomy
             will be resolved by sequentially adding, generating all tree
             topologies equiprobably. ``rng.sample()`` should behave like
             ``random.sample()``
-            If ``rng`` is `None`, then polytomy is broken deterministically by
+            If ``rng`` is |None|, then polytomy is broken deterministically by
             repeatedly joining pairs of children.
         """
         polytomies = []
@@ -4787,28 +4787,28 @@ class Tree(
             update_bipartitions=False,
             suppress_unifurcations=True):
         """
-        Removes all leaves for which ``filter_fn`` returns `False`. If recursive
-        is `True`, then process is repeated until all leaf nodes in the tree will
-        evaluate to `True` when passed to ``filter_fn``.
+        Removes all leaves for which ``filter_fn`` returns |False|. If recursive
+        is |True|, then process is repeated until all leaf nodes in the tree will
+        evaluate to |True| when passed to ``filter_fn``.
 
         Parameters
         ----------
         ``filter_fn`` : function object
-            A function that takes a |Node| object and returns `True` if
-            the object is to be allowed as a leaf node, and `False` if otherwise.
+            A function that takes a |Node| object and returns |True| if
+            the object is to be allowed as a leaf node, and |False| if otherwise.
         recursive : bool
-            If `True`, then filter is repeatedly applied until all leaf nodes
-            evaluate to `True` under ``filter_fn``. If `False`, then only a
+            If |True|, then filter is repeatedly applied until all leaf nodes
+            evaluate to |True| under ``filter_fn``. If |False|, then only a
             single pass is made on the current leaf set. This may result in new
-            leaves for which the ``filter_fn`` is `False` (e.g., the parent node
-            of a cherry in which both children evaluated to `False`
-            under ``filter_fn`` now is a leaf node which may be `False`
+            leaves for which the ``filter_fn`` is |False| (e.g., the parent node
+            of a cherry in which both children evaluated to |False|
+            under ``filter_fn`` now is a leaf node which may be |False|
             under ``filter_fn``).
         suppress_unifurcations : bool
-            If `True`, nodes of outdegree 1 will be deleted as they are
+            If |True|, nodes of outdegree 1 will be deleted as they are
             encountered.
         update_bipartitions : bool
-            If `True`, then bipartitions will be calculated.
+            If |True|, then bipartitions will be calculated.
 
         Returns
         -------
@@ -4840,7 +4840,7 @@ class Tree(
             suppress_unifurcations=True):
         """
         Removes all terminal nodes that have their ``taxon`` attribute set to
-        `None`.
+        |None|.
         """
         nodes_removed = []
         while True:
@@ -4947,8 +4947,8 @@ class Tree(
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is `False`) or
-        descending (if ``ascending`` is `False`) order in terms of the number of
+        Sorts child nodes in ascending (if ``ascending`` is |False|) or
+        descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
         """
         node_desc_counts = {}
@@ -5006,7 +5006,7 @@ class Tree(
             All edge lengths calculated to have a value less than this will be
             set to this.
         error_on_negative_edge_lengths : bool
-            If `True`, an inferred edge length that is less than 0 will result
+            If |True|, an inferred edge length that is less than 0 will result
             in a ValueError.
         """
         for nd in self.preorder_node_iter():
@@ -5044,30 +5044,30 @@ class Tree(
             ``ultrametricity_precision`` is negative or False, then this check
             will be skipped.
         force_max_age: bool
-            If ``force_max_age`` is ``True``, then each node will be set to the
+            If ``force_max_age`` is |True|, then each node will be set to the
             maximum possible age, by being set to the oldest age given its
             child set and the subtending edge lengths. This option only makes a
             difference if the tree is not ultrametric, and so the
             ultrametricity precision check is ignore if this option is set to
             True.
         force_min_age: bool
-            If ``force_min_age`` is ``True`` then each node will be set to the
+            If ``force_min_age`` is |True| then each node will be set to the
             minimum possible age, by being set to the youngest age given its
             child set and the subtending edge lengths. This option only makes a
             difference if the tree is not ultrametric, and so the
             ultrametricity precision check is ignore if this option is set to
             True.
         set_node_age_fn: function object
-            If not `None`, then this should be a function that takes a node as
-            an argument and returns ``None`` or a non-``None`` value. If
-            ``None``, then this indicates that the node's age should be
-            calculated by this function. If not ``None``, then this is the
+            If not |None|, then this should be a function that takes a node as
+            an argument and returns |None| or a non-|None| value. If
+            |None|, then this indicates that the node's age should be
+            calculated by this function. If not |None|, then this is the
             value that this node's age should be set to. This can be used to
             set non-contemporary tip ages by passing something like:
 
                 f = lambda nd: None if not nd.is_leaf else nd.annotations["height"]
 
-            which returns ``None`` if the node is an internal node, but
+            which returns |None| if the node is an internal node, but
             otherwise returns the value in the ``height`` annotation.
 
         Returns
@@ -5255,28 +5255,28 @@ class Tree(
         Parameters
         ----------
         suppress_unifurcations : bool
-            If `True`, nodes of outdegree 1 will be deleted as they are
+            If |True|, nodes of outdegree 1 will be deleted as they are
             encountered.
         collapse_unrooted_basal_bifurcation: bool
-            If `True`, then a basal bifurcation on an unrooted tree will be
+            If |True|, then a basal bifurcation on an unrooted tree will be
             collapsed to a trifurcation. This mean that an unrooted tree like
             '(A,(B,C))' will be changed to '(A,B,C)' after this.
         suppress_storage : bool
             By default, the bipartition encoding is stored as a list (assigned
             to ``self.bipartition_encoding``) and returned. If ``suppress_storage``
-            is `True`, then the list is not created.
+            is |True|, then the list is not created.
         is_bipartitions_mutable : bool
             By default, the |Bipartition| instances coded will be locked
             or frozen, allowing their use in hashing containers such as
             dictionary (keys) and sets. To allow modification of values, the
-            ``is_mutable`` attribute must be set to `True`.
+            ``is_mutable`` attribute must be set to |True|.
 
         Returns
         -------
-        list[|Bipartition|] or `None`
+        list[|Bipartition|] or |None|
             A list of |Bipartition| objects of this |Tree|
             representing the structure of this tree, or, if ``suppress_storage``
-            is `True`, then `None`.
+            is |True|, then |None|.
 
         """
         self._bipartition_edge_map = None

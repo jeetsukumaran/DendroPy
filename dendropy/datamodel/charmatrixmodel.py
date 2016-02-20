@@ -367,7 +367,7 @@ class CharacterDataSequence(
 
     def has_annotations_at(self, idx):
         """
-        Return `True` if character at ``idx`` has metadata annotations.
+        Return |True| if character at ``idx`` has metadata annotations.
 
         Parameters
         ----------
@@ -377,7 +377,7 @@ class CharacterDataSequence(
         Returns
         -------
         b : bool
-            `True` if character at ``idx`` has metadata annotations, `False`
+            |True| if character at ``idx`` has metadata annotations, |False|
             otherwise.
         """
         return not self._character_annotations[idx] is None
@@ -564,16 +564,16 @@ class CharacterMatrix(
 
             - **label** (*str*) -- Name or identifier to be assigned to the new
               object; if not given, will be assigned the one specified in the
-              data source, or `None` otherwise.
+              data source, or |None| otherwise.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created.
             - **matrix_offset** (*int*) -- 0-based index of character block or
               matrix in source to be parsed. If not specified then the
               first matrix (offset = 0) is assumed.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -733,9 +733,9 @@ class CharacterMatrix(
             specified, a new one will be created using keyword arguments
             specified by ``kwargs``.
         case_sensitive_taxon_labels : boolean
-            If `True`, matching of string labels specified as keys in ``d`` will
+            If |True|, matching of string labels specified as keys in ``d`` will
             be matched to |Taxon| objects in current taxon namespace
-            with case being respected. If `False`, then case will be ignored.
+            with case being respected. If |False|, then case will be ignored.
         \*\*kwargs : keyword arguments, optional
             Keyword arguments to be passed to constructor of
             |CharacterMatrix| when creating new instance to populate, if
@@ -980,7 +980,7 @@ class CharacterMatrix(
         ----------
         taxon : |Taxon|
             |Taxon| instance with which this sequence is associated.
-        values : iterable or `None`
+        values : iterable or |None|
             An initial set of values with which to populate the new character
             sequence.
 
@@ -1062,8 +1062,8 @@ class CharacterMatrix(
 
     def __contains__(self, key):
         """
-        Returns `True` if a sequence associated with ``key`` is in ``self``, or
-        `False` otherwise.
+        Returns |True| if a sequence associated with ``key`` is in ``self``, or
+        |False| otherwise.
 
         Parameters
         ----------
@@ -1079,7 +1079,7 @@ class CharacterMatrix(
         Returns
         -------
         b : boolean
-            `True` if ``key`` is in ``self``; `False` otherwise.
+            |True| if ``key`` is in ``self``; |False| otherwise.
         """
         return self._taxon_sequence_map.__contains__(key)
 
@@ -1268,11 +1268,11 @@ class CharacterMatrix(
             A valid value (e.g., a numeric value for continuous characters, or
             a |StateIdentity| for discrete character).
         size : integer or None
-            The size (length) up to which the sequences will be padded. If `None`, then
+            The size (length) up to which the sequences will be padded. If |None|, then
             the maximum (longest) sequence size will be used.
         append : boolean
-            If `True` (default), then new values will be added to the end of
-            each sequence. If `False`, then new values will be inserted to the
+            If |True| (default), then new values will be added to the end of
+            each sequence. If |False|, then new values will be inserted to the
             front of each sequence.
         """
         if size is None:
@@ -1310,11 +1310,11 @@ class CharacterMatrix(
             A valid value (e.g., a numeric value for continuous characters, or
             a |StateIdentity| for discrete character).
         size : integer or None
-            The size (length) up to which the sequences will be padded. If `None`, then
+            The size (length) up to which the sequences will be padded. If |None|, then
             the maximum (longest) sequence size will be used.
         append : boolean
-            If `True` (default), then new values will be added to the end of
-            each sequence. If `False`, then new values will be inserted to the
+            If |True| (default), then new values will be added to the end of
+            each sequence. If |False|, then new values will be inserted to the
             front of each sequence.
         """
         self.fill_taxa()
@@ -1796,11 +1796,11 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
         char_indices : iterable of ints
             An iterable of indexes of characters to include (by column). If not
-            given or `None` [default], then all characters are included.
+            given or |None| [default], then all characters are included.
 
         gaps_as_missing : boolean
-            If `True` [default] then gap characters will be treated as missing
-            data values. If `False`, then they will be treated as an additional
+            If |True| [default] then gap characters will be treated as missing
+            data values. If |False|, then they will be treated as an additional
             (fundamental) state.`
 
         Returns

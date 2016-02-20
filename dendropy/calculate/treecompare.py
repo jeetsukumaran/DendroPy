@@ -33,7 +33,7 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
     Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    ``is_bipartitions_updated`` argument must be `False` to force recalculation
+    ``is_bipartitions_updated`` argument must be |False| to force recalculation
     of bipartitions.
 
     Parameters
@@ -47,8 +47,8 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
         same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
-        If `False`, then the bipartitions on *both* trees will be updated
-        before comparison. If `True` then the bipartitions will only be
+        If |False|, then the bipartitions on *both* trees will be updated
+        before comparison. If |True| then the bipartitions will only be
         calculated for a |Tree| object if they have not been calculated
         before, either explicitly or implicitly.
 
@@ -103,7 +103,7 @@ def weighted_robinson_foulds_distance(
     Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be |False| to force recalculation of
     bipartitions.
 
     Parameters
@@ -119,8 +119,8 @@ def weighted_robinson_foulds_distance(
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
-        If `True`, then the bipartitions on *both* trees will be updated before
-        comparison. If `False` (default) then the bipartitions will only be
+        If |True|, then the bipartitions on *both* trees will be updated before
+        comparison. If |False| (default) then the bipartitions will only be
         calculated for a |Tree| object if they have not been calculated
         before, either explicitly or implicitly.
 
@@ -171,7 +171,7 @@ def false_positives_and_negatives(
     Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be |False| to force recalculation of
     bipartitions.
 
     Parameters
@@ -185,8 +185,8 @@ def false_positives_and_negatives(
         same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
-        If `True`, then the bipartitions on *both* trees will be updated
-        before comparison. If `False` (default) then the bipartitions
+        If |True|, then the bipartitions on *both* trees will be updated
+        before comparison. If |False| (default) then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
@@ -246,7 +246,7 @@ def euclidean_distance(
     Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be |False| to force recalculation of
     bipartitions.
 
     Parameters
@@ -262,8 +262,8 @@ def euclidean_distance(
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
-        If `True`, then the bipartitions on *both* trees will be updated
-        before comparison. If `False` (default) then the bipartitions
+        If |True|, then the bipartitions on *both* trees will be updated
+        before comparison. If |False| (default) then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
@@ -309,7 +309,7 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     Trees need to share the same |TaxonNamespace| reference. The
     bipartition bitmasks of the trees must be correct for the current tree
     structures (by calling :meth:`Tree.encode_bipartitions()` method) or the
-    ``is_bipartitions_updated`` argument must be `False` to force recalculation of
+    ``is_bipartitions_updated`` argument must be |False| to force recalculation of
     bipartitions.
 
     Parameters
@@ -323,8 +323,8 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
         same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
-        If `True`, then the bipartitions on *both* trees will be updated
-        before comparison. If `False` (default) then the bipartitions
+        If |True|, then the bipartitions on *both* trees will be updated
+        before comparison. If |False| (default) then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 

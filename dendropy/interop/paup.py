@@ -75,19 +75,19 @@ class PaupService(object):
             A list or some other iterable of strings representing PAUP
             commands.
         suppress_standard_preamble : bool
-            If `True`, then the command sequence will not be prefaced by the
+            If |True|, then the command sequence will not be prefaced by the
             standard preamble.
         ignore_error_returncode : bool
-            If `True`, then a non-0 return code from the PAUP process will not
+            If |True|, then a non-0 return code from the PAUP process will not
             result in an exception being raised.
         ignore_nonempty_stderr : bool
-            If `True`, then the PAUP process writing to standard error will not
+            If |True|, then the PAUP process writing to standard error will not
             result in an exception being raised.
         strip_extraneous_prompts_from_stdout : bool
-            If `True`, then all occurrences of 'paup>' will be removed from the
+            If |True|, then all occurrences of 'paup>' will be removed from the
             standard output contents.
         strip_extraneous_prompts_from_stderr : bool
-            If `True`, then all occurrences of 'paup>' will be removed from the
+            If |True|, then all occurrences of 'paup>' will be removed from the
             standard error contents.
         cwd : string
             Set the working directory of the PAUP* process to this directory.
@@ -198,11 +198,11 @@ class PaupService(object):
             A list or some other iterable of file paths containing trees in
             NEXUS format.
         is_rooted : bool
-            If `True` then trees will be treated as rooted. If `False`, then
+            If |True| then trees will be treated as rooted. If |False|, then
             rooting follows that specified in the tree statements, defaulting
             to unrooted if not specified.
         use_tree_weights : bool
-            If `False` then tree weighting statements are disregarded.
+            If |False| then tree weighting statements are disregarded.
             Otherwise, they will be regarded.
         burnin : integer
             Skip these many trees (from beginning of each source).
@@ -274,11 +274,11 @@ class PaupService(object):
             A list or some other iterable of file paths containing trees in
             NEXUS format.
         is_rooted : bool
-            If `True` then trees will be treated as rooted. If `False`, then
+            If |True| then trees will be treated as rooted. If |False|, then
             rooting follows that specified in the tree statements, defaulting
             to unrooted if not specified.
         use_tree_weights : bool
-            If `False` then tree weighting statements are disregarded.
+            If |False| then tree weighting statements are disregarded.
             Otherwise, they will be regarded.
         burnin : integer
             Skip these many trees (from beginning of each source).

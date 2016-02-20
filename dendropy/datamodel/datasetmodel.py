@@ -157,16 +157,16 @@ class DataSet(
 
         **Optional General Keyword Arguments:**
 
-            - **exclude_trees** (*bool*) -- If ``True``, then all tree data in the data
+            - **exclude_trees** (*bool*) -- If |True|, then all tree data in the data
               source will be skipped.
-            - **exclude_chars** (*bool*) -- If ``True``, then all character
+            - **exclude_chars** (*bool*) -- If |True|, then all character
               data in the data source will be skipped.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created.
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**
@@ -306,19 +306,19 @@ class DataSet(
 
         **Optional General Keyword Arguments:**
 
-            - **exclude_trees** (*bool*) -- If ``True``, then all tree data in the data
+            - **exclude_trees** (*bool*) -- If |True|, then all tree data in the data
               source will be skipped.
-            - **exclude_chars** (*bool*) -- If ``True``, then all character
+            - **exclude_chars** (*bool*) -- If |True|, then all character
               data in the data source will be skipped.
             - **taxon_namespace** (|TaxonNamespace|) -- The |TaxonNamespace|
               instance to use to :doc:`manage the taxon names </primer/taxa>`.
               If not specified, a new one will be created unless the DataSet
               object is in attached taxon namespace mode
-              (``self.attached_taxon_namespace`` is not ``None`` but assigned
+              (``self.attached_taxon_namespace`` is not |None| but assigned
               to a specific |TaxonNamespace| instance).
-            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If `True`,
+            - **ignore_unrecognized_keyword_arguments** (*bool*) -- If |True|,
               then unsupported or unrecognized keyword arguments will not
-              result in an error. Default is `False`: unsupported keyword
+              result in an error. Default is |False|: unsupported keyword
               arguments will result in an error.
 
         **Optional Schema-Specific Keyword Arguments:**

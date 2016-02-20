@@ -1,3 +1,30 @@
+Release 4.1.0 (Pending)
+-----------------------
+
+New or Updated Features
+^^^^^^^^^^^^^^^^^^^^^^^
+
+    -   Implementation of the Protracted Speciation model: a Birth-Death process with explicit modeling of speciation-as-a-process rather than speciation-as-an-event by incorporating the lag between speciation initiation and speciation completion.
+    -   Added phylogenetic community ecology statistic calculations.
+    -   Added DataTable class to manage community ecology (as well as more general classes of) data.
+    -   NEWICK terminating semicolon requirement relaxation.
+    -   Some more refined node filtering/dropping.
+    -   Return list of nodes dropped when filtering out leaves.
+    -   Force max/min ages when calculating node ages; and beginning of support for setting node ages by function.
+    -   Implementation of Tree.find_nodes() to return collection of nodes that match instaed of just the first one.
+
+Bug Fixes
+^^^^^^^^^
+
+    -   Update string type checking to handle unicode etc. under Python 2.
+    -   Exclusion of trees from data set reads actually works.
+    -   Actually implement symbol to state (alphabet) identity coercion in derived classes.
+    -   Pop out inner classes to enable pickling.
+    -   Several bugs, mostly caused by leftovers of DendroPy3 code.
+    -   Made group_ranges work properly with unordered iterables.
+    -   Make PHYLIP writing work correctly with missing taxa.
+
+
 Release 4.0.3
 -------------
 

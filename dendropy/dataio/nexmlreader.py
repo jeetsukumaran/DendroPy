@@ -232,12 +232,12 @@ class NexmlReader(ioservice.DataReader, _AnnotationParser):
 
         default_namespace : str
             Default namespace to use for elements.
-        case_sensitive_taxon_labels: boolean, default: `False`
-            If `True`, then case is respected when matching taxon names.
-            Default is `False`: case is ignored.
-        ignore_unrecognized_keyword_arguments : boolean, default: `False`
-            If `True`, then unsupported or unrecognized keyword arguments will
-            not result in an error. Default is `False`: unsupported keyword
+        case_sensitive_taxon_labels: boolean, default: |False|
+            If |True|, then case is respected when matching taxon names.
+            Default is |False|: case is ignored.
+        ignore_unrecognized_keyword_arguments : boolean, default: |False|
+            If |True|, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
 
         """

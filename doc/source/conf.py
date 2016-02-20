@@ -263,9 +263,9 @@ rst_prolog = """
 .. |read_from_methods| replace::  :py:meth:`read_from_*() <read_from_*>`
 .. |write_to_methods| replace::  :py:meth:`write_to_*() <read_from_*>`
 
-.. |True| replace:: `True`
-.. |False| replace:: `False`
-.. |None| replace:: `None`
+.. |True| replace:: ``True``
+.. |False| replace:: ``False``
+.. |None| replace:: ``None``
 
 .. |FigTree| replace:: FigTree
 .. _FigTree: http://tree.bio.ed.ac.uk/software/figtree/

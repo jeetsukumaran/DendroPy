@@ -51,7 +51,7 @@ class RService(object):
         r_commands : iterable of strings
             A list or some other iterable of strings of R commands.
         ignore_error_returncode : bool
-            If `True`, then a non-0 return code from the R process will not
+            If |True|, then a non-0 return code from the R process will not
             result in an exception being raised.
         cwd : string
             Set the working directory of the R process to this directory.

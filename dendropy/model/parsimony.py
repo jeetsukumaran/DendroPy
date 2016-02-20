@@ -65,7 +65,7 @@ def fitch_down_pass(
         traversal of the tree.
     state_sets_attr_name : str
         Name of attribute on |Node| objects in which state set lists
-        will stored/accessed. If `None`, then state sets will not be stored on
+        will stored/accessed. If |None|, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets
         A dictionary that takes a taxon object as a key and returns a state set
@@ -75,7 +75,7 @@ def fitch_down_pass(
     weights : iterable
         A list of weights for each pattern.
     score_by_character_list : None or list
-        If not `None`, should be a reference to a list object.
+        If not |None|, should be a reference to a list object.
         This list will be populated by the scores on a character-by-character
         basis.
 
@@ -227,7 +227,7 @@ def fitch_up_pass(
         traversal of the tree.
     state_sets_attr_name : str
         Name of attribute on |Node| objects in which state set lists
-        will stored/accessed. If `None`, then state sets will not be stored on
+        will stored/accessed. If |None|, then state sets will not be stored on
         the tree.
     taxon_state_sets_map : dict[taxon] = state sets
         A dictionary that takes a taxon object as a key and returns a state set
@@ -325,12 +325,12 @@ def parsimony_score(
         A |CharacterMatrix|-derived object with data to be scored. Must have
         the same |TaxonNamespace| as ``tree``.
     gap_as_missing : bool
-        If `True` [default], then gaps will be treated as missing data.
-        If `False`, then gaps will be treated as a new/additional state.
+        If |True| [default], then gaps will be treated as missing data.
+        If |False|, then gaps will be treated as a new/additional state.
     weights : iterable
         A list of weights for each pattern/column in the matrix.
     score_by_character_list : None or list
-        If not `None`, should be a reference to a list object.
+        If not |None|, should be a reference to a list object.
         This list will be populated by the scores on a character-by-character
         basis.
 
@@ -368,7 +368,7 @@ def parsimony_score(
 
         # We store the site-specific scores here
         # This is optional; if we do not want to
-        # use the per-site scores, just pass in ``None``
+        # use the per-site scores, just pass in |None|
         # for the ``score_by_character_list`` argument
         # or do not specify this argument at all.
         score_by_character_list = []

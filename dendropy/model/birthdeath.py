@@ -82,9 +82,9 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument ``repeat_until_success`` is `True` (the
+    In this case, if the keyword argument ``repeat_until_success`` is |True| (the
     default), then a new branching process is initiated.
-    If `False` (default), then a TreeSimTotalExtinctionException is raised.
+    If |False| (default), then a TreeSimTotalExtinctionException is raised.
 
     A Random() object or equivalent can be passed using the ``rng`` keyword;
     otherwise GLOBAL_RNG is used.
@@ -344,9 +344,9 @@ def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_r
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument ``repeat_until_success`` is `True`, then a new
+    In this case, if the keyword argument ``repeat_until_success`` is |True|, then a new
     branching process is initiated.
-    If `False` (default), then a TreeSimTotalExtinctionException is raised.
+    If |False| (default), then a TreeSimTotalExtinctionException is raised.
 
     A Random() object or equivalent can be passed using the ``rng`` keyword;
     otherwise GLOBAL_RNG is used.
@@ -509,7 +509,7 @@ def fit_pure_birth_model(**kwargs):
                 In some cases (typically, abnormal trees, e.g., 1-tip), the
                 likelihood estimation will fail. In this case a ValueError will
                 be raised. If ``ignore_likelihood_calculation_failure`` is
-                `True`, then the function call will still succeed, with the
+                |True|, then the function call will still succeed, with the
                 likelihood set to -``inf``.
 
     Returns

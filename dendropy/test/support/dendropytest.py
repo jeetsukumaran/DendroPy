@@ -38,9 +38,9 @@ __unittest = True
 
 def discover_test_module_paths(filter_patterns=None):
     """
-    Discovers test modules. If ``filter_patterns`` is `None`, then
+    Discovers test modules. If ``filter_patterns`` is |None|, then
     all files in *immediate* directory that begin with 'test' will
-    be added to the set returned. If ``filter_patterns`` is not `None`, then it
+    be added to the set returned. If ``filter_patterns`` is not |None|, then it
     should be a list of regular expression patterns, and only files that match
     at least one of the patterns will be returned.
     """
@@ -61,7 +61,7 @@ def discover_test_module_paths(filter_patterns=None):
 
 def get_test_suite(test_names=None):
     """
-    If ``test_names`` is not `None`, creates a test suite out of those
+    If ``test_names`` is not |None|, creates a test suite out of those
     modules. Otherwise, creates a test suite from all of the modules in
     ``dendropy.test`` using the discovery.
     """

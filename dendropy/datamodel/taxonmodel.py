@@ -227,7 +227,7 @@ class TaxonNamespaceAssociated(object):
         concept namespace scope.
 
         Current :attr:`self.taxon_namespace` value will be replaced with value
-        given in ``taxon_namespace`` if this is not `None`, or a new
+        given in ``taxon_namespace`` if this is not |None|, or a new
         |TaxonNamespace| object. Following this,
         ``reconstruct_taxon_namespace()`` will be called: each distinct
         |Taxon| object associated with ``self`` or members of ``self`` that
@@ -239,14 +239,14 @@ class TaxonNamespaceAssociated(object):
 
         Label mapping case sensitivity follows the
         ``self.taxon_namespace.is_case_sensitive`` setting. If
-        `False` and ``unify_taxa_by_label`` is also `True`, then the
+        |False| and ``unify_taxa_by_label`` is also |True|, then the
         establishment of correspondence between |Taxon| objects in the
         old and new namespaces with be based on case-insensitive matching of
         labels. E.g., if there are four |Taxon| objects with labels
         'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
         that reference these will reference a single new |Taxon| object
         in the new namespace (with a label some existing casing variant of
-        'foo'). If `True`: if ``unify_taxa_by_label`` is `True`,
+        'foo'). If |True|: if ``unify_taxa_by_label`` is |True|,
         |Taxon| objects with labels identical except in case will be
         considered distinct.
 
@@ -257,10 +257,10 @@ class TaxonNamespaceAssociated(object):
             will be moved.
 
         unify_taxa_by_label : boolean, optional
-            If `True`, then references to distinct |Taxon| objects with
+            If |True|, then references to distinct |Taxon| objects with
             identical labels in the current namespace will be replaced with a
             reference to a single |Taxon| object in the new namespace.
-            If `False`: references to distinct |Taxon| objects will
+            If |False|: references to distinct |Taxon| objects will
             remain distinct, even if the labels are the same.
 
         taxon_mapping_memo : dictionary
@@ -325,14 +325,14 @@ class TaxonNamespaceAssociated(object):
 
         Label mapping case sensitivity follows the
         ``self.taxon_namespace.is_case_sensitive`` setting. If
-        `False` and ``unify_taxa_by_label`` is also `True`, then the
+        |False| and ``unify_taxa_by_label`` is also |True|, then the
         establishment of correspondence between |Taxon| objects in the
         old and new namespaces with be based on case-insensitive matching of
         labels. E.g., if there are four |Taxon| objects with labels
         'Foo', 'Foo', 'FOO', and 'FoO' in the old namespace, then all objects
         that reference these will reference a single new |Taxon| object
         in the new namespace (with a label some existing casing variant of
-        'foo'). If `True`: if ``unify_taxa_by_label`` is `True`,
+        'foo'). If |True|: if ``unify_taxa_by_label`` is |True|,
         |Taxon| objects with labels identical except in case will be
         considered distinct.
 
@@ -346,10 +346,10 @@ class TaxonNamespaceAssociated(object):
         Parameters
         ----------
         unify_taxa_by_label : boolean, optional
-            If `True`, then references to distinct |Taxon| objects with
+            If |True|, then references to distinct |Taxon| objects with
             identical labels in the current namespace will be replaced with a
             reference to a single |Taxon| object in the new namespace.
-            If `False`: references to distinct |Taxon| objects will
+            If |False|: references to distinct |Taxon| objects will
             remain distinct, even if the labels are the same.
 
         taxon_mapping_memo : dictionary
@@ -461,11 +461,11 @@ class TaxonNamespace(
         \*\*kwargs : keyword arguments
             label : string
                 The label or name for this namespace.
-            is_mutable : boolean, optional (default = `True`)
-                If `True` (default), then |Taxon| objects can be added to this
-                namespace. If `False`, then adding |Taxon| objects will result
+            is_mutable : boolean, optional (default = |True|)
+                If |True| (default), then |Taxon| objects can be added to this
+                namespace. If |False|, then adding |Taxon| objects will result
                 in an error.
-            is_case_sensitive : boolean, optional (default = `False`)
+            is_case_sensitive : boolean, optional (default = |False|)
                 Whether or not taxon names are considered case sensitive or
                 insensitive.
 
@@ -663,7 +663,7 @@ class TaxonNamespace(
 
     def __contains__(self, taxon):
         """
-        Returns `True` if Taxon object ``taxon`` is in self.
+        Returns |True| if Taxon object ``taxon`` is in self.
         """
         # look-up in dictionary for O(1) instead of O(n) in list
         return taxon in self._taxon_accession_index_map
@@ -681,30 +681,30 @@ class TaxonNamespace(
         ----------
         label : str
             The label for which to search.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
         first_match_only : bool
-            If `False`, then the entire namespace will be searched and *all*
+            If |False|, then the entire namespace will be searched and *all*
             |Taxon| objects with the matching labels will be returned
-            as a list. If `True` then the function will return after
+            as a list. If |True| then the function will return after
             processing the first |Taxon| object with a matching label
             (i.e., the entire namespace is not searched). Setting this
-            argument to `True` will be more efficient and should be preferred
+            argument to |True| will be more efficient and should be preferred
             if there are no redundant or duplicate labels.
         error_if_not_found : bool
-            If `True`, then a LookupError is raised if there are no matches.
+            If |True|, then a LookupError is raised if there are no matches.
 
         Returns
         -------
-        t : `None` or |Taxon| instance or list[|Taxon|]
+        t : |None| or |Taxon| instance or list[|Taxon|]
             If no |Taxon| instances have ``label`` attributes that match
-            the ``label`` argument, then `None`. Otherise, if
+            the ``label`` argument, then |None|. Otherise, if
             `first_match_only==True`, then a |Taxon| instance with
             ``label`` attribute matching the value of the ``label`` argument; if
             `first_match_only==False`, a list of one or more |Taxon|
@@ -755,7 +755,7 @@ class TaxonNamespace(
         ------
         TypeError
             If this namespace is immutable (i.e.
-            :attr:`TaxonNamespace.is_mutable` is `False`).
+            :attr:`TaxonNamespace.is_mutable` is |False|).
 
         """
         # NOTE
@@ -800,7 +800,7 @@ class TaxonNamespace(
         ------
         TypeError
             If this namespace is immutable (i.e. :attr:`TaxonNamespace.is_mutable` is
-            `False`).
+            |False|).
         """
         for t in taxa:
             self.add_taxon(t)
@@ -847,7 +847,7 @@ class TaxonNamespace(
         ------
         TypeError
             If this namespace is immutable (i.e.
-            :attr:`TaxonNamespace.is_mutable` is `False`).
+            :attr:`TaxonNamespace.is_mutable` is |False|).
 
         """
         if not self.is_mutable:
@@ -907,20 +907,20 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the |Taxon| object label to remove.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
         first_match_only : bool
-            If `False`, then the entire namespace will be searched and *all*
+            If |False|, then the entire namespace will be searched and *all*
             |Taxon| objects with the matching labels will be remove. If
-            `True` then only the first |Taxon| object with a matching
+            |True| then only the first |Taxon| object with a matching
             label will be removed (i.e., the entire namespace is not searched).
-            Setting this argument to `True` will be more efficient and should
+            Setting this argument to |True| will be more efficient and should
             be preferred if there are no redundant or duplicate labels.
 
         Raises
@@ -955,20 +955,20 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the |Taxon| object label to remove.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
         first_match_only : bool
-            If `False`, then the entire namespace will be searched and *all*
+            If |False|, then the entire namespace will be searched and *all*
             |Taxon| objects with the matching labels will be remove. If
-            `True` then only the first |Taxon| object with a matching
+            |True| then only the first |Taxon| object with a matching
             label will be removed (i.e., the entire namespace is not searched).
-            Setting this argument to `True` will be more efficient and should
+            Setting this argument to |True| will be more efficient and should
             be preferred if there are no redundant or duplicate labels.
 
         See Also
@@ -1008,13 +1008,13 @@ class TaxonNamespace(
         label : string or string-like
             The value which the ``label`` attribute of the |Taxon| object(s)
             to be returned must match.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
 
         Returns
@@ -1042,20 +1042,20 @@ class TaxonNamespace(
         ----------
         label : string or string-like
             The value of the |Taxon| object label to match.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
 
         Returns
         -------
         b : boolean
-            `True` if there is at least one |Taxon| object in this namespace
-            with a label matching the value of ``label``. Otherwise, `False`.
+            |True| if there is at least one |Taxon| object in this namespace
+            with a label matching the value of ``label``. Otherwise, |False|.
         """
         t = self._lookup_label(
                 label=label,
@@ -1073,21 +1073,21 @@ class TaxonNamespace(
         ----------
         labels : `collections.Iterable` [string]
             The values of the |Taxon| object labels to match.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
 
         Returns
         -------
         b : boolean
-            Returns `True` if, for every element in the iterable ``labels``,
+            Returns |True| if, for every element in the iterable ``labels``,
             there is at least one |Taxon| object that has a label attribute
-            that matches this. `False` otherwise.
+            that matches this. |False| otherwise.
         """
         for label in labels:
             f = self._lookup_label(label=label,
@@ -1106,27 +1106,27 @@ class TaxonNamespace(
         If multiple |Taxon| objects exist with labels that match
         ``label``, then only the first one is returned.  If no |Taxon|
         object is found in this namespace with the specified critieria,
-        `None` is returned.
+        |None| is returned.
 
         Parameters
         ----------
         label : string or string-like
             The value which the ``label`` attribute of the |Taxon| object
             to be returned must match.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
 
         Returns
         -------
-        taxon : |Taxon| object or `None`
+        taxon : |Taxon| object or |None|
             The first |Taxon| object in this namespace collection with a label
-            matching ``label``, or `None` if no such |Taxon| object exists.
+            matching ``label``, or |None| if no such |Taxon| object exists.
         """
         return self._lookup_label(label=label,
                 is_case_sensitive=is_case_sensitive,
@@ -1144,21 +1144,21 @@ class TaxonNamespace(
             Any |Taxon| object in this namespace collection that has a label
             attribute that matches any value in ``labels`` will be included in
             the list returned.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
         first_match_only : bool
-            If `False`, then for *each* label in ``labels``, the entire namespace
+            If |False|, then for *each* label in ``labels``, the entire namespace
             will be searched and *all* |Taxon| objects with the matches
-            will be added to the lest. If `True` then, for each label in
+            will be added to the lest. If |True| then, for each label in
             ``labels``, only the first |Taxon| object with a matching
             label will be added to the list (i.e., the entire namespace is not
-            searched). Setting this argument to `True` will be more
+            searched). Setting this argument to |True| will be more
             efficient and should be preferred if there are no redundant or
             duplicate labels.
 
@@ -1204,18 +1204,18 @@ class TaxonNamespace(
         label : string or string-like
             The value which the ``label`` attribute of the |Taxon| object
             to be returned must match.
-        is_case_sensitive : `None` or bool
+        is_case_sensitive : |None| or bool
             By default, label lookup will use the
             ``is_case_sensitive`` attribute of ``self`` to decide
             whether or not to respect case when trying to match labels to
             operational taxonomic unit names represented by |Taxon|
             instances. This can be over-ridden by specifying
-            ``is_case_sensitive`` to `True` (forcing case-sensitivity) or `False`
+            ``is_case_sensitive`` to |True| (forcing case-sensitivity) or |False|
             (forcing case-insensitivity).
 
         Returns
         -------
-        taxon : |Taxon| object or `None`
+        taxon : |Taxon| object or |None|
             A |Taxon| object in this namespace collection with a label
             matching ``label``.
 
@@ -1224,7 +1224,7 @@ class TaxonNamespace(
         TypeError
             If no |Taxon| object is currently in the collection with a label
             matching the input ``label`` and the ``is_mutable`` attribute of self
-            is `False`.
+            is |False|.
         """
         taxon = self._lookup_label(label=label,
                 is_case_sensitive=is_case_sensitive,
@@ -1252,7 +1252,7 @@ class TaxonNamespace(
             returns the value that determines its sort order. Defaults to
             sorting by label.
         reverse : boolean, optional
-            If `True`, sort will be in reverse order.
+            If |True|, sort will be in reverse order.
         """
         if key is None:
             key = lambda x: x.label
@@ -1286,7 +1286,7 @@ class TaxonNamespace(
         If the |TaxonNamespace| is currently case-insensitive, then the
         dictionary returned will have case-insensitive keys, other the
         dictionary will be case-sensitive. You can override this by explicitly
-        specifying ``is_case_sensitive`` to `False` or `True`.
+        specifying ``is_case_sensitive`` to |False| or |True|.
 
         No attempt is made to handle collisions.
 
@@ -1500,12 +1500,12 @@ class TaxonNamespace(
         bitmask : integer
             Split hash bitmask value.
         preserve_spaces : boolean, optional
-            If `False` (default), then spaces in taxon labels will be replaced
-            by underscores. If `True`, then taxon labels with spaces will be
+            If |False| (default), then spaces in taxon labels will be replaced
+            by underscores. If |True|, then taxon labels with spaces will be
             wrapped in quotes.
         quote_underscores : boolean, optional
-            If `True` (default), then taxon labels with underscores will be
-            wrapped in quotes. If `False`, then the labels will not be wrapped
+            If |True| (default), then taxon labels with underscores will be
+            wrapped in quotes. If |False|, then the labels will not be wrapped
             in quotes.
 
         Returns
@@ -1532,12 +1532,12 @@ class TaxonNamespace(
         bitmask : integer
             Split hash bitmask value.
         preserve_spaces : boolean, optional
-            If `False` (default), then spaces in taxon labels will be replaced
-            by underscores. If `True`, then taxon labels with spaces will be
+            If |False| (default), then spaces in taxon labels will be replaced
+            by underscores. If |True|, then taxon labels with spaces will be
             wrapped in quotes.
         quote_underscores : boolean, optional
-            If `True` (default), then taxon labels with underscores will be
-            wrapped in quotes. If `False`, then the labels will not be wrapped
+            If |True| (default), then taxon labels with underscores will be
+            wrapped in quotes. If |False|, then the labels will not be wrapped
             in quotes.
 
         Returns

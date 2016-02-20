@@ -399,7 +399,7 @@ class ProtractedSpeciationProcess(object):
         that each node can only be associated with a single lineage, but a
         lineage might span several nodes.
 
-        If ``is_correlate_lineage_and_species_trees`` is ``True``,
+        If ``is_correlate_lineage_and_species_trees`` is |True|,
         then additional attributes will be added. See
         :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
         for details.
@@ -407,27 +407,27 @@ class ProtractedSpeciationProcess(object):
         Parameters
         ----------
 
-        max_time : float or `None`
-            Terminate and return results when this time is reached. If `None`,
+        max_time : float or |None|
+            Terminate and return results when this time is reached. If |None|,
             then do not terminated based on run time.
-        max_extant_orthospecies : int or `None`
+        max_extant_orthospecies : int or |None|
             Terminate and return results when this number of tips are found in
             the confirmed-species tree (i.e., the pruned tree consisting of only
-            "good" species). If `None`, then do not terminate
+            "good" species). If |None|, then do not terminate
             based on the number of tipes on the confirmed-species tree.
-        max_extant_lineages : int or `None`
+        max_extant_lineages : int or |None|
             Terminate and return results when this number of tips are found in
             the lineage tree (i.e. the tree with both incipient and good
-            species). If `None`, then do not terminate based on the
+            species). If |None|, then do not terminate based on the
             number of tipes on the incipient species tree.
         is_initial_lineage_orthospecies : bool
             Whether the first lineage that initialies the process is a
-            "good" species or not. Defaults to `True`: first species on
+            "good" species or not. Defaults to |True|: first species on
             the tree is a "good" species.
         is_retry_on_total_extinction : bool
-            If ``False``, then a TreeSimTotalExtinctionException will be raised
+            If |False|, then a TreeSimTotalExtinctionException will be raised
             if all lineages go extinct before the termination conditions are
-            met. Defaults to ``True``: if all lineages go extinct before the
+            met. Defaults to |True|: if all lineages go extinct before the
             termination conditions are met, then the simulation is rerun, up to
             a maximum of ``max_retries``.
         max_retries : int
@@ -435,10 +435,10 @@ class ProtractedSpeciationProcess(object):
             prematurely-terminated simulations due to all lineages going
             extinct. Once this number or re-runs is exceed, then
             TreeSimTotalExtinctionException is raised. Defaults to 1000. Set to
-            ``None`` to never quit trying.
+            |None| to never quit trying.
         is_correlate_lineage_and_species_trees: bool
             [NOT USED]
-            If ``True`` then additional attributes will be added to the
+            If |True| then additional attributes will be added to the
             resulting trees to relate them. See
             :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
             for details.
@@ -481,8 +481,8 @@ class ProtractedSpeciationProcess(object):
     #     Each node on the lineage tree will have the following
     #     attributes added:
 
-    #         - ``is_orthospeciation_event`` : ``True`` if the node represents a
-    #          "good" speciation event, ``False`` otherwise.
+    #         - ``is_orthospeciation_event`` : |True| if the node represents a
+    #          "good" speciation event, |False| otherwise.
 
     #     Each internal node on the "good" species tree will have the following
     #     attributes added:

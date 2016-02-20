@@ -233,9 +233,9 @@ class TreeSummarizer(object):
         result of ``summarization_fn`` applied to the vector of ages of the
         same node on the input trees (in ``split_distribution``, a
         `SplitDistribution` object) being summarized.
-        ``summarization_fn`` should take an iterable of floats, and return a float. If `None`, it
+        ``summarization_fn`` should take an iterable of floats, and return a float. If |None|, it
         defaults to calculating the mean (``lambda x: float(sum(x))/len(x)``).
-        If ``set_edge_lengths`` is `True`, then edge lengths will be set to so that the actual node ages
+        If ``set_edge_lengths`` is |True|, then edge lengths will be set to so that the actual node ages
         correspond to the ``age`` attribute value.
         If ``collapse_negative_edges`` is True, then edge lengths with negative values will be set to 0.
         If ``allow_negative_edges`` is True, then no error will be raised if edges have negative lengths.
@@ -280,7 +280,7 @@ class TreeSummarizer(object):
         lengths of the corresponding edges on the input trees (in
         ``split_distribution``, a `SplitDistribution` object) being
         summarized.
-        ``summarization_fn`` should take an iterable of floats, and return a float. If `None`, it
+        ``summarization_fn`` should take an iterable of floats, and return a float. If |None|, it
         defaults to calculating the mean (``lambda x: float(sum(x))/len(x)``).
         """
         if summarization_fn is None:

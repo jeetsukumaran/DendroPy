@@ -127,7 +127,7 @@ class DataReader(IOService):
             where ``taxon_namespace`` is an existing |TaxonNamespace| object that
             should be used.
 
-            If ``taxon_namespace_factor`` is `None`, then no tree data will be
+            If ``taxon_namespace_factor`` is |None|, then no tree data will be
             parsed.
 
         tree_list_factory : function object
@@ -183,7 +183,7 @@ class DataReader(IOService):
 
                 char_matrix = dataset.new_char_matrix
 
-            If ``char_matrix_factory`` is `None`, then no character data will be
+            If ``char_matrix_factory`` is |None|, then no character data will be
             parsed.
 
         state_alphabet_factory : function object
@@ -193,7 +193,7 @@ class DataReader(IOService):
         global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
-            `None`, then such metadata or annotations will not be stored.
+            |None|, then such metadata or annotations will not be stored.
 
         Returns
         -------
@@ -222,9 +222,9 @@ class DataReader(IOService):
         dataset : |DataSet| object
             The target |DataSet| to populate/build.
         exclude_trees : boolean, default: False
-            If set to `True`, tree data will not be read from the source.
+            If set to |True|, tree data will not be read from the source.
         exclude_chars : boolean, default: False
-            If set to `True`, character data will not be read from the source.
+            If set to |True|, character data will not be read from the source.
 
         """
         if taxon_namespace is not None:
@@ -309,7 +309,7 @@ class DataReader(IOService):
             where ``taxon_namespace`` is an existing |TaxonNamespace| object that
             should be used.
 
-            If ``taxon_namespace_factor`` is `None`, then no tree data will be
+            If ``taxon_namespace_factor`` is |None|, then no tree data will be
             parsed.
 
         tree_list_factory : function object
@@ -346,7 +346,7 @@ class DataReader(IOService):
         global_annotations_target : |Annotable| object
             Any object that will be the target (or subject, in the grammatical
             sense) of general metadata or annotations in the data source. If
-            `None`, then such metadata or annotations will not be stored.
+            |None|, then such metadata or annotations will not be stored.
 
         Returns
         -------
@@ -425,7 +425,7 @@ class DataWriter(IOService):
         global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
-            `None`, then such metadata or annotations will not be stored.
+            |None|, then such metadata or annotations will not be stored.
 
         """
         raise NotImplementedError
@@ -444,13 +444,13 @@ class DataWriter(IOService):
         dataset : |DataSet| object
             The |DataSet| to write.
         exclude_trees : boolean, default: False
-            If set to `True`, tree data will not be written to the destination.
+            If set to |True|, tree data will not be written to the destination.
         exclude_chars : boolean, default: False
-            If set to `True`, character data will not be written to the destination.
+            If set to |True|, character data will not be written to the destination.
         global_annotations_target : |Annotable| object
             Any object that will be the source (or subject, in the grammatical
             sense) of general metadata or annotations for the data. If
-            `None`, then such metadata or annotations will not be stored.
+            |None|, then such metadata or annotations will not be stored.
         """
         tree_lists = dataset.tree_lists if not exclude_trees else None
         char_matrices = dataset.char_matrices if not exclude_chars else None

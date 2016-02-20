@@ -220,7 +220,7 @@ def coalesce_nodes(nodes,
         The random number generator instance to use. If not specified, the
         default RNG will be used.
     use_expected_tmrca : bool
-        If `True`, then instead of random times, the *expected* times will be
+        If |True|, then instead of random times, the *expected* times will be
         used.
 
     Returns

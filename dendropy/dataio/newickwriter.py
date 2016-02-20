@@ -45,75 +45,75 @@ class NewickWriter(ioservice.DataWriter):
 
         Keyword Arguments
         -----------------
-        suppress_leaf_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels will not be rendered for leaves.
-            Default is `False`: render leaf taxon labels. See notes below for
+        suppress_leaf_taxon_labels : boolean, default: |False|
+            If |True|, then taxon labels will not be rendered for leaves.
+            Default is |False|: render leaf taxon labels. See notes below for
             details.
-        suppress_leaf_node_labels : boolean, default: `True`
-            If `False`, then node labels (if available) will be printed for
-            leaves. Defaults to `True`: do not render leaf node labels. See
+        suppress_leaf_node_labels : boolean, default: |True|
+            If |False|, then node labels (if available) will be printed for
+            leaves. Defaults to |True|: do not render leaf node labels. See
             notes below for details.
-        suppress_internal_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels will not be printed for internal
-            nodes. Default is `False`: print taxon labels for internal nodes.
+        suppress_internal_taxon_labels : boolean, default: |False|
+            If |True|, then taxon labels will not be printed for internal
+            nodes. Default is |False|: print taxon labels for internal nodes.
             See notes below for details.
-        suppress_internal_node_labels : boolean, default: `False`
-            If `True`, then node labels will not be printed for internal nodes.
-            Default is `False`: print node labels for internal nodes. See notes
+        suppress_internal_node_labels : boolean, default: |False|
+            If |True|, then node labels will not be printed for internal nodes.
+            Default is |False|: print node labels for internal nodes. See notes
             below for details.
-        suppress_rooting : boolean, default: `False`
-            If `True`, will not write rooting token ('[&R]' or '[&U]').
-            Default is `False`: rooting token will be written.
-        suppress_edge_lengths : boolean, default: `False`
-            If `True`, will not write edge lengths. Default is `False`: edge
+        suppress_rooting : boolean, default: |False|
+            If |True|, will not write rooting token ('[&R]' or '[&U]').
+            Default is |False|: rooting token will be written.
+        suppress_edge_lengths : boolean, default: |False|
+            If |True|, will not write edge lengths. Default is |False|: edge
             lengths will be written.
-        unquoted_underscores : boolean, default: `False`
-            If `True`, labels with underscores will not be quoted, which will
+        unquoted_underscores : boolean, default: |False|
+            If |True|, labels with underscores will not be quoted, which will
             mean that they will be interpreted as spaces if read again ("soft"
-            underscores).  If `False`, then labels with underscores
+            underscores).  If |False|, then labels with underscores
             will be quoted, resulting in "hard" underscores.  Default is
-            `False`.
-        preserve_spaces : boolean, default: `False`
-            If `True`, spaces will not be replaced with underscores in labels
+            |False|.
+        preserve_spaces : boolean, default: |False|
+            If |True|, spaces will not be replaced with underscores in labels
             (which means any labels containing spaces will have to be quoted).
-            Default is `False`: spaces will be converted to underscores.
+            Default is |False|: spaces will be converted to underscores.
             False.
-        store_tree_weights : boolean, default: `False`
-            If `True`, tree weights are written. Default is `False`: tree
+        store_tree_weights : boolean, default: |False|
+            If |True|, tree weights are written. Default is |False|: tree
             weights will not be written.
-        taxon_token_map : boolean or dict or `None`, default: `None`.
-            If not `False` or `None`, a "TRANSLATE" statement will be written
+        taxon_token_map : boolean or dict or |None|, default: |None|.
+            If not |False| or |None|, a "TRANSLATE" statement will be written
             and referenced in tree statements (instead of using the taxon
-            labels). If `True`, then a default translate statement will
+            labels). If |True|, then a default translate statement will
             be used, with tokens given by the taxon indexes. If a dictionary is
             given, then the keys should be |Taxon| objects and the
             values should be the token (strings).
-        suppress_annotations : boolean, default: `True`
-            If `False`, metadata annotations will be written out as special
-            comments. Defaults to `True`: metadata annotations will be ignored.
-        annotations_as_nhx : boolean, default: `False`
-            If `True`, and if ``suppress_annotations`` is `False`, will write
-            annotation as NHX statements. Default is `False`: annotations
+        suppress_annotations : boolean, default: |True|
+            If |False|, metadata annotations will be written out as special
+            comments. Defaults to |True|: metadata annotations will be ignored.
+        annotations_as_nhx : boolean, default: |False|
+            If |True|, and if ``suppress_annotations`` is |False|, will write
+            annotation as NHX statements. Default is |False|: annotations
             will not be written as NHX statements.
-        suppress_item_comments : boolean, default: `True`
-            If `False`, any additional comments associated with trees, nodes,
-            edges, etc. will be written. Default is `True`: comments will be
+        suppress_item_comments : boolean, default: |True|
+            If |False|, any additional comments associated with trees, nodes,
+            edges, etc. will be written. Default is |True|: comments will be
             ignored.
         node_label_element_separator : string, default: ' '
             If both ``suppress_leaf_taxon_labels`` and
-            ``suppress_leaf_node_labels`` are `False`, then this will be the
+            ``suppress_leaf_node_labels`` are |False|, then this will be the
             string used to join them. Defaults to ' ' (space).
-        node_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes a |Node|
+        node_label_compose_fn : function object or |None|, default: |None|
+            If not |None|, should be a function that takes a |Node|
             object as an argument and returns the string to be used to
             represent the node in the tree statement. The return value from
             this function is used unconditionally to print a node
             representation in a tree statement, by-passing the default
             labelling function, ignoring ``suppress_leaf_taxon_labels``,
             ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``,
-            ``suppress_internal_node_labels``, etc. Defaults to `None`.
-        edge_label_compose_fn : function object or `None`, default: `None`
-            If not `None`, should be a function that takes an Edge object as
+            ``suppress_internal_node_labels``, etc. Defaults to |None|.
+        edge_label_compose_fn : function object or |None|, default: |None|
+            If not |None|, should be a function that takes an Edge object as
             an argument, and returns the string to be used to represent the
             edge length in the tree statement.
         real_value_format_specifier : string, default: ''
@@ -122,9 +122,9 @@ class NewickWriter(ioservice.DataWriter):
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
-        ignore_unrecognized_keyword_arguments : boolean, default: `False`
-            If `True`, then unsupported or unrecognized keyword arguments will
-            not result in an error. Default is `False`: unsupported keyword
+        ignore_unrecognized_keyword_arguments : boolean, default: |False|
+            If |True|, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
 
         Notes
@@ -137,7 +137,7 @@ class NewickWriter(ioservice.DataWriter):
         any one node can only be rendered with a single token or symbol. Thus,
         if there is more than one source of label available for a particular
         node (e.g., if both ``suppress_leaf_taxon_labels`` and
-        ``suppress_leaf_node_labels`` are `False`, and a particular leaf
+        ``suppress_leaf_node_labels`` are |False|, and a particular leaf
         node has both a taxon *and* a label associated with it), then
         the node symbol will be rendered as concatenation of the unsuppressed
         candidate labels, with each candidate label separated by the value

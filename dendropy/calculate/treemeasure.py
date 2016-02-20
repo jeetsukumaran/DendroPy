@@ -151,24 +151,26 @@ class PatristicDistanceMatrix(object):
         applied if ``filter_fn`` is specified).
 
         The mean pairwise distance (mpd) is given by:
-        $$$
+
+        .. math::
             mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
-        $$$
-        where $i \\neq j$, \\delta_{i,j} is the phylogenetic distance between
-        species $i$ and $j$, and $n$ is the number of comparisons.
+
+        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        distance between species :math:`i` and :math:`j`, and $n$ is the number
+        of species in the sample.
 
         Parameters
         ----------
         filter_fn : function object or None
-            If ``None``, then all leaves will be considered. Otherwise should
+            If |None|, then all leaves will be considered. Otherwise should
             be a function object that takes a Taxon instance as an argument and
-            returns ``True`` if it is to be included in the calculation or
-            ``False`` otherwise.
+            returns |True| if it is to be included in the calculation or
+            |False| otherwise.
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
         edge_weighted : bool
-            If ``True`` then the edge-weighted distance, i.e., considering edge
+            If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of edge_weighted edges, connecting two
             taxa is considered.
@@ -198,10 +200,12 @@ class PatristicDistanceMatrix(object):
         References
         ----------
 
-        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of ecological
-            communities: An example for rainforest trees. The American Naturalist
-            156: 145-155.
+        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of
+        ecological communities: An example for rainforest trees. The
+        American Naturalist 156: 145-155.
+
         [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
+
 
         """
         if edge_weighted:
@@ -235,24 +239,26 @@ class PatristicDistanceMatrix(object):
         applied if ``filter_fn`` is specified).
 
         The mean nearest taxon distance (mntd) is given by:
-        $$$
-            mpd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{\\choose{n,2}},
-        $$$
-        where $i \\neq j$, \\delta_{i,j} is the phylogenetic distance between
-        species $i$ and $j$, and $n$ is the number of comparisons.
+
+        .. math::
+            mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
+
+        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        distance between species :math:`i` and :math:`j`, and $n$ is the number
+        of species in the sample.
 
         Parameters
         ----------
         filter_fn : function object or None
-            If ``None``, then all leaves will be considered. Otherwise should
+            If |None|, then all leaves will be considered. Otherwise should
             be a function object that takes a Taxon instance as an argument and
-            returns ``True`` if it is to be included in the calculation or
-            ``False`` otherwise.
+            returns |True| if it is to be included in the calculation or
+            |False| otherwise.
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
         edge_weighted : bool
-            If ``True`` then the edge-weighted distance, i.e., considering edge
+            If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of edge_weighted edges, connecting two
             taxa is considered.
@@ -282,9 +288,10 @@ class PatristicDistanceMatrix(object):
         References
         ----------
 
-        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of ecological
-            communities: An example for rainforest trees. The American Naturalist
-            156: 145-155.
+        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of
+        ecological communities: An example for rainforest trees. The
+        American Naturalist 156: 145-155.
+
         [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
 
         """

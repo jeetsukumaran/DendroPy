@@ -697,7 +697,7 @@ class Annotable(object):
             ``other``) and ``id(x)`` is found in ``attribute_object_mapper``,
             then in the copy the owner of the attribute is changed to
             ``attribute_object_mapper[id(x)]``.
-            If ``attribute_object_mapper`` is `None` (default), then the
+            If ``attribute_object_mapper`` is |None| (default), then the
             following mapping is automatically inserted: ``id(other): self``.
             That is, any references to ``other`` in any |Annotation|
             object will be remapped to ``self``.  If really no reattribution
@@ -1370,9 +1370,9 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : |AnnotationSet| or `None`
+        results : |AnnotationSet| or |None|
             |AnnotationSet| containing |Annotation| objects that
-            match criteria, or `None` if no matching annotations found.
+            match criteria, or |None| if no matching annotations found.
         """
         results = []
         for a in self:
@@ -1396,9 +1396,9 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : |Annotation| or `None`
+        results : |Annotation| or |None|
             First |Annotation| object found that matches criteria, or
-            `None` if no matching annotations found.
+            |None| if no matching annotations found.
         """
         if "default" in kwargs:
             default = kwargs["default"]
@@ -1429,9 +1429,9 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : |Annotation| or `None`
+        results : |Annotation| or |None|
             ``value`` of first |Annotation| object found that matches
-            criteria, or `None` if no matching annotations found.
+            criteria, or |None| if no matching annotations found.
         """
         for a in self:
             if a.is_match(name=name):
@@ -1452,7 +1452,7 @@ class AnnotationSet(container.OrderedSet):
 
         Returns
         -------
-        results : |Annotation| or `None`
+        results : |Annotation| or |None|
             ``value`` of first |Annotation| object found that matches
             criteria.
         """

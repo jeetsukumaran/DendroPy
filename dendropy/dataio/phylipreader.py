@@ -65,29 +65,29 @@ class PhylipReader(ioservice.DataReader):
             A |StateAlphabet| object to be used to manage the alphabet of the
             characters (|StandardCharacterMatrix| **only**).
         strict : bool
-            If `True`, then data is given in 'strict' format, where first 10
+            If |True|, then data is given in 'strict' format, where first 10
             characters are the taxon label and remaining characters are the sequence.
-            Default is `False`: relaxed format, where taxon labels are of
+            Default is |False|: relaxed format, where taxon labels are of
             arbitrary length and separation of sequences are is by one or more (if
-            ``multispace_delimiter`` is `False`) or two or more (if
-            ``multispace_delimiter`` is `True`) spaces.
+            ``multispace_delimiter`` is |False|) or two or more (if
+            ``multispace_delimiter`` is |True|) spaces.
         interleaved : bool
-            If `True`, then data is in interleaved format.
-            Default is `False`: data is non-interleaved.
+            If |True|, then data is in interleaved format.
+            Default is |False|: data is non-interleaved.
         multispace_delimiter: bool
-            If `True` (and ``strict`` is `False`), then at least two spaces are
+            If |True| (and ``strict`` is |False|), then at least two spaces are
             required to delimit taxon label and associated sequence. Default is
-            `False`: one or more spaces delimit taxon label and associated
+            |False|: one or more spaces delimit taxon label and associated
             sequence.
         underscore_to_spaces: bool
-            If `True`, then underscores in taxon labels are converted to
-            spaces. Default is `False`: underscores are not converted.
+            If |True|, then underscores in taxon labels are converted to
+            spaces. Default is |False|: underscores are not converted.
         ignore_invalid_chars : bool
-            If `True` then any invalid characters in sequences will be ignored.
-            Default is `False`: invalid characters result in errors.
-        ignore_unrecognized_keyword_arguments : boolean, default: `False`
-            If `True`, then unsupported or unrecognized keyword arguments will
-            not result in an error. Default is `False`: unsupported keyword
+            If |True| then any invalid characters in sequences will be ignored.
+            Default is |False|: invalid characters result in errors.
+        ignore_unrecognized_keyword_arguments : boolean, default: |False|
+            If |True|, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
         """
         ioservice.DataReader.__init__(self)

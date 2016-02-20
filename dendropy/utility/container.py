@@ -145,7 +145,7 @@ class OrderedSet(object):
 
     def __contains__(self, value):
         """
-        Returns `True` if ``value`` is in ``self`` or `False` otherwise.
+        Returns |True| if ``value`` is in ``self`` or |False| otherwise.
         """
         return value in self._item_set
 

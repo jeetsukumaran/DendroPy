@@ -422,12 +422,12 @@ def format_item_annotations_as_comments(
                    "8.4f". If the annotation has its ``format_specifier``
                    attribute set, then this argument is ignored for rendering
                    that particular annotation unless
-                   ``override_annotation_format_specifier`` is `True`. Defaults to "".
+                   ``override_annotation_format_specifier`` is |True|. Defaults to "".
     ``override_annotation_format_specifier``
                     If the annotation has its ``format_specifier`` attribute set,
                     then this it will be used in preference to the
                     ``real_value_format_specifier`` above unless this argument is
-                    `True`. Defaults to `False`.
+                    |True|. Defaults to |False|.
     """
     if not annotated.annotations:
         return ""

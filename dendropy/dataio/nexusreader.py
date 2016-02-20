@@ -215,76 +215,76 @@ class NexusReader(ioservice.DataReader):
             Specifies the type of the edge lengths (``int`` or ``float``). Tokens
             interpreted as branch lengths will be cast to this type.
             Defaults to ``float``.
-        suppress_edge_lengths : boolean, default: `False`
-            If `True`, edge length values will not be processed. If `False`,
+        suppress_edge_lengths : boolean, default: |False|
+            If |True|, edge length values will not be processed. If |False|,
             edge length values will be processed.
-        extract_comment_metadata : boolean, default: `True`
-            If `True` (default), any comments that begin with '&' or '&&' will
+        extract_comment_metadata : boolean, default: |True|
+            If |True| (default), any comments that begin with '&' or '&&' will
             be parsed and stored as part of the annotation set of the
             corresponding object (accessible through the ``annotations``
             attribute of the object). This requires that the comment
             contents conform to a particular format (NHX or BEAST: 'field =
-            value'). If `False`, then the comments will not be parsed,
+            value'). If |False|, then the comments will not be parsed,
             but will be instead stored directly as elements of the ``comments``
             list attribute of the associated object.
-        store_tree_weights : boolean, default: `False`
-            If `True`, process the tree weight (e.g. "[&W 1/2]") comment
-            associated with each tree, if any. Defaults to `False`.
-        encode_splits : boolean, default: `False`
-            If `True`, split hash bitmasks will be calculated and attached to
+        store_tree_weights : boolean, default: |False|
+            If |True|, process the tree weight (e.g. "[&W 1/2]") comment
+            associated with each tree, if any. Defaults to |False|.
+        encode_splits : boolean, default: |False|
+            If |True|, split hash bitmasks will be calculated and attached to
             the edges.
-        finish_node_fn : function object, default: `None`
+        finish_node_fn : function object, default: |None|
             If specified, this function will be applied to each node after
             it has been constructed.
-        case_sensitive_taxon_labels : boolean, default: `False`
-            If `True`, then taxon labels are case sensitive (e.g., "P.regius"
+        case_sensitive_taxon_labels : boolean, default: |False|
+            If |True|, then taxon labels are case sensitive (e.g., "P.regius"
             and "P.REGIUS" wil be treated as different operation taxonomic
             unit concepts). Otherwise, taxon label intepretation will be made
             without regard for case.
-        preserve_underscores : boolean, default: `False`
-            If `True`, unquoted underscores in labels will *not* converted to
-            spaces. Defaults to `False`: all underscores not protected by
+        preserve_underscores : boolean, default: |False|
+            If |True|, unquoted underscores in labels will *not* converted to
+            spaces. Defaults to |False|: all underscores not protected by
             quotes will be converted to spaces.
-        suppress_internal_node_taxa : boolean, default: `True`
-            If `False`, internal node labels will be instantantiated into
-            |Taxon| objects. If `True`, internal node labels
+        suppress_internal_node_taxa : boolean, default: |True|
+            If |False|, internal node labels will be instantantiated into
+            |Taxon| objects. If |True|, internal node labels
             will *not* be instantantiated as strings.
-        suppress_leaf_node_taxa : boolean, default: `False`
-            If `False`, leaf (external) node labels will be instantantiated
-            into |Taxon| objects. If `True`, leaff (external) node
+        suppress_leaf_node_taxa : boolean, default: |False|
+            If |False|, leaf (external) node labels will be instantantiated
+            into |Taxon| objects. If |True|, leaff (external) node
             labels will *not* be instantantiated as strings.
-        terminating_semicolon_required : boolean, default: `True`
-            If `True` [default], then a tree statement that does not end in a
-            semi-colon is an error. If `False`, then no error will be raised.
+        terminating_semicolon_required : boolean, default: |True|
+            If |True| [default], then a tree statement that does not end in a
+            semi-colon is an error. If |False|, then no error will be raised.
         unconstrained_taxa_accumulation_mode : bool
-            If `True`, then no error is raised even if the number of taxon
+            If |True|, then no error is raised even if the number of taxon
             names defined exceeds the number of declared taxa (as specified by
-            'NTAX'). Defaults to `False`.
+            'NTAX'). Defaults to |False|.
         automatically_substitute_missing_taxa_blocks : bool
-            If `True` then, if a taxon namespace is linked to by title but is
+            If |True| then, if a taxon namespace is linked to by title but is
             not given in the data file, then, if one and exactly one other
             taxon namespace has been given in the data file, this taxon
             namespace will be used; if there are multiple taxon namespaces,
-            then if ``automatically_create_missing_taxa_blocks`` is `True` a
+            then if ``automatically_create_missing_taxa_blocks`` is |True| a
             new taxon namespace will be created, otherwise an error is raised.
-            Default is `False`: if a taxon namespace is linked to by title but
+            Default is |False|: if a taxon namespace is linked to by title but
             is not given in the data file, then an error is raised.
         automatically_create_missing_taxa_blocks : bool
-            If `True` then taxon namespaces linked to by title but not given in
-            the data file will be automatically created. If `False` taxon
+            If |True| then taxon namespaces linked to by title but not given in
+            the data file will be automatically created. If |False| taxon
             namespaces linked to by title but not given in the data file will
             result in error.
         exclude_chars : bool
-            If `False`, then character data will not be read. Defaults to
-            `True`: character data will be read.
+            If |False|, then character data will not be read. Defaults to
+            |True|: character data will be read.
         exclude_trees : bool
-            If `False`, then tree data will not be read. Defaults to
-            `True`: tree data will be read.
+            If |False|, then tree data will not be read. Defaults to
+            |True|: tree data will be read.
         attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
-        ignore_unrecognized_keyword_arguments : boolean, default: `False`
-            If `True`, then unsupported or unrecognized keyword arguments will
-            not result in an error. Default is `False`: unsupported keyword
+        ignore_unrecognized_keyword_arguments : boolean, default: |False|
+            If |True|, then unsupported or unrecognized keyword arguments will
+            not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
         """
 
@@ -1242,7 +1242,7 @@ class NexusReader(ioservice.DataReader):
         Reads character sequence data substatement until the number of
         character states read is equal to ``self._file_specified_nchar`` (with
         multi-state characters, such as '(AG)' counting as a single
-        state) or, if ``self._interleave`` is `True`, until an EOL is
+        state) or, if ``self._interleave`` is |True|, until an EOL is
         reached.
 
         Given a sequence of characters, with ambiguities denoted by
@@ -1336,7 +1336,7 @@ class NexusReader(ioservice.DataReader):
         Reads character sequence data substatement until the number of
         character states read is equal to ``self._file_specified_nchar`` (with
         multi-state characters, such as '(AG)' counting as a single
-        state) or, if ``self._interleave`` is `True`, until an EOL is
+        state) or, if ``self._interleave`` is |True|, until an EOL is
         reached.
         """
         if self._interleave:

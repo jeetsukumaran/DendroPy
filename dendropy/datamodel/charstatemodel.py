@@ -92,7 +92,7 @@ class StateAlphabet(
         If specified, automatically creates a "no data" ambiguous state,
         represented by the (canonical, or primary) symbol
         "no_data_symbol", which maps to all fundamental states.
-        This will also insert `None` into all symbol look-up maps, which, when
+        This will also insert |None| into all symbol look-up maps, which, when
         dereferenced will return this state. Furthermore, the attribute
         ``self.no_data_symbol`` will return this symbol and ``self.no_data_state``
         will return this state. The 'no data' state will be an ambiguous
@@ -275,7 +275,7 @@ class StateAlphabet(
             been used to refer to any other state, fundamental or otherwise, as
             a primary or synonymous symbol (including implicit synonyms given
             by case-variants if the state alphabet is not case-sensitive).
-            Cannot be blank ("") or `None`.
+            Cannot be blank ("") or |None|.
 
         Returns
         -------
@@ -312,7 +312,7 @@ class StateAlphabet(
             been used to refer to any other state, fundamental or otherwise, as
             a primary or synonymous symbol (including implicit synonyms given
             by case-variants if the state alphabet is not case-sensitive). Can
-            be blank ("") or `None` if there.
+            be blank ("") or |None| if there.
 
         \*\*kwargs : keyword arguments, mandatory
             Exactly one of the following must be specified:
@@ -349,7 +349,7 @@ class StateAlphabet(
             been used to refer to any other state, fundamental or otherwise, as
             a primary or synonymous symbol (including implicit synonyms given
             by case-variants if the state alphabet is not case-sensitive). Can
-            be blank ("") or `None` if there.
+            be blank ("") or |None| if there.
 
         \*\*kwargs : keyword arguments, mandatory
             Exactly one of the following must be specified:
@@ -387,7 +387,7 @@ class StateAlphabet(
             been used to refer to any other state, fundamental or otherwise, as
             a primary or synonymous symbol (including implicit synonyms given
             by case-variants if the state alphabet is not case-sensitive). Can
-            be blank ("") or `None` if there.
+            be blank ("") or |None| if there.
 
         state_denomination : enum
             StateAlphabet.POLYMORPHIC_STATE or StateAlphabet.AMBIGUOUS_STATE
@@ -683,7 +683,7 @@ class StateAlphabet(
     def fundamental_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        ``include_synonyms`` is `False`) that map to fundamental states.
+        ``include_synonyms`` is |False|) that map to fundamental states.
         """
         for state in self.fundamental_state_iter():
             yield state.symbol
@@ -694,7 +694,7 @@ class StateAlphabet(
     def ambiguous_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        ``include_synonyms`` is `False`) that map to ambiguous states.
+        ``include_synonyms`` is |False|) that map to ambiguous states.
         """
         for state in self.ambiguous_state_iter():
             yield state.symbol
@@ -705,7 +705,7 @@ class StateAlphabet(
     def polymorphic_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        ``include_synonyms`` is `False`) that map to polymorphic states.
+        ``include_synonyms`` is |False|) that map to polymorphic states.
         """
         for state in self.polymorphic_state_iter():
             yield state.symbol
@@ -716,7 +716,7 @@ class StateAlphabet(
     def multistate_symbol_iter(self, include_synonyms=True):
         """
         Returns an iterator over all symbols (including synonyms, unless
-        ``include_synonyms`` is `False`) that map to multistate states.
+        ``include_synonyms`` is |False|) that map to multistate states.
         """
         for state in self.multistate_state_iter():
             yield state.symbol
@@ -1034,14 +1034,14 @@ class StateIdentity(
 
     def _is_single_state(self):
         """
-        `True` if a FUNDAMENTAL state.
+        |True| if a FUNDAMENTAL state.
         """
         return self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE
     is_single_state = property(_is_single_state)
 
     def _is_fundamental_state(self):
         """
-        `True` if a FUNDAMENTAL state.
+        |True| if a FUNDAMENTAL state.
         """
         return self._state_denomination == StateAlphabet.FUNDAMENTAL_STATE
     is_fundamental_state = property(_is_fundamental_state)

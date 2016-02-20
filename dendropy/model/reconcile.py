@@ -71,22 +71,22 @@ class ContainingTree(dendropy.Tree):
                 parasite trees.
 
             ``fit_containing_edge_lengths``
-                If `True` [default], then the branch lengths of
+                If |True| [default], then the branch lengths of
                 ``containing_tree`` will be adjusted to fit the contained tree
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
 
             ``collapse_empty_edges``
-                If `True` [default], after edge lengths are adjusted,
+                If |True| [default], after edge lengths are adjusted,
                 zero-length branches will be collapsed.
 
             ``ultrametricity_precision``
-                If `False` [default], then trees will not be checked for
+                If |False| [default], then trees will not be checked for
                 ultrametricity. Otherwise this is the threshold within which
                 all node to tip distances for sister nodes must be equal.
 
             ``ignore_root_deep_coalescences``
-                If `True` [default], then deep coalescences in the root will
+                If |True| [default], then deep coalescences in the root will
                 not be counted.
 
         Other Keyword Arguments: Will be passed to Tree().
@@ -335,7 +335,7 @@ class ContainingTree(dendropy.Tree):
         conditional on self.
 
             ``rng``
-                Random number generator to use. If `None`, the default will
+                Random number generator to use. If |None|, the default will
                 be used.
 
             ``edge_pop_size_attr``
@@ -366,7 +366,7 @@ class ContainingTree(dendropy.Tree):
         conditional on self.
 
             ``rng``
-                Random number generator to use. If `None`, the default will
+                Random number generator to use. If |None|, the default will
                 be used.
 
             ``edge_pop_size_attr``

@@ -33,9 +33,9 @@ class FastaWriter(ioservice.DataWriter):
         Keyword Arguments
         -----------------
 
-        wrap: boolean, default: `True`
-            If `False`, then sequences are written out as single, unbroken lines.
-            Defaults to `True`: wraps sequences at 70 colums.
+        wrap: boolean, default: |True|
+            If |False|, then sequences are written out as single, unbroken lines.
+            Defaults to |True|: wraps sequences at 70 colums.
         """
         ioservice.DataWriter.__init__(self)
         self.wrap = kwargs.get("wrap", True)
