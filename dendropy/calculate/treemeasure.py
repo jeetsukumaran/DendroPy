@@ -49,7 +49,25 @@ class PhylogeneticDistanceCalculator(object):
         self.max_dist_nodes = None
         self._mrca = {}
 
+    def __eq__(self, o):
+        if self.taxon_namespace is not o.taxon_namespace:
+            return False
+        return (
+                (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
+                and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
+                and (self.max_dist == o.max_dist)
+                and (self.max_dist_taxa == o.max_dist_taxa)
+                and (self.max_dist_nodes == o.max_dist_nodes)
+                and (self._mrca == o._mrca)
+                )
+
+    def __hash__(self):
+        return id(self)
+
     def __call__(self, taxon1, taxon2):
+        return self.patristic_distance(taxon1, taxon2)
+
+    def patristic_distance(self, taxon1, taxon2):
         """
         Returns patristic distance between two taxon objects.
         """
