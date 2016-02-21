@@ -15,3 +15,5 @@ setuptools-*.egg
 # Ctags
 .ctags
 tags
+
+# Virtual environments
