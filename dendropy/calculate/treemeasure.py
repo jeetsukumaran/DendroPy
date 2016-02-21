@@ -24,7 +24,7 @@ import math
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
-class PatristicDistanceMatrix(object):
+class PhylogeneticDistanceCalculator(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
     ``max_dist_taxa`` and ``max_dist_nodes`` will return a tuple of taxon objects
@@ -33,18 +33,22 @@ class PatristicDistanceMatrix(object):
     closer to the first item of each pair.
     """
 
-    def __init__(self, tree=None):
-        self.tree = None
+    @classmethod
+    def from_tree(cls, tree, create_midpoints=None, is_bipartitions_updated=False):
+        pdc = cls()
+        pdc.compile(tree=tree,
+                create_midpoints=create_midpoints,
+                is_bipartitions_updated=is_bipartitions_updated)
+        return pdc
+
+    def __init__(self):
         self.taxon_namespace = None
-        self._pat_dists = {}
-        self._path_steps = {}
+        self._taxon_phylogenetic_distances = {}
+        self._taxon_phylogenetic_path_steps = {}
         self.max_dist = None
         self.max_dist_taxa = None
         self.max_dist_nodes = None
         self._mrca = {}
-        if tree is not None:
-            self.tree = tree
-            self.calc()
 
     def __call__(self, taxon1, taxon2):
         """
@@ -53,9 +57,9 @@ class PatristicDistanceMatrix(object):
         if taxon1 is taxon2:
             return 0.0
         try:
-            return self._pat_dists[taxon1][taxon2]
+            return self._taxon_phylogenetic_distances[taxon1][taxon2]
         except KeyError:
-            return self._pat_dists[taxon2][taxon1]
+            return self._taxon_phylogenetic_distances[taxon2][taxon1]
 
     def mrca(self, taxon1, taxon2):
         """
@@ -75,33 +79,30 @@ class PatristicDistanceMatrix(object):
         if taxon1 is taxon2:
             return 0
         try:
-            return self._path_steps[taxon1][taxon2]
+            return self._taxon_phylogenetic_path_steps[taxon1][taxon2]
         except KeyError:
-            return self._path_steps[taxon2][taxon1]
+            return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
 
-    def calc(self, tree=None, create_midpoints=None, is_bipartitions_updated=False):
+    def compile(self, tree, create_midpoints=None, is_bipartitions_updated=False):
         """
         Calculates the distances. Note that the path length (in number of
         steps) between taxa that span the root will be off by one if
         the tree is unrooted.
         """
-        if tree is not None:
-            self.tree = tree
-        assert self.tree is not None
         if not is_bipartitions_updated:
-            self.tree.encode_bipartitions()
-        self.taxon_namespace = self.tree.taxon_namespace
-        self._pat_dists = {}
-        self._path_steps = {}
+            tree.encode_bipartitions()
+        self.taxon_namespace = tree.taxon_namespace
+        self._taxon_phylogenetic_distances = {}
+        self._taxon_phylogenetic_path_steps = {}
         for i1, t1 in enumerate(self.taxon_namespace):
-            self._pat_dists[t1] = {}
-            self._path_steps[t1] = {}
+            self._taxon_phylogenetic_distances[t1] = {}
+            self._taxon_phylogenetic_path_steps[t1] = {}
             self._mrca[t1] = {}
             self.max_dist = None
             self.max_dist_taxa = None
             self.max_dist_nodes = None
 
-        for node in self.tree.postorder_node_iter():
+        for node in tree.postorder_node_iter():
             children = node.child_nodes()
             if len(children) == 0:
                 node.desc_paths = {node : (0,0)}
@@ -114,9 +115,9 @@ class PatristicDistanceMatrix(object):
                             for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
                                 pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
-                                self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
+                                self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
-                                self._path_steps[desc1.taxon][desc2.taxon] = path_steps
+                                self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                                 if self.max_dist is None or pat_dist > self.max_dist:
                                     self.max_dist = pat_dist
                                     midpoint = float(pat_dist) / 2
@@ -133,7 +134,7 @@ class PatristicDistanceMatrix(object):
         Returns list of patristic distances.
         """
         dists = []
-        for dt in self._pat_dists.values():
+        for dt in self._taxon_phylogenetic_distances.values():
             for d in dt.values():
                 dists.append(d)
         return dists
@@ -184,7 +185,7 @@ class PatristicDistanceMatrix(object):
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
                                      schema="nexus")
-            pdm = treemeasure.PatristicDistanceMatrix(tree)
+            pdm = treemeasure.PhylogeneticDistanceCalculator(tree)
 
             # consider all tip
             mpd1 = pdm.mean_pairwise_distance()
@@ -209,9 +210,9 @@ class PatristicDistanceMatrix(object):
 
         """
         if edge_weighted:
-            dmatrix = self._pat_dists
+            dmatrix = self._taxon_phylogenetic_distances
         else:
-            dmatrix = self._path_steps
+            dmatrix = self._taxon_phylogenetic_path_steps
         seen_comps = set()
         distances = []
         for taxon1 in dmatrix:
@@ -231,6 +232,12 @@ class PatristicDistanceMatrix(object):
             return sum(distances) / (len(distances) * 1.0)
         else:
             return 0
+
+    def standardized_effect_size_minimum_pairwise_distance(self,
+            filter_fn=None,
+            edge_weighted=True,
+            null_model_type="taxa.label",):
+        pass
 
     def mean_nearest_taxon_distance(self, filter_fn=None, edge_weighted=True):
         """
@@ -272,7 +279,7 @@ class PatristicDistanceMatrix(object):
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
                                      schema="nexus")
-            pdm = treemeasure.PatristicDistanceMatrix(tree)
+            pdm = treemeasure.PhylogeneticDistanceCalculator(tree)
 
             # consider all tips
             mntd = pdm.mean_nearest_taxon_distance()
@@ -296,9 +303,9 @@ class PatristicDistanceMatrix(object):
 
         """
         if edge_weighted:
-            dmatrix = self._pat_dists
+            dmatrix = self._taxon_phylogenetic_distances
         else:
-            dmatrix = self._path_steps
+            dmatrix = self._taxon_phylogenetic_path_steps
         distances = []
         for taxon1 in dmatrix:
             if filter_fn and not filter_fn(taxon1):
@@ -317,11 +324,17 @@ class PatristicDistanceMatrix(object):
         else:
             return 0
 
+class PatrisiticDistanceMatrix(PhylogeneticDistanceCalculator):
+
+    def __init__(self, tree):
+        PhylogeneticDistanceCalculator.__init__(self)
+        self.compile(tree=tree)
+
 def patristic_distance(tree, taxon1, taxon2, is_bipartitions_updated=False):
     """
     Given a tree with bipartitions encoded, and two taxa on that tree, returns the
     patristic distance between the two. Much more inefficient than constructing
-    a PatristicDistanceMatrix object.
+    a PhylogeneticDistanceCalculator object.
     """
     mrca = tree.mrca(taxa=[taxon1, taxon2], is_bipartitions_updated=is_bipartitions_updated)
     dist = 0

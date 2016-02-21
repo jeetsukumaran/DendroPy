@@ -4596,7 +4596,7 @@ class Tree(
         removed from the tree.
         """
         from dendropy.calculate import treemeasure
-        pdm = treemeasure.PatristicDistanceMatrix(self)
+        pdm = treemeasure.PhylogeneticDistanceCalculator(self)
         n1, n2 = pdm.max_dist_nodes
         plen = float(pdm.max_dist) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)
@@ -4944,6 +4944,38 @@ class Tree(
             c = nd.child_nodes()
             rng.shuffle(c)
             nd.set_child_nodes(c)
+
+    def shuffle_taxa(self, include_internal_nodes=False, rng=None):
+        """
+        Randomly re-assigns taxa associated with nodes. Note that in the case
+        of not all nodes being associated with taxa, this will NOT assign taxa
+        to nodes that currently do not have them, nor will nodes currently
+        associated with taxa end up not being associated with taxa.
+        Returns a dictionary mapping the old taxa to their new counterparts.
+        """
+        if rng is None:
+            rng = GLOBAL_RNG # use the global rng by default
+        if include_internal_nodes:
+            nd_iterator = self.preorder_node_iter
+        else:
+            nd_iterator = self.leaf_node_iter
+        current_node_taxon_map = {}
+        node_taxa = set()
+        for nd in nd_iterator():
+            if nd.taxon is not None:
+                current_node_taxon_map[nd] = nd.taxon
+                assert nd.taxon not in node_taxa
+                node_taxa.add(nd.taxon)
+        assert len(current_node_taxon_map) == len(node_taxa)
+        current_to_shuffled_taxon_map = {}
+        for nd in current_node_taxon_map:
+            new_taxon = rng.sample(node_taxa, 1)[0]
+            current_to_shuffled_taxon_map[nd.taxon] = new_taxon
+            nd.taxon = new_taxon
+            node_taxa.remove(new_taxon)
+        assert len(node_taxa) == 0, node_taxa
+        assert len(current_to_shuffled_taxon_map) == len(current_node_taxon_map)
+        return current_to_shuffled_taxon_map
 
     def ladderize(self, ascending=True):
         """
