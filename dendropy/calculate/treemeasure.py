@@ -363,6 +363,8 @@ class PhylogeneticDistanceCalculator(object):
         for t1 in self._taxon_phylogenetic_distances:
             registered_taxa.add(t1)
             registered_taxa.update([t2 for t2 in self._taxon_phylogenetic_distances[t1]])
+        # registered_taxa = list(registered_taxa)
+        # rng.shuffle(registered_taxa)
         reordered_taxa = list(registered_taxa)
         rng.shuffle(reordered_taxa)
         current_to_shuffled_taxon_map = dict(zip(registered_taxa, reordered_taxa))
