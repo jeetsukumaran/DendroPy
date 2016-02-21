@@ -67,6 +67,26 @@ class PhylogeneticDistanceCalculator(object):
     def __call__(self, taxon1, taxon2):
         return self.patristic_distance(taxon1, taxon2)
 
+    def __copy__(self):
+        return self.clone()
+
+    def clone(self):
+        o = self.__class__()
+        o.taxon_namespace = self.taxon_namespace
+        o.max_dist = self.max_dist
+        o.max_dist_taxa = self.max_dist_taxa
+        o.max_dist_nodes = self.max_dist_nodes
+        for src, dest in (
+                    (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
+                    (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
+                    (self._mrca, o._mrca,),
+                ):
+            for t1 in src:
+                dest[t1] = {}
+                for t2 in src[t1]:
+                    dest[t1][t2] = src[t1][t2]
+        return o
+
     def patristic_distance(self, taxon1, taxon2):
         """
         Returns patristic distance between two taxon objects.

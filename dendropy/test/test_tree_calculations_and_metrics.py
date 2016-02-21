@@ -835,6 +835,34 @@ class TreeSymmetricDistTest(unittest.TestCase):
          o_tree.encode_bipartitions()
          self.assertEqual(treecompare.symmetric_difference(o_tree, ref), 2)
 
+class PhylogeneticDistanceCalculatorCloneTest(unittest.TestCase):
+
+    def setUp(self):
+        self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
+
+    def test_clone(self):
+        pdm0 = self.tree.phylogenetic_distance_calculator()
+        pdm1 = pdm0.clone()
+        self.assertIsNot(pdm0, pdm1)
+        self.assertIs(pdm0.taxon_namespace, pdm1.taxon_namespace)
+        for src, dest in (
+                    (pdm0._taxon_phylogenetic_distances, pdm1._taxon_phylogenetic_distances,),
+                    (pdm0._taxon_phylogenetic_path_steps, pdm1._taxon_phylogenetic_path_steps,),
+                    (pdm0._mrca, pdm1._mrca,),
+                ):
+            self.assertIsNot(src, dest)
+            for t1 in src:
+                self.assertIn(t1, dest)
+                self.assertIsNot(src[t1], dest[t1])
+        for t1 in self.tree.taxon_namespace:
+            for t2 in self.tree.taxon_namespace:
+                self.assertEqual(pdm0.patristic_distance(t1, t2), pdm1.patristic_distance(t1, t2))
+                self.assertEqual(pdm0.mrca(t1, t2), pdm1.mrca(t1, t2))
+                self.assertEqual(pdm0.path_edge_count(t1, t2), pdm1.path_edge_count(t1, t2))
+        self.assertEqual(set(pdm0.distances()), set(pdm1.distances()))
+        self.assertEqual(pdm0.sum_of_distances(), pdm1.sum_of_distances())
+        self.assertEqual(pdm0, pdm1)
+
 class TreePatristicDistTest(unittest.TestCase):
 
     def setUp(self):
