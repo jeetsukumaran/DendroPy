@@ -253,6 +253,7 @@ rst_prolog = """
 .. |Annotation| replace:: :class:`~dendropy.datamodel.basemodel.Annotation`
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
 .. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
+.. |PhylogeneticDistanceCalculator| replace:: :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceCalculator`
 
 .. |get| replace::  :py:meth:`get`
 .. |put| replace::  :py:meth:`put`

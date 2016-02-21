@@ -34,10 +34,9 @@ class PhylogeneticDistanceCalculator(object):
     """
 
     @classmethod
-    def from_tree(cls, tree, create_midpoints=None, is_bipartitions_updated=False):
+    def from_tree(cls, tree, is_bipartitions_updated=False):
         pdc = cls()
         pdc.compile(tree=tree,
-                create_midpoints=create_midpoints,
                 is_bipartitions_updated=is_bipartitions_updated)
         return pdc
 
@@ -83,7 +82,7 @@ class PhylogeneticDistanceCalculator(object):
         except KeyError:
             return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
 
-    def compile(self, tree, create_midpoints=None, is_bipartitions_updated=False):
+    def compile(self, tree, is_bipartitions_updated=False):
         """
         Calculates the distances. Note that the path length (in number of
         steps) between taxa that span the root will be off by one if

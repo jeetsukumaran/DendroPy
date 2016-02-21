@@ -160,9 +160,12 @@ For example:
 .. literalinclude:: /examples/mrca.py
 
 Note that this method is inefficient when you need to resolve MRCA's for multiple sets or pairs of taxa.
-In this context, the :class:`~dendropy.calculate.treemeasure.PatristicDistanceMatrix` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa:
+In this context, the :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceCalculator` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa. An instance of this class will be returned when you call :meth:`~dendropy.datamodel.treemodel.Tree.phylogenetic_distance_calculator()`:
 
 .. literalinclude:: /examples/mrca2.py
+
+Note that the |PhylogeneticDistanceCalculator| object does not automatically update if the original |Tree| changes: it is essentially a snapshot of |Tree| at the point in which it is instantiated.
+If the original |Tree| changes, you should create a new instance of the corresponding |PhylogeneticDistanceCalculator| object.
 
 Viewing and Displaying Trees
 ============================

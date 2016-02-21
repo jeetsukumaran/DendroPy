@@ -841,7 +841,7 @@ class TreePatristicDistTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def testPatDistMatrix(self):
-        pdm = treemeasure.PhylogeneticDistanceCalculator(self.tree)
+        pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self.tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.require_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.require_taxon(label=t2)
@@ -1156,7 +1156,7 @@ class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("community.tree.newick"),
                 schema="newick")
-        self.pdm = treemeasure.PhylogeneticDistanceCalculator(self.tree)
+        self.pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self.tree)
 
     def test_nonabundance_weighted_mpd(self):
         # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)

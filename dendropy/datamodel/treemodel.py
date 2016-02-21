@@ -4596,7 +4596,7 @@ class Tree(
         removed from the tree.
         """
         from dendropy.calculate import treemeasure
-        pdm = treemeasure.PhylogeneticDistanceCalculator(self)
+        pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self)
         n1, n2 = pdm.max_dist_nodes
         plen = float(pdm.max_dist) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)
@@ -5056,6 +5056,29 @@ class Tree(
 
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
+
+    def phylogenetic_distance_calculator(self, is_bipartitions_updated=False):
+        """
+        Returns a |PhylogeneticDistanceCalculator| instance based
+        on the tree (in its current state).
+
+        Parameters
+        ----------
+        is_bipartitions_updated : bool
+            If ``True``, then assumes that the bipartitions habe already been
+            calculated and are correct, and will not be calculated before the
+            distances are calculated. If ``False``, will result in
+            recalculation.
+
+        Returns
+        -------
+        pdc : a |PhylogeneticDistanceCalculator| instance
+            A |PhylogeneticDistanceCalculator| instance corresponding to the
+            tree in its current state.
+        """
+        from dendropy.calculate import treemeasure
+        return treemeasure.PhylogeneticDistanceCalculator.from_tree(tree=self,
+                is_bipartitions_updated=is_bipartitions_updated)
 
     def calc_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
