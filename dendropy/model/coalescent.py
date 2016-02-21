@@ -85,7 +85,7 @@ def time_to_coalescence(n_genes,
 
     Given the number of gene lineages in a sample, ``n_genes``, and a
     population size, ``pop_size``, this function returns a random number from
-    an exponential distribution with rate $\choose(``pop_size``, 2)$.
+    an exponential distribution with rate $\\choose(``pop_size``, 2)$.
     ``pop_size`` is the effective *haploid* population size; i.e., number of gene
     in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals. If ``pop_size`` is 1 or 0 or
@@ -96,11 +96,11 @@ def time_to_coalescence(n_genes,
     The coalescence time, or the waiting time for the coalescence, of two
     gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $N$ an
-    expectation of $\frac{1}{N}$).
+    expectation of $\\frac{1}{N}$).
     The waiting time for coalescence of *any* two gene lineages in a sample of
     $n$ gene lineages evolving in a population with haploid size $N$ is an
-    exponentially-distributed random variable with rate of $\choose{N, 2}$ and
-    an expectation of $\frac{1}{\choose{N, 2}}$.
+    exponentially-distributed random variable with rate of $\\choose{N, 2}$ and
+    an expectation of $\\frac{1}{\choose{N, 2}}$.
 
     Parameters
     ----------
