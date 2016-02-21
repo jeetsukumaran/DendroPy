@@ -22,6 +22,7 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 
 import math
 from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import container
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
@@ -42,7 +43,11 @@ class PhylogeneticDistanceMatrix(object):
         return pdc
 
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.taxon_namespace = None
+        self._mapped_taxa = []
         self._taxon_phylogenetic_distances = {}
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
@@ -53,16 +58,14 @@ class PhylogeneticDistanceMatrix(object):
         steps) between taxa that span the root will be off by one if
         the tree is unrooted.
         """
+        self.clear()
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
         self.taxon_namespace = tree.taxon_namespace
-        self._taxon_phylogenetic_distances = {}
-        self._taxon_phylogenetic_path_steps = {}
         for i1, t1 in enumerate(self.taxon_namespace):
             self._taxon_phylogenetic_distances[t1] = {}
             self._taxon_phylogenetic_path_steps[t1] = {}
             self._mrca[t1] = {}
-
         for node in tree.postorder_node_iter():
             children = node.child_nodes()
             if len(children) == 0:
@@ -80,6 +83,7 @@ class PhylogeneticDistanceMatrix(object):
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                     del(c1.desc_paths)
+        self._mapped_taxa = self.mapped_taxa()
 
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
@@ -146,8 +150,8 @@ class PhylogeneticDistanceMatrix(object):
         except KeyError:
             return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
 
-    def max_pairwise_distance_taxa(self, edge_weighted=True):
-        if edge_weighted:
+    def max_pairwise_distance_taxa(self, is_weighted_edges=True):
+        if is_weighted_edges:
             dists = self._taxon_phylogenetic_distances
         else:
             dists = self._taxon_phylogenetic_path_steps
@@ -177,7 +181,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         return sum(self.distances())
 
-    def mean_pairwise_distance(self, filter_fn=None, edge_weighted=True):
+    def mean_pairwise_distance(self, filter_fn=None, is_weighted_edges=True):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -202,10 +206,10 @@ class PhylogeneticDistanceMatrix(object):
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
-        edge_weighted : bool
+        is_weighted_edges : bool
             If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
-            edges rather then the sum of edge_weighted edges, connecting two
+            edges rather then the sum of is_weighted_edges edges, connecting two
             taxa is considered.
 
         Examples
@@ -241,7 +245,7 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        if edge_weighted:
+        if is_weighted_edges:
             dmatrix = self._taxon_phylogenetic_distances
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
@@ -267,11 +271,11 @@ class PhylogeneticDistanceMatrix(object):
 
     def standardized_effect_size_minimum_pairwise_distance(self,
             filter_fn=None,
-            edge_weighted=True,
+            is_weighted_edges=True,
             null_model_type="taxa.label",):
         pass
 
-    def mean_nearest_taxon_distance(self, filter_fn=None, edge_weighted=True):
+    def mean_nearest_taxon_distance(self, filter_fn=None, is_weighted_edges=True):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -296,10 +300,10 @@ class PhylogeneticDistanceMatrix(object):
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
-        edge_weighted : bool
+        is_weighted_edges : bool
             If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
-            edges rather then the sum of edge_weighted edges, connecting two
+            edges rather then the sum of is_weighted_edges edges, connecting two
             taxa is considered.
 
         Examples
@@ -334,7 +338,7 @@ class PhylogeneticDistanceMatrix(object):
         [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
 
         """
-        if edge_weighted:
+        if is_weighted_edges:
             dmatrix = self._taxon_phylogenetic_distances
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
@@ -359,15 +363,11 @@ class PhylogeneticDistanceMatrix(object):
     def shuffle_taxa(self, rng=None):
         if rng is None:
             rng = GLOBAL_RNG
-        registered_taxa = set()
-        for t1 in self._taxon_phylogenetic_distances:
-            registered_taxa.add(t1)
-            registered_taxa.update([t2 for t2 in self._taxon_phylogenetic_distances[t1]])
-        # registered_taxa = list(registered_taxa)
-        # rng.shuffle(registered_taxa)
-        reordered_taxa = list(registered_taxa)
+        # mapped_taxa = list(mapped_taxa)
+        # rng.shuffle(mapped_taxa)
+        reordered_taxa = list(self._mapped_taxa)
         rng.shuffle(reordered_taxa)
-        current_to_shuffled_taxon_map = dict(zip(registered_taxa, reordered_taxa))
+        current_to_shuffled_taxon_map = dict(zip(self._mapped_taxa, reordered_taxa))
         for attr_name in (
                     "_taxon_phylogenetic_distances",
                     "_taxon_phylogenetic_path_steps",
@@ -384,10 +384,26 @@ class PhylogeneticDistanceMatrix(object):
             setattr(self, attr_name, dest)
         return current_to_shuffled_taxon_map
 
-    def as_data_table(self):
+    def as_data_table(self, is_weighted_edges):
         """
         Returns this as a table.
         """
+        if is_weighted_edges:
+            dmatrix = self._taxon_phylogenetic_distances
+        else:
+            dmatrix = self._taxon_phylogenetic_path_steps
+        dt = container.DataTable
+        mapped_taxa = self.mapped_taxa()
+
+    def mapped_taxa(self):
+        """
+        Returns set of taxa in matrix.
+        """
+        mapped_taxa = set()
+        for t1 in self._taxon_phylogenetic_distances:
+            mapped_taxa.add(t1)
+            mapped_taxa.update([t2 for t2 in self._taxon_phylogenetic_distances[t1]])
+        return mapped_taxa
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):

@@ -898,7 +898,6 @@ class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
                         different.append( (t1, t2) )
                 else:
                     self.assertEqual(d1, 0)
-        print(len(same_as_before), len(different))
         self.assertTrue(len(different) > 0)
         self.assertEqual(pdc1, pdc2)
         self.assertNotEqual(pdc0, pdc1)
