@@ -829,6 +829,27 @@ class DataTable(object):
         for column_name in self._column_names:
             yield self[row_name, column_name]
 
+    def write_csv(self, csv_writer,
+            is_first_row_column_names=True,
+            is_first_column_row_names=True,
+            missing_data_value="NA"):
+        if is_first_row_column_names:
+            header = []
+            if is_first_column_row_names:
+                header.append("")
+            header.extend(self._column_names)
+            csv_writer.writerow(header)
+        for row_name in self._row_names:
+            row = []
+            if is_first_column_row_names:
+                row.append(row_name)
+            for column_name in self._column_names:
+                v = self[row_name, column_name]
+                if v is None:
+                    v = missing_data_value
+                row.append(v)
+            csv_writer.writerow(row)
+
     def _validate_new_column_name(self, column_name=None):
         if column_name is None:
             column_name = "V{}".format(len(self._columns))

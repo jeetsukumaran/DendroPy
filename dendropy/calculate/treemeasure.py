@@ -392,21 +392,21 @@ class PhylogeneticDistanceMatrix(object):
             setattr(self, attr_name, dest)
         return current_to_shuffled_taxon_map
 
-    def as_data_table(self, is_weighted_edges):
+    def as_data_table(self, is_weighted_edges=True):
         """
         Returns this as a table.
         """
         if is_weighted_edges:
-            dmatrix = self._taxon_phylogenetic_distances
+            df = self.patristic_distance
         else:
-            dmatrix = self._taxon_phylogenetic_path_steps
-        dt = container.DataTable
+            df = self.path_edge_count
+        dt = container.DataTable()
         for t1 in self._mapped_taxa:
             dt.add_row(row_name=t1.label)
             dt.add_column(column_name=t1.label)
         for t1 in self._mapped_taxa:
             for t2 in self._mapped_taxa:
-                dt[t1.label, t2.label] = dmatrix(t1, t2)
+                dt[t1.label, t2.label] = df(t1, t2)
         return dt
 
 ## legacy: will soon be deprecated
