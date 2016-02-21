@@ -47,7 +47,7 @@ class PhylogeneticDistanceMatrix(object):
 
     def clear(self):
         self.taxon_namespace = None
-        self._mapped_taxa = []
+        self._mapped_taxa = set()
         self._taxon_phylogenetic_distances = {}
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
@@ -62,10 +62,10 @@ class PhylogeneticDistanceMatrix(object):
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
         self.taxon_namespace = tree.taxon_namespace
-        for i1, t1 in enumerate(self.taxon_namespace):
-            self._taxon_phylogenetic_distances[t1] = {}
-            self._taxon_phylogenetic_path_steps[t1] = {}
-            self._mrca[t1] = {}
+        # for i1, t1 in enumerate(self.taxon_namespace):
+        #     self._taxon_phylogenetic_distances[t1] = {}
+        #     self._taxon_phylogenetic_path_steps[t1] = {}
+        #     self._mrca[t1] = {}
         for node in tree.postorder_node_iter():
             children = node.child_nodes()
             if len(children) == 0:
@@ -75,27 +75,34 @@ class PhylogeneticDistanceMatrix(object):
                 for cidx1, c1 in enumerate(children):
                     for desc1, (desc1_plen, desc1_psteps) in c1.desc_paths.items():
                         node.desc_paths[desc1] = (desc1_plen + c1.edge.length, desc1_psteps + 1)
+                        assert desc1.taxon is not None
+                        if desc1.taxon not in self._taxon_phylogenetic_distances:
+                            self._mapped_taxa.add(desc1.taxon)
+                            self._taxon_phylogenetic_distances[desc1.taxon] = {}
+                            self._taxon_phylogenetic_path_steps[desc1.taxon] = {}
+                            self._mrca[desc1.taxon] = {}
                         for c2 in children[cidx1+1:]:
                             for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
+                                self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
                                 pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                     del(c1.desc_paths)
-        self._mapped_taxa = self.mapped_taxa()
 
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
             return False
-        return (
-                (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
+        return (True
+                and (self._mapped_taxa == o._mapped_taxa)
+                and (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
                 and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
                 and (self._mrca == o._mrca)
                 )
 
-    def __hash__(self):
-        return id(self)
+        def __hash__(self):
+            return id(self)
 
     def __call__(self, taxon1, taxon2):
         return self.patristic_distance(taxon1, taxon2)
@@ -106,10 +113,11 @@ class PhylogeneticDistanceMatrix(object):
     def clone(self):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
+        self._mapped_taxa = set(o._mapped_taxa)
         for src, dest in (
-                    (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
-                    (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
-                    (self._mrca, o._mrca,),
+                (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
+                (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
+                (self._mrca, o._mrca,),
                 ):
             for t1 in src:
                 dest[t1] = {}
@@ -185,12 +193,12 @@ class PhylogeneticDistanceMatrix(object):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
-        applied if ``filter_fn`` is specified).
+                applied if ``filter_fn`` is specified).
 
         The mean pairwise distance (mpd) is given by:
 
-        .. math::
-            mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
+            .. math::
+                mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
 
         where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and $n$ is the number
@@ -220,7 +228,7 @@ class PhylogeneticDistanceMatrix(object):
             import dendropy
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
-                                     schema="nexus")
+                    schema="nexus")
             pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
 
             # consider all tip
@@ -279,12 +287,12 @@ class PhylogeneticDistanceMatrix(object):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
-        applied if ``filter_fn`` is specified).
+                applied if ``filter_fn`` is specified).
 
         The mean nearest taxon distance (mntd) is given by:
 
-        .. math::
-            mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
+            .. math::
+                mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
 
         where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and $n$ is the number
@@ -314,7 +322,7 @@ class PhylogeneticDistanceMatrix(object):
             import dendropy
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
-                                     schema="nexus")
+                    schema="nexus")
             pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
 
             # consider all tips
@@ -369,9 +377,9 @@ class PhylogeneticDistanceMatrix(object):
         rng.shuffle(reordered_taxa)
         current_to_shuffled_taxon_map = dict(zip(self._mapped_taxa, reordered_taxa))
         for attr_name in (
-                    "_taxon_phylogenetic_distances",
-                    "_taxon_phylogenetic_path_steps",
-                    "_mrca",
+                "_taxon_phylogenetic_distances",
+                "_taxon_phylogenetic_path_steps",
+                "_mrca",
                 ):
             src = getattr(self, attr_name)
             dest = {}
@@ -394,16 +402,6 @@ class PhylogeneticDistanceMatrix(object):
             dmatrix = self._taxon_phylogenetic_path_steps
         dt = container.DataTable
         mapped_taxa = self.mapped_taxa()
-
-    def mapped_taxa(self):
-        """
-        Returns set of taxa in matrix.
-        """
-        mapped_taxa = set()
-        for t1 in self._taxon_phylogenetic_distances:
-            mapped_taxa.add(t1)
-            mapped_taxa.update([t2 for t2 in self._taxon_phylogenetic_distances[t1]])
-        return mapped_taxa
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):
