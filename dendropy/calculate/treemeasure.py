@@ -401,7 +401,13 @@ class PhylogeneticDistanceMatrix(object):
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
         dt = container.DataTable
-        mapped_taxa = self.mapped_taxa()
+        for t1 in self._mapped_taxa:
+            dt.add_row(row_name=t1.label)
+            dt.add_column(column_name=t1.label)
+        for t1 in self._mapped_taxa:
+            for t2 in self._mapped_taxa:
+                dt[t1.label, t2.label] = dmatrix(t1, t2)
+        return dt
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):

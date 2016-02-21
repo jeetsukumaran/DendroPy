@@ -58,7 +58,7 @@ Patristic Distances
 -------------------
 
 The :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceMatrix` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
-The easiest way to get an object of this class for a particular tree is to call :meth:`~dendropy.datamodel.treemodel.Tree.phylogenetic_distance_calculator()`.
+The easiest way to get an object of this class for a particular tree is to call :meth:`~dendropy.datamodel.treemodel.Tree.phylogenetic_distance_matrix()`.
 The object is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
 
 .. literalinclude:: /examples/pdm.py

@@ -841,7 +841,7 @@ class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def test_clone(self):
-        pdm0 = self.tree.phylogenetic_distance_calculator()
+        pdm0 = self.tree.phylogenetic_distance_matrix()
         pdm1 = pdm0.clone()
         self.assertIsNot(pdm0, pdm1)
         self.assertIs(pdm0.taxon_namespace, pdm1.taxon_namespace)
@@ -870,8 +870,8 @@ class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
                     src=pathmap.tree_source_path("community.tree.newick"),
                     schema="newick",
                     rooting="force-rooted")
-        pdc0 = tree.phylogenetic_distance_calculator()
-        pdc1 = tree.phylogenetic_distance_calculator()
+        pdc0 = tree.phylogenetic_distance_matrix()
+        pdc1 = tree.phylogenetic_distance_matrix()
         current_to_shuffled_taxon_map = pdc1.shuffle_taxa()
         keys = set(current_to_shuffled_taxon_map.keys())
         values = set(current_to_shuffled_taxon_map.values())
@@ -882,7 +882,7 @@ class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
         for nd in tree.leaf_node_iter():
             self.assertIn(current_to_shuffled_taxon_map[nd.taxon], tree.taxon_namespace)
             nd.taxon = current_to_shuffled_taxon_map[nd.taxon]
-        pdc2 = tree.phylogenetic_distance_calculator()
+        pdc2 = tree.phylogenetic_distance_matrix()
         same_as_before = []
         different = []
         for t1 in tree.taxon_namespace:

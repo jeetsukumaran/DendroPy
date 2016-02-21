@@ -5076,7 +5076,7 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def phylogenetic_distance_calculator(self, is_bipartitions_updated=False):
+    def phylogenetic_distance_matrix(self, is_bipartitions_updated=False):
         """
         Returns a |PhylogeneticDistanceMatrix| instance based
         on the tree (in its current state).
