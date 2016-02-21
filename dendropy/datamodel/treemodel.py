@@ -4598,18 +4598,24 @@ class Tree(
         from dendropy.calculate import treemeasure
         pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self)
 
+        ## ugly, ugly, ugly code to find two nodes that span the midpoint
         maxtax1, maxtax2 = pdm.max_pairwise_distance_taxa()
-        n1 = None
-        n2 = None
+        spanning_nodes = [None, None]
+        found = 0
         for nd in self.leaf_node_iter():
-            if nd.taxon is maxtax1:
-                n1 = nd
-            elif nd.taxon is maxtax2:
-                n2 = nd
-        if n1.distance_from_root() < n2.distance_from_root():
-            temp = n1
-            n1 = n2
-            n2 = temp
+            for tax in (maxtax1, maxtax2):
+                if nd.taxon is tax:
+                    spanning_nodes[found] = nd
+                    found +=1
+                    break
+            if found == 2:
+                break
+        if spanning_nodes[0].distance_from_root() < spanning_nodes[1].distance_from_root():
+            n1 = spanning_nodes[1]
+            n2 = spanning_nodes[0]
+        else:
+            n1 = spanning_nodes[0]
+            n2 = spanning_nodes[1]
 
         plen = float(pdm.patristic_distance(maxtax1, maxtax2)) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)

@@ -160,13 +160,6 @@ class PhylogeneticDistanceCalculator(object):
                     max_dist = pat_dist
                     max_dist_taxa = (t1, t2)
         return max_dist_taxa
-                    # midpoint = float(pat_dist) / 2
-                    # if midpoint - node.desc_paths[desc1][0] <= 0:
-                    #     max_dist_nodes = (desc1, desc2)
-                    #     max_dist_taxa = (desc1.taxon, desc2.taxon)
-                    # else:
-                    #     max_dist_nodes = (desc2, desc1)
-                    #     max_dist_taxa = (desc2.taxon, desc1.taxon)
 
     def distances(self):
         """
