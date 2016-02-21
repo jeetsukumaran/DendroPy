@@ -17,3 +17,4 @@ setuptools-*.egg
 tags
 
 # Virtual environments
+.venv
