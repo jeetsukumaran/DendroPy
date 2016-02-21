@@ -785,9 +785,6 @@ class TreeRestructuring(dendropytest.ExtendedTestCase):
     def test_reroot_at_edge(self):
         self.assertFalse(self.fail_incomplete_tests())
 
-    def test_reroot_at_midpoint(self):
-        self.assertFalse(self.fail_incomplete_tests())
-
     def test_suppress_unifurcations(self):
         self.assertFalse(self.fail_incomplete_tests())
 

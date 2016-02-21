@@ -21,6 +21,7 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 """
 
 import math
+from dendropy.utility import GLOBAL_RNG
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
@@ -44,9 +45,6 @@ class PhylogeneticDistanceCalculator(object):
         self.taxon_namespace = None
         self._taxon_phylogenetic_distances = {}
         self._taxon_phylogenetic_path_steps = {}
-        self.max_dist = None
-        self.max_dist_taxa = None
-        self.max_dist_nodes = None
         self._mrca = {}
 
     def __eq__(self, o):
@@ -55,9 +53,6 @@ class PhylogeneticDistanceCalculator(object):
         return (
                 (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
                 and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
-                and (self.max_dist == o.max_dist)
-                and (self.max_dist_taxa == o.max_dist_taxa)
-                and (self.max_dist_nodes == o.max_dist_nodes)
                 and (self._mrca == o._mrca)
                 )
 
@@ -73,9 +68,6 @@ class PhylogeneticDistanceCalculator(object):
     def clone(self):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
-        o.max_dist = self.max_dist
-        o.max_dist_taxa = self.max_dist_taxa
-        o.max_dist_nodes = self.max_dist_nodes
         for src, dest in (
                     (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
                     (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
@@ -135,9 +127,6 @@ class PhylogeneticDistanceCalculator(object):
             self._taxon_phylogenetic_distances[t1] = {}
             self._taxon_phylogenetic_path_steps[t1] = {}
             self._mrca[t1] = {}
-            self.max_dist = None
-            self.max_dist_taxa = None
-            self.max_dist_nodes = None
 
         for node in tree.postorder_node_iter():
             children = node.child_nodes()
@@ -155,16 +144,29 @@ class PhylogeneticDistanceCalculator(object):
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
-                                if self.max_dist is None or pat_dist > self.max_dist:
-                                    self.max_dist = pat_dist
-                                    midpoint = float(pat_dist) / 2
-                                    if midpoint - node.desc_paths[desc1][0] <= 0:
-                                        self.max_dist_nodes = (desc1, desc2)
-                                        self.max_dist_taxa = (desc1.taxon, desc2.taxon)
-                                    else:
-                                        self.max_dist_nodes = (desc2, desc1)
-                                        self.max_dist_taxa = (desc2.taxon, desc1.taxon)
                     del(c1.desc_paths)
+
+    def max_pairwise_distance_taxa(self, edge_weighted=True):
+        if edge_weighted:
+            dists = self._taxon_phylogenetic_distances
+        else:
+            dists = self._taxon_phylogenetic_path_steps
+        max_dist = None
+        max_dist_taxa = None
+        for t1 in dists:
+            for t2 in dists[t1]:
+                pat_dist = dists[t1][t2]
+                if max_dist is None or pat_dist > max_dist:
+                    max_dist = pat_dist
+                    max_dist_taxa = (t1, t2)
+        return max_dist_taxa
+                    # midpoint = float(pat_dist) / 2
+                    # if midpoint - node.desc_paths[desc1][0] <= 0:
+                    #     max_dist_nodes = (desc1, desc2)
+                    #     max_dist_taxa = (desc1.taxon, desc2.taxon)
+                    # else:
+                    #     max_dist_nodes = (desc2, desc1)
+                    #     max_dist_taxa = (desc2.taxon, desc1.taxon)
 
     def distances(self):
         """
@@ -361,6 +363,7 @@ class PhylogeneticDistanceCalculator(object):
         else:
             return 0
 
+## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceCalculator):
 
     def __init__(self, tree):

@@ -4597,8 +4597,21 @@ class Tree(
         """
         from dendropy.calculate import treemeasure
         pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self)
-        n1, n2 = pdm.max_dist_nodes
-        plen = float(pdm.max_dist) / 2
+
+        maxtax1, maxtax2 = pdm.max_pairwise_distance_taxa()
+        n1 = None
+        n2 = None
+        for nd in self.leaf_node_iter():
+            if nd.taxon is maxtax1:
+                n1 = nd
+            elif nd.taxon is maxtax2:
+                n2 = nd
+        if n1.distance_from_root() < n2.distance_from_root():
+            temp = n1
+            n1 = n2
+            n2 = temp
+
+        plen = float(pdm.patristic_distance(maxtax1, maxtax2)) / 2
         mrca_node = pdm.mrca(n1.taxon, n2.taxon)
         #assert mrca_node is self.mrca(taxa=[n1.taxon, n2.taxon])
         #mrca_node = self.mrca(taxa=[n1.taxon, n2.taxon])
