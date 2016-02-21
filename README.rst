@@ -62,7 +62,7 @@ Testing
 
     or::
 
-        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python -m unittest
+        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python -m dendropy.test
 
     If this variable is not set or set to "NONE", then any tests that rely on
     PAUP* will NOT be run.
