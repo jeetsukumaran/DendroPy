@@ -22,6 +22,7 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 
 import math
 import collections
+from dendropy.calculate import statistics
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
 
@@ -326,9 +327,9 @@ class PhylogeneticDistanceMatrix(object):
             tuple with the following elements:
 
                 -   obs       : the observed value of the statistic
-                -   null_mean : the mean value of the statistic under the null
+                -   null_model_mean : the mean value of the statistic under the null
                                 model
-                -   null_sd   : the standard deviation of the statistic under
+                -   null_model_sd   : the standard deviation of the statistic under
                                 the null model
                 -   z         : the standardized effect value of the statistic
                                 (= SES as defined in [1] above)
@@ -336,9 +337,9 @@ class PhylogeneticDistanceMatrix(object):
                                 statistic under the null model.
         """
         results = self._calculate_standardized_effect_size(
-                statisticf=self.mean_pairwise_distance,
+                statisticf_name="mean_pairwise_distance",
+                statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
                 community_sets=community_sets,
-                is_weighted_edges=is_weighted_edges,
                 null_model_type=null_model_type,
                 rng=rng)
         return results
@@ -474,20 +475,52 @@ class PhylogeneticDistanceMatrix(object):
         return dt
 
     def _calculate_standardized_effect_size(self,
-            statisticf,
-            community_sets,
+            statisticf_name,
+            statisticf_kwargs=None,
+            community_sets=None,
             num_randomization_replicates=100,
-            is_weighted_edges=True,
             null_model_type="taxa.label",
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
-                ["obs", "null_mean", "null_sd", "z", "p"])
-        results = []
-        null_matrix = self.clone()
-        assert null_matrix == self
+                ["obs", "null_model_mean", "null_model_sd", "z", "p"])
+        if community_sets is None:
+            community_sets = [ set(self._mapped_taxa) ]
+        if statisticf_kwargs is None:
+            statisticf_kwargs = {}
+        observed_stat_values = {}
+        null_model_stat_values = {}
+        null_model_matrix = self.clone()
+        assert null_model_matrix == self
         for rep_idx in range(num_randomization_replicates):
-            null_matrix.shuffle_taxa(rng=rng)
-
+            null_model_matrix.shuffle_taxa(rng=rng)
+            for community_idx, community_set in enumerate(community_sets):
+                filter_fn = lambda taxon: taxon in community_set
+                statisticf_kwargs["filter_fn"] = filter_fn
+                if rep_idx == 0:
+                    observed_stat_values[community_idx] = getattr(self, statisticf_name)(**statisticf_kwargs)
+                    null_model_stat_values[community_idx] = []
+                stat_value = getattr(null_model_matrix, statisticf_name)(**statisticf_kwargs)
+                null_model_stat_values[community_idx].append(stat_value)
+        results = []
+        for community_idx, community_set in enumerate(community_sets):
+            stat_values = null_model_stat_values[community_idx]
+            null_model_mean, null_model_var = statistics.mean_and_sample_variance(stat_values)
+            if null_model_var > 0:
+                null_model_sd = math.sqrt(null_model_var)
+                z = (observed_stat_values[community_idx] - null_model_mean) / null_model_sd
+            else:
+                null_model_sd = 0.0
+                z = None
+            p = None
+            result = result_type(
+                    obs=observed_stat_values[community_idx],
+                    null_model_mean=null_model_mean,
+                    null_model_sd=null_model_sd,
+                    z=z,
+                    p=p)
+            print(result)
+            results.append(result)
+        return results
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):
