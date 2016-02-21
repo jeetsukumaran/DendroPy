@@ -47,6 +47,40 @@ class PhylogeneticDistanceCalculator(object):
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
 
+    def compile(self, tree, is_bipartitions_updated=False):
+        """
+        Calculates the distances. Note that the path length (in number of
+        steps) between taxa that span the root will be off by one if
+        the tree is unrooted.
+        """
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
+        self.taxon_namespace = tree.taxon_namespace
+        self._taxon_phylogenetic_distances = {}
+        self._taxon_phylogenetic_path_steps = {}
+        for i1, t1 in enumerate(self.taxon_namespace):
+            self._taxon_phylogenetic_distances[t1] = {}
+            self._taxon_phylogenetic_path_steps[t1] = {}
+            self._mrca[t1] = {}
+
+        for node in tree.postorder_node_iter():
+            children = node.child_nodes()
+            if len(children) == 0:
+                node.desc_paths = {node : (0,0)}
+            else:
+                node.desc_paths = {}
+                for cidx1, c1 in enumerate(children):
+                    for desc1, (desc1_plen, desc1_psteps) in c1.desc_paths.items():
+                        node.desc_paths[desc1] = (desc1_plen + c1.edge.length, desc1_psteps + 1)
+                        for c2 in children[cidx1+1:]:
+                            for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
+                                self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
+                                pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
+                                self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
+                                path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
+                                self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
+                    del(c1.desc_paths)
+
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
             return False
@@ -111,40 +145,6 @@ class PhylogeneticDistanceCalculator(object):
             return self._taxon_phylogenetic_path_steps[taxon1][taxon2]
         except KeyError:
             return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
-
-    def compile(self, tree, is_bipartitions_updated=False):
-        """
-        Calculates the distances. Note that the path length (in number of
-        steps) between taxa that span the root will be off by one if
-        the tree is unrooted.
-        """
-        if not is_bipartitions_updated:
-            tree.encode_bipartitions()
-        self.taxon_namespace = tree.taxon_namespace
-        self._taxon_phylogenetic_distances = {}
-        self._taxon_phylogenetic_path_steps = {}
-        for i1, t1 in enumerate(self.taxon_namespace):
-            self._taxon_phylogenetic_distances[t1] = {}
-            self._taxon_phylogenetic_path_steps[t1] = {}
-            self._mrca[t1] = {}
-
-        for node in tree.postorder_node_iter():
-            children = node.child_nodes()
-            if len(children) == 0:
-                node.desc_paths = {node : (0,0)}
-            else:
-                node.desc_paths = {}
-                for cidx1, c1 in enumerate(children):
-                    for desc1, (desc1_plen, desc1_psteps) in c1.desc_paths.items():
-                        node.desc_paths[desc1] = (desc1_plen + c1.edge.length, desc1_psteps + 1)
-                        for c2 in children[cidx1+1:]:
-                            for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
-                                self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
-                                pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
-                                self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
-                                path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
-                                self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
-                    del(c1.desc_paths)
 
     def max_pairwise_distance_taxa(self, edge_weighted=True):
         if edge_weighted:
@@ -355,6 +355,32 @@ class PhylogeneticDistanceCalculator(object):
             return sum(distances) / (len(distances) * 1.0)
         else:
             return 0
+
+    def shuffle_taxa(self, rng=None):
+        if rng is None:
+            rng = GLOBAL_RNG
+        registered_taxa = set()
+        for t1 in self._taxon_phylogenetic_distances:
+            registered_taxa.add(t1)
+            registered_taxa.update([t2 for t2 in self._taxon_phylogenetic_distances[t1]])
+        reordered_taxa = list(registered_taxa)
+        rng.shuffle(reordered_taxa)
+        current_to_shuffled_taxon_map = dict(zip(registered_taxa, reordered_taxa))
+        for attr_name in (
+                    "_taxon_phylogenetic_distances",
+                    "_taxon_phylogenetic_path_steps",
+                    "_mrca",
+                ):
+            src = getattr(self, attr_name)
+            dest = {}
+            for t1 in src:
+                x1 = current_to_shuffled_taxon_map[t1]
+                dest[x1] = {}
+                for t2 in src[t1]:
+                    x2 = current_to_shuffled_taxon_map[t2]
+                    dest[x1][x2] = src[t1][t2]
+            setattr(self, attr_name, dest)
+        return current_to_shuffled_taxon_map
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceCalculator):

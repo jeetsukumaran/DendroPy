@@ -863,6 +863,45 @@ class PhylogeneticDistanceCalculatorCloneTest(unittest.TestCase):
         self.assertEqual(pdm0.sum_of_distances(), pdm1.sum_of_distances())
         self.assertEqual(pdm0, pdm1)
 
+class PhylogeneticDistanceCalculatorShuffleTest(unittest.TestCase):
+
+    def test_shuffle(self):
+        tree = dendropy.Tree.get_from_path(
+                    src=pathmap.tree_source_path("community.tree.newick"),
+                    schema="newick",
+                    rooting="force-rooted")
+        pdc0 = tree.phylogenetic_distance_calculator()
+        pdc1 = tree.phylogenetic_distance_calculator()
+        current_to_shuffled_taxon_map = pdc1.shuffle_taxa()
+        keys = set(current_to_shuffled_taxon_map.keys())
+        values = set(current_to_shuffled_taxon_map.values())
+        self.assertEqual(len(keys), len(values), "\n\n({}): {}\n\n({}): {}".format(len(keys), keys, len(values), values))
+        self.assertEqual(keys, values)
+        for taxon in tree.taxon_namespace:
+            self.assertIn(taxon, current_to_shuffled_taxon_map)
+        for nd in tree.leaf_node_iter():
+            self.assertIn(current_to_shuffled_taxon_map[nd.taxon], tree.taxon_namespace)
+            nd.taxon = current_to_shuffled_taxon_map[nd.taxon]
+        pdc2 = tree.phylogenetic_distance_calculator()
+        same_as_before = []
+        different = []
+        for t1 in tree.taxon_namespace:
+            for t2 in tree.taxon_namespace:
+                d2 = pdc2.patristic_distance(t1, t2)
+                d1 = pdc1.patristic_distance(t1, t2)
+                self.assertEqual(d1, d2)
+                if t1 is not t2:
+                    d0 = pdc0.patristic_distance(t1, t2)
+                    if d0 == d1:
+                        same_as_before.append( (t1, t2) )
+                    else:
+                        different.append( (t1, t2) )
+                else:
+                    self.assertEqual(d1, 0)
+        self.assertTrue(len(different) > 0)
+        self.assertEqual(pdc1, pdc2)
+        self.assertNotEqual(pdc0, pdc1)
+
 class TreePatristicDistTest(unittest.TestCase):
 
     def setUp(self):
@@ -1183,7 +1222,8 @@ class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
             self.data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=int)
         self.tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("community.tree.newick"),
-                schema="newick")
+                schema="newick",
+                rooting="force-rooted")
         self.pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self.tree)
 
     def test_nonabundance_weighted_mpd(self):
