@@ -21,6 +21,7 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 """
 
 import math
+import collections
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
 
@@ -113,7 +114,7 @@ class PhylogeneticDistanceMatrix(object):
     def clone(self):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
-        self._mapped_taxa = set(o._mapped_taxa)
+        o._mapped_taxa = set(self._mapped_taxa)
         for src, dest in (
                 (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
                 (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
@@ -278,10 +279,69 @@ class PhylogeneticDistanceMatrix(object):
             return 0
 
     def standardized_effect_size_minimum_pairwise_distance(self,
-            filter_fn=None,
+            community_sets,
+            num_randomization_replicates=100,
             is_weighted_edges=True,
-            null_model_type="taxa.label",):
-        pass
+            null_model_type="taxa.label",
+            rng=None):
+        """
+        Returns the standardized effect size value for the MPD statistic under
+        a null model under various community compositions.
+
+        The S.E.S. is given by:
+
+            .. math::
+                SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
+
+        This removes any directionary bias associated with the
+        decrease in variance in the MPD statistic value as species richness
+        increases to the point where communities become saturated.
+
+        In contrast to the function calculating the non-standardized effect
+        size version of this statistic, which uses filter function to specify
+        the subset of taxa to be considerd, here a collection of (multiple)
+        sets of taxa constituting a community is specified. This to allow
+        calculation of the null model statistic across all community sets for
+        each randomization replicate.
+
+        Parameters
+        ----------
+        community_sets : iterable of iterable of |Taxon| objects
+            A collection of collections, e.g. a list of sets, with the elements
+            of each set being |Taxon| instances. Each set specifies the
+            composition of a community. The standardized effect size of this
+            statistic will be calculated for each community as specified by a
+            set of |Taxon| instances.
+        num_randomization_replicates : int
+            Number of randomization replicates.
+        is_weighted_edges: bool
+            If ``True`` then edge lengths will be considered for distances.
+            Otherwise, just the number of edges.
+
+        Returns
+        -------
+        r : list of results
+            A list of results, with each result corresponding to a community
+            set given in ``community_sets``. Each result consists of a named
+            tuple with the following elements:
+
+                -   obs       : the observed value of the statistic
+                -   null_mean : the mean value of the statistic under the null
+                                model
+                -   null_sd   : the standard deviation of the statistic under
+                                the null model
+                -   z         : the standardized effect value of the statistic
+                                (= SES as defined in [1] above)
+                -   p         : the p-value of the observed value of the
+                                statistic under the null model.
+        """
+        results = self._calculate_standardized_effect_size(
+                statisticf=self.mean_pairwise_distance,
+                community_sets=community_sets,
+                is_weighted_edges=is_weighted_edges,
+                null_model_type=null_model_type,
+                rng=rng)
+        return results
 
     def mean_nearest_taxon_distance(self, filter_fn=None, is_weighted_edges=True):
         """
@@ -369,6 +429,9 @@ class PhylogeneticDistanceMatrix(object):
             return 0
 
     def shuffle_taxa(self, rng=None):
+        """
+        Randomly shuffles taxa in-situ.
+        """
         if rng is None:
             rng = GLOBAL_RNG
         # mapped_taxa = list(mapped_taxa)
@@ -376,6 +439,7 @@ class PhylogeneticDistanceMatrix(object):
         reordered_taxa = list(self._mapped_taxa)
         rng.shuffle(reordered_taxa)
         current_to_shuffled_taxon_map = dict(zip(self._mapped_taxa, reordered_taxa))
+        # assert len(current_to_shuffled_taxon_map) == len(self._mapped_taxa), "{} != {}".format(len(current_to_shuffled_taxon_map), len(self._mapped_taxa))
         for attr_name in (
                 "_taxon_phylogenetic_distances",
                 "_taxon_phylogenetic_path_steps",
@@ -408,6 +472,22 @@ class PhylogeneticDistanceMatrix(object):
             for t2 in self._mapped_taxa:
                 dt[t1.label, t2.label] = df(t1, t2)
         return dt
+
+    def _calculate_standardized_effect_size(self,
+            statisticf,
+            community_sets,
+            num_randomization_replicates=100,
+            is_weighted_edges=True,
+            null_model_type="taxa.label",
+            rng=None):
+        result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
+                ["obs", "null_mean", "null_sd", "z", "p"])
+        results = []
+        null_matrix = self.clone()
+        assert null_matrix == self
+        for rep_idx in range(num_randomization_replicates):
+            null_matrix.shuffle_taxa(rng=rng)
+
 
 ## legacy: will soon be deprecated
 class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):

@@ -845,6 +845,8 @@ class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
         pdm1 = pdm0.clone()
         self.assertIsNot(pdm0, pdm1)
         self.assertIs(pdm0.taxon_namespace, pdm1.taxon_namespace)
+        self.assertEqual(len(pdm0.taxon_namespace), len(pdm0._mapped_taxa))
+        self.assertEqual(len(pdm1.taxon_namespace), len(pdm1._mapped_taxa))
         for src, dest in (
                     (pdm0._taxon_phylogenetic_distances, pdm1._taxon_phylogenetic_distances,),
                     (pdm0._taxon_phylogenetic_path_steps, pdm1._taxon_phylogenetic_path_steps,),
