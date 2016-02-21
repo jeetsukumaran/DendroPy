@@ -25,7 +25,7 @@ from dendropy.utility import GLOBAL_RNG
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
-class PhylogeneticDistanceCalculator(object):
+class PhylogeneticDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
     ``max_dist_taxa`` and ``max_dist_nodes`` will return a tuple of taxon objects
@@ -217,7 +217,7 @@ class PhylogeneticDistanceCalculator(object):
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
                                      schema="nexus")
-            pdm = treemeasure.PhylogeneticDistanceCalculator(tree)
+            pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
 
             # consider all tip
             mpd1 = pdm.mean_pairwise_distance()
@@ -311,7 +311,7 @@ class PhylogeneticDistanceCalculator(object):
             from dendropy.calculate import treemeasure
             tree = dendropy.Tree.get(path="data.nex",
                                      schema="nexus")
-            pdm = treemeasure.PhylogeneticDistanceCalculator(tree)
+            pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
 
             # consider all tips
             mntd = pdm.mean_nearest_taxon_distance()
@@ -384,18 +384,23 @@ class PhylogeneticDistanceCalculator(object):
             setattr(self, attr_name, dest)
         return current_to_shuffled_taxon_map
 
+    def as_data_table(self):
+        """
+        Returns this as a table.
+        """
+
 ## legacy: will soon be deprecated
-class PatrisiticDistanceMatrix(PhylogeneticDistanceCalculator):
+class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):
 
     def __init__(self, tree):
-        PhylogeneticDistanceCalculator.__init__(self)
+        PhylogeneticDistanceMatrix.__init__(self)
         self.compile(tree=tree)
 
 def patristic_distance(tree, taxon1, taxon2, is_bipartitions_updated=False):
     """
     Given a tree with bipartitions encoded, and two taxa on that tree, returns the
     patristic distance between the two. Much more inefficient than constructing
-    a PhylogeneticDistanceCalculator object.
+    a PhylogeneticDistanceMatrix object.
     """
     mrca = tree.mrca(taxa=[taxon1, taxon2], is_bipartitions_updated=is_bipartitions_updated)
     dist = 0

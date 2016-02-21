@@ -4596,7 +4596,7 @@ class Tree(
         removed from the tree.
         """
         from dendropy.calculate import treemeasure
-        pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self)
 
         ## ugly, ugly, ugly code to find two nodes that span the midpoint
         maxtax1, maxtax2 = pdm.max_pairwise_distance_taxa()
@@ -5078,7 +5078,7 @@ class Tree(
 
     def phylogenetic_distance_calculator(self, is_bipartitions_updated=False):
         """
-        Returns a |PhylogeneticDistanceCalculator| instance based
+        Returns a |PhylogeneticDistanceMatrix| instance based
         on the tree (in its current state).
 
         Parameters
@@ -5091,12 +5091,12 @@ class Tree(
 
         Returns
         -------
-        pdc : a |PhylogeneticDistanceCalculator| instance
-            A |PhylogeneticDistanceCalculator| instance corresponding to the
+        pdc : a |PhylogeneticDistanceMatrix| instance
+            A |PhylogeneticDistanceMatrix| instance corresponding to the
             tree in its current state.
         """
         from dendropy.calculate import treemeasure
-        return treemeasure.PhylogeneticDistanceCalculator.from_tree(tree=self,
+        return treemeasure.PhylogeneticDistanceMatrix.from_tree(tree=self,
                 is_bipartitions_updated=is_bipartitions_updated)
 
     def calc_node_ages(self,

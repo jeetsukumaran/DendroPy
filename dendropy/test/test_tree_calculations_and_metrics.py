@@ -835,7 +835,7 @@ class TreeSymmetricDistTest(unittest.TestCase):
          o_tree.encode_bipartitions()
          self.assertEqual(treecompare.symmetric_difference(o_tree, ref), 2)
 
-class PhylogeneticDistanceCalculatorCloneTest(unittest.TestCase):
+class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
 
     def setUp(self):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
@@ -863,7 +863,7 @@ class PhylogeneticDistanceCalculatorCloneTest(unittest.TestCase):
         self.assertEqual(pdm0.sum_of_distances(), pdm1.sum_of_distances())
         self.assertEqual(pdm0, pdm1)
 
-class PhylogeneticDistanceCalculatorShuffleTest(unittest.TestCase):
+class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
 
     def test_shuffle(self):
         tree = dendropy.Tree.get_from_path(
@@ -909,7 +909,7 @@ class TreePatristicDistTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def testPatDistMatrix(self):
-        pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self.tree)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.require_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.require_taxon(label=t2)
@@ -1225,7 +1225,7 @@ class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
                 src=pathmap.tree_source_path("community.tree.newick"),
                 schema="newick",
                 rooting="force-rooted")
-        self.pdm = treemeasure.PhylogeneticDistanceCalculator.from_tree(self.tree)
+        self.pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
 
     def test_nonabundance_weighted_mpd(self):
         # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)

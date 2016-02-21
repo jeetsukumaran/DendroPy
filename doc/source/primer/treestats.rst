@@ -57,14 +57,14 @@ The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.datamodel.tree
 Patristic Distances
 -------------------
 
-The :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceCalculator` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
+The :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceMatrix` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
 The easiest way to get an object of this class for a particular tree is to call :meth:`~dendropy.datamodel.treemodel.Tree.phylogenetic_distance_calculator()`.
 The object is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
 
 .. literalinclude:: /examples/pdm.py
 
-Note that the |PhylogeneticDistanceCalculator| object does not automatically update if the original |Tree| changes: it is essentially a snapshot of |Tree| at the point in which it is instantiated.
-If the original |Tree| changes, you should create a new instance of the corresponding |PhylogeneticDistanceCalculator| object.
+Note that the |PhylogeneticDistanceMatrix| object does not automatically update if the original |Tree| changes: it is essentially a snapshot of |Tree| at the point in which it is instantiated.
+If the original |Tree| changes, you should create a new instance of the corresponding |PhylogeneticDistanceMatrix| object.
 
 Comparing and Summarizing Trees
 ===============================

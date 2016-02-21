@@ -31,13 +31,13 @@ from dendropy.utility import deprecate
 ##############################################################################
 ## dendropy.calculate.treemeasure
 
-class PhylogeneticDistanceCalculator(treemeasure.PhylogeneticDistanceCalculator):
+class PhylogeneticDistanceMatrix(treemeasure.PhylogeneticDistanceMatrix):
     def __init__(self, tree=None):
         deprecate.dendropy_deprecation_warning(
-                preamble="Deprecated since DendroPy 4: The 'dendropy.treecalc.PhylogeneticDistanceCalculator' class has moved to 'dendropy.calculate.treemeasure.PhylogeneticDistanceCalculator'.",
-                old_construct="from dendropy import treecalc\npdm = treecalc.PhylogeneticDistanceCalculator(...)",
-                new_construct="from dendropy.calculate import treemeasure\npdm = treemeasure.PhylogeneticDistanceCalculator(...)")
-        treemeasure.PhylogeneticDistanceCalculator.__init__(self, tree=tree)
+                preamble="Deprecated since DendroPy 4: The 'dendropy.treecalc.PhylogeneticDistanceMatrix' class has moved to 'dendropy.calculate.treemeasure.PhylogeneticDistanceMatrix'.",
+                old_construct="from dendropy import treecalc\npdm = treecalc.PhylogeneticDistanceMatrix(...)",
+                new_construct="from dendropy.calculate import treemeasure\npdm = treemeasure.PhylogeneticDistanceMatrix(...)")
+        treemeasure.PhylogeneticDistanceMatrix.__init__(self, tree=tree)
 
 def patristic_distance(tree, taxon1, taxon2):
     deprecate.dendropy_deprecation_warning(
