@@ -246,6 +246,16 @@ def variance_covariance(data, population_variance=False):
     # print ""
     return covar
 
+def rank(value_to_be_ranked, value_providing_rank):
+    """
+    Returns the rank of ``value_to_be_ranked`` in set of values, ``values``.
+    Works even if ``values`` is a non-orderable collection (e.g., a set).
+    A binary search would be an optimized way of doing this if we can constrain
+    ``values`` to be an ordered collection.
+    """
+    num_lesser = [v for v in value_providing_rank if v < value_to_be_ranked]
+    return len(num_lesser)
+
 class FishersExactTest(object):
     """
     Given a 2x2 table:

@@ -482,7 +482,7 @@ class PhylogeneticDistanceMatrix(object):
             null_model_type="taxa.label",
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
-                ["obs", "null_model_mean", "null_model_sd", "z", "p"])
+                ["obs", "null_model_mean", "null_model_sd", "z", "rank", "p",])
         if community_sets is None:
             community_sets = [ set(self._mapped_taxa) ]
         if statisticf_kwargs is None:
@@ -503,20 +503,25 @@ class PhylogeneticDistanceMatrix(object):
                 null_model_stat_values[community_idx].append(stat_value)
         results = []
         for community_idx, community_set in enumerate(community_sets):
+            obs_value = observed_stat_values[community_idx]
             stat_values = null_model_stat_values[community_idx]
             null_model_mean, null_model_var = statistics.mean_and_sample_variance(stat_values)
+            rank = statistics.rank(
+                    value_to_be_ranked=obs_value,
+                    value_providing_rank=stat_values)
             if null_model_var > 0:
                 null_model_sd = math.sqrt(null_model_var)
-                z = (observed_stat_values[community_idx] - null_model_mean) / null_model_sd
+                z = (obs_value - null_model_mean) / null_model_sd
             else:
                 null_model_sd = 0.0
                 z = None
-            p = None
+            p = float(rank) / len(stat_values)
             result = result_type(
-                    obs=observed_stat_values[community_idx],
+                    obs=obs_value,
                     null_model_mean=null_model_mean,
                     null_model_sd=null_model_sd,
                     z=z,
+                    rank=rank,
                     p=p)
             print(result)
             results.append(result)
