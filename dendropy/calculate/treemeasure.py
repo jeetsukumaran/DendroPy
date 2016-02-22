@@ -288,7 +288,7 @@ class PhylogeneticDistanceMatrix(object):
         else:
             return 0
 
-    def standardized_effect_size_minimum_pairwise_distance(self,
+    def standardized_effect_size_mean_pairwise_distance(self,
             assemblage_memberships,
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
@@ -340,7 +340,7 @@ class PhylogeneticDistanceMatrix(object):
                     rooting="force-rooted")
             pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
             assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_minimum_pairwise_distance(assemblage_memberships=assemblage_memberships)
+            results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_memberships)
             print(results)
 
         Returns
