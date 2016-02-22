@@ -303,9 +303,10 @@ class PhylogeneticDistanceMatrix(object):
             .. math::
                 SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
 
-        This removes any directionary bias associated with the
-        decrease in variance in the MPD statistic value as species richness
-        increases to the point where communities become saturated.
+        This removes any bias associated with the decrease in variance in the
+        MPD statistic value as species richness increases to the point where
+        communities become saturated. Equivalent to -1 times the Nearest
+        Relative Index (NRI) when using phylogenetic distances.
 
         In contrast to the function calculating the non-standardized effect
         size version of this statistic, which uses filter function to specify
@@ -468,9 +469,10 @@ class PhylogeneticDistanceMatrix(object):
             .. math::
                 SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
 
-        This removes any directionary bias associated with the
-        decrease in variance in the MPD statistic value as species richness
-        increases to the point where communities become saturated.
+        This removes any bias associated with the decrease in variance in the
+        MPD statistic value as species richness increases to the point where
+        communities become saturated. Equivalent to -1 times the Nearest Taxon
+        Index when using phylogenetic distances.
 
         In contrast to the function calculating the non-standardized effect
         size version of this statistic, which uses filter function to specify

@@ -5,7 +5,7 @@ New or Updated Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
     -   The new (actually, warmed-over) PhylogeneticDistanceCalculator to manage various "within-tree" distances (e.g., patristic distances, or the ecological statistics described below).
-    -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), etc.
+    -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), Standardized Effect Size MPD and MNTD (equivalent to -1 * NRI and -1 * NTI).
     -   Added DataTable class to manage community ecology (as well as more general classes of) data.
     -   Implementation of the Protracted Speciation model: a Birth-Death process with explicit modeling of speciation-as-a-process rather than speciation-as-an-event by incorporating the lag between speciation initiation and speciation completion.
     -   NEWICK terminating semicolon requirement relaxation.
