@@ -22,6 +22,7 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 
 import math
 import collections
+import csv
 from dendropy.calculate import statistics
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
@@ -191,6 +192,14 @@ class PhylogeneticDistanceMatrix(object):
         """
         return sum(self.distances())
 
+    def iter_taxa(self):
+        """
+        Iterates over taxa in matrix. Note that this could be a subset of the taxa in
+        the associated taxon namespace.
+        """
+        for t in self._mapped_taxa:
+            yield t
+
     def mean_pairwise_distance(self, filter_fn=None, is_weighted_edges=True):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
@@ -319,6 +328,20 @@ class PhylogeneticDistanceMatrix(object):
             If ``True`` then edge lengths will be considered for distances.
             Otherwise, just the number of edges.
 
+        Examples
+        --------
+
+        ::
+
+            tree = dendropy.Tree.get_from_path(
+                    src="data/community.tree.newick",
+                    schema="newick",
+                    rooting="force-rooted")
+            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
+            community_sets = pdm.read_community_sets_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_minimum_pairwise_distance(community_sets=community_sets)
+            print(results)
+
         Returns
         -------
         r : list of results
@@ -429,6 +452,85 @@ class PhylogeneticDistanceMatrix(object):
         else:
             return 0
 
+    def standardized_effect_size_mean_nearest_taxon_distance(self,
+            community_sets,
+            num_randomization_replicates=100,
+            is_weighted_edges=True,
+            null_model_type="taxa.label",
+            rng=None):
+        """
+        Returns the standardized effect size value for the MNTD statistic under
+        a null model under various community compositions.
+
+        The S.E.S. is given by:
+
+            .. math::
+                SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
+
+        This removes any directionary bias associated with the
+        decrease in variance in the MPD statistic value as species richness
+        increases to the point where communities become saturated.
+
+        In contrast to the function calculating the non-standardized effect
+        size version of this statistic, which uses filter function to specify
+        the subset of taxa to be considerd, here a collection of (multiple)
+        sets of taxa constituting a community is specified. This to allow
+        calculation of the null model statistic across all community sets for
+        each randomization replicate.
+
+        Parameters
+        ----------
+        community_sets : iterable of iterable of |Taxon| objects
+            A collection of collections, e.g. a list of sets, with the elements
+            of each set being |Taxon| instances. Each set specifies the
+            composition of a community. The standardized effect size of this
+            statistic will be calculated for each community as specified by a
+            set of |Taxon| instances.
+        num_randomization_replicates : int
+            Number of randomization replicates.
+        is_weighted_edges: bool
+            If ``True`` then edge lengths will be considered for distances.
+            Otherwise, just the number of edges.
+
+        Examples
+        --------
+
+        ::
+
+            tree = dendropy.Tree.get_from_path(
+                    src="data/community.tree.newick",
+                    schema="newick",
+                    rooting="force-rooted")
+            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
+            community_sets = pdm.read_community_sets_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_mean_nearest_taxon_distance(community_sets=community_sets)
+            print(results)
+
+        Returns
+        -------
+        r : list of results
+            A list of results, with each result corresponding to a community
+            set given in ``community_sets``. Each result consists of a named
+            tuple with the following elements:
+
+                -   obs       : the observed value of the statistic
+                -   null_model_mean : the mean value of the statistic under the null
+                                model
+                -   null_model_sd   : the standard deviation of the statistic under
+                                the null model
+                -   z         : the standardized effect value of the statistic
+                                (= SES as defined in [1] above)
+                -   p         : the p-value of the observed value of the
+                                statistic under the null model.
+        """
+        results = self._calculate_standardized_effect_size(
+                statisticf_name="mean_nearest_taxon_distance",
+                statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
+                community_sets=community_sets,
+                null_model_type=null_model_type,
+                rng=rng)
+        return results
+
     def shuffle_taxa(self, rng=None):
         """
         Randomly shuffles taxa in-situ.
@@ -473,6 +575,35 @@ class PhylogeneticDistanceMatrix(object):
             for t2 in self._mapped_taxa:
                 dt[t1.label, t2.label] = df(t1, t2)
         return dt
+
+    def read_community_sets_from_delimited_source(
+            self,
+            src,
+            delimiter=",",
+            default_data_type=int,):
+        """
+        Convenience method to return list of community sets from a delimited
+        file that lists taxon (labels) in columns and community
+        presence/absences or abundances in rows.
+        """
+        if isinstance(src, str):
+            with open(src) as srcf:
+                reader = csv.reader(srcf, delimiter=delimiter)
+                data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=default_data_type)
+        else:
+            reader = csv.reader(src, delimiter=delimiter)
+            data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=default_data_type)
+        mapped_taxon_labels = set([taxon.label for taxon in self.iter_taxa()])
+        for column_name in data_table.iter_column_names():
+            assert column_name in mapped_taxon_labels
+        community_sets = []
+        for row_name in data_table.iter_row_names():
+            community_set = set()
+            for taxon in self.iter_taxa():
+                if data_table[row_name, taxon.label] > 0:
+                    community_set.add(taxon)
+            community_sets.append(community_set)
+        return community_sets
 
     def _calculate_standardized_effect_size(self,
             statisticf_name,
@@ -523,7 +654,6 @@ class PhylogeneticDistanceMatrix(object):
                     z=z,
                     rank=rank,
                     p=p)
-            print(result)
             results.append(result)
         return results
 
