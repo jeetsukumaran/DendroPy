@@ -161,8 +161,8 @@ class PhylogeneticDistanceMatrix(object):
         except KeyError:
             return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
 
-    def max_pairwise_distance_taxa(self, is_weighted_edges=True):
-        if is_weighted_edges:
+    def max_pairwise_distance_taxa(self, is_weighted_edge_distances=True):
+        if is_weighted_edge_distances:
             dists = self._taxon_phylogenetic_distances
         else:
             dists = self._taxon_phylogenetic_path_steps
@@ -200,7 +200,7 @@ class PhylogeneticDistanceMatrix(object):
         for t in self._mapped_taxa:
             yield t
 
-    def mean_pairwise_distance(self, filter_fn=None, is_weighted_edges=True):
+    def mean_pairwise_distance(self, filter_fn=None, is_weighted_edge_distances=True):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -225,10 +225,10 @@ class PhylogeneticDistanceMatrix(object):
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
-        is_weighted_edges : bool
+        is_weighted_edge_distances : bool
             If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
-            edges rather then the sum of is_weighted_edges edges, connecting two
+            edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
 
         Examples
@@ -264,7 +264,7 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        if is_weighted_edges:
+        if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
@@ -289,9 +289,9 @@ class PhylogeneticDistanceMatrix(object):
             return 0
 
     def standardized_effect_size_minimum_pairwise_distance(self,
-            community_sets,
-            num_randomization_replicates=100,
-            is_weighted_edges=True,
+            assemblage_memberships,
+            num_randomization_replicates=1000,
+            is_weighted_edge_distances=True,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -317,7 +317,7 @@ class PhylogeneticDistanceMatrix(object):
 
         Parameters
         ----------
-        community_sets : iterable of iterable of |Taxon| objects
+        assemblage_memberships : iterable of iterable of |Taxon| objects
             A collection of collections, e.g. a list of sets, with the elements
             of each set being |Taxon| instances. Each set specifies the
             composition of a community. The standardized effect size of this
@@ -325,7 +325,7 @@ class PhylogeneticDistanceMatrix(object):
             set of |Taxon| instances.
         num_randomization_replicates : int
             Number of randomization replicates.
-        is_weighted_edges: bool
+        is_weighted_edge_distances: bool
             If ``True`` then edge lengths will be considered for distances.
             Otherwise, just the number of edges.
 
@@ -339,15 +339,15 @@ class PhylogeneticDistanceMatrix(object):
                     schema="newick",
                     rooting="force-rooted")
             pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
-            community_sets = pdm.read_community_sets_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_minimum_pairwise_distance(community_sets=community_sets)
+            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_minimum_pairwise_distance(assemblage_memberships=assemblage_memberships)
             print(results)
 
         Returns
         -------
         r : list of results
             A list of results, with each result corresponding to a community
-            set given in ``community_sets``. Each result consists of a named
+            set given in ``assemblage_memberships``. Each result consists of a named
             tuple with the following elements:
 
                 -   obs       : the observed value of the statistic
@@ -362,14 +362,14 @@ class PhylogeneticDistanceMatrix(object):
         """
         results = self._calculate_standardized_effect_size(
                 statisticf_name="mean_pairwise_distance",
-                statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
-                community_sets=community_sets,
+                statisticf_kwargs={"is_weighted_edge_distances": is_weighted_edge_distances},
+                assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
 
-    def mean_nearest_taxon_distance(self, filter_fn=None, is_weighted_edges=True):
+    def mean_nearest_taxon_distance(self, filter_fn=None, is_weighted_edge_distances=True):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -394,10 +394,10 @@ class PhylogeneticDistanceMatrix(object):
             In trees sampled from multiple communites, ``filter_fn`` can be
             used to restrict the calculation to only one community based on
             some criteria.
-        is_weighted_edges : bool
+        is_weighted_edge_distances : bool
             If |True| then the edge-weighted distance, i.e., considering edge
             lengths, is returned. Otherwise the the path steps or the number of
-            edges rather then the sum of is_weighted_edges edges, connecting two
+            edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
 
         Examples
@@ -432,7 +432,7 @@ class PhylogeneticDistanceMatrix(object):
         [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
 
         """
-        if is_weighted_edges:
+        if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
@@ -455,9 +455,9 @@ class PhylogeneticDistanceMatrix(object):
             return 0
 
     def standardized_effect_size_mean_nearest_taxon_distance(self,
-            community_sets,
-            num_randomization_replicates=100,
-            is_weighted_edges=True,
+            assemblage_memberships,
+            num_randomization_replicates=1000,
+            is_weighted_edge_distances=True,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -483,7 +483,7 @@ class PhylogeneticDistanceMatrix(object):
 
         Parameters
         ----------
-        community_sets : iterable of iterable of |Taxon| objects
+        assemblage_memberships : iterable of iterable of |Taxon| objects
             A collection of collections, e.g. a list of sets, with the elements
             of each set being |Taxon| instances. Each set specifies the
             composition of a community. The standardized effect size of this
@@ -491,7 +491,7 @@ class PhylogeneticDistanceMatrix(object):
             set of |Taxon| instances.
         num_randomization_replicates : int
             Number of randomization replicates.
-        is_weighted_edges: bool
+        is_weighted_edge_distances: bool
             If ``True`` then edge lengths will be considered for distances.
             Otherwise, just the number of edges.
 
@@ -505,15 +505,15 @@ class PhylogeneticDistanceMatrix(object):
                     schema="newick",
                     rooting="force-rooted")
             pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
-            community_sets = pdm.read_community_sets_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_mean_nearest_taxon_distance(community_sets=community_sets)
+            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_mean_nearest_taxon_distance(assemblage_memberships=assemblage_memberships)
             print(results)
 
         Returns
         -------
         r : list of results
             A list of results, with each result corresponding to a community
-            set given in ``community_sets``. Each result consists of a named
+            set given in ``assemblage_memberships``. Each result consists of a named
             tuple with the following elements:
 
                 -   obs       : the observed value of the statistic
@@ -528,8 +528,8 @@ class PhylogeneticDistanceMatrix(object):
         """
         results = self._calculate_standardized_effect_size(
                 statisticf_name="mean_nearest_taxon_distance",
-                statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
-                community_sets=community_sets,
+                statisticf_kwargs={"is_weighted_edge_distances": is_weighted_edge_distances},
+                assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
@@ -563,11 +563,11 @@ class PhylogeneticDistanceMatrix(object):
             setattr(self, attr_name, dest)
         return current_to_shuffled_taxon_map
 
-    def as_data_table(self, is_weighted_edges=True):
+    def as_data_table(self, is_weighted_edge_distances=True):
         """
         Returns this as a table.
         """
-        if is_weighted_edges:
+        if is_weighted_edge_distances:
             df = self.patristic_distance
         else:
             df = self.path_edge_count
@@ -580,7 +580,7 @@ class PhylogeneticDistanceMatrix(object):
                 dt[t1.label, t2.label] = df(t1, t2)
         return dt
 
-    def read_community_sets_from_delimited_source(
+    def read_assemblage_memberships_from_delimited_source(
             self,
             src,
             delimiter=",",
@@ -600,26 +600,26 @@ class PhylogeneticDistanceMatrix(object):
         mapped_taxon_labels = set([taxon.label for taxon in self.iter_taxa()])
         for column_name in data_table.iter_column_names():
             assert column_name in mapped_taxon_labels
-        community_sets = []
+        assemblage_memberships = []
         for row_name in data_table.iter_row_names():
-            community_set = set()
+            assemblage_membership = set()
             for taxon in self.iter_taxa():
                 if data_table[row_name, taxon.label] > 0:
-                    community_set.add(taxon)
-            community_sets.append(community_set)
-        return community_sets
+                    assemblage_membership.add(taxon)
+            assemblage_memberships.append(assemblage_membership)
+        return assemblage_memberships
 
     def _calculate_standardized_effect_size(self,
             statisticf_name,
             statisticf_kwargs=None,
-            community_sets=None,
+            assemblage_memberships=None,
             null_model_type="taxa.label",
-            num_randomization_replicates=100,
+            num_randomization_replicates=1000,
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
                 ["obs", "null_model_mean", "null_model_sd", "z", "rank", "p",])
-        if community_sets is None:
-            community_sets = [ set(self._mapped_taxa) ]
+        if assemblage_memberships is None:
+            assemblage_memberships = [ set(self._mapped_taxa) ]
         if statisticf_kwargs is None:
             statisticf_kwargs = {}
         observed_stat_values = {}
@@ -628,8 +628,8 @@ class PhylogeneticDistanceMatrix(object):
         assert null_model_matrix == self
         for rep_idx in range(num_randomization_replicates):
             null_model_matrix.shuffle_taxa(rng=rng)
-            for community_idx, community_set in enumerate(community_sets):
-                filter_fn = lambda taxon: taxon in community_set
+            for community_idx, assemblage_membership in enumerate(assemblage_memberships):
+                filter_fn = lambda taxon: taxon in assemblage_membership
                 statisticf_kwargs["filter_fn"] = filter_fn
                 if rep_idx == 0:
                     observed_stat_values[community_idx] = getattr(self, statisticf_name)(**statisticf_kwargs)
@@ -637,7 +637,7 @@ class PhylogeneticDistanceMatrix(object):
                 stat_value = getattr(null_model_matrix, statisticf_name)(**statisticf_kwargs)
                 null_model_stat_values[community_idx].append(stat_value)
         results = []
-        for community_idx, community_set in enumerate(community_sets):
+        for community_idx, assemblage_membership in enumerate(assemblage_memberships):
             obs_value = observed_stat_values[community_idx]
             stat_values = null_model_stat_values[community_idx]
             null_model_mean, null_model_var = statistics.mean_and_sample_variance(stat_values)
