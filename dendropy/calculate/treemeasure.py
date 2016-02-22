@@ -364,6 +364,7 @@ class PhylogeneticDistanceMatrix(object):
                 statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
                 community_sets=community_sets,
                 null_model_type=null_model_type,
+                num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
 
@@ -528,6 +529,7 @@ class PhylogeneticDistanceMatrix(object):
                 statisticf_kwargs={"is_weighted_edges": is_weighted_edges},
                 community_sets=community_sets,
                 null_model_type=null_model_type,
+                num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
 
@@ -609,8 +611,8 @@ class PhylogeneticDistanceMatrix(object):
             statisticf_name,
             statisticf_kwargs=None,
             community_sets=None,
-            num_randomization_replicates=100,
             null_model_type="taxa.label",
+            num_randomization_replicates=100,
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
                 ["obs", "null_model_mean", "null_model_sd", "z", "rank", "p",])
