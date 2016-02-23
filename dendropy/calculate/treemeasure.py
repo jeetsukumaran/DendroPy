@@ -26,6 +26,7 @@ import csv
 from dendropy.calculate import statistics
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
+from dendropy.utility import error
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
@@ -286,7 +287,8 @@ class PhylogeneticDistanceMatrix(object):
         if distances:
             return sum(distances) / (len(distances) * 1.0)
         else:
-            return 0
+            raise error.NullAssemblageException("No taxa in assemblage")
+            # return 0
 
     def standardized_effect_size_mean_pairwise_distance(self,
             assemblage_memberships,
@@ -452,7 +454,8 @@ class PhylogeneticDistanceMatrix(object):
         if distances:
             return sum(distances) / (len(distances) * 1.0)
         else:
-            return 0
+            raise error.NullAssemblageException("No taxa in assemblage")
+            # return 0
 
     def standardized_effect_size_mean_nearest_taxon_distance(self,
             assemblage_memberships,

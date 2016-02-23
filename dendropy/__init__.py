@@ -63,7 +63,6 @@ from dendropy.datamodel.charmatrixmodel import ContinuousCharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
 from dendropy.datamodel.datasetmodel import DataSet
 from dendropy.utility.error import ImmutableTaxonNamespaceError
-from dendropy.utility.error import DataError
 from dendropy.utility.error import DataParseError
 from dendropy.utility.error import UnsupportedSchemaError
 from dendropy.utility.error import UnspecifiedSchemaError

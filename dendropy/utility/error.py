@@ -34,7 +34,7 @@ class ImmutableTaxonNamespaceError(TypeError):
     def __init__(self, message):
         TypeError.__init__(self, message)
 
-class DataError(Exception):
+class DataParseError(Exception):
 
     def __init__(self,
             message=None,
@@ -70,21 +70,6 @@ class DataError(Exception):
         if self.col_num is not None:
             c =  " at column {}".format(self.col_num)
         return "Error parsing data source{}{}{}: {}".format(f, l, c, self.message)
-
-class DataParseError(DataError):
-
-    def __init__(self,
-            message=None,
-            line_num=None,
-            col_num=None,
-            filename=None,
-            stream=None):
-        DataError.__init__(self,
-                message=message,
-                line_num=line_num,
-                col_num=col_num,
-                filename=filename,
-                stream=stream)
 
 class UnsupportedSchemaError(NotImplementedError):
 
@@ -131,6 +116,10 @@ class TaxonNamespaceIdentityError(ValueError):
                 "<TaxonNamespace object at {}>".format(str(hex(id((o1.taxon_namespace))))),
                 "<TaxonNamespace object at {}>".format(str(hex(id((o2.taxon_namespace))))),
                 )
+        ValueError.__init__(self, message)
+
+class NullAssemblageException(ValueError):
+    def __init__(self, message=None):
         ValueError.__init__(self, message)
 
 class MixedRootingError(ValueError):
