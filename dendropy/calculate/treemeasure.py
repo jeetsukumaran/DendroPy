@@ -52,6 +52,7 @@ class PhylogeneticDistanceMatrix(object):
     def clear(self):
         self.taxon_namespace = None
         self._mapped_taxa = set()
+        self._all_distinct_mapped_taxa_pairs = set()
         self._tree_length = None
         self._num_edges = None
         self._taxon_phylogenetic_distances = {}
@@ -98,15 +99,17 @@ class PhylogeneticDistanceMatrix(object):
                             for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
+                                # self._all_distinct_mapped_taxa_pairs.add( tuple([desc1.taxon, desc2.taxon]) )
+                                self._all_distinct_mapped_taxa_pairs.add( frozenset([desc1.taxon, desc2.taxon]) )
                                 pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                     del(c1.desc_paths)
-        self._mirror_comparisons()
+        self._mirror_lookups()
         # assert self._tree_length == tree.length()
 
-    def _mirror_comparisons(self):
+    def _mirror_lookups(self):
         for ddata in (
                 self._taxon_phylogenetic_distances,
                 self._taxon_phylogenetic_path_steps,
@@ -124,6 +127,7 @@ class PhylogeneticDistanceMatrix(object):
             return False
         return (True
                 and (self._mapped_taxa == o._mapped_taxa)
+                and (self._all_distinct_mapped_taxa_pairs == o._all_distinct_mapped_taxa_pairs)
                 and (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
                 and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
                 and (self._mrca == o._mrca)
@@ -144,6 +148,7 @@ class PhylogeneticDistanceMatrix(object):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
         o._mapped_taxa = set(self._mapped_taxa)
+        o._all_distinct_mapped_taxa_pairs = set(self._all_distinct_mapped_taxa_pairs)
         o._tree_length = self._tree_length
         o._num_edges = self._num_edges
         for src, dest in (
@@ -163,10 +168,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         if taxon1 is taxon2:
             return 0.0
-        try:
-            d = self._taxon_phylogenetic_distances[taxon1][taxon2]
-        except KeyError:
-            d = self._taxon_phylogenetic_distances[taxon2][taxon1]
+        d = self._taxon_phylogenetic_distances[taxon1][taxon2]
         if is_normalize_by_tree_size:
             return d / self._tree_length
         else:
@@ -178,10 +180,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         if taxon1 is taxon2:
             return 0
-        try:
-            d = self._taxon_phylogenetic_path_steps[taxon1][taxon2]
-        except KeyError:
-            d = self._taxon_phylogenetic_path_steps[taxon2][taxon1]
+        d = self._taxon_phylogenetic_path_steps[taxon1][taxon2]
         if is_normalize_by_tree_size:
             return float(d) / self._num_edges
         else:
@@ -193,10 +192,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         if taxon1 is taxon2:
             return taxon1
-        try:
-            return self._mrca[taxon1][taxon2]
-        except KeyError:
-            return self._mrca[taxon2][taxon1]
+        return self._mrca[taxon1][taxon2]
 
     def max_pairwise_distance_taxa(self,
             is_weighted_edge_distances=True):
@@ -206,12 +202,11 @@ class PhylogeneticDistanceMatrix(object):
             dists = self._taxon_phylogenetic_path_steps
         max_dist = None
         max_dist_taxa = None
-        for t1 in dists:
-            for t2 in dists[t1]:
-                pat_dist = dists[t1][t2]
-                if max_dist is None or pat_dist > max_dist:
-                    max_dist = pat_dist
-                    max_dist_taxa = (t1, t2)
+        for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            pat_dist = dists[t1][t2]
+            if max_dist is None or pat_dist > max_dist:
+                max_dist = pat_dist
+                max_dist_taxa = (t1, t2)
         return max_dist_taxa
 
     def distances(self,
@@ -220,22 +215,13 @@ class PhylogeneticDistanceMatrix(object):
         """
         Returns list of patristic distances.
         """
-        if is_weighted_edge_distances:
-            dists = self._taxon_phylogenetic_distances
-            if is_normalize_by_tree_size:
-                normalization_factor = self._tree_length
-            else:
-                normalization_factor = 1.0
-        else:
-            dists = self._taxon_phylogenetic_path_steps
-            if is_normalize_by_tree_size:
-                normalization_factor = float(self._num_edges)
-            else:
-                normalization_factor = 1.0
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
+                )
         results = []
-        for dt in dists.values():
-            for d in dt.values():
-                results.append(d/normalization_factor)
+        for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            results.append(dmatrix[t1][t2]/normalization_factor)
         return results
 
     def sum_of_distances(self,
@@ -246,13 +232,22 @@ class PhylogeneticDistanceMatrix(object):
         """
         return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalize_by_tree_size=is_normalize_by_tree_size))
 
-    def iter_taxa(self):
+    def iter_taxa(self, filter_fn):
         """
         Iterates over taxa in matrix. Note that this could be a subset of the taxa in
         the associated taxon namespace.
         """
-        for t in self._mapped_taxa:
-            yield t
+        for t1, t2 in self._mapped_taxa:
+            if not filter_fn or (filter_fn(t1) and filter_fn(t2)):
+                yield t1, t2
+
+    def iter_distinct_taxon_pairs(self, filter_fn=None):
+        """
+        Iterates over all distinct pairs of taxa in matrix.
+        """
+        for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            if not filter_fn or (filter_fn(t1) and filter_fn(t2)):
+                yield t1, t2
 
     def mean_pairwise_distance(self,
             filter_fn=None,
@@ -326,7 +321,7 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        taxon_combinations = self._get_taxon_combinations(filter_fn=filter_fn)
+        taxon_combinations = self.iter_distinct_taxon_pairs(filter_fn=filter_fn)
         return self._calculate_mean_pairwise_distance(
                 taxon_combinations=taxon_combinations,
                 is_weighted_edge_distances=is_weighted_edge_distances,
@@ -651,17 +646,6 @@ class PhylogeneticDistanceMatrix(object):
                     assemblage_membership.add(taxon)
             assemblage_memberships.append(assemblage_membership)
         return assemblage_memberships
-
-    def _get_taxon_combinations(self, filter_fn=None):
-        pairs = []
-        for taxon1 in self._taxon_phylogenetic_distances:
-            if filter_fn and not filter_fn(taxon1):
-                continue
-            for taxon2 in self._taxon_phylogenetic_distances[taxon1]:
-                if filter_fn and not filter_fn(taxon2):
-                    continue
-                pairs.append( (taxon1, taxon2) )
-        return pairs
 
     def _get_taxon_to_all_other_taxa_comparisons(self, filter_fn=None):
         permutations = collections.defaultdict(list)
