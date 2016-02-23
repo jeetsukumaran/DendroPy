@@ -21,31 +21,8 @@ Functions to calculate or draw values from various probability distributions.
 """
 
 import math
+from dendropy.calculate import combinatorics
 from dendropy.utility import GLOBAL_RNG
-
-def factorial(num):
-    """factorial(n): return the factorial of the integer num.
-    factorial(0) = 1
-    factorial(n) with n<0 is -factorial(abs(n))
-    """
-    result = 1
-    for i in range(1, abs(num)+1):
-        result *= i
-    return result
-
-def binomial_coefficient(population, sample):
-    "Returns  ``population`` choose ``sample``."
-    s = max(sample, population - sample)
-    assert s <= population
-    assert population > -1
-    if s == population:
-        return 1
-    numerator = 1
-    denominator = 1
-    for i in range(s+1, population + 1):
-        numerator *= i
-        denominator *= (i - s)
-    return numerator/denominator
 
 def binomial_rv(n, p, rng=None):
     """
@@ -121,7 +98,7 @@ def poisson_pmf(k, rate):
     with rate parameter, ``rate`` (= 1/mean).
     """
     mean = 1.0/rate
-    return float((mean ** k) * math.exp(-mean))/factorial(k)
+    return float((mean ** k) * math.exp(-mean))/combinatorics.factorial(k)
 
 def sample_multinomial(probs, rng=None):
     """Returns the index of the probability bin in ``probs``.
@@ -305,7 +282,7 @@ def hypergeometric_pmf(x, m, n, k):
 
             p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)
     """
-    return float(binomial_coefficient(m, x) * binomial_coefficient(n, k-x))/binomial_coefficient(m+n, k)
+    return float(combinatorics.choose(m, x) * combinatorics.choose(n, k-x))/combinatorics.choose(m+n, k)
 
 def hypergeometric_pmf(x, m, n, k):
     """
@@ -317,8 +294,8 @@ def hypergeometric_pmf(x, m, n, k):
     """
     # following fails with 'OverflowError: long int too large to convert to
     # float' with large numbers
-    # return float(binomial_coefficient(m, x) * binomial_coefficient(n, k-x))/binomial_coefficient(m+n, k)
-    a = math.log(binomial_coefficient(m, x))
-    b = math.log(binomial_coefficient(n, k-x))
-    c = math.log(binomial_coefficient(m+n, k))
+    # return float(combinatorics.choose(m, x) * combinatorics.choose(n, k-x))/combinatorics.choose(m+n, k)
+    a = math.log(combinatorics.choose(m, x))
+    b = math.log(combinatorics.choose(n, k-x))
+    c = math.log(combinatorics.choose(m+n, k))
     return math.exp(a+b-c)

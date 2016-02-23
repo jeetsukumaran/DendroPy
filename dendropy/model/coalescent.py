@@ -26,6 +26,7 @@ import dendropy
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import constants
 from dendropy.calculate import probability
+from dendropy.calculate import combinatorics
 
 ###############################################################################
 ## Calculations and statistics
@@ -69,7 +70,7 @@ def discrete_time_to_coalescence(n_genes,
         time_units = pop_size
     if rng is None:
         rng = GLOBAL_RNG
-    p = pop_size / probability.binomial_coefficient(n_genes, n_to_coalesce)
+    p = pop_size / combinatorics.choose(n_genes, n_to_coalesce)
     tmrca = probability.geometric_rv(p)
     return tmrca * time_units
 
@@ -129,7 +130,7 @@ def time_to_coalescence(n_genes,
         time_units = 1.0
     else:
         time_units = pop_size
-    rate = probability.binomial_coefficient(n_genes, n_to_coalesce)
+    rate = combinatorics.choose(n_genes, n_to_coalesce)
     tmrca = rng.expovariate(rate)
     return tmrca * time_units
 
@@ -161,7 +162,7 @@ def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
         ``pop_size`` genes.
 
     """
-    nc2 = probability.binomial_coefficient(n_genes, n_to_coalesce)
+    nc2 = combinatorics.choose(n_genes, n_to_coalesce)
     tmrca = (float(1)/nc2)
     if pop_size is not None:
         return tmrca * pop_size
@@ -409,7 +410,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     lp = 0.0
     for k, t in coalescent_frames.items():
         k2N = (float(k * (k-1)) / 2) / haploid_pop_size
-#         k2N = float(probability.binomial_coefficient(k, 2)) / haploid_pop_size
+#         k2N = float(combinatorics.choose(k, 2)) / haploid_pop_size
         lp =  lp + math.log(k2N) - (k2N * t)
     return lp
 

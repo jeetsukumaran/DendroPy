@@ -23,6 +23,7 @@ Population genetic statistics.
 import math
 import dendropy
 from dendropy.calculate import probability
+from dendropy.calculate import combinatorics
 
 ###############################################################################
 ## internal functions: generally taking lower-level data, such as sequences etc.
@@ -92,7 +93,7 @@ def _average_number_of_pairwise_differences(char_sequences, state_alphabet, igno
     sampled.
     """
     sum_diff, mean_diff, sq_diff = _count_differences(char_sequences, state_alphabet, ignore_uncertain)
-    return sum_diff / probability.binomial_coefficient(len(char_sequences), 2)
+    return sum_diff / combinatorics.choose(len(char_sequences), 2)
 
 def _num_segregating_sites(char_sequences, state_alphabet, ignore_uncertain=True):
     """
@@ -235,11 +236,11 @@ class PopulationPairSummaryStatistics(object):
         """
         diffs_x, mean_diffs_x, sq_diff_x = _count_differences(self.pop1_seqs, self.state_alphabet, self.ignore_uncertain)
         diffs_y, mean_diffs_y, sq_diff_y = _count_differences(self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)
-        d_x = diffs_x / probability.binomial_coefficient(len(self.pop1_seqs), 2)
-        d_y = diffs_y / probability.binomial_coefficient(len(self.pop2_seqs), 2)
+        d_x = diffs_x / combinatorics.choose(len(self.pop1_seqs), 2)
+        d_y = diffs_y / combinatorics.choose(len(self.pop2_seqs), 2)
         d_xy = self._average_number_of_pairwise_differences_between_populations()
-        s2_x = (float(sq_diff_x) / probability.binomial_coefficient(len(self.pop1_seqs), 2) ) - (d_x ** 2)
-        s2_y = (float(sq_diff_y) / probability.binomial_coefficient(len(self.pop2_seqs), 2) ) - (d_y ** 2)
+        s2_x = (float(sq_diff_x) / combinatorics.choose(len(self.pop1_seqs), 2) ) - (d_x ** 2)
+        s2_y = (float(sq_diff_y) / combinatorics.choose(len(self.pop2_seqs), 2) ) - (d_y ** 2)
         s2_xy = self._variance_of_pairwise_differences_between_populations(d_xy)
         n = len(self.combined_seqs)
         n_x = float(len(self.pop1_seqs))

@@ -21,6 +21,8 @@ import csv
 from dendropy.utility import container
 from dendropy.test.support import pathmap
 from dendropy.calculate import treemeasure
+from dendropy.calculate import probability
+from dendropy.calculate import combinatorics
 
 class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
 
@@ -63,7 +65,8 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                 self.reference_pdm_unweighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
 
         def get_tree(self):
-            return dendropy.Tree.get(path=pathmap.tree_source_path("pythonidae.mle.nex"), schema="nexus")
+            tree = dendropy.Tree.get(path=pathmap.tree_source_path("pythonidae.mle.nex"), schema="nexus")
+            return tree
 
         def test_mapped_taxa(self):
             tree = self.get_tree()
@@ -76,6 +79,28 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             for taxon in pdm.iter_taxa():
                 self.assertIn(taxon1, pdm._mapped_taxa)
                 self.assertIn(taxon1, tree.taxon_namespace)
+
+        def test_all_distinct_mapped_taxa_pairs(self):
+            tree = self.get_tree()
+            pdm = tree.phylogenetic_distance_matrix()
+            n1 = len(tree.taxon_namespace)
+            taxon_pair_iter1 = iter(pdm._all_distinct_mapped_taxa_pairs)
+            taxon_pair_iter2 = pdm.iter_distinct_taxon_pairs()
+            for tpi in (taxon_pair_iter1, taxon_pair_iter2):
+                seen_pairs = set()
+                visited_taxa = set()
+                for taxon1, taxon2 in tpi:
+                    s = frozenset([taxon1, taxon2])
+                    self.assertIn(taxon1, pdm._mapped_taxa)
+                    self.assertIn(taxon1, tree.taxon_namespace)
+                    self.assertIn(taxon2, pdm._mapped_taxa)
+                    self.assertIn(taxon2, tree.taxon_namespace)
+                    self.assertNotIn(s, seen_pairs)
+                    seen_pairs.add(s)
+                    visited_taxa.add(taxon1)
+                    visited_taxa.add(taxon2)
+                self.assertEqual(len(visited_taxa), n1)
+                self.assertEqual(len(seen_pairs), combinatorics.choose(n1, 2))
 
 class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
 
