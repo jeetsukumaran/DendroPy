@@ -118,6 +118,12 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                     self.assertAlmostEqual(obs1, exp, 6)
                     obs2 = self.pdm.patristic_distance(taxon1, taxon2)
                     self.assertAlmostEqual(obs2, exp, 6)
+                    obs3 = self.pdm.distance(
+                            taxon1,
+                            taxon2,
+                            is_weighted_edge_distances=True,
+                            is_normalize_by_tree_size=False)
+                    self.assertAlmostEqual(obs3, exp, 6)
 
         def test_tree_weighted_normalized_pairwise_distance_query(self):
             tree_length = self.tree.length()
@@ -126,6 +132,12 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                     exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label] / tree_length
                     obs2 = self.pdm.patristic_distance(taxon1, taxon2, is_normalize_by_tree_size=True)
                     self.assertAlmostEqual(obs2, exp, 6)
+                    obs3 = self.pdm.distance(
+                            taxon1,
+                            taxon2,
+                            is_weighted_edge_distances=True,
+                            is_normalize_by_tree_size=True)
+                    self.assertAlmostEqual(obs3, exp, 6)
 
         def test_tree_unweighted_unnormalized_pairwise_distance_query(self):
             for taxon1 in self.tree.taxon_namespace:
@@ -135,6 +147,12 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                     self.assertAlmostEqual(obs1, exp, 6)
                     obs2 = self.pdm.path_edge_count(taxon1, taxon2)
                     self.assertAlmostEqual(obs2, exp, 6)
+                    obs3 = self.pdm.distance(
+                            taxon1,
+                            taxon2,
+                            is_weighted_edge_distances=False,
+                            is_normalize_by_tree_size=False)
+                    self.assertAlmostEqual(obs3, exp, 6)
 
         def test_tree_unweighted_normalized_pairwise_distance_query(self):
             num_edges_on_tree = combinatorics.num_edges_on_tree(
@@ -144,6 +162,12 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                     exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label] / num_edges_on_tree
                     obs2 = self.pdm.path_edge_count(taxon1, taxon2, is_normalize_by_tree_size=True)
                     self.assertAlmostEqual(obs2, exp, 6)
+                    obs3 = self.pdm.distance(
+                            taxon1,
+                            taxon2,
+                            is_weighted_edge_distances=False,
+                            is_normalize_by_tree_size=True)
+                    self.assertAlmostEqual(obs3, exp, 6)
 
         def test_tree_weighted_unnormalized_pairwise_distance_collection(self):
             # this test relies on populating the expected result list
@@ -177,13 +201,19 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
                 self.assertAlmostEqual(obs, exp, 6)
 
         def test_tree_unweighted_unnormalized_pairwise_distance_collection(self):
-            for taxon1 in self.tree.taxon_namespace:
-                for taxon2 in self.tree.taxon_namespace:
-                    exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label]
-                    obs1 = self.pdm._taxon_phylogenetic_path_steps[taxon1][taxon2]
-                    self.assertAlmostEqual(obs1, exp, 6)
-                    obs2 = self.pdm.path_edge_count(taxon1, taxon2)
-                    self.assertAlmostEqual(obs2, exp, 6)
+            # this test relies on populating the expected result list
+            # in the *same order* as the function it is testing
+            exp_list = []
+            for taxon1, taxon2 in self.pdm.iter_distinct_taxon_pairs():
+                exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label]
+                exp_list.append(exp)
+            obs = self.pdm.distances(
+                    is_weighted_edge_distances=False,
+                    is_normalize_by_tree_size=False,
+                    )
+            self.assertEqual(len(obs), len(exp_list))
+            for obs, exp in zip(obs, exp_list):
+                self.assertAlmostEqual(obs, exp, 6)
 
         def test_tree_unweighted_normalized_pairwise_distance_collection(self):
             # this test relies on populating the expected result list

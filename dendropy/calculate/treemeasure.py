@@ -164,6 +164,27 @@ class PhylogeneticDistanceMatrix(object):
                     dest[t1][t2] = src[t1][t2]
         return o
 
+    def mrca(self, taxon1, taxon2):
+        """
+        Returns MRCA of two taxon objects.
+        """
+        if taxon1 is taxon2:
+            return taxon1
+        return self._mrca[taxon1][taxon2]
+
+    def distance(self,
+            taxon1,
+            taxon2,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=False):
+        """
+        Returns distance between taxon1 and taxon2.
+        """
+        if is_weighted_edge_distances:
+            return self.patristic_distance(taxon1, taxon2, is_normalize_by_tree_size=is_normalize_by_tree_size)
+        else:
+            return self.path_edge_count(taxon1, taxon2, is_normalize_by_tree_size=is_normalize_by_tree_size)
+
     def patristic_distance(self, taxon1, taxon2, is_normalize_by_tree_size=False):
         """
         Returns patristic distance between two taxon objects.
@@ -187,14 +208,6 @@ class PhylogeneticDistanceMatrix(object):
             return float(d) / self._num_edges
         else:
             return d
-
-    def mrca(self, taxon1, taxon2):
-        """
-        Returns MRCA of two taxon objects.
-        """
-        if taxon1 is taxon2:
-            return taxon1
-        return self._mrca[taxon1][taxon2]
 
     def distances(self,
             is_weighted_edge_distances=True,
