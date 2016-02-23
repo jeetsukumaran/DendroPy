@@ -110,12 +110,40 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(self.pdm._num_edges, combinatorics.num_edges_on_tree(
                 num_leaves=len(self.tree.taxon_namespace), is_rooted=True))
 
-        def test_tree_weighted_pairwise_distances(self):
+        def test_tree_weighted_unnormalized_pairwise_distances(self):
             for taxon1 in self.tree.taxon_namespace:
                 for taxon2 in self.tree.taxon_namespace:
                     exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label]
                     obs1 = self.pdm._taxon_phylogenetic_distances[taxon1][taxon2]
                     self.assertAlmostEqual(obs1, exp, 6)
+                    obs2 = self.pdm.patristic_distance(taxon1, taxon2)
+                    self.assertAlmostEqual(obs2, exp, 6)
+
+        def test_tree_weighted_normalized_pairwise_distances(self):
+            tree_length = self.tree.length()
+            for taxon1 in self.tree.taxon_namespace:
+                for taxon2 in self.tree.taxon_namespace:
+                    exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label] / tree_length
+                    obs2 = self.pdm.patristic_distance(taxon1, taxon2, is_normalize_by_tree_size=True)
+                    self.assertAlmostEqual(obs2, exp, 6)
+
+        def test_tree_unweighted_unnormalized_pairwise_distances(self):
+            for taxon1 in self.tree.taxon_namespace:
+                for taxon2 in self.tree.taxon_namespace:
+                    exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label]
+                    obs1 = self.pdm._taxon_phylogenetic_path_steps[taxon1][taxon2]
+                    self.assertAlmostEqual(obs1, exp, 6)
+                    obs2 = self.pdm.path_edge_count(taxon1, taxon2)
+                    self.assertAlmostEqual(obs2, exp, 6)
+
+        def test_tree_unweighted_normalized_pairwise_distances(self):
+            num_edges_on_tree = combinatorics.num_edges_on_tree(
+                    num_leaves=len(self.tree.taxon_namespace), is_rooted=True)
+            for taxon1 in self.tree.taxon_namespace:
+                for taxon2 in self.tree.taxon_namespace:
+                    exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label] / num_edges_on_tree
+                    obs2 = self.pdm.path_edge_count(taxon1, taxon2, is_normalize_by_tree_size=True)
+                    self.assertAlmostEqual(obs2, exp, 6)
 
 class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
 
