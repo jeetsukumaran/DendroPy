@@ -220,7 +220,11 @@ class PhylogeneticDistanceMatrix(object):
                 is_normalize_by_tree_size=is_normalize_by_tree_size,
                 )
         results = []
+        seen_pairs = set()
         for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            s = frozenset([t1, t2])
+            assert s not in seen_pairs
+            seen_pairs.add(s)
             results.append(dmatrix[t1][t2]/normalization_factor)
         return results
 
@@ -232,14 +236,14 @@ class PhylogeneticDistanceMatrix(object):
         """
         return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalize_by_tree_size=is_normalize_by_tree_size))
 
-    def iter_taxa(self, filter_fn):
+    def iter_taxa(self, filter_fn=None):
         """
         Iterates over taxa in matrix. Note that this could be a subset of the taxa in
         the associated taxon namespace.
         """
-        for t1, t2 in self._mapped_taxa:
-            if not filter_fn or (filter_fn(t1) and filter_fn(t2)):
-                yield t1, t2
+        for t1 in self._mapped_taxa:
+            if not filter_fn or filter_fn(t1):
+                yield t1
 
     def iter_distinct_taxon_pairs(self, filter_fn=None):
         """

@@ -52,6 +52,31 @@ class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
         self.assertEqual(pdm0.sum_of_distances(), pdm1.sum_of_distances())
         self.assertEqual(pdm0, pdm1)
 
+class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
+
+        def setUp(self):
+            with open(pathmap.tree_source_path("pythonidae.mle.weighted.pdm.csv")) as src:
+                reader = csv.reader(src, delimiter=",")
+                self.reference_pdm_weighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+            with open(pathmap.tree_source_path("pythonidae.mle.unweighted.pdm.csv")) as src:
+                reader = csv.reader(src, delimiter=",")
+                self.reference_pdm_unweighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+
+        def get_tree(self):
+            return dendropy.Tree.get(path=pathmap.tree_source_path("pythonidae.mle.nex"), schema="nexus")
+
+        def test_mapped_taxa(self):
+            tree = self.get_tree()
+            pdm = tree.phylogenetic_distance_matrix()
+            n1 = len(tree.taxon_namespace)
+            self.assertEqual(pdm.taxon_namespace, tree.taxon_namespace)
+            self.assertEqual(n1, len(tree.taxon_namespace))
+            for taxon1 in tree.taxon_namespace:
+                self.assertIn(taxon1, pdm._mapped_taxa)
+            for taxon in pdm.iter_taxa():
+                self.assertIn(taxon1, pdm._mapped_taxa)
+                self.assertIn(taxon1, tree.taxon_namespace)
+
 class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
 
     def test_shuffle(self):
