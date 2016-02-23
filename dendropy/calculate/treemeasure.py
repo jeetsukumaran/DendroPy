@@ -196,6 +196,21 @@ class PhylogeneticDistanceMatrix(object):
             return taxon1
         return self._mrca[taxon1][taxon2]
 
+    def distances(self,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=False):
+        """
+        Returns list of patristic distances.
+        """
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
+                )
+        results = []
+        for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            results.append(dmatrix[t1][t2]/normalization_factor)
+        return results
+
     def max_pairwise_distance_taxa(self,
             is_weighted_edge_distances=True):
         if is_weighted_edge_distances:
@@ -210,25 +225,6 @@ class PhylogeneticDistanceMatrix(object):
                 max_dist = pat_dist
                 max_dist_taxa = (t1, t2)
         return max_dist_taxa
-
-    def distances(self,
-            is_weighted_edge_distances=True,
-            is_normalize_by_tree_size=False):
-        """
-        Returns list of patristic distances.
-        """
-        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
-                is_weighted_edge_distances=is_weighted_edge_distances,
-                is_normalize_by_tree_size=is_normalize_by_tree_size,
-                )
-        results = []
-        seen_pairs = set()
-        for t1, t2 in self._all_distinct_mapped_taxa_pairs:
-            s = frozenset([t1, t2])
-            assert s not in seen_pairs
-            seen_pairs.add(s)
-            results.append(dmatrix[t1][t2]/normalization_factor)
-        return results
 
     def sum_of_distances(self,
             is_weighted_edge_distances=True,
