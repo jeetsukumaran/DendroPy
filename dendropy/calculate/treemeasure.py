@@ -103,7 +103,21 @@ class PhylogeneticDistanceMatrix(object):
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                     del(c1.desc_paths)
+        self._mirror_comparisons()
         # assert self._tree_length == tree.length()
+
+    def _mirror_comparisons(self):
+        for ddata in (
+                self._taxon_phylogenetic_distances,
+                self._taxon_phylogenetic_path_steps,
+                self._mrca,
+                ):
+            for taxon1 in ddata:
+                for taxon2 in ddata[taxon1]:
+                    assert taxon1 is not taxon2
+                    if taxon2 not in ddata:
+                        ddata[taxon2] = {}
+                    ddata[taxon2][taxon1] = ddata[taxon1][taxon2]
 
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
@@ -312,12 +326,89 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        taxon_pairs = self._get_taxon_pair_combinations(filter_fn=filter_fn)
+        taxon_combinations = self._get_taxon_combinations(filter_fn=filter_fn)
         return self._calculate_mean_pairwise_distance(
-                taxon_pairs=taxon_pairs,
+                taxon_combinations=taxon_combinations,
                 is_weighted_edge_distances=is_weighted_edge_distances,
                 is_normalize_by_tree_size=is_normalize_by_tree_size,
                 )
+
+    def mean_nearest_taxon_distance(self,
+            filter_fn=None,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=False):
+        """
+        Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
+        (only considering taxa for which ``filter_fn`` returns True when
+                applied if ``filter_fn`` is specified).
+
+        The mean nearest taxon distance (mntd) is given by:
+
+            .. math::
+                mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
+
+        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        distance between species :math:`i` and :math:`j`, and $n$ is the number
+        of species in the sample.
+
+        Parameters
+        ----------
+        filter_fn : function object or None
+            If |None|, then all leaves will be considered. Otherwise should
+            be a function object that takes a Taxon instance as an argument and
+            returns |True| if it is to be included in the calculation or
+            |False| otherwise.
+            In trees sampled from multiple communites, ``filter_fn`` can be
+            used to restrict the calculation to only one community based on
+            some criteria.
+        is_weighted_edge_distances : bool
+            If |True| then the edge-weighted distance, i.e., considering edge
+            lengths, is returned. Otherwise the the path steps or the number of
+            edges rather then the sum of is_weighted_edge_distances edges, connecting two
+            taxa is considered.
+        is_normalize_by_tree_size : bool
+            If |True| then the results are normalized by the total tree length
+            or steps/edges (depending on whether edge-weighted or unweighted
+            distances are used, respectively). Otherwise, raw distances are
+            used.
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+            from dendropy.calculate import treemeasure
+            tree = dendropy.Tree.get(path="data.nex",
+                    schema="nexus")
+            pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
+
+            # consider all tips
+            mntd = pdm.mean_nearest_taxon_distance()
+
+            # only tips within the same community, based on the node annotation
+            # "community"
+            mntds_by_community = {}
+            for community_label in ("1", "2", "3",):
+                filter_fn = lambda x: x.annotations["community"] == community_label
+                mntd = pdm.mean_pairwise_distance(filter_fn=filter_fn)
+                mntds_by_community[community_label] = mntd
+
+        References
+        ----------
+
+        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of
+        ecological communities: An example for rainforest trees. The
+        American Naturalist 156: 145-155.
+
+        [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
+
+        """
+        taxon_to_all_other_taxa_comparisons = self._get_taxon_to_all_other_taxa_comparisons(filter_fn=filter_fn)
+        return self._calculate_mean_nearest_taxon_distance(
+                taxon_to_all_other_taxa_comparisons=taxon_to_all_other_taxa_comparisons,
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,)
 
     def standardized_effect_size_mean_pairwise_distance(self,
             assemblage_memberships,
@@ -402,111 +493,6 @@ class PhylogeneticDistanceMatrix(object):
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
-
-    def mean_nearest_taxon_distance(self,
-            filter_fn=None,
-            is_weighted_edge_distances=True,
-            is_normalize_by_tree_size=False):
-        """
-        Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
-        (only considering taxa for which ``filter_fn`` returns True when
-                applied if ``filter_fn`` is specified).
-
-        The mean nearest taxon distance (mntd) is given by:
-
-            .. math::
-                mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
-
-        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
-        distance between species :math:`i` and :math:`j`, and $n$ is the number
-        of species in the sample.
-
-        Parameters
-        ----------
-        filter_fn : function object or None
-            If |None|, then all leaves will be considered. Otherwise should
-            be a function object that takes a Taxon instance as an argument and
-            returns |True| if it is to be included in the calculation or
-            |False| otherwise.
-            In trees sampled from multiple communites, ``filter_fn`` can be
-            used to restrict the calculation to only one community based on
-            some criteria.
-        is_weighted_edge_distances : bool
-            If |True| then the edge-weighted distance, i.e., considering edge
-            lengths, is returned. Otherwise the the path steps or the number of
-            edges rather then the sum of is_weighted_edge_distances edges, connecting two
-            taxa is considered.
-        is_normalize_by_tree_size : bool
-            If |True| then the results are normalized by the total tree length
-            or steps/edges (depending on whether edge-weighted or unweighted
-            distances are used, respectively). Otherwise, raw distances are
-            used.
-
-        Examples
-        --------
-
-        ::
-
-            import dendropy
-            from dendropy.calculate import treemeasure
-            tree = dendropy.Tree.get(path="data.nex",
-                    schema="nexus")
-            pdm = treemeasure.PhylogeneticDistanceMatrix(tree)
-
-            # consider all tips
-            mntd = pdm.mean_nearest_taxon_distance()
-
-            # only tips within the same community, based on the node annotation
-            # "community"
-            mntds_by_community = {}
-            for community_label in ("1", "2", "3",):
-                filter_fn = lambda x: x.annotations["community"] == community_label
-                mntd = pdm.mean_pairwise_distance(filter_fn=filter_fn)
-                mntds_by_community[community_label] = mntd
-
-        References
-        ----------
-
-        [1] Webb, C.O. 2000. Exploring the phylogenetic structure of
-        ecological communities: An example for rainforest trees. The
-        American Naturalist 156: 145-155.
-
-        [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
-
-        """
-        if is_weighted_edge_distances:
-            dmatrix = self._taxon_phylogenetic_distances
-            if is_normalize_by_tree_size:
-                normalization_factor = self._tree_length
-            else:
-                normalization_factor = 1.0
-        else:
-            dmatrix = self._taxon_phylogenetic_path_steps
-            if is_normalize_by_tree_size:
-                normalization_factor = float(self._num_edges)
-            else:
-                normalization_factor = 1.0
-        distances = []
-        for taxon1 in self._mapped_taxa:
-            if filter_fn and not filter_fn(taxon1):
-                continue
-            subdistances = []
-            for taxon2 in self._mapped_taxa:
-                if taxon1 is taxon2:
-                    continue
-                if filter_fn and not filter_fn(taxon2):
-                    continue
-                try:
-                    subdistances.append(dmatrix[taxon1][taxon2])
-                except KeyError:
-                    subdistances.append(dmatrix[taxon2][taxon1])
-            if subdistances:
-                distances.append(min(subdistances))
-        if distances:
-            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
-        else:
-            raise error.NullAssemblageException("No taxa in assemblage")
-            # return 0
 
     def standardized_effect_size_mean_nearest_taxon_distance(self,
             assemblage_memberships,
@@ -666,8 +652,32 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships.append(assemblage_membership)
         return assemblage_memberships
 
-    def _calculate_mean_pairwise_distance(self,
-            taxon_pairs,
+    def _get_taxon_combinations(self, filter_fn=None):
+        pairs = []
+        for taxon1 in self._taxon_phylogenetic_distances:
+            if filter_fn and not filter_fn(taxon1):
+                continue
+            for taxon2 in self._taxon_phylogenetic_distances[taxon1]:
+                if filter_fn and not filter_fn(taxon2):
+                    continue
+                pairs.append( (taxon1, taxon2) )
+        return pairs
+
+    def _get_taxon_to_all_other_taxa_comparisons(self, filter_fn=None):
+        permutations = collections.defaultdict(list)
+        for taxon1 in self._mapped_taxa:
+            # permutations[taxon1] = []
+            if filter_fn and not filter_fn(taxon1):
+                continue
+            for taxon2 in self._mapped_taxa:
+                if taxon1 is taxon2:
+                    continue
+                if filter_fn and not filter_fn(taxon2):
+                    continue
+                permutations[taxon1].append(taxon2)
+        return permutations
+
+    def _get_distance_matrix_and_normalization_factor(self,
             is_weighted_edge_distances,
             is_normalize_by_tree_size):
         if is_weighted_edge_distances:
@@ -682,24 +692,44 @@ class PhylogeneticDistanceMatrix(object):
                 normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
+        return dmatrix, normalization_factor
+
+    def _calculate_mean_pairwise_distance(self,
+            taxon_combinations,
+            is_weighted_edge_distances,
+            is_normalize_by_tree_size):
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,)
         distances = []
-        for taxon1, taxon2 in taxon_pairs:
+        for taxon1, taxon2 in taxon_combinations:
             distances.append(dmatrix[taxon1][taxon2])
         if distances:
             return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
         else:
             raise error.NullAssemblageException("No taxa in assemblage")
 
-    def _get_taxon_pair_combinations(self, filter_fn=None):
-        pairs = []
-        for taxon1 in self._taxon_phylogenetic_distances:
-            if filter_fn and not filter_fn(taxon1):
-                continue
-            for taxon2 in self._taxon_phylogenetic_distances[taxon1]:
-                if filter_fn and not filter_fn(taxon2):
-                    continue
-                pairs.append( (taxon1, taxon2) )
-        return pairs
+    def _calculate_mean_nearest_taxon_distance(self,
+            taxon_to_all_other_taxa_comparisons,
+            is_weighted_edge_distances,
+            is_normalize_by_tree_size):
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,)
+        distances = []
+        for taxon1 in taxon_to_all_other_taxa_comparisons:
+            # subdistances = [dmatrix[taxon1][taxon2] for taxon2 in taxon_to_all_other_taxa_comparisons[taxon1]]
+            # distances.append(min(subdistances))
+            min_distance = dmatrix[taxon1][taxon_to_all_other_taxa_comparisons[taxon1][0]]
+            for taxon2 in taxon_to_all_other_taxa_comparisons[taxon1][1:]:
+                d = dmatrix[taxon1][taxon2]
+                if d < min_distance:
+                    min_distance = d
+            distances.append(min_distance)
+        if distances:
+            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
+        else:
+            raise error.NullAssemblageException("No taxa in assemblage")
 
     def _calculate_standardized_effect_size(self,
             statisticf_name,
