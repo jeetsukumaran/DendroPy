@@ -57,50 +57,65 @@ class PhylogeneticDistanceMatrixCloneTest(unittest.TestCase):
 class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
 
         def setUp(self):
+            # library(ape)
+            # tree = read.nexus("data/pythonidae.mle.nex")
+            # pdm = cophenetic.phylo(tree)
+            # write.csv(format(pdm,digits=22), "pythonidae.mle.weighted.pdm.csv")
             with open(pathmap.tree_source_path("pythonidae.mle.weighted.pdm.csv")) as src:
                 reader = csv.reader(src, delimiter=",")
                 self.reference_pdm_weighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
             with open(pathmap.tree_source_path("pythonidae.mle.unweighted.pdm.csv")) as src:
                 reader = csv.reader(src, delimiter=",")
                 self.reference_pdm_unweighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
-
-        def get_tree(self):
-            tree = dendropy.Tree.get(path=pathmap.tree_source_path("pythonidae.mle.nex"), schema="nexus")
-            return tree
+            self.tree = dendropy.Tree.get(path=pathmap.tree_source_path(
+                "pythonidae.mle.nex"),
+                schema="nexus",
+                preserve_underscores=True)
+            self.pdm = self.tree.phylogenetic_distance_matrix()
 
         def test_mapped_taxa(self):
-            tree = self.get_tree()
-            pdm = tree.phylogenetic_distance_matrix()
-            n1 = len(tree.taxon_namespace)
-            self.assertEqual(pdm.taxon_namespace, tree.taxon_namespace)
-            self.assertEqual(n1, len(tree.taxon_namespace))
-            for taxon1 in tree.taxon_namespace:
-                self.assertIn(taxon1, pdm._mapped_taxa)
-            for taxon in pdm.iter_taxa():
-                self.assertIn(taxon1, pdm._mapped_taxa)
-                self.assertIn(taxon1, tree.taxon_namespace)
+            n1 = len(self.tree.taxon_namespace)
+            self.assertEqual(self.pdm.taxon_namespace, self.tree.taxon_namespace)
+            self.assertEqual(n1, len(self.tree.taxon_namespace))
+            for taxon1 in self.tree.taxon_namespace:
+                self.assertIn(taxon1, self.pdm._mapped_taxa)
+            for taxon in self.pdm.iter_taxa():
+                self.assertIn(taxon1, self.pdm._mapped_taxa)
+                self.assertIn(taxon1, self.tree.taxon_namespace)
 
         def test_all_distinct_mapped_taxa_pairs(self):
-            tree = self.get_tree()
-            pdm = tree.phylogenetic_distance_matrix()
-            n1 = len(tree.taxon_namespace)
-            taxon_pair_iter1 = iter(pdm._all_distinct_mapped_taxa_pairs)
-            taxon_pair_iter2 = pdm.iter_distinct_taxon_pairs()
+            n1 = len(self.tree.taxon_namespace)
+            taxon_pair_iter1 = iter(self.pdm._all_distinct_mapped_taxa_pairs)
+            taxon_pair_iter2 = self.pdm.iter_distinct_taxon_pairs()
             for tpi in (taxon_pair_iter1, taxon_pair_iter2):
                 seen_pairs = set()
                 visited_taxa = set()
                 for taxon1, taxon2 in tpi:
                     s = frozenset([taxon1, taxon2])
-                    self.assertIn(taxon1, pdm._mapped_taxa)
-                    self.assertIn(taxon1, tree.taxon_namespace)
-                    self.assertIn(taxon2, pdm._mapped_taxa)
-                    self.assertIn(taxon2, tree.taxon_namespace)
+                    self.assertIn(taxon1, self.pdm._mapped_taxa)
+                    self.assertIn(taxon1, self.tree.taxon_namespace)
+                    self.assertIn(taxon2, self.pdm._mapped_taxa)
+                    self.assertIn(taxon2, self.tree.taxon_namespace)
                     self.assertNotIn(s, seen_pairs)
                     seen_pairs.add(s)
                     visited_taxa.add(taxon1)
                     visited_taxa.add(taxon2)
                 self.assertEqual(len(visited_taxa), n1)
                 self.assertEqual(len(seen_pairs), combinatorics.choose(n1, 2))
+
+        def test_tree_length(self):
+            self.assertEqual(self.pdm._tree_length, self.tree.length())
+
+        def test_tree_num_edges(self):
+            self.assertEqual(self.pdm._num_edges, combinatorics.num_edges_on_tree(
+                num_leaves=len(self.tree.taxon_namespace), is_rooted=True))
+
+        def test_tree_weighted_pairwise_distances(self):
+            for taxon1 in self.tree.taxon_namespace:
+                for taxon2 in self.tree.taxon_namespace:
+                    exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label]
+                    obs1 = self.pdm._taxon_phylogenetic_distances[taxon1][taxon2]
+                    self.assertAlmostEqual(obs1, exp, 6)
 
 class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
 

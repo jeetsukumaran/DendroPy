@@ -52,3 +52,20 @@ def choose(population, sample):
         denominator *= (i - s)
     return numerator/denominator
 
+def num_edges_on_tree(num_leaves, is_rooted=True):
+    if is_rooted:
+        return (2 * num_leaves) - 2
+    else:
+        return (2 * num_leaves) - 3
+
+def num_internal_nodes_on_tree(num_leaves, is_rooted=True):
+    if is_rooted:
+        return num_leaves - 1
+    else:
+        return num_leaves - 2
+
+def num_internal_edges_on_tree(num_leaves, is_rooted=True):
+    if is_rooted:
+        return num_leaves - 2
+    else:
+        return num_leaves - 3

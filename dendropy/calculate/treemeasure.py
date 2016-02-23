@@ -93,7 +93,9 @@ class PhylogeneticDistanceMatrix(object):
                         if desc1.taxon not in self._taxon_phylogenetic_distances:
                             self._mapped_taxa.add(desc1.taxon)
                             self._taxon_phylogenetic_distances[desc1.taxon] = {}
+                            self._taxon_phylogenetic_distances[desc1.taxon][desc1.taxon] = 0.0
                             self._taxon_phylogenetic_path_steps[desc1.taxon] = {}
+                            self._taxon_phylogenetic_path_steps[desc1.taxon][desc1.taxon] = 0
                             self._mrca[desc1.taxon] = {}
                         for c2 in children[cidx1+1:]:
                             for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
@@ -117,7 +119,7 @@ class PhylogeneticDistanceMatrix(object):
                 ):
             for taxon1 in ddata:
                 for taxon2 in ddata[taxon1]:
-                    assert taxon1 is not taxon2
+                    # assert taxon1 is not taxon2
                     if taxon2 not in ddata:
                         ddata[taxon2] = {}
                     ddata[taxon2][taxon1] = ddata[taxon1][taxon2]
