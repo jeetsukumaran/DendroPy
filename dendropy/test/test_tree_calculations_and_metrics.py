@@ -1216,7 +1216,7 @@ class FrequencyOfBipartitionsTests(unittest.TestCase):
                 is_bipartitions_updated=True) # this will be ignore as the member `Tree.bipartition_encoding` are not populated
         self.assertAlmostEqual(freq, 0.346534653465)
 
-class PhylogeneticEcologyMeanPairwiseDistanceTest(unittest.TestCase):
+class PhylogeneticEcologyStatsTests(unittest.TestCase):
 
     def setUp(self):
         with open(pathmap.char_source_path("community.data.tsv")) as src:

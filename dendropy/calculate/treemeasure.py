@@ -52,6 +52,8 @@ class PhylogeneticDistanceMatrix(object):
     def clear(self):
         self.taxon_namespace = None
         self._mapped_taxa = set()
+        self._tree_length = None
+        self._num_edges = None
         self._taxon_phylogenetic_distances = {}
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
@@ -70,7 +72,14 @@ class PhylogeneticDistanceMatrix(object):
         #     self._taxon_phylogenetic_distances[t1] = {}
         #     self._taxon_phylogenetic_path_steps[t1] = {}
         #     self._mrca[t1] = {}
+        self._tree_length = 0.0
+        self._num_edges = 0
         for node in tree.postorder_node_iter():
+            try:
+                self._tree_length += node.edge.length
+            except TypeError: # None for edge length
+                pass
+            self._num_edges += 1
             children = node.child_nodes()
             if len(children) == 0:
                 node.desc_paths = {node : (0,0)}
@@ -94,6 +103,7 @@ class PhylogeneticDistanceMatrix(object):
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                     del(c1.desc_paths)
+        # assert self._tree_length == tree.length()
 
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
@@ -103,6 +113,8 @@ class PhylogeneticDistanceMatrix(object):
                 and (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
                 and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
                 and (self._mrca == o._mrca)
+                and (self._tree_length == o._tree_length)
+                and (self._num_edges == o._num_edges)
                 )
 
         def __hash__(self):
@@ -118,6 +130,8 @@ class PhylogeneticDistanceMatrix(object):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
         o._mapped_taxa = set(self._mapped_taxa)
+        o._tree_length = self._tree_length
+        o._num_edges = self._num_edges
         for src, dest in (
                 (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
                 (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
@@ -129,16 +143,35 @@ class PhylogeneticDistanceMatrix(object):
                     dest[t1][t2] = src[t1][t2]
         return o
 
-    def patristic_distance(self, taxon1, taxon2):
+    def patristic_distance(self, taxon1, taxon2, is_normalized_by_tree_size=False):
         """
         Returns patristic distance between two taxon objects.
         """
         if taxon1 is taxon2:
             return 0.0
         try:
-            return self._taxon_phylogenetic_distances[taxon1][taxon2]
+            d = self._taxon_phylogenetic_distances[taxon1][taxon2]
         except KeyError:
-            return self._taxon_phylogenetic_distances[taxon2][taxon1]
+            d = self._taxon_phylogenetic_distances[taxon2][taxon1]
+        if is_normalized_by_tree_size:
+            return d / self._tree_length
+        else:
+            return d
+
+    def path_edge_count(self, taxon1, taxon2, is_normalized_by_tree_size=False):
+        """
+        Returns the number of edges between two taxon objects.
+        """
+        if taxon1 is taxon2:
+            return 0
+        try:
+            d = self._taxon_phylogenetic_path_steps[taxon1][taxon2]
+        except KeyError:
+            d = self._taxon_phylogenetic_path_steps[taxon2][taxon1]
+        if is_normalized_by_tree_size:
+            return float(d) / self._num_edges
+        else:
+            return d
 
     def mrca(self, taxon1, taxon2):
         """
@@ -151,18 +184,8 @@ class PhylogeneticDistanceMatrix(object):
         except KeyError:
             return self._mrca[taxon2][taxon1]
 
-    def path_edge_count(self, taxon1, taxon2):
-        """
-        Returns the number of edges between two taxon objects.
-        """
-        if taxon1 is taxon2:
-            return 0
-        try:
-            return self._taxon_phylogenetic_path_steps[taxon1][taxon2]
-        except KeyError:
-            return self._taxon_phylogenetic_path_steps[taxon2][taxon1]
-
-    def max_pairwise_distance_taxa(self, is_weighted_edge_distances=True):
+    def max_pairwise_distance_taxa(self,
+            is_weighted_edge_distances=True):
         if is_weighted_edge_distances:
             dists = self._taxon_phylogenetic_distances
         else:
@@ -177,21 +200,37 @@ class PhylogeneticDistanceMatrix(object):
                     max_dist_taxa = (t1, t2)
         return max_dist_taxa
 
-    def distances(self):
+    def distances(self,
+            is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False):
         """
         Returns list of patristic distances.
         """
-        dists = []
-        for dt in self._taxon_phylogenetic_distances.values():
+        if is_weighted_edge_distances:
+            dists = self._taxon_phylogenetic_distances
+            if is_normalized_by_tree_size:
+                normalization_factor = self._tree_length
+            else:
+                normalization_factor = 1.0
+        else:
+            dists = self._taxon_phylogenetic_path_steps
+            if is_normalized_by_tree_size:
+                normalization_factor = self._num_edges
+            else:
+                normalization_factor = 1.0
+        results = []
+        for dt in dists.values():
             for d in dt.values():
-                dists.append(d)
-        return dists
+                results.append(d/normalization_factor)
+        return results
 
-    def sum_of_distances(self):
+    def sum_of_distances(self,
+            is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False):
         """
         Returns sum of patristic distances on tree.
         """
-        return sum(self.distances())
+        return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalized_by_tree_size=is_normalized_by_tree_size))
 
     def iter_taxa(self):
         """
@@ -201,7 +240,10 @@ class PhylogeneticDistanceMatrix(object):
         for t in self._mapped_taxa:
             yield t
 
-    def mean_pairwise_distance(self, filter_fn=None, is_weighted_edge_distances=True):
+    def mean_pairwise_distance(self,
+            filter_fn=None,
+            is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -231,6 +273,11 @@ class PhylogeneticDistanceMatrix(object):
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
+        is_normalized_by_tree_size : bool
+            If |True| then the results are normalized by the total tree length
+            or steps/edges (depending on whether edge-weighted or unweighted
+            distances are used, respectively). Otherwise, raw distances are
+            used.
 
         Examples
         --------
@@ -265,27 +312,35 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
+        # seen_comps = set()
         if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
+            if is_normalized_by_tree_size:
+                normalization_factor = self._tree_length
+            else:
+                normalization_factor = 1.0
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
-        seen_comps = set()
+            if is_normalized_by_tree_size:
+                normalization_factor = self._num_edges
+            else:
+                normalization_factor = 1.0
         distances = []
         for taxon1 in dmatrix:
             if filter_fn and not filter_fn(taxon1):
                 continue
-            for taxon2 in dmatrix:
+            for taxon2 in dmatrix[taxon1]:
                 if taxon1 is taxon2:
                     continue
                 if filter_fn and not filter_fn(taxon2):
                     continue
-                comp_hash = frozenset([taxon1, taxon2])
-                if comp_hash in seen_comps:
-                    continue
-                distances.append(self.__call__(taxon1, taxon2))
-                seen_comps.add( comp_hash )
+                # comp_hash = frozenset([taxon1, taxon2])
+                # if comp_hash in seen_comps:
+                #     continue
+                distances.append(dmatrix[taxon1][taxon2])
+                # seen_comps.add( comp_hash )
         if distances:
-            return sum(distances) / (len(distances) * 1.0)
+            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
         else:
             raise error.NullAssemblageException("No taxa in assemblage")
             # return 0
@@ -294,6 +349,7 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships,
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -364,14 +420,19 @@ class PhylogeneticDistanceMatrix(object):
         """
         results = self._calculate_standardized_effect_size(
                 statisticf_name="mean_pairwise_distance",
-                statisticf_kwargs={"is_weighted_edge_distances": is_weighted_edge_distances},
+                statisticf_kwargs={
+                    "is_weighted_edge_distances": is_weighted_edge_distances,
+                    "is_normalized_by_tree_size": is_normalized_by_tree_size},
                 assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
 
-    def mean_nearest_taxon_distance(self, filter_fn=None, is_weighted_edge_distances=True):
+    def mean_nearest_taxon_distance(self,
+            filter_fn=None,
+            is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -401,6 +462,11 @@ class PhylogeneticDistanceMatrix(object):
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
+        is_normalized_by_tree_size : bool
+            If |True| then the results are normalized by the total tree length
+            or steps/edges (depending on whether edge-weighted or unweighted
+            distances are used, respectively). Otherwise, raw distances are
+            used.
 
         Examples
         --------
@@ -436,23 +502,34 @@ class PhylogeneticDistanceMatrix(object):
         """
         if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
+            if is_normalized_by_tree_size:
+                normalization_factor = self._tree_length
+            else:
+                normalization_factor = 1.0
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
+            if is_normalized_by_tree_size:
+                normalization_factor = self._num_edges
+            else:
+                normalization_factor = 1.0
         distances = []
-        for taxon1 in dmatrix:
+        for taxon1 in self._mapped_taxa:
             if filter_fn and not filter_fn(taxon1):
                 continue
             subdistances = []
-            for taxon2 in dmatrix:
+            for taxon2 in self._mapped_taxa:
                 if taxon1 is taxon2:
                     continue
                 if filter_fn and not filter_fn(taxon2):
                     continue
-                subdistances.append(self.__call__(taxon1, taxon2))
+                try:
+                    subdistances.append(dmatrix[taxon1][taxon2])
+                except KeyError:
+                    subdistances.append(dmatrix[taxon2][taxon1])
             if subdistances:
                 distances.append(min(subdistances))
         if distances:
-            return sum(distances) / (len(distances) * 1.0)
+            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
         else:
             raise error.NullAssemblageException("No taxa in assemblage")
             # return 0
@@ -461,6 +538,7 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships,
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
+            is_normalized_by_tree_size=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -531,7 +609,9 @@ class PhylogeneticDistanceMatrix(object):
         """
         results = self._calculate_standardized_effect_size(
                 statisticf_name="mean_nearest_taxon_distance",
-                statisticf_kwargs={"is_weighted_edge_distances": is_weighted_edge_distances},
+                statisticf_kwargs={
+                    "is_weighted_edge_distances": is_weighted_edge_distances,
+                    "is_normalized_by_tree_size": is_normalized_by_tree_size},
                 assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
