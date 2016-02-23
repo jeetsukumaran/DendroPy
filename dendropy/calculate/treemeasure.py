@@ -143,7 +143,7 @@ class PhylogeneticDistanceMatrix(object):
                     dest[t1][t2] = src[t1][t2]
         return o
 
-    def patristic_distance(self, taxon1, taxon2, is_normalized_by_tree_size=False):
+    def patristic_distance(self, taxon1, taxon2, is_normalize_by_tree_size=False):
         """
         Returns patristic distance between two taxon objects.
         """
@@ -153,12 +153,12 @@ class PhylogeneticDistanceMatrix(object):
             d = self._taxon_phylogenetic_distances[taxon1][taxon2]
         except KeyError:
             d = self._taxon_phylogenetic_distances[taxon2][taxon1]
-        if is_normalized_by_tree_size:
+        if is_normalize_by_tree_size:
             return d / self._tree_length
         else:
             return d
 
-    def path_edge_count(self, taxon1, taxon2, is_normalized_by_tree_size=False):
+    def path_edge_count(self, taxon1, taxon2, is_normalize_by_tree_size=False):
         """
         Returns the number of edges between two taxon objects.
         """
@@ -168,7 +168,7 @@ class PhylogeneticDistanceMatrix(object):
             d = self._taxon_phylogenetic_path_steps[taxon1][taxon2]
         except KeyError:
             d = self._taxon_phylogenetic_path_steps[taxon2][taxon1]
-        if is_normalized_by_tree_size:
+        if is_normalize_by_tree_size:
             return float(d) / self._num_edges
         else:
             return d
@@ -202,19 +202,19 @@ class PhylogeneticDistanceMatrix(object):
 
     def distances(self,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False):
+            is_normalize_by_tree_size=False):
         """
         Returns list of patristic distances.
         """
         if is_weighted_edge_distances:
             dists = self._taxon_phylogenetic_distances
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = self._tree_length
             else:
                 normalization_factor = 1.0
         else:
             dists = self._taxon_phylogenetic_path_steps
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
@@ -226,11 +226,11 @@ class PhylogeneticDistanceMatrix(object):
 
     def sum_of_distances(self,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False):
+            is_normalize_by_tree_size=False):
         """
         Returns sum of patristic distances on tree.
         """
-        return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalized_by_tree_size=is_normalized_by_tree_size))
+        return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalize_by_tree_size=is_normalize_by_tree_size))
 
     def iter_taxa(self):
         """
@@ -243,7 +243,7 @@ class PhylogeneticDistanceMatrix(object):
     def mean_pairwise_distance(self,
             filter_fn=None,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False):
+            is_normalize_by_tree_size=False):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -273,7 +273,7 @@ class PhylogeneticDistanceMatrix(object):
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
-        is_normalized_by_tree_size : bool
+        is_normalize_by_tree_size : bool
             If |True| then the results are normalized by the total tree length
             or steps/edges (depending on whether edge-weighted or unweighted
             distances are used, respectively). Otherwise, raw distances are
@@ -315,13 +315,13 @@ class PhylogeneticDistanceMatrix(object):
         # seen_comps = set()
         if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = self._tree_length
             else:
                 normalization_factor = 1.0
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
@@ -349,7 +349,7 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships,
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False,
+            is_normalize_by_tree_size=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -422,7 +422,7 @@ class PhylogeneticDistanceMatrix(object):
                 statisticf_name="mean_pairwise_distance",
                 statisticf_kwargs={
                     "is_weighted_edge_distances": is_weighted_edge_distances,
-                    "is_normalized_by_tree_size": is_normalized_by_tree_size},
+                    "is_normalize_by_tree_size": is_normalize_by_tree_size},
                 assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
@@ -432,7 +432,7 @@ class PhylogeneticDistanceMatrix(object):
     def mean_nearest_taxon_distance(self,
             filter_fn=None,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False):
+            is_normalize_by_tree_size=False):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
@@ -462,7 +462,7 @@ class PhylogeneticDistanceMatrix(object):
             lengths, is returned. Otherwise the the path steps or the number of
             edges rather then the sum of is_weighted_edge_distances edges, connecting two
             taxa is considered.
-        is_normalized_by_tree_size : bool
+        is_normalize_by_tree_size : bool
             If |True| then the results are normalized by the total tree length
             or steps/edges (depending on whether edge-weighted or unweighted
             distances are used, respectively). Otherwise, raw distances are
@@ -502,13 +502,13 @@ class PhylogeneticDistanceMatrix(object):
         """
         if is_weighted_edge_distances:
             dmatrix = self._taxon_phylogenetic_distances
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = self._tree_length
             else:
                 normalization_factor = 1.0
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
-            if is_normalized_by_tree_size:
+            if is_normalize_by_tree_size:
                 normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
@@ -538,7 +538,7 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships,
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
-            is_normalized_by_tree_size=False,
+            is_normalize_by_tree_size=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -611,7 +611,7 @@ class PhylogeneticDistanceMatrix(object):
                 statisticf_name="mean_nearest_taxon_distance",
                 statisticf_kwargs={
                     "is_weighted_edge_distances": is_weighted_edge_distances,
-                    "is_normalized_by_tree_size": is_normalized_by_tree_size},
+                    "is_normalize_by_tree_size": is_normalize_by_tree_size},
                 assemblage_memberships=assemblage_memberships,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
