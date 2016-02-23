@@ -215,7 +215,7 @@ class PhylogeneticDistanceMatrix(object):
         else:
             dists = self._taxon_phylogenetic_path_steps
             if is_normalized_by_tree_size:
-                normalization_factor = self._num_edges
+                normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
         results = []
@@ -322,7 +322,7 @@ class PhylogeneticDistanceMatrix(object):
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
             if is_normalized_by_tree_size:
-                normalization_factor = self._num_edges
+                normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
         distances = []
@@ -509,7 +509,7 @@ class PhylogeneticDistanceMatrix(object):
         else:
             dmatrix = self._taxon_phylogenetic_path_steps
             if is_normalized_by_tree_size:
-                normalization_factor = self._num_edges
+                normalization_factor = float(self._num_edges)
             else:
                 normalization_factor = 1.0
         distances = []
