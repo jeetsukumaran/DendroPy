@@ -312,38 +312,12 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        # seen_comps = set()
-        if is_weighted_edge_distances:
-            dmatrix = self._taxon_phylogenetic_distances
-            if is_normalize_by_tree_size:
-                normalization_factor = self._tree_length
-            else:
-                normalization_factor = 1.0
-        else:
-            dmatrix = self._taxon_phylogenetic_path_steps
-            if is_normalize_by_tree_size:
-                normalization_factor = float(self._num_edges)
-            else:
-                normalization_factor = 1.0
-        distances = []
-        for taxon1 in dmatrix:
-            if filter_fn and not filter_fn(taxon1):
-                continue
-            for taxon2 in dmatrix[taxon1]:
-                if taxon1 is taxon2:
-                    continue
-                if filter_fn and not filter_fn(taxon2):
-                    continue
-                # comp_hash = frozenset([taxon1, taxon2])
-                # if comp_hash in seen_comps:
-                #     continue
-                distances.append(dmatrix[taxon1][taxon2])
-                # seen_comps.add( comp_hash )
-        if distances:
-            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
-        else:
-            raise error.NullAssemblageException("No taxa in assemblage")
-            # return 0
+        taxon_pairs = self._get_taxon_pair_combinations(filter_fn=filter_fn)
+        return self._calculate_mean_pairwise_distance(
+                taxon_pairs=taxon_pairs,
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
+                )
 
     def standardized_effect_size_mean_pairwise_distance(self,
             assemblage_memberships,
@@ -691,6 +665,41 @@ class PhylogeneticDistanceMatrix(object):
                     assemblage_membership.add(taxon)
             assemblage_memberships.append(assemblage_membership)
         return assemblage_memberships
+
+    def _calculate_mean_pairwise_distance(self,
+            taxon_pairs,
+            is_weighted_edge_distances,
+            is_normalize_by_tree_size):
+        if is_weighted_edge_distances:
+            dmatrix = self._taxon_phylogenetic_distances
+            if is_normalize_by_tree_size:
+                normalization_factor = self._tree_length
+            else:
+                normalization_factor = 1.0
+        else:
+            dmatrix = self._taxon_phylogenetic_path_steps
+            if is_normalize_by_tree_size:
+                normalization_factor = float(self._num_edges)
+            else:
+                normalization_factor = 1.0
+        distances = []
+        for taxon1, taxon2 in taxon_pairs:
+            distances.append(dmatrix[taxon1][taxon2])
+        if distances:
+            return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
+        else:
+            raise error.NullAssemblageException("No taxa in assemblage")
+
+    def _get_taxon_pair_combinations(self, filter_fn=None):
+        pairs = []
+        for taxon1 in self._taxon_phylogenetic_distances:
+            if filter_fn and not filter_fn(taxon1):
+                continue
+            for taxon2 in self._taxon_phylogenetic_distances[taxon1]:
+                if filter_fn and not filter_fn(taxon2):
+                    continue
+                pairs.append( (taxon1, taxon2) )
+        return pairs
 
     def _calculate_standardized_effect_size(self,
             statisticf_name,
