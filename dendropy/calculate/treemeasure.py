@@ -623,6 +623,22 @@ class PhylogeneticDistanceMatrix(object):
         for attr_name in to_shuffle:
             src = getattr(self, attr_name)
             dest = {}
+
+            ## 5m55.186s
+            # for t1, t2 in self._all_distinct_mapped_taxa_pairs:
+            #     x1 = current_to_shuffled_taxon_map[t1]
+            #     x2 = current_to_shuffled_taxon_map[t2]
+            #     try:
+            #         dest[x1][x2] = src[t1][t2]
+            #     except KeyError:
+            #         dest[x1] = {x2: src[t1][t2]}
+            #     try:
+            #         dest[x2][x1] = src[t2][t1]
+            #     except KeyError:
+            #         dest[x2] = {x1: src[t2][t1]}
+            # src.update(dest)
+
+            # 4m48.025s
             for t1 in src:
                 x1 = current_to_shuffled_taxon_map[t1]
                 dest[x1] = {}
@@ -630,6 +646,7 @@ class PhylogeneticDistanceMatrix(object):
                     x2 = current_to_shuffled_taxon_map[t2]
                     dest[x1][x2] = src[t1][t2]
             setattr(self, attr_name, dest)
+
         return current_to_shuffled_taxon_map
 
     def as_data_table(self, is_weighted_edge_distances=True):
