@@ -183,6 +183,10 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(len(obs), len(exp_list))
             for obs, exp in zip(obs, exp_list):
                 self.assertAlmostEqual(obs, exp, 6)
+            self.assertAlmostEqual(self.pdm.sum_of_distances(
+                    is_weighted_edge_distances=True,
+                    is_normalize_by_tree_size=False,
+                    ), sum(exp_list), 6)
 
         def test_tree_weighted_normalized_pairwise_distance_collection(self):
             # this test relies on populating the expected result list
@@ -199,6 +203,10 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(len(obs), len(exp_list))
             for obs, exp in zip(obs, exp_list):
                 self.assertAlmostEqual(obs, exp, 6)
+            self.assertAlmostEqual(self.pdm.sum_of_distances(
+                    is_weighted_edge_distances=True,
+                    is_normalize_by_tree_size=True,
+                    ), sum(exp_list), 6)
 
         def test_tree_unweighted_unnormalized_pairwise_distance_collection(self):
             # this test relies on populating the expected result list
@@ -214,6 +222,10 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(len(obs), len(exp_list))
             for obs, exp in zip(obs, exp_list):
                 self.assertAlmostEqual(obs, exp, 6)
+            self.assertAlmostEqual(self.pdm.sum_of_distances(
+                    is_weighted_edge_distances=False,
+                    is_normalize_by_tree_size=False,
+                    ), sum(exp_list), 6)
 
         def test_tree_unweighted_normalized_pairwise_distance_collection(self):
             # this test relies on populating the expected result list
@@ -231,6 +243,10 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(len(obs), len(exp_list))
             for obs, exp in zip(obs, exp_list):
                 self.assertAlmostEqual(obs, exp, 6)
+            self.assertAlmostEqual(self.pdm.sum_of_distances(
+                    is_weighted_edge_distances=False,
+                    is_normalize_by_tree_size=True,
+                    ), sum(exp_list), 6)
 
         def test_max_pairwise_weighted_distance_taxa(self):
             maxd = None
