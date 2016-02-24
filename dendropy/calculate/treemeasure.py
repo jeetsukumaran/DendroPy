@@ -502,9 +502,8 @@ class PhylogeneticDistanceMatrix(object):
             comparison_regimes.append(comparison_regime)
         results = self._calculate_standardized_effect_size(
                 statisticf_name="_calculate_mean_pairwise_distance",
-                statisticf_kwargs={
-                    "is_weighted_edge_distances": is_weighted_edge_distances,
-                    "is_normalize_by_tree_size": is_normalize_by_tree_size},
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
                 comparison_regimes=comparison_regimes,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
@@ -593,32 +592,35 @@ class PhylogeneticDistanceMatrix(object):
             comparison_regimes.append(comparison_regime)
         results = self._calculate_standardized_effect_size(
                 statisticf_name="_calculate_mean_nearest_taxon_distance",
-                statisticf_kwargs={
-                    "is_weighted_edge_distances": is_weighted_edge_distances,
-                    "is_normalize_by_tree_size": is_normalize_by_tree_size},
                 comparison_regimes=comparison_regimes,
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
         return results
 
-    def shuffle_taxa(self, rng=None):
+    def shuffle_taxa(self,
+            is_shuffle_phylogenetic_distances=True,
+            is_shuffle_phylogenetic_path_steps=True,
+            is_shuffle_mrca=True,
+            rng=None):
         """
         Randomly shuffles taxa in-situ.
         """
         if rng is None:
             rng = GLOBAL_RNG
-        # mapped_taxa = list(mapped_taxa)
-        # rng.shuffle(mapped_taxa)
         reordered_taxa = list(self._mapped_taxa)
         rng.shuffle(reordered_taxa)
         current_to_shuffled_taxon_map = dict(zip(self._mapped_taxa, reordered_taxa))
-        # assert len(current_to_shuffled_taxon_map) == len(self._mapped_taxa), "{} != {}".format(len(current_to_shuffled_taxon_map), len(self._mapped_taxa))
-        for attr_name in (
-                "_taxon_phylogenetic_distances",
-                "_taxon_phylogenetic_path_steps",
-                "_mrca",
-                ):
+        to_shuffle = []
+        if is_shuffle_phylogenetic_distances:
+            to_shuffle.append("_taxon_phylogenetic_distances")
+        if is_shuffle_phylogenetic_path_steps:
+            to_shuffle.append("_taxon_phylogenetic_path_steps")
+        if is_shuffle_mrca:
+            to_shuffle.append("_mrca")
+        for attr_name in to_shuffle:
             src = getattr(self, attr_name)
             dest = {}
             for t1 in src:
@@ -747,20 +749,33 @@ class PhylogeneticDistanceMatrix(object):
     def _calculate_standardized_effect_size(self,
             statisticf_name,
             comparison_regimes,
-            statisticf_kwargs=None,
+            is_weighted_edge_distances,
+            is_normalize_by_tree_size,
             null_model_type="taxa.label",
             num_randomization_replicates=1000,
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
                 ["obs", "null_model_mean", "null_model_sd", "z", "rank", "p",])
-        if statisticf_kwargs is None:
-            statisticf_kwargs = {}
+        statisticf_kwargs={
+            "is_weighted_edge_distances": is_weighted_edge_distances,
+            "is_normalize_by_tree_size": is_normalize_by_tree_size
+        }
         observed_stat_values = {}
         null_model_stat_values = {}
         null_model_matrix = self.clone()
         assert null_model_matrix == self
+        if is_weighted_edge_distances:
+            is_shuffle_phylogenetic_distances = True
+            is_shuffle_phylogenetic_path_steps = False
+        else:
+            is_shuffle_phylogenetic_distances = False
+            is_shuffle_phylogenetic_path_steps = True
         for rep_idx in range(num_randomization_replicates):
-            null_model_matrix.shuffle_taxa(rng=rng)
+            null_model_matrix.shuffle_taxa(
+                    is_shuffle_phylogenetic_distances=is_shuffle_phylogenetic_distances,
+                    is_shuffle_phylogenetic_path_steps=is_shuffle_phylogenetic_distances,
+                    is_shuffle_mrca=False,
+                    rng=rng)
             for comparison_regime_idx, comparison_regime in enumerate(comparison_regimes):
                 statisticf_kwargs["comparison_regime"] = comparison_regime
                 if rep_idx == 0:
