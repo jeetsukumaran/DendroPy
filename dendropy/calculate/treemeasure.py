@@ -624,19 +624,24 @@ class PhylogeneticDistanceMatrix(object):
             src = getattr(self, attr_name)
             dest = {}
 
-            ## 5m55.186s
+            ## 5m8.076s
             # for t1, t2 in self._all_distinct_mapped_taxa_pairs:
             #     x1 = current_to_shuffled_taxon_map[t1]
             #     x2 = current_to_shuffled_taxon_map[t2]
+            #     d = src[t1][t2]
             #     try:
-            #         dest[x1][x2] = src[t1][t2]
+            #         dest[x1][x2] = d
             #     except KeyError:
-            #         dest[x1] = {x2: src[t1][t2]}
+            #         dest[x1] = {x2: d}
+            #         if t1 in src[t1]:
+            #             dest[x1][x1] = src[t1][t1]
             #     try:
-            #         dest[x2][x1] = src[t2][t1]
+            #         dest[x2][x1] = d
             #     except KeyError:
-            #         dest[x2] = {x1: src[t2][t1]}
-            # src.update(dest)
+            #         dest[x2] = {x1: d}
+            #         if t2 in src[t2]:
+            #             dest[x2][x2] = src[t2][t2]
+            # setattr(self, attr_name, dest)
 
             # 4m48.025s
             for t1 in src:
