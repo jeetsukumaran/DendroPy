@@ -336,9 +336,9 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        taxon_combinations = self.iter_distinct_taxon_pairs(filter_fn=filter_fn)
+        comparison_regime = self.iter_distinct_taxon_pairs(filter_fn=filter_fn)
         return self._calculate_mean_pairwise_distance(
-                taxon_combinations=taxon_combinations,
+                comparison_regime=comparison_regime,
                 is_weighted_edge_distances=is_weighted_edge_distances,
                 is_normalize_by_tree_size=is_normalize_by_tree_size,
                 )
@@ -414,9 +414,9 @@ class PhylogeneticDistanceMatrix(object):
         [2] Swenson, N.G. Functional and Phylogenetic Ecology in R.
 
         """
-        taxon_to_all_other_taxa_comparisons = self._get_taxon_to_all_other_taxa_comparisons(filter_fn=filter_fn)
+        comparison_regime = self._get_taxon_to_all_other_taxa_comparisons(filter_fn=filter_fn)
         return self._calculate_mean_nearest_taxon_distance(
-                taxon_to_all_other_taxa_comparisons=taxon_to_all_other_taxa_comparisons,
+                comparison_regime=comparison_regime,
                 is_weighted_edge_distances=is_weighted_edge_distances,
                 is_normalize_by_tree_size=is_normalize_by_tree_size,)
 
@@ -493,12 +493,19 @@ class PhylogeneticDistanceMatrix(object):
                 -   p         : the p-value of the observed value of the
                                 statistic under the null model.
         """
+        if assemblage_memberships is None:
+            assemblage_memberships = [ set(self._mapped_taxa) ]
+        comparison_regimes = []
+        for assemblage_membership in assemblage_memberships:
+            filter_fn = lambda taxon: taxon in assemblage_membership
+            comparison_regime = list(self.iter_distinct_taxon_pairs(filter_fn=filter_fn))
+            comparison_regimes.append(comparison_regime)
         results = self._calculate_standardized_effect_size(
-                statisticf_name="mean_pairwise_distance",
+                statisticf_name="_calculate_mean_pairwise_distance",
                 statisticf_kwargs={
                     "is_weighted_edge_distances": is_weighted_edge_distances,
                     "is_normalize_by_tree_size": is_normalize_by_tree_size},
-                assemblage_memberships=assemblage_memberships,
+                comparison_regimes=comparison_regimes,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
@@ -577,12 +584,19 @@ class PhylogeneticDistanceMatrix(object):
                 -   p         : the p-value of the observed value of the
                                 statistic under the null model.
         """
+        if assemblage_memberships is None:
+            assemblage_memberships = [ set(self._mapped_taxa) ]
+        comparison_regimes = []
+        for assemblage_membership in assemblage_memberships:
+            filter_fn = lambda taxon: taxon in assemblage_membership
+            comparison_regime = self._get_taxon_to_all_other_taxa_comparisons(filter_fn=filter_fn)
+            comparison_regimes.append(comparison_regime)
         results = self._calculate_standardized_effect_size(
-                statisticf_name="mean_nearest_taxon_distance",
+                statisticf_name="_calculate_mean_nearest_taxon_distance",
                 statisticf_kwargs={
                     "is_weighted_edge_distances": is_weighted_edge_distances,
                     "is_normalize_by_tree_size": is_normalize_by_tree_size},
-                assemblage_memberships=assemblage_memberships,
+                comparison_regimes=comparison_regimes,
                 null_model_type=null_model_type,
                 num_randomization_replicates=num_randomization_replicates,
                 rng=rng)
@@ -694,14 +708,14 @@ class PhylogeneticDistanceMatrix(object):
         return dmatrix, normalization_factor
 
     def _calculate_mean_pairwise_distance(self,
-            taxon_combinations,
+            comparison_regime,
             is_weighted_edge_distances,
             is_normalize_by_tree_size):
         dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
                 is_weighted_edge_distances=is_weighted_edge_distances,
                 is_normalize_by_tree_size=is_normalize_by_tree_size,)
         distances = []
-        for taxon1, taxon2 in taxon_combinations:
+        for taxon1, taxon2 in comparison_regime:
             distances.append(dmatrix[taxon1][taxon2])
         if distances:
             return (sum(distances) / normalization_factor) / (len(distances) * 1.0)
@@ -709,18 +723,18 @@ class PhylogeneticDistanceMatrix(object):
             raise error.NullAssemblageException("No taxa in assemblage")
 
     def _calculate_mean_nearest_taxon_distance(self,
-            taxon_to_all_other_taxa_comparisons,
+            comparison_regime,
             is_weighted_edge_distances,
             is_normalize_by_tree_size):
         dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
                 is_weighted_edge_distances=is_weighted_edge_distances,
                 is_normalize_by_tree_size=is_normalize_by_tree_size,)
         distances = []
-        for taxon1 in taxon_to_all_other_taxa_comparisons:
-            # subdistances = [dmatrix[taxon1][taxon2] for taxon2 in taxon_to_all_other_taxa_comparisons[taxon1]]
+        for taxon1 in comparison_regime:
+            # subdistances = [dmatrix[taxon1][taxon2] for taxon2 in comparison_regime[taxon1]]
             # distances.append(min(subdistances))
-            min_distance = dmatrix[taxon1][taxon_to_all_other_taxa_comparisons[taxon1][0]]
-            for taxon2 in taxon_to_all_other_taxa_comparisons[taxon1][1:]:
+            min_distance = dmatrix[taxon1][comparison_regime[taxon1][0]]
+            for taxon2 in comparison_regime[taxon1][1:]:
                 d = dmatrix[taxon1][taxon2]
                 if d < min_distance:
                     min_distance = d
@@ -732,15 +746,13 @@ class PhylogeneticDistanceMatrix(object):
 
     def _calculate_standardized_effect_size(self,
             statisticf_name,
+            comparison_regimes,
             statisticf_kwargs=None,
-            assemblage_memberships=None,
             null_model_type="taxa.label",
             num_randomization_replicates=1000,
             rng=None):
         result_type = collections.namedtuple("PhylogeneticCommunityStandardizedEffectSizeStatisticCalculationResult",
                 ["obs", "null_model_mean", "null_model_sd", "z", "rank", "p",])
-        if assemblage_memberships is None:
-            assemblage_memberships = [ set(self._mapped_taxa) ]
         if statisticf_kwargs is None:
             statisticf_kwargs = {}
         observed_stat_values = {}
@@ -749,18 +761,17 @@ class PhylogeneticDistanceMatrix(object):
         assert null_model_matrix == self
         for rep_idx in range(num_randomization_replicates):
             null_model_matrix.shuffle_taxa(rng=rng)
-            for community_idx, assemblage_membership in enumerate(assemblage_memberships):
-                filter_fn = lambda taxon: taxon in assemblage_membership
-                statisticf_kwargs["filter_fn"] = filter_fn
+            for comparison_regime_idx, comparison_regime in enumerate(comparison_regimes):
+                statisticf_kwargs["comparison_regime"] = comparison_regime
                 if rep_idx == 0:
-                    observed_stat_values[community_idx] = getattr(self, statisticf_name)(**statisticf_kwargs)
-                    null_model_stat_values[community_idx] = []
+                    observed_stat_values[comparison_regime_idx] = getattr(self, statisticf_name)(**statisticf_kwargs)
+                    null_model_stat_values[comparison_regime_idx] = []
                 stat_value = getattr(null_model_matrix, statisticf_name)(**statisticf_kwargs)
-                null_model_stat_values[community_idx].append(stat_value)
+                null_model_stat_values[comparison_regime_idx].append(stat_value)
         results = []
-        for community_idx, assemblage_membership in enumerate(assemblage_memberships):
-            obs_value = observed_stat_values[community_idx]
-            stat_values = null_model_stat_values[community_idx]
+        for comparison_regime_idx, comparison_regime in enumerate(comparison_regimes):
+            obs_value = observed_stat_values[comparison_regime_idx]
+            stat_values = null_model_stat_values[comparison_regime_idx]
             null_model_mean, null_model_var = statistics.mean_and_sample_variance(stat_values)
             rank = statistics.rank(
                     value_to_be_ranked=obs_value,
