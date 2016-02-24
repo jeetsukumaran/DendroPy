@@ -61,10 +61,10 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             # tree = read.nexus("data/pythonidae.mle.nex")
             # pdm = cophenetic.phylo(tree)
             # write.csv(format(pdm,digits=22), "pythonidae.mle.weighted.pdm.csv")
-            with open(pathmap.tree_source_path("pythonidae.mle.weighted.pdm.csv")) as src:
+            with open(pathmap.other_source_path("pythonidae.mle.weighted.pdm.csv")) as src:
                 reader = csv.reader(src, delimiter=",")
                 self.reference_pdm_weighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
-            with open(pathmap.tree_source_path("pythonidae.mle.unweighted.pdm.csv")) as src:
+            with open(pathmap.other_source_path("pythonidae.mle.unweighted.pdm.csv")) as src:
                 reader = csv.reader(src, delimiter=",")
                 self.reference_pdm_unweighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
             self.tree = dendropy.Tree.get(path=pathmap.tree_source_path(
@@ -367,16 +367,20 @@ class TreePatristicDistTest(unittest.TestCase):
 class PhylogeneticEcologyStatsTests(unittest.TestCase):
 
     def setUp(self):
-        with open(pathmap.char_source_path("community.data.tsv")) as src:
-            reader = csv.reader(src, delimiter="\t")
-            self.data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=int)
         self.tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("community.tree.newick"),
                 schema="newick",
                 rooting="force-rooted")
         self.pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
+        assemblage_data_filepath = pathmap.other_source_path("community.data.tsv")
+        with open(assemblage_data_filepath) as src:
+            reader = csv.reader(src, delimiter="\t")
+            self.data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=int)
+        self.assemblage_memberships = self.pdm.read_assemblage_memberships_from_delimited_source(
+                assemblage_data_filepath,
+                delimiter="\t")
 
-    def test_nonabundance_weighted_mpd(self):
+    def test_nonabundance_edgeweighted_unnormalized_mpd(self):
         # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)
         # my.phylo = read.tree("data/PD.example.phylo.txt")
         # pd.matrix = cophenetic(my.phylo)
@@ -395,7 +399,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
             d = self.pdm.mean_pairwise_distance(filter_fn=filter_fn)
             self.assertAlmostEqual(d, expected_results[row_name])
 
-    def test_nonabundance_weighted_mntd(self):
+    def test_nonabundance_edgeweighted_unnormalized_mntd(self):
         # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)
         # my.phylo = read.tree("data/PD.example.phylo.txt")
         # pd.matrix = cophenetic(my.phylo)
@@ -413,4 +417,25 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
             filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
             d = self.pdm.mean_nearest_taxon_distance(filter_fn=filter_fn)
             self.assertAlmostEqual(d, expected_results[row_name])
+
+    def test_nonabundance_edgeweighted_unnormalized_ses_mpd(self):
+        # suppressMessages(library(picante))
+        # dists = as.matrix(read.csv("data/dist.csv",header=T,row.names=1))
+        # comm = as.matrix(read.csv("data/community.data.tsv",sep="\t",header=T,row.names=1))
+        # results.mpd = ses.mpd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=1000)
+        # write.csv(format(results.mpd,digits=22), "community.data.ses.mpd.csv")
+        # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=1000)
+        # write.csv(format(results.mntd,digits=22), "community.data.ses.mntd.csv")
+        with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mpd.csv")) as src:
+            reader = csv.reader(src, delimiter=",")
+            expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+        results = self.pdm.standardized_effect_size_mean_pairwise_distance(
+                assemblage_memberships=self.assemblage_memberships,
+                num_randomization_replicates=10,
+                is_weighted_edge_distances=True,
+                is_normalize_by_tree_size=False,
+                )
+
+if __name__ == "__main__":
+    unittest.main()
 

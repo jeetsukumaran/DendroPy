@@ -637,7 +637,7 @@ class PhylogeneticDistanceMatrix(object):
             self,
             src,
             delimiter=",",
-            default_data_type=int,):
+            default_data_type=float,):
         """
         Convenience method to return list of community sets from a delimited
         file that lists taxon (labels) in columns and community

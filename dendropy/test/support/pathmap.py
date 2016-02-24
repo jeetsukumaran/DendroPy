@@ -83,6 +83,17 @@ def splits_source_path(filename=None):
         filename = ""
     return os.path.join(TESTS_DATA_DIR, "splits", filename)
 
+def other_source_stream(filename):
+    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+        return open(other_source_path(filename), "rU")
+    else:
+        return open(other_source_path(filename), "r")
+
+def other_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    return os.path.join(TESTS_DATA_DIR, "other", filename)
+
 def data_source_stream(filename):
     return open(data_source_path(filename), "rU")
 
