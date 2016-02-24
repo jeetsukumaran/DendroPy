@@ -465,6 +465,50 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                     expected_results_data_table[expected_result_row_name, "mpd.obs.p"],
                     ))
 
+    def test_nonabundance_edgeweighted_unnormalized_ses_mntd(self):
+        # suppressMessages(library(picante))
+        # dists = as.matrix(read.csv("data/dist.csv",header=T,row.names=1))
+        # comm = as.matrix(read.csv("data/community.data.tsv",sep="\t",header=T,row.names=1))
+        # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
+        # write.csv(format(results.mntd, digits=22), quote=F, "community.data.weighted.unnormalized.ses.mntd.csv")
+        # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
+        # write.csv(format(results.mntd,digits=22), quote=F, "community.data.weighted.unnormalized.ses.mntd.csv")
+        with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mntd.csv")) as src:
+            reader = csv.reader(src, delimiter=",")
+            expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+        # for row_name in expected_results_data_table.iter_row_names():
+        #     for column_name in expected_results_data_table.iter_column_names():
+        #         v = expected_results_data_table[row_name, column_name]
+        #         print("{}, {}: {} ({})".format(row_name, column_name, v, type(v)))
+        obs_results = self.pdm.standardized_effect_size_mean_nearest_taxon_distance(
+                assemblage_memberships=self.assemblage_memberships,
+                num_randomization_replicates=100,
+                is_weighted_edge_distances=True,
+                is_normalize_by_tree_size=False,
+                )
+        self.assertEqual(len(obs_results), expected_results_data_table.num_rows())
+        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.iter_row_names()):
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.obs,
+                    expected_results_data_table[expected_result_row_name, "mntd.obs"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.null_model_mean,
+                    expected_results_data_table[expected_result_row_name, "mntd.rand.mean"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.null_model_sd,
+                    expected_results_data_table[expected_result_row_name, "mntd.rand.sd"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.z,
+                    expected_results_data_table[expected_result_row_name, "mntd.obs.z"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.p,
+                    expected_results_data_table[expected_result_row_name, "mntd.obs.p"],
+                    ))
+
 if __name__ == "__main__":
     unittest.main()
 
