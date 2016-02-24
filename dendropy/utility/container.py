@@ -873,6 +873,15 @@ class DataTable(object):
             else:
                 return key
 
+    def num_rows(self):
+        return len(self._row_names)
+
+    def num_columns(self):
+        return len(self._column_names)
+
+    def __len__(self):
+        return self.num_rows()
+
 ###############################################################################
 ## Generic Container Interace (for reference)
 

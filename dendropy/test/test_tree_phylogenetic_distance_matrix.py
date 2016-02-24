@@ -380,6 +380,9 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 assemblage_data_filepath,
                 delimiter="\t")
 
+    def _low_precision_equality(self, v1, v2, error=1.0):
+        return abs(v1-v2) <= error
+
     def test_nonabundance_edgeweighted_unnormalized_mpd(self):
         # my.sample = read.table("data/PD.example.sample.txt", sep = "\t", row.names = 1, header = T)
         # my.phylo = read.tree("data/PD.example.phylo.txt")
@@ -422,19 +425,45 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         # suppressMessages(library(picante))
         # dists = as.matrix(read.csv("data/dist.csv",header=T,row.names=1))
         # comm = as.matrix(read.csv("data/community.data.tsv",sep="\t",header=T,row.names=1))
-        # results.mpd = ses.mpd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=1000)
-        # write.csv(format(results.mpd,digits=22), "community.data.ses.mpd.csv")
-        # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=1000)
-        # write.csv(format(results.mntd,digits=22), "community.data.ses.mntd.csv")
+        # results.mpd = ses.mpd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
+        # write.csv(format(results.mpd, digits=22), quote=F, "community.data.weighted.unnormalized.ses.mpd.csv")
+        # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
+        # write.csv(format(results.mntd,digits=22), quote=F, "community.data.weighted.unnormalized.ses.mntd.csv")
         with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mpd.csv")) as src:
             reader = csv.reader(src, delimiter=",")
             expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
-        results = self.pdm.standardized_effect_size_mean_pairwise_distance(
+        # for row_name in expected_results_data_table.iter_row_names():
+        #     for column_name in expected_results_data_table.iter_column_names():
+        #         v = expected_results_data_table[row_name, column_name]
+        #         print("{}, {}: {} ({})".format(row_name, column_name, v, type(v)))
+        obs_results = self.pdm.standardized_effect_size_mean_pairwise_distance(
                 assemblage_memberships=self.assemblage_memberships,
-                num_randomization_replicates=10,
+                num_randomization_replicates=100,
                 is_weighted_edge_distances=True,
                 is_normalize_by_tree_size=False,
                 )
+        self.assertEqual(len(obs_results), expected_results_data_table.num_rows())
+        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.iter_row_names()):
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.obs,
+                    expected_results_data_table[expected_result_row_name, "mpd.obs"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.null_model_mean,
+                    expected_results_data_table[expected_result_row_name, "mpd.rand.mean"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.null_model_sd,
+                    expected_results_data_table[expected_result_row_name, "mpd.rand.sd"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.z,
+                    expected_results_data_table[expected_result_row_name, "mpd.obs.z"],
+                    ))
+            self.assertTrue(self._low_precision_equality(
+                    obs_result.p,
+                    expected_results_data_table[expected_result_row_name, "mpd.obs.p"],
+                    ))
 
 if __name__ == "__main__":
     unittest.main()
