@@ -69,30 +69,41 @@ class PhylogeneticDistanceMatrix(object):
         if not is_first_row_column_names and not is_first_column_row_names:
             distances = {}
             seen_row_labels = set()
-            for t1_label in data_table.iter_row_names():
+            seen_row_taxa_labels = set()
+            for i1, t1_label in enumerate(data_table.iter_row_names()):
+                if len(taxon_namespace) <= i1:
+                    t1 = taxon_namespace.require_taxon(label=t1_label)
+                else:
+                    t1 = taxon_namespace[i1]
                 seen_row_labels.add(t1_label)
-                t1 = taxon_namespace.require_taxon(label=t1_label)
+                assert t1.label not in seen_row_taxa_labels
+                seen_row_taxa_labels.add(t1.label)
                 distances[t1] = {}
-                for t2_label in data_table.iter_column_names():
+                for i2, t2_label in enumerate(data_table.iter_column_names()):
                     if t2_label in seen_row_labels:
                         continue
-                    t2 = taxon_namespace.require_taxon(label=t2_label)
+                    if len(taxon_namespace) <= i2:
+                        t2 = taxon_namespace.require_taxon(label=t2_label)
+                    else:
+                        t2 = taxon_namespace[i2]
                     distances[t1][t2] = data_table[t1_label, t2_label]
         elif is_first_row_column_names and is_first_column_row_names:
             distances = {}
+            seen_taxa = set()
             taxa = []
-            taxa_labels = set()
             seen_row_labels = set()
             for label in data_table.iter_row_names():
-                assert label not in taxa_labels
-                taxa.append(taxon_namespace.require_taxon(label=label))
-                taxa_labels.add(label)
+                t1 = taxon_namespace.require_taxon(label=label)
+                assert t1 not in seen_taxa
+                seen_taxa.add(t1)
+                taxa.append(t1)
+            seen_row_taxa = set()
             for t1 in taxa:
-                assert t1.label in taxa_labels
-                seen_row_labels.add(t1.label)
+                assert t1 in seen_taxa
+                seen_row_taxa.add(t1)
                 distances[t1] = {}
                 for t2 in taxa:
-                    if t2.label in seen_row_labels:
+                    if t2 in seen_row_taxa:
                         continue
                     distances[t1][t2] = data_table[t1.label, t2.label]
 
