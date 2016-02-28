@@ -78,10 +78,7 @@ be related through correct interpretation of their taxon labels.
 import warnings
 import collections
 import copy
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
+from dendropy.utility.textprocessing import StringIO
 from dendropy.datamodel import basemodel
 from dendropy.utility import bitprocessing
 from dendropy.utility import textprocessing

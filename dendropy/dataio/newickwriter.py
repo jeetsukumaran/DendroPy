@@ -22,10 +22,6 @@ Writing of Newick-format tree to a stream.
 
 import re
 import warnings
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 from dendropy.utility import error
 from dendropy.utility import textprocessing
 from dendropy.dataio import tokenizer

@@ -654,6 +654,13 @@ class PhylogeneticDistanceMatrix(object):
 
         return current_to_shuffled_taxon_map
 
+    def neighbor_joining_tree(self):
+        """
+        Returns an NJ tree for the distances.
+        """
+        tree = None
+        return tree
+
     def as_data_table(self, is_weighted_edge_distances=True):
         """
         Returns this as a table.

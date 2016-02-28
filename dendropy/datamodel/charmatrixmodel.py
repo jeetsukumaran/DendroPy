@@ -23,10 +23,7 @@ Character and character-sequence data structures.
 import warnings
 import copy
 import collections
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
+from dendropy.utility.textprocessing import StringIO
 from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.utility import deprecate

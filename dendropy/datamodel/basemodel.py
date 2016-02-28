@@ -24,10 +24,7 @@ import os
 import copy
 import sys
 import collections
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
+from dendropy.utility.textprocessing import StringIO
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container

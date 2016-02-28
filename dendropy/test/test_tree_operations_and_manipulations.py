@@ -20,10 +20,6 @@
 Tests native tree structuring routines.
 """
 
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 import sys
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
@@ -36,6 +32,7 @@ from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.test.support.mockrandom import MockRandom
 import dendropy
 from dendropy.calculate import treecompare
+from dendropy.utility.textprocessing import StringIO
 import re
 
 _LOG = messaging.get_logger(__name__)

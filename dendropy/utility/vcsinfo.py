@@ -22,10 +22,6 @@ Wraps up source version control system system information.
 
 import os
 import sys
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 import subprocess
 import datetime
 from dendropy.utility import textprocessing

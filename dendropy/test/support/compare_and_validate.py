@@ -16,13 +16,10 @@
 ##
 ##############################################################################
 
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 from . import pathmap
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import charmatrixmodel
+from dendropy.utility.textprocessing import StringIO
 
 class ValidateWriteable(object):
 

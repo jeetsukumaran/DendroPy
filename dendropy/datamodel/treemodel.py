@@ -23,10 +23,7 @@ as well as all the structural classes that make up a tree.
 
 import collections
 import math
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
+from dendropy.utility.textprocessing import StringIO
 import copy
 import sys
 from dendropy.utility import GLOBAL_RNG

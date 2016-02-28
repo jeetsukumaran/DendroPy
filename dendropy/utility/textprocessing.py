@@ -28,6 +28,13 @@ import locale
 import codecs
 
 ###############################################################################
+## Cross-version compatibility
+try:
+    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
+except ImportError:
+    from io import StringIO # Python 3
+
+###############################################################################
 ## Unicode/String Conversions
 
 ENCODING = locale.getdefaultlocale()[1]

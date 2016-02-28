@@ -23,16 +23,13 @@ Tests of tree metrics.
 import random
 import math
 import unittest
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 from dendropy.test.support import dendropytest
 from dendropy.test.support import pathmap
 
 import dendropy
 from dendropy.calculate import treemeasure
 from dendropy.calculate import treecompare
+from dendropy.utility.textprocessing import StringIO
 
 def _get_reference_tree_list(taxon_namespace=None):
     tree_list = dendropy.TreeList(label=None, taxon_namespace=taxon_namespace)

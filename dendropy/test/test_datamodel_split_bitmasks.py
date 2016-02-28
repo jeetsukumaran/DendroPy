@@ -24,17 +24,13 @@ import warnings
 import unittest
 import re
 import sys
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
-
 from dendropy.test.support import pathmap
 from dendropy.test.support import paupsplitsreference
 from dendropy.test.support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
 from dendropy.utility import bitprocessing
 from dendropy.interop import paup
+from dendropy.utility.textprocessing import StringIO
 from dendropy.calculate import treecompare
 import dendropy
 

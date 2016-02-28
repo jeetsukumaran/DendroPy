@@ -21,10 +21,6 @@ Wrappers for interacting with SeqGen. Originally part of PySeqGen.
 """
 
 import subprocess
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 import uuid
 import tempfile
 import socket

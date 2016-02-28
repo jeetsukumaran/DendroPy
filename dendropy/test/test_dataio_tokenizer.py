@@ -20,12 +20,9 @@
 Tests for tokenizers classes.
 """
 
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 import unittest
 from dendropy.dataio import nexusprocessing
+from dendropy.utility.textprocessing import StringIO
 
 class NexusTokenizerTestCase(unittest.TestCase):
     """

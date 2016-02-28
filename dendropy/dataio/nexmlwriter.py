@@ -24,11 +24,7 @@ import json
 import textwrap
 import collections
 from dendropy.dataio import ioservice
-
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
+from dendropy.utility.textprocessing import StringIO
 
 ############################################################################
 ## Local Module Methods

@@ -23,10 +23,6 @@ trees.
 
 import collections
 import math
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 import copy
 import sys
 from dendropy.utility import container
@@ -338,7 +334,6 @@ class TreeList(
 
             # /usr/bin/env python
 
-            import StringIO
             from dendropy import TaxonNamespace, Tree, TreeList
 
             # instantiate an empty tree
@@ -2429,34 +2424,6 @@ class TreeArray(
 
         """
         return basemodel.MultiReadable._read_from(self, **kwargs)
-
-
-    # def read_from_stream(self, fileobj, schema, **kwargs):
-    #     """
-    #     Reads trees from a file. See :meth:|TreeList|.read_from_stream()`.
-    #     """
-    #     return self.read_from_files(
-    #             files=[fileobj],
-    #             schema=schema,
-    #             **kwargs)
-
-    # def read_from_path(self, filepath, schema, **kwargs):
-    #     """
-    #     Reads trees from a path. See :meth:|TreeList|.read_from_path()`.
-    #     """
-    #     return self.read_from_files(
-    #             files=[filepath],
-    #             schema=schema,
-    #             **kwargs)
-
-    # def read_from_string(self, src_str, schema, **kwargs):
-    #     """
-    #     Reads trees from a string. See :meth:|TreeList|.read_from_string()`.
-    #     """
-    #     return self.read_from_files(
-    #             files=[StringIO(src_str)],
-    #             schema=schema,
-    #             **kwargs)
 
     ##############################################################################
     ## Container (List) Interface
