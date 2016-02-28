@@ -87,25 +87,30 @@ class PhylogeneticDistanceMatrix(object):
                     else:
                         t2 = taxon_namespace[i2]
                     distances[t1][t2] = data_table[t1_label, t2_label]
-        elif is_first_row_column_names and is_first_column_row_names:
+        else:
             distances = {}
             seen_taxa = set()
             taxa = []
-            seen_row_labels = set()
-            for label in data_table.iter_row_names():
+            if is_first_column_row_names:
+                name_iter = data_table.iter_row_names()
+            else:
+                name_iter = data_table.iter_column_names()
+            for label in name_iter:
                 t1 = taxon_namespace.require_taxon(label=label)
                 assert t1 not in seen_taxa
                 seen_taxa.add(t1)
                 taxa.append(t1)
             seen_row_taxa = set()
-            for t1 in taxa:
+            for i1, t1 in enumerate(taxa):
                 assert t1 in seen_taxa
                 seen_row_taxa.add(t1)
                 distances[t1] = {}
-                for t2 in taxa:
+                for i2, t2 in enumerate(taxa):
                     if t2 in seen_row_taxa:
                         continue
-                    distances[t1][t2] = data_table[t1.label, t2.label]
+                    distances[t1][t2] = data_table[i1, i2]
+        # else:
+            # raise NotImplementedError()
 
         taxon_namespace.is_mutable = old_taxon_namespace_mutability
         pdm = cls()

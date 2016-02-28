@@ -530,6 +530,23 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         e  , 21 , 22 , 23 , 24 , 0  , 25
         f  , 26 , 27 , 28 , 29 , 30 , 0
         """
+        self.s10 = """\
+        a  , 0  , 1  , 2  , 3  , 4  , 5
+        b  , 6  , 0  , 7  , 8  , 9  , 10
+        c  , 11 , 12 , 0  , 13 , 14 , 15
+        d  , 16 , 17 , 18 ,  0 , 19 , 20
+        e  , 21 , 22 , 23 , 24 , 0  , 25
+        f  , 26 , 27 , 28 , 29 , 30 , 0
+        """
+        self.s01 = """\
+        a  , b  , c  , d  , e  , f
+        0  , 1  , 2  , 3  , 4  , 5
+        6  , 0  , 7  , 8  , 9  , 10
+        11 , 12 , 0  , 13 , 14 , 15
+        16 , 17 , 18 ,  0 , 19 , 20
+        21 , 22 , 23 , 24 , 0  , 25
+        26 , 27 , 28 , 29 , 30 , 0
+        """
         self.expected_labels = {
             0 : "a",
             1 : "b",
@@ -584,6 +601,22 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
                 is_first_column_row_names=False,
                 is_allow_new_taxa=True)
         self.check_pdm(pdm, is_check_labels=False)
+
+    def test_read_new_taxon_namespace_with_row_and_no_column_names(self):
+        csv_reader = self.get_csv_reader(self.s10)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                is_first_row_column_names=False,
+                is_first_column_row_names=True,
+                is_allow_new_taxa=True)
+        self.check_pdm(pdm, is_check_labels=True)
+
+    def test_read_new_taxon_namespace_with_no_row_and_column_names(self):
+        csv_reader = self.get_csv_reader(self.s01)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                is_first_row_column_names=True,
+                is_first_column_row_names=False,
+                is_allow_new_taxa=True)
+        self.check_pdm(pdm, is_check_labels=True)
 
     def test_read_new_taxon_namespace_with_row_and_column_names(self):
         csv_reader = self.get_csv_reader(self.s11)

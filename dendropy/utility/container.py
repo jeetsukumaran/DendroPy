@@ -743,7 +743,7 @@ class DataTable(object):
                 if is_trim_space:
                     cell = cell.strip(" ")
                 if row_idx == 0 and is_first_row_column_names:
-                    if cell_idx == 0:
+                    if cell_idx == 0 and is_first_column_row_names:
                         continue
                     data_table.add_column(
                             column_name=cell,
@@ -752,9 +752,9 @@ class DataTable(object):
                     data_table.add_row(cell)
                 else:
                     if row_idx == 0 and not is_first_row_column_names:
-                        data_table.add_row()
-                    if row_idx == 0 and not is_first_column_row_names:
                         data_table.add_column(data_type=column_data_types.get(cell, default_data_type))
+                    if cell_idx == 0 and not is_first_column_row_names:
+                        data_table.add_row()
                     effective_row_idx = row_idx - first_data_row_offset
                     assert effective_row_idx < len(data_table._row_names), "{}: {}".format(effective_row_idx, data_table._row_names)
                     effective_column_idx = cell_idx - first_data_column_offset
