@@ -19,6 +19,7 @@ import unittest
 import dendropy
 import csv
 from dendropy.utility import container
+from dendropy.utility.textprocessing import StringIO
 from dendropy.test.support import pathmap
 from dendropy.calculate import treemeasure
 from dendropy.calculate import probability
@@ -508,6 +509,81 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                     obs_result.p,
                     expected_results_data_table[expected_result_row_name, "mntd.obs.p"],
                     ))
+
+class PhylogeneticDistanceMatrixReader(unittest.TestCase):
+
+    def setUp(self):
+        self.s00 = """\
+         0  , 1  , 2  , 3  , 4  , 5
+         6  , 0  , 7  , 8  , 9  , 10
+         11 , 12 , 0  , 13 , 14 , 15
+         16 , 17 , 18 ,  0 , 19 , 20
+         21 , 22 , 23 , 24 , 0  , 25
+         26 , 27 , 28 , 29 , 30 , 0
+        """
+        self.s11 = """\
+        .  , a  , b  , c  , d  , e  , f
+        a  , 0  , 1  , 2  , 3  , 4  , 5
+        b  , 6  , 0  , 7  , 8  , 9  , 10
+        c  , 11 , 12 , 0  , 13 , 14 , 15
+        d  , 16 , 17 , 18 ,  0 , 19 , 20
+        e  , 21 , 22 , 23 , 24 , 0  , 25
+        f  , 26 , 27 , 28 , 29 , 30 , 0
+        """
+        self.expected_labels = {
+            0 : "a",
+            1 : "b",
+            2 : "c",
+            3 : "d",
+            4 : "e",
+            5 : "f",
+        }
+        self.expected_distances = {
+            frozenset([0,1]): 1,
+            frozenset([0,2]): 2,
+            frozenset([0,3]): 3,
+            frozenset([0,4]): 4,
+            frozenset([0,5]): 5,
+            frozenset([1,2]): 7,
+            frozenset([1,3]): 8,
+            frozenset([1,4]): 9,
+            frozenset([1,5]): 10,
+            frozenset([2,2]): 0,
+            frozenset([2,3]): 13,
+            frozenset([2,4]): 14,
+            frozenset([2,5]): 15,
+            frozenset([3,4]): 19,
+            frozenset([3,5]): 20,
+            frozenset([4,5]): 25,
+        }
+
+    def get_csv_reader(self, s):
+        csv_reader = csv.reader(StringIO(s), delimiter=",")
+        return csv_reader
+
+    def check_pdm(self, pdm, is_check_labels=True):
+        self.assertEqual(len(pdm.taxon_namespace), 6)
+        for i1 in range(6):
+            t1 = pdm.taxon_namespace[i1]
+            if is_check_labels:
+                self.assertEqual(t1.label, self.expected_labels[i1])
+            for i2 in range(6):
+                t2 = pdm.taxon_namespace[i2]
+                if is_check_labels:
+                    self.assertEqual(t2.label, self.expected_labels[i2])
+                if i1 == i2:
+                    self.assertIs(t1, t2)
+                    self.assertEqual(pdm.patristic_distance(t1, t2), 0)
+                else:
+                    self.assertEqual(pdm.patristic_distance(t1, t2), self.expected_distances[frozenset([i1, i2])])
+
+    def test_read_new_taxon_namespace_with_no_row_and_no_column_names(self):
+        csv_reader = self.get_csv_reader(self.s00)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                is_first_row_column_names=False,
+                is_first_column_row_names=False,
+                is_allow_new_taxa=True)
+        self.check_pdm(pdm, is_check_labels=False)
 
 if __name__ == "__main__":
     unittest.main()

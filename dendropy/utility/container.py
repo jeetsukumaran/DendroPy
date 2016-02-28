@@ -686,6 +686,7 @@ class DataTable(object):
             csv_reader,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
+            is_trim_space=True,
             default_data_type=None,
             column_data_types=None,
             ):
@@ -702,6 +703,9 @@ class DataTable(object):
         is_first_column_row_names : bool
             If True, then the first column is interpreted as row names;
             otherwise, treated as data column.
+        is_trim_space : bool
+            If True, then will strip space from both sides of all tokens before
+            processing. Note that only spaces will be trimmed, not tabs.
         default_data_type : type or function object
             Any callable that, when passed a value, returns the coerced-to-type
             equivalent for the data.
@@ -732,8 +736,12 @@ class DataTable(object):
             if ncols is None:
                 ncols = len(row)
             else:
-                assert ncols == len(row)
+                if len(row) == 1 and row[0].strip() == "" and is_trim_space: # blank row
+                    continue
+                assert ncols == len(row), "{} != {}".format(ncols, len(row))
             for cell_idx, cell in enumerate(row):
+                if is_trim_space:
+                    cell = cell.strip(" ")
                 if row_idx == 0 and is_first_row_column_names:
                     if cell_idx == 0:
                         continue
@@ -743,6 +751,10 @@ class DataTable(object):
                 elif cell_idx == 0 and is_first_column_row_names:
                     data_table.add_row(cell)
                 else:
+                    if row_idx == 0 and not is_first_row_column_names:
+                        data_table.add_row()
+                    if row_idx == 0 and not is_first_column_row_names:
+                        data_table.add_column(data_type=column_data_types.get(cell, default_data_type))
                     effective_row_idx = row_idx - first_data_row_offset
                     assert effective_row_idx < len(data_table._row_names), "{}: {}".format(effective_row_idx, data_table._row_names)
                     effective_column_idx = cell_idx - first_data_column_offset
@@ -852,14 +864,14 @@ class DataTable(object):
 
     def _validate_new_column_name(self, column_name=None):
         if column_name is None:
-            column_name = "V{}".format(len(self._columns))
+            column_name = "V{}".format(len(self._column_names))
         else:
             column_name = str(column_name)
         return column_name
 
     def _validate_new_row_name(self, row_name=None):
         if row_name is None:
-            row_name = "V{}".format(len(self._rows))
+            row_name = "V{}".format(len(self._row_names))
         else:
             row_name = str(row_name)
         return row_name

@@ -27,6 +27,7 @@ from dendropy.calculate import statistics
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
 from dendropy.utility import error
+import dendropy
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
@@ -41,10 +42,48 @@ class PhylogeneticDistanceMatrix(object):
 
     @classmethod
     def from_tree(cls, tree, is_bipartitions_updated=False):
-        pdc = cls()
-        pdc.compile(tree=tree,
+        pdm = cls()
+        pdm.compile_from_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
-        return pdc
+        return pdm
+
+    @classmethod
+    def from_csv_reader(cls,
+            csv_reader,
+            taxon_namespace=None,
+            is_first_row_column_names=True,
+            is_first_column_row_names=True,
+            default_data_type=float,
+            is_allow_new_taxa=None,
+            ):
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
+        old_taxon_namespace_mutability = taxon_namespace.is_mutable
+        taxon_namespace.is_mutable = is_allow_new_taxa
+        data_table = container.DataTable.get_from_csv_reader(
+                csv_reader,
+                is_first_row_column_names=is_first_row_column_names,
+                is_first_column_row_names=is_first_column_row_names,
+                default_data_type=default_data_type,
+                )
+        if not is_first_row_column_names and not is_first_column_row_names:
+            distances = {}
+            seen_row_labels = set()
+            for t1_label in data_table.iter_row_names():
+                seen_row_labels.add(t1_label)
+                t1 = taxon_namespace.require_taxon(label=t1_label)
+                distances[t1] = {}
+                for t2_label in data_table.iter_column_names():
+                    if t2_label in seen_row_labels:
+                        continue
+                    t2 = taxon_namespace.require_taxon(label=t2_label)
+                    distances[t1][t2] = data_table[t1_label, t2_label]
+        taxon_namespace.is_mutable = old_taxon_namespace_mutability
+        pdm = cls()
+        pdm.compile_from_dict(
+                distances=distances,
+                taxon_namespace=taxon_namespace)
+        return pdm
 
     def __init__(self):
         self.clear()
@@ -59,7 +98,7 @@ class PhylogeneticDistanceMatrix(object):
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
 
-    def compile(self, tree, is_bipartitions_updated=False):
+    def compile_from_tree(self, tree, is_bipartitions_updated=False):
         """
         Calculates the distances. Note that the path length (in number of
         steps) between taxa that span the root will be off by one if
@@ -110,6 +149,16 @@ class PhylogeneticDistanceMatrix(object):
                     del(c1.desc_paths)
         self._mirror_lookups()
         # assert self._tree_length == tree.length()
+
+    def compile_from_dict(self, distances, taxon_namespace):
+        self.clear()
+        self.taxon_namespace = taxon_namespace
+        for t1 in distances:
+            self._mapped_taxa.add(t1)
+            self._taxon_phylogenetic_distances[t1] = {}
+            for t2 in distances[t1]:
+                self._taxon_phylogenetic_distances[t1][t2] = distances[t1][t2]
+        self._mirror_lookups()
 
     def _mirror_lookups(self):
         for ddata in (
@@ -842,7 +891,7 @@ class PatrisiticDistanceMatrix(PhylogeneticDistanceMatrix):
 
     def __init__(self, tree):
         PhylogeneticDistanceMatrix.__init__(self)
-        self.compile(tree=tree)
+        self.compile_from_tree(tree=tree)
 
 def patristic_distance(tree, taxon1, taxon2, is_bipartitions_updated=False):
     """
