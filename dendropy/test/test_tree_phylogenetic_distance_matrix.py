@@ -585,6 +585,14 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
                 is_allow_new_taxa=True)
         self.check_pdm(pdm, is_check_labels=False)
 
+    def test_read_new_taxon_namespace_with_row_and_column_names(self):
+        csv_reader = self.get_csv_reader(self.s11)
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                is_first_row_column_names=True,
+                is_first_column_row_names=True,
+                is_allow_new_taxa=True)
+        self.check_pdm(pdm, is_check_labels=False)
+
 if __name__ == "__main__":
     unittest.main()
 
