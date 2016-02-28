@@ -678,6 +678,42 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         self.assertIs(taxon_namespace, pdm.taxon_namespace)
         self.check_pdm(pdm, is_check_labels=True)
 
+class PdmNeighborJoiningTree(unittest.TestCase):
+
+    def test_njtree(self):
+        #  z = matrix( c(0,5,9,9,8, 5,0,10,10,9, 9,10,0,8,7, 9,10,8,0,3, 8,9,7,3,0), byrow=T, nrow=5)
+        # rownames(z)  <- c("a", "b", "c", "d", "e")
+        # colnames(z)  <- c("a", "b", "c", "d", "e")
+        # t = nj(z)
+        # write.tree(t)
+        # "(e:1,d:2,((a:2,b:3):3,c:4):2);"
+        data_str = """\
+          , a , b  , c  , d  , e
+        a , 0 , 5  , 9  , 9  , 8
+        b , 5 , 0  , 10 , 10 , 9
+        c , 9 , 10 , 0  , 8  , 7
+        d , 9 , 10 , 8  , 0  , 3
+        e , 8 , 9  , 7  , 3  , 0
+        """
+        csv_reader = csv.reader(StringIO(data_str), delimiter=",")
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                is_first_row_column_names=True,
+                is_first_column_row_names=True,
+                is_allow_new_taxa=True)
+        obs_tree = pdm.neighbor_joining_tree()
+        expected_tree = dendropy.Tree.get(
+                data="(e:1,d:2,((a:2,b:3):3,c:4):2);",
+                schema="newick",
+                rooting="force-unrooted",
+                taxon_namespace=pdm.taxon_namespace)
+        bipartitions1 = obs_tree.encode_bipartitions()
+        bipartitions2 = expected_tree.encode_bipartitions()
+        self.assertEqual(len(bipartitions1), len(bipartitions2))
+        self.assertEqual(set(bipartitions1), set(bipartitions2))
+        for b1 in expected_tree.bipartition_edge_map:
+            self.assertIn(b1, obs_tree.bipartition_edge_map)
+            self.assertAlmostEqual(expected_tree.bipartition_edge_map[b1].length,
+                    obs_tree.bipartition_edge_map[b1].length)
 
 if __name__ == "__main__":
     unittest.main()
