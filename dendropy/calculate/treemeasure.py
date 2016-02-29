@@ -948,8 +948,6 @@ class PhylogeneticDistanceMatrix(object):
                 new_node.add_child(node_to_join)
                 new_node._upgma_cluster.update(node_to_join._upgma_cluster)
                 node_to_join.edge.length = elen - node_to_join._upgma_distance_from_tip
-                # del node_to_join._upgma_cluster
-                # del node_to_join._upgma_distance_from_tip
                 node_pool.remove(node_to_join)
             new_node._upgma_distance_from_tip = nodes_to_join[0].edge.length + nodes_to_join[0]._upgma_distance_from_tip
 
@@ -968,6 +966,7 @@ class PhylogeneticDistanceMatrix(object):
             for idx1, nd1 in enumerate(node_pool):
                 d1 = 0.0
                 count = 0.0
+                # assert nodes_to_join[0] is not nodes_to_join[1]
                 for node_to_join in nodes_to_join:
                     try:
                         d2 = working_dmatrix[node_to_join][nd1]
@@ -986,9 +985,13 @@ class PhylogeneticDistanceMatrix(object):
                 #     "+".join(x.taxon.label for x in new_node._upgma_cluster),
                 #     "+".join(x.taxon.label for x in nd1._upgma_cluster),
                 #     d))
+            for node_to_join in nodes_to_join:
+                del node_to_join._upgma_cluster
+                del node_to_join._upgma_distance_from_tip
             node_pool.append(new_node)
         tree.seed_node = node_pool[0]
         del tree.seed_node._upgma_cluster
+        del tree.seed_node._upgma_distance_from_tip
         # print(tree.as_string("newick"))
         return tree
 
