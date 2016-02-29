@@ -70,9 +70,9 @@ def least_significant_set_bit(n):
     return m ^ n
 
 def indexes_of_set_bits(s, fill_bitmask=-1, one_based=False, ordination_in_mask=False):
-    return [i for i in iter_set_bit_indexes(s, fill_bitmask, one_based, ordination_in_mask)]
+    return [i for i in set_bit_index_iter(s, fill_bitmask, one_based, ordination_in_mask)]
 
-def iter_set_bit_indexes(s, fill_bitmask=-1, one_based=False, ordination_in_mask=False):
+def set_bit_index_iter(s, fill_bitmask=-1, one_based=False, ordination_in_mask=False):
     """
     Returns the index of each bit that is on in ``s`` and the ``fill_bitmask``
 

@@ -817,15 +817,15 @@ class DataTable(object):
             value = self._column_data_types[column_name](value)
         self._data[row_name][column_name] = value
 
-    def iter_row_names(self):
+    def row_name_iter(self):
         for row_name in self._row_names:
             yield row_name
 
-    def iter_column_names(self):
+    def column_name_iter(self):
         for column_name in self._column_names:
             yield column_name
 
-    def iter_row_values(self, column_name):
+    def row_value_iter(self, column_name):
         column_name = self._dereference_key(
                 key=column_name,
                 name_list=self._column_names,
@@ -833,7 +833,7 @@ class DataTable(object):
         for row_name in self._row_names:
             yield self[row_name, column_name]
 
-    def iter_column_values(self, row_name):
+    def column_value_iter(self, row_name):
         row_name = self._dereference_key(
                 key=row_name,
                 name_list=self._row_names,

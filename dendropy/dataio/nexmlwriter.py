@@ -333,7 +333,7 @@ class NexmlWriter(ioservice.DataWriter):
                         print_count += 1
                 dest.write("\n{}</seq>\n".format(self.indent * (indent_level+3)))
             else:
-                for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
+                for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.cell_iter()):
                     parts = []
                     parts.append('%s<cell' % (self.indent*(indent_level+3)))
                     parts.append('char="%s"' % cell_char_type_id_map[ (taxon, col_idx) ])
@@ -588,7 +588,7 @@ class NexmlWriter(ioservice.DataWriter):
         char_type_ids_written = set()
         for taxon in char_matrix:
             char_vector = char_matrix[taxon]
-            for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.iter_cells()):
+            for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector.cell_iter()):
                 if cell_char_type is None:
                     if char_matrix.data_type == "continuous":
                         char_type_id, char_type_xml = self._compose_char_type_xml_for_continuous_type(indent_level=indent_level+1)

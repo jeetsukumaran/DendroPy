@@ -71,7 +71,7 @@ class PhylogeneticDistanceMatrix(object):
             distances = {}
             seen_row_labels = set()
             seen_row_taxa_labels = set()
-            for i1, t1_label in enumerate(data_table.iter_row_names()):
+            for i1, t1_label in enumerate(data_table.row_name_iter()):
                 if len(taxon_namespace) <= i1:
                     t1 = taxon_namespace.require_taxon(label=t1_label)
                 else:
@@ -80,7 +80,7 @@ class PhylogeneticDistanceMatrix(object):
                 assert t1.label not in seen_row_taxa_labels
                 seen_row_taxa_labels.add(t1.label)
                 distances[t1] = {}
-                for i2, t2_label in enumerate(data_table.iter_column_names()):
+                for i2, t2_label in enumerate(data_table.column_name_iter()):
                     if t2_label in seen_row_labels:
                         continue
                     if len(taxon_namespace) <= i2:
@@ -93,9 +93,9 @@ class PhylogeneticDistanceMatrix(object):
             seen_taxa = set()
             taxa = []
             if is_first_column_row_names:
-                name_iter = data_table.iter_row_names()
+                name_iter = data_table.row_name_iter()
             else:
-                name_iter = data_table.iter_column_names()
+                name_iter = data_table.column_name_iter()
             for label in name_iter:
                 t1 = taxon_namespace.require_taxon(label=label)
                 assert t1 not in seen_taxa
@@ -331,7 +331,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         return sum(self.distances(is_weighted_edge_distances=is_weighted_edge_distances,is_normalize_by_tree_size=is_normalize_by_tree_size))
 
-    def iter_taxa(self, filter_fn=None):
+    def taxon_iter(self, filter_fn=None):
         """
         Iterates over taxa in matrix. Note that this could be a subset of the taxa in
         the associated taxon namespace.
@@ -340,7 +340,7 @@ class PhylogeneticDistanceMatrix(object):
             if not filter_fn or filter_fn(t1):
                 yield t1
 
-    def iter_distinct_taxon_pairs(self, filter_fn=None):
+    def distinct_taxon_pair_iter(self, filter_fn=None):
         """
         Iterates over all distinct pairs of taxa in matrix.
         """
@@ -420,7 +420,7 @@ class PhylogeneticDistanceMatrix(object):
 
 
         """
-        comparison_regime = self.iter_distinct_taxon_pairs(filter_fn=filter_fn)
+        comparison_regime = self.distinct_taxon_pair_iter(filter_fn=filter_fn)
         return self._calculate_mean_pairwise_distance(
                 comparison_regime=comparison_regime,
                 is_weighted_edge_distances=is_weighted_edge_distances,
@@ -582,7 +582,7 @@ class PhylogeneticDistanceMatrix(object):
         comparison_regimes = []
         for assemblage_membership in assemblage_memberships:
             filter_fn = lambda taxon: taxon in assemblage_membership
-            comparison_regime = list(self.iter_distinct_taxon_pairs(filter_fn=filter_fn))
+            comparison_regime = list(self.distinct_taxon_pair_iter(filter_fn=filter_fn))
             comparison_regimes.append(comparison_regime)
         results = self._calculate_standardized_effect_size(
                 statisticf_name="_calculate_mean_pairwise_distance",
@@ -957,13 +957,13 @@ class PhylogeneticDistanceMatrix(object):
         else:
             reader = csv.reader(src, delimiter=delimiter)
             data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=default_data_type)
-        mapped_taxon_labels = set([taxon.label for taxon in self.iter_taxa()])
-        for column_name in data_table.iter_column_names():
+        mapped_taxon_labels = set([taxon.label for taxon in self.taxon_iter()])
+        for column_name in data_table.column_name_iter():
             assert column_name in mapped_taxon_labels
         assemblage_memberships = []
-        for row_name in data_table.iter_row_names():
+        for row_name in data_table.row_name_iter():
             assemblage_membership = set()
-            for taxon in self.iter_taxa():
+            for taxon in self.taxon_iter():
                 if data_table[row_name, taxon.label] > 0:
                     assemblage_membership.add(taxon)
             assemblage_memberships.append(assemblage_membership)

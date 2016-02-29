@@ -80,14 +80,14 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             self.assertEqual(n1, len(self.tree.taxon_namespace))
             for taxon1 in self.tree.taxon_namespace:
                 self.assertIn(taxon1, self.pdm._mapped_taxa)
-            for taxon in self.pdm.iter_taxa():
+            for taxon in self.pdm.taxon_iter():
                 self.assertIn(taxon1, self.pdm._mapped_taxa)
                 self.assertIn(taxon1, self.tree.taxon_namespace)
 
         def test_all_distinct_mapped_taxa_pairs(self):
             n1 = len(self.tree.taxon_namespace)
             taxon_pair_iter1 = iter(self.pdm._all_distinct_mapped_taxa_pairs)
-            taxon_pair_iter2 = self.pdm.iter_distinct_taxon_pairs()
+            taxon_pair_iter2 = self.pdm.distinct_taxon_pair_iter()
             for tpi in (taxon_pair_iter1, taxon_pair_iter2):
                 seen_pairs = set()
                 visited_taxa = set()
@@ -174,7 +174,7 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             # this test relies on populating the expected result list
             # in the *same order* as the function it is testing
             exp_list = []
-            for taxon1, taxon2 in self.pdm.iter_distinct_taxon_pairs():
+            for taxon1, taxon2 in self.pdm.distinct_taxon_pair_iter():
                 exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label]
                 exp_list.append(exp)
             obs = self.pdm.distances(
@@ -194,7 +194,7 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             # in the *same order* as the function it is testing
             tree_length = self.tree.length()
             exp_list = []
-            for taxon1, taxon2 in self.pdm.iter_distinct_taxon_pairs():
+            for taxon1, taxon2 in self.pdm.distinct_taxon_pair_iter():
                 exp = self.reference_pdm_weighted_table[taxon1.label, taxon2.label] / tree_length
                 exp_list.append(exp)
             obs = self.pdm.distances(
@@ -213,7 +213,7 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             # this test relies on populating the expected result list
             # in the *same order* as the function it is testing
             exp_list = []
-            for taxon1, taxon2 in self.pdm.iter_distinct_taxon_pairs():
+            for taxon1, taxon2 in self.pdm.distinct_taxon_pair_iter():
                 exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label]
                 exp_list.append(exp)
             obs = self.pdm.distances(
@@ -234,7 +234,7 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             num_edges_on_tree = combinatorics.num_edges_on_tree(
                     num_leaves=len(self.tree.taxon_namespace), is_rooted=True)
             exp_list = []
-            for taxon1, taxon2 in self.pdm.iter_distinct_taxon_pairs():
+            for taxon1, taxon2 in self.pdm.distinct_taxon_pair_iter():
                 exp = self.reference_pdm_unweighted_table[taxon1.label, taxon2.label] / num_edges_on_tree
                 exp_list.append(exp)
             obs = self.pdm.distances(
@@ -398,7 +398,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 "C4": 1.939592309320466778644,
                 "C5": 0.1934132401466666650869,
         }
-        for row_name in self.data_table.iter_row_names():
+        for row_name in self.data_table.row_name_iter():
             filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
             d = self.pdm.mean_pairwise_distance(filter_fn=filter_fn)
             self.assertAlmostEqual(d, expected_results[row_name])
@@ -417,7 +417,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 "C4": 0.1180230301583333335502,
                 "C5": 0.1426761318733333339104,
         }
-        for row_name in self.data_table.iter_row_names():
+        for row_name in self.data_table.row_name_iter():
             filter_fn = lambda taxon: self.data_table[row_name, taxon.label] > 0
             d = self.pdm.mean_nearest_taxon_distance(filter_fn=filter_fn)
             self.assertAlmostEqual(d, expected_results[row_name])
@@ -433,8 +433,8 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mpd.csv")) as src:
             reader = csv.reader(src, delimiter=",")
             expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
-        # for row_name in expected_results_data_table.iter_row_names():
-        #     for column_name in expected_results_data_table.iter_column_names():
+        # for row_name in expected_results_data_table.row_name_iter():
+        #     for column_name in expected_results_data_table.column_name_iter():
         #         v = expected_results_data_table[row_name, column_name]
         #         print("{}, {}: {} ({})".format(row_name, column_name, v, type(v)))
         obs_results = self.pdm.standardized_effect_size_mean_pairwise_distance(
@@ -444,7 +444,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 is_normalize_by_tree_size=False,
                 )
         self.assertEqual(len(obs_results), expected_results_data_table.num_rows())
-        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.iter_row_names()):
+        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.row_name_iter()):
             self.assertTrue(self._low_precision_equality(
                     obs_result.obs,
                     expected_results_data_table[expected_result_row_name, "mpd.obs"],
@@ -477,8 +477,8 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mntd.csv")) as src:
             reader = csv.reader(src, delimiter=",")
             expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
-        # for row_name in expected_results_data_table.iter_row_names():
-        #     for column_name in expected_results_data_table.iter_column_names():
+        # for row_name in expected_results_data_table.row_name_iter():
+        #     for column_name in expected_results_data_table.column_name_iter():
         #         v = expected_results_data_table[row_name, column_name]
         #         print("{}, {}: {} ({})".format(row_name, column_name, v, type(v)))
         obs_results = self.pdm.standardized_effect_size_mean_nearest_taxon_distance(
@@ -488,7 +488,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 is_normalize_by_tree_size=False,
                 )
         self.assertEqual(len(obs_results), expected_results_data_table.num_rows())
-        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.iter_row_names()):
+        for obs_result, expected_result_row_name in zip(obs_results, expected_results_data_table.row_name_iter()):
             self.assertTrue(self._low_precision_equality(
                     obs_result.obs,
                     expected_results_data_table[expected_result_row_name, "mntd.obs"],

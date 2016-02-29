@@ -124,7 +124,7 @@ class CharacterDataSequence(
     ``character_value`` argument, thus allowing for setting of the value,
     character type, and annotation set simultaneously. While iteration over
     character values are available through the standard list iteration
-    interface, the method ``CharacterDataSequence.iter_cells()`` provides for
+    interface, the method ``CharacterDataSequence.cell_iter()`` provides for
     iterating over ``<character-value, character-type,
     character-annotation-set>`` triplets.
 
@@ -255,7 +255,7 @@ class CharacterDataSequence(
 
     next = __next__ # Python 2 legacy support
 
-    def iter_cells(self):
+    def cell_iter(self):
         """
         Iterate over triplets of character values and associated
         |CharacterType| and |AnnotationSet| instances.
