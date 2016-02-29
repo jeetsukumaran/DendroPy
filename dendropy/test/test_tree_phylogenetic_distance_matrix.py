@@ -680,17 +680,24 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
 
 class PdmNeighborJoiningTree(unittest.TestCase):
 
-    def test_njtree(self):
+    def test_njtree_from_distance_matrices(self):
 
-        ## Wikipedia example:
         # z = matrix( c(0,5,9,9,8, 5,0,10,10,9, 9,10,0,8,7, 9,10,8,0,3, 8,9,7,3,0), byrow=T, nrow=5)
         # rownames(z)  <- c("a", "b", "c", "d", "e")
         # colnames(z)  <- c("a", "b", "c", "d", "e")
         # t = nj(z)
         # write.tree(t)
+        # ---
+        # p1 = read.csv("pythonidae.mle.unweighted.pdm.csv", header=T, row.names=1)
+        # m1 = as.matrix(p1)
+        # nj(m1)
+        # t = nj(m1)
+        # write.tree(t)
         test_runs = [
                 ("wpnjex.csv", "(e:1,d:2,((a:2,b:3):3,c:4):2);"),
                 ("saitou_and_nei_1987_table1.csv", "(h:6,g:2,((((a:5,b:2):2,c:1):1,d:3):2,(e:1,f:4):2):1);"),
+                ("pythonidae.mle.unweighted.pdm.csv", "(Morelia_spilota:1,Morelia_bredli:1,((((((Morelia_kinghorni:1,Morelia_nauta:1):1,Morelia_clastolepis:1):1,Morelia_amethistina:1):1,Morelia_tracyae:1):1,Morelia_oenpelliensis:1):1,(((((Liasis_albertisii:1,Bothrochilus_boa:1):1,((Antaresia_melanocephalus:1,Antaresia_ramsayi:1):1,((Liasis_fuscus:1,Liasis_mackloti:1):1,(Apodora_papuana:1,Liasis_olivaceus:1):1):1):1):1,Morelia_boeleni:1):1,((Python_timoriensis:1,Python_reticulatus:1):1,((((Python_sebae:1,Python_molurus:1):1,Python_curtus:1):1,Python_regius:1):1,((Xenopeltis_unicolor:1,Candoia_aspera:1):1,Loxocemus_bicolor:1):1):1):1):1,((((Antaresia_stimsoni:1,Antaresia_childreni:1):1,Antaresia_perthensis:1):1,Antaresia_maculosa:1):1,((Morelia_viridisN:1,Morelia_viridisS:1):1,Morelia_carinata:1):1):1):1):1);"),
+                ("pythonidae.mle.weighted.pdm.csv", "((Liasis_albertisii:0.0542142498,Bothrochilus_boa:0.0638595214):0.038444,(((Apodora_papuana:0.0670782319,Liasis_olivaceus:0.0430801028):0.010168,(Liasis_fuscus:0.0194903208,Liasis_mackloti:0.0141916418):0.048505):0.013422,(Antaresia_melanocephalus:0.0380695554,Antaresia_ramsayi:0.0325474267):0.043626):0.007734,(((((((Antaresia_stimsoni:0.0152390165,Antaresia_childreni:0.023141749):0.032397,Antaresia_perthensis:0.0760812159):0.012848,Antaresia_maculosa:0.0679212061):0.011617,((Morelia_viridisN:0.0377499268,Morelia_viridisS:0.0473589755):0.027329,Morelia_carinata:0.0660356718):0.013482):0.015469,((((((Morelia_kinghorni:0.0075825724,Morelia_nauta:0.0086155842):0.004182,Morelia_clastolepis:0.0045446653):0.018597,Morelia_amethistina:0.0227641045):0.007181,Morelia_tracyae:0.0377936102):0.024796,Morelia_oenpelliensis:0.0579745143):0.004283,(Morelia_bredli:0.0274921037,Morelia_spilota:0.0241663426):0.026356):0.031732):0.006602,(((((Python_sebae:0.0629755585,Python_molurus:0.0335903967):0.02165,Python_curtus:0.1067094932):0.016163,Python_regius:0.1058922755):0.032743,((Xenopeltis_unicolor:0.1983677797,Candoia_aspera:0.4092923305):0.048508,Loxocemus_bicolor:0.2627888765):0.060789):0.030952,(Python_timoriensis:0.074479767,Python_reticulatus:0.0562613055):0.06004):0.027099):0.002859,Morelia_boeleni:0.0843874314):0.002713);"),
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
@@ -707,7 +714,8 @@ class PdmNeighborJoiningTree(unittest.TestCase):
                     data=expected_tree_str,
                     schema="newick",
                     rooting="force-unrooted",
-                    taxon_namespace=pdm.taxon_namespace)
+                    taxon_namespace=pdm.taxon_namespace,
+                    preserve_underscores=True)
             bipartitions1 = obs_tree.encode_bipartitions()
             bipartitions2 = expected_tree.encode_bipartitions()
             self.assertEqual(len(bipartitions1), len(bipartitions2))
