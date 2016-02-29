@@ -682,6 +682,9 @@ class PdmNeighborJoiningTree(unittest.TestCase):
 
     def test_njtree(self):
 
+        test_runs = []
+
+        ## Wikipedia example
         # z = matrix( c(0,5,9,9,8, 5,0,10,10,9, 9,10,0,8,7, 9,10,8,0,3, 8,9,7,3,0), byrow=T, nrow=5)
         # rownames(z)  <- c("a", "b", "c", "d", "e")
         # colnames(z)  <- c("a", "b", "c", "d", "e")
@@ -696,40 +699,45 @@ class PdmNeighborJoiningTree(unittest.TestCase):
         e , 8 , 9  , 7  , 3  , 0
         """
         tree_str = "(e:1,d:2,((a:2,b:3):3,c:4):2);"
+        test_runs.append( (data_str, tree_str) )
 
-        # data_str = """\
-        #    , a  , b  , c  , d  , e  , f  , g  , h
-        # a  , 0  , 7  , 8  , 13 , 17 , 13 , 10 , 12
-        # b  , 7  , 0  , 11 , 16 , 5  , 10 , 7  , 5
-        # c  , 8  , 5  , 0  , 13 , 8  , 14 , 11 , 6
-        # d  , 11 , 8  , 5  , 0  , 10 , 5  , 8  , 10
-        # e  , 13 , 10 , 7  , 8  , 0  , 7  , 11 , 9
-        # f  , 16 , 13 , 10 , 11 , 5  , 0  , 8  , 13
-        # g  , 13 , 10 , 7  , 8  , 6  , 9  , 0  , 8
-        # h  , 17 , 14 , 11 , 12 , 10 , 13 , 8  , 0
-        # """
-        # tree_str = "(h:6,g:2,((((a:5,b:2):2,c:1):1,d:3):2,(e:1,f:4):2):1);"
+        ## Saitou, N. and Nei, M. (1987);  Table 1
+        data_str = """\
+              , a  , b  , c  , d  , e  , f  , g  , h
+            a , 0  , 7  , 8  , 11 , 13 , 16 , 13 , 17
+            b , 7  , 0  , 5  , 8  , 10 , 13 , 10 , 14
+            c , 8  , 5  , 0  , 5  , 7  , 10 , 7  , 11
+            d , 11 , 8  , 5  , 0  , 8  , 11 , 8  , 12
+            e , 13 , 10 , 7  , 8  , 0  , 5  , 6  , 10
+            f , 16 , 13 , 10 , 11 , 5  , 0  , 9  , 13
+            g , 13 , 10 , 7  , 8  , 6  , 9  , 0  , 8
+            h , 17 , 14 , 11 , 12 , 10 , 13 , 8  , 0
+        """
+        tree_str = "(h:6,g:2,((((a:5,b:2):2,c:1):1,d:3):2,(e:1,f:4):2):1);"
+        test_runs.append( (data_str, tree_str) )
 
-        csv_reader = csv.reader(StringIO(data_str), delimiter=",")
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
-                is_first_row_column_names=True,
-                is_first_column_row_names=True,
-                is_allow_new_taxa=True)
-        obs_tree = pdm.neighbor_joining_tree()
-        # print(obs_tree.as_string("newick"))
-        expected_tree = dendropy.Tree.get(
-                data=tree_str,
-                schema="newick",
-                rooting="force-unrooted",
-                taxon_namespace=pdm.taxon_namespace)
-        bipartitions1 = obs_tree.encode_bipartitions()
-        bipartitions2 = expected_tree.encode_bipartitions()
-        self.assertEqual(len(bipartitions1), len(bipartitions2))
-        self.assertEqual(set(bipartitions1), set(bipartitions2))
-        for b1 in expected_tree.bipartition_edge_map:
-            self.assertIn(b1, obs_tree.bipartition_edge_map)
-            self.assertAlmostEqual(expected_tree.bipartition_edge_map[b1].length,
-                    obs_tree.bipartition_edge_map[b1].length)
+        for data_str, tree_str in test_runs:
+            csv_reader = csv.reader(StringIO(data_str), delimiter=",")
+            pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+                    is_first_row_column_names=True,
+                    is_first_column_row_names=True,
+                    is_allow_new_taxa=True)
+            obs_tree = pdm.neighbor_joining_tree()
+            # print(obs_tree.as_string("newick"))
+            # print(obs_tree.as_ascii_plot(plot_metric="length"))
+            expected_tree = dendropy.Tree.get(
+                    data=tree_str,
+                    schema="newick",
+                    rooting="force-unrooted",
+                    taxon_namespace=pdm.taxon_namespace)
+            bipartitions1 = obs_tree.encode_bipartitions()
+            bipartitions2 = expected_tree.encode_bipartitions()
+            self.assertEqual(len(bipartitions1), len(bipartitions2))
+            self.assertEqual(set(bipartitions1), set(bipartitions2))
+            for b1 in expected_tree.bipartition_edge_map:
+                self.assertIn(b1, obs_tree.bipartition_edge_map)
+                self.assertAlmostEqual(expected_tree.bipartition_edge_map[b1].length,
+                        obs_tree.bipartition_edge_map[b1].length)
 
 if __name__ == "__main__":
     unittest.main()
