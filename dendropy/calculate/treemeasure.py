@@ -745,6 +745,75 @@ class PhylogeneticDistanceMatrix(object):
         """
         Returns an NJ tree for the distances.
         """
+
+        # def _dump_d(dmatrix, node_pool):
+        #     import sys
+        #     out = sys.stdout
+        #     out.write("## Distance Matrix ##\n")
+        #     for n in node_pool:
+        #         if n.taxon is not None:
+        #             n.label = n.taxon.label
+        #         else:
+        #             n.label = "{}+{}".format(n._child_nodes[0].label, n._child_nodes[1].label)
+        #     nodes = list(node_pool)
+        #     nodes.sort(key=lambda x: x.label)
+        #     out.write("{:>10}".format(" "))
+        #     for nd in nodes:
+        #         out.write("{:>10} ".format(nd.label))
+        #     out.write("\n")
+        #     for nd1 in nodes:
+        #         out.write("{:>10} ".format(nd1.label))
+        #         for nd2 in nodes:
+        #             try:
+        #                 out.write("{:>10} ".format(dmatrix[nd1][nd2]))
+        #             except KeyError:
+        #                 try:
+        #                     out.write("{:>10} ".format(dmatrix[nd2][nd1]))
+        #                 except KeyError:
+        #                     out.write("{:>10} ".format("NA"))
+        #         out.write("\n")
+
+        # def _dump_q(qmatrix):
+        #     import sys
+        #     out = sys.stdout
+        #     out.write("## Q Matrix ##\n")
+        #     nodes = set()
+        #     qm = {}
+        #     for x1, x2 in qmatrix:
+        #         n1 = x2[0]
+        #         n2 = x2[1]
+        #         nodes.add(n1)
+        #         nodes.add(n2)
+        #         for n in (n1, n2):
+        #             if n.taxon is not None:
+        #                 n.label = n.taxon.label
+        #             else:
+        #                 n.label = "{}+{}".format(n._child_nodes[0].label, n._child_nodes[1].label)
+        #         if n1 not in qm:
+        #             qm[n1] = {n1: 0.0}
+        #         if n2 not in qm:
+        #             qm[n2] = {n2: 0.0}
+        #         qm[n1][n2] = x1
+        #         qm[n2][n1] = x1
+        #     print("<<<")
+        #     nodes = list(nodes)
+        #     nodes.sort(key=lambda x: x.label)
+        #     out.write("{:>10}".format(" "))
+        #     for nd in nodes:
+        #         out.write("{:>10} ".format(nd.label))
+        #     out.write("\n")
+        #     for nd1 in nodes:
+        #         out.write("{:>10} ".format(nd1.label))
+        #         for nd2 in nodes:
+        #             try:
+        #                 out.write("{:>10} ".format(qm[nd1][nd2]))
+        #             except KeyError:
+        #                 try:
+        #                     out.write("{:>10} ".format(qm[nd2][nd1]))
+        #                 except KeyError:
+        #                     out.write("{:>10} ".format("NA"))
+        #         out.write("\n")
+
         if is_weighted_edge_distances:
             original_dmatrix = self._taxon_phylogenetic_distances
         else:
@@ -772,6 +841,7 @@ class PhylogeneticDistanceMatrix(object):
         #     for idx2, nd2 in enumerate(node_pool[idx1+1:]):
         #         working_dmatrix[nd1][nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
         while len(node_pool) > 1:
+            # _dump_d(working_dmatrix, node_pool)
             qmatrix = []
             xsub_values = {}
             for idx1, nd1 in enumerate(node_pool[:-1]):
@@ -780,36 +850,34 @@ class PhylogeneticDistanceMatrix(object):
                     xsub1 = []
                     xsub2 = []
                     for ndx in node_pool:
-                        try:
-                            xsub1.append( working_dmatrix[nd1][ndx] )
-                        except KeyError:
-                            pass
-                        try:
-                            xsub2.append( working_dmatrix[nd2][ndx] )
-                        except KeyError:
-                            pass
+                        if ndx is not nd1:
+                            try:
+                                xsub1.append( working_dmatrix[nd1][ndx] )
+                            except KeyError:
+                                xsub1.append( working_dmatrix[ndx][nd1] )
+                                pass
+                        if ndx is not nd2:
+                            try:
+                                xsub2.append( working_dmatrix[nd2][ndx] )
+                            except KeyError:
+                                xsub2.append( working_dmatrix[ndx][nd2] )
+                                pass
                     xsubv_nd1 = sum(xsub1)
                     xsubv_nd2 = sum(xsub2)
                     xsub_values[nd1] = xsubv_nd1
                     xsub_values[nd2] = xsubv_nd2
                     qvalue = v1 - xsubv_nd1 - xsubv_nd2
-                    heapq.heappush(qmatrix, ((qvalue, (nd1, nd2))) )
+                    heapq.heappush(qmatrix, (qvalue, (nd1, nd2)))
+            # _dump_q(qmatrix)
             to_join = heapq.heappop(qmatrix)
             node_to_join1 = to_join[1][0]
             node_to_join2 = to_join[1][1]
             node_pool.remove(node_to_join1)
             node_pool.remove(node_to_join2)
 
-            v1 = 0.5 * working_dmatrix[node_to_join1][node_to_join2]
-            v4  = 1.0/(2*(n-2)) * (xsub_values[node_to_join1] - xsub_values[node_to_join2])
-            delta_f = v1 + v4
-            delta_g = working_dmatrix[node_to_join1][node_to_join2] - delta_f
-
             new_node = tree.node_factory()
             new_node.add_child(node_to_join1)
-            node_to_join1.edge.length = delta_f
             new_node.add_child(node_to_join2)
-            node_to_join2.edge.length = delta_g
 
             working_dmatrix[new_node] = {}
             for node in node_pool:
@@ -826,9 +894,31 @@ class PhylogeneticDistanceMatrix(object):
                 except KeyError:
                     v3 = working_dmatrix[node_to_join2][node_to_join1]
                 dist = 0.5 * (v1 + v2 - v3)
+                # dist = 0.5 * (v1 - node_to_join1.edge.length) + 0.5 * (v2 - node_to_join2.edge.length)
                 working_dmatrix[node][new_node] = dist
                 working_dmatrix[new_node][node] = dist
             node_pool.append(new_node)
+
+            if n > 2:
+                v1 = 0.5 * working_dmatrix[node_to_join1][node_to_join2]
+                v4  = 1.0/(2*(n-2)) * (xsub_values[node_to_join1] - xsub_values[node_to_join2])
+                delta_f = v1 + v4
+                delta_g = working_dmatrix[node_to_join1][node_to_join2] - delta_f
+                node_to_join1.edge.length = delta_f
+                node_to_join2.edge.length = delta_g
+            else:
+                d = working_dmatrix[node_to_join1][node_to_join2]
+                node_to_join1.edge.length = d / 2
+                node_to_join2.edge.length = d / 2
+
+            n = len(node_pool)
+                # for nd in node_pool:
+                #     for ch_nd in nd.child_node_iter():
+                #         if ch_nd.edge.length is None:
+                #             try:
+                #                 ch_nd.edge.length = working_dmatrix[nd][ch_nd]
+                #             except KeyError:
+                #                 ch_nd.edge.length = working_dmatrix[ch_nd][nd]
 
         tree.seed_node = node_pool[0]
         return tree
