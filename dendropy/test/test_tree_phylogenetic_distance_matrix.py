@@ -678,7 +678,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         self.assertIs(taxon_namespace, pdm.taxon_namespace)
         self.check_pdm(pdm, is_check_labels=True)
 
-class PdmNeighborJoiningTree(unittest.TestCase):
+class PdmTreeChecker(object):
 
     def check_tree(self, obs_tree, expected_tree):
         bipartitions1 = obs_tree.encode_bipartitions()
@@ -687,8 +687,14 @@ class PdmNeighborJoiningTree(unittest.TestCase):
         self.assertEqual(set(bipartitions1), set(bipartitions2))
         for b1 in expected_tree.bipartition_edge_map:
             self.assertIn(b1, obs_tree.bipartition_edge_map)
-            self.assertAlmostEqual(expected_tree.bipartition_edge_map[b1].length,
-                    obs_tree.bipartition_edge_map[b1].length)
+            self.assertAlmostEqual(
+                    expected_tree.bipartition_edge_map[b1].length,
+                    obs_tree.bipartition_edge_map[b1].length,
+                    7,
+                    "{}: {} != {}".format(b1.leafset_as_newick_string(obs_tree.taxon_namespace), expected_tree.bipartition_edge_map[b1].length, obs_tree.bipartition_edge_map[b1].length,)
+                    )
+
+class PdmNeighborJoiningTree(PdmTreeChecker, unittest.TestCase):
 
     def test_njtree_from_distance_matrices(self):
 
@@ -742,6 +748,30 @@ class PdmNeighborJoiningTree(unittest.TestCase):
                 ]
         for is_weighted_edge_distances, expected_tree_str in test_runs:
             obs_tree = pdm.nj_tree(is_weighted_edge_distances=is_weighted_edge_distances)
+            expected_tree = dendropy.Tree.get(
+                    data=expected_tree_str,
+                    schema="newick",
+                    rooting="force-unrooted",
+                    taxon_namespace=pdm.taxon_namespace,
+                    preserve_underscores=True)
+            self.check_tree(obs_tree=obs_tree,
+                    expected_tree=expected_tree)
+
+class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
+
+    def test_upgma_average_from_distance_matrices(self):
+        test_runs = [
+                ("wpupgmaex.csv", "((e:11,(a:8.5,b:8.5):2.5):5.5,(c:14,d:14):2.5);"),
+                ]
+        for data_filename, expected_tree_str in test_runs:
+            with open(pathmap.other_source_path(data_filename)) as src:
+                csv_reader = csv.reader(src, delimiter=",")
+                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(
+                        csv_reader,
+                        is_first_row_column_names=True,
+                        is_first_column_row_names=True,
+                        is_allow_new_taxa=True)
+            obs_tree = pdm.upgma_tree()
             expected_tree = dendropy.Tree.get(
                     data=expected_tree_str,
                     schema="newick",
