@@ -717,7 +717,7 @@ class PdmNeighborJoiningTree(unittest.TestCase):
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,
                         is_allow_new_taxa=True)
-            obs_tree = pdm.neighbor_joining_tree()
+            obs_tree = pdm.nj_tree()
             # print(obs_tree.as_string("newick"))
             # print(obs_tree.as_ascii_plot(plot_metric="length"))
             expected_tree = dendropy.Tree.get(
@@ -741,7 +741,7 @@ class PdmNeighborJoiningTree(unittest.TestCase):
                 (True,   "((Liasis_albertisii:0.0542142498,Bothrochilus_boa:0.0638595214):0.038444,(((Apodora_papuana:0.0670782319,Liasis_olivaceus:0.0430801028):0.010168,(Liasis_fuscus:0.0194903208,Liasis_mackloti:0.0141916418):0.048505):0.013422,(Antaresia_melanocephalus:0.0380695554,Antaresia_ramsayi:0.0325474267):0.043626):0.007734,(((((((Antaresia_stimsoni:0.0152390165,Antaresia_childreni:0.023141749):0.032397,Antaresia_perthensis:0.0760812159):0.012848,Antaresia_maculosa:0.0679212061):0.011617,((Morelia_viridisN:0.0377499268,Morelia_viridisS:0.0473589755):0.027329,Morelia_carinata:0.0660356718):0.013482):0.015469,((((((Morelia_kinghorni:0.0075825724,Morelia_nauta:0.0086155842):0.004182,Morelia_clastolepis:0.0045446653):0.018597,Morelia_amethistina:0.0227641045):0.007181,Morelia_tracyae:0.0377936102):0.024796,Morelia_oenpelliensis:0.0579745143):0.004283,(Morelia_bredli:0.0274921037,Morelia_spilota:0.0241663426):0.026356):0.031732):0.006602,(((((Python_sebae:0.0629755585,Python_molurus:0.0335903967):0.02165,Python_curtus:0.1067094932):0.016163,Python_regius:0.1058922755):0.032743,((Xenopeltis_unicolor:0.1983677797,Candoia_aspera:0.4092923305):0.048508,Loxocemus_bicolor:0.2627888765):0.060789):0.030952,(Python_timoriensis:0.074479767,Python_reticulatus:0.0562613055):0.06004):0.027099):0.002859,Morelia_boeleni:0.0843874314):0.002713);"),
                 ]
         for is_weighted_edge_distances, expected_tree_str in test_runs:
-            obs_tree = pdm.neighbor_joining_tree(is_weighted_edge_distances=is_weighted_edge_distances)
+            obs_tree = pdm.nj_tree(is_weighted_edge_distances=is_weighted_edge_distances)
             expected_tree = dendropy.Tree.get(
                     data=expected_tree_str,
                     schema="newick",

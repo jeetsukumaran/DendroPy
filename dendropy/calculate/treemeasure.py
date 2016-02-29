@@ -387,6 +387,11 @@ class PhylogeneticDistanceMatrix(object):
             distances are used, respectively). Otherwise, raw distances are
             used.
 
+        Returns
+        -------
+        mpd : float
+            The Mean Pairwise Distance (MPD) statistic for the daata.
+
         Examples
         --------
 
@@ -465,6 +470,11 @@ class PhylogeneticDistanceMatrix(object):
             or steps/edges (depending on whether edge-weighted or unweighted
             distances are used, respectively). Otherwise, raw distances are
             used.
+
+        Returns
+        -------
+        mntd : float
+            The Mean Nearest Taxon Distance (MNTD) statistic for the daata.
 
         Examples
         --------
@@ -546,20 +556,6 @@ class PhylogeneticDistanceMatrix(object):
             If ``True`` then edge lengths will be considered for distances.
             Otherwise, just the number of edges.
 
-        Examples
-        --------
-
-        ::
-
-            tree = dendropy.Tree.get_from_path(
-                    src="data/community.tree.newick",
-                    schema="newick",
-                    rooting="force-rooted")
-            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
-            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_memberships)
-            print(results)
-
         Returns
         -------
         r : list of results
@@ -575,6 +571,20 @@ class PhylogeneticDistanceMatrix(object):
                 -   z         : the standardized effect value of the statistic
                                 (= SES as defined in [1] above)
                 -   p         : the p-value of the observed value of the
+
+        Examples
+        --------
+
+        ::
+
+            tree = dendropy.Tree.get_from_path(
+                    src="data/community.tree.newick",
+                    schema="newick",
+                    rooting="force-rooted")
+            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
+            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_memberships)
+            print(results)
                                 statistic under the null model.
         """
         if assemblage_memberships is None:
@@ -636,20 +646,6 @@ class PhylogeneticDistanceMatrix(object):
             If ``True`` then edge lengths will be considered for distances.
             Otherwise, just the number of edges.
 
-        Examples
-        --------
-
-        ::
-
-            tree = dendropy.Tree.get_from_path(
-                    src="data/community.tree.newick",
-                    schema="newick",
-                    rooting="force-rooted")
-            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
-            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_mean_nearest_taxon_distance(assemblage_memberships=assemblage_memberships)
-            print(results)
-
         Returns
         -------
         r : list of results
@@ -666,6 +662,20 @@ class PhylogeneticDistanceMatrix(object):
                                 (= SES as defined in [1] above)
                 -   p         : the p-value of the observed value of the
                                 statistic under the null model.
+        Examples
+        --------
+
+        ::
+
+            tree = dendropy.Tree.get_from_path(
+                    src="data/community.tree.newick",
+                    schema="newick",
+                    rooting="force-rooted")
+            pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(tree)
+            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
+            results = pdm.standardized_effect_size_mean_nearest_taxon_distance(assemblage_memberships=assemblage_memberships)
+            print(results)
+
         """
         if assemblage_memberships is None:
             assemblage_memberships = [ set(self._mapped_taxa) ]
@@ -738,81 +748,57 @@ class PhylogeneticDistanceMatrix(object):
 
         return current_to_shuffled_taxon_map
 
-    def neighbor_joining_tree(self,
+    def nj_tree(self,
             is_weighted_edge_distances=True,
             tree_factory=None,
             ):
         """
-        Returns an NJ tree for the distances.
+        Returns an Neighbor-Joining (NJ) tree based on the distances in the matrix.
+
+        Calculates and returns a tree under the Neighbor-Joining algorithm of
+        Saitou and Nei (1987) for the data in the matrix.
+
+        Parameters
+        ----------
+        is_weighted_edge_distances: bool
+            If ``True`` then edge lengths will be considered for distances.
+            Otherwise, just the number of edges.
+
+        Returns
+        -------
+        t : |Tree|
+            A |Tree| instance corresponding to the Neighbor-Joining (NJ) tree
+            for this data.
+
+        Examples
+        --------
+
+        ::
+
+            # Read data from a CSV file into a PhylogeneticDistanceMatrix
+            # object
+            with open("distance_matrix.csv") as src:
+                csv_reader = csv.reader(src, delimiter=",")
+                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(
+                        csv_reader,
+                        is_first_row_column_names=True,
+                        is_first_column_row_names=True,
+                        is_allow_new_taxa=True)
+
+            # Calculate the tree
+            nj_tree = pdm.nj_tree()
+
+            # Print it
+            print(nj_tree.as_string("nexus"))
+
+
+        References
+        ----------
+        Saitou, N. and Nei, M. (1987) The neighbor-joining method: a new method
+        for reconstructing phylogenetic trees. Molecular Biology and Evolution,
+        4: 406-425.
+
         """
-
-        # def _dump_d(dmatrix, node_pool):
-        #     import sys
-        #     out = sys.stdout
-        #     out.write("## Distance Matrix ##\n")
-        #     for n in node_pool:
-        #         if n.taxon is not None:
-        #             n.label = n.taxon.label
-        #         else:
-        #             n.label = "{}+{}".format(n._child_nodes[0].label, n._child_nodes[1].label)
-        #     nodes = list(node_pool)
-        #     nodes.sort(key=lambda x: x.label)
-        #     out.write("{:>10}".format(" "))
-        #     for nd in nodes:
-        #         out.write("{:>10} ".format(nd.label))
-        #     out.write("\n")
-        #     for nd1 in nodes:
-        #         out.write("{:>10} ".format(nd1.label))
-        #         for nd2 in nodes:
-        #             try:
-        #                 out.write("{:>10} ".format(dmatrix[nd1][nd2]))
-        #             except KeyError:
-        #                 try:
-        #                     out.write("{:>10} ".format(dmatrix[nd2][nd1]))
-        #                 except KeyError:
-        #                     out.write("{:>10} ".format("NA"))
-        #         out.write("\n")
-
-        # def _dump_q(qmatrix):
-        #     import sys
-        #     out = sys.stdout
-        #     out.write("## Q Matrix ##\n")
-        #     nodes = set()
-        #     qm = {}
-        #     for x1, x2 in qmatrix:
-        #         n1 = x2[0]
-        #         n2 = x2[1]
-        #         nodes.add(n1)
-        #         nodes.add(n2)
-        #         for n in (n1, n2):
-        #             if n.taxon is not None:
-        #                 n.label = n.taxon.label
-        #             else:
-        #                 n.label = "{}+{}".format(n._child_nodes[0].label, n._child_nodes[1].label)
-        #         if n1 not in qm:
-        #             qm[n1] = {n1: 0.0}
-        #         if n2 not in qm:
-        #             qm[n2] = {n2: 0.0}
-        #         qm[n1][n2] = x1
-        #         qm[n2][n1] = x1
-        #     print("<<<")
-        #     nodes = list(nodes)
-        #     nodes.sort(key=lambda x: x.label)
-        #     out.write("{:>10}".format(" "))
-        #     for nd in nodes:
-        #         out.write("{:>10} ".format(nd.label))
-        #     out.write("\n")
-        #     for nd1 in nodes:
-        #         out.write("{:>10} ".format(nd1.label))
-        #         for nd2 in nodes:
-        #             try:
-        #                 out.write("{:>10} ".format(qm[nd1][nd2]))
-        #             except KeyError:
-        #                 try:
-        #                     out.write("{:>10} ".format(qm[nd2][nd1]))
-        #                 except KeyError:
-        #                     out.write("{:>10} ".format("NA"))
-        #         out.write("\n")
 
         if is_weighted_edge_distances:
             original_dmatrix = self._taxon_phylogenetic_distances
