@@ -941,17 +941,18 @@ class PhylogeneticDistanceMatrix(object):
         while n > 1:
             min_q = None
             nodes_to_join = None
-            for idx1, nd1 in enumerate(node_pool[:-1]):
+            for nd1 in node_pool:
                 nd1._nj_xsub = 0.0
                 for ndx in node_pool:
                     if ndx is not nd1:
                         nd1._nj_xsub += nd1._nj_distances[ndx]
+            for idx1, nd1 in enumerate(node_pool[:-1]):
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
                     v1 = (n - 2) * nd1._nj_distances[nd2]
-                    nd2._nj_xsub = 0.0
-                    for ndx in node_pool:
-                        if ndx is not nd2:
-                            nd2._nj_xsub += nd2._nj_distances[ndx]
+                    # nd2._nj_xsub = 0.0
+                    # for ndx in node_pool:
+                    #     if ndx is not nd2:
+                    #         nd2._nj_xsub += nd2._nj_distances[ndx]
                     qvalue = v1 - nd1._nj_xsub - nd2._nj_xsub
                     if min_q is None or qvalue < min_q:
                         min_q = qvalue
