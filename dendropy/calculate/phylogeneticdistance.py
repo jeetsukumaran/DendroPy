@@ -939,20 +939,17 @@ class PhylogeneticDistanceMatrix(object):
                 nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
 
         while n > 1:
-            min_q = None
-            nodes_to_join = None
+
             for nd1 in node_pool:
                 nd1._nj_xsub = 0.0
                 for ndx in node_pool:
                     if ndx is not nd1:
                         nd1._nj_xsub += nd1._nj_distances[ndx]
+            min_q = None
+            nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
                     v1 = (n - 2) * nd1._nj_distances[nd2]
-                    # nd2._nj_xsub = 0.0
-                    # for ndx in node_pool:
-                    #     if ndx is not nd2:
-                    #         nd2._nj_xsub += nd2._nj_distances[ndx]
                     qvalue = v1 - nd1._nj_xsub - nd2._nj_xsub
                     if min_q is None or qvalue < min_q:
                         min_q = qvalue
@@ -972,7 +969,6 @@ class PhylogeneticDistanceMatrix(object):
                 dist = 0.5 * (v1 - v3)
                 new_node._nj_distances[node] = dist
                 node._nj_distances[new_node] = dist
-            node_pool.append(new_node)
 
             if n > 2:
                 v1 = 0.5 * nodes_to_join[0]._nj_distances[nodes_to_join[1]]
@@ -985,6 +981,8 @@ class PhylogeneticDistanceMatrix(object):
                 d = nodes_to_join[0]._nj_distances[nodes_to_join[1]]
                 nodes_to_join[0].edge.length = d / 2
                 nodes_to_join[1].edge.length = d / 2
+
+            node_pool.append(new_node)
             for node_to_join in nodes_to_join:
                 del node_to_join._nj_distances
 
