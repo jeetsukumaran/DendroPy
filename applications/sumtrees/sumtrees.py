@@ -1602,6 +1602,18 @@ def main():
         _bulleted_message_and_log("{} unique splits out of a total of {} splits".format(num_unique_splits, int(num_splits)))
         _bulleted_message_and_log("{} unique non-trivial splits counted out of a total of non-trivial {} splits".format(num_nt_unique_splits, int(num_nt_splits)))
 
+    ###  tip ages
+    if not taxon_label_age_map:
+        pass
+        # _message_and_log("All tips assumed to be contemporaneous with age of 0.0")
+    else:
+        _message_and_log("Tips assigned the following ages for node age analysis:")
+        taxon_labels = [taxon.label for taxon in tree_array.taxon_namespace]
+        max_taxon_label_length = max([len(x) for x in taxon_labels])
+        taxon_age_template = "{{:>{}}} : {{}}".format(max_taxon_label_length)
+        for taxon in tree_array.taxon_namespace:
+            _bulleted_message_and_log(taxon_age_template.format(taxon.label, taxon_label_age_map.get(taxon.label, 0.0)))
+
     ### build target tree(s)
     target_trees = dendropy.TreeList(taxon_namespace=tree_array.taxon_namespace)
     if target_tree_filepath is None:
@@ -1670,12 +1682,6 @@ def main():
             msg = "Summarizing onto target tree".format(len(target_trees))
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
-
-    ###  tip ages
-    if taxon_label_age_map:
-        _bulleted_message_and_log("All tips assumed to be contemporaneous with age 0.0")
-    else:
-        _bulleted_message_and_log("Tip ages:")
 
 
     ###  rooting
