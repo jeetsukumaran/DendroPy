@@ -890,9 +890,10 @@ class PhylogeneticDistanceMatrix(object):
 
         ::
 
+            import dendropy
+
             # Read data from a CSV file into a PhylogeneticDistanceMatrix
             # object
-            import dendropy
             with open("distance_matrix.csv") as src:
                 pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                         src,
@@ -996,6 +997,48 @@ class PhylogeneticDistanceMatrix(object):
             is_weighted_edge_distances=True,
             tree_factory=None,
             ):
+        """
+        Returns an Unweighted Pairwise Group Mathematical Average (UPGMA) tree
+        based on the distances in the matrix.
+
+        Parameters
+        ----------
+        is_weighted_edge_distances: bool
+            If ``True`` then edge lengths will be considered for distances.
+            Otherwise, just the number of edges.
+
+        Returns
+        -------
+        t : |Tree|
+            A |Tree| instance corresponding to the UPGMA tree
+            for this data.
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+
+            # Read data from a CSV file into a PhylogeneticDistanceMatrix
+            # object
+            with open("distance_matrix.csv") as src:
+                pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
+                        src,
+                        is_first_row_column_names=True,
+                        is_first_column_row_names=True,
+                        is_allow_new_taxa=True,
+                        delimiter=",",
+                        )
+
+            # Calculate the tree
+            upgma_tree = pdm.upgma_tree()
+
+            # Print it
+            print(upgma_tree.as_string("nexus"))
+
+        """
+
         if is_weighted_edge_distances:
             original_dmatrix = self._taxon_phylogenetic_distances
         else:
