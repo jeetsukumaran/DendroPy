@@ -46,15 +46,70 @@ class PhylogeneticDistanceMatrix(object):
     def from_csv(cls,
             src,
             taxon_namespace=None,
+            is_allow_new_taxa=None,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
             default_data_type=float,
-            is_allow_new_taxa=None,
             label_transform_fn=None,
             **csv_reader_kwargs
             ):
+        """
+        Instantiates a new PhylogeneticDataMatrix instance with data
+        from an external source.
+
+        Parameters
+        ----------
+        src : file or file-like
+            Source of data. This is a token delimited-file (e.g., a
+            comma-delimited or tab-delimited file) providing a table which
+            lists taxon labels in both rows and columns. The cells of the table
+            are numeric (typically real) values that indicate the distance
+            between the taxa of the current row and column. Note that *only*
+            the upper right section of the table is considered. The diagonals
+            values are typically zeroes and, in either case, ignored along with
+            the lower diagonal. Despite being ignored by the
+            PhylogeneticDataMatrix object, the values are parsed by the
+            underlying reader and thus have to be valid numerical values.
+        taxon_namespace : |TaxonNamespace| instance
+            The taxon namespace with which to manage taxa. If this has
+            not already been pre-populated with the taxon names, then
+            ``is_allow_new_taxa`` should be set to |True|.
+        is_allow_new_taxa : bool
+            If |False|: we do *not* expect to encounter any new taxa in the
+            data file, and it is an error if we do. If |True|: we do expect to
+            encounter new taxa in the data file. The default value of this
+            depends on the value passed to ``taxon_namespace``. If
+            ``taxon_namespace`` is ``None`` or an empty |TaxonNamespace|
+            instance, then unless explicitly set to |False|,
+            ``is_allow_new_taxa`` will default to |True|: allowing of creation
+            of new taxa corresponding to labels found in the data source. On
+            the other hand, if ``taxon_namespace`` is not None and its value is
+            a |TaxonNamespace| instance with at least one taxon, unless
+            explicitly set to |True|, ``is_allow_new_taxa`` will default to
+            |False|, and it will be an error if taxon labels are found in the
+            data source that do not correspond (exactly) to |Taxon| objects
+            defined in the taxon namespace.  This is to err on the side of
+            caution, to avoid (or rather, highlight) problems due to incorrect
+            or mismatching labels between the data source and the current taxon
+            namespace.
+        is_first_row_column_names : bool
+            By default |True|: assumes that first row lists the taxon names.
+            Set to |False| if there is no header row.
+        is_first_column_row_names : bool
+            By default |True|: assumes that first column lists the taxon names.
+            Set to |False| if there is now row name column.
+        label_transform_fn : function object
+            If not None, this should be a function object that takes a string
+            as an argument and returns another string. This function will be
+            applied to row and column labels before they are matched to taxon
+            labels in the |TaxonNamespace| instance given by
+            ``taxon_namespace``.
+
+        """
         if taxon_namespace is None:
             taxon_namespace = dendropy.TaxonNamespace()
+        if len(taxon_namespace) == 0 and is_allow_new_taxa is None:
+            is_allow_new_taxa = True
         old_taxon_namespace_mutability = taxon_namespace.is_mutable
         taxon_namespace.is_mutable = is_allow_new_taxa
         data_table = container.DataTable.from_csv(
