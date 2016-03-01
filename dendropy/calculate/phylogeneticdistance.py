@@ -939,24 +939,20 @@ class PhylogeneticDistanceMatrix(object):
                 nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
 
         while n > 1:
-            xsub_values = {}
             min_q = None
             nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
+                nd1._nj_xsub = 0.0
+                for ndx in node_pool:
+                    if ndx is not nd1:
+                        nd1._nj_xsub += nd1._nj_distances[ndx]
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
                     v1 = (n - 2) * nd1._nj_distances[nd2]
-                    xsub1 = []
-                    xsub2 = []
+                    nd2._nj_xsub = 0.0
                     for ndx in node_pool:
-                        if ndx is not nd1:
-                            xsub1.append( nd1._nj_distances[ndx] )
                         if ndx is not nd2:
-                            xsub2.append( nd2._nj_distances[ndx] )
-                    xsubv_nd1 = sum(xsub1)
-                    xsubv_nd2 = sum(xsub2)
-                    xsub_values[nd1] = xsubv_nd1
-                    xsub_values[nd2] = xsubv_nd2
-                    qvalue = v1 - xsubv_nd1 - xsubv_nd2
+                            nd2._nj_xsub += nd2._nj_distances[ndx]
+                    qvalue = v1 - nd1._nj_xsub - nd2._nj_xsub
                     if min_q is None or qvalue < min_q:
                         min_q = qvalue
                         nodes_to_join = (nd1, nd2)
@@ -979,7 +975,7 @@ class PhylogeneticDistanceMatrix(object):
 
             if n > 2:
                 v1 = 0.5 * nodes_to_join[0]._nj_distances[nodes_to_join[1]]
-                v4  = 1.0/(2*(n-2)) * (xsub_values[nodes_to_join[0]] - xsub_values[nodes_to_join[1]])
+                v4  = 1.0/(2*(n-2)) * (nodes_to_join[0]._nj_xsub - nodes_to_join[1]._nj_xsub)
                 delta_f = v1 + v4
                 delta_g = nodes_to_join[0]._nj_distances[nodes_to_join[1]] - delta_f
                 nodes_to_join[0].edge.length = delta_f
