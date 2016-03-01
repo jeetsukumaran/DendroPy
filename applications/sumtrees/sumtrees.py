@@ -34,6 +34,7 @@ import platform
 import socket
 import math
 import csv
+import json
 
 try:
     # Python 3
@@ -59,9 +60,7 @@ from dendropy.utility import textprocessing
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Summarization"
-_program_date = "Jan 31 2015"
-# _program_version = "{} ({})".format(dendropy.__version__, _program_date)
-_program_version = "4.0.0 ({})".format(_program_date)
+_program_version = dendropy.__version__
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = """\
@@ -172,6 +171,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
+            taxon_label_age_map,
             log_frequency,
             messenger,
             messenger_lock,
@@ -192,6 +192,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
+        self.taxon_label_age_map = taxon_label_age_map
         self.log_frequency = log_frequency
         self.messenger = messenger
         self.messenger_lock = messenger_lock
@@ -203,6 +204,7 @@ class TreeAnalysisWorker(multiprocessing.Process):
                 ignore_node_ages=self.ignore_node_ages,
                 use_tree_weights=self.use_tree_weights,
                 ultrametricity_precision=self.ultrametricity_precision,
+                taxon_label_age_map=self.taxon_label_age_map,
                 )
         self.tree_array.worker_name = self.name
         self.num_tasks_received = 0
@@ -289,6 +291,7 @@ class TreeProcessor(object):
             ignore_node_ages,
             use_tree_weights,
             ultrametricity_precision,
+            taxon_label_age_map,
             num_processes,
             log_frequency,
             messenger,
@@ -300,6 +303,7 @@ class TreeProcessor(object):
         self.ignore_node_ages = ignore_node_ages
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
+        self.taxon_label_age_map = taxon_label_age_map
         self.num_processes = num_processes
         self.log_frequency = log_frequency
         self.messenger = messenger
@@ -359,6 +363,7 @@ class TreeProcessor(object):
                 ignore_node_ages=self.ignore_node_ages,
                 use_tree_weights=self.use_tree_weights,
                 ultrametricity_precision=self.ultrametricity_precision,
+                taxon_label_age_map=self.taxon_label_age_map,
                 )
         _read_into_tree_array(
                 tree_array=tree_array,
@@ -430,6 +435,7 @@ class TreeProcessor(object):
                     ignore_node_ages=self.ignore_node_ages,
                     use_tree_weights=self.use_tree_weights,
                     ultrametricity_precision=self.ultrametricity_precision,
+                    taxon_label_age_map=self.taxon_label_age_map,
                     messenger=self.messenger,
                     messenger_lock=messenger_lock,
                     log_frequency=self.log_frequency,
@@ -525,7 +531,7 @@ def _write_trees(trees,
 ##############################################################################
 ## Front-End
 
-def citation(args):
+def show_citation(args):
     show_splash(dest=sys.stdout)
     sys.exit(0)
 
@@ -655,10 +661,6 @@ def main():
             action="store_false",
             default=None,
             help="Treat source trees as unrooted.")
-    source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
-            type=float,
-            default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
     source_options.add_argument("--weighted-trees",
             action="store_true",
             default=False,
@@ -674,7 +676,12 @@ def main():
                 "Do not convert unprotected (unquoted) underscores to spaces"
                 " when reading NEXUS/NEWICK format trees."
                 ))
-    source_options.add_argument("--taxon-name-filepath",
+    source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
+            type=float,
+            default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
+    source_options.add_argument(
+            "--taxon-name-filepath", "--taxon-names-filepath",
             metavar="FILEPATH",
             default=None,
             help=(
@@ -694,6 +701,57 @@ def main():
                 " providing the taxon names via this option can avoid"
                 " these issues."
                 ))
+    source_options.add_argument("--tip-ages", "--tip-ages-filepath",
+            dest="tip_ages_filepath",
+            metavar="FILEPATH",
+            default=None,
+            help=(
+                "Path to file providing ages (i.e., time from present) of"
+                " tips. For format of this file, see '--tip-age-format'."
+                " If not specified, or for any taxon omitted from the data,"
+                " an age of 0.0 will be assumed."
+                ))
+    source_options.add_argument("--tip-ages-format",
+            dest="tip_ages_format",
+            default="tsv",
+            choices=["tsv", "csv", "json",],
+            metavar="FORMAT",
+            help=cli.CustomFormatter.format_definition_list_help(
+                    preamble=
+                        (
+                        "Format of the tip date data (default: '%(default)s'):"
+                        ),
+                    definitions=
+                        (
+                            ("'json'",
+                                "A JSON file. This should specify a single"
+                                " dictionary at the top-level with keys being taxon"
+                                " labels (matching the taxon labels of the input "
+                                " trees EXACTLY) and values being the ages of the "
+                                " corresponding tips."
+                            ),
+                            ("'tsv'",
+                                "A tab-delimited file. This should consist of two columns"
+                                " separated by tabs. The first column lists the taxon labels"
+                                " (matching the taxon label of the input trees EXACTLY)"
+                                " and the second column lists the ages of the"
+                                " corresponding tips."
+                            ),
+                            ("'csv'",
+                                "A comma-delimited file. This should consist of two columns"
+                                " separated by commas. The first column lists the taxon labels"
+                                " (matching the taxon label of the input trees EXACTLY)"
+                                " and the second column lists the ages of the"
+                                " corresponding tips."
+                            ),
+                        )
+                ))
+    source_options.add_argument("--no-trim-tip-age-labels",
+            action="store_false",
+            default=True,
+            help="By default, whitespace will be trimmed from the labels"
+                 " found in the tip ages data source. Specifing this option"
+                 " suppresses this.")
 
     target_tree_options = parser.add_argument_group("Target Tree Topology Options")
     target_tree_options.add_argument(
@@ -1080,7 +1138,7 @@ def main():
     ## Information (Only) Operations
 
     if args.citation:
-        citation(args)
+        show_citation(args)
 
     if not args.quiet:
         show_splash()
@@ -1249,6 +1307,65 @@ def main():
         # API uses 0
         args.ultrametricity_precision = -1
 
+    ######################################################################
+    ## Tip Ages
+
+    if args.tip_ages_filepath is None:
+        taxon_label_age_map = None
+    else:
+        if not args.summarize_node_ages:
+            messenger.error("Tip age data file specified, but node ages are not going be analyzed."
+                            " Specify '--summarize-node-ages' or '--edges=mean-age' or --edges=median-age'"
+                            " to analyze node ages.")
+            sys.exit(1)
+        tip_ages_filepath = os.path.expanduser(os.path.expandvars(args.tip_ages_filepath))
+        messenger.info("Tip ages will be read from: '{}'".format(tip_ages_filepath))
+        with open(tip_ages_filepath, "r") as src:
+            if args.tip_ages_format == "csv" or args.tip_ages_format == "tsv":
+                raw_tip_data_map = collections.OrderedDict()
+                if args.tip_ages_format == "csv":
+                    delimiter=","
+                    delimiter_desc = "',' (comma)"
+                else:
+                    delimiter="\t"
+                    delimiter_desc = "'\\t' (the tab character)"
+                csv_reader = csv.reader(src, delimiter=delimiter)
+                for row_idx, row in enumerate(csv_reader):
+                    try:
+                        taxon_label, age = row
+                    except ValueError as e:
+                        messenger.error("Tip age data file '{}', line {}: error reading columns. Perhaps wrong delimiter was specified? Expecting {} as a delimiter. Use '--tip-ages-format' to change this.".format(
+                            tip_ages_filepath, row_idx, delimiter_desc))
+                        sys.exit(1)
+                    try:
+                        raw_tip_data_map[taxon_label] = float(age)
+                    except ValueError as e:
+                        messenger.error("Tip age data file '{}', line {} (label = '{}'): invalid age value: {}".format(
+                            tip_ages_filepath, row_idx, taxon_label, age))
+                        sys.exit(1)
+            elif args.tip_ages_format == "json":
+                raw_tip_data_map = collections.OrderedDict(json.load(src))
+            else:
+                messenger.error("Unrecognized or unsupported format for tip age data: '{}'".format(args.tip_ages_format))
+                sys.exit(1)
+        taxon_label_age_map = {}
+        for taxon_label in raw_tip_data_map:
+            try:
+                age = float(raw_tip_data_map[taxon_label])
+            except ValueError:
+                messenger.error("Tip age data file '{}': taxon with label '{}': invalid value for age: {}".format(
+                    tip_ages_filepath, taxon_label, raw_tip_data_map[taxon_label]))
+                sys.exit(1)
+            if not args.no_trim_tip_age_labels:
+                taxon_label = taxon_label.strip()
+            if args.input_format in ("nexus/newick", "nexus", "newick"):
+                if not args.preserve_underscores:
+                    if not (
+                            (taxon_label[0] == taxon_label[1] == "'")
+                            or (taxon_label[0] == taxon_label[1] == '"')
+                            ):
+                        taxon_label = taxon_label.replace("_", " ")
+            taxon_label_age_map[taxon_label] = age
 
     ######################################################################
     ## Output File Setup
@@ -1366,6 +1483,7 @@ def main():
             ignore_node_ages=not args.summarize_node_ages,
             use_tree_weights=args.weighted_trees,
             ultrametricity_precision=args.ultrametricity_precision,
+            taxon_label_age_map=taxon_label_age_map,
             num_processes=num_processes,
             log_frequency=args.log_frequency if not args.quiet else 0,
             messenger=messenger,
@@ -1417,6 +1535,21 @@ def main():
         sys.exit(1)
     analysis_time_end = datetime.datetime.now()
     analysis_time_delta =  analysis_time_end-analysis_time_start
+
+    ### Validate/match taxa with tip ages
+    ### We do this here so as to avoid reporting a "job complete"
+    ### if there are errors
+    if not taxon_label_age_map:
+        taxon_age_map = {}
+        for taxon_label, age in taxon_label_age_map.items():
+            taxon = tree_array.taxon_namespace.get_taxon(taxon_label)
+            if taxon is None:
+                messenger.error("Unable to find taxon with label matching tip data label '{}' in the taxon namespace: {}".format(
+                    taxon_label,
+                    [t.label for t in tree_array.taxon_namespace]))
+                sys.exit(1)
+            taxon_age_map[taxon] = taxon_label_age_map[taxon_label]
+
     messenger.info("Analysis of source trees completed in: {}".format(timeprocessing.pretty_timedelta(analysis_time_delta),
         wrap=False,
         ))
@@ -1527,6 +1660,13 @@ def main():
             msg = "Summarizing onto target tree".format(len(target_trees))
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
+
+    ###  tip ages
+    if taxon_label_age_map:
+        _bulleted_message_and_log("All tips assumed to be contemporaneous with age 0.0")
+    else:
+        _bulleted_message_and_log("Tip ages:")
+
 
     ###  rooting
 
@@ -1666,11 +1806,8 @@ def main():
         summarization_metainfo.append("Program Information")
         summarization_metainfo.append("-------------------")
         summarization_metainfo.append("{} {} by {}".format(_program_name, _program_version, _program_author))
-        summarization_metainfo.append("Using {}, located at: '{}'".format(dendropy.description(), dendropy.homedir()))
-        python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
-        summarization_metainfo.append("Running under Python {}, located at: '{}'".format(python_version, sys.executable))
+        summarization_metainfo.append(dendropy.description_text())
 
-        summarization_metainfo.append("")
         summarization_metainfo.append("Execution Information")
         summarization_metainfo.append("---------------------")
         try:

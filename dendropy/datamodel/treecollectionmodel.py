@@ -1231,7 +1231,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            taxon_label_age_map=None):
 
         # Taxon Namespace
         taxonmodel.TaxonNamespaceAssociated.__init__(self,
@@ -1243,13 +1244,16 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.use_tree_weights = use_tree_weights
         self.ultrametricity_precision = ultrametricity_precision
 
-        # storage
+        # storage/function
         self.total_trees_counted = 0
         self.sum_of_tree_weights = 0.0
         self.tree_rooting_types_counted = set()
         self.split_counts = collections.defaultdict(float)
         self.split_edge_lengths = collections.defaultdict(list)
         self.split_node_ages = collections.defaultdict(list)
+        self.is_force_max_age = False
+        self.is_force_min_age = False
+        self.taxon_label_age_map = taxon_label_age_map
 
         # secondary/derived/generated/collected data
         self._is_rooted = False
@@ -1344,7 +1348,16 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         assert tree.taxon_namespace is self.taxon_namespace
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
-            tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
+            if self.taxon_label_age_map:
+                set_node_age_fn = self._set_node_age
+            else:
+                set_node_age_fn = None
+            tree.calc_node_ages(
+                    ultrametricity_precision=self.ultrametricity_precision,
+                    is_force_max_age=self.is_force_max_age,
+                    is_force_min_age=self.is_force_min_age,
+                    set_node_age_fn=set_node_age_fn,
+                    )
         if tree.weight is not None and self.use_tree_weights:
             weight_to_use = float(tree.weight)
         else:
@@ -1563,6 +1576,12 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             except ValueError:
                 pass
         return self._split_node_age_summaries
+
+    def _set_node_age(self, nd):
+        if nd.taxon is None or nd._child_nodes:
+            return None
+        else:
+            return self.taxon_label_age_map.get(nd.taxon.label, 0.0)
 
     def _get_split_edge_length_summaries(self):
         if self._split_edge_length_summaries is None \
@@ -2114,7 +2133,8 @@ class TreeArray(
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            ultrametricity_precision=None,
+            taxon_label_age_map=None,
             ):
         """
         Parameters
@@ -2146,6 +2166,9 @@ class TreeArray(
         self.use_tree_weights = use_tree_weights
         self.default_edge_length_value = 0 # edge.length of |None| gets this value
         self.tree_type = treemodel.Tree
+        self.taxon_label_age_map = taxon_label_age_map
+        if ultrametricity_precision is None and not self.taxon_label_age_map:
+            ultrametricity_precision = constants.DEFAULT_ULTRAMETRICITY_PRECISION
 
         # Storage
         self._tree_split_bitmasks = []
@@ -2157,6 +2180,7 @@ class TreeArray(
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
                 ultrametricity_precision=ultrametricity_precision,
+                taxon_label_age_map=self.taxon_label_age_map,
                 )
 
     ##############################################################################

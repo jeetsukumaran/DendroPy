@@ -165,6 +165,12 @@ def description(dest=None):
             fieldnamewidth=max_fieldname_len + 2,
             fieldvalue=fieldvalue))
 
+def description_text():
+    from dendropy.utility.textprocessing import StringIO
+    s = StringIO()
+    description(s)
+    return s.getvalue()
+
 def citation_info(include_preamble=True, width=76):
     import textwrap
     citation_lines = []

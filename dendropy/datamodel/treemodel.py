@@ -5154,6 +5154,7 @@ class Tree(
             child_nodes = node.child_nodes()
             if set_node_age_fn is not None:
                 node.age = set_node_age_fn(node)
+                # print("Setting node age: {} = {}".format(node.taxon, node.age))
                 if node.age is not None:
                     continue
             if len(child_nodes) == 0:
