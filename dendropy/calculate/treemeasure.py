@@ -49,23 +49,27 @@ class PhylogeneticDistanceMatrix(object):
         return pdm
 
     @classmethod
-    def from_csv_reader(cls,
-            csv_reader,
+    def from_csv(cls,
+            src,
             taxon_namespace=None,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
             default_data_type=float,
             is_allow_new_taxa=None,
+            label_transform_fn=None,
+            **csv_reader_kwargs
             ):
         if taxon_namespace is None:
             taxon_namespace = dendropy.TaxonNamespace()
         old_taxon_namespace_mutability = taxon_namespace.is_mutable
         taxon_namespace.is_mutable = is_allow_new_taxa
-        data_table = container.DataTable.get_from_csv_reader(
-                csv_reader,
+        data_table = container.DataTable.from_csv(
+                src,
                 is_first_row_column_names=is_first_row_column_names,
                 is_first_column_row_names=is_first_column_row_names,
                 default_data_type=default_data_type,
+                label_transform_fn=label_transform_fn,
+                **csv_reader_kwargs
                 )
         if not is_first_row_column_names and not is_first_column_row_names:
             distances = {}
@@ -1057,8 +1061,8 @@ class PhylogeneticDistanceMatrix(object):
     def read_assemblage_memberships_from_delimited_source(
             self,
             src,
-            delimiter=",",
-            default_data_type=float,):
+            default_data_type=float,
+            **csv_reader_kwargs):
         """
         Convenience method to return list of community sets from a delimited
         file that lists taxon (labels) in columns and community
@@ -1066,11 +1070,17 @@ class PhylogeneticDistanceMatrix(object):
         """
         if isinstance(src, str):
             with open(src) as srcf:
-                reader = csv.reader(srcf, delimiter=delimiter)
-                data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=default_data_type)
+                data_table = container.DataTable.from_csv(
+                        src,
+                        default_data_type=default_data_type,
+                        **csv_reader_kwargs
+                        )
         else:
-            reader = csv.reader(src, delimiter=delimiter)
-            data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=default_data_type)
+            data_table = container.DataTable.from_csv(
+                    src,
+                    default_data_type=default_data_type,
+                    **csv_reader_kwargs
+                    )
         mapped_taxon_labels = set([taxon.label for taxon in self.taxon_iter()])
         for column_name in data_table.column_name_iter():
             assert column_name in mapped_taxon_labels

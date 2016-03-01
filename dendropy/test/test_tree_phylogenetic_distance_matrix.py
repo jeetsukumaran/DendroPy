@@ -63,11 +63,9 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             # pdm = cophenetic.phylo(tree)
             # write.csv(format(pdm,digits=22), "pythonidae.mle.weighted.pdm.csv")
             with open(pathmap.other_source_path("pythonidae.mle.weighted.pdm.csv")) as src:
-                reader = csv.reader(src, delimiter=",")
-                self.reference_pdm_weighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+                self.reference_pdm_weighted_table = container.DataTable.from_csv(src, default_data_type=float, delimiter=",")
             with open(pathmap.other_source_path("pythonidae.mle.unweighted.pdm.csv")) as src:
-                reader = csv.reader(src, delimiter=",")
-                self.reference_pdm_unweighted_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+                self.reference_pdm_unweighted_table = container.DataTable.from_csv(src, default_data_type=float, delimiter=",")
             self.tree = dendropy.Tree.get(path=pathmap.tree_source_path(
                 "pythonidae.mle.nex"),
                 schema="nexus",
@@ -375,8 +373,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         self.pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
         assemblage_data_filepath = pathmap.other_source_path("community.data.tsv")
         with open(assemblage_data_filepath) as src:
-            reader = csv.reader(src, delimiter="\t")
-            self.data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=int)
+            self.data_table = container.DataTable.from_csv(src, default_data_type=int, delimiter="\t")
         self.assemblage_memberships = self.pdm.read_assemblage_memberships_from_delimited_source(
                 assemblage_data_filepath,
                 delimiter="\t")
@@ -431,8 +428,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
         # write.csv(format(results.mntd,digits=22), quote=F, "community.data.weighted.unnormalized.ses.mntd.csv")
         with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mpd.csv")) as src:
-            reader = csv.reader(src, delimiter=",")
-            expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+            expected_results_data_table = container.DataTable.from_csv(src, default_data_type=float)
         # for row_name in expected_results_data_table.row_name_iter():
         #     for column_name in expected_results_data_table.column_name_iter():
         #         v = expected_results_data_table[row_name, column_name]
@@ -475,8 +471,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         # results.mntd = ses.mntd(comm, dists, null.model="taxa.labels",abundance.weighted=F,runs=100000)
         # write.csv(format(results.mntd,digits=22), quote=F, "community.data.weighted.unnormalized.ses.mntd.csv")
         with open(pathmap.other_source_path("community.data.weighted.unnormalized.ses.mntd.csv")) as src:
-            reader = csv.reader(src, delimiter=",")
-            expected_results_data_table = container.DataTable.get_from_csv_reader(reader, default_data_type=float)
+            expected_results_data_table = container.DataTable.from_csv(src, default_data_type=float, delimiter=",")
         # for row_name in expected_results_data_table.row_name_iter():
         #     for column_name in expected_results_data_table.column_name_iter():
         #         v = expected_results_data_table[row_name, column_name]
@@ -574,10 +569,6 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
             frozenset([4,5]): 25,
         }
 
-    def get_csv_reader(self, s):
-        csv_reader = csv.reader(StringIO(s), delimiter=",")
-        return csv_reader
-
     def check_pdm(self, pdm, is_check_labels=True):
         self.assertEqual(len(pdm.taxon_namespace), 6)
         for i1 in range(6):
@@ -595,32 +586,32 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
                     self.assertEqual(pdm.patristic_distance(t1, t2), self.expected_distances[frozenset([i1, i2])])
 
     def test_read_new_taxon_namespace_with_no_row_and_no_column_names(self):
-        csv_reader = self.get_csv_reader(self.s00)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s00),
                 is_first_row_column_names=False,
                 is_first_column_row_names=False,
                 is_allow_new_taxa=True)
         self.check_pdm(pdm, is_check_labels=False)
 
     def test_read_new_taxon_namespace_with_row_and_no_column_names(self):
-        csv_reader = self.get_csv_reader(self.s10)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s10),
                 is_first_row_column_names=False,
                 is_first_column_row_names=True,
                 is_allow_new_taxa=True)
         self.check_pdm(pdm, is_check_labels=True)
 
     def test_read_new_taxon_namespace_with_no_row_and_column_names(self):
-        csv_reader = self.get_csv_reader(self.s01)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s01),
                 is_first_row_column_names=True,
                 is_first_column_row_names=False,
                 is_allow_new_taxa=True)
         self.check_pdm(pdm, is_check_labels=True)
 
     def test_read_new_taxon_namespace_with_row_and_column_names(self):
-        csv_reader = self.get_csv_reader(self.s11)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s11),
                 is_first_row_column_names=True,
                 is_first_column_row_names=True,
                 is_allow_new_taxa=True)
@@ -630,8 +621,8 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        csv_reader = self.get_csv_reader(self.s00)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s00),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=False,
                 is_first_column_row_names=False,
@@ -643,8 +634,8 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        csv_reader = self.get_csv_reader(self.s01)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s01),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=True,
                 is_first_column_row_names=False,
@@ -656,8 +647,8 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        csv_reader = self.get_csv_reader(self.s10)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s10),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=False,
                 is_first_column_row_names=True,
@@ -669,8 +660,8 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        csv_reader = self.get_csv_reader(self.s11)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(csv_reader,
+        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.s11),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=True,
                 is_first_column_row_names=True,
@@ -717,12 +708,12 @@ class PdmNeighborJoiningTree(PdmTreeChecker, unittest.TestCase):
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
-                csv_reader = csv.reader(src, delimiter=",")
-                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(
-                        csv_reader,
+                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                        src,
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,
-                        is_allow_new_taxa=True)
+                        is_allow_new_taxa=True,
+                        delimiter=",")
             obs_tree = pdm.nj_tree()
             # print(obs_tree.as_string("newick"))
             # print(obs_tree.as_ascii_plot(plot_metric="length"))
@@ -765,12 +756,12 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
-                csv_reader = csv.reader(src, delimiter=",")
-                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(
-                        csv_reader,
+                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                        src,
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,
-                        is_allow_new_taxa=True)
+                        is_allow_new_taxa=True,
+                        delimiter=",")
             obs_tree = pdm.upgma_tree()
             expected_tree = dendropy.Tree.get(
                     data=expected_tree_str,

@@ -683,13 +683,15 @@ class FrozenOrderedDict(collections.OrderedDict):
 class DataTable(object):
 
     @classmethod
-    def get_from_csv_reader(cls,
-            csv_reader,
+    def from_csv(cls,
+            src,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
             is_trim_space=True,
             default_data_type=None,
             column_data_types=None,
+            label_transform_fn=None,
+            **csv_reader_kwargs
             ):
         """
         Returns table from a full-configured csv.Reader instance.
@@ -721,6 +723,39 @@ class DataTable(object):
             Returns table from a full-configured csv.Reader instance.
 
         """
+        if isinstance(src, str):
+            with open(src, "r") as fsrc:
+                return cls._from_csv_file(
+                    src=fsrc,
+                    is_first_row_column_names=is_first_row_column_names,
+                    is_first_column_row_names=is_first_column_row_names,
+                    is_trim_space=is_trim_space,
+                    default_data_type=default_data_type,
+                    column_data_types=column_data_types,
+                    label_transform_fn=label_transform_fn,
+                    **csv_reader_kwargs)
+        else:
+            return cls._from_csv_file(
+                src=src,
+                is_first_row_column_names=is_first_row_column_names,
+                is_first_column_row_names=is_first_column_row_names,
+                is_trim_space=is_trim_space,
+                default_data_type=default_data_type,
+                column_data_types=column_data_types,
+                label_transform_fn=label_transform_fn,
+                **csv_reader_kwargs)
+
+    @classmethod
+    def _from_csv_file(cls,
+            src,
+            is_first_row_column_names=True,
+            is_first_column_row_names=True,
+            is_trim_space=True,
+            default_data_type=None,
+            column_data_types=None,
+            label_transform_fn=None,
+            **csv_reader_kwargs
+            ):
         ncols = None
         data_table = cls()
         if is_first_row_column_names:
@@ -733,6 +768,9 @@ class DataTable(object):
             first_data_column_offset = 0
         if column_data_types is None:
             column_data_types = {}
+        if label_transform_fn is None:
+            label_transform_fn = lambda x: x
+        csv_reader = csv.reader(src, **csv_reader_kwargs)
         for row_idx, row in enumerate(csv_reader):
             if ncols is None:
                 ncols = len(row)
@@ -747,10 +785,10 @@ class DataTable(object):
                     if cell_idx == 0 and is_first_column_row_names:
                         continue
                     data_table.add_column(
-                            column_name=cell,
+                            column_name=label_transform_fn(cell),
                             data_type=column_data_types.get(cell, default_data_type))
                 elif cell_idx == 0 and is_first_column_row_names:
-                    data_table.add_row(cell)
+                    data_table.add_row(label_transform_fn(cell))
                 else:
                     if row_idx == 0 and not is_first_row_column_names:
                         data_table.add_column(data_type=column_data_types.get(cell, default_data_type))
