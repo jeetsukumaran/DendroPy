@@ -934,18 +934,16 @@ class PhylogeneticDistanceMatrix(object):
         n = len(self._mapped_taxa)
 
         for nd1 in node_pool:
+            nd1._nj_xsub = 0.0
             for nd2 in node_pool:
                 if nd1 is nd2:
                     continue
-                nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
+                d = original_dmatrix[nd1.taxon][nd2.taxon]
+                nd1._nj_distances[nd2] = d
+                nd1._nj_xsub += d
 
         while n > 1:
 
-            for nd1 in node_pool:
-                nd1._nj_xsub = 0.0
-                for ndx in node_pool:
-                    if ndx is not nd1:
-                        nd1._nj_xsub += nd1._nj_distances[ndx]
             min_q = None
             nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
@@ -983,14 +981,24 @@ class PhylogeneticDistanceMatrix(object):
                 nodes_to_join[0].edge.length = d / 2
                 nodes_to_join[1].edge.length = d / 2
 
-            node_pool.append(new_node)
+            new_node._nj_xsub = 0.0
+            for node in node_pool:
+                new_node._nj_xsub += new_node._nj_distances[node]
+                node._nj_xsub += new_node._nj_distances[node]
+                for node_to_join in nodes_to_join:
+                    node._nj_xsub -= node_to_join._nj_distances[node]
+
             for node_to_join in nodes_to_join:
                 del node_to_join._nj_distances
+                del node_to_join._nj_xsub
+
+            node_pool.append(new_node)
 
             n -= 1
 
         tree.seed_node = node_pool[0]
         del tree.seed_node._nj_distances
+        del tree.seed_node._nj_xsub
         return tree
 
     def upgma_tree(self,
