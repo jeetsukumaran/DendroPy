@@ -5098,10 +5098,10 @@ class Tree(
 
     def calc_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            force_max_age=False,
-            force_min_age=False,
+            is_force_max_age=False,
+            is_force_min_age=False,
             set_node_age_fn=None,
-            return_internal_node_ages_only=False):
+            is_return_internal_node_ages_only=False):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips.
@@ -5114,15 +5114,15 @@ class Tree(
             raised indicating deviation from ultrametricity. If
             ``ultrametricity_precision`` is negative or False, then this check
             will be skipped.
-        force_max_age: bool
-            If ``force_max_age`` is |True|, then each node will be set to the
+        is_force_max_age: bool
+            If ``is_force_max_age`` is |True|, then each node will be set to the
             maximum possible age, by being set to the oldest age given its
             child set and the subtending edge lengths. This option only makes a
             difference if the tree is not ultrametric, and so the
             ultrametricity precision check is ignore if this option is set to
             True.
-        force_min_age: bool
-            If ``force_min_age`` is |True| then each node will be set to the
+        is_force_min_age: bool
+            If ``is_force_min_age`` is |True| then each node will be set to the
             minimum possible age, by being set to the youngest age given its
             child set and the subtending edge lengths. This option only makes a
             difference if the tree is not ultrametric, and so the
@@ -5148,8 +5148,8 @@ class Tree(
 
         """
         ages = []
-        if force_max_age and force_min_age:
-            raise ValueError("Cannot specify both 'force_max_age' and 'force_min_age'")
+        if is_force_max_age and is_force_min_age:
+            raise ValueError("Cannot specify both 'is_force_max_age' and 'is_force_min_age'")
         for node in self.postorder_node_iter():
             child_nodes = node.child_nodes()
             if set_node_age_fn is not None:
@@ -5158,18 +5158,18 @@ class Tree(
                     continue
             if len(child_nodes) == 0:
                node.age = 0.0
-               if not return_internal_node_ages_only:
+               if not is_return_internal_node_ages_only:
                    ages.append(node.age)
             else:
-                if force_max_age:
+                if is_force_max_age:
                     age_to_set = max([ (child.age + child.edge.length) for child in child_nodes ])
-                elif force_min_age:
+                elif is_force_min_age:
                     age_to_set = min([ (child.age + child.edge.length) for child in child_nodes ])
                 else:
                     first_child = child_nodes[0]
                     age_to_set = first_child.age + first_child.edge.length
                 node.age = age_to_set
-                if not (force_max_age or force_min_age or ultrametricity_precision is None or ultrametricity_precision is False or ultrametricity_precision < 0):
+                if not (is_force_max_age or is_force_min_age or ultrametricity_precision is None or ultrametricity_precision is False or ultrametricity_precision < 0):
                     for nnd in child_nodes[1:]:
                         try:
                             ocnd = nnd.age + nnd.edge.length
@@ -5205,17 +5205,17 @@ class Tree(
 
     def internal_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            force_max_age=False,
-            force_min_age=False,
+            is_force_max_age=False,
+            is_force_min_age=False,
             set_node_age_fn=None,
             ):
         """
         Returns list of ages of speciation events / coalescence times on tree.
         """
         ages = self.calc_node_ages(
-                ultrametricity_precision=ultrametricity_precision, return_internal_node_ages_only=True,
-                force_max_age=force_max_age,
-                force_min_age=force_min_age,
+                ultrametricity_precision=ultrametricity_precision, is_return_internal_node_ages_only=True,
+                is_force_max_age=is_force_max_age,
+                is_force_min_age=is_force_min_age,
                 set_node_age_fn=set_node_age_fn,
                 )
         ages.sort()
@@ -5223,8 +5223,8 @@ class Tree(
 
     def node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            force_max_age=False,
-            force_min_age=False,
+            is_force_max_age=False,
+            is_force_min_age=False,
             set_node_age_fn=None,
             internal_only=False):
         """
@@ -5235,10 +5235,10 @@ class Tree(
         """
         ages = self.calc_node_ages(
                 ultrametricity_precision=ultrametricity_precision,
-                force_max_age=force_max_age,
-                force_min_age=force_min_age,
+                is_force_max_age=is_force_max_age,
+                is_force_min_age=is_force_min_age,
                 set_node_age_fn=set_node_age_fn,
-                return_internal_node_ages_only=internal_only)
+                is_return_internal_node_ages_only=internal_only)
         ages.sort()
         return ages
 
