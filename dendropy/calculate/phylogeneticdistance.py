@@ -962,7 +962,6 @@ class PhylogeneticDistanceMatrix(object):
 
             # create the new node
             new_node = tree.node_factory()
-            new_node._nj_distances = {}
 
             # attach it to the tree
             for node_to_join in nodes_to_join:
@@ -970,6 +969,7 @@ class PhylogeneticDistanceMatrix(object):
                 node_pool.remove(node_to_join)
 
             # calculate the distances for the new node
+            new_node._nj_distances = {}
             new_node._nj_xsub = 0.0
             for node in node_pool:
                 # actual node-to-node distances
