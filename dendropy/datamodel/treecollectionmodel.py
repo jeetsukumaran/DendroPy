@@ -2134,7 +2134,7 @@ class TreeArray(
             ignore_edge_lengths=False,
             ignore_node_ages=True,
             use_tree_weights=True,
-            ultrametricity_precision=None,
+            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             taxon_label_age_map=None,
             ):
         """
@@ -2168,8 +2168,6 @@ class TreeArray(
         self.default_edge_length_value = 0 # edge.length of |None| gets this value
         self.tree_type = treemodel.Tree
         self.taxon_label_age_map = taxon_label_age_map
-        if ultrametricity_precision is None and not self.taxon_label_age_map:
-            ultrametricity_precision = constants.DEFAULT_ULTRAMETRICITY_PRECISION
 
         # Storage
         self._tree_split_bitmasks = []

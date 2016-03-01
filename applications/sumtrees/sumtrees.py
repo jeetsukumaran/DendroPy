@@ -678,12 +678,8 @@ def main():
                 ))
     source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
             type=float,
-            default=None,
-            help="".join([
-                "Precision to use when validating ultrametricity.",
-                " Specify '0' to disable validation. If tip age data is specified,",
-                " Defaults to {} unless tip age data is specified using".format(constants.DEFAULT_ULTRAMETRICITY_PRECISION),
-                " using '--tip-ages-filepath', in which case it default to 0 or disabled.",]))
+            default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
     source_options.add_argument(
             "--taxon-name-filepath", "--taxon-names-filepath",
             metavar="FILEPATH",
@@ -1358,8 +1354,8 @@ def main():
             if args.input_format in ("nexus/newick", "nexus", "newick"):
                 if not args.preserve_underscores:
                     if not (
-                            (taxon_label[0] == taxon_label[1] == "'")
-                            or (taxon_label[0] == taxon_label[1] == '"')
+                            (taxon_label[0] == taxon_label[-1] == "'")
+                            or (taxon_label[0] == taxon_label[-1] == '"')
                             ):
                         taxon_label = taxon_label.replace("_", " ")
             taxon_label_age_map[taxon_label] = age
@@ -1367,12 +1363,7 @@ def main():
     ######################################################################
     ## Ultrametricity Precision
 
-    if args.ultrametricity_precision is None:
-        if taxon_label_age_map:
-            args.ultrametricity_precision = -1
-        else:
-            args.ultrametricity_precision = constants.DEFAULT_ULTRAMETRICITY_PRECISION
-    elif args.ultrametricity_precision == 0:
+    if args.ultrametricity_precision == 0:
         # underlying function expects negative value to disable, but SumTrees
         # API uses 0
         args.ultrametricity_precision = -1
