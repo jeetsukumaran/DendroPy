@@ -925,14 +925,19 @@ class PhylogeneticDistanceMatrix(object):
         if tree_factory is None:
             tree_factory = dendropy.Tree
         tree = tree_factory(taxon_namespace=self.taxon_namespace)
+
+        # initialize node pool
         node_pool = []
         for t1 in self._mapped_taxa:
             nd = tree.node_factory()
             nd.taxon = t1
             nd._nj_distances = {}
             node_pool.append(nd)
+
+        # initialize factor
         n = len(self._mapped_taxa)
 
+        # cache calculations
         for nd1 in node_pool:
             nd1._nj_xsub = 0.0
             for nd2 in node_pool:
@@ -944,6 +949,7 @@ class PhylogeneticDistanceMatrix(object):
 
         while n > 1:
 
+            # calculate the Q-matrix
             min_q = None
             nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
@@ -954,13 +960,19 @@ class PhylogeneticDistanceMatrix(object):
                         min_q = qvalue
                         nodes_to_join = (nd1, nd2)
 
+            # create the new node
             new_node = tree.node_factory()
             new_node._nj_distances = {}
+
+            # attach it to the tree
             for node_to_join in nodes_to_join:
                 new_node.add_child(node_to_join)
                 node_pool.remove(node_to_join)
 
+            # calculate the distances for the new node
+            new_node._nj_xsub = 0.0
             for node in node_pool:
+                # actual node-to-node distances
                 v1 = 0.0
                 for node_to_join in nodes_to_join:
                     v1 += node._nj_distances[node_to_join]
@@ -969,6 +981,14 @@ class PhylogeneticDistanceMatrix(object):
                 new_node._nj_distances[node] = dist
                 node._nj_distances[new_node] = dist
 
+                # Adjust/recalculate the values needed for the Q-matrix
+                # calculations
+                new_node._nj_xsub += dist
+                node._nj_xsub += dist
+                for node_to_join in nodes_to_join:
+                    node._nj_xsub -= node_to_join._nj_distances[node]
+
+            # calculate the branch lengths
             if n > 2:
                 v1 = 0.5 * nodes_to_join[0]._nj_distances[nodes_to_join[1]]
                 v4  = 1.0/(2*(n-2)) * (nodes_to_join[0]._nj_xsub - nodes_to_join[1]._nj_xsub)
@@ -981,19 +1001,15 @@ class PhylogeneticDistanceMatrix(object):
                 nodes_to_join[0].edge.length = d / 2
                 nodes_to_join[1].edge.length = d / 2
 
-            new_node._nj_xsub = 0.0
-            for node in node_pool:
-                new_node._nj_xsub += new_node._nj_distances[node]
-                node._nj_xsub += new_node._nj_distances[node]
-                for node_to_join in nodes_to_join:
-                    node._nj_xsub -= node_to_join._nj_distances[node]
-
+            # clean up
             for node_to_join in nodes_to_join:
                 del node_to_join._nj_distances
                 del node_to_join._nj_xsub
 
+            # add the new node to the pool of nodes
             node_pool.append(new_node)
 
+            # adjust count
             n -= 1
 
         tree.seed_node = node_pool[0]
