@@ -44,7 +44,7 @@ class PhylogeneticDistanceMatrix(object):
         Subsequent changes to the tree will not be reflected in
         |PhylogeneticDistanceMatrix| instances previously created.
 
-        Also note that syntactically, you may prefer to use::
+        Also note that syntactically you may prefer to use::
 
             pdm = tree.phylogenetic_distance_matrix()
 
@@ -475,10 +475,10 @@ class PhylogeneticDistanceMatrix(object):
         The mean pairwise distance (mpd) is given by:
 
             .. math::
-                mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
+                mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{n \\choose 2},
 
         where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
-        distance between species :math:`i` and :math:`j`, and $n$ is the number
+        distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
         Parameters
@@ -517,7 +517,7 @@ class PhylogeneticDistanceMatrix(object):
                     schema="nexus")
             pdm = dendropy.PhylogeneticDistanceMatrix(tree)
 
-            # consider all tip
+            # consider all tips
             mpd1 = pdm.mean_pairwise_distance()
 
             # only tips within the same community, based on the node annotation
@@ -561,7 +561,7 @@ class PhylogeneticDistanceMatrix(object):
                 mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
 
         where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
-        distance between species :math:`i` and :math:`j`, and $n$ is the number
+        distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
         Parameters
@@ -641,7 +641,7 @@ class PhylogeneticDistanceMatrix(object):
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
+                SES(statistic) = \\frac{observed - mean(null-model)}{sd(null-model)} [1]
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
@@ -732,7 +732,7 @@ class PhylogeneticDistanceMatrix(object):
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(null)}{standard_deviation(null)} [1]
+                SES(statistic) = \\frac{observed - mean(null-model)}{sd(null-model)} [1]
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
@@ -998,7 +998,7 @@ class PhylogeneticDistanceMatrix(object):
             tree_factory=None,
             ):
         """
-        Returns an Unweighted Pairwise Group Mathematical Average (UPGMA) tree
+        Returns an Unweighted Pair Group Method with Arithmetic Mean (UPGMA) tree
         based on the distances in the matrix.
 
         Parameters
