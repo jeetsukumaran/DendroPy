@@ -1088,6 +1088,7 @@ class PhylogeneticDistanceMatrix(object):
         tree.seed_node = node_pool[0]
         del tree.seed_node._upgma_cluster
         del tree.seed_node._upgma_distance_from_tip
+        del tree.seed_node._upgma_distances
         return tree
 
     def as_data_table(self, is_weighted_edge_distances=True):
