@@ -1012,6 +1012,48 @@ class PhylogeneticDistanceMatrix(object):
                 dt[t1.label, t2.label] = df(t1, t2)
         return dt
 
+    def write_csv(self,
+            out,
+            is_first_row_column_names=True,
+            is_first_column_row_names=True,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=True,
+            label_transform_fn=None,
+            **csv_writer_kwargs
+            ):
+        if isinstance(out, str):
+            dest = open(out, "w")
+        else:
+            dest = out
+        if label_transform_fn is None:
+            label_transform_fn = lambda x: x
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
+                )
+        if "delimiter" not in csv_writer_kwargs:
+            csv_writer_kwargs["delimiter"] = ","
+        writer = csv.writer(dest, csv_writer_kwargs)
+        if is_first_row_column_names:
+            row = []
+            if is_first_column_row_names:
+                row.append("")
+            for taxon in self._mapped_taxa:
+                row.append(label_transform_fn(taxon.label))
+            writer.writerow(row)
+            # dest.write(delimiter.join(row))
+            # dest.write("\n")
+        for taxon1 in self._mapped_taxa:
+            row = []
+            if is_first_column_row_names:
+                row.append(label_transform_fn(taxon1.label))
+            for taxon2 in self._mapped_taxa:
+                d = dmatrix[taxon1][taxon2] / normalization_factor
+                row.append("{}".format(d))
+            writer.writerow(row)
+            # dest.write(delimiter.join(row))
+            # dest.write("\n")
+
     def read_assemblage_memberships_from_delimited_source(
             self,
             src,

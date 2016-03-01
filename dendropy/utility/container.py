@@ -23,6 +23,7 @@ Various data structures.
 import collections
 import copy
 import sys
+import csv
 
 ###############################################################################
 ## OrderedSet
@@ -841,10 +842,20 @@ class DataTable(object):
         for column_name in self._column_names:
             yield self[row_name, column_name]
 
-    def write_csv(self, csv_writer,
+    def write_csv(self,
+            out,
             is_first_row_column_names=True,
             is_first_column_row_names=True,
-            missing_data_value="NA"):
+            missing_data_value="NA",
+            **csv_writer_kwargs
+            ):
+        if isinstance(out, str):
+            dest = open(out, "w")
+        else:
+            dest = out
+        if "delimiter" not in csv_writer_kwargs:
+            csv_writer_kwargs["delimiter"] = ","
+        csv_writer = csv.writer(dest, csv_writer_kwargs)
         if is_first_row_column_names:
             header = []
             if is_first_column_row_names:
