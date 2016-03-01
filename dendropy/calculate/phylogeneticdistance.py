@@ -938,7 +938,7 @@ class PhylogeneticDistanceMatrix(object):
                     continue
                 nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
 
-        while len(node_pool) > 1:
+        while n > 1:
             xsub_values = {}
             min_q = None
             nodes_to_join = None
@@ -991,7 +991,7 @@ class PhylogeneticDistanceMatrix(object):
             for node_to_join in nodes_to_join:
                 del node_to_join._nj_distances
 
-            n = len(node_pool)
+            n -= 1
 
         tree.seed_node = node_pool[0]
         del tree.seed_node._nj_distances
