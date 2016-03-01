@@ -1043,24 +1043,25 @@ class PhylogeneticDistanceMatrix(object):
             nd.taxon = t1
             nd._upgma_cluster = set([nd])
             nd._upgma_distance_from_tip = 0.0
+            nd._upgma_distances = {}
             node_pool.append(nd)
-        working_dmatrix = {}
         for idx1, nd1 in enumerate(node_pool[:-1]):
-            working_dmatrix[nd1] = {}
             for idx2, nd2 in enumerate(node_pool[idx1+1:]):
                 d = original_dmatrix[nd1.taxon][nd2.taxon]
-                working_dmatrix[nd1][nd2] = d
+                nd1._upgma_distances[nd2] = d
+                nd2._upgma_distances[nd1] = d
         while len(node_pool) > 1:
             min_distance = None
             nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
-                    d = working_dmatrix[nd1][nd2]
+                    d = nd1._upgma_distances[nd2]
                     if min_distance is None or d < min_distance:
                         nodes_to_join = (nd1, nd2)
                         min_distance = d
             new_node = tree.node_factory()
             new_node._upgma_cluster = set()
+            new_node._upgma_distances = {}
             elen = min_distance / 2.0
             for node_to_join in nodes_to_join:
                 new_node.add_child(node_to_join)
@@ -1068,49 +1069,25 @@ class PhylogeneticDistanceMatrix(object):
                 node_to_join.edge.length = elen - node_to_join._upgma_distance_from_tip
                 node_pool.remove(node_to_join)
             new_node._upgma_distance_from_tip = nodes_to_join[0].edge.length + nodes_to_join[0]._upgma_distance_from_tip
-
-            # diff1 =  nodes_to_join[0]._upgma_distance_from_tip - nodes_to_join[1]._upgma_distance_from_tip
-            # nodes_to_join[0].edge.length = min_distance/2.0 - diff1
-            # nodes_to_join[1].edge.length = min_distance/2.0 + diff1
-            # new_node._upgma_distance_from_tip = nodes_to_join[0].edge.length + nodes_to_join[0]._upgma_distance_from_tip
-            # print("--")
-            # for node_to_join in nodes_to_join:
-            #     print("{}: {}".format(
-            #         "+".join(x.taxon.label for x in node_to_join._upgma_cluster),
-            #         node_to_join.edge.length))
-            # print("--")
-
-            working_dmatrix[new_node] = {}
             for idx1, nd1 in enumerate(node_pool):
                 d1 = 0.0
                 count = 0.0
-                # assert nodes_to_join[0] is not nodes_to_join[1]
                 for node_to_join in nodes_to_join:
-                    try:
-                        d2 = working_dmatrix[node_to_join][nd1]
-                    except KeyError:
-                        d2 = working_dmatrix[nd1][node_to_join]
+                    d2 = node_to_join._upgma_distances[nd1]
                     xc = len(node_to_join._upgma_cluster)
                     d1 += (d2 * xc)
                     count += xc
                 d = d1 / count
-                try:
-                    working_dmatrix[nd1][new_node] = d
-                except KeyError:
-                    working_dmatrix[nd1] = {new_node: d}
-                working_dmatrix[new_node][nd1] = d
-                # print("{} vs {} = {}".format(
-                #     "+".join(x.taxon.label for x in new_node._upgma_cluster),
-                #     "+".join(x.taxon.label for x in nd1._upgma_cluster),
-                #     d))
+                nd1._upgma_distances[new_node] = d
+                new_node._upgma_distances[nd1] = d
             for node_to_join in nodes_to_join:
                 del node_to_join._upgma_cluster
                 del node_to_join._upgma_distance_from_tip
+                del node_to_join._upgma_distances
             node_pool.append(new_node)
         tree.seed_node = node_pool[0]
         del tree.seed_node._upgma_cluster
         del tree.seed_node._upgma_distance_from_tip
-        # print(tree.as_string("newick"))
         return tree
 
     def as_data_table(self, is_weighted_edge_distances=True):
