@@ -23,7 +23,6 @@ Taxon-to-taxon phylogenetic distances.
 import math
 import collections
 import csv
-import heapq
 from dendropy.calculate import statistics
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import container
@@ -938,9 +937,11 @@ class PhylogeneticDistanceMatrix(object):
                 if nd1 is nd2:
                     continue
                 nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
+
         while len(node_pool) > 1:
-            qmatrix = []
             xsub_values = {}
+            min_q = None
+            nodes_to_join = None
             for idx1, nd1 in enumerate(node_pool[:-1]):
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
                     v1 = (n - 2) * nd1._nj_distances[nd2]
@@ -956,42 +957,39 @@ class PhylogeneticDistanceMatrix(object):
                     xsub_values[nd1] = xsubv_nd1
                     xsub_values[nd2] = xsubv_nd2
                     qvalue = v1 - xsubv_nd1 - xsubv_nd2
-                    heapq.heappush(qmatrix, (qvalue, (nd1, nd2)))
-            # _dump_q(qmatrix)
-            to_join = heapq.heappop(qmatrix)
-            node_to_join1 = to_join[1][0]
-            node_to_join2 = to_join[1][1]
-            node_pool.remove(node_to_join1)
-            node_pool.remove(node_to_join2)
+                    if min_q is None or qvalue < min_q:
+                        min_q = qvalue
+                        nodes_to_join = (nd1, nd2)
 
             new_node = tree.node_factory()
             new_node._nj_distances = {}
-            new_node.add_child(node_to_join1)
-            new_node.add_child(node_to_join2)
+            for node_to_join in nodes_to_join:
+                new_node.add_child(node_to_join)
+                node_pool.remove(node_to_join)
 
             for node in node_pool:
-                v1 = node._nj_distances[node_to_join1]
-                v2 = node._nj_distances[node_to_join2]
-                v3 = node_to_join1._nj_distances[node_to_join2]
-                dist = 0.5 * (v1 + v2 - v3)
-                # dist = 0.5 * (v1 - node_to_join1.edge.length) + 0.5 * (v2 - node_to_join2.edge.length)
+                v1 = 0.0
+                for node_to_join in nodes_to_join:
+                    v1 += node._nj_distances[node_to_join]
+                v3 = nodes_to_join[0]._nj_distances[nodes_to_join[1]]
+                dist = 0.5 * (v1 - v3)
                 new_node._nj_distances[node] = dist
                 node._nj_distances[new_node] = dist
             node_pool.append(new_node)
 
             if n > 2:
-                v1 = 0.5 * node_to_join1._nj_distances[node_to_join2]
-                v4  = 1.0/(2*(n-2)) * (xsub_values[node_to_join1] - xsub_values[node_to_join2])
+                v1 = 0.5 * nodes_to_join[0]._nj_distances[nodes_to_join[1]]
+                v4  = 1.0/(2*(n-2)) * (xsub_values[nodes_to_join[0]] - xsub_values[nodes_to_join[1]])
                 delta_f = v1 + v4
-                delta_g = node_to_join1._nj_distances[node_to_join2] - delta_f
-                node_to_join1.edge.length = delta_f
-                node_to_join2.edge.length = delta_g
+                delta_g = nodes_to_join[0]._nj_distances[nodes_to_join[1]] - delta_f
+                nodes_to_join[0].edge.length = delta_f
+                nodes_to_join[1].edge.length = delta_g
             else:
-                d = node_to_join1._nj_distances[node_to_join2]
-                node_to_join1.edge.length = d / 2
-                node_to_join2.edge.length = d / 2
-            del node_to_join1._nj_distances
-            del node_to_join2._nj_distances
+                d = nodes_to_join[0]._nj_distances[nodes_to_join[1]]
+                nodes_to_join[0].edge.length = d / 2
+                nodes_to_join[1].edge.length = d / 2
+            for node_to_join in nodes_to_join:
+                del node_to_join._nj_distances
 
             n = len(node_pool)
 
