@@ -929,42 +929,28 @@ class PhylogeneticDistanceMatrix(object):
         for t1 in self._mapped_taxa:
             nd = tree.node_factory()
             nd.taxon = t1
+            nd._nj_distances = {}
             node_pool.append(nd)
         n = len(self._mapped_taxa)
 
-        working_dmatrix = {}
         for nd1 in node_pool:
-            working_dmatrix[nd1] = {}
             for nd2 in node_pool:
                 if nd1 is nd2:
                     continue
-                working_dmatrix[nd1][nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
-        # for idx1, nd1 in enumerate(node_pool[:-1]):
-        #     working_dmatrix[nd1] = {}
-        #     for idx2, nd2 in enumerate(node_pool[idx1+1:]):
-        #         working_dmatrix[nd1][nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
+                nd1._nj_distances[nd2] = original_dmatrix[nd1.taxon][nd2.taxon]
         while len(node_pool) > 1:
-            # _dump_d(working_dmatrix, node_pool)
             qmatrix = []
             xsub_values = {}
             for idx1, nd1 in enumerate(node_pool[:-1]):
                 for idx2, nd2 in enumerate(node_pool[idx1+1:]):
-                    v1 = (n - 2) * working_dmatrix[nd1][nd2]
+                    v1 = (n - 2) * nd1._nj_distances[nd2]
                     xsub1 = []
                     xsub2 = []
                     for ndx in node_pool:
                         if ndx is not nd1:
-                            try:
-                                xsub1.append( working_dmatrix[nd1][ndx] )
-                            except KeyError:
-                                xsub1.append( working_dmatrix[ndx][nd1] )
-                                pass
+                            xsub1.append( nd1._nj_distances[ndx] )
                         if ndx is not nd2:
-                            try:
-                                xsub2.append( working_dmatrix[nd2][ndx] )
-                            except KeyError:
-                                xsub2.append( working_dmatrix[ndx][nd2] )
-                                pass
+                            xsub2.append( nd2._nj_distances[ndx] )
                     xsubv_nd1 = sum(xsub1)
                     xsubv_nd2 = sum(xsub2)
                     xsub_values[nd1] = xsubv_nd1
@@ -979,51 +965,38 @@ class PhylogeneticDistanceMatrix(object):
             node_pool.remove(node_to_join2)
 
             new_node = tree.node_factory()
+            new_node._nj_distances = {}
             new_node.add_child(node_to_join1)
             new_node.add_child(node_to_join2)
 
-            working_dmatrix[new_node] = {}
             for node in node_pool:
-                try:
-                    v1 = working_dmatrix[node][node_to_join1]
-                except KeyError:
-                    v1 = working_dmatrix[node_to_join1][node]
-                try:
-                    v2 = working_dmatrix[node][node_to_join2]
-                except KeyError:
-                    v2 = working_dmatrix[node_to_join2][node]
-                try:
-                    v3 = working_dmatrix[node_to_join1][node_to_join2]
-                except KeyError:
-                    v3 = working_dmatrix[node_to_join2][node_to_join1]
+                v1 = node._nj_distances[node_to_join1]
+                v2 = node._nj_distances[node_to_join2]
+                v3 = node_to_join1._nj_distances[node_to_join2]
                 dist = 0.5 * (v1 + v2 - v3)
                 # dist = 0.5 * (v1 - node_to_join1.edge.length) + 0.5 * (v2 - node_to_join2.edge.length)
-                working_dmatrix[node][new_node] = dist
-                working_dmatrix[new_node][node] = dist
+                new_node._nj_distances[node] = dist
+                node._nj_distances[new_node] = dist
             node_pool.append(new_node)
 
             if n > 2:
-                v1 = 0.5 * working_dmatrix[node_to_join1][node_to_join2]
+                v1 = 0.5 * node_to_join1._nj_distances[node_to_join2]
                 v4  = 1.0/(2*(n-2)) * (xsub_values[node_to_join1] - xsub_values[node_to_join2])
                 delta_f = v1 + v4
-                delta_g = working_dmatrix[node_to_join1][node_to_join2] - delta_f
+                delta_g = node_to_join1._nj_distances[node_to_join2] - delta_f
                 node_to_join1.edge.length = delta_f
                 node_to_join2.edge.length = delta_g
             else:
-                d = working_dmatrix[node_to_join1][node_to_join2]
+                d = node_to_join1._nj_distances[node_to_join2]
                 node_to_join1.edge.length = d / 2
                 node_to_join2.edge.length = d / 2
+            del node_to_join1._nj_distances
+            del node_to_join2._nj_distances
 
             n = len(node_pool)
-                # for nd in node_pool:
-                #     for ch_nd in nd.child_node_iter():
-                #         if ch_nd.edge.length is None:
-                #             try:
-                #                 ch_nd.edge.length = working_dmatrix[nd][ch_nd]
-                #             except KeyError:
-                #                 ch_nd.edge.length = working_dmatrix[ch_nd][nd]
 
         tree.seed_node = node_pool[0]
+        del tree.seed_node._nj_distances
         return tree
 
     def upgma_tree(self,
