@@ -117,7 +117,7 @@ def compose_citation_for_program(
         include_preamble=True,
         include_epilog=True):
     if dendropy_description is None:
-        dendropy_description = dendropy.description()
+        dendropy_description = dendropy.description_text()
     citation_lines = []
     citation_lines.extend(dendropy.citation_info(include_preamble=include_preamble, width=width))
     if additional_citations:

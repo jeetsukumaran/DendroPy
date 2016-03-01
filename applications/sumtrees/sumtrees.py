@@ -531,7 +531,7 @@ def _write_trees(trees,
 ##############################################################################
 ## Front-End
 
-def show_citation(args):
+def print_citation(args):
     show_splash(dest=sys.stdout)
     sys.exit(0)
 
@@ -678,8 +678,12 @@ def main():
                 ))
     source_options.add_argument("-v", "--ultrametricity-precision", "--edge-weight-epsilon", "--branch-length-epsilon",
             type=float,
-            default=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            help="Precision to use when validating ultrametricity (default: %(default)s; specify '0' to disable validation).")
+            default=None,
+            help="".join([
+                "Precision to use when validating ultrametricity.",
+                " Specify '0' to disable validation. If tip age data is specified,",
+                " Defaults to {} unless tip age data is specified using".format(constants.DEFAULT_ULTRAMETRICITY_PRECISION),
+                " using '--tip-ages-filepath', in which case it default to 0 or disabled.",]))
     source_options.add_argument(
             "--taxon-name-filepath", "--taxon-names-filepath",
             metavar="FILEPATH",
@@ -723,13 +727,6 @@ def main():
                         ),
                     definitions=
                         (
-                            ("'json'",
-                                "A JSON file. This should specify a single"
-                                " dictionary at the top-level with keys being taxon"
-                                " labels (matching the taxon labels of the input "
-                                " trees EXACTLY) and values being the ages of the "
-                                " corresponding tips."
-                            ),
                             ("'tsv'",
                                 "A tab-delimited file. This should consist of two columns"
                                 " separated by tabs. The first column lists the taxon labels"
@@ -742,6 +739,13 @@ def main():
                                 " separated by commas. The first column lists the taxon labels"
                                 " (matching the taxon label of the input trees EXACTLY)"
                                 " and the second column lists the ages of the"
+                                " corresponding tips."
+                            ),
+                            ("'json'",
+                                "A JSON file. This should specify a single"
+                                " dictionary at the top-level with keys being taxon"
+                                " labels (matching the taxon labels of the input "
+                                " trees EXACTLY) and values being the ages of the "
                                 " corresponding tips."
                             ),
                         )
@@ -1138,7 +1142,8 @@ def main():
     ## Information (Only) Operations
 
     if args.citation:
-        show_citation(args)
+        print_citation(args)
+        sys.exit(0)
 
     if not args.quiet:
         show_splash()
@@ -1300,14 +1305,6 @@ def main():
         args.summarize_node_ages = True
 
     ######################################################################
-    ## Ultrametricity Precision
-
-    if args.ultrametricity_precision == 0:
-        # underlying function expects negative value to disable, but SumTrees
-        # API uses 0
-        args.ultrametricity_precision = -1
-
-    ######################################################################
     ## Tip Ages
 
     if args.tip_ages_filepath is None:
@@ -1366,6 +1363,19 @@ def main():
                             ):
                         taxon_label = taxon_label.replace("_", " ")
             taxon_label_age_map[taxon_label] = age
+
+    ######################################################################
+    ## Ultrametricity Precision
+
+    if args.ultrametricity_precision is None:
+        if taxon_label_age_map:
+            args.ultrametricity_precision = -1
+        else:
+            args.ultrametricity_precision = constants.DEFAULT_ULTRAMETRICITY_PRECISION
+    elif args.ultrametricity_precision == 0:
+        # underlying function expects negative value to disable, but SumTrees
+        # API uses 0
+        args.ultrametricity_precision = -1
 
     ######################################################################
     ## Output File Setup
@@ -1539,7 +1549,7 @@ def main():
     ### Validate/match taxa with tip ages
     ### We do this here so as to avoid reporting a "job complete"
     ### if there are errors
-    if not taxon_label_age_map:
+    if taxon_label_age_map:
         taxon_age_map = {}
         for taxon_label, age in taxon_label_age_map.items():
             taxon = tree_array.taxon_namespace.get_taxon(taxon_label)
