@@ -37,6 +37,49 @@ class PhylogeneticDistanceMatrix(object):
 
     @classmethod
     def from_tree(cls, tree, is_bipartitions_updated=False):
+        """
+        Creates and returns a |PhylogeneticDistanceMatrix| based
+        on the given tree.
+
+        Note that this creates a "snapshot" of the current state of the tree.
+        Subsequent changes to the tree will not be reflected in
+        |PhylogeneticDistanceMatrix| instances previously created.
+
+        Also note that syntactically, you may prefer to use::
+
+            pdm = tree.phylogenetic_distance_matrix()
+
+        instead of::
+
+            pdm = PhylogeneticDistanceMatrix.from_tree(tree)
+
+        Parameters
+        ----------
+        tree : a |Tree| instance
+            The |Tree| from which to get the phylogenetic distances.
+
+        is_bipartitions_updated : bool
+            If the bipartitions have already been calculated on the tree, and
+            the tree has not been modified, set this to |True|.
+
+        Returns
+        -------
+        pdm : A |PhylogeneticDistanceMatrix| instance
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+            tree = dendropy.Tree.get(path="tree.nex",
+                    schema="nexus")
+            pdm1 = dendropy.PhylogeneticDistanceMatrix.from_tree(tree)
+
+            # following is equivalent to above and probably preferred:
+            pdm2 = tree.phylogenetic_distance_matrix()
+
+        """
         pdm = cls()
         pdm.compile_from_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
@@ -54,7 +97,7 @@ class PhylogeneticDistanceMatrix(object):
             **csv_reader_kwargs
             ):
         """
-        Instantiates a new PhylogeneticDataMatrix instance with data
+        Instantiates a new PhylogeneticDistanceMatrix instance with data
         from an external source.
 
         Parameters
@@ -68,7 +111,7 @@ class PhylogeneticDistanceMatrix(object):
             the upper right section of the table is considered. The diagonals
             values are typically zeroes and, in either case, ignored along with
             the lower diagonal. Despite being ignored by the
-            PhylogeneticDataMatrix object, the values are parsed by the
+            PhylogeneticDistanceMatrix object, the values are parsed by the
             underlying reader and thus have to be valid numerical values.
         taxon_namespace : |TaxonNamespace| instance
             The taxon namespace with which to manage taxa. If this has
@@ -104,6 +147,26 @@ class PhylogeneticDistanceMatrix(object):
             applied to row and column labels before they are matched to taxon
             labels in the |TaxonNamespace| instance given by
             ``taxon_namespace``.
+        \*\*csv_reader_kwargs : keyword arguments
+            This arguments will be passed to the underlying CSV reader.
+            The most important one is probably 'delimiter'.
+
+        Returns
+        -------
+        pdm : A |PhylogeneticDistanceMatrix| instance
+
+        Examples
+        --------
+
+        ::
+
+            import dendropy
+            pdm1 = dendropy.PhylogeneticDistanceMatrix.from_csv(
+                    src=open("data.csv"),
+                    delimiter=",")
+            pdm2 = dendropy.PhylogeneticDistanceMatrix.from_csv(
+                    src=open("data.tsv"),
+                    delimiter="\t")
 
         """
         if taxon_namespace is None:
