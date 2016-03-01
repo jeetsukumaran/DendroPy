@@ -4592,8 +4592,8 @@ class Tree(
         ``suppress_unifurcations`` is False, then it will be
         removed from the tree.
         """
-        from dendropy.calculate import treemeasure
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self)
+        from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
+        pdm = PhylogeneticDistanceMatrix.from_tree(self)
 
         ## ugly, ugly, ugly code to find two nodes that span the midpoint
         maxtax1, maxtax2 = pdm.max_pairwise_distance_taxa()
@@ -5092,8 +5092,8 @@ class Tree(
             A |PhylogeneticDistanceMatrix| instance corresponding to the
             tree in its current state.
         """
-        from dendropy.calculate import treemeasure
-        return treemeasure.PhylogeneticDistanceMatrix.from_tree(tree=self,
+        from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
+        return PhylogeneticDistanceMatrix.from_tree(tree=self,
                 is_bipartitions_updated=is_bipartitions_updated)
 
     def calc_node_ages(self,

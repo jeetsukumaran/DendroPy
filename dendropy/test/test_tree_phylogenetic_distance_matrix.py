@@ -336,7 +336,7 @@ class TreePatristicDistTest(unittest.TestCase):
         self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def testPatDistMatrix(self):
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(self.tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = self.tree.taxon_namespace.require_taxon(label=t1)
             tax2 = self.tree.taxon_namespace.require_taxon(label=t2)
@@ -370,7 +370,7 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
                 src=pathmap.tree_source_path("community.tree.newick"),
                 schema="newick",
                 rooting="force-rooted")
-        self.pdm = treemeasure.PhylogeneticDistanceMatrix.from_tree(self.tree)
+        self.pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(self.tree)
         assemblage_data_filepath = pathmap.other_source_path("community.data.tsv")
         with open(assemblage_data_filepath) as src:
             self.data_table = container.DataTable.from_csv(src, default_data_type=int, delimiter="\t")
@@ -586,7 +586,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
                     self.assertEqual(pdm.patristic_distance(t1, t2), self.expected_distances[frozenset([i1, i2])])
 
     def test_read_new_taxon_namespace_with_no_row_and_no_column_names(self):
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s00),
                 is_first_row_column_names=False,
                 is_first_column_row_names=False,
@@ -594,7 +594,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         self.check_pdm(pdm, is_check_labels=False)
 
     def test_read_new_taxon_namespace_with_row_and_no_column_names(self):
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s10),
                 is_first_row_column_names=False,
                 is_first_column_row_names=True,
@@ -602,7 +602,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         self.check_pdm(pdm, is_check_labels=True)
 
     def test_read_new_taxon_namespace_with_no_row_and_column_names(self):
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s01),
                 is_first_row_column_names=True,
                 is_first_column_row_names=False,
@@ -610,7 +610,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         self.check_pdm(pdm, is_check_labels=True)
 
     def test_read_new_taxon_namespace_with_row_and_column_names(self):
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s11),
                 is_first_row_column_names=True,
                 is_first_column_row_names=True,
@@ -621,7 +621,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s00),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=False,
@@ -634,7 +634,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s01),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=True,
@@ -647,7 +647,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s10),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=False,
@@ -660,7 +660,7 @@ class PhylogeneticDistanceMatrixReader(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         for label in self.expected_labels.values():
             t1 = taxon_namespace.require_taxon(label=label)
-        pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+        pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                 StringIO(self.s11),
                 taxon_namespace=taxon_namespace,
                 is_first_row_column_names=True,
@@ -708,7 +708,7 @@ class PdmNeighborJoiningTree(PdmTreeChecker, unittest.TestCase):
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
-                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                         src,
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,
@@ -756,7 +756,7 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
-                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                pdm = dendropy.PhylogeneticDistanceMatrix.from_csv(
                         src,
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,

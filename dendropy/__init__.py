@@ -61,6 +61,7 @@ from dendropy.datamodel.charmatrixmodel import StandardCharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
+from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
 from dendropy.datamodel.datasetmodel import DataSet
 from dendropy.utility.error import ImmutableTaxonNamespaceError
 from dendropy.utility.error import DataParseError

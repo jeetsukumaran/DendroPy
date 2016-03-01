@@ -20,6 +20,7 @@ Data Model
     charstatemodel.rst
     charmatrixmodel.rst
     datasetmodel.rst
+    phylogeneticdistance.rst
 
 Process Models
 ==============
