@@ -782,12 +782,13 @@ class PhylogeneticDistanceMatrix(object):
             # Read data from a CSV file into a PhylogeneticDistanceMatrix
             # object
             with open("distance_matrix.csv") as src:
-                csv_reader = csv.reader(src, delimiter=",")
-                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv_reader(
-                        csv_reader,
+                pdm = treemeasure.PhylogeneticDistanceMatrix.from_csv(
+                        src,
                         is_first_row_column_names=True,
                         is_first_column_row_names=True,
-                        is_allow_new_taxa=True)
+                        is_allow_new_taxa=True,
+                        delimiter=",",
+                        )
 
             # Calculate the tree
             nj_tree = pdm.nj_tree()
