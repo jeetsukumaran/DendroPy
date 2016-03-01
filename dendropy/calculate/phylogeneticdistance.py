@@ -470,11 +470,11 @@ class PhylogeneticDistanceMatrix(object):
         """
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
-                applied if ``filter_fn`` is specified).
+        applied if ``filter_fn`` is specified).
 
         The mean pairwise distance (mpd) is given by:
 
-            .. calculate::
+            .. math::
                 mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{\\choose{n,2}},
 
         where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
@@ -553,7 +553,7 @@ class PhylogeneticDistanceMatrix(object):
         """
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
-                applied if ``filter_fn`` is specified).
+        applied if ``filter_fn`` is specified).
 
         The mean nearest taxon distance (mntd) is given by:
 
