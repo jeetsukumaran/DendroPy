@@ -87,7 +87,7 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 
 def unweighted_robinson_foulds_distance(tree1, tree2, is_bipartitions_updated=False):
     """
-    Alias for `symmetric_difference()`.
+    Alias for ``symmetric_difference()``.
     """
     return symmetric_difference(tree1, tree2, is_bipartitions_updated)
 

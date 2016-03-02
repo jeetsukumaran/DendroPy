@@ -698,7 +698,7 @@ class CharacterMatrix(
         values are of type `CharacterDataSequence`, then they are added
         as-is.  Otherwise `CharacterDataSequence` instances are
         created for them. Values may be coerced into types compatible with
-        particular matrices. The classmethod `coerce_values()` will be
+        particular matrices. The classmethod ``coerce_values()`` will be
         called for this.
 
         Examples

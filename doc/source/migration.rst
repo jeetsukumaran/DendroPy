@@ -115,9 +115,9 @@ Unique Object Identifier ("``oid``") Attributes Removed
     * Numerous look-up methods took '``case_insensitive``' as an argument that
       determined whether the look-up was case sensitive or not (when
       retrieving, for example, a :class:`Taxon` object corresponding to a
-      particular label), which, if not specified, default to `False`, i.e. a
+      particular label), which, if not specified, default to ``False``, i.e. a
       non-caseless or a case-sensitive matching criteria. In all cases, this
-      has been changed to to '``case_sensitive``' with a default of `True`. That
+      has been changed to to '``case_sensitive``' with a default of ``True``. That
       is, searches by default are still case-sensitive, but now you will have
       to specify '``case_sensitive=False``' instead of '``case_insensitive=True``'
       to perform a case-insensitive search. This change was for consistency
@@ -245,10 +245,10 @@ NEWICK-format Reading
 NEWICK-format Writing
 =====================
 
-* Previously, if ``annotations_as_nhx`` was `True`, metadata annotations would
-  be written out even if ``suppress_annotations`` was `True`. Now,
-  ``suppress_annotations`` must be `True` for annotations to be written out,
-  even if ``annotations_as_nhx`` is `True`.
+* Previously, if ``annotations_as_nhx`` was ``True``, metadata annotations would
+  be written out even if ``suppress_annotations`` was ``True``. Now,
+  ``suppress_annotations`` must be ``True`` for annotations to be written out,
+  even if ``annotations_as_nhx`` is ``True``.
 
 The :class:`DataSet` Class
 ==========================

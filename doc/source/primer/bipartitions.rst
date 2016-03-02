@@ -315,7 +315,7 @@ its :attr:`Bipartition.split_bitmask` attribute; two distinct
 different :class:`Edge` objects on different :class:`Tree` objects if their
 :attr:`Bipartition.split_bitmask` values are the same. If you need to modify
 the values of a :class:`Bipartition`, you need to set the
-:attr:`Bipartition.is_mutable` attribute to `True`. Note that changing any
+:attr:`Bipartition.is_mutable` attribute to ``True``. Note that changing any
 values that modify the hash of a :class:`Bipartition` instance that is already
 in a hash container such as a set or dictionary will make that instance or
 possibly other members of the container inaccessible: never change the value of

@@ -53,7 +53,7 @@ def discrete_time_to_coalescence(n_genes,
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : `Random`
+    rng : ``Random`` object
         The random number generator instance.
 
     Returns
@@ -114,7 +114,7 @@ def time_to_coalescence(n_genes,
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : `Random`
+    rng : ``Random`` object
         The random number generator instance to use.
 
     Returns
@@ -151,7 +151,7 @@ def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : `Random`
+    rng : ``Random`` object
         The random number generator instance.
 
     Returns
@@ -217,7 +217,7 @@ def coalesce_nodes(nodes,
         time equals 2N generations for a diploid population of size N, or N
         generations for a haploid population of size N. Otherwise time is in
         generations.
-    rng : `Random`
+    rng : ``Random`` object
         The random number generator instance to use. If not specified, the
         default RNG will be used.
     use_expected_tmrca : bool
@@ -399,7 +399,9 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    $\frac{{k \choose 2}}{N_e}$::
+    :math`\frac{{k \choose 2}}{N_e}`::
+
+    .. math::
 
          \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
 

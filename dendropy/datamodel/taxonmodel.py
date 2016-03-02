@@ -831,13 +831,13 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        labels : `collections.Iterable` [string]
+        labels : ``collections.Iterable`` [string]
             The values of the ``label`` attributes of the new |Taxon| objects to
             be created, added to this namespace collection, and returned.
 
         Returns
         -------
-        taxa : `collections.Iterable` [|Taxon|]
+        taxa : ``collections.Iterable`` [|Taxon|]
             A list of |Taxon| objects created and added.
 
         Raises
@@ -1068,7 +1068,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        labels : `collections.Iterable` [string]
+        labels : ``collections.Iterable`` [string]
             The values of the |Taxon| object labels to match.
         is_case_sensitive : |None| or bool
             By default, label lookup will use the
@@ -1137,7 +1137,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        labels : `collections.Iterable` [string]
+        labels : ``collections.Iterable`` [string]
             Any |Taxon| object in this namespace collection that has a label
             attribute that matches any value in ``labels`` will be included in
             the list returned.
@@ -1407,9 +1407,9 @@ class TaxonNamespace(
         \*\*kwargs : keyword arguments
             Requires one of:
 
-                taxa : `collections.Iterable` [|Taxon|]
+                taxa : ``collections.Iterable`` [|Taxon|]
                     Iterable of |Taxon| objects.
-                labels : `collections.Iterable` [string]
+                labels : ``collections.Iterable`` [string]
                     Iterable of |Taxon| label values.
 
         Returns
@@ -1438,9 +1438,9 @@ class TaxonNamespace(
         \*\*kwargs : keyword arguments
             Requires one of:
 
-                taxa : `collections.Iterable` [|Taxon|]
+                taxa : ``collections.Iterable`` [|Taxon|]
                     Iterable of |Taxon| objects.
-                labels : `collections.Iterable` [string]
+                labels : ``collections.Iterable`` [string]
                     Iterable of |Taxon| label values.
 
         Returns

@@ -214,6 +214,14 @@ Glossary and Terminological Reference
         just the number of :term:`edges:, while a *weighted* path length or
         path weight is the sum of :term:`edge lengths <edge length>`.
 
+    postorder traversal
+        A process by which all nodes of a tree are visited, with a particular
+        node being visited only after its children.
+
+    preorder traversal
+        A process by which all nodes of a tree are visited, with a particular
+        node being visited before its children.
+
     rooted tree
         A state of a :term:`tree` in which its :term:`seed node` represents the
         most-recent common ancestor of all the :term:`leaf nodes <leaf node>`

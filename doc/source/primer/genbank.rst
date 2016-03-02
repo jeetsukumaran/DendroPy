@@ -381,7 +381,7 @@ To persist the information in a the :class:`~dendropy.interop.genbank.GenBankAcc
 Reference Annotation
 ....................
 
-Specifying "`add_ref_annotation_to_taxa=True`" will result in a reference-style metadata annotation added to the |Taxon| object, while specifying "`add_ref_annotation_to_seqs=True`" will result in a reference-style metadata annotation added to the sequence.
+Specifying "``add_ref_annotation_to_taxa=True``" will result in a reference-style metadata annotation added to the |Taxon| object, while specifying "``add_ref_annotation_to_seqs=True``" will result in a reference-style metadata annotation added to the sequence.
 The reference-style annotation is brief, single annotation that points to the URL of the original record.
 As with metadata annotations in general, you really need to be using the NeXML format for full functionality.
 
@@ -461,7 +461,7 @@ will result in::
 Full Annotation
 ...............
 
-Specifying "`add_full_annotation_to_taxa=True`" or "`add_full_annotation_to_seqs=True`" will result in the entire GenBank record being added as a set of annotations to the |Taxon| or |CharacterDataSequence| object, respectively.
+Specifying "``add_full_annotation_to_taxa=True``" or "``add_full_annotation_to_seqs=True``" will result in the entire GenBank record being added as a set of annotations to the |Taxon| or |CharacterDataSequence| object, respectively.
 
 For example::
 

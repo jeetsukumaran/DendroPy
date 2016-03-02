@@ -59,7 +59,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
           tips (or 0 tips), then a tree will be randomly selected from the
           intervals which corresond to times at which the tree had exactly ``ntax``
           leaves (or len(taxon_namespace) tips). This allows for simulations according to
-          the "General Sampling Approach" of [citeHartmannWS2010]_
+          the "General Sampling Approach" of Hartmann et al. (2010).
 
 
     If more than one of the above is given, then tree growth will terminate when
@@ -89,7 +89,10 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     A Random() object or equivalent can be passed using the ``rng`` keyword;
     otherwise GLOBAL_RNG is used.
 
-    .. [citeHartmannWS2010] Hartmann, Wong, and Stadler "Sampling Trees from Evolutionary Models" Systematic Biology. 2010. 59(4). 465-476
+    References
+    ----------
+
+    Hartmann, Wong, and Stadler "Sampling Trees from Evolutionary Models" Systematic Biology. 2010. 59(4). 465-476
 
     """
     target_num_taxa = kwargs.get('ntax')
