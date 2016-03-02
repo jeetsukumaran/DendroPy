@@ -1,5 +1,6 @@
 # /usr/bin/env python
 
+import collections
 import dendropy
 from dendropy.utility import container
 from dendropy.utility.textprocessing import StringIO
@@ -35,26 +36,23 @@ assemblage_data = container.DataTable.from_csv(
         default_data_type=int)
 
 # generate the assemblage definitions
-assemblage_names = []
-assemblage_memberships = []
+assemblage_memberships = collections.OrderedDict()
 for row_name in assemblage_data.row_name_iter():
-    assemblage_names.append(row_name)
     member_labels = set([col_name for col_name in assemblage_data.column_name_iter() if assemblage_data[row_name, col_name] > 0])
     member_taxa = set([t for t in pdm.taxon_namespace if t.label in member_labels])
-    assemblage_memberships.append(member_taxa)
+    assemblage_memberships[row_name] = member_taxa
 
 # calculate the SES statistics for each assemblage
 results_mpd = pdm.standardized_effect_size_mean_pairwise_distance(
-        assemblage_memberships=assemblage_memberships)
+        assemblage_memberships=assemblage_memberships.values())
 
 # inspect the results
 print("Phylogenetic Community Standardize Effect Size Statistics:")
 assert len(results_mpd) == len(assemblage_memberships)
-assert len(results_mpd) == len(assemblage_names)
-for assemblage_name, assemblage_membership, result in zip(assemblage_names, assemblage_memberships, results_mpd, ):
+for assemblage_name, result in zip(assemblage_memberships, results_mpd, ):
     print("# Assemblage '{}' ({})".format(
         assemblage_name,
-        [t.label for t in assemblage_membership]))
+        [t.label for t in assemblage_memberships[assemblage_name]]))
     print("   -     MPD: {}".format(result.obs))
     print("   - SES MPD: {}".format(result.z))
     print("   - p-value: {}".format(result.p))

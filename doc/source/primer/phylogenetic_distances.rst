@@ -192,3 +192,32 @@ The result ``namedtuple`` objects have the following fields:
 As an example:
 
 .. literalinclude:: /examples/pdm_ses1.py
+
+which results in::
+
+    Phylogenetic Community Standardize Effect Size Statistics:
+    # Assemblage 'C1' (['spC', 'spM', 'spG', 'spA', 'spO', 'spN', 'spE'])
+    -     MPD: 3.19428571429
+    - SES MPD: 1.3646499598
+    - p-value: 0.984
+    # Assemblage 'C2' (['spD', 'spJ', 'spG', 'spB', 'spK', 'spE'])
+    -     MPD: 1.88666666667
+    - SES MPD: -0.81913270976
+    - p-value: 0.236
+    # Assemblage 'C3' (['spC', 'spF', 'spN', 'spA', 'spG', 'spH'])
+    -     MPD: 1.88666666667
+    - SES MPD: -0.877928418605
+    - p-value: 0.22
+    # Assemblage 'C4' (['spL', 'spI', 'spM', 'spJ', 'spH', 'spK'])
+    -     MPD: 1.91066666667
+    - SES MPD: -0.9128648633
+    - p-value: 0.221
+    # Assemblage 'C5' (['spH', 'spI', 'spJ'])
+    -     MPD: 0.18
+    - SES MPD: -2.00861633529
+    - p-value: 0.003
+
+If you are unhappy with the extra book-keeping involved with co-ordinating all these different lists (``assemblage_memberships``, ``assemblage_names``, etc.), you can associate at least some of these lists in an ``OrderedDict`` object::
+
+.. literalinclude:: /examples/pdm_ses2.py
+
