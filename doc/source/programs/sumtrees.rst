@@ -280,11 +280,9 @@ As might be expected, in can be combined with other options. For example, to dis
     $ sumtrees.py --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
 
-
 .. .. note::
 
         Unfortunately, there is a *lot* of confusion regarding the terminology of this topology. The earlier versions of *BEAST* manual described a summary topology they called the "Maximum Clade Credibility Tree" or MCCT, which is the topology amongst the input set that maximized the *sum* of the clade credibilities. Later versions of *BEAST* introduced a summarization approach that used the topology amongst the input set that maximized the *product* of the clade credibilities. In *some* places in the *BEAST* documentation, discussion, and literature, this was referred to as the "Maximum Credibility Tree" or MCT, while in others the previous term, i.e., "MCCT" was re-defined to refer to this new approach. The terminological confusion is made worse due to the fact that, while the latest versions of TreeAnnotator of *BEAST* uses the term "Maximum Clade Credibility Tree" in its dialogs, the manual that ships with it is for an older version that retains the definition of the MCCT being the tree that maximizes the sum rather than the product of the clade credibilities. In the paper by Heled and Bouckaert ("Looking for trees in the forest: summary tree from posterior samples", BMC Evolutionary Biology, 2013, 13:221;  doi:10.1186/1471-2148-13-221), the term "Clade Credibility" was defined to the be the product of the posterior frequencies of the clades on a tree, and thus the "Maximum Clade Credibility" tree or topology is the tree or topology that maximizes this score. This is the definition we use throughout DendroPy.
-
 
 Specifying a Custom Topology or Set of Topologies
 -------------------------------------------------
@@ -304,20 +302,8 @@ If you want the support expressed in percentages instead of proportions, and the
     $ sumtrees.py --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
 
-
-Summarizing Rooted and Ultrametric Trees
-----------------------------------------
-
-SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--force-rooted``" flag::
-
-    $ sumtrees.py --force-rooted phylo.trees
-
-If the trees are rooted **and** ultrametric, the "``--summarize-node-ages``" flag will result in SumTrees summarizing node age information as well::
-
-    $ sumtrees.py --summarize-node-ages phylo.trees
-
-Summarizing Edge Lengths and Node Ages
---------------------------------------
+Summarizing Edge Lengths
+========================
 
 If a target topology has been specified using the "``--target-tree-filepath``" or the "``-t``" option, then by default SumTrees retains the edge lengths of the target topologies.
 Otherwise, if the input trees are ultrametric and the "``--summarize-node-ages``" option is given, then by default SumTrees will adjust the edge lengths of the target topology so that the ages of the internal nodes are the mean of the ages of the corresponding nodes in the input set of trees.
@@ -341,6 +327,34 @@ Or to set the edges of a user-specifed tree to the median edge length of the inp
 
     $ sumtrees.py --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
     $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
+
+
+Summarizing Rooted and Ultrametric Trees
+========================================
+
+Forcing Trees to be Treated as Rooted
+-------------------------------------
+
+SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--force-rooted``" flag::
+
+    $ sumtrees.py --force-rooted phylo.trees
+
+Summarizing Node Ages
+---------------------
+
+If the trees are rooted **and** ultrametric, the "``--summarize-node-ages``" flag will result in SumTrees summarizing node age information as well::
+
+    $ sumtrees.py --summarize-node-ages phylo.trees
+
+This will calculate and report statistics such as the mean, standard deviation, ranges, high posterior density intervals, etc. of the node ages.
+
+Setting the Node Ages of the Summary Trees
+------------------------------------------
+
+If the tree is rooted and ultrametric, instead of summarizing edge lengths to be the mean of the edge lengths across the input set, you probably want to set the edge lengths of the summary tree so the node ages correspond to the mean or median of the node ages of the input set::
+
+    $ sumtrees.py --set-edges=mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
+    $ sumtrees.py --e mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
 
 Rooting the Target Topology
 ---------------------------
@@ -368,6 +382,69 @@ For example::
 
         $ sumtrees.py --preserve-underscores --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
         $ sumtrees.py --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
+
+Assigning the Ages of Non-Contemporaneous Tips ("Tip-Dating")
+-------------------------------------------------------------
+
+In some studies, such as those including fossil taxa or serially-sampled
+lineages (e.g., viral or bacterial studies), the tips of the tree corresponding
+to taxa are non-contemporaneous.
+In these studies, the tips corresponding to taxa or samples in the past are usually assigned dates.
+Commonly referred to by some folks by the unfortunate and somewhat ambiguous
+phrase "tip-dating", here we refer to this process of assigning ages of
+non-contemporaneous tips as somewhat less sloppy and more explicit, "assigning
+ages of non-contemporaneous tips".
+
+To do this using SumTrees, you would use the option ``--tip-ages`` to specify the path to a file containing the tip age data.
+The format of this file is specified by the ``--tip-ages-format`` option, which can be "tsv" (tab-separated values), "csv" (comma-separated values), or "json" (JSON).
+The default format is "tsv", which specifies a tab delimited file.
+For both the tab-separated and comma-separated formats, the data should consist of two columns, with the first column specifying the taxon label and the second column specifying the age of the corresponding tip.
+The JSON-format file should consist of a single dictionary with keys being taxon labels and values being the age of the corresponding tips.
+
+Taxon labels must match *EXACTLY* with the taxon labels in the input tree sources.
+This needs to account for things like the conversion of unprotected underscores to spaces as mandated by the Newick/NEXUS standard unless overridden by the ``--preserve-underscores`` option.
+Any taxon not listed in the tip ages file will get assigned an age of 0.0 by default.
+
+So, for example, given a tree file '``data/x1.tre``' with trees like::
+
+    [&R] ((d:2,(a:3,(b:1,c:2):1):3):2,(g:4,(e:1,f:1):2):4);
+    [&R] ((d:2,(a:3,(b:1,c:2):1):3):2,(g:4,(e:1,f:1):2):4);
+    .
+    .
+    .
+
+and a tip age data file, '``data/x1.ages.tsv``', consisting of tab-separated values like::
+
+    d<TAB>4
+    b<TAB>1
+    e<TAB>1
+    f<TAB>1
+
+then the following is the invocation to summarize the trees and their node ages::
+
+   $ sumtrees.py \
+    --tip-ages data/x1.ages.tsv
+    --summarize-node-ages \
+    data/x1-1.tre
+    data/x1-2.tre
+
+If the tip age data file is given in a comma-separated file, '``data/x1.ages.csv``', like the following::
+
+    d,4
+    b,1
+    e,1
+    f,1
+
+then the invocation is::
+
+   $ sumtrees.py \
+    --tip-ages data/x1.ages.csv
+    --tip-ages-format=csv \
+    --summarize-node-ages \
+    data/x1-1.tre
+    data/x1-2.tre
+
+Note that if specifying the tip ages you have to explicitly specify ``--summarize-node-ages`` or some other option that results in node ages being analyzed (e.g., ``--set-edges=mean-age``).
 
 Parallelizing SumTrees
 ======================
