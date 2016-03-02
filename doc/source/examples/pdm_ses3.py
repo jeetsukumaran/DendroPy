@@ -1,8 +1,6 @@
 # /usr/bin/env python
 
-import collections
 import dendropy
-from dendropy.utility import container
 from dendropy.utility.textprocessing import StringIO
 
 phylogeny_str = """\
@@ -28,29 +26,16 @@ tree = dendropy.Tree.get(
 # distances of the above tree
 pdm = tree.phylogenetic_distance_matrix()
 
-
-# read the assemblage data into a table,
-# being sure to specify an appropriate data type!
-assemblage_data = container.DataTable.from_csv(
+## read the assemblage memberships
+assemblage_membership_definitions = pdm.read_assemblage_membership_definitions_from_csv(
         src=StringIO(assemblage_data_table_str),
-        default_data_type=int)
+        delimiter=",")
 
-# generate the assemblage definitions
-assemblage_membership_definitions = collections.OrderedDict()
-for row_name in assemblage_data.row_name_iter():
-    member_labels = set([col_name for col_name in assemblage_data.column_name_iter() if assemblage_data[row_name, col_name] > 0])
-    member_taxa = set([t for t in pdm.taxon_namespace if t.label in member_labels])
-    assemblage_membership_definitions[row_name] = member_taxa
-
-# calculate the SES statistics for each assemblage
-results_mpd = pdm.standardized_effect_size_mean_pairwise_distance(
-        assemblage_memberships=assemblage_membership_definitions.values())
-
-# inspect the results
-print("Phylogenetic Community Standardize Effect Size Statistics:")
-assert len(results_mpd) == len(assemblage_membership_definitions)
-for assemblage_name, result in zip(assemblage_membership_definitions, results_mpd, ):
-    print("# Assemblage '{}' ({})".format(
+## calculate the results
+results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_membership_definitions.values())
+assert len(results) == len(assemblage_membership_definitions)
+for assemblage_name, result in zip(assemblage_membership_definitions, results):
+    print("# Assemblage '{}'".format(
         assemblage_name,
         [t.label for t in assemblage_membership_definitions[assemblage_name]]))
     print("   -     MPD: {}".format(result.obs))

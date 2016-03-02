@@ -217,7 +217,11 @@ which results in::
     - SES MPD: -2.00861633529
     - p-value: 0.003
 
-If you are unhappy with the extra book-keeping involved with co-ordinating all these different lists (``assemblage_memberships``, ``assemblage_names``, etc.), you can associate at least some of these lists in an ``OrderedDict`` object::
+If you are unhappy with the extra book-keeping involved with co-ordinating all these different lists (``assemblage_memberships``, ``assemblage_names``, etc.), you can associate at least some of these lists in an ``OrderedDict`` object:
 
 .. literalinclude:: /examples/pdm_ses2.py
+
+A convenience method is available to read community data from a delimited source, :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.read_assemblage_membership_definitions_from_csv`, which makes the process somewhat easier:
+
+.. literalinclude:: /examples/pdm_ses3.py
 

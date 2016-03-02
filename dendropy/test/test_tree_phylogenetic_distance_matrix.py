@@ -374,9 +374,10 @@ class PhylogeneticEcologyStatsTests(unittest.TestCase):
         assemblage_data_filepath = pathmap.other_source_path("community.data.tsv")
         with open(assemblage_data_filepath) as src:
             self.data_table = container.DataTable.from_csv(src, default_data_type=int, delimiter="\t")
-        self.assemblage_memberships = self.pdm.read_assemblage_memberships_from_delimited_source(
+        self.assemblage_membership_definitions = self.pdm.read_assemblage_membership_definitions_from_csv(
                 assemblage_data_filepath,
                 delimiter="\t")
+        self.assemblage_memberships = self.assemblage_membership_definitions.values()
 
     def _low_precision_equality(self, v1, v2, error=1.0):
         return abs(v1-v2) <= error

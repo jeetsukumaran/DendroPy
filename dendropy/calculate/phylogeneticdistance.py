@@ -693,9 +693,9 @@ class PhylogeneticDistanceMatrix(object):
                     src="data/community.tree.newick",
                     schema="newick",
                     rooting="force-rooted")
-            pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(tree)
-            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
-            results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_memberships)
+            pdm = tree.phylogenetic_distance_matrix()
+            assemblage_membership_definitions = pdm.read_assemblage_membership_definitions_from_csv("data/comm1.csv")
+            results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_membership_definitions.values())
             print(results)
 
         """
@@ -785,7 +785,7 @@ class PhylogeneticDistanceMatrix(object):
                     schema="newick",
                     rooting="force-rooted")
             pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(tree)
-            assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
+            assemblage_memberships = pdm.read_assemblage_membership_definitions_from_csv("data/comm1.csv")
             results = pdm.standardized_effect_size_mean_nearest_taxon_distance(assemblage_memberships=assemblage_memberships)
             print(results)
 
@@ -1181,7 +1181,7 @@ class PhylogeneticDistanceMatrix(object):
             # dest.write(delimiter.join(row))
             # dest.write("\n")
 
-    def read_assemblage_memberships_from_delimited_source(
+    def read_assemblage_membership_definitions_from_csv(
             self,
             src,
             default_data_type=float,
@@ -1207,13 +1207,13 @@ class PhylogeneticDistanceMatrix(object):
         mapped_taxon_labels = set([taxon.label for taxon in self.taxon_iter()])
         for column_name in data_table.column_name_iter():
             assert column_name in mapped_taxon_labels
-        assemblage_memberships = []
+        assemblage_memberships = collections.OrderedDict()
         for row_name in data_table.row_name_iter():
             assemblage_membership = set()
             for taxon in self.taxon_iter():
                 if data_table[row_name, taxon.label] > 0:
                     assemblage_membership.add(taxon)
-            assemblage_memberships.append(assemblage_membership)
+            assemblage_memberships[row_name] = assemblage_membership
         return assemblage_memberships
 
     def _get_taxon_to_all_other_taxa_comparisons(self, filter_fn=None):
