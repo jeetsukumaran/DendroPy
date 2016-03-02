@@ -104,3 +104,38 @@ UPGMA Trees
 The :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.upgma_tree` method returns a |Tree| representing the UPGMA tree calculated on the distances in the matrix:
 
 .. literalinclude:: /examples/pdm_upgma_tree.py
+
+Phylogenetic Community Statistics
+=================================
+
+Various phylogenetic community statistics can be calculated for one or more definitions of "community".
+
+
+    -   The Mean Pairwise Distance (MPD) is returned by the :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_pairwise_distance` method, which calculates:
+
+        .. math::
+
+            mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n \choose 2},
+
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
+        distance between species :math:`i` and :math:`j`, and :math:`n` is the number
+        of species in the sample.
+
+
+    -   The Mean Nearest Taxon Distance (MNTD) is returned by the :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_nearest_taxon_distance` method, which calculates:
+
+            .. math::
+                mntd = \frac{ \sum_{i}^{n} min(\delta_{i,j}) }{n},
+
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
+        distance between species :math:`i` and :math:`j`, and :math:`n` is the number
+        of species in the sample.
+
+Each of these methods takes a function object as a ``filter_fn`` argument.
+This function object serves to filter the taxa of the tree, reducing it to so that the tips are restricted to the community or assemblage of interest.
+If not specified, then all leaves are considered in the calculation.
+For example, to calculate the MPD the entire tree and then of some highly artificial communities:
+
+.. literalinclude:: /examples/pdm_mpd0.py
+
+A more realistic example is where a tree is sampled across multiple communities, and we are interested
