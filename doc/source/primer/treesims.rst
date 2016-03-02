@@ -128,6 +128,9 @@ With a non-zero death rate, it is possible for all lineages of a tree to go exti
 In this case, by default a :class:`~dendropy.simulate.treesim.TreeSimTotalExtinctionException` will be raised::
 
     >>> t = treesim.birth_death_tree(birth_rate=1.0, death_rate=0.9, ntax=10)
+
+produces::
+
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
       File "/Users/jeet/Projects/DendroPy/dendropy/treesim.py", line 188, in birth_death

@@ -49,9 +49,7 @@ You can also represent the data as a string using the :meth:`as_string` method::
     print(s)
 
 
-In addition, fine-grained control over the reading and writing of data is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
-
-More information on reading operations is available in the :doc:`/primer/reading_and_writing` section.
+In addition, fine-grained control over the reading and writing of data is available through various keyword arguments as described in the :doc:`/primer/reading_and_writing` section.
 
 Creating a Character Data Matrix from a Dictionary of Strings
 =============================================================
