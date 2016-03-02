@@ -89,3 +89,11 @@ Neighbor-Joining Trees
 
 The :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.nj_tree` method returns a |Tree| representing the neighbor-joining tree calculated on the distances in the matrix:
 
+.. literalinclude:: /examples/pdm_nj_tree.py
+
+UPGMA Trees
+-----------
+
+The :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.upgma_tree` method returns a |Tree| representing the UPGMA tree calculated on the distances in the matrix:
+
+.. literalinclude:: /examples/pdm_upgma_tree.py
