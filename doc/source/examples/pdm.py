@@ -1,7 +1,4 @@
-#! /usr/bin/env python
-
 import dendropy
-from dendropy.calculate import treemeasure
 
 tree = dendropy.Tree.get(
     path="pythonidae.mle.nex",

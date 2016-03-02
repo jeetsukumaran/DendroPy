@@ -699,7 +699,7 @@ class PhylogeneticDistanceMatrix(object):
             assemblage_memberships = pdm.read_assemblage_memberships_from_delimited_source("data/comm1.csv")
             results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_memberships)
             print(results)
-                                statistic under the null model.
+
         """
         if assemblage_memberships is None:
             assemblage_memberships = [ set(self._mapped_taxa) ]

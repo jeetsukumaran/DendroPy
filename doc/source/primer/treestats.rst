@@ -5,10 +5,12 @@ Tree Statistics, Metrics, Summarizations, and Other Calculations
 Some general tree metrics that are calculated without reference to any particular model or data and general report some tree metadata (e.g., tree length, node ages, etc.) are available as instance methods.
 More specialized tree statistics, however, are available through functions in various other modules:
 
--   The :mod:`~dendropy.calculate.treemeasure` module provides for calculation of statistics that are typically calculated on a single tree
+-   The :mod:`~dendropy.calculate.treemeasure` module provides for calculation of statistics that are typically calculated on a single tree.
 -   The :mod:`~dendropy.calculate.treecompare` module provides for calculation of statistics that are typically calculated between trees
 -   The :mod:`~dendropy.calculate.treescore` module provides for statistics that typically score a tree under a model and with reference to some sort of data.
 -   The :mod:`~dendropy.model.coalescent` module provides for calcuations on trees under the coalescent model.
+
+In addition, see the :doc:`PhylogeneticDistanceMatrix class </primer/phylogenetic_distances>` for statistics, operations, and inferences based on phylogenetic (taxon-to-taxon) distances, including rapid calculation of MRCA's, patristics distances, neighbor-joining (NJ) and Unweighted Pair Group with Mathematical Average (UPGMA) trees, phylogenetic community statistics (such as the Mean Pairwise Distance, MPD, or Mean Nearest Taxon Distance, MNTD), and more.
 
 Native Tree Statistic and Metric Methods
 ========================================
@@ -57,7 +59,7 @@ The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.datamodel.tree
 Patristic Distances
 -------------------
 
-The :class:`~dendropy.calculate.treemeasure.PhylogeneticDistanceMatrix` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
+The :class:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
 The easiest way to get an object of this class for a particular tree is to call :meth:`~dendropy.datamodel.treemodel.Tree.phylogenetic_distance_matrix()`.
 The object is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
 

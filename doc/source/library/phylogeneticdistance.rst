@@ -11,4 +11,3 @@ The :class:`PhylogeneticDistanceMatrix` Class
 =============================================
 .. autoclass:: dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix
     :members:
-    :inherited-members:

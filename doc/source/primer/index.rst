@@ -49,6 +49,15 @@ Working with Character Data: Sequences and Matrices
     phylogenetic_character_analyses.rst
     popgenstats.rst
 
+Working with Phylogenetic Distances
+===================================
+
+.. toctree::
+    :maxdepth: 2
+
+    phylogenetic_distances.rst
+
+
 Working with Data Sets
 ======================
 
