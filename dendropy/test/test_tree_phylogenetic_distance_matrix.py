@@ -676,7 +676,16 @@ class PdmTreeChecker(object):
         bipartitions1 = obs_tree.encode_bipartitions()
         bipartitions2 = expected_tree.encode_bipartitions()
         self.assertEqual(len(bipartitions1), len(bipartitions2))
+        b1 = [b.split_as_bitstring() for b in bipartitions1]
+        b2 = [b.split_as_bitstring() for b in bipartitions2]
+        self.assertEqual(set(b1), set(b2))
         self.assertEqual(set(bipartitions1), set(bipartitions2))
+        # try:
+        #     self.assertEqual(set(bipartitions1), set(bipartitions2))
+        # except AssertionError as e:
+        #     print(e)
+        #     print(e.__dict__)
+        #     raise
         for b1 in expected_tree.bipartition_edge_map:
             self.assertIn(b1, obs_tree.bipartition_edge_map)
             self.assertAlmostEqual(
@@ -690,6 +699,8 @@ class PdmNeighborJoiningTree(PdmTreeChecker, unittest.TestCase):
 
     def test_njtree_from_distance_matrices(self):
 
+        # library(ape)
+        # ---
         # z = matrix( c(0,5,9,9,8, 5,0,10,10,9, 9,10,0,8,7, 9,10,8,0,3, 8,9,7,3,0), byrow=T, nrow=5)
         # rownames(z)  <- c("a", "b", "c", "d", "e")
         # colnames(z)  <- c("a", "b", "c", "d", "e")
@@ -752,8 +763,15 @@ class PdmNeighborJoiningTree(PdmTreeChecker, unittest.TestCase):
 class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
 
     def test_upgma_average_from_distance_matrices(self):
+        # library(phangorn)
+        # d = read.csv("wpupgmaex.csv", header=T, row.names=1)
+        # upgma(d)
         test_runs = [
                 ("wpupgmaex.csv", "((e:11,(a:8.5,b:8.5):2.5):5.5,(c:14,d:14):2.5);"),
+                ("pythonidae.mle.weighted.pdm.csv", "(Candoia_aspera:0.3358679339,(Loxocemus_bicolor:0.239139024,(Xenopeltis_unicolor:0.2306593655,((Python_regius:0.1021235458,(Python_curtus:0.0883212354,(Python_sebae:0.0482829776,Python_molurus:0.0482829776):0.0400382578):0.01380231042):0.04278465647,((Python_timoriensis:0.06537053625,Python_reticulatus:0.06537053625):0.06029549731,(((Liasis_albertisii:0.0590368856,Bothrochilus_boa:0.0590368856):0.03300696511,(Morelia_boeleni:0.08681248898,((Antaresia_melanocephalus:0.03530849105,Antaresia_ramsayi:0.03530849105):0.04351804164,((Liasis_fuscus:0.0168409813,Liasis_mackloti:0.0168409813):0.04845559302,(Apodora_papuana:0.05507916735,Liasis_olivaceus:0.05507916735):0.01021740697):0.01352995836):0.007985956296):0.005231361731):0.005812651357,(((Morelia_tracyae:0.0359450459,(Morelia_amethistina:0.02553168923,(Morelia_clastolepis:0.0084128718,(Morelia_kinghorni:0.0080990783,Morelia_nauta:0.0080990783):0.0003137935):0.01711881743):0.01041335667):0.02235606786,(Morelia_oenpelliensis:0.05722136872,(Morelia_bredli:0.02582922315,Morelia_spilota:0.02582922315):0.03139214558):0.001079745035):0.03700402529,((Morelia_carinata:0.06795956147,(Morelia_viridisN:0.04255445115,Morelia_viridisS:0.04255445115):0.02540511032):0.01460551598,(Antaresia_maculosa:0.07026059995,(Antaresia_perthensis:0.06383429933,(Antaresia_stimsoni:0.01919038275,Antaresia_childreni:0.01919038275):0.04464391658):0.006426300625):0.0123044775):0.01274006159):0.002551363025):0.02780953149):0.01924216872):0.08575116319):0.008479658536):0.09672890989);"),
+                ("laurasiatherian.distances.ml.csv", "(Platypus:0.115554082,((Opposum:0.04554785647,(Bandicoot:0.03760589713,(Wallaroo:0.02994721074,Possum:0.02994721074):0.00765868639):0.007941959338):0.05561264108,(Elephant:0.09767314505,(Tenrec:0.09197201988,(Hedghog:0.08893681608,((Cebus:0.07429923126,(Baboon:0.06398456889,Human:0.06398456889):0.01031466238):0.01347573751,((Mouse:0.04952979734,Vole:0.04952979734):0.03752885067,(Gymnure:0.08423117145,((GuineaPig:0.0740040685,CaneRat:0.0740040685):0.009033085883,(Armadillo:0.0815558576,((Squirrel:0.0719024199,Dormouse:0.0719024199):0.006011912967,(Loris:0.07535539083,((Rabbit:0.06082665549,Pika:0.06082665549):0.01312116941,(LongTBat:0.07253285264,(Aardvark:0.07207716472,(FruitBat:0.06375844723,((((FurSeal:0.03311262951,(HarbSeal:0.004907721762,GraySeal:0.004907721762):0.02820490774):0.01108478546,(Cat:0.04153849221,Dog:0.04153849221):0.002658922751):0.01112227127,((Mole:0.04702531576,Shrew:0.04702531576):0.006612877503,((Rbat:0.0483680062,(FlyingFox:0.01426606479,RyFlyFox:0.01426606479):0.03410194142):0.002903547772,(Pig:0.04899261297,((Horse:0.009073986173,Donkey:0.009073986173):0.02905609806,(WhiteRhino:0.02269245743,IndianRhin:0.02269245743):0.0154376268):0.01086252874):0.002278941003):0.002366639287):0.001681492971):0.004794138467,(Alpaca:0.05736084145,(Hippo:0.05532140845,((Cow:0.02807794212,Sheep:0.02807794212):0.02602799145,(SpermWhale:0.03397215079,(FinWhale:0.01328705847,BlueWhale:0.01328705847):0.02068509233):0.02013378278):0.001215474875):0.002039433007):0.002752983249):0.003644622527):0.008318717494):0.0004556879157):0.001414972262):0.001407565924):0.00255894204):0.003641524737):0.001481296783):0.001194017065):0.002827476566):0.0007163207591):0.001161847302):0.003035203803):0.005701125173):0.0034873525):0.01439358448);"),
+                ## note:following fails, probably due to different arbitrary resolutions of equal distances
+                # ("pythonidae.mle.unweighted.pdm.csv", "((((Morelia_carinata:1.5,(Morelia_viridisN:1,Morelia_viridisS:1):0.5):1.458333333,((Antaresia_stimsoni:1,Antaresia_childreni:1):0.75,(Antaresia_maculosa:1.5,Antaresia_perthensis:1.5):0.25):1.208333333):1.416666667,((Morelia_bredli:1,Morelia_spilota:1):2.166666667,((Morelia_clastolepis:1.5,(Morelia_kinghorni:1,Morelia_nauta:1):0.5):0.8333333333,(Morelia_oenpelliensis:1.75,(Morelia_tracyae:1.5,Morelia_amethistina:1.5):0.25):0.5833333333):0.8333333333):1.208333333):0.6861111111,(((Morelia_boeleni:2,(Liasis_albertisii:1,Bothrochilus_boa:1):1):0.8333333333,((Antaresia_melanocephalus:1,Antaresia_ramsayi:1):1.5,((Apodora_papuana:1,Liasis_olivaceus:1):1,(Liasis_fuscus:1,Liasis_mackloti:1):1):0.5):0.3333333333):1.888888889,(((Python_sebae:1,Python_molurus:1):0.75,(Python_regius:1.5,Python_curtus:1.5):0.25):1.275,((Python_timoriensis:1,Python_reticulatus:1):1.833333333,(Loxocemus_bicolor:1.5,(Xenopeltis_unicolor:1,Candoia_aspera:1):0.5):1.333333333):0.1916666667):1.697222222):0.3388888889);"),
                 ]
         for data_filename, expected_tree_str in test_runs:
             with open(pathmap.other_source_path(data_filename)) as src:
@@ -767,7 +785,7 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
             expected_tree = dendropy.Tree.get(
                     data=expected_tree_str,
                     schema="newick",
-                    rooting="force-unrooted",
+                    # rooting="force-unrooted",
                     taxon_namespace=pdm.taxon_namespace,
                     preserve_underscores=True)
             self.check_tree(obs_tree=obs_tree,
