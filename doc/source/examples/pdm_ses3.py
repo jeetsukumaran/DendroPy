@@ -27,7 +27,7 @@ tree = dendropy.Tree.get(
 pdm = tree.phylogenetic_distance_matrix()
 
 ## read the assemblage memberships
-assemblage_membership_definitions = pdm.read_assemblage_membership_definitions_from_csv(
+assemblage_membership_definitions = pdm.assemblage_membership_definitions_from_csv(
         src=StringIO(assemblage_data_table_str),
         delimiter=",")
 

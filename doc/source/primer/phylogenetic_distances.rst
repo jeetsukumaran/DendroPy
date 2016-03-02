@@ -221,7 +221,7 @@ If you are unhappy with the extra book-keeping involved with co-ordinating all t
 
 .. literalinclude:: /examples/pdm_ses2.py
 
-A convenience method is available to read community data from a delimited source, :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.read_assemblage_membership_definitions_from_csv`, which makes the process somewhat easier:
+A convenience method is available to read community data from a delimited source, :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.assemblage_membership_definitions_from_csv`, which makes the process somewhat easier:
 
 .. literalinclude:: /examples/pdm_ses3.py
 

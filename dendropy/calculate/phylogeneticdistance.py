@@ -694,7 +694,7 @@ class PhylogeneticDistanceMatrix(object):
                     schema="newick",
                     rooting="force-rooted")
             pdm = tree.phylogenetic_distance_matrix()
-            assemblage_membership_definitions = pdm.read_assemblage_membership_definitions_from_csv("data/comm1.csv")
+            assemblage_membership_definitions = pdm.assemblage_membership_definitions_from_csv("data/comm1.csv")
             results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_membership_definitions.values())
             print(results)
 
@@ -785,7 +785,7 @@ class PhylogeneticDistanceMatrix(object):
                     schema="newick",
                     rooting="force-rooted")
             pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(tree)
-            assemblage_memberships = pdm.read_assemblage_membership_definitions_from_csv("data/comm1.csv")
+            assemblage_memberships = pdm.assemblage_membership_definitions_from_csv("data/comm1.csv")
             results = pdm.standardized_effect_size_mean_nearest_taxon_distance(assemblage_memberships=assemblage_memberships)
             print(results)
 
@@ -1181,7 +1181,7 @@ class PhylogeneticDistanceMatrix(object):
             # dest.write(delimiter.join(row))
             # dest.write("\n")
 
-    def read_assemblage_membership_definitions_from_csv(
+    def assemblage_membership_definitions_from_csv(
             self,
             src,
             default_data_type=float,
