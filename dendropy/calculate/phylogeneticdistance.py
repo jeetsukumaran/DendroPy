@@ -285,7 +285,7 @@ class PhylogeneticDistanceMatrix(object):
                             self._taxon_phylogenetic_distances[desc1.taxon][desc1.taxon] = 0.0
                             self._taxon_phylogenetic_path_steps[desc1.taxon] = {}
                             self._taxon_phylogenetic_path_steps[desc1.taxon][desc1.taxon] = 0
-                            self._mrca[desc1.taxon] = {}
+                            self._mrca[desc1.taxon] = {desc1.taxon: desc1}
                         for c2 in children[cidx1+1:]:
                             for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
@@ -367,8 +367,6 @@ class PhylogeneticDistanceMatrix(object):
         """
         Returns MRCA of two taxon objects.
         """
-        if taxon1 is taxon2:
-            return taxon1
         return self._mrca[taxon1][taxon2]
 
     def distance(self,

@@ -81,6 +81,13 @@ You can specify ``is_allow_new_taxa=True`` to relax this restriction.
                 delimiter=",",
                 label_transform_fn=label_transform_fn)
 
+Calculating Patristic Distances and Most-Recent Common Ancestors (MRCA)
+=======================================================================
+
+.. literalinclude:: /examples/mrca2.py
+
+.. note:: "Weighted" distances (or "weighted edge" distances) refers to distances taking the edge weights or branch lengths into account. "Unweighted" distances (or "unweighted edge") distances refers to distances considering only the total *number* of edges connecting two taxa, rather than the total branch length.
+
 Generating Distance Trees from a |PhylogeneticDistanceMatrix| Object
 ====================================================================
 
