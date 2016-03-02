@@ -108,6 +108,9 @@ The :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.u
 Phylogenetic Community Statistics
 =================================
 
+Basic Phylogenetic Community Statistics
+---------------------------------------
+
 Various phylogenetic community statistics can be calculated for one or more definitions of "community".
 
 
@@ -142,3 +145,50 @@ For example, to calculate the MPD of the entire tree and then of some (highly ar
 A more realistic example is where a tree is sampled across multiple communities, with the data read from a tab-delimited source:
 
 .. literalinclude:: /examples/pdm_mpd1.py
+
+which results in::
+
+    Assemblage Memberships:
+    C1: ['spA', 'spC', 'spE', 'spG', 'spM', 'spN', 'spO']
+    C2: ['spB', 'spD', 'spE', 'spG', 'spJ', 'spK']
+    C3: ['spA', 'spC', 'spF', 'spG', 'spH', 'spN']
+    C4: ['spH', 'spI', 'spJ', 'spK', 'spL', 'spM']
+    C5: ['spH', 'spI', 'spJ']
+    Phylogenetic Community Statistics:
+    C1: MPD=3.19428571429, MNTD=1.61142857143
+    C2: MPD=1.88666666667, MNTD=1.06666666667
+    C3: MPD=1.88666666667, MNTD=1.06166666667
+    C4: MPD=1.91066666667, MNTD=0.108333333333
+    C5: MPD=0.18, MNTD=0.13
+
+Standardized Effect Size Statistics
+-----------------------------------
+
+The Standardized Effect Size (S.E.S.) of these statistics are useful to remove any bias associated with the decrease in variance as species richness increases to the point where assemblages are saturated.
+The S.E.S. is calculated under a null model, given here by random shuffling of the tip labels of the tree.
+The statistic is calculated for each randomization of the tip labels, and the mean and standard deviation of the collection of values across multiple randomization replicates is used to calculate the S.E.S
+For a particular statistic, the S.E.S. is obtained by dividing the difference between the value of the statistic as given by the original data and the mean of the statistic across the replicates generated under the null model, divided by the standard deviation of the statistic across the replicates generated under the null model:
+
+.. math::
+    SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}
+
+The S.E.S. of the MPD is calculated by the :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_pairwise_distance` method, while the S.E.S of the MNTD is calculated by the :meth:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_nearest_taxon_distance` method.
+
+Instead of a filter function, as with the basic statistics above, these methods take an ``assemblage_memberships`` argument, the value of which should be an iterable of iterable of |Taxon| objects. For e.g., a list of sets of |Taxon| objects, where each set in the list specifies the membership of a single assemblage.
+The return value of these methods is a list of ``namedtuple`` objects, with each element in the list the result of associated with community/assemblage definition in the corresponding position of the input ``assemblage_memberships`` list.
+The result ``namedtuple`` objects have the following fields:
+
+    ``obs``
+        the observed value of the statistic
+    ``null_model_mean``
+        the mean value of the statistic under the null model
+    ``null_model_sd``
+        the standard deviation of the statistic under the null model
+    ``z``
+        the standardized effect (S.E.S.) value of the statistic
+    ``p``
+        the p-value of the observed value of the statistic
+
+As an example:
+
+.. literalinclude:: /examples/pdm_ses1.py

@@ -639,7 +639,7 @@ class PhylogeneticDistanceMatrix(object):
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(null-model)}{sd(null-model)} [1]
+                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
@@ -730,7 +730,7 @@ class PhylogeneticDistanceMatrix(object):
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(null-model)}{sd(null-model)} [1]
+                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
