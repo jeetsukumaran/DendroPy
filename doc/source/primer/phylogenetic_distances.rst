@@ -134,8 +134,11 @@ Various phylogenetic community statistics can be calculated for one or more defi
 Each of these methods takes a function object as a ``filter_fn`` argument.
 This function object serves to filter the taxa of the tree, reducing it to so that the tips are restricted to the community or assemblage of interest.
 If not specified, then all leaves are considered in the calculation.
-For example, to calculate the MPD the entire tree and then of some highly artificial communities:
+If specified, the function object should take a |Taxon| object as its only argument and return ``True`` if the |Taxon| is considered part of the assembalge or community or |False| if not.
+For example, to calculate the MPD of the entire tree and then of some (highly artificial) communities:
 
 .. literalinclude:: /examples/pdm_mpd0.py
 
-A more realistic example is where a tree is sampled across multiple communities, and we are interested
+A more realistic example is where a tree is sampled across multiple communities, with the data read from a tab-delimited source:
+
+.. literalinclude:: /examples/pdm_mpd1.py
