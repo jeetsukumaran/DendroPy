@@ -1,6 +1,57 @@
 ******************************
 Tree Simulation and Generation
 ******************************
+
+The :mod:`~dendropy.simulate.treesim` module provides functions for the simulation of trees under a variety of theoretical models.
+This module is actually just a namespace that aggregates functions and classes for tree simulation routines in one convenient place.
+For example the :func:`~dendropy.model.birthdeath.birth_death_tree()` function
+is actually defined in the :mod:`~dendropy.model.birthdeath` module, but is
+exposed in the :mod:`~dendropy.simulate.treesim` for ease of access.
+
+Birth-Death Process Trees
+=========================
+
+There are two different birth-death process tree simulation routines in DendroPy:
+
+    :func:`~dendropy.simulate.treesim.birth_death_tree()`
+        Returns a tree generated under a continuous-time birth-death process, with branch lengths in arbitrary time units.
+
+    :func:`~dendropy.simulate.treesim.discrete_birth_death_tree()`
+        Returns a tree generated under discrete-time birth-death process, with branch length in generation units.
+
+Both of these functions have identical interfaces, and will grow a tree under a branching process with the specified birth-date and death-rate until the termination condition (pre-specified number of leaves or maximum amount of time) is met.
+
+For example, to get a continuous-time tree with 10 leaves, generated under a birth rate of 1.0 and death rate of 0.5::
+
+    >>> from dendropy.simulate import treesim
+    >>> t = treesim.birth_death_tree(birth_rate=1.0, death_rate=0.5, ntax=10)
+    >>> t.print_plot()
+                  /-------------------------------------------- T1
+                  |
+    /-------------+                             /-------------- T2
+    |             |              /--------------+
+    |             \--------------+              \-------------- T3
+    |                            |
+    |                            \----------------------------- T4
+    +
+    |                            /----------------------------- T5
+    |             /--------------+
+    |             |              |              /-------------- T6
+    |             |              \--------------+
+    \-------------+                             \-------------- T7
+                  |
+                  |                             /-------------- T8
+                  |              /--------------+
+                  \--------------+              \-------------- T9
+                                 |
+                                 \----------------------------- T10
+
+While to get a continuous time tree generated under the same rates after 6 time units::
+
+    >>> t = treesim.birth_death_tree(birth_rate=1.0, death_rate=0.5, max_time=6.0)
+
+If both conditions are given simultaneously, then tree growth will terminate when
+*any* of the termination conditions (i.e., number of tips == ``ntax``, or number
 of tips == len(taxon_namespace) or maximum time == ``max_time``) are met.
 
 Specifying a |TaxonNamespace|
