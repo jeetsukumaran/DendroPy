@@ -195,27 +195,27 @@ As an example:
 
 which results in::
 
-    Phylogenetic Community Standardize Effect Size Statistics:
-    # Assemblage 'C1' (['spC', 'spM', 'spG', 'spA', 'spO', 'spN', 'spE'])
+    Phylogenetic Community Standardized Effect Size Statistics:
+    # Assemblage 'C1' (['spA', 'spC', 'spE', 'spG', 'spM', 'spN', 'spO'])
     -     MPD: 3.19428571429
-    - SES MPD: 1.3646499598
-    - p-value: 0.984
-    # Assemblage 'C2' (['spD', 'spJ', 'spG', 'spB', 'spK', 'spE'])
+    - SES MPD: 1.42344634503
+    - p-value: 0.982
+    # Assemblage 'C2' (['spB', 'spD', 'spE', 'spG', 'spJ', 'spK'])
     -     MPD: 1.88666666667
-    - SES MPD: -0.81913270976
-    - p-value: 0.236
-    # Assemblage 'C3' (['spC', 'spF', 'spN', 'spA', 'spG', 'spH'])
+    - SES MPD: -0.917064662164
+    - p-value: 0.21
+    # Assemblage 'C3' (['spA', 'spC', 'spF', 'spG', 'spH', 'spN'])
     -     MPD: 1.88666666667
-    - SES MPD: -0.877928418605
-    - p-value: 0.22
-    # Assemblage 'C4' (['spL', 'spI', 'spM', 'spJ', 'spH', 'spK'])
+    - SES MPD: -0.769722690565
+    - p-value: 0.24
+    # Assemblage 'C4' (['spH', 'spI', 'spJ', 'spK', 'spL', 'spM'])
     -     MPD: 1.91066666667
-    - SES MPD: -0.9128648633
-    - p-value: 0.221
+    - SES MPD: -0.87070720087
+    - p-value: 0.229
     # Assemblage 'C5' (['spH', 'spI', 'spJ'])
     -     MPD: 0.18
-    - SES MPD: -2.00861633529
-    - p-value: 0.003
+    - SES MPD: -1.99810309955
+    - p-value: 0.0
 
 If you are unhappy with the extra book-keeping involved with co-ordinating all these different lists (``assemblage_memberships``, ``assemblage_names``, etc.), you can associate at least some of these lists in an ``OrderedDict`` object:
 

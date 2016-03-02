@@ -47,12 +47,12 @@ results_mpd = pdm.standardized_effect_size_mean_pairwise_distance(
         assemblage_memberships=assemblage_membership_definitions.values())
 
 # inspect the results
-print("Phylogenetic Community Standardize Effect Size Statistics:")
+print("Phylogenetic Community Standardized Effect Size Statistics:")
 assert len(results_mpd) == len(assemblage_membership_definitions)
 for assemblage_name, result in zip(assemblage_membership_definitions, results_mpd, ):
     print("# Assemblage '{}' ({})".format(
         assemblage_name,
-        [t.label for t in assemblage_membership_definitions[assemblage_name]]))
+        sorted([t.label for t in assemblage_membership_definitions[assemblage_name]])))
     print("   -     MPD: {}".format(result.obs))
     print("   - SES MPD: {}".format(result.z))
     print("   - p-value: {}".format(result.p))

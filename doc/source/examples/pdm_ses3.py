@@ -35,9 +35,9 @@ assemblage_membership_definitions = pdm.assemblage_membership_definitions_from_c
 results = pdm.standardized_effect_size_mean_pairwise_distance(assemblage_memberships=assemblage_membership_definitions.values())
 assert len(results) == len(assemblage_membership_definitions)
 for assemblage_name, result in zip(assemblage_membership_definitions, results):
-    print("# Assemblage '{}'".format(
+    print("# Assemblage '{}' ({})".format(
         assemblage_name,
-        [t.label for t in assemblage_membership_definitions[assemblage_name]]))
+        sorted([t.label for t in assemblage_membership_definitions[assemblage_name]])))
     print("   -     MPD: {}".format(result.obs))
     print("   - SES MPD: {}".format(result.z))
     print("   - p-value: {}".format(result.p))
