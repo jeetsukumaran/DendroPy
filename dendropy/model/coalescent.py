@@ -399,11 +399,11 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    :math`\frac{{k \choose 2}}{N_e}`::
+    :math`\\frac{{k \choose 2}}{N_e}`::
 
-    .. math::
+        .. math::
 
-         \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
+            \\Pr(T) =  \\frac{{k \\choose 2}}{N_e} \\e{-  \\frac{{k \\choose 2}}{N_e} T},
 
     where $T$ is the length of  (chronological) time in which there are
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
