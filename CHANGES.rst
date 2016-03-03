@@ -4,7 +4,8 @@ Release 4.1.0 (Pending)
 New or Updated Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-    -   Neighbor-joining trees!
+    -   [SumTrees]: tip-dating/non-contemporaneous tip age assignment using the "--tip-ages" argument.
+    -   Neighbor-joining and UPGMA trees (calculated by the PhylogeneticDistanceMatrixClass).
     -   The new (actually, warmed-over) PhylogeneticDistanceMatrix to manage various "within-tree" distances (e.g., patristic distances, or the ecological statistics described below).
     -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), Standardized Effect Size MPD and MNTD (equivalent to -1 * NRI and -1 * NTI).
     -   Added DataTable class to manage community ecology (as well as more general classes of) data.
