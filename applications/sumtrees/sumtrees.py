@@ -1113,10 +1113,11 @@ def main():
             action="store_true",
             default=False,
             help="Show help information for program and exit.")
-    information_options.add_argument("--citation",
+    information_options.add_argument("--version","--citation",
+            dest="citation",
             action="store_true",
             default=False,
-            help="Show citation information for program and exit.")
+            help="Show version and citation information for program and exit.")
     information_options.add_argument("--usage-examples",
             action="store_true",
             default=False,
