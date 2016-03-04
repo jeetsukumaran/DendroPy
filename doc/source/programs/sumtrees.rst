@@ -384,7 +384,7 @@ For example::
         $ sumtrees.py --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 
 Assigning the Ages of Non-Contemporaneous Tips ("Tip-Dating")
--------------------------------------------------------------
+=============================================================
 
 In some studies, such as those including fossil taxa or serially-sampled
 lineages (e.g., viral or bacterial studies), the tips of the tree corresponding
