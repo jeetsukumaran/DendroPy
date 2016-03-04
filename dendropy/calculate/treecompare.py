@@ -432,8 +432,8 @@ class TreeShapeKernel(object):
     def __call__(self,
             tree1,
             tree2,
-            is_tree1_cache_updated=True,
-            is_tree2_cache_updated=True,
+            is_tree1_cache_updated=False,
+            is_tree2_cache_updated=False,
             ):
         """
         Recursive function for computing tree convolution
