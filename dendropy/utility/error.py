@@ -114,6 +114,10 @@ class TaxonNamespaceIdentityError(ValueError):
                 )
         ValueError.__init__(self, message)
 
+class SingleTaxonAssemblageException(ValueError):
+    def __init__(self, message=None):
+        ValueError.__init__(self, message)
+
 class NullAssemblageException(ValueError):
     def __init__(self, message=None):
         ValueError.__init__(self, message)

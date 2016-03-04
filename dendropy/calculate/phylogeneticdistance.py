@@ -630,6 +630,7 @@ class PhylogeneticDistanceMatrix(object):
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False,
+            is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -702,7 +703,12 @@ class PhylogeneticDistanceMatrix(object):
         if assemblage_memberships is None:
             assemblage_memberships = [ set(self._mapped_taxa) ]
         comparison_regimes = []
-        for assemblage_membership in assemblage_memberships:
+        for idx, assemblage_membership in enumerate(assemblage_memberships):
+            if len(assemblage_membership) == 1:
+                if is_skip_single_taxon_assemblages:
+                    continue
+                else:
+                    raise error.SingleTaxonAssemblageException("{}: {}".format(idx, assemblage_membership))
             filter_fn = lambda taxon: taxon in assemblage_membership
             comparison_regime = list(self.distinct_taxon_pair_iter(filter_fn=filter_fn))
             comparison_regimes.append(comparison_regime)
@@ -721,6 +727,7 @@ class PhylogeneticDistanceMatrix(object):
             num_randomization_replicates=1000,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False,
+            is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
         """
@@ -793,7 +800,12 @@ class PhylogeneticDistanceMatrix(object):
         if assemblage_memberships is None:
             assemblage_memberships = [ set(self._mapped_taxa) ]
         comparison_regimes = []
-        for assemblage_membership in assemblage_memberships:
+        for idx, assemblage_membership in enumerate(assemblage_memberships):
+            if len(assemblage_membership) == 1:
+                if is_skip_single_taxon_assemblages:
+                    continue
+                else:
+                    raise error.SingleTaxonAssemblageException("{}: {}".format(idx, assemblage_membership))
             filter_fn = lambda taxon: taxon in assemblage_membership
             comparison_regime = self._get_taxon_to_all_other_taxa_comparisons(filter_fn=filter_fn)
             comparison_regimes.append(comparison_regime)
