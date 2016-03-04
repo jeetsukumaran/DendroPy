@@ -21,6 +21,7 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 """
 
 import math
+import collections
 from dendropy.utility import error
 
 ###############################################################################
@@ -356,26 +357,16 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
 ### TreeshapeKernel
 
 class TreeShapeKernel(object):
+
+    _TreeShapeKernelNodeCache = collections.namedtuple("_TreeShapeKernelNodeCache",
+            ["production", "index", "edge_lengths", "sum_of_square_edge_lengths"])
+
     def __init__(self,
                 sigma=1,
                 gauss_factor=1,
                 decay_factor=0.1):
         """
         Calculator for tree shape kernel tricking.
-
-        Acknowledgements
-        ----------------
-
-        Original based in part on:
-
-            KAMPHIR
-            https://github.com/ArtPoon/kamphir.git
-            KAMPHIR is written and maintained by: Art F.Y. Poon.
-            With major contributions from: Rosemary McCloskey
-
-        Original work copyright (c) 2015, Art Poon. All rights reserved.
-        See https://github.com/ArtPoon/kamphir/blob/master/LICENSE.md for
-        more license information.
 
         References
         ----------
@@ -398,68 +389,100 @@ class TreeShapeKernel(object):
         msv123.
 
         """
+
+        # kernel function
         self.sigma = sigma
         self.gauss_factor = gauss_factor
         self.decay_factor = decay_factor
 
-    def annotate_tree(self, t):
+        # cache management
+        self._tree_cache = collections.defaultdict(dict)
+
+    def annotate_tree(self, tree):
         """
         Add annotations to Clade objects in place
         """
-        for tip in t.get_terminals():
-            tip.production = 0
+        for nd in tree.leaf_node_iter():
+            self._tree_cache[tree][nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
+                    production=0,
+                    index=0,
+                    edge_lengths=None,
+                    sum_of_square_edge_lengths=0)
+            nd.production = 0
+        for i, nd in enumerate(tree.postorder_internal_node_iter()):
+            nterms = sum( [self._tree_cache[tree][ch].production == 0 for ch in nd.child_node_iter()] )
+            production = nterms + 1
+            index = i
+            edge_lengths = [ch.branch_length for ch in nd.child_node_iter()]
+            sum_of_square_edge_lengths = sum([elen**2 for elen in edge_lengths])
+            self._tree_cache[tree][nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
+                    production=production,
+                    index=index,
+                    edge_lengths=edge_lengths,
+                    sum_of_square_edge_lengths=sum_of_square_edge_lengths)
+            # nterms = sum( [ch.production == 0 for ch in nd.child_node_iter()] )
+            # nd.production = nterms + 1
+            # nd.index = i
+            # branch_lengths = [ch.branch_length for ch in nd.child_node_iter()]
+            # nd.bl = branch_lengths
+            # nd.sqbl = sum([bl**2 for bl in branch_lengths])
 
-        for i, node in enumerate(t.get_nonterminals(order='postorder')):
-            children = node.clades
-            nterms = sum( [c.production == 0 for c in children] )
-            node.production = nterms + 1
-            node.index = i
-            branch_lengths = [c.branch_length for c in node.clades]
-            node.bl = branch_lengths
-            node.sqbl = sum([bl**2 for bl in branch_lengths])
-
-    def kernel(self, t1, t2, myrank=None, nprocs=None, output=None):
+    def kernel(self, tree1, tree2):
         """
         Recursive function for computing tree convolution
-        kernel.  Adapted from Moschitti (2006) Making tree kernels
+        kernel.
+
+        Acknowledgements
+        ----------------
+
+        Based in part on:
+
+            KAMPHIR
+            https://github.com/ArtPoon/kamphir.git
+            KAMPHIR is written and maintained by: Art F.Y. Poon.
+            With major contributions from: Rosemary McCloskey
+
+        Copyright (c) 2015, Art Poon. All rights reserved.
+        See https://github.com/ArtPoon/kamphir/blob/master/LICENSE.md for
+        more license information.
+
+        Original work adapted from Moschitti (2006) Making tree kernels
         practical for natural language learning. Proceedings of the
         11th Conference of the European Chapter of the Association
         for Computational Linguistics.
         """
-        nodes1 = t1.get_nonterminals(order='postorder')
-        nodes2 = t2.get_nonterminals(order='postorder')
+        nodes1 = tree1.get_nonterminals(order='postorder')
+        nodes2 = tree2.get_nonterminals(order='postorder')
         k = 0
         if not hasattr(nodes1[0], 'production'):
-            self.annotate_tree(t1)
+            self.annotate_tree(tree1)
         if not hasattr(nodes2[0], 'production'):
-            self.annotate_tree(t2)
+            self.annotate_tree(tree2)
         dp_matrix = {}
-        # iterate over non-terminals, visiting children before parents
-        for ni, n1 in enumerate(nodes1):
-            if myrank is not None and nprocs and ni % nprocs != myrank:
-                continue
-            for n2 in nodes2:
-                if n1.production == n2.production:
-                    res = self.decay_factor * math.exp( -1. / self.gauss_factor
-                        * (n1.sqbl + n2.sqbl - 2*sum([(n1.bl[i]*n2.bl[i]) for i in range(len(n1.bl))])))
-                    for cn1 in range(2):
-                        c1 = n1.clades[cn1]
-                        c2 = n2.clades[cn1]
-                        if c1.production != c2.production:
-                            continue
-                        if c1.production == 0:
-                            # branches are terminal
-                            res *= self.sigma + self.decay_factor
-                        else:
-                            try:
-                                res *= self.sigma + dp_matrix[(c1.index, c2.index)]
-                            except KeyError:
-                                res *= self.sigma
-                    dp_matrix[(n1.index, n2.index)] = res
-                    k += res
-        if output is None:
-            return k
-        output.put(k)
+        for ni, tree1_node in enumerate(nodes1):
+            tree1_node_cache = self._tree_cache[tree1][tree1_node]
+            for tree2_node in nodes2:
+                tree2_node_cache = self._tree_cache[tree2][tree2_node]
+                if tree1_node_cache.production != tree2_node_cache.production:
+                    continue
+                res = self.decay_factor * math.exp( -1. / self.gauss_factor
+                    * (tree1_node_cache.sum_of_square_edge_lengths + tree2_node_cache.sum_of_square_edge_lengths - 2*sum([(tree1_node_cache.edge_lengths[i]*tree2_node_cache.edge_lengths[i]) for i in range(len(tree1_node_cache.edge_lengths))])))
+                for node_idx in range(2):
+                    c1 = tree1_node.clades[node_idx]
+                    c2 = tree2_node.clades[node_idx]
+                    if self._tree_cache[tree1][c1].production != self._tree_cache[tree2][c2].production:
+                        continue
+                    if self._tree_cache[tree1][c1].production == 0:
+                        # branches are terminal
+                        res *= self.sigma + self.decay_factor
+                    else:
+                        try:
+                            res *= self.sigma + dp_matrix[(self._tree_cache[tree1][c1].index, self._tree_cache[tree2][c2].index)]
+                        except KeyError:
+                            res *= self.sigma
+                dp_matrix[(self._tree_cache[tree1][tree1_node].index, self._tree_cache[tree2][tree2_node].index)] = res
+                k += res
+        return k
 
 ###############################################################################
 ## Legacy
