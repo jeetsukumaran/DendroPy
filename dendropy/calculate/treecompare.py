@@ -396,41 +396,73 @@ class TreeShapeKernel(object):
         self.decay_factor = decay_factor
 
         # cache management
-        self._tree_cache = collections.defaultdict(dict)
+        self._tree_cache = {}
 
-    def annotate_tree(self, tree):
+    def update_cache(self, tree):
         """
-        Add annotations to Clade objects in place
+        Pre-computes values needed for the kernel trick with this tree and
+        caches them.
         """
+        current_tree_cache = {}
         for nd in tree.leaf_node_iter():
-            self._tree_cache[tree][nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
+            current_tree_cache[nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
                     production=0,
                     index=0,
                     edge_lengths=None,
                     sum_of_square_edge_lengths=0)
             nd.production = 0
-        for i, nd in enumerate(tree.postorder_internal_node_iter()):
-            nterms = sum( [self._tree_cache[tree][ch].production == 0 for ch in nd.child_node_iter()] )
+        for nd_idx, nd in enumerate(tree.postorder_internal_node_iter()):
+            nterms = 0
+            edge_lengths = []
+            for ch in nd.child_node_iter():
+                if current_tree_cache[ch].production == 0:
+                    nterms += 1
+                edge_lengths.append(ch.edge.length)
             production = nterms + 1
-            index = i
-            edge_lengths = [ch.branch_length for ch in nd.child_node_iter()]
+            index = nd_idx
             sum_of_square_edge_lengths = sum([elen**2 for elen in edge_lengths])
-            self._tree_cache[tree][nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
+            current_tree_cache[nd] = TreeShapeKernel._TreeShapeKernelNodeCache(
                     production=production,
                     index=index,
                     edge_lengths=edge_lengths,
                     sum_of_square_edge_lengths=sum_of_square_edge_lengths)
-            # nterms = sum( [ch.production == 0 for ch in nd.child_node_iter()] )
-            # nd.production = nterms + 1
-            # nd.index = i
-            # branch_lengths = [ch.branch_length for ch in nd.child_node_iter()]
-            # nd.bl = branch_lengths
-            # nd.sqbl = sum([bl**2 for bl in branch_lengths])
+        self._tree_cache[tree] = current_tree_cache
+        return current_tree_cache
 
-    def kernel(self, tree1, tree2):
+    def __call__(self,
+            tree1,
+            tree2,
+            is_tree1_cache_updated=True,
+            is_tree2_cache_updated=True,
+            ):
         """
         Recursive function for computing tree convolution
         kernel.
+
+        Parameters
+        ----------
+        tree1 : |Tree| instance
+            First tree to be compared. If it has already been seen by self, its
+            values will have been cached. If the tree has changed since it has been
+            seen by self, it will need to be recached, either explicitly before
+            the calculation by calling 'update_cache' or by specifying
+            'is_tree1_cache_updated=False'
+        tree2 : |Tree| instance
+            Second tree to be compared. If it has already been seen by self, its
+            values will have been cached. If the tree has changed since it has been
+            seen by self, it will need to be recached, either explicitly before
+            the calculation by calling 'update_cache' or by specifying
+            'is_tree2_cache_updated=True'
+        is_tree1_cache_updated : bool
+            If ``tree1`` has not been seen before, then this is ignored as the
+            cache will be updated regardless. If ``tree1`` has been seen, then
+            the cached values representing it will be used unless
+            ``is_tree1_cache_updated`` is ``False``.
+        is_tree2_cache_updated : bool
+            If ``tree1`` has not been seen before, then this is ignored as the
+            cache will be updated regardless. If ``tree1`` has been seen, then
+            the cached values representing it will be used unless
+            ``is_tree1_cache_updated`` is ``False``.
 
         Acknowledgements
         ----------------
@@ -454,33 +486,43 @@ class TreeShapeKernel(object):
         nodes1 = tree1.get_nonterminals(order='postorder')
         nodes2 = tree2.get_nonterminals(order='postorder')
         k = 0
-        if not hasattr(nodes1[0], 'production'):
-            self.annotate_tree(tree1)
-        if not hasattr(nodes2[0], 'production'):
-            self.annotate_tree(tree2)
+        if not is_tree1_cache_updated:
+            tree1_cache = self.update_cache(tree1)
+        else:
+            try:
+                tree1_cache = self._tree_cache[tree1]
+            except KeyError:
+                tree1_cache = self.update_cache(tree1)
+        if not is_tree2_cache_updated:
+            tree2_cache = self.update_cache(tree2)
+        else:
+            try:
+                tree2_cache = self._tree_cache[tree2]
+            except KeyError:
+                tree2_cache = self.update_cache(tree2)
         dp_matrix = {}
         for ni, tree1_node in enumerate(nodes1):
-            tree1_node_cache = self._tree_cache[tree1][tree1_node]
+            tree1_cache_node = tree1_cache[tree1_node]
             for tree2_node in nodes2:
-                tree2_node_cache = self._tree_cache[tree2][tree2_node]
-                if tree1_node_cache.production != tree2_node_cache.production:
+                tree2_cache_node = tree2_cache[tree2_node]
+                if tree1_cache_node.production != tree2_cache_node.production:
                     continue
                 res = self.decay_factor * math.exp( -1. / self.gauss_factor
-                    * (tree1_node_cache.sum_of_square_edge_lengths + tree2_node_cache.sum_of_square_edge_lengths - 2*sum([(tree1_node_cache.edge_lengths[i]*tree2_node_cache.edge_lengths[i]) for i in range(len(tree1_node_cache.edge_lengths))])))
+                    * (tree1_cache_node.sum_of_square_edge_lengths + tree2_cache_node.sum_of_square_edge_lengths - 2*sum([(tree1_cache_node.edge_lengths[i]*tree2_cache_node.edge_lengths[i]) for i in range(len(tree1_cache_node.edge_lengths))])))
                 for node_idx in range(2):
                     c1 = tree1_node.clades[node_idx]
                     c2 = tree2_node.clades[node_idx]
-                    if self._tree_cache[tree1][c1].production != self._tree_cache[tree2][c2].production:
+                    if tree1_cache[c1].production != tree2_cache[c2].production:
                         continue
-                    if self._tree_cache[tree1][c1].production == 0:
+                    if tree1_cache[c1].production == 0:
                         # branches are terminal
                         res *= self.sigma + self.decay_factor
                     else:
                         try:
-                            res *= self.sigma + dp_matrix[(self._tree_cache[tree1][c1].index, self._tree_cache[tree2][c2].index)]
+                            res *= self.sigma + dp_matrix[(tree1_cache[c1].index, tree2_cache[c2].index)]
                         except KeyError:
                             res *= self.sigma
-                dp_matrix[(self._tree_cache[tree1][tree1_node].index, self._tree_cache[tree2][tree2_node].index)] = res
+                dp_matrix[(tree1_cache[tree1_node].index, tree2_cache[tree2_node].index)] = res
                 k += res
         return k
 

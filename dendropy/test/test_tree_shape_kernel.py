@@ -67,8 +67,8 @@ class TreeShapeKernelTests(unittest.TestCase):
         taxon_namespace = dendropy.TaxonNamespace()
         T1 = PhyloTree.get_from_string(T1_str, "newick", taxon_namespace=taxon_namespace)
         T2 = PhyloTree.get_from_string(T2_str, "newick", taxon_namespace=taxon_namespace)
-        kernel = TreeShapeKernel(decay_factor=0.5, gauss_factor=1)
-        assert kernel.kernel(T1, T2) == 1.125 * (1+math.exp(-0.0625))
+        tree_shape_kernel = TreeShapeKernel(decay_factor=0.5, gauss_factor=1)
+        assert tree_shape_kernel(T1, T2) == 1.125 * (1+math.exp(-0.0625))
 
 if __name__ == "__main__":
     unittest.main()
