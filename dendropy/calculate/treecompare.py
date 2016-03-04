@@ -20,7 +20,7 @@
 Statistics, metrics, measurements, and values calculated *between* *two* trees.
 """
 
-from math import sqrt
+import math
 from dendropy.utility import error
 
 ###############################################################################
@@ -293,7 +293,7 @@ def euclidean_distance(
         print(treecompare.euclidean_distance(tree1, tree2))
 
     """
-    df = lambda length_diffs: sqrt(sum([pow(i[0] - i[1], 2) for i in length_diffs]))
+    df = lambda length_diffs: math.sqrt(sum([pow(i[0] - i[1], 2) for i in length_diffs]))
     return _bipartition_difference(tree1,
                            tree2,
                            dist_fn=df,
@@ -351,6 +351,115 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
         else:
             missing.append(bipartition)
     return missing
+
+##############################################################################
+### TreeshapeKernel
+
+class TreeShapeKernel(object):
+    def __init__(self,
+                sigma=1,
+                gauss_factor=1,
+                decay_factor=0.1):
+        """
+        Calculator for tree shape kernel tricking.
+
+        Acknowledgements
+        ----------------
+
+        Original based in part on:
+
+            KAMPHIR
+            https://github.com/ArtPoon/kamphir.git
+            KAMPHIR is written and maintained by: Art F.Y. Poon.
+            With major contributions from: Rosemary McCloskey
+
+        Original work copyright (c) 2015, Art Poon. All rights reserved.
+        See https://github.com/ArtPoon/kamphir/blob/master/LICENSE.md for
+        more license information.
+
+        References
+        ----------
+
+        [1] Poon, A. F., Pond, S. L. K., Bennett, P., Richman, D. D., Brown, A.
+        J. L., & Frost, S. D. (2007). Adaptation to human populations is
+        revealed by within-host polymorphisms in HIV-1 and hepatitis C virus.
+        PLoS Pathog, 3(3), e45.
+
+        [2] Poon, A. F., Walker, L. W., Murray, H., McCloskey, R. M., Harrigan,
+        P. R., & Liang, R. H. (2013). Mapping the shapes of phylogenetic trees
+        from human and zoonotic RNA viruses. PLoS one, 8(11), e78122.
+
+        [3] Poon, A. F., Walker, L. W., Murray, H., McCloskey, R. M., Harrigan,
+        P. R., & Liang, R. H. (2013). Mapping the shapes of phylogenetic trees
+        from human and zoonotic RNA viruses. PLoS one, 8(11), e78122.
+
+        [4] Poon, A. F. (2015). Phylodynamic inference with kernel ABC and its
+        application to HIV epidemiology. Molecular biology and evolution,
+        msv123.
+
+        """
+        self.sigma = sigma
+        self.gauss_factor = gauss_factor
+        self.decay_factor = decay_factor
+
+    def annotate_tree(self, t):
+        """
+        Add annotations to Clade objects in place
+        """
+        for tip in t.get_terminals():
+            tip.production = 0
+
+        for i, node in enumerate(t.get_nonterminals(order='postorder')):
+            children = node.clades
+            nterms = sum( [c.production == 0 for c in children] )
+            node.production = nterms + 1
+            node.index = i
+            branch_lengths = [c.branch_length for c in node.clades]
+            node.bl = branch_lengths
+            node.sqbl = sum([bl**2 for bl in branch_lengths])
+
+    def kernel(self, t1, t2, myrank=None, nprocs=None, output=None):
+        """
+        Recursive function for computing tree convolution
+        kernel.  Adapted from Moschitti (2006) Making tree kernels
+        practical for natural language learning. Proceedings of the
+        11th Conference of the European Chapter of the Association
+        for Computational Linguistics.
+        """
+        nodes1 = t1.get_nonterminals(order='postorder')
+        nodes2 = t2.get_nonterminals(order='postorder')
+        k = 0
+        if not hasattr(nodes1[0], 'production'):
+            self.annotate_tree(t1)
+        if not hasattr(nodes2[0], 'production'):
+            self.annotate_tree(t2)
+        dp_matrix = {}
+        # iterate over non-terminals, visiting children before parents
+        for ni, n1 in enumerate(nodes1):
+            if myrank is not None and nprocs and ni % nprocs != myrank:
+                continue
+            for n2 in nodes2:
+                if n1.production == n2.production:
+                    res = self.decay_factor * math.exp( -1. / self.gauss_factor
+                        * (n1.sqbl + n2.sqbl - 2*sum([(n1.bl[i]*n2.bl[i]) for i in range(len(n1.bl))])))
+                    for cn1 in range(2):
+                        c1 = n1.clades[cn1]
+                        c2 = n2.clades[cn1]
+                        if c1.production != c2.production:
+                            continue
+                        if c1.production == 0:
+                            # branches are terminal
+                            res *= self.sigma + self.decay_factor
+                        else:
+                            try:
+                                res *= self.sigma + dp_matrix[(c1.index, c2.index)]
+                            except KeyError:
+                                res *= self.sigma
+                    dp_matrix[(n1.index, n2.index)] = res
+                    k += res
+        if output is None:
+            return k
+        output.put(k)
 
 ###############################################################################
 ## Legacy

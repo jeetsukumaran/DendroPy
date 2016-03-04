@@ -17,10 +17,13 @@
 ##############################################################################
 
 """
-Models of canonical tree shapes.
+Models and operations with tree shapes.
 """
 
 import dendropy
+
+##############################################################################
+### Treeshape Generation
 
 def star_tree(taxon_namespace, **kwargs):
     "Builds and returns a star tree from the given taxa block."
