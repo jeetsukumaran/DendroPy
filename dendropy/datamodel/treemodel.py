@@ -2146,7 +2146,7 @@ class Node(
         return self.sibling_nodes()
 
     def extract_subtree(self,
-            reference_to_original_node_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extracted_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
@@ -2157,7 +2157,7 @@ class Node(
 
         Parameters
         ----------
-        reference_to_original_node_attr_name : str
+        extraction_source_reference_attr_name : str
             Name of attribute to set on cloned nodes that references
             corresponding original node. If ``None``, then attribute (and
             reference) will not be created.
@@ -2241,8 +2241,8 @@ class Node(
                 if nd0 is start_node_to_match:
                     start_node = nd1
                 memo[nd0] = nd1
-                if reference_to_original_node_attr_name:
-                    setattr(nd1, reference_to_original_node_attr_name, nd0)
+                if extraction_source_reference_attr_name:
+                    setattr(nd1, extraction_source_reference_attr_name, nd0)
         if start_node is not None:
             return start_node
         else:
@@ -3258,7 +3258,7 @@ class Tree(
     ### Extracting Trees and Subtrees
 
     def extract_tree(self,
-            reference_to_original_node_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extracted_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
@@ -3272,7 +3272,7 @@ class Tree(
 
         Parameters
         ----------
-        reference_to_original_node_attr_name : str
+        extraction_source_reference_attr_name : str
             Name of attribute to set on cloned nodes that references
             corresponding original node. If ``None``, then attribute (and
             reference) will not be created.
@@ -3336,13 +3336,13 @@ class Tree(
         Returns
         -------
         t : |Tree|
-            A clone tree.
+            A new tree based on this one, with nodes filtered out if specified.
 
         """
         other = self.__class__(taxon_namespace=self.taxon_namespace)
         other.label = self.label
         other.seed_node = self.seed_node.extract_subtree(
-                reference_to_original_node_attr_name=reference_to_original_node_attr_name,
+                extraction_source_reference_attr_name=extraction_source_reference_attr_name,
                 node_filter_fn=node_filter_fn,
                 suppress_unifurcations=suppress_unifurcations,
                 is_apply_filter_to_leaf_nodes=is_apply_filter_to_leaf_nodes,
@@ -3350,87 +3350,138 @@ class Tree(
                 )
         return other
 
+    def extract_tree_with_taxa(self,
+            taxa,
+            extraction_source_reference_attr_name="extracted_from",
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a copy of this tree that only includes leaf nodes if they
+        are associated with the taxon objects listed in ``taxa``. Note that
+        this copy will be a "thin" copy, including just the basic structure
+        (nodes, edges) and minimal attributes (edge lengths, node labels, and
+        taxon associations). Annotations, comments, and other attributes are
+        not copied.
+
+        Parameters
+        ----------
+        taxa : iterable of |Taxon| instances
+            List or some other iterable of |Taxon| objects to include.
+        suppress_unifurcations : bool
+            If |True|, nodes of outdegree 1 will be deleted. Only will
+            be done if some nodes are excluded from the cloned tree.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
+
+        Examples
+        --------
+
+        A clone that only extracts a subtree with taxa in the genus
+        "Rhacophorus"::
+
+            tree0 = dendropy.Tree.get(
+                        path="old_world_frogs.tre",
+                        schema="newick")
+            # Include non-leaf nodes and leaf nodes with taxon
+            # whose label starts with "Rhacophorus"
+            taxa_to_retain = set([taxon for taxon in tree0.taxon_namespace
+                    if taxon.label.startswith("Rhacophorus")])
+            tree1 = tree0.extract_tree_with_taxa(taxa=taxa_to_retain)
+
+            # Above is equivalent to, but more efficient than:
+            #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
+            #           if nd.taxon.label.startswith("Rhacophorus)]
+            #   tree1 = dendropy.Tree(tree0)
+            #   tree1.retain_taxa(inclusion_set)
+
+        Returns
+        -------
+        t : |Tree|
+            A new tree based on this one, with nodes filtered out if specified.
+
+        """
+        node_filter_fn = lambda nd: nd.taxon is None or nd.taxon in set(taxa)
+        return self.extract_tree(
+                node_filter_fn=node_filter_fn,
+                extraction_source_reference_attr_name=extraction_source_reference_attr_name,
+                is_apply_filter_to_leaf_nodes=True,
+                is_apply_filter_to_internal_nodes=False,
+                )
+
+    def extract_tree_with_taxa_labels(self,
+            labels,
+            extraction_source_reference_attr_name="extracted_from",
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a copy of this tree that only includes leaf nodes if they are
+        associated with taxon objects with labels matching those listed in
+        ``labels``. Note that this copy will be a "thin" copy, including just
+        the basic structure (nodes, edges) and minimal attributes (edge
+        lengths, node labels, and taxon associations). Annotations,
+        comments, and other attributes are not copied.
+
+        Parameters
+        ----------
+        labels : iterable of str instances
+            List or some other iterable of strings to match.
+        suppress_unifurcations : bool
+            If |True|, nodes of outdegree 1 will be deleted. Only will
+            be done if some nodes are excluded from the cloned tree.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
+
+        Examples
+        --------
+
+        A clone that only extracts a subtree with taxa in the genus
+        "Rhacophorus"::
+
+            tree0 = dendropy.Tree.get(
+                        path="old_world_frogs.tre",
+                        schema="newick")
+            # Include non-leaf nodes and leaf nodes with taxon
+            # whose label starts with "Rhacophorus"
+            labels = set([taxon.label for taxon in tree0.taxon_namespace
+                    if taxon.label.startswith("Rhacophorus")])
+            tree1 = tree0.extract_tree_with_taxa_labels(labels=labels)
+
+            # Above is equivalent to, but more efficient than:
+            #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
+            #           if nd.taxon.label.startswith("Rhacophorus)]
+            #   tree1 = dendropy.Tree(tree0)
+            #   tree1.retain_taxa(inclusion_set)
+
+        Returns
+        -------
+        t : |Tree|
+            A new tree based on this one, with nodes filtered out if specified.
+
+        """
+        node_filter_fn = lambda nd: nd.taxon is None or nd.taxon.label in set(labels)
+        return self.extract_tree(
+                node_filter_fn=node_filter_fn,
+                extraction_source_reference_attr_name=extraction_source_reference_attr_name,
+                is_apply_filter_to_leaf_nodes=True,
+                is_apply_filter_to_internal_nodes=False,
+                )
+
     ###########################################################################
     ### I/O
-
-    # def _parse_and_add_from_stream(self, stream, schema, **kwargs):
-    #     """
-    #     Redefines this |Tree| object based on data from ``source``.
-
-    #     The current |TaxonNamespace| reference will be retained (and
-    #     modified if new operational taxonomic unit concept definitions
-    #     are encountered in the data source). *All* other information,
-    #     including metadata/annotations, will be lost or replaced with
-    #     information from the new data source.
-
-    #     If the source defines multiple tree collections (e.g. multiple NEXUS
-    #     "Trees" blocks), then the ``collection_offset`` argument
-    #     can be used to specify the 0-based index of the tree collection, and
-    #     ``tree_offset`` argument can be used to specify the 0-based
-    #     index of the tree within the collection, as the source. If
-    #     ``collection_offset`` is not specified or |None|, then all collections in
-    #     the source are merged before considering ``tree_offset``.  If
-    #     ``tree_offset`` is not specified, then the first tree (offset=0) is
-    #     returned.
-
-    #     Notes
-    #     -----
-    #     *All* operational taxonomic unit concepts in the data source will be included
-    #     in the |TaxonNamespace| object associated with the new
-    #     |TreeList| object and its contained |Tree| objects, even those
-    #     not associated with tree being retrieved.
-
-    #     Parameters
-    #     ----------
-
-    #     stream : file or file-like object
-    #         Source of data.
-
-    #     schema : string
-    #         Identifier of format of data in ``stream``
-
-    #     collection_offset : integer or None
-    #         0-based index of tree block or collection in source to be parsed.
-
-    #     tree_offset : integer or None
-    #         0-based index of tree in source to be parsed. If
-    #         ``collection_offset`` is |None|, then this is the 0-based index of
-    #         the tree across all collections considered together. Otherwise,
-    #         this is the 0-based index within a particular collection. If
-    #         ``tree_offset`` is |None| or not specified, then the first tree is
-    #         returned.
-
-    #     \*\*kwargs : keyword arguments
-    #         Arguments to customize parsing and instantiation this |Tree|
-    #         from the data source, including schema- or format-specific
-    #         handling. The following optional keyword arguments are recognized
-    #         and handled by this constructor:
-
-    #             - ``label``: The label the tree |Tree| object.
-
-    #         Other keyword arguments may be available, depending on the
-    #         implementation of the reader specialized to handle ``schema``
-    #         formats. See documentation for details on keyword arguments
-    #         supported by readers of various schemas.
-
-    #     Returns
-    #     -------
-    #     tree : |Tree|
-    #          Returns ``self``.
-
-    #     Raises
-    #     ------
-    #     ValueError
-    #         If no valid trees matching criteria found in source.
-
-    #     """
-    #     if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not self.taxon_namespace:
-    #         raise TypeError("Cannot change ``taxon_namespace`` when reading an existing Tree")
-    #     kwargs["taxon_namespace"] = self.taxon_namespace
-    #     tree = Tree._parse_and_create_from_stream(stream, schema, **kwargs)
-    #     if tree is None:
-    #         raise ValueError("Invalid tree source specification")
-    #     self.__dict__ = tree.__dict__
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
         """
@@ -5078,18 +5129,6 @@ class Tree(
             self.update_bipartitions()
         return nodes_removed
 
-    def prune_taxa(self, taxa, update_bipartitions=False, suppress_unifurcations=True):
-        """
-        Removes terminal nodes associated with Taxon objects given by the container
-        ``taxa`` (which can be any iterable, including a TaxonNamespace object) from ``self``.
-        """
-        nodes_to_remove = []
-        for nd in self.postorder_node_iter():
-            if nd.taxon and nd.taxon in taxa:
-                nd.edge.tail_node.remove_child(nd)
-        self.prune_leaves_without_taxa(update_bipartitions=update_bipartitions,
-                suppress_unifurcations=suppress_unifurcations)
-
     def prune_nodes(self, nodes, prune_leaves_without_taxa=False, update_bipartitions=False, suppress_unifurcations=True):
         for nd in nodes:
             if nd.edge.tail_node is None:
@@ -5099,10 +5138,33 @@ class Tree(
             self.prune_leaves_without_taxa(update_bipartitions=update_bipartitions,
                     suppress_unifurcations=suppress_unifurcations)
 
+    def prune_taxa(self,
+            taxa,
+            update_bipartitions=False,
+            suppress_unifurcations=True,
+            is_apply_filter_to_leaf_nodes=True,
+            is_apply_filter_to_internal_nodes=False):
+        """
+        Removes terminal nodes associated with Taxon objects given by the container
+        ``taxa`` (which can be any iterable, including a TaxonNamespace object) from ``self``.
+        """
+        nodes_to_remove = []
+        for nd in self.postorder_node_iter():
+            if (
+                ((is_apply_filter_to_internal_nodes and nd._child_nodes)
+                or (is_apply_filter_to_leaf_nodes and not nd._child_nodes))
+                and (nd.taxon and nd.taxon in taxa)
+                ):
+                    nd.edge.tail_node.remove_child(nd)
+        self.prune_leaves_without_taxa(update_bipartitions=update_bipartitions,
+                suppress_unifurcations=suppress_unifurcations)
+
     def prune_taxa_with_labels(self,
             labels,
             update_bipartitions=False,
-            suppress_unifurcations=True):
+            suppress_unifurcations=True,
+            is_apply_filter_to_leaf_nodes=True,
+            is_apply_filter_to_internal_nodes=False):
         """
         Removes terminal nodes that are associated with Taxon objects with
         labels given by ``labels``.
@@ -5110,7 +5172,9 @@ class Tree(
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.prune_taxa(taxa=taxa,
                 update_bipartitions=update_bipartitions,
-                suppress_unifurcations=suppress_unifurcations)
+                suppress_unifurcations=suppress_unifurcations,
+                is_apply_filter_to_leaf_nodes=is_apply_filter_to_leaf_nodes,
+                is_apply_filter_to_internal_nodes=is_apply_filter_to_internal_nodes)
 
     def retain_taxa(self,
             taxa,

@@ -771,6 +771,16 @@ class TestStructureExtraction(
         compare_and_validate.Comparator,
         unittest.TestCase):
 
+    def setUp(self):
+        self.taxon_label_inclusion_sets = (
+            ("i", "k", "l", "n", "p"),
+            ("i", "j", "k", "l", "m", "n", "p"),
+            ("j", "k"),
+            ("i", "k"),
+            ("i", "p"),
+            ("i", "j", "n"),
+        )
+
     def test_full_extract(self):
         tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                 suppress_internal_node_taxa=True,
@@ -782,16 +792,8 @@ class TestStructureExtraction(
                 compare_taxon_annotations=False)
 
     def test_filtered_leaf_extract(self):
-        inclusion_sets = (
-            ("i", "k", "l", "n", "p"),
-            ("i", "j", "k", "l", "m", "n", "p"),
-            ("j", "k"),
-            ("i", "k"),
-            ("i", "p"),
-            ("i", "j", "n"),
-        )
         for suppress_internal_node_taxa in (True, ):#False):
-            for inclusion_set in inclusion_sets:
+            for inclusion_set in self.taxon_label_inclusion_sets:
                 tree1, anodes1, lnodes1, inodes1 = self.get_tree(
                         suppress_internal_node_taxa=suppress_internal_node_taxa,
                         suppress_leaf_node_taxa=False)
@@ -804,6 +806,25 @@ class TestStructureExtraction(
                         taxon_namespace_scoped=True,
                         compare_tree_annotations=False,
                         compare_taxon_annotations=False)
+
+    def test_extract_with_taxa(self):
+        for taxon_label_inclusion_set in self.taxon_label_inclusion_sets:
+            tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_leaf_node_taxa=False)
+            to_include_taxa = set([tree1.taxon_namespace.get_taxon(label) for label in taxon_label_inclusion_set])
+            tree1.retain_taxa(to_include_taxa)
+            assert None not in to_include_taxa
+            tree2 = tree1.extract_tree_with_taxa_labels(taxon_label_inclusion_set)
+            self.compare_distinct_trees(tree1, tree2,
+                    taxon_namespace_scoped=True,
+                    compare_tree_annotations=False,
+                    compare_taxon_annotations=False)
+            tree3 = tree1.extract_tree_with_taxa(to_include_taxa)
+            self.compare_distinct_trees(tree1, tree3,
+                    taxon_namespace_scoped=True,
+                    compare_tree_annotations=False,
+                    compare_taxon_annotations=False)
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
