@@ -2149,6 +2149,8 @@ class Node(
             reference_to_original_node_attr_name="extracted_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
+            is_apply_filter_to_leaf_nodes=True,
+            is_apply_filter_to_internal_nodes=True,
             ):
         """
         Returns a clone of the structure descending from this node.
@@ -2176,9 +2178,20 @@ class Node(
         start_node = None
         start_node_to_match = self
         for nd0 in self.postorder_iter():
-            if node_filter_fn is not None and not node_filter_fn(nd0):
-                is_excluded_nodes = True
-                continue
+            if node_filter_fn is not None:
+                if nd0._child_nodes:
+                    if is_apply_filter_to_internal_nodes:
+                        is_apply_filter = True
+                    else:
+                        is_apply_filter = False
+                else:
+                    if is_apply_filter_to_leaf_nodes:
+                        is_apply_filter = True
+                    else:
+                        is_apply_filter = False
+                if is_apply_filter and not node_filter_fn(nd0):
+                    is_excluded_nodes = True
+                    continue
             original_node_has_children = False
             children_to_add = []
             for ch_nd0 in nd0.child_node_iter():
@@ -3204,6 +3217,37 @@ class Tree(
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
 
+    def __deepcopy__(self, memo=None):
+        # ensure clone map
+        return basemodel.Annotable.__deepcopy__(self, memo=memo)
+        # if memo is None:
+        #     memo = {}
+        # # get or create clone of self
+        # try:
+        #     other = memo[id(self)]
+        # except KeyError:
+        #     # create object without initialization
+        #     other = self.__class__.__new__(self.__class__)
+        #     # store
+        #     memo[id(self)] = other
+        # # copy other attributes first, skipping annotations
+        # for k in self.__dict__:
+        #     if k == "_annotations":
+        #         continue
+        #     if k in other.__dict__:
+        #         # do not copy if already populated, perhaps by a derived class
+        #         continue
+        #     other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        #     memo[id(self.__dict__[k])] = other.__dict__[k]
+        #     # assert id(self.__dict__[k]) in memo
+        # # create annotations
+        # other.deep_copy_annotations_from(self, memo)
+        # # return
+        # return other
+
+    ###########################################################################
+    ### Extracting Trees and Subtrees
+
     def extract_tree(self,
             reference_to_original_node_attr_name="extracted_from",
             node_filter_fn=None,
@@ -3252,7 +3296,7 @@ class Tree(
                         nd.taxon.label.startswith("Rhacophorus")
             tree1 = tree0.extract_tree(node_filter_fn=node_filter_fn)
 
-            # Above is operationally identical to:
+            # Above is equivalent to, but more efficient than:
             #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
             #           if nd.taxon.label.startswith("Rhacophorus)]
             #   tree1 = dendropy.Tree(tree0)
@@ -3282,34 +3326,6 @@ class Tree(
                 node_filter_fn=node_filter_fn,
                 suppress_unifurcations=suppress_unifurcations)
         return other
-
-    def __deepcopy__(self, memo=None):
-        # ensure clone map
-        return basemodel.Annotable.__deepcopy__(self, memo=memo)
-        # if memo is None:
-        #     memo = {}
-        # # get or create clone of self
-        # try:
-        #     other = memo[id(self)]
-        # except KeyError:
-        #     # create object without initialization
-        #     other = self.__class__.__new__(self.__class__)
-        #     # store
-        #     memo[id(self)] = other
-        # # copy other attributes first, skipping annotations
-        # for k in self.__dict__:
-        #     if k == "_annotations":
-        #         continue
-        #     if k in other.__dict__:
-        #         # do not copy if already populated, perhaps by a derived class
-        #         continue
-        #     other.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-        #     memo[id(self.__dict__[k])] = other.__dict__[k]
-        #     # assert id(self.__dict__[k]) in memo
-        # # create annotations
-        # other.deep_copy_annotations_from(self, memo)
-        # # return
-        # return other
 
     ###########################################################################
     ### I/O
