@@ -3122,15 +3122,16 @@ class Tree(
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
 
-    def clone_structure(self,
+    def extract_tree(self,
             reference_to_original_node_attr_name="cloned_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
             ):
         """
         Returns a copy of this tree that only includes the basic structure
-        (nodes, edges, edge lengths, node labels, and taxon associations).
-        Annotations and other attributes are not copied.
+        (nodes, edges), and minimal attributes (edge lengths, node labels, and
+        taxon associations). Annotations, comments, and other attributes are
+        not copied.
 
         Parameters
         ----------
@@ -3155,7 +3156,7 @@ class Tree(
             tree0 = dendropy.Tree.get(
                         path="mammals.tre",
                         schema="newick")
-            tree1 = tree0.clone_structure()
+            tree1 = tree0.extract_tree()
 
         A clone that only extracts a subtree with taxa in the genus
         "Rhacophorus"::
@@ -3167,7 +3168,13 @@ class Tree(
             # whose label starts with "Rhacophorus"
             node_filter_fn = lambda nd: nd.is_internal() or \
                         nd.taxon.label.startswith("Rhacophorus")
-            tree1 = tree0.clone_structure(node_filter_fn=node_filter_fn)
+            tree1 = tree0.extract_tree(node_filter_fn=node_filter_fn)
+
+            # Above is operationally identical to:
+            #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
+            #           if nd.taxon.label.startswith("Rhacophorus)]
+            #   tree1 = dendropy.Tree(tree0)
+            #   tree1.retain_taxa(inclusion_set)
 
         A clone that only extracts a subtree with nodes with taxa associated
         with the habitat "mountain" or "forest":
@@ -3178,7 +3185,7 @@ class Tree(
             include_habitats = set(["mountain", "forest"])
             node_filter_fn = lambda nd: nd.taxon is None or \
                         nd.taxon.annotations["habitat"] in include_habitats
-            tree1 = tree0.clone_structure(node_filter_fn=node_filter_fn)
+            tree1 = tree0.extract_tree(node_filter_fn=node_filter_fn)
 
         Returns
         -------
