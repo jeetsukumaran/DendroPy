@@ -2223,7 +2223,7 @@ class Node(
                     else:
                         children_to_add[0].edge.length += nd0.edge.length
                 else:
-                    nd0.edge.length = children_to_add[0].edge.length
+                    nd1.edge.length = children_to_add[0].edge.length
                 if nd0.parent_node is None:
                     start_node = children_to_add[0]
                     break
