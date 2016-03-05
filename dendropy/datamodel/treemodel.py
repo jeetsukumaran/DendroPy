@@ -3081,6 +3081,9 @@ class Tree(
     def __eq__(self, other):
         return self is other
 
+    ##############################################################################
+    ## Copying/cloning
+
     def _clone_from(self, tree, kwargs_dict):
         # super(Tree, self).__init__()
         memo = {}
@@ -3118,6 +3121,103 @@ class Tree(
         # the TaxonNamespace and Taxon objects
         self.taxon_namespace.populate_memo_for_taxon_namespace_scoped_copy(memo)
         return self.__deepcopy__(memo=memo)
+
+    def clone_structure(self,
+            reference_to_original_node_attr_name="cloned_from",
+            node_filter_fn=None,
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a copy of this tree that only includes the basic structure
+        (nodes, edges, edge lengths, node labels, and taxon associations).
+        Annotations and other attributes are not copied.
+
+        Parameters
+        ----------
+        reference_to_original_node_attr_name : str
+            Name of attribute to set on cloned nodes that references
+            corresponding original node. If ``None``, then attribute (and
+            reference) will not be created.
+        node_filter_fn : None or function object
+            If ``None``, then entire tree structure is cloned.
+            If not ``None``, must be a function object that returns ``True``
+            if a particular |Node| instance on the original tree should
+            be included in the cloned tree, or ``False`` otherwise.
+        suppress_unifurcations : bool
+            If |True|, nodes of outdegree 1 will be deleted. Only will
+            be done if some nodes are excluded from the cloned tree.
+
+        Examples
+        --------
+
+        A simple clone::
+
+            tree0 = dendropy.Tree.get(
+                        path="mammals.tre",
+                        schema="newick")
+            tree1 = tree0.clone_structure()
+
+        A clone that only extracts a subtree with taxa in the genus
+        "Rhacophorus"::
+
+            tree0 = dendropy.Tree.get(
+                        path="old_world_frogs.tre",
+                        schema="newick")
+            # Include non-leaf nodes and leaf nodes with taxon
+            # whose label starts with "Rhacophorus"
+            node_filter_fn = lambda nd: nd.is_internal() or \
+                        nd.taxon.label.startswith("Rhacophorus")
+            tree1 = tree0.clone_structure(node_filter_fn=node_filter_fn)
+
+        A clone that only extracts a subtree with nodes with taxa associated
+        with the habitat "mountain" or "forest":
+
+            tree0 = dendropy.Tree.get(
+                        path="birds.tre",
+                        schema="newick")
+            include_habitats = set(["mountain", "forest"])
+            node_filter_fn = lambda nd: nd.taxon is None or \
+                        nd.taxon.annotations["habitat"] in include_habitats
+            tree1 = tree0.clone_structure(node_filter_fn=node_filter_fn)
+
+        Returns
+        -------
+        t : |Tree|
+            A clone tree.
+
+        """
+        other = self.__class__(taxon_namespace=self.taxon_namespace)
+        other.label = self.label
+        memo = {}
+        is_excluded_nodes = False
+        new_seed = None
+        for nd0 in self.postorder_node_iter():
+            if node_filter_fn is not None and not node_filter_fn(nd0):
+                is_excluded_nodes = True
+                continue
+            nd1 = self.node_factory()
+            if nd0 is self.seed_node:
+                new_seed = nd1
+            nd1.label = nd0.label
+            nd1.taxon = nd0.taxon
+            nd1.edge.length = nd0.edge.length
+            nd1.edge.label = nd0.edge.label
+            if reference_to_original_node_attr_name:
+                setattr(nd1, reference_to_original_node_attr_name, nd0)
+            original_node_has_no_children = True
+            cloned_node_has_children_added = False
+            for ch_nd0 in nd0.child_node_iter():
+                original_node_has_no_children = False
+                ch_nd1 = memo.get(ch_nd0, None)
+                if ch_nd1 is not None:
+                    cloned_node_has_children_added = True
+                    nd1.add_child(ch_nd1)
+            if original_node_has_no_children or cloned_node_has_children_added:
+                memo[nd0] = nd1
+        other.seed_node = new_seed
+        if is_excluded_nodes and suppress_unifurcations:
+            other.suppress_unifurcations()
+        return other
 
     def __deepcopy__(self, memo=None):
         # ensure clone map
