@@ -3310,8 +3310,7 @@ class Tree(
             tree0 = dendropy.Tree.get(
                         path="old_world_frogs.tre",
                         schema="newick")
-            # Include non-leaf nodes and leaf nodes with taxon
-            # whose label starts with "Rhacophorus"
+            # Include taxa only if label starts with "Rhacophorus"
             node_filter_fn = lambda nd: nd.is_internal() or \
                         nd.taxon.label.startswith("Rhacophorus")
             tree1 = tree0.extract_tree(node_filter_fn=node_filter_fn)
@@ -3389,8 +3388,7 @@ class Tree(
             tree0 = dendropy.Tree.get(
                         path="old_world_frogs.tre",
                         schema="newick")
-            # Include non-leaf nodes and leaf nodes with taxon
-            # whose label starts with "Rhacophorus"
+            # Include taxa only if label starts with "Rhacophorus"
             taxa_to_retain = set([taxon for taxon in tree0.taxon_namespace
                     if taxon.label.startswith("Rhacophorus")])
             tree1 = tree0.extract_tree_with_taxa(taxa=taxa_to_retain)
@@ -3454,8 +3452,7 @@ class Tree(
             tree0 = dendropy.Tree.get(
                         path="old_world_frogs.tre",
                         schema="newick")
-            # Include non-leaf nodes and leaf nodes with taxon
-            # whose label starts with "Rhacophorus"
+            # Include taxa only if label starts with "Rhacophorus"
             labels = set([taxon.label for taxon in tree0.taxon_namespace
                     if taxon.label.startswith("Rhacophorus")])
             tree1 = tree0.extract_tree_with_taxa_labels(labels=labels)
@@ -3473,6 +3470,134 @@ class Tree(
 
         """
         node_filter_fn = lambda nd: nd.taxon is None or nd.taxon.label in set(labels)
+        return self.extract_tree(
+                node_filter_fn=node_filter_fn,
+                extraction_source_reference_attr_name=extraction_source_reference_attr_name,
+                is_apply_filter_to_leaf_nodes=True,
+                is_apply_filter_to_internal_nodes=False,
+                )
+
+    def extract_tree_without_taxa(self,
+            taxa,
+            extraction_source_reference_attr_name="extracted_from",
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a copy of this tree that only includes leaf nodes if they
+        are NOT associated with the taxon objects listed in ``taxa``. Note that
+        this copy will be a "thin" copy, including just the basic structure
+        (nodes, edges) and minimal attributes (edge lengths, node labels, and
+        taxon associations). Annotations, comments, and other attributes are
+        not copied.
+
+        Parameters
+        ----------
+        taxa : iterable of |Taxon| instances
+            List or some other iterable of |Taxon| objects to exclude.
+        suppress_unifurcations : bool
+            If |True|, nodes of outdegree 1 will be deleted. Only will
+            be done if some nodes are excluded from the cloned tree.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
+
+        Examples
+        --------
+
+        A clone that only extracts a subtree with taxa NOT in the genus
+        "Rhacophorus"::
+
+            tree0 = dendropy.Tree.get(
+                        path="old_world_frogs.tre",
+                        schema="newick")
+            # Exclude taxa if their name starts with "Rhacophorus"
+            taxa_to_exclude = set([taxon for taxon in tree0.taxon_namespace
+                    if taxon.label.startswith("Rhacophorus")])
+            tree1 = tree0.extract_tree_with_taxa(taxa=taxa_to_retain)
+
+            # Above is equivalent to, but more efficient than:
+            #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
+            #           if nd.taxon.label.startswith("Rhacophorus)]
+            #   tree1 = dendropy.Tree(tree0)
+            #   tree1.retain_taxa(inclusion_set)
+
+        Returns
+        -------
+        t : |Tree|
+            A new tree based on this one, with nodes filtered out if specified.
+
+        """
+        node_filter_fn = lambda nd: nd.taxon is None or nd.taxon not in set(taxa)
+        return self.extract_tree(
+                node_filter_fn=node_filter_fn,
+                extraction_source_reference_attr_name=extraction_source_reference_attr_name,
+                is_apply_filter_to_leaf_nodes=True,
+                is_apply_filter_to_internal_nodes=False,
+                )
+
+    def extract_tree_without_taxa_labels(self,
+            labels,
+            extraction_source_reference_attr_name="extracted_from",
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a copy of this tree that only includes leaf nodes if they
+        are NOT associated with the taxon objects listed in ``taxa``. Note that
+        this copy will be a "thin" copy, including just the basic structure
+        (nodes, edges) and minimal attributes (edge lengths, node labels, and
+        taxon associations). Annotations, comments, and other attributes are
+        not copied.
+
+        Parameters
+        ----------
+        labels : iterable of str instances
+            List or some other iterable of strings to match.
+        suppress_unifurcations : bool
+            If |True|, nodes of outdegree 1 will be deleted. Only will
+            be done if some nodes are excluded from the cloned tree.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
+
+        Examples
+        --------
+
+        A clone that only extracts a subtree with taxa NOT in the genus
+        "Rhacophorus"::
+
+            tree0 = dendropy.Tree.get(
+                        path="old_world_frogs.tre",
+                        schema="newick")
+            # Exclude taxa if label starts with "Rhacophorus"
+            labels = set([taxon.label for taxon in tree0.taxon_namespace
+                    if taxon.label.startswith("Rhacophorus")])
+            tree1 = tree0.extract_tree_without_taxa_labels(labels=labels)
+
+            # Above is equivalent to, but more efficient than:
+            #   inclusion_set = [nd.taxon for nd in tree0.leaf_node_iter()
+            #           if nd.taxon.label.startswith("Rhacophorus)]
+            #   tree1 = dendropy.Tree(tree0)
+            #   tree1.prune_taxa(inclusion_set)
+
+        Returns
+        -------
+        t : |Tree|
+            A new tree based on this one, with nodes filtered out if specified.
+
+        """
+        node_filter_fn = lambda nd: nd.taxon is None or nd.taxon.label not in set(labels)
         return self.extract_tree(
                 node_filter_fn=node_filter_fn,
                 extraction_source_reference_attr_name=extraction_source_reference_attr_name,

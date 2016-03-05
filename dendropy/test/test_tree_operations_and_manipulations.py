@@ -813,14 +813,34 @@ class TestStructureExtraction(
                     suppress_internal_node_taxa=False,
                     suppress_leaf_node_taxa=False)
             to_include_taxa = set([tree1.taxon_namespace.get_taxon(label) for label in taxon_label_inclusion_set])
-            tree1.retain_taxa(to_include_taxa)
             assert None not in to_include_taxa
+            tree1.retain_taxa(to_include_taxa)
             tree2 = tree1.extract_tree_with_taxa_labels(taxon_label_inclusion_set)
             self.compare_distinct_trees(tree1, tree2,
                     taxon_namespace_scoped=True,
                     compare_tree_annotations=False,
                     compare_taxon_annotations=False)
             tree3 = tree1.extract_tree_with_taxa(to_include_taxa)
+            self.compare_distinct_trees(tree1, tree3,
+                    taxon_namespace_scoped=True,
+                    compare_tree_annotations=False,
+                    compare_taxon_annotations=False)
+
+    def test_extract_without_taxa(self):
+        for taxon_label_inclusion_set in self.taxon_label_inclusion_sets:
+            tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                    suppress_internal_node_taxa=False,
+                    suppress_leaf_node_taxa=False)
+            to_exclude_taxa = set([t for t in tree1.taxon_namespace if t.label not in taxon_label_inclusion_set])
+            assert None not in to_exclude_taxa
+            tree1.prune_taxa(to_exclude_taxa)
+            to_exclude_taxa_labels = set([t.label for t in to_exclude_taxa])
+            tree2 = tree1.extract_tree_without_taxa(to_exclude_taxa)
+            self.compare_distinct_trees(tree1, tree2,
+                    taxon_namespace_scoped=True,
+                    compare_tree_annotations=False,
+                    compare_taxon_annotations=False)
+            tree3 = tree1.extract_tree_without_taxa_labels(to_exclude_taxa_labels)
             self.compare_distinct_trees(tree1, tree3,
                     taxon_namespace_scoped=True,
                     compare_tree_annotations=False,
