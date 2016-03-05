@@ -2146,7 +2146,7 @@ class Node(
         return self.sibling_nodes()
 
     def extract_subtree(self,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
@@ -3258,7 +3258,7 @@ class Tree(
     ### Extracting Trees and Subtrees
 
     def extract_tree(self,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
@@ -3322,7 +3322,7 @@ class Tree(
             #   tree1.retain_taxa(inclusion_set)
 
         A clone that only extracts a subtree with nodes with taxa associated
-        with the habitat "mountain" or "forest":
+        with the habitat "mountain" or "forest"::
 
             tree0 = dendropy.Tree.get(
                         path="birds.tre",
@@ -3351,7 +3351,7 @@ class Tree(
 
     def extract_tree_with_taxa(self,
             taxa,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             suppress_unifurcations=True,
             ):
         """
@@ -3415,7 +3415,7 @@ class Tree(
 
     def extract_tree_with_taxa_labels(self,
             labels,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             suppress_unifurcations=True,
             ):
         """
@@ -3479,7 +3479,7 @@ class Tree(
 
     def extract_tree_without_taxa(self,
             taxa,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             suppress_unifurcations=True,
             ):
         """
@@ -3543,7 +3543,7 @@ class Tree(
 
     def extract_tree_without_taxa_labels(self,
             labels,
-            extraction_source_reference_attr_name="extracted_from",
+            extraction_source_reference_attr_name="extraction_source",
             suppress_unifurcations=True,
             ):
         """

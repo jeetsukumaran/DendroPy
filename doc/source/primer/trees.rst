@@ -63,9 +63,13 @@ You can make a "taxon namespace-scoped" copy of a |Tree| instance, i.e., where a
 
 .. literalinclude:: /examples/tree_copy1.py
 
-Finally, for a true and complete deep-copy, where even the |Taxon| and |TaxonNamespace| references are copied, call :func:`copy.deepcopy`:
+For a true and complete deep-copy, where even the |Taxon| and |TaxonNamespace| references are copied, call :func:`copy.deepcopy`:
 
 .. literalinclude:: /examples/tree_copy2.py
+
+Alternatively, many times you want a "light" or "thin" copy, where just the tree structure (node and edge relationships) and basic information are retained (e.g., edge lengths, taxon associations, and node and edge labels), but not, e.g. the rich annotations. Then the :meth:`~dendropy.datamodel.treemode.Tree.extract_tree` method is what you are looking for:
+
+.. literalinclude:: /examples/tree_extract1.py
 
 Tree Traversal
 ==============

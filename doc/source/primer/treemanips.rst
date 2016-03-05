@@ -380,6 +380,43 @@ which results in::
 
 Again, it should be noted that, as these operations modify the structure of the tree, you need to call :meth:`~dendropy.datamodel.treemodel.Tree.update_bipartitions()` to update the internal splits hashes, before carrying out any calculations, comparisons, or metrics.
 
+Extracting Trees and Subtrees from an Existing Tree
+===================================================
+
+If you just need a tree *structure*, i.e. the nodes and edges, and minimal other attributes, such as taxon associations, node and edge labels, and edge lengths, the following methods provide fast and powerful ways to give you copies of the current tree or parts of the current tree:
+
+-   :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree`
+-   :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree_with_taxa`
+-   :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree_without_taxa`
+-   :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree_with_taxa_labels`
+-   :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree_without_taxa_labels`
+
+All these methods create a "thin" or "light" copy of the tree, optionally pruning out nodes based on criteria.
+
+The basic :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree` method returns a full clone of the structure of the source tree:
+
+.. literalinclude:: /examples/tree_extract1.py
+
+As can be seen, the nodes on the extracted tree have an attribute set on them, "``extraction_source``" that point to the corresponding node on the original tree.
+Note how while labels, taxon associations and edge lengths are copied, the metadata annotations are not.
+
+The ``node_filter_fn`` argument provides a powerful and flexible way to selective pull out parts of the tree that might interest you:
+
+.. literalinclude:: /examples/tree_extract2.py
+
+If you do not need the annotations, then this approach can be dramatically more performant than cloning and then pruning the tree. For example, the following:
+
+.. literalinclude:: /examples/tree_clone_and_prune_vs_extract.py
+
+results in::
+
+    0.00191879272461
+    0.000579190254211
+
+Some convenience wrappers around the :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree` method allow you to more easily pull out or drop taxa of interest, either by passing in the |Taxon| instances directly or their labels:
+
+.. literalinclude:: /examples/tree_extract3.py
+
 Rotating
 ========
 
