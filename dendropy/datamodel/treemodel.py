@@ -2166,6 +2166,15 @@ class Node(
             If not ``None``, must be a function object that returns ``True``
             if a particular |Node| instance on the original tree should
             be included in the cloned tree, or ``False`` otherwise.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
 
         Returns
         -------
@@ -3252,6 +3261,8 @@ class Tree(
             reference_to_original_node_attr_name="extracted_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
+            is_apply_filter_to_leaf_nodes=True,
+            is_apply_filter_to_internal_nodes=True,
             ):
         """
         Returns a copy of this tree that only includes the basic structure
@@ -3273,6 +3284,15 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
+        is_apply_filter_to_leaf_nodes : bool
+            If ``True`` then the above filter will be applied to leaf nodes. If
+            ``False`` then it will not (and all leaf nodes will be
+            automatically included, unless excluded by an ancestral node being
+            filtered out).
+        is_apply_filter_to_internal_nodes : bool
+            If ``True`` then the above filter will be applied to internal nodes. If
+            ``False`` then it will not (internal nodes without children will
+            still be filtered out).
 
         Examples
         --------
@@ -3324,7 +3344,10 @@ class Tree(
         other.seed_node = self.seed_node.extract_subtree(
                 reference_to_original_node_attr_name=reference_to_original_node_attr_name,
                 node_filter_fn=node_filter_fn,
-                suppress_unifurcations=suppress_unifurcations)
+                suppress_unifurcations=suppress_unifurcations,
+                is_apply_filter_to_leaf_nodes=is_apply_filter_to_leaf_nodes,
+                is_apply_filter_to_internal_nodes=is_apply_filter_to_internal_nodes,
+                )
         return other
 
     ###########################################################################
