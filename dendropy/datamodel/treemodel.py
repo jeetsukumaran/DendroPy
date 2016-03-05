@@ -2145,6 +2145,88 @@ class Node(
         """Legacy synonym for :meth:`Node.sister_nodes()`"""
         return self.sibling_nodes()
 
+    def extract_subtree(self,
+            reference_to_original_node_attr_name="extracted_from",
+            node_filter_fn=None,
+            suppress_unifurcations=True,
+            ):
+        """
+        Returns a clone of the structure descending from this node.
+
+        Parameters
+        ----------
+        reference_to_original_node_attr_name : str
+            Name of attribute to set on cloned nodes that references
+            corresponding original node. If ``None``, then attribute (and
+            reference) will not be created.
+        node_filter_fn : None or function object
+            If ``None``, then entire tree structure is cloned.
+            If not ``None``, must be a function object that returns ``True``
+            if a particular |Node| instance on the original tree should
+            be included in the cloned tree, or ``False`` otherwise.
+
+        Returns
+        -------
+        nd : |Node|
+            A node with descending subtree mirroring this one.
+
+        """
+        memo = {}
+        is_excluded_nodes = False
+        start_node = None
+        start_node_to_match = self
+        for nd0 in self.postorder_iter():
+            if node_filter_fn is not None and not node_filter_fn(nd0):
+                is_excluded_nodes = True
+                continue
+            original_node_has_children = False
+            children_to_add = []
+            for ch_nd0 in nd0.child_node_iter():
+                original_node_has_children = True
+                ch_nd1 = memo.get(ch_nd0, None)
+                if ch_nd1 is not None:
+                    children_to_add.append(ch_nd1)
+            if not children_to_add and original_node_has_children:
+                # filter removes all descendents of internal node,
+                # so this internal node is not added
+                if nd0.parent_node is None:
+                    raise error.SeedNodeDeletionException("Attempting to remove seed node or node without parent")
+                if nd0 is self:
+                    start_node_to_match = nd0.parent_node
+                continue
+            elif len(children_to_add) == 1 and suppress_unifurcations:
+                if nd0.edge.length is not None:
+                    if children_to_add[0].edge.length is None:
+                        children_to_add[0].edge.length = nd0.edge.length
+                    else:
+                        children_to_add[0].edge.length += nd0.edge.length
+                else:
+                    nd0.edge.length = children_to_add[0].edge.length
+                if nd0.parent_node is None:
+                    start_node = children_to_add[0]
+                    break
+                if nd0 is self:
+                    start_node_to_match = nd0.parent_node
+                memo[nd0] = children_to_add[0]
+            else:
+                nd1 = self.__class__()
+                nd1.label = nd0.label
+                nd1.taxon = nd0.taxon
+                nd1.edge.length = nd0.edge.length
+                nd1.edge.label = nd0.edge.label
+                for ch_nd1 in children_to_add:
+                    nd1.add_child(ch_nd1)
+                if nd0 is start_node_to_match:
+                    start_node = nd1
+                memo[nd0] = nd1
+                if reference_to_original_node_attr_name:
+                    setattr(nd1, reference_to_original_node_attr_name, nd0)
+        if start_node is not None:
+            return start_node
+        else:
+            ## TODO: find a replacement node
+            raise ValueError
+
     ###########################################################################
     ### Metrics
 
@@ -3123,7 +3205,7 @@ class Tree(
         return self.__deepcopy__(memo=memo)
 
     def extract_tree(self,
-            reference_to_original_node_attr_name="cloned_from",
+            reference_to_original_node_attr_name="extracted_from",
             node_filter_fn=None,
             suppress_unifurcations=True,
             ):
@@ -3195,35 +3277,10 @@ class Tree(
         """
         other = self.__class__(taxon_namespace=self.taxon_namespace)
         other.label = self.label
-        memo = {}
-        is_excluded_nodes = False
-        new_seed = None
-        for nd0 in self.postorder_node_iter():
-            if node_filter_fn is not None and not node_filter_fn(nd0):
-                is_excluded_nodes = True
-                continue
-            nd1 = self.node_factory()
-            if nd0 is self.seed_node:
-                new_seed = nd1
-            nd1.label = nd0.label
-            nd1.taxon = nd0.taxon
-            nd1.edge.length = nd0.edge.length
-            nd1.edge.label = nd0.edge.label
-            if reference_to_original_node_attr_name:
-                setattr(nd1, reference_to_original_node_attr_name, nd0)
-            original_node_has_no_children = True
-            cloned_node_has_children_added = False
-            for ch_nd0 in nd0.child_node_iter():
-                original_node_has_no_children = False
-                ch_nd1 = memo.get(ch_nd0, None)
-                if ch_nd1 is not None:
-                    cloned_node_has_children_added = True
-                    nd1.add_child(ch_nd1)
-            if original_node_has_no_children or cloned_node_has_children_added:
-                memo[nd0] = nd1
-        other.seed_node = new_seed
-        if is_excluded_nodes and suppress_unifurcations:
-            other.suppress_unifurcations()
+        other.seed_node = self.seed_node.extract_subtree(
+                reference_to_original_node_attr_name=reference_to_original_node_attr_name,
+                node_filter_fn=node_filter_fn,
+                suppress_unifurcations=suppress_unifurcations)
         return other
 
     def __deepcopy__(self, memo=None):

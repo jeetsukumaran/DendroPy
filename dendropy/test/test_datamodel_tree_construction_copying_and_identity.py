@@ -210,49 +210,5 @@ class TestSpecialTreeConstruction(
             self.assertIn(nd.taxon, tree1.taxon_namespace)
             self.assertNotIn(nd.taxon, tree2.taxon_namespace)
 
-class TestStructureCloning(
-        curated_test_tree.CuratedTestTree,
-        compare_and_validate.Comparator,
-        unittest.TestCase):
-
-    def test_full_extract(self):
-        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-                suppress_internal_node_taxa=True,
-                suppress_leaf_node_taxa=False)
-        tree2 = tree1.extract_tree()
-        self.compare_distinct_trees(tree1, tree2,
-                taxon_namespace_scoped=True,
-                compare_tree_annotations=False,
-                compare_taxon_annotations=False)
-
-    def test_filtered_leaf_extract(self):
-        inclusion_sets = (
-            ("i", "k", "l", "n", "p"),
-            ("i", "j", "k", "l", "m", "n", "p"),
-            ("j", "k"),
-            ("i", "k"),
-            ("i", "p"),
-            ("i", "j", "n"),
-        )
-        for suppress_internal_node_taxa in (True, ):#False):
-            for inclusion_set in inclusion_sets:
-                tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-                        suppress_internal_node_taxa=suppress_internal_node_taxa,
-                        suppress_leaf_node_taxa=False)
-                to_include = set([tree1.taxon_namespace.get_taxon(label) for label in inclusion_set])
-                # if not suppress_internal_node_taxa:
-                #     to_include.add(tree1.seed_node.taxon)
-                #     for inode in inodes1:
-                #         if inode.taxon is not None:
-                #             to_include.add(inode.taxon)
-                assert None not in to_include
-                node_filter_fn = lambda nd: nd.is_internal() or nd.taxon in to_include
-                tree2 = tree1.extract_tree(node_filter_fn=node_filter_fn)
-                tree1.retain_taxa(to_include)
-                self.compare_distinct_trees(tree1, tree2,
-                        taxon_namespace_scoped=True,
-                        compare_tree_annotations=False,
-                        compare_taxon_annotations=False)
-
 if __name__ == "__main__":
     unittest.main()

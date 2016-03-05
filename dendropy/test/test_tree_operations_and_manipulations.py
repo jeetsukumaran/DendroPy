@@ -25,6 +25,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 import unittest
 from dendropy.test.support import curated_test_tree
+from dendropy.test.support import compare_and_validate
 from dendropy.test.support import pathmap
 from dendropy.test.support import dendropytest
 from dendropy.utility import messaging
@@ -764,6 +765,54 @@ class ResolvePolytomiesTestCase(dendropytest.ExtendedTestCase):
                 tree_string2 = rooting + " " +  tree_string
                 for rng in (MockRandom(), None):
                     self.verify_resolve_polytomies(tree_string2, rng)
+
+class TestStructureExtraction(
+        curated_test_tree.CuratedTestTree,
+        compare_and_validate.Comparator,
+        unittest.TestCase):
+
+    def test_full_extract(self):
+        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                suppress_internal_node_taxa=True,
+                suppress_leaf_node_taxa=False)
+        tree2 = tree1.extract_tree()
+        self.compare_distinct_trees(tree1, tree2,
+                taxon_namespace_scoped=True,
+                compare_tree_annotations=False,
+                compare_taxon_annotations=False)
+
+    def test_filtered_leaf_extract(self):
+        inclusion_sets = (
+            ("i", "k", "l", "n", "p"),
+            ("i", "j", "k", "l", "m", "n", "p"),
+            ("j", "k"),
+            ("i", "k"),
+            ("i", "p"),
+            ("i", "j", "n"),
+        )
+        for suppress_internal_node_taxa in (True, ):#False):
+            for inclusion_set in inclusion_sets:
+                tree1, anodes1, lnodes1, inodes1 = self.get_tree(
+                        suppress_internal_node_taxa=suppress_internal_node_taxa,
+                        suppress_leaf_node_taxa=False)
+                to_include = set([tree1.taxon_namespace.get_taxon(label) for label in inclusion_set])
+                print("---")
+                print(inclusion_set)
+                # if not suppress_internal_node_taxa:
+                #     to_include.add(tree1.seed_node.taxon)
+                #     for inode in inodes1:
+                #         if inode.taxon is not None:
+                #             to_include.add(inode.taxon)
+                assert None not in to_include
+                node_filter_fn = lambda nd: nd.is_internal() or nd.taxon in to_include
+                tree2 = tree1.extract_tree(node_filter_fn=node_filter_fn)
+                tree1.retain_taxa(to_include)
+                print(tree1.as_string("newick"))
+                print(tree2.as_string("newick"))
+                self.compare_distinct_trees(tree1, tree2,
+                        taxon_namespace_scoped=True,
+                        compare_tree_annotations=False,
+                        compare_taxon_annotations=False)
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
