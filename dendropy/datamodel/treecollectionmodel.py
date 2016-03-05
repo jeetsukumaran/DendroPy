@@ -1044,6 +1044,8 @@ class TreeList(
                 ignore_node_ages=kwargs_dict.pop("ignore_node_ages", True),
                 use_tree_weights=kwargs_dict.pop("use_tree_weights", True),
                 ultrametricity_precision=kwargs_dict.pop("ultrametricity_precision", constants.DEFAULT_ULTRAMETRICITY_PRECISION),
+                is_force_max_age=kwargs_dict.pop("is_force_max_age", None),
+                taxon_label_age_map=kwargs_dict.pop("taxon_label_age_map", None),
                 is_bipartitions_updated=kwargs_dict.pop("is_bipartitions_updated", False)
                 )
         return ta
@@ -1231,6 +1233,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             ignore_node_ages=True,
             use_tree_weights=True,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            is_force_max_age=False,
             taxon_label_age_map=None):
 
         # Taxon Namespace
@@ -1250,7 +1253,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         self.split_counts = collections.defaultdict(float)
         self.split_edge_lengths = collections.defaultdict(list)
         self.split_node_ages = collections.defaultdict(list)
-        self.is_force_max_age = False
+        self.is_force_max_age = is_force_max_age
         self.is_force_min_age = False
         self.taxon_label_age_map = taxon_label_age_map
 
@@ -2109,6 +2112,8 @@ class TreeArray(
             ignore_node_ages=True,
             use_tree_weights=True,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            is_force_max_age=None,
+            taxon_label_age_map=None,
             is_bipartitions_updated=False,
             ):
         taxon_namespace = trees.taxon_namespace
@@ -2118,7 +2123,9 @@ class TreeArray(
             ignore_edge_lengths=ignore_edge_lengths,
             ignore_node_ages=ignore_node_ages,
             use_tree_weights=use_tree_weights,
-            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            ultrametricity_precision=ultrametricity_precision,
+            is_force_max_age=is_force_max_age,
+            taxon_label_age_map=taxon_label_age_map,
             )
         ta.add_trees(
                 trees=trees,
@@ -2135,6 +2142,7 @@ class TreeArray(
             ignore_node_ages=True,
             use_tree_weights=True,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+            is_force_max_age=None,
             taxon_label_age_map=None,
             ):
         """
@@ -2179,6 +2187,7 @@ class TreeArray(
                 ignore_edge_lengths=self.ignore_edge_lengths,
                 ignore_node_ages=self.ignore_node_ages,
                 ultrametricity_precision=ultrametricity_precision,
+                is_force_max_age=is_force_max_age,
                 taxon_label_age_map=self.taxon_label_age_map,
                 )
 

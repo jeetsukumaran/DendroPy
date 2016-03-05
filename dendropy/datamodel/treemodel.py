@@ -5275,7 +5275,16 @@ class Tree(
                     age_to_set = min([ (child.age + child.edge.length) for child in child_nodes ])
                 else:
                     first_child = child_nodes[0]
-                    age_to_set = first_child.age + first_child.edge.length
+                    if first_child.edge.length is not None and first_child.age is not None:
+                        age_to_set = first_child.age + first_child.edge.length
+                    elif first_child.edge.length is None:
+                        first_child.edge.length = 0.0
+                        age_to_set = first_child.age
+                    elif first_child.age is None:
+                        first_child.age = 0.0
+                        age_to_set = first_child.edge.length
+                    else:
+                        age_to_set = 0.0
                 node.age = age_to_set
                 if not (is_force_max_age or is_force_min_age or ultrametricity_precision is None or ultrametricity_precision is False or ultrametricity_precision < 0):
                     for nnd in child_nodes[1:]:
