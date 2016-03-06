@@ -398,7 +398,11 @@ class TreeShapeKernel(object):
         # cache management
         self._tree_cache = {}
 
-    def update_cache(self, tree):
+        # categorization of lineages
+        self._tree_classification_regime_subtree_map = {}
+        self._num_classification_regimes = None
+
+    def update_cache(self, tree, node_classification_regimes=None):
         """
         Pre-computes values needed for the kernel trick with this tree and
         caches them.
@@ -427,11 +431,21 @@ class TreeShapeKernel(object):
                     edge_lengths=edge_lengths,
                     sum_of_square_edge_lengths=sum_of_square_edge_lengths)
         self._tree_cache[tree] = current_tree_cache
+        if node_classification_regimes is None:
+            if self._num_classification_regimes is not None:
+                raise ValueError("Expecting {} node classification regimes, but none provided".format(self._num_classification_regimes))
+        else:
+            if self._num_classification_regimes is None:
+                self._num_classification_regimes = len(node_classification_regimes)
+            elif len(node_classification_regimes) != self._num_classification_regimes:
+                    raise ValueError("Expecting {} node classification regimes, but only {} specified".format(self._num_classification_regimes,
+                        len(self._num_classification_regimes)))
         return current_tree_cache
 
     def __call__(self,
             tree1,
             tree2,
+            node_classification_regimes=None,
             is_tree1_cache_updated=False,
             is_tree2_cache_updated=False,
             ):
@@ -483,8 +497,7 @@ class TreeShapeKernel(object):
         11th Conference of the European Chapter of the Association
         for Computational Linguistics.
         """
-        nodes1 = tree1.get_nonterminals(order='postorder')
-        nodes2 = tree2.get_nonterminals(order='postorder')
+        internal_nodes2 = list(tree2.postorder_internal_node_iter())
         k = 0
         if not is_tree1_cache_updated:
             tree1_cache = self.update_cache(tree1)
@@ -501,17 +514,22 @@ class TreeShapeKernel(object):
             except KeyError:
                 tree2_cache = self.update_cache(tree2)
         dp_matrix = {}
-        for ni, tree1_node in enumerate(nodes1):
+        for ni, tree1_node in enumerate(tree1.postorder_internal_node_iter()):
             tree1_cache_node = tree1_cache[tree1_node]
-            for tree2_node in nodes2:
+            for tree2_node in internal_nodes2:
                 tree2_cache_node = tree2_cache[tree2_node]
                 if tree1_cache_node.production != tree2_cache_node.production:
                     continue
                 res = self.decay_factor * math.exp( -1. / self.gauss_factor
                     * (tree1_cache_node.sum_of_square_edge_lengths + tree2_cache_node.sum_of_square_edge_lengths - 2*sum([(tree1_cache_node.edge_lengths[i]*tree2_cache_node.edge_lengths[i]) for i in range(len(tree1_cache_node.edge_lengths))])))
-                for node_idx in range(2):
-                    c1 = tree1_node.clades[node_idx]
-                    c2 = tree2_node.clades[node_idx]
+                ## TODO:
+                ##  - (check and) handles cases where unequal number of children
+                ##  - how to handle rotation mismatch problems? or do we assume
+                ##    trees have equal rotations
+                # for node_idx in range(2):
+                #     c1 = tree1_node.clades[node_idx]
+                #     c2 = tree2_node.clades[node_idx]
+                for c1, c2 in zip(tree1_node.child_node_iter(), tree2_node.child_node_iter()):
                     if tree1_cache[c1].production != tree2_cache[c2].production:
                         continue
                     if tree1_cache[c1].production == 0:
