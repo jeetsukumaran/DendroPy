@@ -4,10 +4,11 @@ Release 4.1.0 (Pending)
 New or Updated Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-    -   [SumTrees]: tip-dating/non-contemporaneous tip age assignment using the "--tip-ages" argument.
-    -   Neighbor-joining and UPGMA trees (calculated by the PhylogeneticDistanceMatrixClass).
-    -   The new (actually, warmed-over) PhylogeneticDistanceMatrix to manage various "within-tree" distances (e.g., patristic distances, or the ecological statistics described below).
-    -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), Standardized Effect Size MPD and MNTD (equivalent to -1 * NRI and -1 * NTI).
+    -   [SumTrees]: tip-dating/non-contemporaneous tip age assignment using the "--tip-ages" argument (http://dendropy.org/programs/sumtrees.html#setting-the-node-ages-of-the-summary-trees).
+    -   Fast, flexible, and powerful tree and subtree cloning, extracting only nodes/taxa of interest (http://dendropy.org/primer/treemanips.html#extracting-trees-and-subtrees-from-an-existing-tree).
+    -   Neighbor-joining and UPGMA trees (http://dendropy.org/primer/phylogenetic_distances.html#generating-distance-trees-from-a-phylogeneticdistancematrix-object).
+    -   The new (actually, warmed-over) PhylogeneticDistanceMatrix to manage various "within-tree" distances, such patristic distances, or the ecological statistics described below (http://dendropy.org/primer/phylogenetic_distances.html#creating-a-phylogeneticdistancematrix-object).
+    -   Added phylogenetic community ecology statistic calculations: Mean Pairwise Distance (MPD), Mean Nearest Taxon Distance (MNTD), Standardized Effect Size MPD and MNTD, equivalent to -1 * NRI and -1 * NTI (http://dendropy.org/primer/phylogenetic_distances.html#phylogenetic-community-statistics).
     -   Added DataTable class to manage community ecology (as well as more general classes of) data.
     -   Implementation of the Protracted Speciation model: a Birth-Death process with explicit modeling of speciation-as-a-process rather than speciation-as-an-event by incorporating the lag between speciation initiation and speciation completion.
     -   NEWICK terminating semicolon requirement relaxation.
