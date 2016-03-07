@@ -18,9 +18,11 @@
 
 import math
 import unittest
+import collections
 import dendropy
 from dendropy.calculate.treecompare import TreeShapeKernel
-class TreeShapeKernelTests(unittest.TestCase):
+
+class TreeShapeKernelBasicCalculationTest(unittest.TestCase):
 
     def test_small_single(self):
         ## Test based on:
@@ -161,6 +163,47 @@ class TreeShapeKernelTests(unittest.TestCase):
             for idx2, t2 in enumerate(trees):
                 self.assertAlmostEqual(tree_shape_kernel(t1, t2), expected[idx1][idx2])
                 # print("{}, {} = {}".format(idx1+1, idx2+1, tree_shape_kernel(t1, t2)))
+
+# class TreeShapeKernelSubtreeTests(unittest.TestCase):
+
+#     GROUP_IDS = ("a", "b", "c", "d", "e")
+
+#     def get_random_tree(self):
+#         from dendropy.model import birthdeath
+#         tns = dendropy.TaxonNamespace()
+#         for group_id in self.GROUP_IDS:
+#             for group_member in range(10):
+#                 t = tns.require_taxon(label="{}{}".format(
+#                     group_id,
+#                     group_member))
+#         tree = dendropy.birth_death_tree(
+#                 birth_rate=0.1,
+#                 death_rate=0.0,
+#                 taxon_namespace=taxon_namespace)
+#         tree.node_classification_regimes = []
+#         tree.classification_regime_subtrees = []
+#         for group_id in self.GROUP_IDS:
+#             subtree1 = tree.extract_tree(
+#                     node_filter_fn=nd.taxon is None or nd.taxon.label.startswith("group_id"))
+#             node_classification_regime = set()
+#             for leaf_nd in subtree1.leaf_node_iter():
+#                 assert leaf_nd.taxon.label.startswith(group_id)
+#                 node_classification_regime.add(leaf_nd)
+#             tree.node_classification_regimes.append(node_classification_regime)
+#             tree.classification_regime_subtrees.append(subtree1)
+#         assert len(tree.classification_regime_subtrees) == len(self.GROUP_IDS)
+#         return tree
+
+#     def test_basic_subtree_generation_and_caching(self):
+#         tree_shape_kernel = TreeShapeKernel(
+#                 sigma=1,
+#                 gauss_factor=1,
+#                 decay_factor=0.1,
+#                 )
+#         tree = self.get_random_tree()
+#         tree_shape_kernel.update_cache(
+#                 tree=tree,
+#                 node_classification_regimes=tree.node_classification_regimes)
 
 if __name__ == "__main__":
     unittest.main()

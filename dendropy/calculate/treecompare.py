@@ -398,11 +398,7 @@ class TreeShapeKernel(object):
         # cache management
         self._tree_cache = {}
 
-        # categorization of lineages
-        self._tree_classification_regime_subtree_map = {}
-        self._num_classification_regimes = None
-
-    def update_cache(self, tree, node_classification_regimes=None):
+    def update_cache(self, tree):
         """
         Pre-computes values needed for the kernel trick with this tree and
         caches them.
@@ -431,21 +427,11 @@ class TreeShapeKernel(object):
                     edge_lengths=edge_lengths,
                     sum_of_square_edge_lengths=sum_of_square_edge_lengths)
         self._tree_cache[tree] = current_tree_cache
-        if node_classification_regimes is None:
-            if self._num_classification_regimes is not None:
-                raise ValueError("Expecting {} node classification regimes, but none provided".format(self._num_classification_regimes))
-        else:
-            if self._num_classification_regimes is None:
-                self._num_classification_regimes = len(node_classification_regimes)
-            elif len(node_classification_regimes) != self._num_classification_regimes:
-                    raise ValueError("Expecting {} node classification regimes, but only {} specified".format(self._num_classification_regimes,
-                        len(self._num_classification_regimes)))
         return current_tree_cache
 
     def __call__(self,
             tree1,
             tree2,
-            node_classification_regimes=None,
             is_tree1_cache_updated=False,
             is_tree2_cache_updated=False,
             ):
@@ -543,6 +529,44 @@ class TreeShapeKernel(object):
                 dp_matrix[(tree1_cache[tree1_node].index, tree2_cache[tree2_node].index)] = res
                 k += res
         return k
+
+##############################################################################
+### InducedTreeShapeKernel
+
+class InducedTreeShapeKernel(TreeShapeKernel):
+
+    def __init__(self, *args, **kwargs):
+        TreeShapeKernel.__init__(self, *args, **kwargs)
+        self._tree_classification_regime_subtree_map = {}
+        self._num_classification_regimes = None
+
+    def update_cache(self, tree, node_classification_regimes=None):
+        current_tree_cache = TreeShapeKernel.update_cache(self,
+                tree=tree)
+        if node_classification_regimes is None:
+            if self._num_classification_regimes is not None:
+                raise ValueError("Expecting {} node classification regimes, but none provided".format(self._num_classification_regimes))
+        else:
+            if self._num_classification_regimes is None:
+                self._num_classification_regimes = len(node_classification_regimes)
+            elif len(node_classification_regimes) != self._num_classification_regimes:
+                    raise ValueError("Expecting {} node classification regimes, but only {} specified".format(self._num_classification_regimes,
+                        len(self._num_classification_regimes)))
+        return current_tree_cache
+
+    def __call__(self,
+            tree1,
+            tree2,
+            node_classification_regimes=None,
+            is_tree1_cache_updated=False,
+            is_tree2_cache_updated=False,
+            ):
+        main_tree_score = TreeShapeKernel.__call__(self,
+                tree1=tree1,
+                tree2=tree2,
+                is_tree1_cache_updated=is_tree1_cache_updated,
+                is_tree2_cache_updated=is_tree2_cache_updated,
+                )
 
 ###############################################################################
 ## Legacy
