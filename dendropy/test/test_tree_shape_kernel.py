@@ -171,10 +171,11 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
 
     GROUP_IDS = ("a", "b", "c", "d", "e")
 
-    def get_random_tree(self):
+    @staticmethod
+    def get_random_tree():
         from dendropy.model import birthdeath
         tns = dendropy.TaxonNamespace()
-        for group_id in self.GROUP_IDS:
+        for group_id in AssemblageInducedTreeManagerTests.GROUP_IDS:
             for group_member in range(10):
                 t = tns.require_taxon(label="{}{}".format(
                     group_id,
@@ -185,7 +186,7 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
                 taxon_namespace=tns)
         tree.assemblage_leaf_sets = []
         tree.classification_regime_subtrees = []
-        for group_id in self.GROUP_IDS:
+        for group_id in AssemblageInducedTreeManagerTests.GROUP_IDS:
             node_filter_fn=lambda nd: nd.taxon is None or nd.taxon.label.startswith(group_id)
             subtree1 = tree.extract_tree(
                     node_filter_fn=node_filter_fn)
@@ -196,7 +197,7 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
                     assemblage_leaf_set.add(leaf_nd)
             tree.assemblage_leaf_sets.append(assemblage_leaf_set)
             tree.classification_regime_subtrees.append(subtree1)
-        assert len(tree.classification_regime_subtrees) == len(self.GROUP_IDS)
+        assert len(tree.classification_regime_subtrees) == len(AssemblageInducedTreeManagerTests.GROUP_IDS)
         return tree
 
     def test_basic_subtree_generation_and_caching(self):
@@ -207,16 +208,16 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
             tree.induced_trees = test_target.generate_induced_trees(
                 tree=tree,
                 assemblage_leaf_sets=tree.assemblage_leaf_sets)
-            self.assertEqual(len(tree.induced_trees), len(self.GROUP_IDS))
+            self.assertEqual(len(tree.induced_trees), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
             self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
-            self.assertEqual(test_target._num_assemblages, len(self.GROUP_IDS))
+            self.assertEqual(test_target._num_assemblages, len(AssemblageInducedTreeManagerTests.GROUP_IDS))
             self.assertEqual(len(test_target._tree_assemblage_induced_trees_map), idx+1)
             self.assertIn(tree, test_target._tree_assemblage_induced_trees_map)
-            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(self.GROUP_IDS))
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
         for tree in trees:
-            self.assertEqual(len(tree.induced_trees), len(self.GROUP_IDS))
+            self.assertEqual(len(tree.induced_trees), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
             self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
-            for induced_tree, group_id, original_leafset_nodes in zip(tree.induced_trees, self.GROUP_IDS, tree.assemblage_leaf_sets):
+            for induced_tree, group_id, original_leafset_nodes in zip(tree.induced_trees, AssemblageInducedTreeManagerTests.GROUP_IDS, tree.assemblage_leaf_sets):
                 original_leafset = set(original_leafset_nodes)
                 for leaf_nd in induced_tree.leaf_node_iter():
                     self.assertTrue(leaf_nd.taxon.label.startswith(group_id), leaf_nd.taxon.label)
