@@ -896,13 +896,20 @@ class TestStructureExtraction(
                 data=original_tree_str,
                 schema="newick",
                 )
+        expected_tree_str = """\
+        [&R] ((a3,a4)a0);
+        """
         extracted_tree = source_tree1.extract_tree(
                 # node_filter_fn=lambda node: node.taxon is not None and node.taxon.label.startswith("a"),
                 node_filter_fn=lambda node: node.taxon.label in set(["a3", "a4"]),
                 is_apply_filter_to_leaf_nodes=True,
                 is_apply_filter_to_internal_nodes=False,
                 )
-        print(extracted_tree.as_string("newick"))
+        expected_tree = dendropy.Tree.get(
+                data=expected_tree_str,
+                schema="newick",
+                taxon_namespace=source_tree1.taxon_namespace)
+        self.assertEqual(treecompare.unweighted_robinson_foulds_distance(extracted_tree, expected_tree), 0.0)
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
