@@ -211,6 +211,7 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
                 assemblage_leaf_sets=tree.assemblage_leaf_sets)
         self.assertEqual(len(induced_trees), len(self.GROUP_IDS))
         self.assertEqual(len(induced_trees), len(tree.assemblage_leaf_sets))
+        # print(tree.as_string("newick"))
         for induced_tree, group_id, original_leafset_nodes in zip(induced_trees, self.GROUP_IDS, tree.assemblage_leaf_sets):
             original_leafset = set(original_leafset_nodes)
             for leaf_nd in induced_tree.leaf_node_iter():
@@ -222,9 +223,11 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
             labels=[x.taxon.label for x in original_leafset_nodes]
             t2 = tree.extract_tree_with_taxa_labels(labels=labels)
             self.assertEqual(treecompare.weighted_robinson_foulds_distance(t2, induced_tree), 0.0)
-            # t3 = dendropy.Tree(tree)
-            # t3.prune_taxa_with_labels(labels=labels)
-            # self.assertEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
+            t3 = dendropy.Tree(tree)
+            t3.retain_taxa_with_labels(labels=labels)
+            # print(t3.as_string("newick"))
+            # print(induced_tree.as_string("newick"))
+            self.assertEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
 
 if __name__ == "__main__":
     unittest.main()
