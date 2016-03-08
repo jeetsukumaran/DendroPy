@@ -20,7 +20,10 @@ import math
 import unittest
 import collections
 import dendropy
+from dendropy.calculate import treecompare
 from dendropy.calculate.treecompare import TreeShapeKernel
+from dendropy.calculate.treecompare import AssemblageInducedTreeManager
+from dendropy.calculate.treecompare import AssemblageInducedTreeShapeKernel
 
 class TreeShapeKernelBasicCalculationTest(unittest.TestCase):
 
@@ -164,46 +167,64 @@ class TreeShapeKernelBasicCalculationTest(unittest.TestCase):
                 self.assertAlmostEqual(tree_shape_kernel(t1, t2), expected[idx1][idx2])
                 # print("{}, {} = {}".format(idx1+1, idx2+1, tree_shape_kernel(t1, t2)))
 
-# class TreeShapeKernelSubtreeTests(unittest.TestCase):
+class AssemblageInducedTreeManagerTests(unittest.TestCase):
 
-#     GROUP_IDS = ("a", "b", "c", "d", "e")
+    GROUP_IDS = ("a", "b", "c", "d", "e")
 
-#     def get_random_tree(self):
-#         from dendropy.model import birthdeath
-#         tns = dendropy.TaxonNamespace()
-#         for group_id in self.GROUP_IDS:
-#             for group_member in range(10):
-#                 t = tns.require_taxon(label="{}{}".format(
-#                     group_id,
-#                     group_member))
-#         tree = dendropy.birth_death_tree(
-#                 birth_rate=0.1,
-#                 death_rate=0.0,
-#                 taxon_namespace=taxon_namespace)
-#         tree.node_classification_regimes = []
-#         tree.classification_regime_subtrees = []
-#         for group_id in self.GROUP_IDS:
-#             subtree1 = tree.extract_tree(
-#                     node_filter_fn=nd.taxon is None or nd.taxon.label.startswith("group_id"))
-#             node_classification_regime = set()
-#             for leaf_nd in subtree1.leaf_node_iter():
-#                 assert leaf_nd.taxon.label.startswith(group_id)
-#                 node_classification_regime.add(leaf_nd)
-#             tree.node_classification_regimes.append(node_classification_regime)
-#             tree.classification_regime_subtrees.append(subtree1)
-#         assert len(tree.classification_regime_subtrees) == len(self.GROUP_IDS)
-#         return tree
+    def get_random_tree(self):
+        from dendropy.model import birthdeath
+        tns = dendropy.TaxonNamespace()
+        for group_id in self.GROUP_IDS:
+            for group_member in range(10):
+                t = tns.require_taxon(label="{}{}".format(
+                    group_id,
+                    group_member))
+        tree = dendropy.simulate.birth_death_tree(
+                birth_rate=0.1,
+                death_rate=0.0,
+                taxon_namespace=tns)
+        tree.assemblage_leaf_sets = []
+        tree.classification_regime_subtrees = []
+        for group_id in self.GROUP_IDS:
+            node_filter_fn=lambda nd: nd.taxon is None or nd.taxon.label.startswith(group_id)
+            subtree1 = tree.extract_tree(
+                    node_filter_fn=node_filter_fn)
+            assemblage_leaf_set = set()
+            for leaf_nd in tree.leaf_node_iter():
+                if node_filter_fn(leaf_nd):
+                    assert leaf_nd.taxon.label.startswith(group_id)
+                    assemblage_leaf_set.add(leaf_nd)
+            tree.assemblage_leaf_sets.append(assemblage_leaf_set)
+            tree.classification_regime_subtrees.append(subtree1)
+        assert len(tree.classification_regime_subtrees) == len(self.GROUP_IDS)
+        return tree
 
-#     def test_basic_subtree_generation_and_caching(self):
-#         tree_shape_kernel = TreeShapeKernel(
-#                 sigma=1,
-#                 gauss_factor=1,
-#                 decay_factor=0.1,
-#                 )
-#         tree = self.get_random_tree()
-#         tree_shape_kernel.update_cache(
-#                 tree=tree,
-#                 node_classification_regimes=tree.node_classification_regimes)
+    def test_basic_subtree_generation_and_caching(self):
+        tree_shape_kernel = AssemblageInducedTreeManager(
+                sigma=1,
+                gauss_factor=1,
+                decay_factor=0.1,
+                )
+        tree = self.get_random_tree()
+        induced_trees = tree_shape_kernel.generate_induced_trees(
+                tree=tree,
+                assemblage_leaf_sets=tree.assemblage_leaf_sets)
+        self.assertEqual(len(induced_trees), len(self.GROUP_IDS))
+        self.assertEqual(len(induced_trees), len(tree.assemblage_leaf_sets))
+        for induced_tree, group_id, original_leafset_nodes in zip(induced_trees, self.GROUP_IDS, tree.assemblage_leaf_sets):
+            original_leafset = set(original_leafset_nodes)
+            for leaf_nd in induced_tree.leaf_node_iter():
+                self.assertTrue(leaf_nd.taxon.label.startswith(group_id), leaf_nd.taxon.label)
+                original_node = leaf_nd.extraction_source
+                self.assertIn(original_node, original_leafset)
+                original_leafset.remove(original_node)
+            self.assertEqual(len(original_leafset), 0)
+            labels=[x.taxon.label for x in original_leafset_nodes]
+            t2 = tree.extract_tree_with_taxa_labels(labels=labels)
+            self.assertEqual(treecompare.weighted_robinson_foulds_distance(t2, induced_tree), 0.0)
+            # t3 = dendropy.Tree(tree)
+            # t3.prune_taxa_with_labels(labels=labels)
+            # self.assertEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
 
 if __name__ == "__main__":
     unittest.main()

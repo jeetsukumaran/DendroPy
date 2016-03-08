@@ -531,42 +531,78 @@ class TreeShapeKernel(object):
         return k
 
 ##############################################################################
-### InducedTreeShapeKernel
+### AssemblageInducedTree
 
-class InducedTreeShapeKernel(TreeShapeKernel):
+class AssemblageInducedTreeManager(object):
+
+    def __init__(self, *args, **kwargs):
+        self.is_exchangeable_assemblages = kwargs.pop("is_exchangeable_assemblages", True)
+        self._num_assemblages = kwargs.pop("num_assemblages", None)
+        self._tree_assemblage_induced_trees_map = {}
+
+    def generate_induced_trees(self, tree, assemblage_leaf_sets=None):
+        if assemblage_leaf_sets is None:
+            if self._num_assemblages is not None:
+                raise ValueError("Expecting {} assemblage leaf set definitions, but none provided".format(self._num_assemblages))
+        else:
+            if self._num_assemblages is None:
+                self._num_assemblages = len(assemblage_leaf_sets)
+            elif len(assemblage_leaf_sets) != self._num_assemblages:
+                    raise ValueError("Expecting {} assemblage leaf set definitions, but only {} specified".format(
+                        self._num_assemblages,
+                        len(assemblage_leaf_sets)))
+        induced_trees = []
+        for assemblage_leaf_set in assemblage_leaf_sets:
+            node_filter_fn = lambda nd: nd in assemblage_leaf_set
+            induced_tree = tree.extract_tree(
+                               node_filter_fn=node_filter_fn,
+                               is_apply_filter_to_leaf_nodes=True,
+                               is_apply_filter_to_internal_nodes=False)
+            induced_trees.append(induced_tree)
+        self._tree_assemblage_induced_trees_map[tree] = induced_trees
+        return induced_trees
+
+##############################################################################
+### AssemblageInducedTreeShapeKernel
+
+class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeManager):
 
     def __init__(self, *args, **kwargs):
         TreeShapeKernel.__init__(self, *args, **kwargs)
-        self._tree_classification_regime_subtree_map = {}
-        self._num_classification_regimes = None
-
-    def update_cache(self, tree, node_classification_regimes=None):
-        current_tree_cache = TreeShapeKernel.update_cache(self,
-                tree=tree)
-        if node_classification_regimes is None:
-            if self._num_classification_regimes is not None:
-                raise ValueError("Expecting {} node classification regimes, but none provided".format(self._num_classification_regimes))
-        else:
-            if self._num_classification_regimes is None:
-                self._num_classification_regimes = len(node_classification_regimes)
-            elif len(node_classification_regimes) != self._num_classification_regimes:
-                    raise ValueError("Expecting {} node classification regimes, but only {} specified".format(self._num_classification_regimes,
-                        len(self._num_classification_regimes)))
-        return current_tree_cache
+        AssemblageInducedTreeManager.__init__(self, *args, **kwargs)
 
     def __call__(self,
             tree1,
             tree2,
-            node_classification_regimes=None,
+            tree1_assemblage_leaf_set_filter_fns=None,
+            tree2_assemblage_leaf_set_filter_fns=None,
             is_tree1_cache_updated=False,
             is_tree2_cache_updated=False,
             ):
-        main_tree_score = TreeShapeKernel.__call__(self,
+        score_vector = []
+        main_trees_score = TreeShapeKernel.__call__(self,
                 tree1=tree1,
                 tree2=tree2,
                 is_tree1_cache_updated=is_tree1_cache_updated,
                 is_tree2_cache_updated=is_tree2_cache_updated,
                 )
+        if not is_tree1_cache_updated or tree1 not in self._tree_assemblage_induced_trees_map:
+            self.update_assemblage_induced_tree_cache(tree1, tree1_assemblage_leaf_set_filter_fns)
+        if not is_tree2_cache_updated or tree2 not in self._tree_assemblage_induced_trees_map:
+            self.update_assemblage_induced_tree_cache(tree2, tree2_assemblage_leaf_set_filter_fns)
+        score_vector.append(main_trees_score)
+        induced_trees1 = self._tree_assemblage_induced_trees_map[tree1]
+        induced_trees2 = self._tree_assemblage_induced_trees_map[tree1]
+        assert len(induced_trees1) == len(induced_trees2) == self._num_assemblages
+        if not self.is_exchangeable_assemblages:
+            for induced_tree1, induced_tree2 in zip(induced_trees1, induced_trees2):
+                s = TreeShapeKernel.__call__(self,
+                                tree1=induced_tree1,
+                                tree2=induced_tree2,
+                                is_tree1_cache_updated=True,
+                                is_tree2_cache_updated=True,
+                                )
+                score_vector.append(s)
 
 ###############################################################################
 ## Legacy
