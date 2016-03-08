@@ -888,6 +888,22 @@ class TestStructureExtraction(
             self.assertEqual(treecompare.unweighted_robinson_foulds_distance(extracted_tree, expected_induced_tree), 0)
             self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(extracted_tree, expected_induced_tree), 0.0)
 
+    def test_special_case2(self):
+        original_tree_str = """\
+        [&R] ((a1,(a2,(a3,a4)a0)),(b1,(b2,(b3,b4))));
+        """
+        source_tree1 = dendropy.Tree.get(
+                data=original_tree_str,
+                schema="newick",
+                )
+        extracted_tree = source_tree1.extract_tree(
+                # node_filter_fn=lambda node: node.taxon is not None and node.taxon.label.startswith("a"),
+                node_filter_fn=lambda node: node.taxon.label in set(["a3", "a4"]),
+                is_apply_filter_to_leaf_nodes=True,
+                is_apply_filter_to_internal_nodes=False,
+                )
+        print(extracted_tree.as_string("newick"))
+
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
     def test_collapse_basal_bifurcation(self):

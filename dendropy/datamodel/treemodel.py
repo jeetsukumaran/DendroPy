@@ -2150,7 +2150,7 @@ class Node(
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
-            is_apply_filter_to_internal_nodes=True,
+            is_apply_filter_to_internal_nodes=False,
             ):
         """
         Returns a clone of the structure descending from this node.
@@ -3262,7 +3262,7 @@ class Tree(
             node_filter_fn=None,
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
-            is_apply_filter_to_internal_nodes=True,
+            is_apply_filter_to_internal_nodes=False,
             ):
         """
         Returns a copy of this tree that only includes the basic structure

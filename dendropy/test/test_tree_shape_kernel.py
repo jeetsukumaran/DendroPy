@@ -227,7 +227,7 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
             t3.retain_taxa_with_labels(labels=labels)
             # print(t3.as_string("newick"))
             # print(induced_tree.as_string("newick"))
-            self.assertEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
+            self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
 
 if __name__ == "__main__":
     unittest.main()
