@@ -200,34 +200,38 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
         return tree
 
     def test_basic_subtree_generation_and_caching(self):
-        tree_shape_kernel = AssemblageInducedTreeManager(
-                sigma=1,
-                gauss_factor=1,
-                decay_factor=0.1,
-                )
-        tree = self.get_random_tree()
-        induced_trees = tree_shape_kernel.generate_induced_trees(
+        test_target = AssemblageInducedTreeManager()
+        trees = []
+        for idx in range(10):
+            tree = self.get_random_tree()
+            tree.induced_trees = test_target.generate_induced_trees(
                 tree=tree,
                 assemblage_leaf_sets=tree.assemblage_leaf_sets)
-        self.assertEqual(len(induced_trees), len(self.GROUP_IDS))
-        self.assertEqual(len(induced_trees), len(tree.assemblage_leaf_sets))
-        # print(tree.as_string("newick"))
-        for induced_tree, group_id, original_leafset_nodes in zip(induced_trees, self.GROUP_IDS, tree.assemblage_leaf_sets):
-            original_leafset = set(original_leafset_nodes)
-            for leaf_nd in induced_tree.leaf_node_iter():
-                self.assertTrue(leaf_nd.taxon.label.startswith(group_id), leaf_nd.taxon.label)
-                original_node = leaf_nd.extraction_source
-                self.assertIn(original_node, original_leafset)
-                original_leafset.remove(original_node)
-            self.assertEqual(len(original_leafset), 0)
-            labels=[x.taxon.label for x in original_leafset_nodes]
-            t2 = tree.extract_tree_with_taxa_labels(labels=labels)
-            self.assertEqual(treecompare.weighted_robinson_foulds_distance(t2, induced_tree), 0.0)
-            t3 = dendropy.Tree(tree)
-            t3.retain_taxa_with_labels(labels=labels)
-            # print(t3.as_string("newick"))
-            # print(induced_tree.as_string("newick"))
-            self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
+            self.assertEqual(len(tree.induced_trees), len(self.GROUP_IDS))
+            self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
+            self.assertEqual(test_target._num_assemblages, len(self.GROUP_IDS))
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map), idx+1)
+            self.assertIn(tree, test_target._tree_assemblage_induced_trees_map)
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(self.GROUP_IDS))
+        for tree in trees:
+            self.assertEqual(len(tree.induced_trees), len(self.GROUP_IDS))
+            self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
+            for induced_tree, group_id, original_leafset_nodes in zip(tree.induced_trees, self.GROUP_IDS, tree.assemblage_leaf_sets):
+                original_leafset = set(original_leafset_nodes)
+                for leaf_nd in induced_tree.leaf_node_iter():
+                    self.assertTrue(leaf_nd.taxon.label.startswith(group_id), leaf_nd.taxon.label)
+                    original_node = leaf_nd.extraction_source
+                    self.assertIn(original_node, original_leafset)
+                    original_leafset.remove(original_node)
+                self.assertEqual(len(original_leafset), 0)
+                labels=[x.taxon.label for x in original_leafset_nodes]
+                t2 = tree.extract_tree_with_taxa_labels(labels=labels)
+                self.assertEqual(treecompare.weighted_robinson_foulds_distance(t2, induced_tree), 0.0)
+                t3 = dendropy.Tree(tree)
+                t3.retain_taxa_with_labels(labels=labels)
+                # print(t3.as_string("newick"))
+                # print(induced_tree.as_string("newick"))
+                self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
 
 if __name__ == "__main__":
     unittest.main()
