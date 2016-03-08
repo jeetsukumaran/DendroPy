@@ -3339,6 +3339,9 @@ class Tree(
 
         """
         other = self.__class__(taxon_namespace=self.taxon_namespace)
+        other._is_rooted = self._is_rooted
+        other.weight = self.weight
+        other.length_type = self.length_type
         other.label = self.label
         other.seed_node = self.seed_node.extract_subtree(
                 extraction_source_reference_attr_name=extraction_source_reference_attr_name,

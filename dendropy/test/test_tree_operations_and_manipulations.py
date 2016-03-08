@@ -875,15 +875,18 @@ class TestStructureExtraction(
                 taxon_namespace=tns)
         assert len(expected_induced_trees) == len(group_ids)
         for group_id, expected_induced_tree in zip(group_ids, expected_induced_trees):
-            for leaf_nd in expected_induced_tree.leaf_node_iter():
-                assert leaf_nd.taxon.label.startswith(group_id)
             extracted_tree = source_tree1.extract_tree(
                     node_filter_fn=lambda node: node.taxon.label.startswith(group_id),
                     is_apply_filter_to_leaf_nodes=True,
                     is_apply_filter_to_internal_nodes=False)
-        self.assertEqual(treecompare.weighted_robinson_foulds_distance(source_tree1, source_tree2), 0.0)
-        self.assertEqual(treecompare.weighted_robinson_foulds_distance(extracted_tree, expected_induced_tree), 0.0)
+            for leaf_nd in extracted_tree.leaf_node_iter():
+                self.assertTrue(leaf_nd.taxon.label.startswith(group_id))
+            for leaf_nd in expected_induced_tree.leaf_node_iter():
+                assert leaf_nd.taxon.label.startswith(group_id)
 
+            # self.assertEqual(treecompare.weighted_robinson_foulds_distance(source_tree1, source_tree2), 0.0)
+            self.assertEqual(treecompare.unweighted_robinson_foulds_distance(extracted_tree, expected_induced_tree), 0)
+            self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(extracted_tree, expected_induced_tree), 0.0)
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 

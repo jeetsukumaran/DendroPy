@@ -685,6 +685,8 @@ def _get_length_diffs(
         except KeyError: # excep
             elen2 = 0.0
         value2 = value_type(elen2) #  ctor + bind # best case
+        # if abs(value2-value1) > 1e-5:
+        #     print("{}: {}, {}".format(bipartition.leafset_as_newick_string(tree1.taxon_namespace), value2, value1))
         length_diffs.append((value1,value2)) # ctor + listappend
         bipartition_length_diffs[bipartition] = length_diffs[-1]
 
