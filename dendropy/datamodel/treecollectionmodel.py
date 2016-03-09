@@ -1683,6 +1683,30 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             sum_of_split_support += split_support
         return sum_of_split_support
 
+    def collapse_edges_with_less_than_minimum_support(self,
+            tree,
+            min_freq=constants.GREATER_THAN_HALF,
+            ):
+        """
+        Collapse edges on tree that have support less than indicated by
+        ``min_freq``.
+        """
+        if not tree.is_rooted and self.is_all_counted_trees_rooted():
+            raise ValueError("Tree is interpreted as unrooted, but split support is based on rooted trees")
+        elif tree.is_rooted and self.is_all_counted_trees_treated_as_unrooted():
+            raise ValueError("Tree is interpreted as rooted, but split support is based on unrooted trees")
+        tree.encode_bipartitions()
+        split_frequencies = self._get_split_frequencies()
+        to_collapse = []
+        for nd in tree.postorder_node_iter():
+            s = nd.edge.bipartition.split_bitmask
+            if s not in split_frequencies:
+                to_collapse.append(nd)
+            elif split_frequencies[s] < min_freq:
+                to_collapse.append(nd)
+        for nd in to_collapse:
+            nd.edge.collapse(adjust_collapsed_head_children_edge_lengths=True)
+
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,
             is_rooted=None,
@@ -1717,7 +1741,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         if is_rooted is None:
             if self.is_all_counted_trees_rooted():
                 is_rooted = True
-            elif self.is_all_counted_trees_strictly_unrooted:
+            elif self.is_all_counted_trees_strictly_unrooted():
                 is_rooted = False
         split_frequencies = self._get_split_frequencies()
         to_try_to_add = []
@@ -2807,6 +2831,14 @@ class TreeArray(
                 **split_summarization_kwargs
                 )
         return tree
+
+    def collapse_edges_with_less_than_minimum_support(self,
+            tree,
+            min_freq=constants.GREATER_THAN_HALF,
+            ):
+        return self.split_distribution.collapse_edges_with_less_than_minimum_support(
+                tree=tree,
+                min_freq=min_freq)
 
     def consensus_tree(self,
             min_freq=constants.GREATER_THAN_HALF,

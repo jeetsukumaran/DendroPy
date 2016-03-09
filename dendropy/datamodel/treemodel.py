@@ -824,7 +824,8 @@ class Edge(
         Inserts all children of the head_node of self as children of the
         tail_node of self in the same place in the child_node list that
         head_node had occupied. The edge length and head_node will no longer be
-        part of the tree.
+        part of the tree unless ``adjust_collapsed_head_children_edge_lengths``.
+        is True.
         """
         to_del = self.head_node
         parent = self.tail_node

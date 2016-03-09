@@ -804,12 +804,13 @@ def main():
                         )
                 ))
     target_tree_supplemental_options = parser.add_argument_group("Target Tree Supplemental Options")
-    target_tree_supplemental_options.add_argument("-f", "--min-consensus-freq", "--min-freq", "--min-clade-freq",
+    target_tree_supplemental_options.add_argument("-f", "--min-freq", "--min-clade-freq", "--min-consensus-freq",
             type=float,
             default=constants.GREATER_THAN_HALF,
             metavar="#.##",
             help=(
-                "If using a consensus tree summarization strategy, then "
+                "If using a consensus tree summarization strategy, or "
+                "specifying '--collapse-edges-below-minumum-support', "
                 "this is the minimum frequency or probability for a clade "
                 "or a split to be included in the resulting tree "
                 "(default: > 0.5)."))
@@ -820,6 +821,18 @@ def main():
                 "Do not fail with error if target tree(s) have taxa not"
                 " previously encountered in source trees or defined in"
                 " the taxon discovery file."
+                ))
+    target_tree_supplemental_options.add_argument(
+            "--collapse-edges-with-less-than-minimum-support",
+            dest="collapse_edges_with_less_than_minimum_support",
+            action="store_true",
+            default=False,
+            help=(
+                "Collapse edges that have support values less than that specifed "
+                "by '-f', '--min-freq'. By default, the '--min-freq' option "
+                "only applies for consensus tree summary targets. Specifying "
+                "this option will apply it to all other types of summary targets "
+                "including user-specified target trees."
                 ))
 
     target_tree_rooting_options = parser.add_argument_group("Target Tree Rooting Options")
@@ -1617,8 +1630,8 @@ def main():
         if args.summary_target is None:
             args.summary_target = "consensus"
         if args.summary_target == "consensus":
-            tree = tree_array.consensus_tree(min_freq=args.min_consensus_freq, summarize_splits=False)
-            msg = "Summarized onto consensus tree with minimum clade frequency threshold of {}:".format(args.min_consensus_freq)
+            tree = tree_array.consensus_tree(min_freq=args.min_freq, summarize_splits=False)
+            msg = "Summarized onto consensus tree with minimum clade frequency threshold of {}:".format(args.min_freq)
         elif args.summary_target == "mcct" or args.summary_target == "mcc":
             tree = tree_array.maximum_product_of_split_support_tree(
                     include_external_splits=args.include_external_splits_when_scoring_clade_credibility_tree,
@@ -1631,8 +1644,8 @@ def main():
             msg = "Summarized onto Maximum Sum of Credibilities Tree (i.e., tree given in sources that maximizes the sum of clade credibilities{}):".format(coda)
         else:
             raise ValueError(args.summary_target)
-        target_trees.append(tree)
         _message_and_log(msg, wrap=True)
+        target_trees.append(tree)
     else:
         try:
             if not args.allow_unknown_target_tree_taxa:
@@ -1672,9 +1685,15 @@ def main():
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
+        target_trees.append(tree)
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
-
+    if args.collapse_edges_with_less_than_minimum_support and args.summary_target != "consensus":
+        msg = "Collapsing edges with support frequency less than {}".format(args.min_freq)
+        for tree in target_trees:
+            tree_array.collapse_edges_with_less_than_minimum_support(
+                    tree=tree,
+                    min_freq=args.min_freq,)
 
     ###  rooting
 
