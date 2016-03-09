@@ -253,6 +253,10 @@ class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase
             test_target.update_assemblage_induced_tree_cache(
                     tree=tree,
                     assemblage_leaf_sets=tree.assemblage_leaf_sets)
+            ## to check for inadvertent double adding
+            test_target.update_assemblage_induced_tree_cache(
+                    tree=tree,
+                    assemblage_leaf_sets=tree.assemblage_leaf_sets)
         self.validate_managed_trees(
                 test_target=test_target,
                 trees=trees)
