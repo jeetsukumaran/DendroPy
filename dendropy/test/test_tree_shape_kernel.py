@@ -167,7 +167,7 @@ class TreeShapeKernelBasicCalculationTest(unittest.TestCase):
                 self.assertAlmostEqual(tree_shape_kernel(t1, t2), expected[idx1][idx2])
                 # print("{}, {} = {}".format(idx1+1, idx2+1, tree_shape_kernel(t1, t2)))
 
-class AssemblageInducedTreeManagerTests(unittest.TestCase):
+class AssemblageInducedTreeManagerTestBase(unittest.TestCase):
 
     GROUP_IDS = ("a", "b", "c", "d", "e")
 
@@ -200,24 +200,21 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
         assert len(tree.classification_regime_subtrees) == len(AssemblageInducedTreeManagerTests.GROUP_IDS)
         return tree
 
-    def test_basic_subtree_generation_and_caching(self):
-        test_target = AssemblageInducedTreeManager()
-        trees = []
-        for idx in range(10):
-            tree = self.get_random_tree()
-            tree.induced_trees = test_target.generate_induced_trees(
-                tree=tree,
-                assemblage_leaf_sets=tree.assemblage_leaf_sets)
-            self.assertEqual(len(tree.induced_trees), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
-            self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
-            self.assertEqual(test_target._num_assemblages, len(AssemblageInducedTreeManagerTests.GROUP_IDS))
-            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map), idx+1)
-            self.assertIn(tree, test_target._tree_assemblage_induced_trees_map)
-            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
+    def validate_managed_trees(self, test_target, trees):
+        self.assertEqual(test_target._num_assemblages, len(AssemblageInducedTreeManagerTests.GROUP_IDS))
+        self.assertEqual(len(test_target._tree_assemblage_induced_trees_map), len(trees))
         for tree in trees:
+            self.assertIn(tree, test_target._tree_assemblage_induced_trees_map)
             self.assertEqual(len(tree.induced_trees), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
             self.assertEqual(len(tree.induced_trees), len(tree.assemblage_leaf_sets))
-            for induced_tree, group_id, original_leafset_nodes in zip(tree.induced_trees, AssemblageInducedTreeManagerTests.GROUP_IDS, tree.assemblage_leaf_sets):
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(tree.induced_trees))
+            for induced_tree in tree.induced_trees:
+                self.assertIn(induced_tree, test_target._tree_assemblage_induced_trees_map[tree])
+            induced_trees = test_target._tree_assemblage_induced_trees_map[tree]
+            expected_induced_trees = tree.induced_trees
+            for ( induced_tree, expected_induced_tree, group_id, original_leafset_nodes) in zip( induced_trees, expected_induced_trees, AssemblageInducedTreeManagerTests.GROUP_IDS, tree.assemblage_leaf_sets):
+                self.assertIs(induced_tree, expected_induced_tree)
                 original_leafset = set(original_leafset_nodes)
                 for leaf_nd in induced_tree.leaf_node_iter():
                     self.assertTrue(leaf_nd.taxon.label.startswith(group_id), leaf_nd.taxon.label)
@@ -233,6 +230,26 @@ class AssemblageInducedTreeManagerTests(unittest.TestCase):
                 # print(t3.as_string("newick"))
                 # print(induced_tree.as_string("newick"))
                 self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(t3, induced_tree), 0.0)
+
+class AssemblageInducedTreeManagerTests(AssemblageInducedTreeManagerTestBase):
+
+    def test_basic_subtree_generation_and_caching(self):
+        test_target = AssemblageInducedTreeManager()
+        trees = []
+        for idx in range(10):
+            tree = self.get_random_tree()
+            tree.induced_trees = test_target.generate_induced_trees(
+                tree=tree,
+                assemblage_leaf_sets=tree.assemblage_leaf_sets)
+            trees.append(tree)
+        self.validate_managed_trees(
+                test_target=test_target,
+                trees=trees)
+
+class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase):
+
+    def test_comparison_add_trees(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
