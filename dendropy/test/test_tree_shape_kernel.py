@@ -246,6 +246,13 @@ class AssemblageInducedTreeManagerTests(AssemblageInducedTreeManagerTestBase):
 
 class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase):
 
+    def validate_managed_and_cached_trees(self, test_target, trees):
+        self.validate_managed_trees(
+                test_target=test_target,
+                trees=trees)
+        for tree in trees:
+            self.assertIn(tree, test_target._tree_cache)
+
     def test_comparison_add_trees_directly(self):
         test_target = AssemblageInducedTreeShapeKernel()
         trees = [self.get_random_tree() for idx in range(10)]
@@ -257,7 +264,7 @@ class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase
             test_target.update_assemblage_induced_tree_cache(
                     tree=tree,
                     assemblage_leaf_sets=tree.assemblage_leaf_sets)
-        self.validate_managed_trees(
+        self.validate_managed_and_cached_trees(
                 test_target=test_target,
                 trees=trees)
 
@@ -272,7 +279,7 @@ class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase
                     tree1_assemblage_leaf_sets=tree1.assemblage_leaf_sets,
                     tree2_assemblage_leaf_sets=tree2.assemblage_leaf_sets,
                     )
-        self.validate_managed_trees(
+        self.validate_managed_and_cached_trees(
                 test_target=test_target,
                 trees=trees)
 
