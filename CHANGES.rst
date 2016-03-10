@@ -4,8 +4,8 @@ Release 4.1.0 (Pending)
 New or Updated Features
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-    -   [SumTrees]: tip-dating/non-contemporaneous tip age assignment using the "--tip-ages" argument (http://dendropy.org/programs/sumtrees.html#setting-the-node-ages-of-the-summary-trees).
-    -   [SumTrees]: '--collapse-edges-with-less-than-minimum-support' option, to force collapsing of edges in user-specifed or non-consensus tree summary targets as well.
+    -   [SumTrees]: tip-dating/non-contemporaneous tip age assignment using the "``--tip-ages``" argument (http://dendropy.org/programs/sumtrees.html#setting-the-node-ages-of-the-summary-trees).
+    -   [SumTrees]: "``--min-clade-freq``" applies to all summary targets (i.e., not just consensus trees, but user-specified as well as, e.g. MCCT trees).
     -   Fast, flexible, and powerful tree and subtree cloning, extracting only nodes/taxa of interest (http://dendropy.org/primer/treemanips.html#extracting-trees-and-subtrees-from-an-existing-tree).
     -   Neighbor-joining and UPGMA trees (http://dendropy.org/primer/phylogenetic_distances.html#generating-distance-trees-from-a-phylogeneticdistancematrix-object).
     -   The new (actually, warmed-over) PhylogeneticDistanceMatrix to manage various "within-tree" distances, such patristic distances, or the ecological statistics described below (http://dendropy.org/primer/phylogenetic_distances.html#creating-a-phylogeneticdistancematrix-object).
