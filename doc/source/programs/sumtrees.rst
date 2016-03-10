@@ -302,6 +302,21 @@ If you want the support expressed in percentages instead of proportions, and the
     $ sumtrees.py --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
 
+Collapsing Clades/Edges/Splits Below a Minimum Support Frequency Threshold
+--------------------------------------------------------------------------
+
+The "``-f``" or "``--min-clade-freq``" flag sets the threshold below which clades will be collapsed.
+This applies to all summary targets: user-specified target topologies as well consensus trees, MCCT trees, etc.::
+
+        $ sumtrees.py --min-clade-freq=0.75 --percentages --decimals=0 phylo-boots.tre
+        $ sumtrees.py -f0.75 -p -d0 phylo-boots.tre
+        $ sumtrees.py --min-clade-freq=0.95 --summary-target=mcct phylo-boots.tre
+        $ sumtrees.py -f0.95 -s mcct phylo-boots.tre
+        $ sumtrees.py --min-clade-freq=0.75 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+        $ sumtrees.py -f0.75 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+
+Note that the minimum support frequency threshold is specified as proportion scaled from 0 to 1, even if the percentages are requested as the support units.
+
 Summarizing Edge Lengths
 ========================
 

@@ -252,6 +252,9 @@ class AssemblageInducedTreeShapeKernelTests(AssemblageInducedTreeManagerTestBase
                 trees=trees)
         for tree in trees:
             self.assertIn(tree, test_target._tree_cache)
+            self.assertEqual(len(test_target._tree_assemblage_induced_trees_map[tree]), len(AssemblageInducedTreeManagerTests.GROUP_IDS))
+            for induced_tree in test_target._tree_assemblage_induced_trees_map[tree]:
+                self.assertIn(induced_tree, test_target._tree_cache)
 
     def test_comparison_add_trees_directly(self):
         test_target = AssemblageInducedTreeShapeKernel()

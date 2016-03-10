@@ -570,6 +570,7 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
     def __init__(self, *args, **kwargs):
         TreeShapeKernel.__init__(self, *args, **kwargs)
         AssemblageInducedTreeManager.__init__(self, *args, **kwargs)
+        self._cache_induced_tree_scores = {}
 
     def update_assemblage_induced_tree_cache(self,
             tree,
@@ -577,6 +578,23 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
         self.update_cache(tree=tree)
         induced_trees = self.generate_induced_trees(tree=tree,
                 assemblage_leaf_sets=assemblage_leaf_sets)
+        # self._cache_induced_tree_scores[tree] = []
+        # for induced_tree1 in induced_trees:
+        #     self.update_cache(tree=induced_tree1)
+        #     s0 = TreeShapeKernel.__call__(self,
+        #             tree1=induced_tree1,
+        #             tree2=tree,
+        #             is_tree1_cache_updated=True,
+        #             is_tree2_cache_updated=True,
+        #             )
+        #     for induced_tree2 in induced_trees:
+        #         s1 = TreeShapeKernel.__call__(self,
+        #                 tree1=induced_tree1,
+        #                 tree2=induced_tree2,
+        #                 is_tree1_cache_updated=True,
+        #                 is_tree2_cache_updated=True,
+        #                 )
+        #         self._cache_induced_tree_scores[tree].append(s1-s0)
 
     def __call__(self,
             tree1,
@@ -601,6 +619,7 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
             self.update_assemblage_induced_tree_cache(
                     tree=tree2,
                     assemblage_leaf_sets=tree2_assemblage_leaf_sets)
+        ## ++ main tree score
         score_vector.append(main_trees_score)
         induced_trees1 = self._tree_assemblage_induced_trees_map[tree1]
         induced_trees2 = self._tree_assemblage_induced_trees_map[tree1]
@@ -613,7 +632,9 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
                                 is_tree1_cache_updated=True,
                                 is_tree2_cache_updated=True,
                                 )
+                ## ++ raw scores direct comparisons of each of the induced trees
                 score_vector.append(s)
+        return score_vector
 
 ###############################################################################
 ## Legacy
