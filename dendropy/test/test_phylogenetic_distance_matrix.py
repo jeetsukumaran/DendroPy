@@ -792,7 +792,7 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
             self.check_tree(obs_tree=obs_tree,
                     expected_tree=expected_tree)
 
-class NodeToNodeDistances(unittest.TestCase):
+class NodeToNodeDistancesTest(unittest.TestCase):
 
     def test_weighted_distances(self):
         test_runs = [
@@ -802,7 +802,7 @@ class NodeToNodeDistances(unittest.TestCase):
             tree = dendropy.Tree.get_from_path(
                     src=pathmap.tree_source_path(tree_filename),
                     schema='nexus')
-            ndm = tree.node_to_node_distances()
+            ndm = tree.node_distance_matrix()
             reference_table = container.DataTable.from_csv(
                     src=open(pathmap.other_source_path(distances_filename)),
                     default_data_type=float,

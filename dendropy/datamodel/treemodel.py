@@ -5483,7 +5483,7 @@ class Tree(
         from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
         return PhylogeneticDistanceMatrix.from_tree(tree=self)
 
-    def node_to_node_distances(self):
+    def node_distance_matrix(self):
         from dendropy.calculate.phylogeneticdistance import NodeDistanceMatrix
         return NodeDistanceMatrix.from_tree(tree=self)
 
