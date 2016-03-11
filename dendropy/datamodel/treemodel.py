@@ -5483,6 +5483,10 @@ class Tree(
         from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
         return PhylogeneticDistanceMatrix.from_tree(tree=self)
 
+    def node_to_node_distances(self):
+        from dendropy.calculate.phylogeneticdistance import NodeDistanceMatrix
+        return NodeDistanceMatrix.from_tree(tree=self)
+
     def calc_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             is_force_max_age=False,

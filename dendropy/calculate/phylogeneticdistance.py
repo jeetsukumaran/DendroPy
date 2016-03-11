@@ -329,8 +329,8 @@ class PhylogeneticDistanceMatrix(object):
                 and (self._num_edges == o._num_edges)
                 )
 
-        def __hash__(self):
-            return id(self)
+    def __hash__(self):
+        return id(self)
 
     def __call__(self, taxon1, taxon2):
         return self.patristic_distance(taxon1, taxon2)
@@ -1350,4 +1350,155 @@ class PhylogeneticDistanceMatrix(object):
                     p=p)
             results.append(result)
         return results
+
+class NodeDistanceMatrix(object):
+
+    @classmethod
+    def from_tree(cls, tree):
+        ndm = cls()
+        ndm.compile_from_tree(tree=tree)
+        return ndm
+
+    def __init__(self):
+        self.clear()
+
+    def clear(self):
+        self._tree_length = None
+        self._num_edges = None
+        self._node_phylogenetic_distances = {}
+        self._node_phylogenetic_path_steps = {}
+        self._mrca = {}
+
+    def compile_from_tree(self, tree):
+        self.clear()
+        self._tree_length = 0.0
+        self._num_edges = 0
+        for node1 in tree.postorder_node_iter():
+            try:
+                self._tree_length += node1.edge.length
+            except TypeError: # None for edge length
+                pass
+            self._num_edges += 1
+            if node1 not in self._node_phylogenetic_distances:
+                self._node_phylogenetic_distances[node1] = {node1: 0.0}
+            children = node1.child_nodes()
+            for ch_idx, ch1 in enumerate(children):
+                ch1_elen = ch1.edge.length if ch1.edge.length is not None else 0.0
+                for ch1_subtree_node in self._node_phylogenetic_distances[ch1].keys():
+                    if ch1_subtree_node not in self._node_phylogenetic_distances[node1]:
+                        d = self._node_phylogenetic_distances[ch1][ch1_subtree_node] + ch1_elen
+                        self._node_phylogenetic_distances[node1][ch1_subtree_node] = d
+                        self._node_phylogenetic_distances[ch1_subtree_node][node1] = d
+                self._node_phylogenetic_distances[node1][ch1] = ch1_elen
+                self._node_phylogenetic_distances[ch1][node1] = ch1_elen
+                for ch2 in children[ch_idx+1:]:
+                    ch2_elen = ch2.edge.length if ch2.edge.length is not None else 0.0
+                    d = ch1_elen + ch2_elen
+                    self._node_phylogenetic_distances[ch1][ch2] = d
+                    self._node_phylogenetic_distances[ch2][ch1] = d
+            for snd1 in self._node_phylogenetic_distances[node1]:
+                for snd2 in self._node_phylogenetic_distances[node1]:
+                    if snd1 is snd2:
+                        continue
+                    if snd1 not in self._node_phylogenetic_distances:
+                        self._node_phylogenetic_distances[snd1] = {}
+                    if snd2 not in self._node_phylogenetic_distances:
+                        self._node_phylogenetic_distances[snd2] = {}
+                    if snd2 not in self._node_phylogenetic_distances[snd1]:
+                        self._node_phylogenetic_distances[snd1][snd2] = self._node_phylogenetic_distances[node1][snd1] + self._node_phylogenetic_distances[node1][snd2]
+                    if snd1 not in self._node_phylogenetic_distances[snd2]:
+                        self._node_phylogenetic_distances[snd2][snd1] = self._node_phylogenetic_distances[node1][snd1] + self._node_phylogenetic_distances[node1][snd2]
+
+    def _mirror_lookups(self):
+        for ddata in (
+                self._node_phylogenetic_distances,
+                self._node_phylogenetic_path_steps,
+                self._mrca,
+                ):
+            for node1 in ddata:
+                for node2 in ddata[node1]:
+                    # assert node1 is not node2
+                    if node2 not in ddata:
+                        ddata[node2] = {}
+                    ddata[node2][node1] = ddata[node1][node2]
+
+    def __eq__(self, o):
+        if self.node_namespace is not o.node_namespace:
+            return False
+        return (True
+                and (self._node_phylogenetic_distances == o._node_phylogenetic_distances)
+                and (self._node_phylogenetic_path_steps == o._node_phylogenetic_path_steps)
+                and (self._mrca == o._mrca)
+                and (self._tree_length == o._tree_length)
+                and (self._num_edges == o._num_edges)
+                )
+
+    def __hash__(self):
+        return id(self)
+
+    def __call__(self, node1, node2):
+        return self.patristic_distance(node1, node2)
+
+    def __copy__(self):
+        return self.clone()
+
+    def clone(self):
+        o = self.__class__()
+        o._tree_length = self._tree_length
+        o._num_edges = self._num_edges
+        for src, dest in (
+                (self._node_phylogenetic_distances, o._node_phylogenetic_distances,),
+                (self._node_phylogenetic_path_steps, o._node_phylogenetic_path_steps,),
+                (self._mrca, o._mrca,),
+                ):
+            for t1 in src:
+                dest[t1] = {}
+                for t2 in src[t1]:
+                    dest[t1][t2] = src[t1][t2]
+        return o
+
+    def mrca(self, node1, node2):
+        """
+        Returns MRCA of two node objects.
+        """
+        return self._mrca[node1][node2]
+
+    def distance(self,
+            node1,
+            node2,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=False):
+        """
+        Returns distance between node1 and node2.
+        """
+        if is_weighted_edge_distances:
+            return self.patristic_distance(node1, node2, is_normalize_by_tree_size=is_normalize_by_tree_size)
+        else:
+            return self.path_edge_count(node1, node2, is_normalize_by_tree_size=is_normalize_by_tree_size)
+
+
+    def patristic_distance(self, node1, node2, is_normalize_by_tree_size=False):
+        """
+        Returns patristic distance between two node objects.
+        """
+        if node1 is node2:
+            return 0.0
+        d = self._node_phylogenetic_distances[node1][node2]
+        if is_normalize_by_tree_size:
+            return d / self._tree_length
+        else:
+            return d
+
+    def path_edge_count(self, node1, node2, is_normalize_by_tree_size=False):
+        """
+        Returns the number of edges between two node objects.
+        """
+        if node1 is node2:
+            return 0
+        d = self._node_phylogenetic_path_steps[node1][node2]
+        if is_normalize_by_tree_size:
+            return float(d) / self._num_edges
+        else:
+            return d
+
 

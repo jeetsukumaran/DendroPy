@@ -802,15 +802,14 @@ class NodeToNodeDistances(unittest.TestCase):
             tree = dendropy.Tree.get_from_path(
                     src=pathmap.tree_source_path(tree_filename),
                     schema='nexus')
-            wdm, udm = tree.node_to_node_distances()
+            ndm = tree.node_to_node_distances()
             reference_table = container.DataTable.from_csv(
                     src=open(pathmap.other_source_path(distances_filename)),
                     default_data_type=float,
                     delimiter=",")
             for nd1 in tree.postorder_internal_node_iter():
                 for nd2 in tree.postorder_internal_node_iter():
-                    print("{}, {} = {}".format(nd1.label, nd2.label, reference_table[nd1.label, nd2.label]))
-                    d = wdm[nd1][nd2]
+                    d = ndm.patristic_distance(nd1, nd2)
                     e = reference_table[nd1.label, nd2.label]
                     self.assertAlmostEqual(d, e)
 
