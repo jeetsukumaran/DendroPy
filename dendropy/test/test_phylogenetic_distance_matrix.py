@@ -795,20 +795,30 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
 class NodeToNodeDistancesTest(unittest.TestCase):
 
     def test_weighted_distances(self):
+        ## get distances from ape
+        # library(ape)
+        # tr = read.nexus("pythonidae.mle.nex")
+        # tr$node.label <- (Ntip(tr)+1):(nrow(tr$edge)+1)
+        # tr$tip.label <- (1:Ntip(tr))
+        # write.tree(tr)
+        # d = dist.nodes(tr)
+        # write.csv(d, "file.csv")
         test_runs = [
-                ("hiv1.nexus", "hiv1.node-to-node-dists.csv"),
+                ("hiv1.newick", "hiv1.node-to-node-dists.csv"),
+                ("pythonidae.mle.numbered-nodes.newick", "pythonidae.mle.node-to-node-dists.csv")
                 ]
         for tree_filename, distances_filename in test_runs:
             tree = dendropy.Tree.get_from_path(
                     src=pathmap.tree_source_path(tree_filename),
-                    schema='nexus')
+                    schema='newick',
+                    suppress_leaf_node_taxa=True)
             ndm = tree.node_distance_matrix()
             reference_table = container.DataTable.from_csv(
                     src=open(pathmap.other_source_path(distances_filename)),
                     default_data_type=float,
                     delimiter=",")
-            for nd1 in tree.postorder_internal_node_iter():
-                for nd2 in tree.postorder_internal_node_iter():
+            for nd1 in tree.postorder_node_iter():
+                for nd2 in tree.postorder_node_iter():
                     d = ndm.patristic_distance(nd1, nd2)
                     e = reference_table[nd1.label, nd2.label]
                     self.assertAlmostEqual(d, e)
