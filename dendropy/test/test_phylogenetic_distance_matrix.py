@@ -794,7 +794,7 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
 
 class NodeToNodeDistancesTest(unittest.TestCase):
 
-    def test_weighted_distances(self):
+    def test_distances(self):
         ## get distances from ape
         # library(ape)
         # tr = read.nexus("pythonidae.mle.nex")
@@ -806,7 +806,7 @@ class NodeToNodeDistancesTest(unittest.TestCase):
         test_runs = [
                 ("hiv1.newick", True, "hiv1.node-to-node-dists.csv"),
                 ("pythonidae.mle.numbered-nodes.newick", True, "pythonidae.mle.node-to-node-dists.csv"),
-                ("hiv1.unweighted-edges.newick", False, "hiv1.unweighted.node-to-node-dists.csv"),
+                ("hiv1.newick", False, "hiv1.unweighted.node-to-node-dists.csv"),
                 # ("pythonidae.mle.numbered-nodes.unweighted.newick", False, "pythonidae.mle.unweighted.node-to-node-dists.csv"),
                 ]
         for tree_filename, is_weighted, distances_filename in test_runs:
