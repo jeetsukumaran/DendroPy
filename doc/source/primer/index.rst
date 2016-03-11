@@ -75,4 +75,5 @@ Interoperability with Other Programs, Libraries and Applications
     genbank.rst
     seqgen.rst
     paup.rst
+    phyml.rst
     raxml.rst
