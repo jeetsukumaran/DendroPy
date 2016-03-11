@@ -807,7 +807,7 @@ class NodeToNodeDistancesTest(unittest.TestCase):
                 ("hiv1.newick", True, "hiv1.node-to-node-dists.csv"),
                 ("pythonidae.mle.numbered-nodes.newick", True, "pythonidae.mle.node-to-node-dists.csv"),
                 ("hiv1.newick", False, "hiv1.unweighted.node-to-node-dists.csv"),
-                # ("pythonidae.mle.numbered-nodes.unweighted.newick", False, "pythonidae.mle.unweighted.node-to-node-dists.csv"),
+                ("pythonidae.mle.numbered-nodes.newick", False, "pythonidae.mle.unweighted.node-to-node-dists.csv"),
                 ]
         for tree_filename, is_weighted, distances_filename in test_runs:
             tree = dendropy.Tree.get_from_path(
