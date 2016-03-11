@@ -1382,6 +1382,7 @@ class NodeDistanceMatrix(object):
             if node1 not in self._node_phylogenetic_distances:
                 self._node_phylogenetic_distances[node1] = {node1: 0.0}
                 self._node_phylogenetic_path_steps[node1] = {node1: 0}
+                self._mrca[node1] = {node1: node1}
             children = node1.child_nodes()
             for ch_idx, ch1 in enumerate(children):
                 ch1_elen = ch1.edge.length if ch1.edge.length is not None else 0.0
@@ -1398,12 +1399,19 @@ class NodeDistanceMatrix(object):
                 self._node_phylogenetic_path_steps[node1][ch1] = 1
                 self._node_phylogenetic_path_steps[ch1][node1] = 1
                 for ch2 in children[ch_idx+1:]:
+                    self._mrca[ch1][ch2] = node1
+                    self._mrca[ch2][ch1] = node1
                     ch2_elen = ch2.edge.length if ch2.edge.length is not None else 0.0
                     d = ch1_elen + ch2_elen
                     self._node_phylogenetic_distances[ch1][ch2] = d
                     self._node_phylogenetic_distances[ch2][ch1] = d
                     self._node_phylogenetic_path_steps[ch1][ch2] = 2
                     self._node_phylogenetic_path_steps[ch2][ch1] = 2
+            # Below is ugly, ugly, ugly. Basic idea is to link nodes of each
+            # the subtrees of each of the child nodes of node1. Assumes
+            # that any pairwise comparison of nodes descending from node1
+            # (as given by nodes in a pairwise comparison with node1) not
+            # already made have their MRCA at node1.
             for snd1 in self._node_phylogenetic_distances[node1]:
                 for snd2 in self._node_phylogenetic_distances[node1]:
                     if snd1 is snd2:
@@ -1420,19 +1428,13 @@ class NodeDistanceMatrix(object):
                     if snd1 not in self._node_phylogenetic_distances[snd2]:
                         self._node_phylogenetic_distances[snd2][snd1] = self._node_phylogenetic_distances[node1][snd1] + self._node_phylogenetic_distances[node1][snd2]
                         self._node_phylogenetic_path_steps[snd2][snd1] = self._node_phylogenetic_path_steps[node1][snd1] + self._node_phylogenetic_path_steps[node1][snd2]
-
-    def _mirror_lookups(self):
-        for ddata in (
-                self._node_phylogenetic_distances,
-                self._node_phylogenetic_path_steps,
-                self._mrca,
-                ):
-            for node1 in ddata:
-                for node2 in ddata[node1]:
-                    # assert node1 is not node2
-                    if node2 not in ddata:
-                        ddata[node2] = {}
-                    ddata[node2][node1] = ddata[node1][node2]
+                    if snd1 not in self._mrca:
+                        self._mrca[snd1] = {}
+                    if snd2 not in self._mrca:
+                        self._mrca[snd2] = {}
+                    if snd2 not in self._mrca[snd1]:
+                        self._mrca[snd1][snd2] = node1
+                        self._mrca[snd2][snd1] = node1
 
     def __eq__(self, o):
         if self.node_namespace is not o.node_namespace:

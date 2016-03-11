@@ -825,6 +825,30 @@ class NodeToNodeDistancesTest(unittest.TestCase):
                     e = reference_table[nd1.label, nd2.label]
                     self.assertAlmostEqual(d, e)
 
+    def test_mrca(self):
+        test_runs = [
+                "hiv1.newick",
+                "pythonidae.mle.numbered-nodes.newick",
+                ]
+        for tree_filename in test_runs:
+            tree = dendropy.Tree.get_from_path(
+                    src=pathmap.tree_source_path(tree_filename),
+                    schema='newick',
+                    rooting="force-rooted")
+            tree.encode_bipartitions()
+            ndm = tree.node_distance_matrix()
+            for nd1 in tree.postorder_node_iter():
+                for nd2 in tree.postorder_node_iter():
+                    leafset_bitmask = nd1.leafset_bitmask | nd2.leafset_bitmask
+                    exp_mrca = tree.mrca(leafset_bitmask=leafset_bitmask)
+                    obs_mrca = ndm.mrca(nd1, nd2)
+                    # print("{} | {} = {} ({})".format(
+                    #     nd1.leafset_bitmask,
+                    #     nd2.leafset_bitmask,
+                    #     leafset_bitmask,
+                    #     obs_mrca.edge.bipartition.leafset_bitmask))
+                    self.assertIs(exp_mrca, obs_mrca)
+
 if __name__ == "__main__":
     unittest.main()
 
