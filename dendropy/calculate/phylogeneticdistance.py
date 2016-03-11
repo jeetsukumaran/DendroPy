@@ -1381,33 +1381,45 @@ class NodeDistanceMatrix(object):
             self._num_edges += 1
             if node1 not in self._node_phylogenetic_distances:
                 self._node_phylogenetic_distances[node1] = {node1: 0.0}
+                self._node_phylogenetic_path_steps[node1] = {node1: 0}
             children = node1.child_nodes()
             for ch_idx, ch1 in enumerate(children):
                 ch1_elen = ch1.edge.length if ch1.edge.length is not None else 0.0
                 for ch1_subtree_node in self._node_phylogenetic_distances[ch1].keys():
                     if ch1_subtree_node not in self._node_phylogenetic_distances[node1]:
                         d = self._node_phylogenetic_distances[ch1][ch1_subtree_node] + ch1_elen
+                        d2 = self._node_phylogenetic_path_steps[ch1][ch1_subtree_node] + 1
                         self._node_phylogenetic_distances[node1][ch1_subtree_node] = d
                         self._node_phylogenetic_distances[ch1_subtree_node][node1] = d
+                        self._node_phylogenetic_path_steps[node1][ch1_subtree_node] = d2
+                        self._node_phylogenetic_path_steps[ch1_subtree_node][node1] = d2
                 self._node_phylogenetic_distances[node1][ch1] = ch1_elen
                 self._node_phylogenetic_distances[ch1][node1] = ch1_elen
+                self._node_phylogenetic_path_steps[node1][ch1] = 1
+                self._node_phylogenetic_path_steps[ch1][node1] = 1
                 for ch2 in children[ch_idx+1:]:
                     ch2_elen = ch2.edge.length if ch2.edge.length is not None else 0.0
                     d = ch1_elen + ch2_elen
                     self._node_phylogenetic_distances[ch1][ch2] = d
                     self._node_phylogenetic_distances[ch2][ch1] = d
+                    self._node_phylogenetic_path_steps[ch1][ch2] = 2
+                    self._node_phylogenetic_path_steps[ch2][ch1] = 2
             for snd1 in self._node_phylogenetic_distances[node1]:
                 for snd2 in self._node_phylogenetic_distances[node1]:
                     if snd1 is snd2:
                         continue
                     if snd1 not in self._node_phylogenetic_distances:
                         self._node_phylogenetic_distances[snd1] = {}
+                        self._node_phylogenetic_path_steps[snd1] = {}
                     if snd2 not in self._node_phylogenetic_distances:
                         self._node_phylogenetic_distances[snd2] = {}
+                        self._node_phylogenetic_path_steps[snd2] = {}
                     if snd2 not in self._node_phylogenetic_distances[snd1]:
                         self._node_phylogenetic_distances[snd1][snd2] = self._node_phylogenetic_distances[node1][snd1] + self._node_phylogenetic_distances[node1][snd2]
+                        self._node_phylogenetic_path_steps[snd1][snd2] = self._node_phylogenetic_path_steps[node1][snd1] + self._node_phylogenetic_path_steps[node1][snd2]
                     if snd1 not in self._node_phylogenetic_distances[snd2]:
                         self._node_phylogenetic_distances[snd2][snd1] = self._node_phylogenetic_distances[node1][snd1] + self._node_phylogenetic_distances[node1][snd2]
+                        self._node_phylogenetic_path_steps[snd2][snd1] = self._node_phylogenetic_path_steps[node1][snd1] + self._node_phylogenetic_path_steps[node1][snd2]
 
     def _mirror_lookups(self):
         for ddata in (

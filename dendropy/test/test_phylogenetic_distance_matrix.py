@@ -804,10 +804,12 @@ class NodeToNodeDistancesTest(unittest.TestCase):
         # d = dist.nodes(tr)
         # write.csv(d, "file.csv")
         test_runs = [
-                ("hiv1.newick", "hiv1.node-to-node-dists.csv"),
-                ("pythonidae.mle.numbered-nodes.newick", "pythonidae.mle.node-to-node-dists.csv")
+                ("hiv1.newick", True, "hiv1.node-to-node-dists.csv"),
+                ("pythonidae.mle.numbered-nodes.newick", True, "pythonidae.mle.node-to-node-dists.csv"),
+                ("hiv1.unweighted-edges.newick", False, "hiv1.unweighted.node-to-node-dists.csv"),
+                # ("pythonidae.mle.numbered-nodes.unweighted.newick", False, "pythonidae.mle.unweighted.node-to-node-dists.csv"),
                 ]
-        for tree_filename, distances_filename in test_runs:
+        for tree_filename, is_weighted, distances_filename in test_runs:
             tree = dendropy.Tree.get_from_path(
                     src=pathmap.tree_source_path(tree_filename),
                     schema='newick',
@@ -819,7 +821,7 @@ class NodeToNodeDistancesTest(unittest.TestCase):
                     delimiter=",")
             for nd1 in tree.postorder_node_iter():
                 for nd2 in tree.postorder_node_iter():
-                    d = ndm.patristic_distance(nd1, nd2)
+                    d = ndm.distance(nd1, nd2, is_weighted_edge_distances=is_weighted)
                     e = reference_table[nd1.label, nd2.label]
                     self.assertAlmostEqual(d, e)
 
