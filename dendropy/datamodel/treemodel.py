@@ -5469,18 +5469,10 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def phylogenetic_distance_matrix(self, is_bipartitions_updated=False):
+    def phylogenetic_distance_matrix(self):
         """
         Returns a |PhylogeneticDistanceMatrix| instance based
         on the tree (in its current state).
-
-        Parameters
-        ----------
-        is_bipartitions_updated : bool
-            If ``True``, then assumes that the bipartitions habe already been
-            calculated and are correct, and will not be calculated before the
-            distances are calculated. If ``False``, will result in
-            recalculation.
 
         Returns
         -------
@@ -5489,8 +5481,7 @@ class Tree(
             tree in its current state.
         """
         from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
-        return PhylogeneticDistanceMatrix.from_tree(tree=self,
-                is_bipartitions_updated=is_bipartitions_updated)
+        return PhylogeneticDistanceMatrix.from_tree(tree=self)
 
     def calc_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,

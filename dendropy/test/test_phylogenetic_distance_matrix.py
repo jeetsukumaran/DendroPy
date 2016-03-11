@@ -792,6 +792,28 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
             self.check_tree(obs_tree=obs_tree,
                     expected_tree=expected_tree)
 
+class NodeToNodeDistances(unittest.TestCase):
+
+    def test_weighted_distances(self):
+        test_runs = [
+                ("hiv1.nexus", "hiv1.node-to-node-dists.csv"),
+                ]
+        for tree_filename, distances_filename in test_runs:
+            tree = dendropy.Tree.get_from_path(
+                    src=pathmap.tree_source_path(tree_filename),
+                    schema='nexus')
+            wdm, udm = tree.node_to_node_distances()
+            reference_table = container.DataTable.from_csv(
+                    src=open(pathmap.other_source_path(distances_filename)),
+                    default_data_type=float,
+                    delimiter=",")
+            for nd1 in tree.postorder_internal_node_iter():
+                for nd2 in tree.postorder_internal_node_iter():
+                    print("{}, {} = {}".format(nd1.label, nd2.label, reference_table[nd1.label, nd2.label]))
+                    d = wdm[nd1][nd2]
+                    e = reference_table[nd1.label, nd2.label]
+                    self.assertAlmostEqual(d, e)
+
 if __name__ == "__main__":
     unittest.main()
 

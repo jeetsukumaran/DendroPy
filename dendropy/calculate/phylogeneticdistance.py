@@ -35,7 +35,7 @@ class PhylogeneticDistanceMatrix(object):
     """
 
     @classmethod
-    def from_tree(cls, tree, is_bipartitions_updated=False):
+    def from_tree(cls, tree):
         """
         Creates and returns a |PhylogeneticDistanceMatrix| based
         on the given tree.
@@ -57,10 +57,6 @@ class PhylogeneticDistanceMatrix(object):
         tree : a |Tree| instance
             The |Tree| from which to get the phylogenetic distances.
 
-        is_bipartitions_updated : bool
-            If the bipartitions have already been calculated on the tree, and
-            the tree has not been modified, set this to |True|.
-
         Returns
         -------
         pdm : A |PhylogeneticDistanceMatrix| instance
@@ -80,8 +76,7 @@ class PhylogeneticDistanceMatrix(object):
 
         """
         pdm = cls()
-        pdm.compile_from_tree(tree=tree,
-                is_bipartitions_updated=is_bipartitions_updated)
+        pdm.compile_from_tree(tree=tree)
         return pdm
 
     @classmethod
@@ -248,15 +243,13 @@ class PhylogeneticDistanceMatrix(object):
         self._taxon_phylogenetic_path_steps = {}
         self._mrca = {}
 
-    def compile_from_tree(self, tree, is_bipartitions_updated=False):
+    def compile_from_tree(self, tree):
         """
         Calculates the distances. Note that the path length (in number of
         steps) between taxa that span the root will be off by one if
         the tree is unrooted.
         """
         self.clear()
-        if not is_bipartitions_updated:
-            tree.encode_bipartitions()
         self.taxon_namespace = tree.taxon_namespace
         # for i1, t1 in enumerate(self.taxon_namespace):
         #     self._taxon_phylogenetic_distances[t1] = {}
