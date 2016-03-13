@@ -338,6 +338,10 @@ class PhylogeneticDistanceMatrix(object):
     def __copy__(self):
         return self.clone()
 
+    def __iter__(self):
+        for taxon in self._taxon_phylogenetic_distances:
+            yield taxon
+
     def clone(self):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
@@ -1446,6 +1450,10 @@ class NodeDistanceMatrix(object):
                 and (self._tree_length == o._tree_length)
                 and (self._num_edges == o._num_edges)
                 )
+
+    def __iter__(self):
+        for node in self._node_phylogenetic_distances:
+            yield node
 
     def __hash__(self):
         return id(self)
