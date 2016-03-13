@@ -49,13 +49,13 @@ for nd in tree2:
 # equivalent to above
 tree3 = tree0.extract_tree(tree_factory=PhyloTree,
         node_factory=PhyloNode)
-print(type(tree2)) # PhyloTree
-for nd in tree2:
+print(type(tree3)) # PhyloTree
+for nd in tree3:
     print(type(nd)) # PhyloNode
 
 # Use dendropy.Tree for tree but
 # PhyloNode for node
 tree4 = tree0.extract_tree(node_factory=PhyloNode)
-print(type(tree2)) # dendropy.Tree
-for nd in tree2:
+print(type(tree4)) # dendropy.Tree
+for nd in tree4:
     print(type(nd)) # PhyloNode
