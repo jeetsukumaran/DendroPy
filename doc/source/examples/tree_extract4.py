@@ -33,10 +33,10 @@ for nd in tree0:
 
 # Default extraction: use dendropy.Tree for tree
 # and dendropy.Node for node
-tree1 = tree0.extract_tree(tree_factory=PhyloTree)
-print(type(tree1)) # PhyloTree
+tree1 = tree0.extract_tree()
+print(type(tree1)) # dendropy.Tree
 for nd in tree1:
-    print(type(nd)) # PhyloNode
+    print(type(nd)) # dendropy.Node
 
 # Node factory defaults to ``node_factory`` method
 # of instance returned by ``tree_factory`` if
