@@ -417,6 +417,10 @@ Some convenience wrappers around the :meth:`~dendropy.datamodel.treemodel.Tree.e
 
 .. literalinclude:: /examples/tree_extract3.py
 
+You can also use the :meth:`~dendropy.datamodel.treemodel.Tree.extract_tree` method to created a "casted" copy, i.e. a (light) copy of the tree using your own custom classes instead of DendroPy's native |Tree| and |Node| classes:
+
+.. literalinclude:: /examples/tree_extract4.py
+
 Rotating
 ========
 

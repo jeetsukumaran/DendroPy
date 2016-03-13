@@ -2152,6 +2152,7 @@ class Node(
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
             is_apply_filter_to_internal_nodes=False,
+            node_factory=None,
             ):
         """
         Returns a clone of the structure descending from this node.
@@ -2176,6 +2177,9 @@ class Node(
             If ``True`` then the above filter will be applied to internal nodes. If
             ``False`` then it will not (internal nodes without children will
             still be filtered out).
+        node_factory : function
+            If not ``None``, must be a function that takes no arguments and
+            returns a new |Node| (or equivalent) instance.
 
         Returns
         -------
@@ -2187,6 +2191,8 @@ class Node(
         is_excluded_nodes = False
         start_node = None
         start_node_to_match = self
+        if node_factory is None:
+            node_factory = self.__class__
         for nd0 in self.postorder_iter():
             if node_filter_fn is not None:
                 if nd0._child_nodes:
@@ -2232,7 +2238,7 @@ class Node(
                     start_node_to_match = nd0.parent_node
                 memo[nd0] = children_to_add[0]
             else:
-                nd1 = self.__class__()
+                nd1 = node_factory()
                 nd1.label = nd0.label
                 nd1.taxon = nd0.taxon
                 nd1.edge.length = nd0.edge.length
@@ -3264,6 +3270,8 @@ class Tree(
             suppress_unifurcations=True,
             is_apply_filter_to_leaf_nodes=True,
             is_apply_filter_to_internal_nodes=False,
+            tree_factory=None,
+            node_factory=None,
             ):
         """
         Returns a copy of this tree that only includes the basic structure
@@ -3294,6 +3302,13 @@ class Tree(
             If ``True`` then the above filter will be applied to internal nodes. If
             ``False`` then it will not (internal nodes without children will
             still be filtered out).
+        tree_factory : function
+            If not ``None``, must be a function that optionally takes a
+            |TaxonNamespace| as an argument and returns a new |Tree| (or
+            equivalent) instance.
+        node_factory : function
+            If not ``None``, must be a function that takes no arguments and
+            returns a new |Node| (or equivalent) instance.
 
         Examples
         --------
@@ -3339,7 +3354,15 @@ class Tree(
             A new tree based on this one, with nodes filtered out if specified.
 
         """
-        other = self.__class__(taxon_namespace=self.taxon_namespace)
+        if tree_factory is None:
+            other = self.__class__(taxon_namespace=self.taxon_namespace)
+        else:
+            other = tree_factory(taxon_namespace=self.taxon_namespace)
+            if node_factory is None:
+                try:
+                    node_factory = other.node_factory
+                except AttributeError:
+                    pass
         other._is_rooted = self._is_rooted
         other.weight = self.weight
         other.length_type = self.length_type
@@ -3350,6 +3373,7 @@ class Tree(
                 suppress_unifurcations=suppress_unifurcations,
                 is_apply_filter_to_leaf_nodes=is_apply_filter_to_leaf_nodes,
                 is_apply_filter_to_internal_nodes=is_apply_filter_to_internal_nodes,
+                node_factory=node_factory,
                 )
         return other
 
