@@ -472,10 +472,10 @@ class NexusReader(ioservice.DataReader):
                 raise self._nexus_error("Multiple taxa blocks with title '{}' defined".format(title), NexusReader.MultipleBlockWithSameTitleError)
             return found[0]
 
-    def _get_taxon_symbol_mapper(self, taxon_namespace):
+    def _get_taxon_symbol_mapper(self, taxon_namespace, enable_lookup_by_taxon_number=True):
         taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
                 taxon_namespace=taxon_namespace,
-                enable_lookup_by_taxon_number=True,
+                enable_lookup_by_taxon_number=enable_lookup_by_taxon_number,
                 case_sensitive=self.case_sensitive_taxon_labels)
         return taxon_symbol_mapper
 

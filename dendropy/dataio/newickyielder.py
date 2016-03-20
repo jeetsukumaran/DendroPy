@@ -62,7 +62,7 @@ class NewickTreeDataYielder(ioservice.TreeDataYielder):
                 preserve_unquoted_underscores=self.newick_reader.preserve_unquoted_underscores)
         taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(
                 taxon_namespace=self.attached_taxon_namespace,
-                enable_lookup_by_taxon_number=True,
+                enable_lookup_by_taxon_number=False,
                 case_sensitive=self.newick_reader.case_sensitive_taxon_labels)
         while True:
             tree = self.newick_reader._parse_tree_statement(

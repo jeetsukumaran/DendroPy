@@ -76,7 +76,10 @@ class NexusTreeDataYielder(
         token = self._nexus_tokenizer.next_token()
         if token.upper() != "#NEXUS":
             if self.assume_newick_if_not_nexus:
-                taxon_symbol_mapper = self._get_taxon_symbol_mapper(taxon_namespace=self.attached_taxon_namespace)
+                taxon_symbol_mapper = self._get_taxon_symbol_mapper(
+                        taxon_namespace=self.attached_taxon_namespace,
+                        enable_lookup_by_taxon_number=False,
+                        )
                 while True:
                     tree = self._build_tree_from_newick_tree_string(
                             tree_factory=self.tree_factory,
