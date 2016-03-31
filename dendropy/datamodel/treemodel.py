@@ -5603,10 +5603,22 @@ class Tree(
                             ocnd = nnd.age
                         d = abs(node.age - ocnd)
                         if  d > ultrametricity_precision:
-                            # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
-                            raise error.UltrametricityError("Tree is not ultrametric within threshold of {threshold}: {deviance}".format(
+                            # try:
+                            #     self.encode_bipartitions()
+                            #     node_id = nnd.bipartition.split_as_newick_string(taxon_namespace=self.taxon_namespace)
+                            # except OSError:
+                            #     node_id = str(nnd)
+                            node_id = str(node)
+                            desc = []
+                            for desc_nd in child_nodes:
+                                desc.append("{}: {}".format(desc_nd, desc_nd.edge.length + desc_nd.age))
+                            desc = ", ".join(desc)
+                            raise error.UltrametricityError("Tree is not ultrametric within threshold of {threshold}: {deviance} (encountered in children of node {node} with edge length of {length}: {desc})".format(
                                 threshold=ultrametricity_precision,
                                 deviance=d,
+                                node=node_id,
+                                length=node.edge.length,
+                                desc=desc,
                                 ))
                 ages.append(node.age)
         return ages
