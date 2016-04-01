@@ -5609,16 +5609,28 @@ class Tree(
                             # except OSError:
                             #     node_id = str(nnd)
                             node_id = str(node)
+                            subtree = node._as_newick_string()
                             desc = []
                             for desc_nd in child_nodes:
-                                desc.append("{}: {}".format(desc_nd, desc_nd.edge.length + desc_nd.age))
-                            desc = ", ".join(desc)
-                            raise error.UltrametricityError("Tree is not ultrametric within threshold of {threshold}: {deviance} (encountered in children of node {node} with edge length of {length}: {desc})".format(
+                                desc.append("-   {}: has age of {} and edge length of {}, resulting in parent node age of {}".format(
+                                    desc_nd,
+                                    desc_nd.age,
+                                    desc_nd.edge.length,
+                                    desc_nd.edge.length + desc_nd.age))
+                            desc = "\n".join(desc)
+                            raise error.UltrametricityError(
+                                    ("Tree is not ultrametric within threshold of {threshold}: {deviance}.\n"
+                                     "Encountered in subtree of node {node} (edge length of {length}):\n"
+                                     "\n    {subtree}\n\n"
+                                     "Age of children:\n"
+                                     "{desc}"
+                                     ).format(
                                 threshold=ultrametricity_precision,
                                 deviance=d,
                                 node=node_id,
                                 length=node.edge.length,
                                 desc=desc,
+                                subtree=subtree,
                                 ))
                 ages.append(node.age)
         return ages
