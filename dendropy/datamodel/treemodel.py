@@ -2476,6 +2476,8 @@ class Node(
             if "'" in label:
                 label.replace("'", "''")
             return "'{}'".format(label)
+        elif " " in label and not kwargs.get("preserve_spaces"):
+            return label.replace(" ", "_")
         else:
             return label
 
