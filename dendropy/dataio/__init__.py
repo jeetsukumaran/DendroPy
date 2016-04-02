@@ -17,6 +17,7 @@
 ##############################################################################
 
 import collections
+from dendropy.dataio import d3writer
 from dendropy.dataio import newickreader
 from dendropy.dataio import newickwriter
 from dendropy.dataio import newickyielder
@@ -38,6 +39,7 @@ _IOServices = collections.namedtuple(
         )
 
 _IO_SERVICE_REGISTRY = container.CaseInsensitiveDict()
+_IO_SERVICE_REGISTRY["d3"] = _IOServices(None, d3writer.D3Writer, None)
 _IO_SERVICE_REGISTRY["newick"] = _IOServices(newickreader.NewickReader, newickwriter.NewickWriter, newickyielder.NewickTreeDataYielder)
 _IO_SERVICE_REGISTRY["nexus"] = _IOServices(nexusreader.NexusReader, nexuswriter.NexusWriter, nexusyielder.NexusTreeDataYielder)
 _IO_SERVICE_REGISTRY["nexus/newick"] = _IOServices(None, None, nexusyielder.NexusNewickTreeDataYielder)
