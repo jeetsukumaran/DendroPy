@@ -1699,7 +1699,6 @@ def main():
             msg = "Summarizing onto {} target trees".format(len(target_trees))
         else:
             msg = "Summarizing onto target tree".format(len(target_trees))
-        target_trees.append(tree)
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
     # if args.collapse_edges_with_less_than_minimum_support and args.summary_target != "consensus":
