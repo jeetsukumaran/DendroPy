@@ -24,7 +24,7 @@ import collections
 from dendropy.utility import constants
 from dendropy.model import coalescent
 
-class Profile(object):
+class MeasurementProfile(object):
 
     def __init__(self, profile_data=None):
         if profile_data is None:
@@ -83,15 +83,15 @@ class TreeProfile(object):
                 tree_length_nf = 1.0
         else:
             tree_length_nf = 1.0
-        self.measurement_profiles["Edge.Lengths"] = Profile(
+        self.measurement_profiles["Edge.Lengths"] = MeasurementProfile(
                 profile_data=[float(e.length)/tree_length_nf for e in tree.postorder_edge_iter() if e.length is not None])
         if tree_phylogenetic_distance_matrix is None:
             tree_phylogenetic_distance_matrix = tree.phylogenetic_distance_matrix()
-        self.measurement_profiles["Patristic.Distances"] = Profile(
+        self.measurement_profiles["Patristic.Distances"] = MeasurementProfile(
                 profile_data=tree_phylogenetic_distance_matrix.distances(
                     is_weighted_edge_distances=True,
                     is_normalize_by_tree_size=is_normalize,))
-        self.measurement_profiles["Patristic.Steps"] = Profile(
+        self.measurement_profiles["Patristic.Steps"] = MeasurementProfile(
                 profile_data=tree_phylogenetic_distance_matrix.distances(
                     is_weighted_edge_distances=False,
                     is_normalize_by_tree_size=is_normalize,))
@@ -100,7 +100,7 @@ class TreeProfile(object):
             if is_normalize:
                 s = sum(node_ages)
                 node_ages = [a/s for a in node_ages]
-            self.measurement_profiles["Node.Ages"] = Profile(profile_data=node_ages,)
+            self.measurement_profiles["Node.Ages"] = MeasurementProfile(profile_data=node_ages,)
         if is_measure_coalescence_intervals:
             cf = coalescent.extract_coalescent_frames(
                     tree=tree,
@@ -109,7 +109,7 @@ class TreeProfile(object):
             if is_normalize:
                 s = sum(waiting_times)
                 waiting_times = [w/s for w in waiting_times]
-            self.measurement_profiles["Coalescence.Intervals"] = Profile(profile_data=node_ages,)
+            self.measurement_profiles["Coalescence.Intervals"] = MeasurementProfile(profile_data=node_ages,)
 
     def measure_distances(self, other_tree_profile):
         d = collections.OrderedDict()
@@ -119,7 +119,7 @@ class TreeProfile(object):
             d[pm_name] = p1.euclidean_distance(p2)
         return d
 
-class TreeProfileDistanceMatrix(object):
+class TreeProfileMatrix(object):
 
     def __init__(self,
             is_measure_node_ages=True,
@@ -148,15 +148,17 @@ class TreeProfileDistanceMatrix(object):
 
     def add_tree(self,
             tree,
+            tree_id=None,
             tree_phylogenetic_distance_matrix=None,
             ):
-        tree_index = len(self.tree_profiles)
+        if tree_id is None:
+            tree_id = str(len(self.tree_profiles))
         profile = TreeProfile(
                 tree=tree,
                 tree_phylogenetic_distance_matrix=tree_phylogenetic_distance_matrix,
-                tree_id=tree_index)
+                tree_id=tree_id)
         self.tree_profiles.append(profile)
-        return tree_index
+        return tree_id
 
     def compile(self):
         tree_profile_distances = collections.OrderedDict()
