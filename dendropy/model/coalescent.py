@@ -377,7 +377,7 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
 
     Returns
     -------
-    x : list of tuples (node, coalescent interval)
+    x : dict
         Returns dictionary, with key = number of alleles, and values = waiting
         time for coalescent for the given tree
     """
@@ -388,9 +388,7 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
     for n in nwti:
         num_genes_wt[num_genes] = n[1]
         num_genes = num_genes - len(n[0].child_nodes()) + 1
-
-    import sys
-    num_alleles_list = sorted(num_genes_wt.keys(), reverse=True)
+    # num_alleles_list = sorted(num_genes_wt.keys(), reverse=True)
     return num_genes_wt
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
