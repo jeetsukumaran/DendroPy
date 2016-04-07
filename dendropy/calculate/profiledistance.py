@@ -26,34 +26,156 @@ from dendropy.model import coalescent
 
 class MeasurementProfile(object):
 
-    def __init__(self, profile_data=None):
-        if profile_data is None:
-            self._profile_data = []
-        else:
-            self._profile_data = sorted(profile_data)
+    @staticmethod
+    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_profile_size):
+        distance = 0.0
+        for i in range(max(self._raw_data_size, other._raw_data_size)):
+            di = pow(self.get(i) - other.get(i), 2)
+            distance += di
+        return distance
+
+    def __init__(self,
+            profile_data=None,
+            interpolation_method="piecewise_linear"):
+        self.set_data(profile_data)
+        self.fixed_size = 0
+        self.interpolation_method = interpolation_method
 
     def add(self, value):
         self._profile_data.append(value)
         self._profile_data = sorted(self._profile_data)
+        self._raw_data_size = len(self._profile_data)
+        self._interpolated_profiles = {}
+
+    def set_data(self, values):
+        if values is None:
+            values = []
+        self._profile_data = sorted(values)
+        self._raw_data_size = len(self._profile_data)
+        self._interpolated_profiles = {}
 
     def __len__(self):
-        return len(self._profile_data)
+        return self._raw_data_size
 
-    def get(self, idx):
-        if idx >= len(self._profile_data):
-            val = 0.0
+    def distance(self,
+            other,
+            profile_size,
+            is_weight_values_by_comparison_profile_size=False):
+        if profile_size is None:
+            profile_size = self._get_profile_comparison_size(other)
+        v1 = self.get_profile_for_size(profile_size)
+        v2 = other.get_profile_for_size(profile_size)
+        return MeasurementProfile._euclidean_distance(v1, v2,
+                is_weight_values_by_comparison_profile_size=is_weight_values_by_comparison_profile_size)
+    # def get(self, idx):
+    #     if idx >= self._raw_data_size:
+    #         val = 0.0
+    #     else:
+    #         val = self._profile_data[idx]
+    #         if val is None:
+    #             val = 0.0
+    #     return val
+
+    def _get_profile_comparison_size(self, other):
+        if self.fixed_size > 0 and other.fixed_size > 0:
+            if self.fixed_size != other.fixed_size:
+                raise ValueError("Comparing two profiles locked to different sizes: {} and {}".format(
+                    self.fixed_size, other.fixed_size))
+            return self.fixed_size
+        elif self.fixed_size == 0 and other.fixed_size > 0:
+            if other.fixed_size < self._raw_data_size:
+                raise ValueError("Cannot interpolate points in current profile: current raw data size is {} but other profile is locked to a smaller fixed size ({})".format(
+                    self._raw_data_size, other.fixed_size))
+            return other.fixed_size
+        elif self.fixed_size > 0 and other.fixed_size == 0:
+            if self.fixed_size < other._raw_data_size:
+                raise ValueError("Cannot interpolate points in other profile: other raw data size is {} but current profile is locked to a smaller fixed size ({})".format(
+                    other._raw_data_size,
+                    self.fixed_size,
+                    ))
+            return self.fixed_size
         else:
-            val = self._profile_data[idx]
-            if val is None:
-                val = 0.0
-        return val
+            return max(self._raw_data_size, other._raw_data_size)
 
-    def euclidean_distance(self, other):
-        distance = 0.0
-        for i in range(max(len(self._profile_data), len(other._profile_data))):
-            di = pow(self.get(i) - other.get(i), 2)
-            distance += di
-        return distance
+    def _get_profile_for_size(self, profile_size):
+        if not profile_size:
+            return self._raw_data_size
+        try:
+            return self._interpolated_profiles[profile_size]
+        except KeyError:
+            self._interpolated_profiles[profile_size] = self._generate_interpolated_profile(profile_size)
+            return self._interpolated_profiles[profile_size]
+
+    def _generate_interpolated_profile(self, profile_size):
+        if profile_size == self._raw_data_size:
+            self._interpolated_profiles[profile_size] = list(self._profile_data)
+            return self._interpolated_profiles[profile_size]
+        if self._raw_data_size == 0:
+            raise ValueError("No data in profile")
+        if profile_sized < self._raw_data_size:
+            raise ValueError("Error interpolating points in profile: number of requested interpolated points ({}) is less than raw data size ({})".format(
+                profile_size, self._raw_data_size))
+        default_bin_size = int(profile_size / self._raw_data_size)
+        if default_bin_size == 0:
+            raise ValueError("Profile size ({}) is too small for raw data size ({}), resulting in a null bin size".
+                    format(profile_size, self._raw_data_size))
+        bin_sizes = [default_bin_size] * self._raw_data_size
+
+        # // due to rounding error, default bin size may not be enough
+        # // this hacky algorithm adds additional points to bins to make up the
+        # // difference, trying to distribute the additional points along the
+        # // length of the line
+        diff = profile_size - (default_bin_size * self._raw_data_size)
+        if diff > 0:
+            dv = float(diff) / self._raw_data_size
+            cv = 0.0
+            for bin_idx in range(len(bin_sizes)):
+                if diff <= 1.0:
+                    break
+                cv += dv
+                if cv >= 1.0:
+                    bin_sizes[bin_idx] += 1.0
+                    diff -= 1.0
+                    cv = cv - 1.0
+
+        interpolated_profile = []
+        if self.interpolation_method == "staircase":
+            for original_data_value in self._profile_data:
+                self._interpolate_flat(
+                        interpolated_profile=interpolated_profile,
+                        value=original_data_value,
+                        num_points=default_bin_size)
+        elif self.interpolation_method = "piecewise_linear":
+            for bin_idx, original_data_value in enumerate(self._profile_data[:-1]):
+                self._interpolate_lineage(
+                        interpolated_profile=interpolated_profile,
+                        x1=bin_idx,
+                        y1=self._profile_data[bin_idx],
+                        y2=self._profile_data[bin_idx+1],
+                        num_points=bin_sizes[bin_idx],
+                        max_points=profile_size,
+                        )
+            interpolated_profile.append(self._profile_data[-1])
+        return interpolated_profile
+
+    def _interpolate_flat(self,
+            interpolated_profile,
+            value,
+            num_points):
+        interpolated_profile += [value] * num_points
+        return interpolated_profile
+
+    def _interpolate_linear(self,
+            interpolated_profile
+            x1, y1, y2,
+            num_points,
+            max_points):
+        assert num_points > 0
+        slope = float(y2 - y1) / num_points
+        for xi in range(num_points):
+            if max_points and len(interpolated_profile) >= max_points:
+                return interpolated_profile
+            interpolated_profile.append((slope * xi) + y1)
 
 class TreeProfile(object):
 
