@@ -28,7 +28,7 @@ from dendropy.model import coalescent
 class MeasurementProfile(object):
 
     @staticmethod
-    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_profile_size=False):
+    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_profile_size=True):
         v1_size = len(v1)
         v2_size = len(v2)
         v1_idx = 0
@@ -76,7 +76,7 @@ class MeasurementProfile(object):
     def distance(self,
             other,
             profile_size,
-            is_weight_values_by_comparison_profile_size=False):
+            is_weight_values_by_comparison_profile_size=True):
         if profile_size is None:
             profile_size = self._get_profile_comparison_size(other)
         v1 = self._get_profile_for_size(profile_size)
@@ -251,7 +251,7 @@ class TreeProfile(object):
 
     def measure_distances(self, other_tree_profile,
             profile_size=None,
-            is_weight_values_by_comparison_profile_size=False):
+            is_weight_values_by_comparison_profile_size=True):
         d = collections.OrderedDict()
         for pm_name in self.measurement_profiles:
             p1 = self.measurement_profiles[pm_name]
