@@ -145,7 +145,7 @@ class MeasurementProfile(object):
                         interpolated_profile=interpolated_profile,
                         value=original_data_value,
                         num_points=default_bin_size)
-        elif self.interpolation_method = "piecewise_linear":
+        elif self.interpolation_method == "piecewise_linear":
             for bin_idx, original_data_value in enumerate(self._profile_data[:-1]):
                 self._interpolate_lineage(
                         interpolated_profile=interpolated_profile,
@@ -166,7 +166,7 @@ class MeasurementProfile(object):
         return interpolated_profile
 
     def _interpolate_linear(self,
-            interpolated_profile
+            interpolated_profile,
             x1, y1, y2,
             num_points,
             max_points):
@@ -253,7 +253,7 @@ class TreeProfileMatrix(object):
         self.is_measure_coalescence_intervals = is_measure_coalescence_intervals
         self.is_normalize = is_normalize
         self.ultrametricity_precision = ultrametricity_precision
-        self.tree_profiles = []
+        self.tree_profiles = collections.OrderedDict()
 
     @property
     def measurement_names(self):
@@ -268,19 +268,22 @@ class TreeProfileMatrix(object):
             names.append("Coalescence.Intervals")
         return names
 
+    def _compose_tree_id(self, tree):
+        return "{}:{}".format(len(self.tree_profiles), id(tree))
+
     def add_tree(self,
             tree,
             tree_id=None,
             tree_phylogenetic_distance_matrix=None,
             ):
         if tree_id is None:
-            tree_id = str(len(self.tree_profiles))
+            tree_id = self._compose_tree_id(tree)
         profile = TreeProfile(
                 tree=tree,
                 tree_phylogenetic_distance_matrix=tree_phylogenetic_distance_matrix,
                 tree_id=tree_id)
-        self.tree_profiles.append(profile)
-        return tree_id
+        self.tree_profiles[tree_id] = profile
+        return profile
 
     def compile(self):
         tree_profile_distances = collections.OrderedDict()
