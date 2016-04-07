@@ -20,6 +20,7 @@
 Profile distances.
 """
 
+import math
 import collections
 from dendropy.utility import constants
 from dendropy.model import coalescent
@@ -27,12 +28,27 @@ from dendropy.model import coalescent
 class MeasurementProfile(object):
 
     @staticmethod
-    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_profile_size):
-        distance = 0.0
-        for i in range(max(self._raw_data_size, other._raw_data_size)):
-            di = pow(self.get(i) - other.get(i), 2)
-            distance += di
-        return distance
+    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_profile_size=False):
+        v1_size = len(v1)
+        v2_size = len(v2)
+        v1_idx = 0
+        v2_idx = 0
+        if v1_size > v2_size:
+            v1_idx = v1_size - v2_size
+            weight = float(v2_size)
+        elif v2_size > v1_size:
+            v2_idx = v2_size - v1_size
+            weight = float(v1_size)
+        else:
+            weight = float(v1_size)
+        if not is_weight_values_by_comparison_profile_size:
+            weight = 1.0
+        ss = 0.0
+        while v1_idx < v1_size and v2_idx < v2_size:
+            ss += pow(v1[v1_idx]/weight - v2[v2_idx]/weight, 2)
+            v1_idx += 1
+            v2_idx += 1
+        return math.sqrt(ss)
 
     def __init__(self,
             profile_data=None,
@@ -63,8 +79,8 @@ class MeasurementProfile(object):
             is_weight_values_by_comparison_profile_size=False):
         if profile_size is None:
             profile_size = self._get_profile_comparison_size(other)
-        v1 = self.get_profile_for_size(profile_size)
-        v2 = other.get_profile_for_size(profile_size)
+        v1 = self._get_profile_for_size(profile_size)
+        v2 = other._get_profile_for_size(profile_size)
         return MeasurementProfile._euclidean_distance(v1, v2,
                 is_weight_values_by_comparison_profile_size=is_weight_values_by_comparison_profile_size)
     # def get(self, idx):
@@ -112,7 +128,7 @@ class MeasurementProfile(object):
             return self._interpolated_profiles[profile_size]
         if self._raw_data_size == 0:
             raise ValueError("No data in profile")
-        if profile_sized < self._raw_data_size:
+        if profile_size < self._raw_data_size:
             raise ValueError("Error interpolating points in profile: number of requested interpolated points ({}) is less than raw data size ({})".format(
                 profile_size, self._raw_data_size))
         default_bin_size = int(profile_size / self._raw_data_size)
@@ -134,7 +150,7 @@ class MeasurementProfile(object):
                     break
                 cv += dv
                 if cv >= 1.0:
-                    bin_sizes[bin_idx] += 1.0
+                    bin_sizes[bin_idx] += 1
                     diff -= 1.0
                     cv = cv - 1.0
 
@@ -147,7 +163,7 @@ class MeasurementProfile(object):
                         num_points=default_bin_size)
         elif self.interpolation_method == "piecewise_linear":
             for bin_idx, original_data_value in enumerate(self._profile_data[:-1]):
-                self._interpolate_lineage(
+                self._interpolate_linear(
                         interpolated_profile=interpolated_profile,
                         x1=bin_idx,
                         y1=self._profile_data[bin_idx],
@@ -233,12 +249,16 @@ class TreeProfile(object):
                 waiting_times = [w/s for w in waiting_times]
             self.measurement_profiles["Coalescence.Intervals"] = MeasurementProfile(profile_data=node_ages,)
 
-    def measure_distances(self, other_tree_profile):
+    def measure_distances(self, other_tree_profile,
+            profile_size=None,
+            is_weight_values_by_comparison_profile_size=False):
         d = collections.OrderedDict()
         for pm_name in self.measurement_profiles:
             p1 = self.measurement_profiles[pm_name]
             p2 = other_tree_profile.measurement_profiles[pm_name]
-            d[pm_name] = p1.euclidean_distance(p2)
+            d[pm_name] = p1.distance(p2,
+                    profile_size=None,
+                    is_weight_values_by_comparison_profile_size=is_weight_values_by_comparison_profile_size)
         return d
 
 class TreeProfileMatrix(object):
@@ -285,10 +305,9 @@ class TreeProfileMatrix(object):
         self.tree_profiles[tree_id] = profile
         return profile
 
-    def compile(self):
-        tree_profile_distances = collections.OrderedDict()
-        for tree_profile_idx1, tree_profile1 in enumerate(self.tree_profiles[:-1]):
-            tree_profile_distances[tree_profile1.tree_id] = collections.OrderedDict()
-            for tree_profile_idx2, tree_profile2 in enumerate(self.tree_profiles[tree_profile_idx1+1:]):
-                tree_profile_distances[tree_profile1.tree_id][tree_profile2.tree_id] = tree_profile1.measure_distances(tree_profile2)
-        return tree_profile_distances
+    def iter_profiles(self):
+        for tree_id in self.tree_profiles:
+            yield self.tree_profiles[tree_id]
+
+    def profiles(self):
+            return self.tree_profiles.values()
