@@ -1523,4 +1523,37 @@ class NodeDistanceMatrix(object):
         else:
             return d
 
+    def distances(self,
+            is_weighted_edge_distances=True,
+            is_normalize_by_tree_size=False):
+        """
+        Returns list of patristic distances.
+        """
+        dmatrix, normalization_factor = self._get_distance_matrix_and_normalization_factor(
+                is_weighted_edge_distances=is_weighted_edge_distances,
+                is_normalize_by_tree_size=is_normalize_by_tree_size,
+                )
+        results = []
+        nodes = list(dmatrix.keys())
+        for node_idx1, node1 in enumerate(nodes[:-1]):
+            for node_idx2, node2 in enumerate(nodes[node_idx1+1:]):
+                results.append(dmatrix[node1][node2]/normalization_factor)
+        return results
+
+    def _get_distance_matrix_and_normalization_factor(self,
+            is_weighted_edge_distances,
+            is_normalize_by_tree_size):
+        if is_weighted_edge_distances:
+            dmatrix = self._node_phylogenetic_distances
+            if is_normalize_by_tree_size:
+                normalization_factor = self._tree_length
+            else:
+                normalization_factor = 1.0
+        else:
+            dmatrix = self._node_phylogenetic_path_steps
+            if is_normalize_by_tree_size:
+                normalization_factor = float(self._num_edges)
+            else:
+                normalization_factor = 1.0
+        return dmatrix, normalization_factor
 

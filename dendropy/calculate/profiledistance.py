@@ -195,59 +195,107 @@ class MeasurementProfile(object):
 
 class TreeProfile(object):
 
-    MEASUREMENT_NAMES = (
-        "Edge.Lengths",
-        "Patristic.Distances",
-        "Patristic.Steps",
-        "Node.Ages",
-        "Coalescence.Intervals",
-    )
-
     def __init__(self,
             tree,
+            is_measure_edge_lengths=True,
+            is_measure_patristic_distances=False,
+            is_measure_patristic_steps=False,
+            is_measure_node_distances=True,
+            is_measure_node_steps=True,
             is_measure_node_ages=True,
             is_measure_coalescence_intervals=True,
             is_normalize=True,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             tree_phylogenetic_distance_matrix=None,
+            tree_node_distance_matrix=None,
             tree_id=None,
             ):
         self.tree_id = tree_id
+        self.is_measure_edge_lengths = is_measure_edge_lengths
+        self.is_measure_patristic_distances = is_measure_patristic_distances
+        self.is_measure_patristic_steps = is_measure_patristic_steps
+        self.is_measure_node_distances = is_measure_node_distances
+        self.is_measure_node_steps = is_measure_node_steps
+        self.is_measure_node_ages = is_measure_node_ages
+        self.is_measure_coalescence_intervals = is_measure_coalescence_intervals
+        self.is_normalize = is_normalize
+        self.ultrametricity_precision = ultrametricity_precision
         self.measurement_profiles = collections.OrderedDict()
+        self.compile(tree)
 
-        if is_normalize:
-            tree_length_nf = tree.length()
-            if tree_length_nf == 0:
+    def compile(self, tree,
+            tree_phylogenetic_distance_matrix=None,
+            tree_node_distance_matrix=None,
+            ):
+        if self.is_measure_edge_lengths:
+            if self.is_normalize:
+                tree_length_nf = tree.length()
+                if tree_length_nf == 0:
+                    tree_length_nf = 1.0
+            else:
                 tree_length_nf = 1.0
-        else:
-            tree_length_nf = 1.0
-        self.measurement_profiles["Edge.Lengths"] = MeasurementProfile(
-                profile_data=[float(e.length)/tree_length_nf for e in tree.postorder_edge_iter() if e.length is not None])
-        if tree_phylogenetic_distance_matrix is None:
-            tree_phylogenetic_distance_matrix = tree.phylogenetic_distance_matrix()
-        self.measurement_profiles["Patristic.Distances"] = MeasurementProfile(
-                profile_data=tree_phylogenetic_distance_matrix.distances(
-                    is_weighted_edge_distances=True,
-                    is_normalize_by_tree_size=is_normalize,))
-        self.measurement_profiles["Patristic.Steps"] = MeasurementProfile(
-                profile_data=tree_phylogenetic_distance_matrix.distances(
-                    is_weighted_edge_distances=False,
-                    is_normalize_by_tree_size=is_normalize,))
-        if is_measure_node_ages:
-            node_ages = tree.calc_node_ages(ultrametricity_precision=ultrametricity_precision)
-            if is_normalize:
+            self.measurement_profiles["Edge.Lengths"] = MeasurementProfile(
+                    profile_data=[float(e.length)/tree_length_nf for e in tree.postorder_edge_iter() if e.length is not None])
+        if self.is_measure_patristic_distances or self.is_measure_patristic_steps:
+            if tree_phylogenetic_distance_matrix is None:
+                tree_phylogenetic_distance_matrix = tree.phylogenetic_distance_matrix()
+            if self.is_measure_patristic_distances:
+                self.measurement_profiles["Patristic.Distances"] = MeasurementProfile(
+                        profile_data=tree_phylogenetic_distance_matrix.distances(
+                            is_weighted_edge_distances=True,
+                            is_normalize_by_tree_size=self.is_normalize,))
+            if self.is_measure_patristic_steps:
+                self.measurement_profiles["Patristic.Steps"] = MeasurementProfile(
+                        profile_data=tree_phylogenetic_distance_matrix.distances(
+                        is_weighted_edge_distances=False,
+                        is_normalize_by_tree_size=self.is_normalize,))
+        if self.is_measure_node_distances or self.is_measure_node_steps:
+            if tree_node_distance_matrix is None:
+                tree_node_distance_matrix = tree.node_distance_matrix()
+            if self.is_measure_node_distances:
+                self.measurement_profiles["Node.Distances"] = MeasurementProfile(
+                        profile_data=tree_node_distance_matrix.distances(
+                            is_weighted_edge_distances=True,
+                            is_normalize_by_tree_size=self.is_normalize,))
+            if self.is_measure_node_steps:
+                self.measurement_profiles["Node.Steps"] = MeasurementProfile(
+                        profile_data=tree_node_distance_matrix.distances(
+                        is_weighted_edge_distances=False,
+                        is_normalize_by_tree_size=self.is_normalize,))
+        if self.is_measure_node_ages:
+            node_ages = tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
+            if self.is_normalize:
                 s = sum(node_ages)
                 node_ages = [a/s for a in node_ages]
             self.measurement_profiles["Node.Ages"] = MeasurementProfile(profile_data=node_ages,)
-        if is_measure_coalescence_intervals:
+        if self.is_measure_coalescence_intervals:
             cf = coalescent.extract_coalescent_frames(
                     tree=tree,
-                    ultrametricity_precision=ultrametricity_precision,)
+                    ultrametricity_precision=self.ultrametricity_precision,)
             waiting_times = cf.values()
-            if is_normalize:
+            if self.is_normalize:
                 s = sum(waiting_times)
                 waiting_times = [w/s for w in waiting_times]
-            self.measurement_profiles["Coalescence.Intervals"] = MeasurementProfile(profile_data=node_ages,)
+            self.measurement_profiles["Coalescence.Intervals"] = MeasurementProfile(profile_data=waiting_times,)
+
+    @property
+    def measurement_names(self):
+        names = []
+        if self.is_measure_edge_lengths:
+            names.append("Edge.Lengths")
+        if self.is_measure_patristic_distances:
+            names.append("Patristic.Distances")
+        if self.is_measure_patristic_steps:
+            names.append("Patristic.Steps")
+        if self.is_measure_node_distances:
+            names.append("Node.Distances")
+        if self.is_measure_node_steps:
+            names.append("Node.Steps")
+        if self.is_measure_node_ages:
+            names.append("Node.Ages")
+        if self.is_measure_coalescence_intervals:
+            names.append("Coalescence.Intervals")
+        return names
 
     def measure_distances(self, other_tree_profile,
             profile_size=None,
@@ -261,53 +309,3 @@ class TreeProfile(object):
                     is_weight_values_by_comparison_profile_size=is_weight_values_by_comparison_profile_size)
         return d
 
-class TreeProfileMatrix(object):
-
-    def __init__(self,
-            is_measure_node_ages=True,
-            is_measure_coalescence_intervals=True,
-            is_normalize=True,
-            ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
-            ):
-        self.is_measure_node_ages = is_measure_node_ages
-        self.is_measure_coalescence_intervals = is_measure_coalescence_intervals
-        self.is_normalize = is_normalize
-        self.ultrametricity_precision = ultrametricity_precision
-        self.tree_profiles = collections.OrderedDict()
-
-    @property
-    def measurement_names(self):
-        names = [
-            "Edge.Lengths",
-            "Patristic.Distances",
-            "Patristic.Steps",
-        ]
-        if self.is_measure_node_ages:
-            names.append("Node.Ages")
-        if self.is_measure_coalescence_intervals:
-            names.append("Coalescence.Intervals")
-        return names
-
-    def _compose_tree_id(self, tree):
-        return "{}:{}".format(len(self.tree_profiles), id(tree))
-
-    def add_tree(self,
-            tree,
-            tree_id=None,
-            tree_phylogenetic_distance_matrix=None,
-            ):
-        if tree_id is None:
-            tree_id = self._compose_tree_id(tree)
-        profile = TreeProfile(
-                tree=tree,
-                tree_phylogenetic_distance_matrix=tree_phylogenetic_distance_matrix,
-                tree_id=tree_id)
-        self.tree_profiles[tree_id] = profile
-        return profile
-
-    def iter_profiles(self):
-        for tree_id in self.tree_profiles:
-            yield self.tree_profiles[tree_id]
-
-    def profiles(self):
-            return self.tree_profiles.values()
