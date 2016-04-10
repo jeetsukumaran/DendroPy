@@ -1427,7 +1427,8 @@ class TaxonNamespace(
             bitmask |= self.taxon_bitmask(taxon)
         return bitmask
 
-    def taxa_bipartition(self, **kwargs):
+    def taxa_bipartition(self,
+            **kwargs):
         """
         Returns a bipartition that represents all taxa specified by
         keyword-specified list of taxon objects (``taxa=``) or labels
@@ -1449,9 +1450,15 @@ class TaxonNamespace(
             List of split hash bitmask values for specified |Taxon|
             objects.
         """
-        from dendropy.treemodel import Bipartition
+        tree_leafset_bitmask = kwargs.get("tree_leafset_bitmask")
+        if tree_leafset_bitmask is None:
+            tree_leafset_bitmask = self.all_taxa_bitmask()
+        from dendropy.datamodel.treemodel import Bipartition
         bitmask = self.taxa_bitmask(**kwargs)
-        return Bipartition(bitmask=bitmask, compile_bipartition=True)
+        return Bipartition(
+                bitmask=bitmask,
+                tree_leafset_bitmask=tree_leafset_bitmask,
+                compile_bipartition=True)
 
     def get_taxa_bitmask(self, **kwargs):
         """
