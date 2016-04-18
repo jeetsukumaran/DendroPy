@@ -54,8 +54,9 @@ class StructuredCoalescent(object):
 
     def score_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_node_map_fn=None,
+            coalescent_to_structure_map_fn,
             default_haploid_pop_size=1.0,
+            is_coalescent_to_structure_map_by_node=False,
             ):
         """
         Returns the log-probability of a coalescent (or gene) tree conditioned
@@ -65,12 +66,40 @@ class StructuredCoalescent(object):
         ----------
         coalescent_tree : |Tree|
             The tree instance to be scored.
-        coalescent_to_structure_node_map_fn : function object
-            A function that takes a (leaf) node on the coalescent tree as an
-            argument and returns the corresponding node on the structure tree
-            as a value.
+        coalescent_to_structure_map_fn : function object
+            A function that takes either a |Taxon| instance (if
+            ``is_coalescent_to_structure_map_by_node`` is False) or
+            |Node| instance (if ``is_coalescent_to_structure_map_by_node`` is
+            True) representing a lineage on the coalescent or gene tree
+            (specified by ``coalescent_tree``), and returns the |Taxon|
+            instance (if ``is_coalescent_to_structure_map_by_node`` is False)
+            or |Node| instance (if ``is_coalescent_to_structure_map_by_node``
+            is True) corresponding to the species or population on the
+            structure tree with which it is associated.
         default_haploid_pop_size : numeric
             Population size for each edge of the coalescent tree.
+        is_coalescent_to_structure_map_by_node : str
+            Specifies the expected type of argument and return value of the
+            mapping function, ``coalescent_to_structure_map_fn``. By default
+            this is |False|, and the mapping function is thus expected to take
+            a |Taxon| instance representing a lineage on the coalescent or gene
+            tree and return a |Taxon| instance representing a species or
+            population on the species tree with which that lineage is
+            associated. This is more efficient if you have many
+            moderately-sized gene trees that share the same taxa: you only need
+            to construct and provide a single mapping. On the other hand, if
+            you are dealing with HUGE trees, it might be optimum to skip
+            processing the taxon namespace, i.e. deserializing the tip labels
+            into rich |Taxon| objects, and just deal with them as plain string
+            labels. In this case, you would want to map the coalescent trees to
+            the structure trees by nodes based on the labels, and will species
+            ``True`` for the ``is_coalescent_to_structure_map_by_node``
+            argument. Then the mapping function
+            ``coalescent_to_structure_map_fn`` will be expected to take a
+            |Node| instance representing a lineage on the coalescent or gene
+            tree and return a |Node| instance representing a species or
+            population on the species tree with which that lineage is
+            associated.
 
         Returns
         -------
@@ -78,8 +107,10 @@ class StructuredCoalescent(object):
             Log probability of ``coalescent_tree`` given structuring imposed by
             ``self._structure_tree``.
         """
-        edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(coalescent_tree=coalescent_tree,
-                coalescent_to_structure_node_map_fn=coalescent_to_structure_node_map_fn)
+        edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(
+                coalescent_tree=coalescent_tree,
+                coalescent_to_structure_map_fn=coalescent_to_structure_map_fn,
+                is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
         logP = 0.0
 
         for structure_tree_edge in edge_head_coalescent_edges:
@@ -111,7 +142,8 @@ class StructuredCoalescent(object):
 
     def _fit_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_node_map_fn):
+            coalescent_to_structure_map_fn,
+            is_coalescent_to_structure_map_by_node=False):
         """
         Map edges of coalescent tree into structure tree (i.e., self).
         """
@@ -121,15 +153,24 @@ class StructuredCoalescent(object):
             coalescent_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         coalescent_leaves = coalescent_tree.leaf_nodes()
         structure_to_coalescent = {}
-        for coalescent_nd in coalescent_leaves:
-            structure_leaf = coalescent_to_structure_node_map_fn(coalescent_nd)
-            x = structure_to_coalescent.setdefault(structure_leaf, set())
-            x.add(coalescent_nd.edge)
+        if is_coalescent_to_structure_map_by_node:
+            for coalescent_nd in coalescent_leaves:
+                structure_leaf = coalescent_to_structure_map_fn(coalescent_nd)
+                x = structure_to_coalescent.setdefault(structure_leaf, set())
+                x.add(coalescent_nd.edge)
+        else:
+            for coalescent_nd in coalescent_leaves:
+                structure_taxon = coalescent_to_structure_map_fn(coalescent_nd.taxon)
+                x = structure_to_coalescent.setdefault(structure_taxon, set())
+                x.add(coalescent_nd.edge)
         edge_head_coalescent_edges = {}
         edge_tail_coalescent_edges = {}
         for structure_edge in self._structure_tree.postorder_edge_iter():
             if structure_edge.is_terminal():
-                edge_head_coalescent_edges[structure_edge] = structure_to_coalescent[structure_edge.head_node]
+                if is_coalescent_to_structure_map_by_node:
+                    edge_head_coalescent_edges[structure_edge] = structure_to_coalescent[structure_edge.head_node]
+                else:
+                    edge_head_coalescent_edges[structure_edge] = structure_to_coalescent[structure_edge.head_node.taxon]
             else:
                 edge_head_coalescent_edges[structure_edge] = set()
                 for nd in structure_edge.head_node.child_nodes():
