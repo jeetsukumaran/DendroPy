@@ -74,7 +74,8 @@ class StructuredCoalescent(object):
         Returns
         -------
         p : numeric
-            Log probability of ``coalescent_tree`` given structuring imposed by ``self._structure_tree``.
+            Log probability of ``coalescent_tree`` given structuring imposed by
+            ``self._structure_tree``.
         """
         edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(coalescent_tree=coalescent_tree,
                 coalescent_to_structure_node_map_fn=coalescent_to_structure_node_map_fn)
