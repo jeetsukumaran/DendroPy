@@ -55,6 +55,8 @@ class StructuredCoalescent(object):
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
             k = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
+            t1 = 0.0
+            # probability of coalescences within this edge
             for ce in coalescing_edges:
                 t1 = ce.tail_node.age
                 wt = t1 - t0
@@ -63,6 +65,11 @@ class StructuredCoalescent(object):
                 k -= 1
                 if k == 1:
                     break
+            # probability of non-coalescences within this edge
+            remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
+            if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
+                remaining_time = structure_tree_edge.tail_node.age - t1
+                logP += remaining_lineages / default_haploid_pop_size * remaining_time
         return logP
 
     def _fit_coalescent_tree(self,

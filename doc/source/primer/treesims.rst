@@ -234,8 +234,8 @@ The :func:`~dendropy.simulate.treesim.pure_kingman()` function returns a tree ge
 
 .. _Simulating_Contained_Coalescent_Trees:
 
-Contained Coalescent Trees
-==========================
+Multispecies Coalescent ("Contained Coalescent" or "Censored Coalescent") Trees
+===============================================================================
 
 The :func:`~dendropy.simulate.treesim.contained_coalescent()` function returns a tree generated under a neutral coalescent model conditioned on population splitting times or events given by a containing species or population tree.
 Such a tree is often referred to as a contained, embedded, censored, truncated, or constrained genealogy/tree.
