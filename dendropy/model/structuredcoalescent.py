@@ -92,8 +92,7 @@ class StructuredCoalescent(object):
                 if ce.head_node is coalescent_tree.seed_node:
                     ### Whut??
                     break
-                else:
-                    t1 = ce.tail_node.age
+                t1 = ce.tail_node.age
                 wt = t1 - t0
                 k2N = (float(k * (k-1)) / 2) / default_haploid_pop_size
                 logP =  logP + math.log(k2N) - (k2N * wt)
