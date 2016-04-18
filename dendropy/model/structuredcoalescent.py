@@ -87,13 +87,17 @@ class StructuredCoalescent(object):
             t1 = 0.0
             # probability of coalescences within this edge
             for ce in coalescing_edges:
-                t1 = ce.tail_node.age
+                if k == 1:
+                    break
+                if ce.head_node is coalescent_tree.seed_node:
+                    ### TODO!!! all coalesce within root
+                    break
+                else:
+                    t1 = ce.tail_node.age
                 wt = t1 - t0
                 k2N = (float(k * (k-1)) / 2) / default_haploid_pop_size
                 logP =  logP + math.log(k2N) - (k2N * wt)
                 k -= 1
-                if k == 1:
-                    break
             # probability of non-coalescences within this edge
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
@@ -133,7 +137,7 @@ class StructuredCoalescent(object):
                     target_age =  structure_edge.head_node.age + structure_edge.length
                 else:
                     # assume all coalesce?
-                    structure_edge.tail_coalescent_edges[coalescent_tree] = set([coalescent_tree.seed_node.edge])
+                    # structure_edge.tail_coalescent_edges[coalescent_tree] = set([coalescent_tree.seed_node.edge])
                     edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
                     continue
             else:
@@ -160,7 +164,10 @@ class StructuredCoalescent(object):
                             remaining = 0
                             break
                     if coalescent_edge and remaining > 0:
-                        remaining -= coalescent_edge.length
+                        try:
+                            remaining -= coalescent_edge.length
+                        except TypeError:
+                            pass
                 if coalescent_edge is not None:
                     # structure_edge.tail_coalescent_edges[coalescent_tree].add(coalescent_edge)
                     edge_tail_coalescent_edges[structure_edge].add(coalescent_edge)

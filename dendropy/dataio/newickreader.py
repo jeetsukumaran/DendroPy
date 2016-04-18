@@ -155,9 +155,6 @@ class NewickReader(ioservice.DataReader):
         store_tree_weights : boolean, default: |False|
             If |True|, process the tree weight (e.g. "[&W 1/2]") comment
             associated with each tree, if any. Defaults to |False|.
-        encode_splits : boolean, default: |False|
-            If |True|, split hash bitmasks will be calculated and attached to
-            the edges.
         finish_node_fn : function object, default: |None|
             If specified, this function will be applied to each node after
             it has been constructed.
