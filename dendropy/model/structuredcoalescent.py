@@ -45,11 +45,11 @@ class StructuredCoalescent(object):
 
     def score_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_leaf_map,
+            coalescent_to_structure_leaf_fn,
             default_haploid_pop_size=1.0,
             ):
         edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(coalescent_tree=coalescent_tree,
-                coalescent_to_structure_leaf_map=coalescent_to_structure_leaf_map)
+                coalescent_to_structure_leaf_fn=coalescent_to_structure_leaf_fn)
         logP = 0.0
         for structure_tree_edge in edge_head_coalescent_edges:
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
@@ -74,7 +74,7 @@ class StructuredCoalescent(object):
 
     def _fit_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_leaf_map):
+            coalescent_to_structure_leaf_fn):
         """
         Map edges of coalescent tree into structure tree (i.e., self).
         """
@@ -85,7 +85,7 @@ class StructuredCoalescent(object):
         coalescent_leaves = coalescent_tree.leaf_nodes()
         structure_to_coalescent = {}
         for coalescent_nd in coalescent_leaves:
-            structure_leaf = coalescent_to_structure_leaf_map[coalescent_nd]
+            structure_leaf = coalescent_to_structure_leaf_fn(coalescent_nd)
             x = structure_to_coalescent.setdefault(structure_leaf, set())
             x.add(coalescent_nd.edge)
         edge_head_coalescent_edges = {}
