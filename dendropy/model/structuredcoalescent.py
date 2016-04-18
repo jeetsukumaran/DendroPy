@@ -90,7 +90,7 @@ class StructuredCoalescent(object):
                 if k == 1:
                     break
                 if ce.head_node is coalescent_tree.seed_node:
-                    ### TODO!!! all coalesce within root
+                    ### Whut??
                     break
                 else:
                     t1 = ce.tail_node.age
