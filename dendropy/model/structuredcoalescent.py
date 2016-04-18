@@ -24,6 +24,14 @@ from dendropy.utility import constants
 
 class StructuredCoalescent(object):
 
+    """
+    Provides methods to work with the "Multispecies Coalescent", a.k.a. the
+    "Truncated" or "Censored" Coalescent. That is, the coalescent process
+    conditioned on a structuring process such as population subdivision or
+    speciation. This is typically represented as gene or coalescent trees
+    embedded within a population or species tree.
+    """
+
     def __init__(self,
             structure_tree,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
@@ -45,11 +53,31 @@ class StructuredCoalescent(object):
 
     def score_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_leaf_fn,
+            coalescent_to_structure_node_map_fn=None,
             default_haploid_pop_size=1.0,
             ):
+        """
+        Returns the log-probability of a coalescent (or gene) tree conditioned
+        on the structure (species or population) tree.
+
+        Parameters
+        ----------
+        coalescent_tree : |Tree|
+            The tree instance to be scored.
+        coalescent_to_structure_node_map_fn : function object
+            A function that takes a (leaf) node on the coalescent tree as an
+            argument and returns the corresponding node on the structure tree
+            as a value.
+        default_haploid_pop_size : numeric
+            Population size for each edge of the coalescent tree.
+
+        Returns
+        -------
+        p : numeric
+            Log probability of ``coalescent_tree`` given structuring imposed by ``self._structure_tree``.
+        """
         edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(coalescent_tree=coalescent_tree,
-                coalescent_to_structure_leaf_fn=coalescent_to_structure_leaf_fn)
+                coalescent_to_structure_node_map_fn=coalescent_to_structure_node_map_fn)
         logP = 0.0
         for structure_tree_edge in edge_head_coalescent_edges:
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
@@ -74,7 +102,7 @@ class StructuredCoalescent(object):
 
     def _fit_coalescent_tree(self,
             coalescent_tree,
-            coalescent_to_structure_leaf_fn):
+            coalescent_to_structure_node_map_fn):
         """
         Map edges of coalescent tree into structure tree (i.e., self).
         """
@@ -85,7 +113,7 @@ class StructuredCoalescent(object):
         coalescent_leaves = coalescent_tree.leaf_nodes()
         structure_to_coalescent = {}
         for coalescent_nd in coalescent_leaves:
-            structure_leaf = coalescent_to_structure_leaf_fn(coalescent_nd)
+            structure_leaf = coalescent_to_structure_node_map_fn(coalescent_nd)
             x = structure_to_coalescent.setdefault(structure_leaf, set())
             x.add(coalescent_nd.edge)
         edge_head_coalescent_edges = {}
