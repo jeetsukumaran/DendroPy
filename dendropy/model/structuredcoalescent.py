@@ -21,6 +21,7 @@ import dendropy
 from dendropy.model import reconcile
 from dendropy.model import coalescent
 from dendropy.utility import constants
+# from dendropy.calculate import combinatorics
 
 class StructuredCoalescent(object):
 
@@ -80,6 +81,7 @@ class StructuredCoalescent(object):
         edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(coalescent_tree=coalescent_tree,
                 coalescent_to_structure_node_map_fn=coalescent_to_structure_node_map_fn)
         logP = 0.0
+
         for structure_tree_edge in edge_head_coalescent_edges:
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
             k = len(edge_head_coalescent_edges[structure_tree_edge])
@@ -88,6 +90,7 @@ class StructuredCoalescent(object):
             # probability of coalescences within this edge
             for ce in coalescing_edges:
                 if k == 1:
+                    # t1 = structure_tree_edge.tail_node.age
                     break
                 if ce.head_node is coalescent_tree.seed_node:
                     ### Whut??
@@ -95,13 +98,15 @@ class StructuredCoalescent(object):
                 t1 = ce.tail_node.age
                 wt = t1 - t0
                 k2N = (float(k * (k-1)) / 2) / default_haploid_pop_size
-                logP =  logP + math.log(k2N) - (k2N * wt)
+                # k2N = float(combinatorics.choose(k, 2)) / default_haploid_pop_size
+                logP = logP + math.log(k2N) - (k2N * wt)
                 k -= 1
+                t0 = t1
             # probability of non-coalescences within this edge
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
                 remaining_time = structure_tree_edge.tail_node.age - t1
-                logP += remaining_lineages / default_haploid_pop_size * remaining_time
+                logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
         return logP
 
     def _fit_coalescent_tree(self,
