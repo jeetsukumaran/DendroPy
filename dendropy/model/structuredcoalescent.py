@@ -112,56 +112,38 @@ class StructuredCoalescent(object):
                 coalescent_to_structure_map_fn=coalescent_to_structure_map_fn,
                 is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
         logP = 0.0
-
-        # for nd in self._structure_tree.postorder_node_iter():
-        #     if not nd._child_nodes:
-        #         nd._haploid_pop_size = default_haploid_pop_size
-        #     else:
-        #         nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
-
-        # for nd in self._structure_tree.preorder_node_iter():
-        #     if nd is self._structure_tree.seed_node:
-        #         nd._haploid_pop_size = default_haploid_pop_size
-        #     else:
-        #         nd._haploid_pop_size = nd.parent_node._haploid_pop_size / 2.0
-
-        for structure_tree_edge in self._structure_tree.postorder_edge_iter():
-        # for structure_tree_edge in edge_coalescent_nodes:
+        # for structure_tree_edge in self._structure_tree.postorder_edge_iter():
+        for structure_tree_edge in edge_coalescent_nodes:
             haploid_pop_size = default_haploid_pop_size
             # haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
-            k = len(edge_head_coalescent_edges[structure_tree_edge])
+            j = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
             t1 = structure_tree_edge.head_node.age
-            oldest_coalescent_event_age = t1
-            # probability of coalescences within this edge
+            oldest_coalescent_event_age = None
             coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age if nd else float("inf"))
-            # print("\n{}".format(edge_tail_coalescent_edges[structure_tree_edge]))
-            # print("\n{} => {}: {}".format(
-            #     len(edge_head_coalescent_edges[structure_tree_edge]),
-            #     len(edge_tail_coalescent_edges[structure_tree_edge]),
-            #     [ce.age for ce in coalescing_nodes],
-            #     ))
+            subP = 0.0
             for cnd in coalescing_nodes:
-                # print(k)
-                if k == 1:
-                    # t1 = structure_tree_edge.tail_node.age
+                if j == 1:
                     break
                 t1 = cnd.age
                 wt = t1 - t0
-                k2N = (float(k * (k-1)) / 2) / haploid_pop_size
-                # k2N = float(combinatorics.choose(k, 2)) / default_haploid_pop_size
-                logP = logP + math.log(k2N) - (k2N * wt)
-                k -= 1
+                q = math.log(2.0/haploid_pop_size) + (-j * (j-1) * haploid_pop_size * wt)
+                subP += q
+                j -= 1
                 t0 = t1
-                if t1 > oldest_coalescent_event_age:
+                if oldest_coalescent_event_age is None or t1 > oldest_coalescent_event_age:
                     oldest_coalescent_event_age = t1
-            # assert k == len(edge_tail_coalescent_edges[structure_tree_edge]) or k == 1, "{} vs {}: {}".format(k, len(edge_tail_coalescent_edges[structure_tree_edge]), edge_tail_coalescent_edges[structure_tree_edge])
-            # probability of non-coalescences within this edge
-            remaining_lineages = k #len(edge_tail_coalescent_edges[structure_tree_edge])
-            if remaining_lineages > 1: # and structure_tree_edge.tail_node is not None:
-                remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
-                # logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
-                logP += -1 * remaining_lineages / haploid_pop_size * remaining_time
+
+            remaining_lineages = j
+            if remaining_lineages > 1:
+                if oldest_coalescent_event_age is None:
+                    remaining_time = structure_tree_edge.tail_node.age - structure_tree_edge.head_node.age
+                else:
+                    remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
+                q = -1 * (remaining_lineages*(remaining_lineages-1))/haploid_pop_size * remaining_time
+                subP += q
+
+            logP += subP
         return logP
 
     def _fit_coalescent_tree(self,

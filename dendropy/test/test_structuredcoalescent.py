@@ -180,7 +180,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
             species_tree,
             coalescent_tree,
             thetas=None,
-            default_theta=10.0,
+            default_theta=1.0,
             ):
         tau_HC = species_tree.find_node_with_label("HC").age
         tau_HCG = species_tree.find_node_with_label("HCG").age
@@ -207,11 +207,15 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         p = p1 * p2 * p3 * p4 * p5 * p6
 
         q1 = math.log(2.0/theta_H) + (-6 * t3_H/theta_H) + (-2 * (tau_HC-t3_H)/theta_H)
+        print([math.log(2.0/theta_H) + (-6 * t3_H/theta_H) , (-2 * (tau_HC-t3_H)/theta_H)])
         q2 = math.log(2.0/theta_C) + (-2 * t2_C/theta_C)
         q3 = math.log(2.0/theta_HC) + (-6 * t3_HC/theta_HC) + math.log(2.0/theta_HC) + (-2 * t2_HC/theta_HC)
         q4 = (-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+        print((tau_HCG - tau_HC - (t3_HC + t2_HC)))
         q5 = math.log(2.0/theta_HCGO) + (-6 * t3_HCGO/theta_HCGO)
         q6 = math.log(2.0/theta_HCGO) + (-2 * t2_HCGO/theta_HCGO)
+        for ix, x in enumerate([q1, q2, q3, q4, q5, q6]):
+            print("({})::: {}".format(ix+1, x))
         q = q1 + q2 + q3 + q4 + q5 + q6
 
         self.assertAlmostEqual(math.log(p), q, 7)
@@ -346,8 +350,22 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 coalescent_tree=coalescent_tree,)
         s = msc.score_coalescent_tree(
                 coalescent_tree=coalescent_tree,
-                coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
+                coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x],
+                default_haploid_pop_size=1.0,
+                )
         print("{}, {}".format(s, expected_lnL))
+
+        # v0 = 0.6
+        # v1 = 0.7
+        # for x in range(1, 10000):
+        #     scale = x/10000.0
+        #     pop_size = v0 + (v1-v0) * scale
+        #     s = msc.score_coalescent_tree(
+        #         coalescent_tree=coalescent_tree,
+        #         coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x],
+        #         default_haploid_pop_size=pop_size,
+        #         )
+        #     print("{:1.16f} : {} ({})".format(pop_size, s, expected_lnL))
 
 if __name__ == "__main__":
     unittest.main()
