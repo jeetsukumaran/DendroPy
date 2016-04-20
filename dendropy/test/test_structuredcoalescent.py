@@ -176,11 +176,12 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         # print(species_tree.as_string("newick"))
         # print(coalescent_tree.as_string("newick"))
         msc = structuredcoalescent.StructuredCoalescent(species_tree)
-        edge_head_coalescent_edges, edge_tail_coalescent_edges = msc._fit_coalescent_tree(
+        edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes = msc._fit_coalescent_tree(
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
 
         _get_edge = lambda t,s: t.find_node(filter_fn=lambda n: n.label==s).edge
+        _get_node = lambda t,s: t.find_node(filter_fn=lambda n: n.label==s)
 
         expected_head_coalescent_edges = {
             _get_edge(species_tree, "H"): set([
@@ -237,8 +238,31 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
             _get_edge(species_tree, "HCGO"): set([
                                                ]),
         }
+        expected_coalescing_nodes = {
+            _get_edge(species_tree, "H"): set([
+                                               _get_node(coalescent_tree, "a"),
+                                               ]),
+            _get_edge(species_tree, "C"): set([
+                                               _get_node(coalescent_tree, "b"),
+                                               ]),
+            _get_edge(species_tree, "G"): set([
+                                              ]),
+            _get_edge(species_tree, "O"): set([
+                                              ]),
+            _get_edge(species_tree, "HC"): set([
+                                               _get_node(coalescent_tree, "d"),
+                                               _get_node(coalescent_tree, "c"),
+                                               ]),
+            _get_edge(species_tree, "HCG"): set([
+                                               ]),
+            _get_edge(species_tree, "HCGO"): set([
+                                               _get_node(coalescent_tree, "f"),
+                                               _get_node(coalescent_tree, "e"),
+                                               ]),
+        }
 
         for structure_tree_edge in edge_head_coalescent_edges:
+            # print("-- {} --".format(structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>"))
             # print("{}: {} vs. {}".format(
             #     structure_tree_edge.head_node.label,
             #     [ce.head_node.label for ce in edge_head_coalescent_edges[structure_tree_edge]],
@@ -248,12 +272,20 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                     expected_head_coalescent_edges[structure_tree_edge]
                     )
             # print("{}: {} vs. {}".format(
-            #     structure_tree_edge.tail_node.label if structure_tree_edge.tail_node else "<root>",
+            #     structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
             #     [ce.head_node.label for ce in edge_tail_coalescent_edges[structure_tree_edge]],
             #     [ce.head_node.label for ce in expected_tail_coalescent_edges[structure_tree_edge]]))
             self.assertEqual(
                     set(edge_tail_coalescent_edges[structure_tree_edge]),
                     expected_tail_coalescent_edges[structure_tree_edge]
+                    )
+            # print("{}: {} vs. {}".format(
+            #     structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
+            #     [nd.label for nd in edge_coalescent_nodes[structure_tree_edge]],
+            #     [nd.label for nd in expected_coalescing_nodes[structure_tree_edge]]))
+            self.assertEqual(
+                    set(edge_coalescent_nodes[structure_tree_edge]),
+                    expected_coalescing_nodes[structure_tree_edge]
                     )
 
 if __name__ == "__main__":

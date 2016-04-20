@@ -175,6 +175,7 @@ class StructuredCoalescent(object):
                 x.add(coalescent_nd.edge)
         edge_head_coalescent_edges = {}
         edge_tail_coalescent_edges = {}
+        edge_coalescent_nodes = {}
         for structure_edge in self._structure_tree.postorder_edge_iter():
             if structure_edge.is_terminal():
                 if is_coalescent_to_structure_map_by_node:
@@ -194,6 +195,7 @@ class StructuredCoalescent(object):
                     # assume all coalesce?
                     # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
                     edge_tail_coalescent_edges[structure_edge] = set([])
+                    edge_coalescent_nodes[structure_edge] = set([e.tail_node for e in edge_head_coalescent_edges[structure_edge] ])
                     continue
             else:
                 target_age = structure_edge.tail_node.age
@@ -226,6 +228,7 @@ class StructuredCoalescent(object):
                 if coalescent_edge is not None:
                     # structure_edge.tail_coalescent_edges[coalescent_tree].add(coalescent_edge)
                     edge_tail_coalescent_edges[structure_edge].add(coalescent_edge)
-        return edge_head_coalescent_edges, edge_tail_coalescent_edges
+                edge_coalescent_nodes[structure_edge] = set([e.tail_node for e in (edge_head_coalescent_edges[structure_edge] - edge_tail_coalescent_edges[structure_edge])])
+        return edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes
 
 
