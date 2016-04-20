@@ -132,6 +132,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 data=species_tree_str,
                 schema="newick",
                 taxon_namespace=species_taxa,
+                rooting="force-rooted",
                 )
         species_taxa.is_mutable = False
         for nd in species_tree.leaf_node_iter():
@@ -147,6 +148,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 data=coalescent_tree_str,
                 schema="newick",
                 taxon_namespace=gene_taxa,
+                rooting="force-rooted",
                 )
         gene_taxa.is_mutable = False
         for nd in coalescent_tree.leaf_node_iter():
