@@ -16,6 +16,7 @@
 ##
 ##############################################################################
 
+import math
 import unittest
 import dendropy
 from dendropy.model import structuredcoalescent
@@ -123,8 +124,8 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         """
         assert len(speciation_ages) == 3
         assert len(coalescent_ages) == 6
-        speciation_ages = sorted(speciation_ages)
-        coalescent_ages = sorted(coalescent_ages)
+        speciation_ages = sorted(float(i) for i in speciation_ages)
+        coalescent_ages = sorted(float(i) for i in coalescent_ages)
 
         species_taxa = dendropy.TaxonNamespace(["H","C","G","O"])
         species_tree_str = "(((H,C)HC,G)HCG,O)HCGO;"
@@ -138,8 +139,9 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         for nd in species_tree.leaf_node_iter():
             nd.age = 0.0
             nd.label = nd.taxon.label
-        for nd_idx, nd in enumerate(species_tree.postorder_internal_node_iter()):
-            nd.age = speciation_ages[nd_idx]
+        species_tree.find_node_with_label("HC").age = speciation_ages[0]
+        species_tree.find_node_with_label("HCG").age = speciation_ages[1]
+        species_tree.find_node_with_label("HCGO").age = speciation_ages[2]
         species_tree.set_edge_lengths_from_node_ages()
 
         gene_taxa = dendropy.TaxonNamespace(["H1", "H2", "H3", "C1", "C2", "G", "O"])
@@ -154,8 +156,12 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         for nd in coalescent_tree.leaf_node_iter():
             nd.age = 0.0
             nd.label = nd.taxon.label
-        for nd_idx, nd in enumerate(coalescent_tree.postorder_internal_node_iter()):
-            nd.age = coalescent_ages[nd_idx]
+        coalescent_tree.find_node_with_label("a").age = coalescent_ages[0]
+        coalescent_tree.find_node_with_label("b").age = coalescent_ages[1]
+        coalescent_tree.find_node_with_label("c").age = coalescent_ages[2]
+        coalescent_tree.find_node_with_label("d").age = coalescent_ages[3]
+        coalescent_tree.find_node_with_label("e").age = coalescent_ages[4]
+        coalescent_tree.find_node_with_label("f").age = coalescent_ages[5]
         coalescent_tree.set_edge_lengths_from_node_ages()
 
         coalescent_to_species_taxon_map = {
@@ -170,6 +176,42 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
 
         return species_tree, coalescent_tree, coalescent_to_species_taxon_map
 
+    def calc_likelihood(self,
+            species_tree,
+            coalescent_tree,
+            thetas=None,
+            default_theta=1.0,
+            ):
+        tau_HC = species_tree.find_node_with_label("HC").age
+        tau_HCG = species_tree.find_node_with_label("HCG").age - tau_HC
+        tau_HCGO = species_tree.find_node_with_label("HCGO").age - tau_HCG
+        t3_H = coalescent_tree.find_node_with_label("a").age
+        t2_C = coalescent_tree.find_node_with_label("b").age
+        t3_HC = coalescent_tree.find_node_with_label("c").age
+        t2_HC = coalescent_tree.find_node_with_label("d").age - t3_HC
+        t3_HCGO = coalescent_tree.find_node_with_label("e").age
+        t2_HCGO = coalescent_tree.find_node_with_label("e").age - t3_HCGO
+        if thetas is None:
+            thetas = {}
+        theta_H = thetas.get("H", default_theta)
+        theta_C = thetas.get("C", default_theta)
+        theta_HC = thetas.get("HC", default_theta)
+        theta_HCG = thetas.get("HCG", default_theta)
+        theta_HCGO = thetas.get("HCGO", default_theta)
+        p1 = 2.0/theta_H * math.exp(-6 * t3_H/theta_H) * math.exp(-2 * (tau_HC-t3_H)/theta_H)
+        p2 = 2.0/theta_C * math.exp(-2 * t2_C/theta_C)
+        p3 = 2.0/theta_HC * math.exp(-6 * t3_HC/theta_HC) * 2.0/theta_HC * math.exp(-2 * t2_HC/theta_HC)
+        p4 = math.exp(-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+        p5 = 2.0/theta_HCGO * math.exp(-6 * t3_HCGO/theta_HCGO)
+        p6 = 2.0/theta_HCGO * math.exp(-2 * t2_HCGO/theta_HCGO)
+        return p1 * p2 * p3 * p4 * p5 * p6
+
+    def get_node(self, tree, label):
+        return tree.find_node(filter_fn=lambda n: n.label==label)
+
+    def get_edge(self, tree, label):
+        return tree.find_node(filter_fn=lambda n: n.label==label).edge
+
     def test_fixed_species_tree_fitting(self):
         species_tree, coalescent_tree, coalescent_to_species_taxon_map = self.generate_system(
                 speciation_ages=[10, 20, 30],
@@ -182,84 +224,81 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
 
-        _get_edge = lambda t,s: t.find_node(filter_fn=lambda n: n.label==s).edge
-        _get_node = lambda t,s: t.find_node(filter_fn=lambda n: n.label==s)
-
         expected_head_coalescent_edges = {
-            _get_edge(species_tree, "H"): set([
-                                               _get_edge(coalescent_tree, "H1"),
-                                               _get_edge(coalescent_tree, "H2"),
-                                               _get_edge(coalescent_tree, "H3"),
+            self.get_edge(species_tree, "H"): set([
+                                               self.get_edge(coalescent_tree, "H1"),
+                                               self.get_edge(coalescent_tree, "H2"),
+                                               self.get_edge(coalescent_tree, "H3"),
                                                ]),
-            _get_edge(species_tree, "C"): set([
-                                               _get_edge(coalescent_tree, "C1"),
-                                               _get_edge(coalescent_tree, "C2"),
+            self.get_edge(species_tree, "C"): set([
+                                               self.get_edge(coalescent_tree, "C1"),
+                                               self.get_edge(coalescent_tree, "C2"),
                                                ]),
-            _get_edge(species_tree, "G"): set([
-                                               _get_edge(coalescent_tree, "G"),
+            self.get_edge(species_tree, "G"): set([
+                                               self.get_edge(coalescent_tree, "G"),
                                               ]),
-            _get_edge(species_tree, "O"): set([
-                                               _get_edge(coalescent_tree, "O"),
+            self.get_edge(species_tree, "O"): set([
+                                               self.get_edge(coalescent_tree, "O"),
                                               ]),
-            _get_edge(species_tree, "HC"): set([
-                                               _get_edge(coalescent_tree, "H1"),
-                                               _get_edge(coalescent_tree, "a"),
-                                               _get_edge(coalescent_tree, "b"),
+            self.get_edge(species_tree, "HC"): set([
+                                               self.get_edge(coalescent_tree, "H1"),
+                                               self.get_edge(coalescent_tree, "a"),
+                                               self.get_edge(coalescent_tree, "b"),
                                                ]),
-            _get_edge(species_tree, "HCG"): set([
-                                               _get_edge(coalescent_tree, "d"),
-                                               _get_edge(coalescent_tree, "G"),
+            self.get_edge(species_tree, "HCG"): set([
+                                               self.get_edge(coalescent_tree, "d"),
+                                               self.get_edge(coalescent_tree, "G"),
                                                ]),
-            _get_edge(species_tree, "HCGO"): set([
-                                               _get_edge(coalescent_tree, "d"),
-                                               _get_edge(coalescent_tree, "G"),
-                                               _get_edge(coalescent_tree, "O"),
+            self.get_edge(species_tree, "HCGO"): set([
+                                               self.get_edge(coalescent_tree, "d"),
+                                               self.get_edge(coalescent_tree, "G"),
+                                               self.get_edge(coalescent_tree, "O"),
                                                ]),
         }
         expected_tail_coalescent_edges = {
-            _get_edge(species_tree, "H"): set([
-                                               _get_edge(coalescent_tree, "H1"),
-                                               _get_edge(coalescent_tree, "a"),
+            self.get_edge(species_tree, "H"): set([
+                                               self.get_edge(coalescent_tree, "H1"),
+                                               self.get_edge(coalescent_tree, "a"),
                                                ]),
-            _get_edge(species_tree, "C"): set([
-                                               _get_edge(coalescent_tree, "b"),
+            self.get_edge(species_tree, "C"): set([
+                                               self.get_edge(coalescent_tree, "b"),
                                                ]),
-            _get_edge(species_tree, "G"): set([
-                                               _get_edge(coalescent_tree, "G"),
+            self.get_edge(species_tree, "G"): set([
+                                               self.get_edge(coalescent_tree, "G"),
                                               ]),
-            _get_edge(species_tree, "O"): set([
-                                               _get_edge(coalescent_tree, "O"),
+            self.get_edge(species_tree, "O"): set([
+                                               self.get_edge(coalescent_tree, "O"),
                                               ]),
-            _get_edge(species_tree, "HC"): set([
-                                               _get_edge(coalescent_tree, "d"),
+            self.get_edge(species_tree, "HC"): set([
+                                               self.get_edge(coalescent_tree, "d"),
                                                ]),
-            _get_edge(species_tree, "HCG"): set([
-                                               _get_edge(coalescent_tree, "d"),
-                                               _get_edge(coalescent_tree, "G"),
+            self.get_edge(species_tree, "HCG"): set([
+                                               self.get_edge(coalescent_tree, "d"),
+                                               self.get_edge(coalescent_tree, "G"),
                                                ]),
-            _get_edge(species_tree, "HCGO"): set([
+            self.get_edge(species_tree, "HCGO"): set([
                                                ]),
         }
         expected_coalescing_nodes = {
-            _get_edge(species_tree, "H"): set([
-                                               _get_node(coalescent_tree, "a"),
+            self.get_edge(species_tree, "H"): set([
+                                               self.get_node(coalescent_tree, "a"),
                                                ]),
-            _get_edge(species_tree, "C"): set([
-                                               _get_node(coalescent_tree, "b"),
+            self.get_edge(species_tree, "C"): set([
+                                               self.get_node(coalescent_tree, "b"),
                                                ]),
-            _get_edge(species_tree, "G"): set([
+            self.get_edge(species_tree, "G"): set([
                                               ]),
-            _get_edge(species_tree, "O"): set([
+            self.get_edge(species_tree, "O"): set([
                                               ]),
-            _get_edge(species_tree, "HC"): set([
-                                               _get_node(coalescent_tree, "d"),
-                                               _get_node(coalescent_tree, "c"),
+            self.get_edge(species_tree, "HC"): set([
+                                               self.get_node(coalescent_tree, "d"),
+                                               self.get_node(coalescent_tree, "c"),
                                                ]),
-            _get_edge(species_tree, "HCG"): set([
+            self.get_edge(species_tree, "HCG"): set([
                                                ]),
-            _get_edge(species_tree, "HCGO"): set([
-                                               _get_node(coalescent_tree, "f"),
-                                               _get_node(coalescent_tree, "e"),
+            self.get_edge(species_tree, "HCGO"): set([
+                                               self.get_node(coalescent_tree, "f"),
+                                               self.get_node(coalescent_tree, "e"),
                                                ]),
         }
 
@@ -289,6 +328,14 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                     set(edge_coalescent_nodes[structure_tree_edge]),
                     expected_coalescing_nodes[structure_tree_edge]
                     )
+
+        expected_probability = self.calc_likelihood(
+                species_tree=species_tree,
+                coalescent_tree=coalescent_tree,)
+        s = msc.score_coalescent_tree(
+                coalescent_tree=coalescent_tree,
+                coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
+        print("{}, {}, {}".format(s, expected_probability, math.log(expected_probability)))
 
 if __name__ == "__main__":
     unittest.main()
