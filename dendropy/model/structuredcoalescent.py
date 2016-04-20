@@ -135,14 +135,14 @@ class StructuredCoalescent(object):
             oldest_coalescent_event_age = t1
             # probability of coalescences within this edge
             coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age)
-            print("\n{}".format(edge_tail_coalescent_edges[structure_tree_edge]))
-            print("\n{} => {}: {}".format(
-                len(edge_head_coalescent_edges[structure_tree_edge]),
-                len(edge_tail_coalescent_edges[structure_tree_edge]),
-                [ce.age for ce in coalescing_nodes],
-                ))
+            # print("\n{}".format(edge_tail_coalescent_edges[structure_tree_edge]))
+            # print("\n{} => {}: {}".format(
+            #     len(edge_head_coalescent_edges[structure_tree_edge]),
+            #     len(edge_tail_coalescent_edges[structure_tree_edge]),
+            #     [ce.age for ce in coalescing_nodes],
+            #     ))
             for cnd in coalescing_nodes:
-                print(k)
+                # print(k)
                 if k == 1:
                     # t1 = structure_tree_edge.tail_node.age
                     break
@@ -155,7 +155,7 @@ class StructuredCoalescent(object):
                 t0 = t1
                 if t1 > oldest_coalescent_event_age:
                     oldest_coalescent_event_age = t1
-            # assert k == len(edge_tail_coalescent_edges[structure_tree_edge]), "{} vs {}: {}".format(k, len(edge_tail_coalescent_edges[structure_tree_edge]), edge_tail_coalescent_edges[structure_tree_edge])
+            # assert k == len(edge_tail_coalescent_edges[structure_tree_edge]) or k == 1, "{} vs {}: {}".format(k, len(edge_tail_coalescent_edges[structure_tree_edge]), edge_tail_coalescent_edges[structure_tree_edge])
             # probability of non-coalescences within this edge
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
