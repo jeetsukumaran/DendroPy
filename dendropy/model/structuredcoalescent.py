@@ -133,7 +133,8 @@ class StructuredCoalescent(object):
             t1 = structure_tree_edge.head_node.age
             oldest_coalescent_event_age = t1
             # probability of coalescences within this edge
-            for cnd in edge_coalescent_nodes[structure_tree_edge]:
+            coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age)
+            for cnd in coalescing_nodes:
                 if k == 1:
                     # t1 = structure_tree_edge.tail_node.age
                     break
