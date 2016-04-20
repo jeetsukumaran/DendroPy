@@ -180,17 +180,17 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
             species_tree,
             coalescent_tree,
             thetas=None,
-            default_theta=1.0,
+            default_theta=10.0,
             ):
         tau_HC = species_tree.find_node_with_label("HC").age
-        tau_HCG = species_tree.find_node_with_label("HCG").age - tau_HC
-        tau_HCGO = species_tree.find_node_with_label("HCGO").age - tau_HCG
+        tau_HCG = species_tree.find_node_with_label("HCG").age - species_tree.find_node_with_label("HC").age
+        tau_HCGO = species_tree.find_node_with_label("HCGO").age - species_tree.find_node_with_label("HCG").age
         t3_H = coalescent_tree.find_node_with_label("a").age
         t2_C = coalescent_tree.find_node_with_label("b").age
-        t3_HC = coalescent_tree.find_node_with_label("c").age
-        t2_HC = coalescent_tree.find_node_with_label("d").age - t3_HC
-        t3_HCGO = coalescent_tree.find_node_with_label("e").age
-        t2_HCGO = coalescent_tree.find_node_with_label("e").age - t3_HCGO
+        t3_HC = coalescent_tree.find_node_with_label("c").age - species_tree.find_node_with_label("HC").age
+        t2_HC = coalescent_tree.find_node_with_label("d").age - coalescent_tree.find_node_with_label("c").age
+        t3_HCGO = coalescent_tree.find_node_with_label("e").age - species_tree.find_node_with_label("HCGO").age
+        t2_HCGO = coalescent_tree.find_node_with_label("f").age - coalescent_tree.find_node_with_label("e").age
         if thetas is None:
             thetas = {}
         theta_H = thetas.get("H", default_theta)
@@ -204,7 +204,24 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         p4 = math.exp(-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
         p5 = 2.0/theta_HCGO * math.exp(-6 * t3_HCGO/theta_HCGO)
         p6 = 2.0/theta_HCGO * math.exp(-2 * t2_HCGO/theta_HCGO)
-        return p1 * p2 * p3 * p4 * p5 * p6
+        p = p1 * p2 * p3 * p4 * p5 * p6
+
+        q1 = math.log(2.0/theta_H) + (-6 * t3_H/theta_H) + (-2 * (tau_HC-t3_H)/theta_H)
+        q2 = math.log(2.0/theta_C) + (-2 * t2_C/theta_C)
+        q3 = math.log(2.0/theta_HC) + (-6 * t3_HC/theta_HC) + math.log(2.0/theta_HC) + (-2 * t2_HC/theta_HC)
+        q4 = (-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+        q5 = math.log(2.0/theta_HCGO) + (-6 * t3_HCGO/theta_HCGO)
+        q6 = math.log(2.0/theta_HCGO) + (-2 * t2_HCGO/theta_HCGO)
+        q = q1 + q2 + q3 + q4 + q5 + q6
+
+        print("---")
+        print(p)
+        print(q)
+        print(math.exp(q))
+        print(math.log(p))
+        print("---")
+
+        return q
 
     def get_node(self, tree, label):
         return tree.find_node(filter_fn=lambda n: n.label==label)
