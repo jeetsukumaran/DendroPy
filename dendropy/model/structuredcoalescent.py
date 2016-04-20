@@ -125,7 +125,8 @@ class StructuredCoalescent(object):
         #     else:
         #         nd._haploid_pop_size = nd.parent_node._haploid_pop_size / 2.0
 
-        for structure_tree_edge in edge_coalescent_nodes:
+        for structure_tree_edge in self._structure_tree.postorder_edge_iter():
+        # for structure_tree_edge in edge_coalescent_nodes:
             haploid_pop_size = default_haploid_pop_size
             # haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
             k = len(edge_head_coalescent_edges[structure_tree_edge])
@@ -134,7 +135,14 @@ class StructuredCoalescent(object):
             oldest_coalescent_event_age = t1
             # probability of coalescences within this edge
             coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age)
+            print("\n{}".format(edge_tail_coalescent_edges[structure_tree_edge]))
+            print("\n{} => {}: {}".format(
+                len(edge_head_coalescent_edges[structure_tree_edge]),
+                len(edge_tail_coalescent_edges[structure_tree_edge]),
+                [ce.age for ce in coalescing_nodes],
+                ))
             for cnd in coalescing_nodes:
+                print(k)
                 if k == 1:
                     # t1 = structure_tree_edge.tail_node.age
                     break
@@ -147,6 +155,7 @@ class StructuredCoalescent(object):
                 t0 = t1
                 if t1 > oldest_coalescent_event_age:
                     oldest_coalescent_event_age = t1
+            # assert k == len(edge_tail_coalescent_edges[structure_tree_edge]), "{} vs {}: {}".format(k, len(edge_tail_coalescent_edges[structure_tree_edge]), edge_tail_coalescent_edges[structure_tree_edge])
             # probability of non-coalescences within this edge
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
@@ -200,7 +209,19 @@ class StructuredCoalescent(object):
                     # assume all coalesce?
                     # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
                     edge_tail_coalescent_edges[structure_edge] = set([])
-                    edge_coalescent_nodes[structure_edge] = set([e.tail_node for e in edge_head_coalescent_edges[structure_edge] ])
+                    # print(">>>>>>>>>>> {}".format(len(edge_head_coalescent_edges[structure_edge])))
+                    # print(">>>>>>>>>>> {}".format(len([e.tail_node for e in edge_head_coalescent_edges[structure_edge]])))
+                    # print(">>>>>>>>>>> {}".format(["{}<={}".format(e.head_node.label, e.tail_node.label) for e in edge_head_coalescent_edges[structure_edge]]))
+                    # print(">>>>>>>>>>> {}".format(len(set(e.tail_node for e in edge_head_coalescent_edges[structure_edge]))))
+                    edge_coalescent_nodes[structure_edge] = set()
+                    for ex in edge_head_coalescent_edges[structure_edge]:
+                        edge_coalescent_nodes[structure_edge].add(ex.tail_node)
+                        if ex.tail_node is not None:
+                            parent_node = ex.tail_node.parent_node
+                            while parent_node is not None and parent_node not in edge_coalescent_nodes[structure_edge]:
+                                edge_coalescent_nodes[structure_edge].add(parent_node)
+                                parent_node = parent_node.parent_node
+                    # print("==== {}".format([nd.label for nd in edge_coalescent_nodes[structure_edge]]))
                     continue
             else:
                 target_age = structure_edge.tail_node.age
