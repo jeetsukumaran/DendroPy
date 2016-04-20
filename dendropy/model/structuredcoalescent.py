@@ -118,13 +118,20 @@ class StructuredCoalescent(object):
         #         nd._haploid_pop_size = default_haploid_pop_size
         #     else:
         #         nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
-        #     # nd._haploid_pop_size = default_haploid_pop_size
+
+        # for nd in self._structure_tree.preorder_node_iter():
+        #     if nd is self._structure_tree.seed_node:
+        #         nd._haploid_pop_size = default_haploid_pop_size
+        #     else:
+        #         nd._haploid_pop_size = nd.parent_node._haploid_pop_size / 2.0
 
         for structure_tree_edge in edge_coalescent_nodes:
             haploid_pop_size = default_haploid_pop_size
+            # haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
             k = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
             t1 = structure_tree_edge.head_node.age
+            oldest_coalescent_event_age = t1
             # probability of coalescences within this edge
             for cnd in edge_coalescent_nodes[structure_tree_edge]:
                 if k == 1:
@@ -137,10 +144,12 @@ class StructuredCoalescent(object):
                 logP = logP + math.log(k2N) - (k2N * wt)
                 k -= 1
                 t0 = t1
+                if t1 > oldest_coalescent_event_age:
+                    oldest_coalescent_event_age = t1
             # probability of non-coalescences within this edge
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
-                remaining_time = structure_tree_edge.tail_node.age - t1
+                remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
                 # logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
                 logP += -1 * remaining_lineages / haploid_pop_size * remaining_time
         return logP
