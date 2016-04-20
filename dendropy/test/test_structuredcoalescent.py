@@ -176,15 +176,15 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
 
         return species_tree, coalescent_tree, coalescent_to_species_taxon_map
 
-    def calc_likelihood(self,
+    def calc_log_likelihood(self,
             species_tree,
             coalescent_tree,
             thetas=None,
             default_theta=10.0,
             ):
         tau_HC = species_tree.find_node_with_label("HC").age
-        tau_HCG = species_tree.find_node_with_label("HCG").age - species_tree.find_node_with_label("HC").age
-        tau_HCGO = species_tree.find_node_with_label("HCGO").age - species_tree.find_node_with_label("HCG").age
+        tau_HCG = species_tree.find_node_with_label("HCG").age
+        tau_HCGO = species_tree.find_node_with_label("HCGO").age
         t3_H = coalescent_tree.find_node_with_label("a").age
         t2_C = coalescent_tree.find_node_with_label("b").age
         t3_HC = coalescent_tree.find_node_with_label("c").age - species_tree.find_node_with_label("HC").age
@@ -214,12 +214,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         q6 = math.log(2.0/theta_HCGO) + (-2 * t2_HCGO/theta_HCGO)
         q = q1 + q2 + q3 + q4 + q5 + q6
 
-        print("---")
-        print(p)
-        print(q)
-        print(math.exp(q))
-        print(math.log(p))
-        print("---")
+        self.assertAlmostEqual(math.log(p), q, 7)
 
         return q
 
@@ -346,13 +341,13 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                     expected_coalescing_nodes[structure_tree_edge]
                     )
 
-        expected_probability = self.calc_likelihood(
+        expected_lnL = self.calc_log_likelihood(
                 species_tree=species_tree,
                 coalescent_tree=coalescent_tree,)
         s = msc.score_coalescent_tree(
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
-        print("{}, {}, {}".format(s, expected_probability, math.log(expected_probability)))
+        print("{}, {}".format(s, expected_lnL))
 
 if __name__ == "__main__":
     unittest.main()
