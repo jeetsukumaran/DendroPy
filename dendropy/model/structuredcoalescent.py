@@ -134,7 +134,7 @@ class StructuredCoalescent(object):
             t1 = structure_tree_edge.head_node.age
             oldest_coalescent_event_age = t1
             # probability of coalescences within this edge
-            coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age)
+            coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age if nd else float("inf"))
             # print("\n{}".format(edge_tail_coalescent_edges[structure_tree_edge]))
             # print("\n{} => {}: {}".format(
             #     len(edge_head_coalescent_edges[structure_tree_edge]),
@@ -157,8 +157,8 @@ class StructuredCoalescent(object):
                     oldest_coalescent_event_age = t1
             # assert k == len(edge_tail_coalescent_edges[structure_tree_edge]) or k == 1, "{} vs {}: {}".format(k, len(edge_tail_coalescent_edges[structure_tree_edge]), edge_tail_coalescent_edges[structure_tree_edge])
             # probability of non-coalescences within this edge
-            remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
-            if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
+            remaining_lineages = k #len(edge_tail_coalescent_edges[structure_tree_edge])
+            if remaining_lineages > 1: # and structure_tree_edge.tail_node is not None:
                 remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
                 # logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
                 logP += -1 * remaining_lineages / haploid_pop_size * remaining_time
@@ -254,7 +254,7 @@ class StructuredCoalescent(object):
                 if coalescent_edge is not None:
                     # structure_edge.tail_coalescent_edges[coalescent_tree].add(coalescent_edge)
                     edge_tail_coalescent_edges[structure_edge].add(coalescent_edge)
-                edge_coalescent_nodes[structure_edge] = set([e.tail_node for e in (edge_head_coalescent_edges[structure_edge] - edge_tail_coalescent_edges[structure_edge])])
+            edge_coalescent_nodes[structure_edge] = set([e.tail_node for e in (edge_head_coalescent_edges[structure_edge] - edge_tail_coalescent_edges[structure_edge])])
         return edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes
 
 
