@@ -21,6 +21,73 @@ import unittest
 import dendropy
 from dendropy.model import structuredcoalescent
 
+def generate_structured_coalescent_system(
+        speciation_ages,
+        coalescent_ages,
+        ):
+    """
+    Generates a species tree and a coalescent tree based on Figure 1 of:
+
+        Rannala B, Yang Z. 2003. Bayesian estimation of species divergence
+        ages and ancestral population sizes using DNA sequences from
+        multiple loci. Genetics 164L 1645-1656.
+
+    """
+    assert len(speciation_ages) == 3
+    assert len(coalescent_ages) == 6
+    speciation_ages = sorted(float(i) for i in speciation_ages)
+    coalescent_ages = sorted(float(i) for i in coalescent_ages)
+
+    species_taxa = dendropy.TaxonNamespace(["H","C","G","O"])
+    species_tree_str = "(((H,C)HC,G)HCG,O)HCGO;"
+    species_tree = dendropy.Tree.get(
+            data=species_tree_str,
+            schema="newick",
+            taxon_namespace=species_taxa,
+            rooting="force-rooted",
+            )
+    species_taxa.is_mutable = False
+    for nd in species_tree.leaf_node_iter():
+        nd.age = 0.0
+        nd.label = nd.taxon.label
+    species_tree.find_node_with_label("HC").age = speciation_ages[0]
+    species_tree.find_node_with_label("HCG").age = speciation_ages[1]
+    species_tree.find_node_with_label("HCGO").age = speciation_ages[2]
+    species_tree.set_edge_lengths_from_node_ages()
+
+    gene_taxa = dendropy.TaxonNamespace(["H1", "H2", "H3", "C1", "C2", "G", "O"])
+    coalescent_tree_str = "(((H1, ((H2, H3)a,(C1, C2)b)c)d,G)e,O)f;"
+    coalescent_tree = dendropy.Tree.get(
+            data=coalescent_tree_str,
+            schema="newick",
+            taxon_namespace=gene_taxa,
+            rooting="force-rooted",
+            )
+    gene_taxa.is_mutable = False
+    for nd in coalescent_tree.leaf_node_iter():
+        nd.age = 0.0
+        nd.label = nd.taxon.label
+    coalescent_tree.find_node_with_label("a").age = coalescent_ages[0]
+    coalescent_tree.find_node_with_label("b").age = coalescent_ages[1]
+    coalescent_tree.find_node_with_label("c").age = coalescent_ages[2]
+    coalescent_tree.find_node_with_label("d").age = coalescent_ages[3]
+    coalescent_tree.find_node_with_label("e").age = coalescent_ages[4]
+    coalescent_tree.find_node_with_label("f").age = coalescent_ages[5]
+    coalescent_tree.set_edge_lengths_from_node_ages()
+
+    coalescent_to_species_taxon_map = {
+        gene_taxa.require_taxon("H1"): species_taxa.require_taxon("H"),
+        gene_taxa.require_taxon("H2"): species_taxa.require_taxon("H"),
+        gene_taxa.require_taxon("H3"): species_taxa.require_taxon("H"),
+        gene_taxa.require_taxon("C1"): species_taxa.require_taxon("C"),
+        gene_taxa.require_taxon("C2"): species_taxa.require_taxon("C"),
+        gene_taxa.require_taxon("G"): species_taxa.require_taxon("G"),
+        gene_taxa.require_taxon("O"): species_taxa.require_taxon("O"),
+    }
+
+    return species_tree, coalescent_tree, coalescent_to_species_taxon_map
+
+
 # class SimpleStructuredCoalescentTestCase(unittest.TestCase):
 
 #     def test_simple1(self):
@@ -110,72 +177,6 @@ from dendropy.model import structuredcoalescent
 
 class StructuredCoalescentBasicTestCase(unittest.TestCase):
 
-    def generate_system(self,
-            speciation_ages,
-            coalescent_ages,
-            ):
-        """
-        Generates a species tree and a coalescent tree based on Figure 1 of:
-
-            Rannala B, Yang Z. 2003. Bayesian estimation of species divergence
-            ages and ancestral population sizes using DNA sequences from
-            multiple loci. Genetics 164L 1645-1656.
-
-        """
-        assert len(speciation_ages) == 3
-        assert len(coalescent_ages) == 6
-        speciation_ages = sorted(float(i) for i in speciation_ages)
-        coalescent_ages = sorted(float(i) for i in coalescent_ages)
-
-        species_taxa = dendropy.TaxonNamespace(["H","C","G","O"])
-        species_tree_str = "(((H,C)HC,G)HCG,O)HCGO;"
-        species_tree = dendropy.Tree.get(
-                data=species_tree_str,
-                schema="newick",
-                taxon_namespace=species_taxa,
-                rooting="force-rooted",
-                )
-        species_taxa.is_mutable = False
-        for nd in species_tree.leaf_node_iter():
-            nd.age = 0.0
-            nd.label = nd.taxon.label
-        species_tree.find_node_with_label("HC").age = speciation_ages[0]
-        species_tree.find_node_with_label("HCG").age = speciation_ages[1]
-        species_tree.find_node_with_label("HCGO").age = speciation_ages[2]
-        species_tree.set_edge_lengths_from_node_ages()
-
-        gene_taxa = dendropy.TaxonNamespace(["H1", "H2", "H3", "C1", "C2", "G", "O"])
-        coalescent_tree_str = "(((H1, ((H2, H3)a,(C1, C2)b)c)d,G)e,O)f;"
-        coalescent_tree = dendropy.Tree.get(
-                data=coalescent_tree_str,
-                schema="newick",
-                taxon_namespace=gene_taxa,
-                rooting="force-rooted",
-                )
-        gene_taxa.is_mutable = False
-        for nd in coalescent_tree.leaf_node_iter():
-            nd.age = 0.0
-            nd.label = nd.taxon.label
-        coalescent_tree.find_node_with_label("a").age = coalescent_ages[0]
-        coalescent_tree.find_node_with_label("b").age = coalescent_ages[1]
-        coalescent_tree.find_node_with_label("c").age = coalescent_ages[2]
-        coalescent_tree.find_node_with_label("d").age = coalescent_ages[3]
-        coalescent_tree.find_node_with_label("e").age = coalescent_ages[4]
-        coalescent_tree.find_node_with_label("f").age = coalescent_ages[5]
-        coalescent_tree.set_edge_lengths_from_node_ages()
-
-        coalescent_to_species_taxon_map = {
-            gene_taxa.require_taxon("H1"): species_taxa.require_taxon("H"),
-            gene_taxa.require_taxon("H2"): species_taxa.require_taxon("H"),
-            gene_taxa.require_taxon("H3"): species_taxa.require_taxon("H"),
-            gene_taxa.require_taxon("C1"): species_taxa.require_taxon("C"),
-            gene_taxa.require_taxon("C2"): species_taxa.require_taxon("C"),
-            gene_taxa.require_taxon("G"): species_taxa.require_taxon("G"),
-            gene_taxa.require_taxon("O"): species_taxa.require_taxon("O"),
-        }
-
-        return species_tree, coalescent_tree, coalescent_to_species_taxon_map
-
     def calc_log_likelihood(self,
             species_tree,
             coalescent_tree,
@@ -229,7 +230,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         return tree.find_node(filter_fn=lambda n: n.label==label).edge
 
     def test_fixed_species_tree_fitting(self):
-        species_tree, coalescent_tree, coalescent_to_species_taxon_map = self.generate_system(
+        species_tree, coalescent_tree, coalescent_to_species_taxon_map = generate_structured_coalescent_system(
                 speciation_ages=[10, 20, 30],
                 coalescent_ages=[5, 6, 15, 16, 35, 36]
                 )
