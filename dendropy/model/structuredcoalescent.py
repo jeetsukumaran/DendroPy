@@ -107,7 +107,7 @@ class StructuredCoalescent(object):
             Log probability of ``coalescent_tree`` given structuring imposed by
             ``self._structure_tree``.
         """
-        edge_head_coalescent_edges, edge_tail_coalescent_edges = self._fit_coalescent_tree(
+        edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes = self._fit_coalescent_tree(
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=coalescent_to_structure_map_fn,
                 is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
@@ -120,22 +120,17 @@ class StructuredCoalescent(object):
         #         nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
         #     # nd._haploid_pop_size = default_haploid_pop_size
 
-        for structure_tree_edge in edge_head_coalescent_edges:
+        for structure_tree_edge in edge_coalescent_nodes:
             haploid_pop_size = default_haploid_pop_size
-
-            coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
             k = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
-            t1 = 0.0
+            t1 = structure_tree_edge.head_node.age
             # probability of coalescences within this edge
-            for ce in coalescing_edges:
+            for cnd in edge_coalescent_nodes[structure_tree_edge]:
                 if k == 1:
                     # t1 = structure_tree_edge.tail_node.age
                     break
-                if ce.head_node is coalescent_tree.seed_node:
-                    ### Whut??
-                    break
-                t1 = ce.tail_node.age
+                t1 = cnd.age
                 wt = t1 - t0
                 k2N = (float(k * (k-1)) / 2) / haploid_pop_size
                 # k2N = float(combinatorics.choose(k, 2)) / default_haploid_pop_size
