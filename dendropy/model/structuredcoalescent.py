@@ -113,7 +113,16 @@ class StructuredCoalescent(object):
                 is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
         logP = 0.0
 
+        for nd in self._structure_tree.postorder_node_iter():
+            if not nd._child_nodes:
+                nd._haploid_pop_size = default_haploid_pop_size
+            else:
+                nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
+            # nd._haploid_pop_size = default_haploid_pop_size
+
         for structure_tree_edge in edge_head_coalescent_edges:
+            haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
+
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
             k = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
@@ -128,7 +137,7 @@ class StructuredCoalescent(object):
                     break
                 t1 = ce.tail_node.age
                 wt = t1 - t0
-                k2N = (float(k * (k-1)) / 2) / default_haploid_pop_size
+                k2N = (float(k * (k-1)) / 2) / haploid_pop_size
                 # k2N = float(combinatorics.choose(k, 2)) / default_haploid_pop_size
                 logP = logP + math.log(k2N) - (k2N * wt)
                 k -= 1
@@ -137,7 +146,8 @@ class StructuredCoalescent(object):
             remaining_lineages = len(edge_tail_coalescent_edges[structure_tree_edge])
             if remaining_lineages > 1 and structure_tree_edge.tail_node is not None:
                 remaining_time = structure_tree_edge.tail_node.age - t1
-                logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
+                # logP += -1 * remaining_lineages / default_haploid_pop_size * remaining_time
+                logP += -1 * remaining_lineages / haploid_pop_size * remaining_time
         return logP
 
     def _fit_coalescent_tree(self,
