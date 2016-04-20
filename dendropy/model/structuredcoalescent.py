@@ -113,15 +113,15 @@ class StructuredCoalescent(object):
                 is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
         logP = 0.0
 
-        for nd in self._structure_tree.postorder_node_iter():
-            if not nd._child_nodes:
-                nd._haploid_pop_size = default_haploid_pop_size
-            else:
-                nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
-            # nd._haploid_pop_size = default_haploid_pop_size
+        # for nd in self._structure_tree.postorder_node_iter():
+        #     if not nd._child_nodes:
+        #         nd._haploid_pop_size = default_haploid_pop_size
+        #     else:
+        #         nd._haploid_pop_size = sum(ch._haploid_pop_size for ch in nd._child_nodes)
+        #     # nd._haploid_pop_size = default_haploid_pop_size
 
         for structure_tree_edge in edge_head_coalescent_edges:
-            haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
+            haploid_pop_size = default_haploid_pop_size
 
             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
             k = len(edge_head_coalescent_edges[structure_tree_edge])
