@@ -352,21 +352,8 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
         s = msc.score_coalescent_tree(
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x],
-                default_haploid_pop_size=1.0,
                 )
         print("{}, {}".format(s, expected_lnL))
-
-        # v0 = 0.6
-        # v1 = 0.7
-        # for x in range(1, 10000):
-        #     scale = x/10000.0
-        #     pop_size = v0 + (v1-v0) * scale
-        #     s = msc.score_coalescent_tree(
-        #         coalescent_tree=coalescent_tree,
-        #         coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x],
-        #         default_haploid_pop_size=pop_size,
-        #         )
-        #     print("{:1.16f} : {} ({})".format(pop_size, s, expected_lnL))
 
 if __name__ == "__main__":
     unittest.main()

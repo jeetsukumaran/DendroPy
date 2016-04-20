@@ -55,7 +55,7 @@ class StructuredCoalescent(object):
     def score_coalescent_tree(self,
             coalescent_tree,
             coalescent_to_structure_map_fn,
-            default_haploid_pop_size=1.0,
+            population_theta_fn=None,
             is_coalescent_to_structure_map_by_node=False,
             ):
         """
@@ -76,8 +76,11 @@ class StructuredCoalescent(object):
             or |Node| instance (if ``is_coalescent_to_structure_map_by_node``
             is True) corresponding to the species or population on the
             structure tree with which it is associated.
-        default_haploid_pop_size : numeric
-            Population size for each edge of the coalescent tree.
+        population_theta_fn : function object
+            Function that takes an edge on the structure tree as an argument
+            and returns the population parameter (theta) for that population or
+            species. If not specified, all edges are assumed to have a theta
+            value of 1.0.
         is_coalescent_to_structure_map_by_node : str
             Specifies the expected type of argument and return value of the
             mapping function, ``coalescent_to_structure_map_fn``. By default
@@ -111,11 +114,13 @@ class StructuredCoalescent(object):
                 coalescent_tree=coalescent_tree,
                 coalescent_to_structure_map_fn=coalescent_to_structure_map_fn,
                 is_coalescent_to_structure_map_by_node=is_coalescent_to_structure_map_by_node)
+        if population_theta_fn is None:
+            population_theta_fn = lambda e: 1.0
         logP = 0.0
         # for structure_tree_edge in self._structure_tree.postorder_edge_iter():
         for structure_tree_edge in edge_coalescent_nodes:
-            haploid_pop_size = default_haploid_pop_size
-            # haploid_pop_size = structure_tree_edge.head_node._haploid_pop_size
+            theta = population_theta_fn(structure_tree_edge)
+            # theta = structure_tree_edge.head_node._theta
             j = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
             t1 = structure_tree_edge.head_node.age
@@ -127,7 +132,7 @@ class StructuredCoalescent(object):
                     break
                 t1 = cnd.age
                 wt = t1 - t0
-                q = math.log(2.0/haploid_pop_size) + (-j * (j-1) * haploid_pop_size * wt)
+                q = math.log(2.0/theta) + (-j * (j-1) * theta * wt)
                 subP += q
                 j -= 1
                 t0 = t1
@@ -140,7 +145,7 @@ class StructuredCoalescent(object):
                     remaining_time = structure_tree_edge.tail_node.age - structure_tree_edge.head_node.age
                 else:
                     remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
-                q = -1 * (remaining_lineages*(remaining_lineages-1))/haploid_pop_size * remaining_time
+                q = -1 * (remaining_lineages*(remaining_lineages-1))/theta * remaining_time
                 subP += q
 
             logP += subP
