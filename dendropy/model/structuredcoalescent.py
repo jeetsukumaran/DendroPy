@@ -192,8 +192,8 @@ class StructuredCoalescent(object):
                     target_age =  structure_edge.head_node.age + structure_edge.length
                 else:
                     # assume all coalesce?
-                    # structure_edge.tail_coalescent_edges[coalescent_tree] = set([coalescent_tree.seed_node.edge])
-                    edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
+                    # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
+                    edge_tail_coalescent_edges[structure_edge] = set([])
                     continue
             else:
                 target_age = structure_edge.tail_node.age

@@ -213,6 +213,30 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                                                _get_edge(coalescent_tree, "O"),
                                                ]),
         }
+        expected_tail_coalescent_edges = {
+            _get_edge(species_tree, "H"): set([
+                                               _get_edge(coalescent_tree, "H1"),
+                                               _get_edge(coalescent_tree, "a"),
+                                               ]),
+            _get_edge(species_tree, "C"): set([
+                                               _get_edge(coalescent_tree, "b"),
+                                               ]),
+            _get_edge(species_tree, "G"): set([
+                                               _get_edge(coalescent_tree, "G"),
+                                              ]),
+            _get_edge(species_tree, "O"): set([
+                                               _get_edge(coalescent_tree, "O"),
+                                              ]),
+            _get_edge(species_tree, "HC"): set([
+                                               _get_edge(coalescent_tree, "d"),
+                                               ]),
+            _get_edge(species_tree, "HCG"): set([
+                                               _get_edge(coalescent_tree, "d"),
+                                               _get_edge(coalescent_tree, "G"),
+                                               ]),
+            _get_edge(species_tree, "HCGO"): set([
+                                               ]),
+        }
 
         for structure_tree_edge in edge_head_coalescent_edges:
             # print("{}: {} vs. {}".format(
@@ -223,14 +247,14 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                     set(edge_head_coalescent_edges[structure_tree_edge]),
                     expected_head_coalescent_edges[structure_tree_edge]
                     )
-
-            # cs_tail = set([ce.bipartition.leafset_as_bitstring() for ce in edge_tail_coalescent_edges[structure_tree_edge]])
-            # # print(cs_tail, expected_tail_coalescent_edges[ss])
-            # self.assertEqual(cs_tail, expected_tail_coalescent_edges[ss])
-
-            # coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
-            # cs = set([ce.bipartition.leafset_as_bitstring() for ce in coalescing_edges])
-            # self.assertEqual(cs, expected_coalescing_edges[ss])
+            # print("{}: {} vs. {}".format(
+            #     structure_tree_edge.tail_node.label if structure_tree_edge.tail_node else "<root>",
+            #     [ce.head_node.label for ce in edge_tail_coalescent_edges[structure_tree_edge]],
+            #     [ce.head_node.label for ce in expected_tail_coalescent_edges[structure_tree_edge]]))
+            self.assertEqual(
+                    set(edge_tail_coalescent_edges[structure_tree_edge]),
+                    expected_tail_coalescent_edges[structure_tree_edge]
+                    )
 
 if __name__ == "__main__":
     unittest.main()
