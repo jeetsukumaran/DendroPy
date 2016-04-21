@@ -51,9 +51,6 @@ class StructuredCoalescent(object):
         self._structure_tree = structure_tree
         if self._structure_tree.seed_node.age is None:
             self._structure_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
-        # for edge in self._structure_tree.postorder_edge_iter():
-        #     edge.head_coalescent_edges = {}
-        #     edge.tail_coalescent_edges = {}
     structure_tree = property(_get_structure_tree, _set_structure_tree)
 
     def score_coalescent_tree(self,
@@ -122,8 +119,8 @@ class StructuredCoalescent(object):
             population_theta_fn = lambda e: 1.0
         logP = 0.0
 
-        def _debug_log(x):
-            print(x)
+        # def _debug_log(x):
+        #     print(x)
 
         for structure_tree_edge in self._structure_tree.postorder_edge_iter():
         # for structure_tree_edge in edge_coalescent_nodes:
@@ -232,8 +229,6 @@ class StructuredCoalescent(object):
 
             if structure_edge.tail_node is None:
                 ## root edge
-                # assume all coalesce?
-                # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
                 # _debug_log("    Structure root edge: coalesce all")
                 for ex in edge_head_coalescent_edges[structure_edge]:
                     edge_coalescent_nodes[structure_edge].add(ex.tail_node)
@@ -276,54 +271,6 @@ class StructuredCoalescent(object):
                     assert False
             if current_lineages:
                 edge_tail_coalescent_edges[structure_edge] = set(x[1] for x in current_lineages)
-
-            # structure_edge.tail_coalescent_edges[coalescent_tree] = set()
-            # if self.is_enforce_structure_integrity:
-            #     current_lineages = set(edge_head_coalescent_edges[structure_edge])
-            #     iter_coalescing_edges = sorted(edge_head_coalescent_edges[structure_edge], key=lambda x: x.tail_node.age if x.tail_node else float("inf"))
-            # else:
-            #     iter_coalescing_edges = iter(edge_head_coalescent_edges[structure_edge])
-            # for coalescent_edge in iter_coalescing_edges:
-            #     if coalescent_edge.tail_node is not None:
-            #         _debug_log("    Processing coalescent edge {} with parent {} (age={})".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.tail_node.age))
-            #         remaining = target_age - coalescent_edge.tail_node.age
-            #     elif coalescent_edge.length is not None:
-            #         _debug_log("    Processing coalescent edge {} with null parent (root) but with edge length of {}".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.length))
-            #         remaining = target_age - (coalescent_edge.head_node.age + coalescent_edge.length)
-            #     else:
-            #         _debug_log("    Processing coalescent edge {} with null parent (root) but with a null edge length".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.length))
-            #         continue
-            #     _debug_log("        Time remaining between coalescence of this edge and population end: {}".format(remaining))
-            #     while remaining > 0:
-            #         if coalescent_edge.tail_node is not None:
-            #             _debug_log("        Adding node {} (age={}) to set of coalescing nodes".format(self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.tail_node.age))
-            #             if self.is_enforce_structure_integrity:
-            #                 for chnd in coalescent_edge.tail_node._child_nodes:
-            #                     if chnd.edge is not coalescent_edge and chnd.edge not in current_lineages:
-            #                         msg = "Invalid coalescence within structure tree edge {}: coalescent tree edge {} is coalescing with edge from another population ({}) after the populations have split".format(
-            #                                 self._compose_edge_desc(structure_edge), self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(chnd.edge), )
-            #                         raise error.InvalidStructuredCoalescentError(msg)
-            #                 current_lineages.add(coalescent_edge.tail_node.edge)
-            #             edge_coalescent_nodes[structure_edge].add(coalescent_edge.tail_node)
-            #             coalescent_edge = coalescent_edge.tail_node.edge
-            #         else:
-            #             if coalescent_edge.length is not None and (remaining - coalescent_edge.length) <= 0:
-            #                 coalescent_edge = None
-            #                 remaining = 0
-            #                 break
-            #             else:
-            #                 remaining = 0
-            #                 break
-            #         if coalescent_edge and remaining > 0:
-            #             try:
-            #                 remaining -= coalescent_edge.length
-            #             except TypeError:
-            #                 pass
-            #     if coalescent_edge is not None:
-            #         # structure_edge.tail_coalescent_edges[coalescent_tree].add(coalescent_edge)
-            #         edge_tail_coalescent_edges[structure_edge].add(coalescent_edge)
-            #         _debug_log("        Adding edge {} to set of non-coalesced edges".format(self._compose_edge_desc(coalescent_edge.tail_node.edge)))
-
         return edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes
 
     def _compose_edge_desc(self, e):
