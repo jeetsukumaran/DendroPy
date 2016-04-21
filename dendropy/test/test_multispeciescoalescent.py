@@ -21,7 +21,7 @@ import unittest
 import dendropy
 from dendropy.model import multispeciescoalescent
 
-def generate_structured_coalescent_system(
+def generate_multispecies_coalescent_system(
         speciation_ages,
         coalescent_ages,
         ):
@@ -146,7 +146,7 @@ class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
         return tree.find_node(filter_fn=lambda n: n.label==label).edge
 
     def test_fixed_species_tree_fitting(self):
-        species_tree, coalescent_tree, coalescent_to_species_taxon_map = generate_structured_coalescent_system(
+        species_tree, coalescent_tree, coalescent_to_species_taxon_map = generate_multispecies_coalescent_system(
                 speciation_ages=[10, 20, 30],
                 coalescent_ages=[5, 6, 15, 16, 35, 36]
                 )

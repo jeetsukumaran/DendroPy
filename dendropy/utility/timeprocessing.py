@@ -16,15 +16,17 @@
 ##
 ##############################################################################
 
-import time
+import datetime
 
 def pretty_timestamp(t=None, style=0):
     if t is None:
-        t = time.localtime()
+        t = datetime.datetime.now()
     if style == 0:
-        return time.strftime("%Y-%m-%d", t)
+        return t.strftime("%Y-%m-%d")
+    elif style == 1:
+        return t.strftime("%Y%m%d%H%M%S")
     else:
-        return time.strftime("%Y%m%d%H%M%S", t)
+        return t.strftime("%Y%m%d%H%M%S%f")
 
 def pretty_elapsed_datetime(t, fill=False):
     parts = []

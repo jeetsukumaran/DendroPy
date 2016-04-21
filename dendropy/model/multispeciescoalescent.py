@@ -261,7 +261,7 @@ class MultispeciesCoalescent(object):
                             if chnd.edge is not coalescent_edge and chnd.edge not in valid_coalescing_lineages:
                                 msg = "Invalid coalescence within structure tree edge {}: coalescent tree lineage {} cannot coalesce with lineage {} because the latter is not in the same population at this time".format(
                                         self._compose_edge_desc(species_edge), self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(chnd.edge), )
-                                raise error.InvalidMultispeciesCoalescentError(msg)
+                                raise error.InvalidMultispeciesCoalescentStructureError(msg)
                         valid_coalescing_lineages.add(coalescent_edge.tail_node.edge)
                     edge_coalescent_nodes[species_edge].add(coalescent_edge.tail_node)
                     new_edge = coalescent_edge.tail_node.edge
