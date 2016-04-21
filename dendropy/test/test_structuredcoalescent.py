@@ -329,10 +329,10 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                     set(edge_head_coalescent_edges[structure_tree_edge]),
                     expected_head_coalescent_edges[structure_tree_edge]
                     )
-            # print("{}: {} vs. {}".format(
-            #     structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
-            #     [ce.head_node.label for ce in edge_tail_coalescent_edges[structure_tree_edge]],
-            #     [ce.head_node.label for ce in expected_tail_coalescent_edges[structure_tree_edge]]))
+            print("{}: {} vs. {}".format(
+                structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
+                [ce.head_node.label for ce in edge_tail_coalescent_edges[structure_tree_edge]],
+                [ce.head_node.label for ce in expected_tail_coalescent_edges[structure_tree_edge]]))
             self.assertEqual(
                     set(edge_tail_coalescent_edges[structure_tree_edge]),
                     expected_tail_coalescent_edges[structure_tree_edge]
