@@ -174,8 +174,7 @@ class StructuredCoalescent(object):
         """
         # if self.fit_structure_edge_lengths:
         #     self.fit_edge_lengths(self.coalescent_trees)
-        if coalescent_tree.seed_node.age is None:
-            coalescent_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
+        coalescent_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
         coalescent_leaves = coalescent_tree.leaf_nodes()
         structure_to_coalescent = {}
         if is_coalescent_to_structure_map_by_node:
