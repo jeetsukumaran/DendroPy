@@ -16,11 +16,13 @@
 ##
 ##############################################################################
 
+from __future__ import division
 import math
 import dendropy
 from dendropy.model import reconcile
 from dendropy.model import coalescent
 from dendropy.utility import constants
+from dendropy.utility import error
 # from dendropy.calculate import combinatorics
 
 class StructuredCoalescent(object):
@@ -38,6 +40,7 @@ class StructuredCoalescent(object):
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
         self._structure_tree = None
         self.ultrametricity_precision = ultrametricity_precision
+        self.is_enforce_structure_integrity = True
         if structure_tree is not None:
             self._set_structure_tree(structure_tree=structure_tree)
 
@@ -117,21 +120,35 @@ class StructuredCoalescent(object):
         if population_theta_fn is None:
             population_theta_fn = lambda e: 1.0
         logP = 0.0
-        # for structure_tree_edge in self._structure_tree.postorder_edge_iter():
-        for structure_tree_edge in edge_coalescent_nodes:
+
+        # def _debug_log(x):
+        #     print(x)
+
+        for structure_tree_edge in self._structure_tree.postorder_edge_iter():
+        # for structure_tree_edge in edge_coalescent_nodes:
             theta = population_theta_fn(structure_tree_edge)
-            # theta = structure_tree_edge.head_node._theta
+            coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age if nd else float("inf"))
+
+            # if structure_tree_edge.tail_node is None:
+            #     _debug_log("-- Structure Edge {}: from {} to infinity (root)".format(self._compose_edge_desc(structure_tree_edge), structure_tree_edge.head_node.age, ))
+            # else:
+            #     _debug_log("-- Structure Edge {}: from {} to {}".format(self._compose_edge_desc(structure_tree_edge), structure_tree_edge.head_node.age, structure_tree_edge.tail_node.age))
+            # _debug_log("          In: {} edges: {}".format(len(edge_head_coalescent_edges[structure_tree_edge]), [self._compose_edge_desc(e) for e in edge_head_coalescent_edges[structure_tree_edge]]))
+            # _debug_log("         Out: {} edges: {}".format(len(edge_tail_coalescent_edges[structure_tree_edge]), [self._compose_edge_desc(e) for e in edge_tail_coalescent_edges[structure_tree_edge]]))
+            # _debug_log("Coalescences: {} nodes: {}".format(len(coalescing_nodes),
+            #     ["{} ^ {} (= {} at {})".format(self._compose_edge_desc(c._child_nodes[0].edge), self._compose_edge_desc(c._child_nodes[1].edge), self._compose_edge_desc(c.edge), c.age) for c in coalescing_nodes if c is not None]))
+
             j = len(edge_head_coalescent_edges[structure_tree_edge])
             t0 = structure_tree_edge.head_node.age
             t1 = structure_tree_edge.head_node.age
             oldest_coalescent_event_age = None
-            coalescing_nodes = sorted(edge_coalescent_nodes[structure_tree_edge], key=lambda nd: nd.age if nd else float("inf"))
             subP = 0.0
             for cnd in coalescing_nodes:
                 if j == 1:
                     break
                 t1 = cnd.age
                 wt = t1 - t0
+                # q = math.log( (j*(j-1.0))  /theta) + (-j * (j-1.0) * theta * wt)
                 q = math.log(2.0/theta) + (-j * (j-1) * theta * wt)
                 subP += q
                 j -= 1
@@ -147,7 +164,6 @@ class StructuredCoalescent(object):
                     remaining_time = structure_tree_edge.tail_node.age - oldest_coalescent_event_age
                 q = -1 * (remaining_lineages*(remaining_lineages-1))/theta * remaining_time
                 subP += q
-
             logP += subP
         return logP
 
@@ -177,53 +193,79 @@ class StructuredCoalescent(object):
         edge_head_coalescent_edges = {}
         edge_tail_coalescent_edges = {}
         edge_coalescent_nodes = {}
+
+        def _debug_log(x):
+            print(x)
+        def _dump_edge_set(ee):
+            return ", ".join(self._compose_edge_desc(e) for e in ee)
+
         for structure_edge in self._structure_tree.postorder_edge_iter():
-            edge_coalescent_nodes[structure_edge] = set()
-            edge_tail_coalescent_edges[structure_edge] = set([])
+
+            # if structure_edge.tail_node is None:
+            #     _debug_log("\nStructure Edge {}: from {} to infinity (root)".format(self._compose_edge_desc(structure_edge), structure_edge.head_node.age, ))
+            # else:
+            #     _debug_log("\nStructure Edge {}: from {} to {}".format(self._compose_edge_desc(structure_edge), structure_edge.head_node.age, structure_edge.tail_node.age))
+
+            ## add initial/inherited coalescent edges to structure edges
             if structure_edge.is_terminal():
                 if is_coalescent_to_structure_map_by_node:
                     edge_head_coalescent_edges[structure_edge] = structure_to_coalescent[structure_edge.head_node]
                 else:
                     edge_head_coalescent_edges[structure_edge] = structure_to_coalescent[structure_edge.head_node.taxon]
+                # _debug_log("    Initializing terminal with edges: {}".format(_dump_edge_set(edge_head_coalescent_edges[structure_edge])))
             else:
                 edge_head_coalescent_edges[structure_edge] = set()
-                for nd in structure_edge.head_node.child_nodes():
+                # _debug_log("    Initializing internal")
+                for nd in structure_edge.head_node.child_node_iter():
                     # edge_head_coalescent_edges[structure_edge].update(nd.edge.tail_coalescent_edges[coalescent_tree])
+                    # _debug_log("        Adding from {}: {}".format(self._compose_edge_desc(nd.edge), _dump_edge_set(edge_tail_coalescent_edges[nd.edge])))
                     edge_head_coalescent_edges[structure_edge].update(edge_tail_coalescent_edges[nd.edge])
+                # _debug_log("        Internal now has edges: {}".format(_dump_edge_set(edge_head_coalescent_edges[structure_edge])))
+
+            ## initialize data containers
+            edge_coalescent_nodes[structure_edge] = set()
+            edge_tail_coalescent_edges[structure_edge] = set([])
 
             if structure_edge.tail_node is None:
-                if structure_edge.length is not None:
-                    target_age =  structure_edge.head_node.age + structure_edge.length
-                else:
-                    # assume all coalesce?
-                    # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
-                    # print(">>>>>>>>>>> {}".format(len(edge_head_coalescent_edges[structure_edge])))
-                    # print(">>>>>>>>>>> {}".format(len([e.tail_node for e in edge_head_coalescent_edges[structure_edge]])))
-                    # print(">>>>>>>>>>> {}".format(["{}<={}".format(e.head_node.label, e.tail_node.label) for e in edge_head_coalescent_edges[structure_edge]]))
-                    # print(">>>>>>>>>>> {}".format(len(set(e.tail_node for e in edge_head_coalescent_edges[structure_edge]))))
-                    for ex in edge_head_coalescent_edges[structure_edge]:
-                        edge_coalescent_nodes[structure_edge].add(ex.tail_node)
-                        if ex.tail_node is not None:
-                            parent_node = ex.tail_node.parent_node
-                            while parent_node is not None and parent_node not in edge_coalescent_nodes[structure_edge]:
-                                edge_coalescent_nodes[structure_edge].add(parent_node)
-                                parent_node = parent_node.parent_node
-                    # print("==== {}".format([nd.label for nd in edge_coalescent_nodes[structure_edge]]))
-                    continue
+                ## root edge
+                # assume all coalesce?
+                # edge_tail_coalescent_edges[structure_edge] = set([coalescent_tree.seed_node.edge])
+                # _debug_log("    Structure root edge: coalesce all")
+                for ex in edge_head_coalescent_edges[structure_edge]:
+                    edge_coalescent_nodes[structure_edge].add(ex.tail_node)
+                    if ex.tail_node is not None:
+                        parent_node = ex.tail_node.parent_node
+                        while parent_node is not None and parent_node not in edge_coalescent_nodes[structure_edge]:
+                            edge_coalescent_nodes[structure_edge].add(parent_node)
+                            parent_node = parent_node.parent_node
+                # _debug_log("        Structure edge now has edges: {}".format(_dump_edge_set(edge_head_coalescent_edges[structure_edge])))
+                continue
             else:
                 target_age = structure_edge.tail_node.age
+                # _debug_log("    Setting structure edge end age: {}".format(target_age))
 
             # structure_edge.tail_coalescent_edges[coalescent_tree] = set()
             for coalescent_edge in edge_head_coalescent_edges[structure_edge]:
                 if coalescent_edge.tail_node is not None:
+                    # _debug_log("    Processing coalescent edge {} with parent {} (age={})".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.tail_node.age))
                     remaining = target_age - coalescent_edge.tail_node.age
                 elif coalescent_edge.length is not None:
+                    # _debug_log("    Processing coalescent edge {} with null parent (root) but with edge length of {}".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.length))
                     remaining = target_age - (coalescent_edge.head_node.age + coalescent_edge.length)
                 else:
+                    # _debug_log("    Processing coalescent edge {} with null parent (root) but with a null edge length".format(self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.length))
                     continue
+                # _debug_log("        Time remaining between coalescence of this edge and population end: {}".format(remaining))
                 while remaining > 0:
                     if coalescent_edge.tail_node is not None:
+                        if self.is_enforce_structure_integrity:
+                            for chnd in coalescent_edge.tail_node._child_nodes:
+                                if chnd.edge not in edge_head_coalescent_edges[structure_edge]:
+                                    msg = "Invalid coalescence within structure tree edge {}: coalescent tree edge {} is coalescing with edge from another population ({}) after the populations have split".format(
+                                            self._compose_edge_desc(structure_edge), self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(chnd.edge), )
+                                    raise error.InvalidStructuredCoalescentError(msg)
                         edge_coalescent_nodes[structure_edge].add(coalescent_edge.tail_node)
+                        # _debug_log("        Adding node {} (age={}) to set of coalescing nodes".format(self._compose_edge_desc(coalescent_edge.tail_node.edge), coalescent_edge.tail_node.age))
                         coalescent_edge = coalescent_edge.tail_node.edge
                     else:
                         if coalescent_edge.length is not None and (remaining - coalescent_edge.length) <= 0:
@@ -241,8 +283,8 @@ class StructuredCoalescent(object):
                 if coalescent_edge is not None:
                     # structure_edge.tail_coalescent_edges[coalescent_tree].add(coalescent_edge)
                     edge_tail_coalescent_edges[structure_edge].add(coalescent_edge)
-                else:
-                    edge_coalescent_nodes[structure_edge].add(coalescent_edge.tail_node)
+                    # _debug_log("        Adding edge {} to set of non-coalesced edges".format(self._compose_edge_desc(coalescent_edge.tail_node.edge)))
         return edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes
 
-
+    def _compose_edge_desc(self, e):
+        return "+".join(x.taxon.label for x in e.head_node.leaf_iter())

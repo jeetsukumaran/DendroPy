@@ -149,6 +149,11 @@ class SeedNodeDeletionException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+class InvalidStructuredCoalescentError(Exception):
+
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
 class ExternalServiceError(Exception):
 
     def __init__(self,
