@@ -265,7 +265,7 @@ class StructuredCoalescent(object):
                     if self.is_enforce_structure_integrity:
                         for chnd in coalescent_edge.tail_node._child_nodes:
                             if chnd.edge is not coalescent_edge and chnd.edge not in valid_coalescing_lineages:
-                                msg = "Invalid coalescence within structure tree edge {}: coalescent tree edge {} is coalescing with edge from another population ({}) after the populations have split".format(
+                                msg = "Invalid coalescence within structure tree edge {}: coalescent tree lineage {} cannot coalesce with lineage {} because the latter is not in the same population at this time".format(
                                         self._compose_edge_desc(structure_edge), self._compose_edge_desc(coalescent_edge), self._compose_edge_desc(chnd.edge), )
                                 raise error.InvalidStructuredCoalescentError(msg)
                         valid_coalescing_lineages.add(coalescent_edge.tail_node.edge)
