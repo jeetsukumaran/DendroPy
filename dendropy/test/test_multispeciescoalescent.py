@@ -19,7 +19,7 @@
 import math
 import unittest
 import dendropy
-from dendropy.model import structuredcoalescent
+from dendropy.model import multispeciescoalescent
 
 def generate_structured_coalescent_system(
         speciation_ages,
@@ -88,7 +88,7 @@ def generate_structured_coalescent_system(
     return species_tree, coalescent_tree, coalescent_to_species_taxon_map
 
 
-# class SimpleStructuredCoalescentTestCase(unittest.TestCase):
+# class SimpleMultispeciesCoalescentTestCase(unittest.TestCase):
 
 #     def test_simple1(self):
         # sp_tree = dendropy.Tree.get(
@@ -97,7 +97,7 @@ def generate_structured_coalescent_system(
         # gene_tree = dendropy.Tree.get(
         #         data="((a:3.0000,b:3.0000):3.0000,c:6.0000);",
         #         schema="newick",)
-        # msc = structuredcoalescent.StructuredCoalescent(sp_tree)
+        # msc = multispeciescoalescent.MultispeciesCoalescent(sp_tree)
 
         # gs_map = {}
         # for nd in gene_tree.leaf_node_iter():
@@ -107,7 +107,7 @@ def generate_structured_coalescent_system(
 
         # print(msc.score_coalescent_tree(
         #     coalescent_tree=gene_tree,
-        #     coalescent_to_structure_map_fn=gfn))
+        #     coalescent_species_lineage_map_fn=gfn))
 
 # class SimpleStructuredTreeFittingTestCase(unittest.TestCase):
 
@@ -126,7 +126,7 @@ def generate_structured_coalescent_system(
 #                 rooting="force-rooted",
 #                 taxon_namespace=gene_taxa)
 #         gene_tree.encode_bipartitions()
-#         msc = structuredcoalescent.StructuredCoalescent(sp_tree)
+#         msc = multispeciescoalescent.MultispeciesCoalescent(sp_tree)
 
 #         gs_map = {}
 #         for nd in gene_tree.leaf_node_iter():
@@ -136,7 +136,7 @@ def generate_structured_coalescent_system(
 
 #         edge_head_coalescent_edges, edge_tail_coalescent_edges = msc._fit_coalescent_tree(
 #                 coalescent_tree=gene_tree,
-#                 coalescent_to_structure_map_fn=gfn)
+#                 coalescent_species_lineage_map_fn=gfn)
 
 #         expected_head_coalescent_edges = {
 #             "001": set(["001"]),
@@ -159,23 +159,23 @@ def generate_structured_coalescent_system(
 #             "011": set(["010", "001"]),
 #             "111": set(["100", "011"]),
 #         }
-#         for structure_tree_edge in edge_head_coalescent_edges:
-#             ss = structure_tree_edge.bipartition.leafset_as_bitstring()
+#         for species_tree_edge in edge_head_coalescent_edges:
+#             ss = species_tree_edge.bipartition.leafset_as_bitstring()
 #             # print("-- {}".format(ss))
 
-#             cs_head = set([ce.bipartition.leafset_as_bitstring() for ce in edge_head_coalescent_edges[structure_tree_edge]])
+#             cs_head = set([ce.bipartition.leafset_as_bitstring() for ce in edge_head_coalescent_edges[species_tree_edge]])
 #             # print(cs_head, expected_head_coalescent_edges[ss])
 #             self.assertEqual(cs_head, expected_head_coalescent_edges[ss])
 
-#             cs_tail = set([ce.bipartition.leafset_as_bitstring() for ce in edge_tail_coalescent_edges[structure_tree_edge]])
+#             cs_tail = set([ce.bipartition.leafset_as_bitstring() for ce in edge_tail_coalescent_edges[species_tree_edge]])
 #             print(cs_tail, expected_tail_coalescent_edges[ss])
 #             self.assertEqual(cs_tail, expected_tail_coalescent_edges[ss])
 
-#             coalescing_edges = edge_head_coalescent_edges[structure_tree_edge] - edge_tail_coalescent_edges[structure_tree_edge]
+#             coalescing_edges = edge_head_coalescent_edges[species_tree_edge] - edge_tail_coalescent_edges[species_tree_edge]
 #             cs = set([ce.bipartition.leafset_as_bitstring() for ce in coalescing_edges])
 #             self.assertEqual(cs, expected_coalescing_edges[ss])
 
-class StructuredCoalescentBasicTestCase(unittest.TestCase):
+class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
 
     def calc_log_likelihood(self,
             species_tree,
@@ -236,10 +236,10 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 )
         # print(species_tree.as_string("newick"))
         # print(coalescent_tree.as_string("newick"))
-        msc = structuredcoalescent.StructuredCoalescent(species_tree)
+        msc = multispeciescoalescent.MultispeciesCoalescent(species_tree)
         edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes = msc._fit_coalescent_tree(
                 coalescent_tree=coalescent_tree,
-                coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x])
+                coalescent_species_lineage_map_fn=lambda x: coalescent_to_species_taxon_map[x])
 
         expected_head_coalescent_edges = {
             self.get_edge(species_tree, "H"): set([
@@ -319,31 +319,31 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                                                ]),
         }
 
-        for structure_tree_edge in edge_head_coalescent_edges:
-            # print("-- {} --".format(structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>"))
+        for species_tree_edge in edge_head_coalescent_edges:
+            # print("-- {} --".format(species_tree_edge.head_node.label if species_tree_edge.head_node else "<root>"))
             # print("{}: {} vs. {}".format(
-            #     structure_tree_edge.head_node.label,
-            #     [ce.head_node.label for ce in edge_head_coalescent_edges[structure_tree_edge]],
-            #     [ce.head_node.label for ce in expected_head_coalescent_edges[structure_tree_edge]]))
+            #     species_tree_edge.head_node.label,
+            #     [ce.head_node.label for ce in edge_head_coalescent_edges[species_tree_edge]],
+            #     [ce.head_node.label for ce in expected_head_coalescent_edges[species_tree_edge]]))
             self.assertEqual(
-                    set(edge_head_coalescent_edges[structure_tree_edge]),
-                    expected_head_coalescent_edges[structure_tree_edge]
+                    set(edge_head_coalescent_edges[species_tree_edge]),
+                    expected_head_coalescent_edges[species_tree_edge]
                     )
             print("{}: {} vs. {}".format(
-                structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
-                [ce.head_node.label for ce in edge_tail_coalescent_edges[structure_tree_edge]],
-                [ce.head_node.label for ce in expected_tail_coalescent_edges[structure_tree_edge]]))
+                species_tree_edge.head_node.label if species_tree_edge.head_node else "<root>",
+                [ce.head_node.label for ce in edge_tail_coalescent_edges[species_tree_edge]],
+                [ce.head_node.label for ce in expected_tail_coalescent_edges[species_tree_edge]]))
             self.assertEqual(
-                    set(edge_tail_coalescent_edges[structure_tree_edge]),
-                    expected_tail_coalescent_edges[structure_tree_edge]
+                    set(edge_tail_coalescent_edges[species_tree_edge]),
+                    expected_tail_coalescent_edges[species_tree_edge]
                     )
             # print("{}: {} vs. {}".format(
-            #     structure_tree_edge.head_node.label if structure_tree_edge.head_node else "<root>",
-            #     [nd.label for nd in edge_coalescent_nodes[structure_tree_edge]],
-            #     [nd.label for nd in expected_coalescing_nodes[structure_tree_edge]]))
+            #     species_tree_edge.head_node.label if species_tree_edge.head_node else "<root>",
+            #     [nd.label for nd in edge_coalescent_nodes[species_tree_edge]],
+            #     [nd.label for nd in expected_coalescing_nodes[species_tree_edge]]))
             self.assertEqual(
-                    set(edge_coalescent_nodes[structure_tree_edge]),
-                    expected_coalescing_nodes[structure_tree_edge]
+                    set(edge_coalescent_nodes[species_tree_edge]),
+                    expected_coalescing_nodes[species_tree_edge]
                     )
 
         expected_lnL = self.calc_log_likelihood(
@@ -351,7 +351,7 @@ class StructuredCoalescentBasicTestCase(unittest.TestCase):
                 coalescent_tree=coalescent_tree,)
         s = msc.score_coalescent_tree(
                 coalescent_tree=coalescent_tree,
-                coalescent_to_structure_map_fn=lambda x: coalescent_to_species_taxon_map[x],
+                coalescent_species_lineage_map_fn=lambda x: coalescent_to_species_taxon_map[x],
                 )
         print("{}, {}".format(s, expected_lnL))
 
