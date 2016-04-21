@@ -87,94 +87,6 @@ def generate_structured_coalescent_system(
 
     return species_tree, coalescent_tree, coalescent_to_species_taxon_map
 
-
-# class SimpleMultispeciesCoalescentTestCase(unittest.TestCase):
-
-#     def test_simple1(self):
-        # sp_tree = dendropy.Tree.get(
-        #         data="((a:2.0000,b:2.0000):3.0000,c:5.0000);",
-        #         schema="newick",)
-        # gene_tree = dendropy.Tree.get(
-        #         data="((a:3.0000,b:3.0000):3.0000,c:6.0000);",
-        #         schema="newick",)
-        # msc = multispeciescoalescent.MultispeciesCoalescent(sp_tree)
-
-        # gs_map = {}
-        # for nd in gene_tree.leaf_node_iter():
-        #     gs_map[nd.taxon] = sp_tree.taxon_namespace.get_taxon(label=nd.taxon.label)
-        #     assert gs_map[nd.taxon] is not None
-        # gfn = lambda x: gs_map[x]
-
-        # print(msc.score_coalescent_tree(
-        #     coalescent_tree=gene_tree,
-        #     coalescent_species_lineage_map_fn=gfn))
-
-# class SimpleStructuredTreeFittingTestCase(unittest.TestCase):
-
-#     def test_simple1(self):
-#         sp_taxa = dendropy.TaxonNamespace(["a","b","c"])
-#         sp_tree = dendropy.Tree.get(
-#                 data="((a:2.0000,b:2.0000):3.0000,c:5.0000);",
-#                 schema="newick",
-#                 rooting="force-rooted",
-#                 taxon_namespace=sp_taxa)
-#         sp_tree.encode_bipartitions()
-#         gene_taxa = dendropy.TaxonNamespace(["a","b","c"])
-#         gene_tree = dendropy.Tree.get(
-#                 data="((a:3.0000,b:3.0000):3.0000,c:6.0000);",
-#                 schema="newick",
-#                 rooting="force-rooted",
-#                 taxon_namespace=gene_taxa)
-#         gene_tree.encode_bipartitions()
-#         msc = multispeciescoalescent.MultispeciesCoalescent(sp_tree)
-
-#         gs_map = {}
-#         for nd in gene_tree.leaf_node_iter():
-#             gs_map[nd.taxon] = sp_tree.taxon_namespace.get_taxon(label=nd.taxon.label)
-#             assert gs_map[nd.taxon] is not None
-#         gfn = lambda x: gs_map[x]
-
-#         edge_head_coalescent_edges, edge_tail_coalescent_edges = msc._fit_coalescent_tree(
-#                 coalescent_tree=gene_tree,
-#                 coalescent_species_lineage_map_fn=gfn)
-
-#         expected_head_coalescent_edges = {
-#             "001": set(["001"]),
-#             "010": set(["010"]),
-#             "100": set(["100"]),
-#             "011": set(["001", "010"]),
-#             "111": set(["011", "100"]),
-#         }
-#         expected_tail_coalescent_edges = {
-#             "001": set(["001"]),
-#             "010": set(["010"]),
-#             "100": set(["100"]),
-#             "011": set(["010"]),
-#             "111": set(["011", ]),
-#         }
-#         expected_coalescing_edges = {
-#             "001": set([]),
-#             "010": set([]),
-#             "100": set([]),
-#             "011": set(["010", "001"]),
-#             "111": set(["100", "011"]),
-#         }
-#         for species_tree_edge in edge_head_coalescent_edges:
-#             ss = species_tree_edge.bipartition.leafset_as_bitstring()
-#             # print("-- {}".format(ss))
-
-#             cs_head = set([ce.bipartition.leafset_as_bitstring() for ce in edge_head_coalescent_edges[species_tree_edge]])
-#             # print(cs_head, expected_head_coalescent_edges[ss])
-#             self.assertEqual(cs_head, expected_head_coalescent_edges[ss])
-
-#             cs_tail = set([ce.bipartition.leafset_as_bitstring() for ce in edge_tail_coalescent_edges[species_tree_edge]])
-#             print(cs_tail, expected_tail_coalescent_edges[ss])
-#             self.assertEqual(cs_tail, expected_tail_coalescent_edges[ss])
-
-#             coalescing_edges = edge_head_coalescent_edges[species_tree_edge] - edge_tail_coalescent_edges[species_tree_edge]
-#             cs = set([ce.bipartition.leafset_as_bitstring() for ce in coalescing_edges])
-#             self.assertEqual(cs, expected_coalescing_edges[ss])
-
 class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
 
     def calc_log_likelihood(self,
@@ -202,21 +114,25 @@ class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
         p1 = 2.0/theta_H * math.exp(-6 * t3_H/theta_H) * math.exp(-2 * (tau_HC-t3_H)/theta_H)
         p2 = 2.0/theta_C * math.exp(-2 * t2_C/theta_C)
         p3 = 2.0/theta_HC * math.exp(-6 * t3_HC/theta_HC) * 2.0/theta_HC * math.exp(-2 * t2_HC/theta_HC)
-        p4 = math.exp(-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+
+        # below is as originally given in the Rannala and Yang paper,
+        # but is incorrect
+        # p4 = math.exp(-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+        p4 = math.exp(-2 * (tau_HCGO - tau_HCG) / theta_HCG)
+
         p5 = 2.0/theta_HCGO * math.exp(-6 * t3_HCGO/theta_HCGO)
         p6 = 2.0/theta_HCGO * math.exp(-2 * t2_HCGO/theta_HCGO)
         p = p1 * p2 * p3 * p4 * p5 * p6
 
         q1 = math.log(2.0/theta_H) + (-6 * t3_H/theta_H) + (-2 * (tau_HC-t3_H)/theta_H)
-        print([math.log(2.0/theta_H) + (-6 * t3_H/theta_H) , (-2 * (tau_HC-t3_H)/theta_H)])
         q2 = math.log(2.0/theta_C) + (-2 * t2_C/theta_C)
         q3 = math.log(2.0/theta_HC) + (-6 * t3_HC/theta_HC) + math.log(2.0/theta_HC) + (-2 * t2_HC/theta_HC)
-        q4 = (-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
-        print((tau_HCG - tau_HC - (t3_HC + t2_HC)))
+        # below is as originally given in the Rannala and Yang paper,
+        # but is incorrect
+        # q4 = (-2 * (tau_HCG - tau_HC - (t3_HC + t2_HC)) / theta_HCG)
+        q4 = (-2 * (tau_HCGO - tau_HCG) / theta_HCG)
         q5 = math.log(2.0/theta_HCGO) + (-6 * t3_HCGO/theta_HCGO)
         q6 = math.log(2.0/theta_HCGO) + (-2 * t2_HCGO/theta_HCGO)
-        for ix, x in enumerate([q1, q2, q3, q4, q5, q6]):
-            print("({})::: {}".format(ix+1, x))
         q = q1 + q2 + q3 + q4 + q5 + q6
 
         self.assertAlmostEqual(math.log(p), q, 7)
@@ -234,8 +150,6 @@ class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
                 speciation_ages=[10, 20, 30],
                 coalescent_ages=[5, 6, 15, 16, 35, 36]
                 )
-        # print(species_tree.as_string("newick"))
-        # print(coalescent_tree.as_string("newick"))
         msc = multispeciescoalescent.MultispeciesCoalescent(species_tree)
         edge_head_coalescent_edges, edge_tail_coalescent_edges, edge_coalescent_nodes = msc._fit_coalescent_tree(
                 coalescent_tree=coalescent_tree,
@@ -329,10 +243,10 @@ class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
                     set(edge_head_coalescent_edges[species_tree_edge]),
                     expected_head_coalescent_edges[species_tree_edge]
                     )
-            print("{}: {} vs. {}".format(
-                species_tree_edge.head_node.label if species_tree_edge.head_node else "<root>",
-                [ce.head_node.label for ce in edge_tail_coalescent_edges[species_tree_edge]],
-                [ce.head_node.label for ce in expected_tail_coalescent_edges[species_tree_edge]]))
+            # print("{}: {} vs. {}".format(
+            #     species_tree_edge.head_node.label if species_tree_edge.head_node else "<root>",
+            #     [ce.head_node.label for ce in edge_tail_coalescent_edges[species_tree_edge]],
+            #     [ce.head_node.label for ce in expected_tail_coalescent_edges[species_tree_edge]]))
             self.assertEqual(
                     set(edge_tail_coalescent_edges[species_tree_edge]),
                     expected_tail_coalescent_edges[species_tree_edge]
@@ -353,7 +267,7 @@ class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
                 coalescent_tree=coalescent_tree,
                 coalescent_species_lineage_map_fn=lambda x: coalescent_to_species_taxon_map[x],
                 )
-        print("{}, {}".format(s, expected_lnL))
+        self.assertAlmostEqual(s, expected_lnL)
 
 if __name__ == "__main__":
     unittest.main()
