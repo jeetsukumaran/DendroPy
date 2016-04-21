@@ -18,8 +18,10 @@
 
 import math
 import unittest
+import json
 import dendropy
 from dendropy.model import multispeciescoalescent
+from dendropy.test.support import pathmap
 
 def generate_multispecies_coalescent_system(
         speciation_ages,
@@ -86,6 +88,37 @@ def generate_multispecies_coalescent_system(
     }
 
     return species_tree, coalescent_tree, coalescent_to_species_taxon_map
+
+class MultispeciesCoalescentFixedSingleTreesCalculationTestCase(unittest.TestCase):
+
+    def test1(self):
+        with open(pathmap.other_source_path("multispecies_coalescent_test_data.json")) as src:
+            test_regimes = json.load(src)
+        for test_regime in test_regimes:
+            species_tree = dendropy.Tree.get(
+                    data=test_regime["species_tree"],
+                    schema="newick",
+                    rooting="force-rooted",
+                    )
+            species_tree.taxon_namespace.is_mutable = False
+            msc = multispeciescoalescent.MultispeciesCoalescent(species_tree=species_tree)
+            coalescent_species_lineage_label_map = test_regime["coalescent_species_lineage_label_map"]
+            coalescent_species_lineage_map_fn = lambda x: species_tree.taxon_namespace.require_taxon(coalescent_species_lineage_label_map[x.label])
+            coalescent_taxa = dendropy.TaxonNamespace(sorted(coalescent_species_lineage_label_map.keys()))
+            coalescent_taxa.is_mutable = False
+            for sub_regime in test_regime["coalescent_trees"]:
+                coalescent_tree = dendropy.Tree.get(
+                        data=sub_regime["coalescent_tree"],
+                        schema="newick",
+                        rooting="force-rooted",
+                        taxon_namespace=coalescent_taxa,
+                        )
+                obs_ln_likelihood = msc.score_coalescent_tree(
+                        coalescent_tree=coalescent_tree,
+                        coalescent_species_lineage_map_fn=coalescent_species_lineage_map_fn,
+                        )
+                exp_ln_likelihood = sub_regime["log_likelihood"]
+                self.assertAlmostEqual(obs_ln_likelihood, exp_ln_likelihood, 2)
 
 class MultispeciesCoalescentBasicTestCase(unittest.TestCase):
 
