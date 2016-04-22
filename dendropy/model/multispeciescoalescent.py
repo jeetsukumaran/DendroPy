@@ -49,8 +49,7 @@ class MultispeciesCoalescent(object):
         return self._species_tree
     def _set_species_tree(self, species_tree):
         self._species_tree = species_tree
-        if self._species_tree.seed_node.age is None:
-            self._species_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
+        self._species_tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
     species_tree = property(_get_species_tree, _set_species_tree)
 
     def score_coalescent_tree(self,
