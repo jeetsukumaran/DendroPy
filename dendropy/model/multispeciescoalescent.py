@@ -12,7 +12,7 @@
 ##  please cite it as:
 ##
 ##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
-##     for phylocoalescenttic computing. Bioinformatics 26: 1569-1571.
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
 ##
 ##############################################################################
 
