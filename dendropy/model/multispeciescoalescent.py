@@ -82,7 +82,7 @@ class MultispeciesCoalescent(object):
             and returns the population parameter (theta) for that population or
             species. If not specified, all edges are assumed to have a theta
             value of 1.0.
-        is_coalescent_species_lineage_map_by_node : str
+        is_coalescent_species_lineage_map_by_node : bool
             Specifies the expected type of argument and return value of the
             mapping function, ``coalescent_species_lineage_map_fn``. By default
             this is |False|, and the mapping function is thus expected to take
