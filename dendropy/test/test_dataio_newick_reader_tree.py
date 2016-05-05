@@ -930,5 +930,42 @@ class NewickTreeReaderOffsetTreeTest(
     #             with self.assertRaises(IndexError):
     #                 f(src, "newick", collection_offset=1, tree_offset=0)
 
+class JplaceParsingTest(dendropytest.ExtendedTestCase):
+
+    def test_basic(self):
+        s = "((A:.01[e]{0}, B:.02{1})D:.3{3}[g], C:.04{4}[h]) {5};"
+        tree = dendropy.Tree.get_from_string(s,
+                                             "newick",
+                                             is_parse_jplace_tokens=True)
+        self.assertEqual([0.01, 0.02, 0.3, 0.04, None],
+                         [e.length for e in tree.edge_index])
+        self.assertEqual('((A:0.01,B:0.02)D:0.3,C:0.04)',
+                         str(tree))
+        self.assertEqual([0,1,3,4,5],
+                         [e.edge_number for e in tree.edge_index])
+
+    def test_do_not_parse_by_default(self):
+        s = "((A:.01[e]{0}, B:.02{1})D:.3{3}[g], C:.04{4}[h]) {5};"
+        with self.assertRaises(newickreader.NewickReader.NewickReaderMalformedStatementError):
+            try:
+                tree = dendropy.Tree.get_from_string(s, "newick")
+            except newickreader.NewickReader.NewickReaderMalformedStatementError as e:
+                self.assertEqual(
+                    "Expecting ':', ')', ',' or ';' after reading label but found '{'",
+                    e.message)
+                raise e
+
+    def test_malformed_error_message_parsing_jplace(self):
+        s = "((A}:.01[e]{0}, B:.02{1})D:.3{3}[g], C:.04{4}[h]) {5};"
+        with self.assertRaises(newickreader.NewickReader.NewickReaderMalformedStatementError):
+            try:
+                tree = dendropy.Tree.get_from_string(s, "newick", is_parse_jplace_tokens=True)
+            except newickreader.NewickReader.NewickReaderMalformedStatementError as e:
+                self.assertEqual(
+                    # extra 2nd element of list
+                    "Expecting ':', '{', ')', ',' or ';' after reading label but found '}'",
+                    e.message)
+                raise e
+
 if __name__ == "__main__":
     unittest.main()
