@@ -13,7 +13,7 @@
 ##
 ##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
 ##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
-##
+#
 ##############################################################################
 
 """
@@ -118,8 +118,7 @@ class NewickReader(ioservice.DataReader):
                     stream=stream)
 
     def __init__(self, **kwargs):
-        """
-        Keyword Arguments
+        """Keyword Arguments
         -----------------
         rooting : string, {['default-unrooted'], 'default-rooted', 'force-unrooted', 'force-rooted'}
             Specifies how trees in the data source should be intepreted with
@@ -178,10 +177,18 @@ class NewickReader(ioservice.DataReader):
         terminating_semicolon_required : boolean, default: |True|
             If |True| [default], then a tree statement that does not end in a
             semi-colon is an error. If |False|, then no error will be raised.
+        is_parse_jplace_tokens : boolean: |False|
+            If |True|, then accept edge numbering according to the jplace
+            format, as described in Matsen et. al. PLoS One, 2012
+            http://dx.doi.org/10.1371/journal.pone.0031009. An instance variable
+            edge_index is added to the returned tree, and an edge_number is
+            added to each edge. If False [default], encountering edge labels
+            raises a NewickReaderMalformedStatementError.
         ignore_unrecognized_keyword_arguments : boolean, default: |False|
             If |True|, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
+
         """
 
         # base
@@ -251,6 +258,7 @@ class NewickReader(ioservice.DataReader):
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", self.suppress_leaf_node_taxa)
         self.terminating_semicolon_required = kwargs.pop("terminating_semicolon_required", True)
+        self.is_parse_jplace_tokens = kwargs.pop("is_parse_jplace_tokens", False)
         self.check_for_unused_keyword_arguments(kwargs)
 
         # per-tree book-keeping
@@ -619,11 +627,28 @@ class NewickReader(ioservice.DataReader):
                         line_num=nexus_tokenizer.token_line_num,
                         col_num=nexus_tokenizer.token_column_num,
                         stream=nexus_tokenizer.src)
+            elif self.is_parse_jplace_tokens and nexus_tokenizer.current_token == '{':
+                # Edge number from .jplace format
+                nexus_tokenizer.require_next_token()
+                edge_number = int(nexus_tokenizer.current_token)
+                edge = current_node.edge
+                edge.edge_number = edge_number
+                try:
+                    tree.edge_index.insert(edge_number, edge)
+                except AttributeError:
+                    tree.edge_index = []
+                    tree.edge_index.insert(edge_number, edge)
+                nexus_tokenizer.require_next_token() # for closing '}'
+                nexus_tokenizer.require_next_token()
             else: #267
                 # label
                 if label_parsed: #269
+                    msg = "Expecting ':'"
+                    if self.is_parse_jplace_tokens:
+                        msg += ", '{'"
+                    msg += ", ')', ',' or ';' after reading label but found '{}'".format(nexus_tokenizer.current_token)
                     raise NewickReader.NewickReaderMalformedStatementError(
-                            message="Expecting ':', ')', ',' or ';' after reading label but found '{}'".format(nexus_tokenizer.current_token),
+                            message=msg,
                             line_num=nexus_tokenizer.token_line_num,
                             col_num=nexus_tokenizer.token_column_num,
                             stream=nexus_tokenizer.src)
