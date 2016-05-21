@@ -967,5 +967,33 @@ class JplaceParsingTest(dendropytest.ExtendedTestCase):
                     e.message)
                 raise e
 
+class NewickInternalLabelAssociationTest(unittest.TestCase):
+
+    def test_assign_to_edges(self):
+        s = "((C:1.3,D:4.0)34:0.034,(A:1.1,(B:1.2,X:1.6)26:0.026)12:0.0126,E:1.5)seed;"
+        expected_labels = {
+                0 :"seed",
+                60 :"34",
+                28 :"12",
+                24 :"26",
+                }
+        for labels_to_edges in (True, False):
+            for rooting in ("force-rooted", "force-unrooted"):
+                tree = dendropy.Tree.get(
+                        data=s,
+                        schema="newick",
+                        is_assign_internal_labels_to_edges=labels_to_edges)
+                tree.encode_bipartitions()
+                for nd in tree:
+                    if nd.is_leaf():
+                        continue
+                    expected_label = expected_labels[int(nd.bipartition)]
+                    if labels_to_edges:
+                        self.assertIs(nd.label, None)
+                        self.assertEquals(nd.edge.label, expected_label)
+                    else:
+                        self.assertEquals(nd.label, expected_label)
+                        self.assertIs(nd.edge.label, None)
+
 if __name__ == "__main__":
     unittest.main()

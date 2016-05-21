@@ -174,9 +174,6 @@ class NewickReader(ioservice.DataReader):
             If |False|, leaf (external) node labels will be instantantiated
             into |Taxon| objects. If |True|, leaff (external) node
             labels will *not* be instantantiated as strings.
-        terminating_semicolon_required : boolean, default: |True|
-            If |True| [default], then a tree statement that does not end in a
-            semi-colon is an error. If |False|, then no error will be raised.
         is_parse_jplace_tokens : boolean: |False|
             If |True|, then accept edge numbering according to the jplace
             format, as described in Matsen et. al. PLoS One, 2012
@@ -184,6 +181,11 @@ class NewickReader(ioservice.DataReader):
             edge_index is added to the returned tree, and an edge_number is
             added to each edge. If False [default], encountering edge labels
             raises a NewickReaderMalformedStatementError.
+        is_assign_internal_labels_to_edges : boolean, default: |None|
+            If |True|, internal node labels will be assigned as edge labels.
+        terminating_semicolon_required : boolean, default: |True|
+            If |True| [default], then a tree statement that does not end in a
+            semi-colon is an error. If |False|, then no error will be raised.
         ignore_unrecognized_keyword_arguments : boolean, default: |False|
             If |True|, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is |False|: unsupported keyword
@@ -257,8 +259,11 @@ class NewickReader(ioservice.DataReader):
         self.suppress_internal_node_taxa = kwargs.pop("suppress_internal_node_taxa", True)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_external_node_taxa", False) # legacy (will be deprecated)
         self.suppress_leaf_node_taxa = kwargs.pop("suppress_leaf_node_taxa", self.suppress_leaf_node_taxa)
-        self.terminating_semicolon_required = kwargs.pop("terminating_semicolon_required", True)
         self.is_parse_jplace_tokens = kwargs.pop("is_parse_jplace_tokens", False)
+        self.is_assign_internal_labels_to_edges = kwargs.pop("is_assign_internal_labels_to_edges", None)
+        if self.is_assign_internal_labels_to_edges and not self.suppress_internal_node_taxa:
+            raise ValueError("Conflicting options: cannot simultaneously assign internal labels to edges and to internal taxa")
+        self.terminating_semicolon_required = kwargs.pop("terminating_semicolon_required", True)
         self.check_for_unused_keyword_arguments(kwargs)
 
         # per-tree book-keeping
@@ -657,7 +662,10 @@ class NewickReader(ioservice.DataReader):
                     label = nexus_tokenizer.current_token
                     if ( (is_internal_node and self.suppress_internal_node_taxa)
                             or ((not is_internal_node) and self.suppress_leaf_node_taxa) ):
-                        current_node.label = label
+                        if self.is_assign_internal_labels_to_edges:
+                            current_node.edge.label = label
+                        else:
+                            current_node.label = label
                     else:
                         node_taxon = taxon_symbol_map_fn(label)
                         if node_taxon in self._seen_taxa:
