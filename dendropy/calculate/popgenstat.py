@@ -51,7 +51,7 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
         states_to_ignore = set()
 
     reduced_char_sequences = []
-    for i, sequence in enumerate(char_sequences):
+    for sequence in char_sequences:
         seq = [getattr(char, attr) for char in sequence]
         reduced_char_sequences.append(seq)
 
