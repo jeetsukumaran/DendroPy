@@ -45,7 +45,8 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
 
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        _states_to_ignore = [state_alphabet.gap_state, state_alphabet.no_data_state]
+        states_to_ignore = set([getattr(char, attr) for char in _states_to_ignore])
     else:
         attr = "fundamental_indexes"
         states_to_ignore = set()
