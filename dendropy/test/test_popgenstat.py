@@ -55,8 +55,33 @@ class TajimasDTests(dendropytest.ExtendedTestCase):
             AAAAAAAAAA AAAAATAAAA AAATAATAAA AAAAAAAAAA A"""
         self.matrix = dendropy.DnaCharacterMatrix.get_from_string(s, 'fasta')
 
+        s_with_missing = """\
+            >s1
+            ATAATAAAAA AATAATAAAA AAATAAAAAA AATAAAAAAA A
+            >s2
+            AAAAAAAATA AATAATAAAA AAATAAAAAA AAAAAAAAAA A
+            >s3
+            AAAATAAAAA TATAATAAAA AAATATAAAA ?AAAAAAAAA ?
+            >s4
+            AAAAAAAAAA AATAATAAAA AAATAAATAA ATAAAAAAAA A
+            >s5
+            AAAATAAAAA AAATATAAAA AAATAAAAAA AAAAAAAAAA A
+            >s6
+            ?AAATAAAAA AAAAATAAAA AAAAAAAAAA AAAAATAAAA A
+            >s7
+            AAAAAATAAA AATAATAAAA AAATAAAAAA AAAAAAAAAA A
+            >s8
+            AAAAAAAAAA AAAAATAAAA AAATAAAAAA AAAAAAAAAT A
+            >s9
+            AAAAAAAAAA AAAAAAAAAA AAATAAAAAA ?AAAAAAAAA A
+            >s10
+            AAAAAAAAAA AAAAATAAAA AAATAATAAA AAAAAAAAAA A"""
+        self.matrix_with_missing = dendropy.DnaCharacterMatrix.get_from_string(s_with_missing, 'fasta')
+
     def testTajimasD(self):
         self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix), -1.44617198561, 4)
+    def testTajimasD_with_missing(self):
+        self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix_with_missing), -1.44617198561, 4)
 
 class SinglePopTest(dendropytest.ExtendedTestCase):
 
@@ -100,4 +125,3 @@ class PopulationPairSummaryStatisticsTests(dendropytest.ExtendedTestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

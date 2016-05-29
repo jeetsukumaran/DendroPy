@@ -108,14 +108,16 @@ def _num_segregating_sites(char_sequences, state_alphabet, ignore_uncertain=True
     s = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        #states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        _states_to_ignore = [state_alphabet.gap_state, state_alphabet.no_data_state]
+        states_to_ignore= set([getattr(char, attr) for char in _states_to_ignore])
     else:
         attr = "fundamental_indexes"
         states_to_ignore = set()
     for i, c1 in enumerate(char_sequences[0]):
         for v in char_sequences[1:]:
             c2 = v[i]
-            if c1 in states_to_ignore or c2 in states_to_ignore:
+            if getattr(c1, attr) in states_to_ignore or getattr(c2, attr) in states_to_ignore:
                 continue
             f1 = getattr(c1, attr)
             f2 = getattr(c2, attr)
