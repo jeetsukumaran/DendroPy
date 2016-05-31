@@ -37,18 +37,27 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
     sum_diff = 0.0
     mean_diff = 0.0
     sq_diff = 0.0
-    total_counted = 0
     comps = 0
+
+    #Check that all sequences are the same length
+    if len(set([len(seq) for seq in char_sequences])) != 1:
+        raise Exception("sequences of unequal length")
+
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        _states_to_ignore = [state_alphabet.gap_state, state_alphabet.no_data_state]
+        states_to_ignore = set([getattr(char, attr) for char in _states_to_ignore])
     else:
         attr = "fundamental_indexes"
         states_to_ignore = set()
-    for vidx, i in enumerate(char_sequences[:-1]):
-        for j in char_sequences[vidx+1:]:
-            if len(i) != len(j):
-                raise Exception("sequences of unequal length")
+
+    reduced_char_sequences = []
+    for sequence in char_sequences:
+        seq = [getattr(char, attr) for char in sequence]
+        reduced_char_sequences.append(seq)
+
+    for vidx, i in enumerate(reduced_char_sequences[:-1]):
+        for j in reduced_char_sequences[vidx+1:]:
             diff = 0
             counted = 0
             comps += 1
@@ -58,10 +67,7 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
                 if c1 in states_to_ignore or c2 in states_to_ignore:
                     continue
                 counted += 1
-                total_counted += 1
-                f1 = getattr(c1, attr)
-                f2 = getattr(c2, attr)
-                if f1 != f2:
+                if c1 is not c2:
                     diff += 1
             sum_diff += float(diff)
             # If counted < 0, this means that there is sites between these sequences
@@ -102,18 +108,19 @@ def _num_segregating_sites(char_sequences, state_alphabet, ignore_uncertain=True
     s = 0
     if ignore_uncertain:
         attr = "fundamental_indexes_with_gaps_as_missing"
-        states_to_ignore = set([state_alphabet.gap_state, state_alphabet.no_data_state])
+        _states_to_ignore = [state_alphabet.gap_state, state_alphabet.no_data_state]
+        states_to_ignore= set([getattr(char, attr) for char in _states_to_ignore])
     else:
         attr = "fundamental_indexes"
         states_to_ignore = set()
     for i, c1 in enumerate(char_sequences[0]):
         for v in char_sequences[1:]:
             c2 = v[i]
-            if c1 in states_to_ignore or c2 in states_to_ignore:
-                continue
             f1 = getattr(c1, attr)
             f2 = getattr(c2, attr)
-            if f1 != f2:
+            if f1 in states_to_ignore or f2 in states_to_ignore:
+                continue
+            if f1 is not f2:
                 s += 1
                 break
     return s
@@ -418,5 +425,3 @@ def unfolded_site_frequency_spectrum(
         else:
             freqs[p] += 1
     return freqs
-
-
