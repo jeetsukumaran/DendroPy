@@ -80,7 +80,7 @@ class TajimasDTests(dendropytest.ExtendedTestCase):
 
     def testTajimasD(self):
         self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix), -1.44617198561, 4)
-        
+
     def testTajimasD_with_missing(self):
         self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix_with_missing), -1.44617198561, 4)
 
