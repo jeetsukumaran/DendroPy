@@ -5084,9 +5084,11 @@ class Tree(
             bipartitions_to_delete = set()
         else:
             bipartitions_to_delete = None
+        remapped_nodes = []
         for nd in self.postorder_node_iter():
             children = nd._child_nodes
             if len(children) == 1:
+                remapped_nodes.append((nd, children[0]))
                 if nd.edge.length is not None:
                     if children[0].edge.length is None:
                         children[0].edge.length = nd.edge.length
@@ -5111,6 +5113,7 @@ class Tree(
         if bipartitions_to_delete:
             old_encoding = self.bipartition_encoding
             self.bipartition_encoding = [b for b in old_encoding if id(b) not in bipartitions_to_delete]
+        return remapped_nodes
 
     def delete_outdegree_one_nodes(self):
         deprecate.dendropy_deprecation_warning(
