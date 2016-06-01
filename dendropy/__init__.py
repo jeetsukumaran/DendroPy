@@ -22,6 +22,8 @@ import sys
 ## Populate the 'dendropy' namespace
 
 from dendropy.dataio.nexusprocessing import get_rooting_argument
+from dendropy.datamodel.basemodel import Annotation
+from dendropy.datamodel.basemodel import AnnotationSet
 from dendropy.datamodel.taxonmodel import Taxon
 from dendropy.datamodel.taxonmodel import TaxonNamespace
 from dendropy.datamodel.taxonmodel import TaxonNamespacePartition
