@@ -22,6 +22,7 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 
 import math
 import collections
+import itertools
 from dendropy.utility import error
 
 ###############################################################################
@@ -398,6 +399,9 @@ class TreeShapeKernel(object):
         # cache management
         self._tree_cache = {}
 
+    def remove_from_cache(self, tree):
+        del self._tree_cache[tree]
+
     def update_cache(self, tree):
         """
         Pre-computes values needed for the kernel trick with this tree and
@@ -540,6 +544,9 @@ class AssemblageInducedTreeManager(object):
         self._num_assemblage_classifications = kwargs.pop("num_assemblages", None)
         self._tree_assemblage_induced_trees_map = {}
 
+    def remove_from_cache(self, tree):
+        del self._tree_assemblage_induced_trees_map[tree]
+
     def generate_induced_trees(self, tree, assemblage_leaf_sets):
         if assemblage_leaf_sets is None:
             if self._num_assemblage_classifications is not None:
@@ -571,6 +578,10 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
         TreeShapeKernel.__init__(self, *args, **kwargs)
         AssemblageInducedTreeManager.__init__(self, *args, **kwargs)
         self._cache_induced_tree_scores = {}
+
+    def remove_from_cache(self, tree):
+        TreeShapeKernel.remove_from_cache(self, tree)
+        AssemblageInducedTreeManager.remove_from_cache(self, tree)
 
     def update_assemblage_induced_tree_cache(self,
             tree,
