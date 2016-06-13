@@ -624,6 +624,8 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
         self.update_cache(tree=tree)
         induced_trees = self.generate_induced_trees(tree=tree,
                 assemblage_leaf_sets=assemblage_leaf_sets)
+        for induced_tree in induced_trees:
+            self.update_cache(tree=induced_tree)
 
     def __call__(self,
             tree1,
@@ -655,7 +657,7 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
         score_table = collections.OrderedDict()
         score_table["primary.tree.kernal.trick.distance"] = main_trees_score
         induced_trees1 = self._tree_assemblage_induced_trees_map[tree1]
-        induced_trees2 = self._tree_assemblage_induced_trees_map[tree1]
+        induced_trees2 = self._tree_assemblage_induced_trees_map[tree2]
         # assert len(induced_trees1) == len(induced_trees2) == self._num_assemblage_classifications
         if not self.is_exchangeable_assemblage_classifications:
             if len(induced_trees1) != len(induced_trees2):
