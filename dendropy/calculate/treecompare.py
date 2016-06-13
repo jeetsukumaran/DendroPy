@@ -23,6 +23,7 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 import math
 import collections
 import itertools
+import dendropy
 from dendropy.utility import error
 
 ###############################################################################
@@ -362,10 +363,7 @@ class TreeShapeKernel(object):
     _TreeShapeKernelNodeCache = collections.namedtuple("_TreeShapeKernelNodeCache",
             ["production", "index", "edge_lengths", "sum_of_square_edge_lengths"])
 
-    def __init__(self,
-                sigma=1,
-                gauss_factor=1,
-                decay_factor=0.1):
+    def __init__(self, **kwargs):
         """
         Calculator for tree shape kernel tricking.
 
@@ -392,9 +390,12 @@ class TreeShapeKernel(object):
         """
 
         # kernel function
-        self.sigma = sigma
-        self.gauss_factor = gauss_factor
-        self.decay_factor = decay_factor
+        # sigma=1,
+        # gauss_factor=1,
+        # decay_factor=0.1,
+        self.sigma = kwargs.pop("sigma", 1)
+        self.gauss_factor = kwargs.pop("gauss_factor", 1)
+        self.decay_factor = kwargs.pop("decay_factor", 0.1)
 
         # cache management
         self._tree_cache = {}
@@ -542,6 +543,9 @@ class AssemblageInducedTreeManager(object):
     def __init__(self, *args, **kwargs):
         self.is_exchangeable_assemblage_classifications = kwargs.pop("is_exchangeable_assemblage_classifications", True)
         self._num_assemblage_classifications = kwargs.pop("num_assemblages", None)
+        self.induced_tree_factory = kwargs.pop("induced_tree_factory", None)
+        self.induced_tree_node_factory = kwargs.pop("induced_tree_node_factory", None)
+        self.skip_null_assemblages = kwargs.pop("skip_null_assemblages", False)
         self._tree_assemblage_induced_trees_map = {}
 
     def remove_from_cache(self, tree):
@@ -559,12 +563,18 @@ class AssemblageInducedTreeManager(object):
                         self._num_assemblage_classifications,
                         len(assemblage_leaf_sets)))
         induced_trees = []
-        for assemblage_leaf_set in assemblage_leaf_sets:
+        for idx, assemblage_leaf_set in enumerate(assemblage_leaf_sets):
+            if len(assemblage_leaf_set) == 0:
+                if self.skip_null_assemblages:
+                    continue
+                raise error.NullLeafSetException()
             node_filter_fn = lambda nd: nd in assemblage_leaf_set
             induced_tree = tree.extract_tree(
                                node_filter_fn=node_filter_fn,
                                is_apply_filter_to_leaf_nodes=True,
-                               is_apply_filter_to_internal_nodes=False)
+                               is_apply_filter_to_internal_nodes=False,
+                               tree_factory=self.induced_tree_factory,
+                               node_factory=self.induced_tree_node_factory)
             induced_trees.append(induced_tree)
         self._tree_assemblage_induced_trees_map[tree] = induced_trees
         return induced_trees
@@ -574,12 +584,37 @@ class AssemblageInducedTreeManager(object):
 
 class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeManager):
 
+    @staticmethod
+    def _euclidean_distance(v1, v2, is_weight_values_by_comparison_size=True):
+        v1_size = len(v1)
+        v2_size = len(v2)
+        v1_idx = 0
+        v2_idx = 0
+        if v1_size > v2_size:
+            v1_idx = v1_size - v2_size
+            weight = float(v2_size)
+        elif v2_size > v1_size:
+            v2_idx = v2_size - v1_size
+            weight = float(v1_size)
+        else:
+            weight = float(v1_size)
+        if not is_weight_values_by_comparison_size:
+            weight = 1.0
+        ss = 0.0
+        while v1_idx < v1_size and v2_idx < v2_size:
+            ss += pow(v1[v1_idx]/weight - v2[v2_idx]/weight, 2)
+            v1_idx += 1
+            v2_idx += 1
+        return math.sqrt(ss)
+
     def __init__(self, *args, **kwargs):
+        self.exchangeable_assemblage_comparison_strategy = kwargs.pop("exchangeable_assemblage_comparison_strategy", "joint minimum")
         TreeShapeKernel.__init__(self, *args, **kwargs)
         AssemblageInducedTreeManager.__init__(self, *args, **kwargs)
-        self._cache_induced_tree_scores = {}
 
     def remove_from_cache(self, tree):
+        for induced_tree in self._tree_assemblage_induced_trees_map[tree]:
+            TreeShapeKernel.remove_from_cache(self, induced_tree)
         TreeShapeKernel.remove_from_cache(self, tree)
         AssemblageInducedTreeManager.remove_from_cache(self, tree)
 
@@ -589,23 +624,6 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
         self.update_cache(tree=tree)
         induced_trees = self.generate_induced_trees(tree=tree,
                 assemblage_leaf_sets=assemblage_leaf_sets)
-        # self._cache_induced_tree_scores[tree] = []
-        # for induced_tree1 in induced_trees:
-        #     self.update_cache(tree=induced_tree1)
-        #     s0 = TreeShapeKernel.__call__(self,
-        #             tree1=induced_tree1,
-        #             tree2=tree,
-        #             is_tree1_cache_updated=True,
-        #             is_tree2_cache_updated=True,
-        #             )
-        #     for induced_tree2 in induced_trees:
-        #         s1 = TreeShapeKernel.__call__(self,
-        #                 tree1=induced_tree1,
-        #                 tree2=induced_tree2,
-        #                 is_tree1_cache_updated=True,
-        #                 is_tree2_cache_updated=True,
-        #                 )
-        #         self._cache_induced_tree_scores[tree].append(s1-s0)
 
     def __call__(self,
             tree1,
@@ -615,7 +633,6 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
             is_tree1_cache_updated=False,
             is_tree2_cache_updated=False,
             ):
-        score_vector = []
         main_trees_score = TreeShapeKernel.__call__(self,
                 tree1=tree1,
                 tree2=tree2,
@@ -623,20 +640,27 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
                 is_tree2_cache_updated=is_tree2_cache_updated,
                 )
         if not is_tree1_cache_updated or tree1 not in self._tree_assemblage_induced_trees_map:
+            if tree1_assemblage_leaf_sets is None:
+                raise ValueError("Uncached tree requires specification of 'tree1_assemblage_leaf_sets'")
             self.update_assemblage_induced_tree_cache(
                     tree=tree1,
                     assemblage_leaf_sets=tree1_assemblage_leaf_sets)
         if not is_tree2_cache_updated or tree2 not in self._tree_assemblage_induced_trees_map:
+            if tree2_assemblage_leaf_sets is None:
+                raise ValueError("Uncached tree requires specification of 'tree2_assemblage_leaf_sets'")
             self.update_assemblage_induced_tree_cache(
                     tree=tree2,
                     assemblage_leaf_sets=tree2_assemblage_leaf_sets)
         ## ++ main tree score
-        score_vector.append(main_trees_score)
+        score_table = collections.OrderedDict()
+        score_table["primary.tree.kernal.trick.distance"] = main_trees_score
         induced_trees1 = self._tree_assemblage_induced_trees_map[tree1]
         induced_trees2 = self._tree_assemblage_induced_trees_map[tree1]
-        assert len(induced_trees1) == len(induced_trees2) == self._num_assemblage_classifications
+        # assert len(induced_trees1) == len(induced_trees2) == self._num_assemblage_classifications
         if not self.is_exchangeable_assemblage_classifications:
-            for induced_tree1, induced_tree2 in zip(induced_trees1, induced_trees2):
+            if len(induced_trees1) != len(induced_trees2):
+                raise TypeError("Different numbers of induced trees not supported for non-exchangeable classifications: {} vs. {}".format(len(induced_trees1), len(induced_trees2)))
+            for idx, (induced_tree1, induced_tree2) in enumerate(zip(induced_trees1, induced_trees2)):
                 s = TreeShapeKernel.__call__(self,
                                 tree1=induced_tree1,
                                 tree2=induced_tree2,
@@ -644,8 +668,34 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
                                 is_tree2_cache_updated=True,
                                 )
                 ## ++ raw scores direct comparisons of each of the induced trees
-                score_vector.append(s)
-        return score_vector
+                score_table["induced.tree.{}.kernel.trick.distance".format(idx+1)] = s
+        else:
+            if self.exchangeable_assemblage_comparison_strategy == "joint minimum":
+                # if lengths are different, we want to fix the smaller set
+                if len(induced_trees1) > len(induced_trees2):
+                    induced_trees2, induced_trees1 = induced_trees1, induced_trees2
+                comparison_vector = [0.0] * len(induced_trees1)
+                current_minimum_distance = None
+                current_joint_minimum_vector = None
+                for induced_trees_permutation in itertools.permutations(induced_trees2, len(induced_trees1)):
+                    distances = []
+                    for t2, t1 in zip(induced_trees_permutation, induced_trees1):
+                        distances.append(TreeShapeKernel.__call__(self,
+                                tree1=t1,
+                                tree2=t2,
+                                is_tree1_cache_updated=True,
+                                is_tree2_cache_updated=True,))
+                    euclidean_distance = self._euclidean_distance(distances, comparison_vector)
+                    if current_minimum_distance is None or euclidean_distance < current_minimum_distance:
+                        current_minimum_distance = euclidean_distance
+                        current_joint_minimum_vector = distances
+                for didx, d in enumerate(distances):
+                    score_table["induced.tree.{}.kernel.trick.distance".format(didx+1)] = d
+                for didx in range(didx+1, self._num_assemblage_classifications):
+                    score_table["induced.tree.{}.kernel.trick.distance".format(didx+1)] = "NA"
+            else:
+                raise NotImplementedError()
+        return score_table
 
 ###############################################################################
 ## Legacy

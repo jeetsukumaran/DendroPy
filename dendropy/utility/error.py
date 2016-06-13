@@ -144,6 +144,11 @@ class TreeSimTotalExtinctionException(ProcessFailedException):
     def __init__(self, *args, **kwargs):
         ProcessFailedException.__init__(self, *args, **kwargs)
 
+class NullLeafSetException(Exception):
+
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
 class SeedNodeDeletionException(Exception):
 
     def __init__(self, *args, **kwargs):
