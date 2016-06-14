@@ -655,7 +655,7 @@ class AssemblageInducedTreeShapeKernel(TreeShapeKernel, AssemblageInducedTreeMan
                     assemblage_leaf_sets=tree2_assemblage_leaf_sets)
         ## ++ main tree score
         score_table = collections.OrderedDict()
-        score_table["primary.tree.kernal.trick.distance"] = main_trees_score
+        score_table["primary.tree.kernel.trick.distance"] = main_trees_score
         induced_trees1 = self._tree_assemblage_induced_trees_map[tree1]
         induced_trees2 = self._tree_assemblage_induced_trees_map[tree2]
         # assert len(induced_trees1) == len(induced_trees2) == self._num_assemblage_classifications
