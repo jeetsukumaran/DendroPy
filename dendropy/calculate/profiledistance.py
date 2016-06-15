@@ -284,7 +284,14 @@ class TreeProfile(object):
             waiting_times = cf.values()
             if self.is_normalize:
                 s = sum(waiting_times)
-                waiting_times = [w/s for w in waiting_times]
+                try:
+                    normalized_waiting_times = [w/s for w in waiting_times]
+                    waiting_times = normalized_waiting_times
+                except ZeroDivisionError as e:
+                    if self.is_skip_normalization_on_zero_division_error:
+                        pass
+                    else:
+                        raise
             self.measurement_profiles["Coalescence.Intervals"] = MeasurementProfile(profile_data=waiting_times,)
 
     @property
