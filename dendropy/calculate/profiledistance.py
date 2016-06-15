@@ -209,6 +209,7 @@ class TreeProfile(object):
             tree_phylogenetic_distance_matrix=None,
             tree_node_distance_matrix=None,
             tree_id=None,
+            is_skip_normalization_on_zero_division_error=False,
             ):
         self.tree_id = tree_id
         self.is_measure_edge_lengths = is_measure_edge_lengths
@@ -219,6 +220,7 @@ class TreeProfile(object):
         self.is_measure_node_ages = is_measure_node_ages
         self.is_measure_coalescence_intervals = is_measure_coalescence_intervals
         self.is_normalize = is_normalize
+        self.is_skip_normalization_on_zero_division_error = is_skip_normalization_on_zero_division_error
         self.ultrametricity_precision = ultrametricity_precision
         self.measurement_profiles = collections.OrderedDict()
         self.compile(tree)
@@ -266,7 +268,14 @@ class TreeProfile(object):
             node_ages = tree.calc_node_ages(ultrametricity_precision=self.ultrametricity_precision)
             if self.is_normalize:
                 s = sum(node_ages)
-                node_ages = [a/s for a in node_ages]
+                try:
+                    normalized_node_ages = [a/s for a in node_ages]
+                    node_ages = normalized_node_ages
+                except ZeroDivisionError as e:
+                    if self.is_skip_normalization_on_zero_division_error:
+                        pass
+                    else:
+                        raise
             self.measurement_profiles["Node.Ages"] = MeasurementProfile(profile_data=node_ages,)
         if self.is_measure_coalescence_intervals:
             cf = coalescent.extract_coalescent_frames(
