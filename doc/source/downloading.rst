@@ -17,6 +17,11 @@ Note: the "``sudo``" command should only be used if installing system-wide on a 
 
     $ pip install --user -U dendropy
 
+You can install directly from the main GitHub repository using::
+
+    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git
+    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git
+
 Source Download and Installation
 ================================
 
@@ -31,6 +36,17 @@ Once downloaded, it can be installed by running:
     $ tar -xvzf DendroPy-|version|.tar.gz
     $ cd DendroPy-|version|
     $ sudo python setup.py install
+
+Installaing the Latest Development Version
+==========================================
+
+If you want to install from a particular branch, e.g., the latest development branch, ``development-master``, you can use::
+
+    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
+
+Or::
+
+    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
 
 Cloning the Source Code Repository
 ==================================
