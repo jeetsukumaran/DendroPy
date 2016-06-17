@@ -104,7 +104,7 @@ import collections
 version_info = collections.namedtuple("dendropy_version_info",
         ["major", "minor", "micro", "releaselevel"])(
                 major=4,
-                minor=1,
+                minor=2,
                 micro=0,
                 releaselevel=""
                 )
