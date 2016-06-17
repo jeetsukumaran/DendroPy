@@ -230,8 +230,8 @@ def false_positives_and_negatives(
             comparison_tree.encode_bipartitions()
     ref_bipartitions = set(reference_tree.bipartition_encoding)
     comparison_bipartitions = set(comparison_tree.bipartition_encoding)
-    false_positives = ref_bipartitions.difference(comparison_bipartitions)
-    false_negatives = comparison_bipartitions.difference(ref_bipartitions)
+    false_positives = comparison_bipartitions.difference(ref_bipartitions)
+    false_negatives = ref_bipartitions.difference(comparison_bipartitions)
     return len(false_positives), len(false_negatives)
 
 def euclidean_distance(
