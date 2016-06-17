@@ -1,3 +1,20 @@
+Release 4.1.1
+-------------
+
+New or Updated Features
+^^^^^^^^^^^^^^^^^^^^^^^
+
+-   Calculate probability of gene tree(s) in species trees under the Multispecies Coalescent model.
+-   New approaches to calculate distances between unlabeled trees of different sizes: ``dendropy.profiledistance`` and ``dendropy.calculate.treecompare.TreeShapeKernel``.
+-   When parsing Newick/NEXUS, allow for internal node labels to be associated with either nodes or edges.
+-   Parse "jplace"-style node numbering in Newick format (thanks Ben J. Woodcroft!).
+
+Bug Fixes
+^^^^^^^^^
+
+-   Fix missing state issues with various population genetic calculations (thanks Andrew Guy!)
+
+
 Release 4.1.0
 -------------
 
