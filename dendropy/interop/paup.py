@@ -60,7 +60,8 @@ class PaupService(object):
             strip_extraneous_prompts_from_stderr=True,
             cwd=None,
             env=None,
-            paup_path=PAUP_PATH
+            paup_path=PAUP_PATH,
+            timeout=None,
             ):
         """
         Executes a sequence of commands in PAUP* and returns the results.
@@ -117,7 +118,13 @@ class PaupService(object):
                 cwd=cwd,
                 env=env,
                 )
-        raw_stdout, raw_stderr = processio.communicate(p, paup_block)
+        try:
+            raw_stdout, raw_stderr = processio.communicate(p, paup_block, timeout=timeout)
+        except TypeError as e:
+            if str(e) == "communicate() got an unexpected keyword argument 'timeout'":
+                raw_stdout, raw_stderr = processio.communicate(p, paup_block)
+            else:
+                raise
         stdout = raw_stdout
         stderr = raw_stderr
         if strip_extraneous_prompts_from_stdout:
@@ -685,6 +692,7 @@ def estimate_tree(char_matrix,
                     extra_post_est_commands=None,
                     paup_path='paup',
                     char_matrix_writing_kwargs=None,
+                    timeout=None,
                     ):
     """
     Given a dataset, ``char_matrix``, estimates a tree using the given criterion.
@@ -750,6 +758,7 @@ def estimate_tree(char_matrix,
     returncode, stdout, stderr = PaupService.call(
             paup_commands=paup_template % paup_args,
             paup_path=paup_path,
+            timeout=timeout,
             )
     t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_namespace=char_matrix.taxon_namespace)
     cf.close()
