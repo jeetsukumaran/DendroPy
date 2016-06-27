@@ -1398,7 +1398,7 @@ class NodeDistanceMatrix(object):
             children = node1.child_nodes()
             for ch_idx, ch1 in enumerate(children):
                 ch1_elen = ch1.edge.length if ch1.edge.length is not None else 0.0
-                for ch1_subtree_node in self._node_phylogenetic_distances[ch1].keys():
+                for ch1_subtree_node in list(self._node_phylogenetic_distances[ch1].keys()):
                     if ch1_subtree_node not in self._node_phylogenetic_distances[node1]:
                         d = self._node_phylogenetic_distances[ch1][ch1_subtree_node] + ch1_elen
                         d2 = self._node_phylogenetic_path_steps[ch1][ch1_subtree_node] + 1
