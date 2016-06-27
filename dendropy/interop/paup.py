@@ -683,7 +683,9 @@ def estimate_tree(char_matrix,
                     prop_invar=True,
                     extra_pre_est_commands=None,
                     extra_post_est_commands=None,
-                    paup_path='paup'):
+                    paup_path='paup',
+                    char_matrix_writing_kwargs=None,
+                    ):
     """
     Given a dataset, ``char_matrix``, estimates a tree using the given criterion.
     """
@@ -694,7 +696,9 @@ def estimate_tree(char_matrix,
         'pinvar' : prop_invar and 'estimate' or '0',
     }
     cf = tempfile.NamedTemporaryFile("w", delete=True)
-    char_matrix.write_to_stream(cf, schema='nexus')
+    if not char_matrix_writing_kwargs:
+        char_matrix_writing_kwargs = {}
+    char_matrix.write_to_stream(cf, schema='nexus', **char_matrix_writing_kwargs)
     cf.flush()
     paup_args['datafile'] = cf.name
     # output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
@@ -738,11 +742,15 @@ def estimate_tree(char_matrix,
     %(post_est_commands)s;
     savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
     """
-    paup_run = subprocess.Popen(['%s -n' % paup_path],
-                                shell=True,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
-    stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
+    # paup_run = subprocess.Popen(['%s -n' % paup_path],
+    #                             shell=True,
+    #                             stdin=subprocess.PIPE,
+    #                             stdout=subprocess.PIPE)
+    # stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
+    returncode, stdout, stderr = PaupService.call(
+            paup_commands=paup_template % paup_args,
+            paup_path=paup_path,
+            )
     t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_namespace=char_matrix.taxon_namespace)
     cf.close()
     output_tree_file_handle.close()
