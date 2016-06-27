@@ -36,12 +36,21 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 ############################################################################
 ## Handling of byte/string conversion during subprocess calls
 
-def communicate(p, commands=None):
+def communicate(p, commands=None, timeout=None):
     if isinstance(commands, list) or isinstance(commands, tuple):
         commands = "\n".join(str(c) for c in commands)
     if commands is not None:
         commands = str.encode(commands)
-    stdout, stderr = p.communicate(commands)
+    if timeout is None:
+        stdout, stderr = p.communicate(commands)
+    else:
+        try:
+            stdout, stderr = p.communicate(commands, timeout=timeout)
+        except TypeError as e:
+            if "unexpected keyword argument 'timeout'" in str(e):
+                stdout, stderr = p.communicate(commands)
+            else:
+                raise
     if stdout is not None:
         stdout = textprocessing.bytes_to_text(stdout)
     if stderr is not None:

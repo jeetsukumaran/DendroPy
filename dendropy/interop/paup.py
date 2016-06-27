@@ -118,13 +118,15 @@ class PaupService(object):
                 cwd=cwd,
                 env=env,
                 )
-        try:
-            raw_stdout, raw_stderr = processio.communicate(p, paup_block, timeout=timeout)
-        except TypeError as e:
-            if str(e) == "communicate() got an unexpected keyword argument 'timeout'":
-                raw_stdout, raw_stderr = processio.communicate(p, paup_block)
-            else:
-                raise
+        raw_stdout, raw_stderr = processio.communicate(p, paup_block, timeout=timeout)
+        # try:
+        #     raw_stdout, raw_stderr = processio.communicate(p, paup_block, timeout=timeout)
+        # except TypeError as e:
+        #     raise
+        #     if str(e) == "communicate() got an unexpected keyword argument 'timeout'":
+        #         raw_stdout, raw_stderr = processio.communicate(p, paup_block)
+        #     else:
+        #         raise
         stdout = raw_stdout
         stderr = raw_stderr
         if strip_extraneous_prompts_from_stdout:
