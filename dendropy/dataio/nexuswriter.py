@@ -162,6 +162,9 @@ class NexusWriter(ioservice.DataWriter):
             annotations. The format specifier should be given in Python's
             string format specification mini-language. E.g. ".8f", ".4E",
             "8.4f".
+        exclude_from_taxa_blocks : set (or other iterable) of |Taxon| instances
+            If specified, any |Taxon| object in this set will be excluded from
+            all TAXA blocks, *even* if they are referenced in the data.
         ignore_unrecognized_keyword_arguments : boolean, default: |False|
             If |True|, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is |False|: unsupported keyword
@@ -195,6 +198,7 @@ class NexusWriter(ioservice.DataWriter):
         if self.discrete_character_state_value_format_fn is None:
             self.discrete_character_state_value_format_fn = self._format_discrete_character_value
         self.translate_tree_taxa = kwargs.pop("translate_tree_taxa", None)
+        self.exclude_from_taxa_blocks = kwargs.pop("exclude_from_taxa_blocks", None)
 
         # The following are used by NewickWriter in addition to NexusWriter, so
         # they are extracted/set here and then forwarded on ...
@@ -290,14 +294,21 @@ class NexusWriter(ioservice.DataWriter):
                 stream.write(block)
                 stream.write("\n")
 
+    def _get_taxa_to_include(self, taxon_namespace):
+        if not self.exclude_from_taxa_blocks:
+            return list(taxon_namespace)
+        else:
+            return [t for t in taxon_namespace if t not in self.exclude_from_taxa_blocks]
+
     def _write_taxa_block(self, stream, taxon_namespace):
         stream.write("BEGIN TAXA;\n")
         self._write_block_title(stream, taxon_namespace)
         self._write_item_annotations(stream, taxon_namespace)
         self._write_item_comments(stream, taxon_namespace)
-        stream.write("    DIMENSIONS NTAX={};\n".format(len(taxon_namespace)))
+        taxon_to_include = self._get_taxa_to_include(taxon_namespace)
+        stream.write("    DIMENSIONS NTAX={};\n".format(len(taxon_to_include)))
         stream.write("    TAXLABELS\n")
-        for taxon in taxon_namespace:
+        for taxon in taxon_to_include:
             stream.write("        {}\n".format(
                 nexusprocessing.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores),
                 ))
