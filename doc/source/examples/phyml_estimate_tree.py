@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import dendropy
-from dendropy.interop import paup
+from dendropy.interop import phyml
 
 data = dendropy.DnaCharacterMatrix.get(
     path="pythonidae.nex",
