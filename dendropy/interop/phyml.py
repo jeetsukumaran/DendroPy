@@ -40,7 +40,7 @@ def _remove_silently(path):
 
 
 def run_phyml(
-        char_matrix, data_type=None, parsimony_starting_tree=False,
+        phyml_path, char_matrix, data_type=None, parsimony_starting_tree=False,
         bootstrap=None, subst_model=None, amino_acid_rates=None,
         state_freqs=None, ts_tv_ratio=None, prop_invar=None, gamma_cats=None,
         gamma_shape=None, gamma_cat_median=False, free_rates=False,
@@ -48,7 +48,7 @@ def run_phyml(
         starting_tree=None, optimization=None, random_starting_tree=False,
         num_random_starting_trees=None, random_seed=None,
         site_likelihoods=False, trace_search=False, run_id=None,
-        alias_subpattern=False, phyml_path="phyml"):
+        alias_subpattern=False):
     """
     Wrapper for running PhyML via its command-line interface.
 
@@ -59,6 +59,8 @@ def run_phyml(
 
     Parameters
     ----------
+    phyml_path : str
+        Path to PhyML executable.
     char_matrix : |CharacterMatrix|
         Matrix with data to be analyzed.
     data_type : str
@@ -158,7 +160,7 @@ def run_phyml(
         If True, site aliasing is generalized at the subtree level.
         Sometimes lead to faster calculations. See Kosakovsky Pond SL,
         Muse SV, Sytematic Biology (2004) for an example.
-        
+
     Returns
     -------
     result : :class:`~dendropy.interop.phyml.PhymlResult`
