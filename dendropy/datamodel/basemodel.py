@@ -976,7 +976,7 @@ class AnnotationSet(container.OrderedSet):
         try:
             o = self.__class__(target=memo[id(self.target)])
         except KeyError:
-            raise KeyError("deepcopy error: object id {} not found: {}".format((id(self.target), repr(self.target))))
+            raise KeyError("deepcopy error: object id {} not found: {}".format(id(self.target), repr(self.target)))
         memo[id(self)] = o
         for a in self:
             x = copy.deepcopy(a, memo)
