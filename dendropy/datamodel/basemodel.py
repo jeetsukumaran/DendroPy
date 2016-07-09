@@ -731,7 +731,8 @@ class Annotable(object):
                 if a2.is_attribute and a1._value[0] is other:
                     a2._value = (self, a1._value[1])
                 self.annotations.add(a2)
-            memo[id(other._annotations)] = self._annotations
+            if hasattr(self, "_annotations"):
+                memo[id(other._annotations)] = self._annotations
 
     # def __copy__(self):
     #     o = self.__class__.__new__(self.__class__)
