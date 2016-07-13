@@ -299,30 +299,43 @@ def run_phyml(
                 raise RuntimeError("PhyML error: %s" % stdout)
         else:
             # Collect output
+            output_files = {}
+
             result = PhymlResult()
             result.command_line = command_line
             result.stdout_text = stdout
-            result.best_tree = dendropy.Tree.get_from_path(
-                char_matrix_f.name + "_phyml_tree", "newick")
-            with open(char_matrix_f.name + "_phyml_stats", "r") as stats_f:
-                result.stats_text = stats_f.read()
-            if os.path.isfile(char_matrix_f.name + "_phyml_boot_trees"):
-                result.boot_trees = dendropy.TreeList.get_from_path(
-                    char_matrix_f.name + "_phyml_boot_trees", "newick")
-            if os.path.isfile(char_matrix_f.name + "_phyml_boot_stats"): 
-                with open(
-                    char_matrix_f.name + "_phyml_boot_stats", "r"
-                ) as boot_stats_f:
-                    result.boot_stats_text = boot_stats_f.read()
-            if os.path.isfile(char_matrix_f.name + "_phyml_rand_trees"):  
-                result.rand_trees = dendropy.TreeList.get_from_path(
-                    char_matrix_f.name + "_phyml_rand_trees", "newick")
-            if os.path.isfile(char_matrix_f.name + "_phyml_lk"):  
-                with open(char_matrix_f.name + "_phyml_lk", "r") as lk_f:
-                    result.site_likelihoods_text = lk_f.read()
-            if os.path.isfile(char_matrix_f.name + "_phyml_trace"):  
-                result.search_trace_trees = dendropy.TreeList.get_from_path(
-                    char_matrix_f.name + "_phyml_trace", "newick")
+
+            output_files["_phyml_tree"], result.best_tree = (
+                _read_phyml_file(char_matrix_f.name, "_phyml_tree", "tree"))
+
+            output_files["_phyml_stats"], result.stats_text = (
+                _read_phyml_file(char_matrix_f.name, "_phyml_stats", "text"))
+
+            if bootstrap and bootstrap > 0:
+                output_files["_phyml_boot_trees"], result.boot_trees = (
+                    _read_phyml_file(
+                        char_matrix_f.name, "_phyml_boot_trees", "treelist"))
+
+                output_files["_phyml_boot_stats"], result.boot_stats_text = (
+                    _read_phyml_file(
+                        char_matrix_f.name, "_phyml_boot_stats", "text"))
+
+            if random_starting_tree:
+                output_files["_phyml_rand_trees"], result.rand_trees = (
+                    _read_phyml_file(
+                        char_matrix_f.name, "_phyml_rand_trees", "treelist"))
+
+            if site_likelihoods:
+                output_files["_phyml_lk"], result.site_likelihoods_text = (
+                    _read_phyml_file(char_matrix_f.name, "_phyml_lk", "text"))
+
+            if trace_search:
+                output_files["_phyml_trace"], result.search_trace_trees = (
+                    _read_phyml_file(
+                        char_matrix_f.name, "_phyml_trace", "treelist"))
+
+            result.output_files = output_files
+
     finally:
         # Clean up
         char_matrix_f.close()
