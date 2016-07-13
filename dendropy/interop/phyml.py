@@ -80,7 +80,7 @@ def run_phyml(
         *  -4 : SH-like branch supports alone.
         *  -5 : (default) approximate Bayes branch supports.
     subst_model : str
-        Substitution model name.        
+        Substitution model name.
         * Nucleotide-based models : "HKY85" (default), "JC69", "K80", "F81",
           "F84", "TN93", "GTR", or a custom GTR-family model, e.g. "00000".
         * Amino-acid based models : "LG" (default), "WAG" ,"JTT", "MtREV",
@@ -91,7 +91,7 @@ def run_phyml(
         to use this option when analyzing amino acid sequences with the
         "custom" substitution model.
     state_freqs : str or list of floats
-        * "e" : the character frequencies will be determined as follows :       
+        * "e" : the character frequencies will be determined as follows :
             - Nucleotide sequences: (Empirical) the equilibrium base
               frequencies are estimated by counting the occurence of the
               different bases in the alignment.
@@ -102,7 +102,7 @@ def run_phyml(
             - Nucleotide sequences: (ML) the equilibrium base frequencies are
               estimated using maximum likelihood.
             - Amino-acid sequences: (Model) the equilibrium amino-acid
-              frequencies are estimated using the frequencies defined by 
+              frequencies are estimated using the frequencies defined by
               the substitution model.
         * "fA,fC,fG,fT" : only valid for nucleotide-based models. fA, fC, fG
             and fT are floating numbers that correspond to the frequencies of
@@ -182,7 +182,7 @@ def run_phyml(
     if subst_model:
         args.append("-m%s" % str(subst_model))
     if amino_acid_rates:
-        args.extend(["--aa_rate_file", char_matrix_f.name + "aa_rate"])
+        args.extend(["--aa_rate_file", char_matrix_f.name + "_aa_rate"])
     if state_freqs:
         if isinstance(state_freqs, str):
             args.append("-f%s" % state_freqs)
