@@ -37,6 +37,23 @@ def _remove_silently(path):
     except OSError as ex:
         if ex.errno != errno.ENOENT:
             raise  # re-raise if some other exception occurrs
+def _get_path(seq_path, phyml_suffix):
+    """
+    Get the full path to a PhyML output file. Returns the path regardless
+    of whether the filename has an extension (e.g. ".txt") or not.
+    Return None if no file matches the constructed search pattern.
+    """
+    match_pattern = seq_path + phyml_suffix + '*'
+    matches = glob.glob(match_pattern)
+    if len(matches) == 1:
+        path = matches[0]
+    elif len(matches) == 0:
+        path = None
+    else:
+        raise RuntimeError(
+            'More than one file matches the pattern: ' +
+            match_pattern + '\nFilenames: ' + matches)
+    return path
 
 
 def run_phyml(
