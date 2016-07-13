@@ -18,4 +18,5 @@ result = phyml.run_phyml(
     starting_tree=tree,
     optimization="lr"  # optimize branch length and rate parameters only
     )
+
 print(result.stats_text)
