@@ -362,6 +362,8 @@ class PhymlResult(object):
         Trees explored during the tree search (file: "*_phyml_trace").
     best_log_likelihood : float
         The best log-likelihood value.
+    output_files : dict
+        Paths to temporary files used to populate the result object.
     """
 
     def __init__(self):
@@ -374,6 +376,7 @@ class PhymlResult(object):
         self.rand_trees = None
         self.site_likelihoods_text = None
         self.search_trace_trees = None
+        self.output_files = None
 
     @property
     def best_log_likelihood(self):
