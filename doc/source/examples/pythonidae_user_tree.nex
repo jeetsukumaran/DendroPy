@@ -1,0 +1,41 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=29;
+    TAXLABELS
+        Liasis_fuscus
+        Liasis_mackloti
+        Liasis_olivaceus
+        Apodora_papuana
+        Bothrochilus_boa
+        Leiopython_albertisii
+        Aspidites_ramsayi
+        Aspidites_melanocephalus
+        Antaresia_maculosa
+        Antaresia_perthensis
+        Antaresia_stimsoni
+        Antaresia_childreni
+        Morelia_carinata
+        Morelia_viridis
+        Morelia_bredli
+        Morelia_spilota
+        Python_timoriensis
+        Python_reticulatus
+        Python_molurus
+        Python_sebae
+        Python_regius
+        Python_brongersmai
+        Morelia_oenpelliensis
+        Morelia_boeleni
+        Morelia_tracyae
+        Morelia_amethistina
+        Morelia_clastolepis
+        Morelia_kinghorni
+        Morelia_nauta
+  ;
+END;
+
+BEGIN TREES;
+    TREE 0 = [&U] (Liasis_fuscus:0.02122328,Liasis_mackloti:0.02819052,((Apodora_papuana:0.06199013,(((Bothrochilus_boa:0.05944153,Leiopython_albertisii:0.051305):0.01611264,((Antaresia_maculosa:0.07889853,(Antaresia_perthensis:0.0675888,(Antaresia_stimsoni:0.01838344,Antaresia_childreni:0.02974202):0.03499884):0.01327737):0.00903287,((Morelia_bredli:0.0316816,Morelia_spilota:0.02190528):0.03210452,(Morelia_viridis:0.06457043,Morelia_carinata:0.06649245):0.01145398):0.00687119):0.01879348):0.01023112,(((Aspidites_ramsayi:0.03255394,Aspidites_melanocephalus:0.04252203):0.03094638,((Python_brongersmai:0.07878101,Python_molurus:0.05627293):0.00983331,(Python_sebae:0.07974599,Python_regius:0.09229847):0.02169248):0.02945389):0.00953931,((Morelia_boeleni:0.06401311,(Morelia_tracyae:0.03233472,(Morelia_amethistina:0.02568897,(Morelia_clastolepis:0.00433051,(Morelia_kinghorni:0.00856225,Morelia_nauta:0.00836324):0.00562121):0.01988229):0.01189422):0.01855827):0.01586807,((Python_timoriensis:0.06979998,Python_reticulatus:0.06241922):0.04433082,Morelia_oenpelliensis:0.05883117):0.00681787):0.00588235):0.00561047):0.0098835):0.01290655,Liasis_olivaceus:0.03651083):0.04304662);
+END;
+
