@@ -56,6 +56,43 @@ def _get_path(seq_path, phyml_suffix):
     return path
 
 
+def _read_phyml_file(seq_path, phyml_suffix, file_type="text"):
+    """
+    Read a PhyML output file.
+
+    Parameters
+    ----------
+    seq_path : str
+        Path to the sequence (input) file.
+    phyml_suffix : str
+        Filename suffix added by PhyML to the filename (e.g.
+        "_phyml_tree"), but without potential filename extension.
+    file_type : {"text", "tree", treelist"}
+
+    Returns
+    -------
+    t : tuple with 2 elements
+        The full path to the file and the output in a format
+        determined by `file_type`.
+    """
+    path = _get_path(seq_path, phyml_suffix)
+    if path:
+        if file_type == "text":
+            with open(path, "r") as f:
+                output = f.read()
+        elif file_type == "tree":
+            output = dendropy.Tree.get_from_path(path, "newick")
+        elif file_type == "treelist":
+            output = dendropy.TreeList.get_from_path(path, "newick")
+        else:
+            raise ValueError(
+                "File type should be one of text, tree or treelist")
+    else:
+        output = None
+    t = (path, output)
+    return t
+
+
 def run_phyml(
         phyml_path, char_matrix, data_type=None, parsimony_starting_tree=False,
         bootstrap=None, subst_model=None, amino_acid_rates=None,
