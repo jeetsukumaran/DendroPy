@@ -31,13 +31,6 @@ import dendropy
 from dendropy.utility import processio
 
 
-def _remove_silently(path):
-    """Silently remove a file."""
-    try:
-        os.remove(path)
-    except OSError as ex:
-        if ex.errno != errno.ENOENT:
-            raise  # re-raise if some other exception occurrs
 def _get_path(seq_path, phyml_suffix):
     """
     Get the full path to a PhyML output file. Returns the path regardless
@@ -333,20 +326,8 @@ def run_phyml(
     finally:
         # Clean up
         char_matrix_f.close()
-
-        suffixes = [
-            "_starting_tree",
-            "_aa_rate",
-            "_phyml_tree",
-            "_phyml_stats",
-            "_phyml_boot_trees",
-            "_phyml_boot_stats",
-            "_phyml_rand_trees",
-            "_phyml_lk",
-            "_phyml_trace"]
-
-        for s in suffixes:
-            _remove_silently(char_matrix_f.name + s)
+        for phyml_file in glob.glob(char_matrix_f.name + "*"):
+            os.remove(phyml_file)
 
     return result
 
