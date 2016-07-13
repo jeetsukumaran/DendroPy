@@ -16,7 +16,7 @@ result = phyml.run_phyml(
     subst_model="HKY85",
     gamma_cats=1,
     starting_tree=tree,
-    optimization="lr"  # optimize branch length and rate parameters only
+    optimization="r"  # optimize rate parameters only
     )
 
 print(result.stats_text)
