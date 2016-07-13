@@ -393,7 +393,8 @@ class PhymlResult(object):
 
     @property
     def best_log_likelihood(self):
-        match_best = re.search(
-            r"\. Log-likelihood:\s+(.+)\n", self.stats_text)
-        if match_best is not None:
-            return float(match_best.group(1))
+        if self.stats_text:
+            match_best = re.search(
+                r"\. Log-likelihood:\s+(.+)\n", self.stats_text)
+            if match_best is not None:
+                return float(match_best.group(1))
