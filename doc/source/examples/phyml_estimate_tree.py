@@ -7,6 +7,7 @@ data = dendropy.DnaCharacterMatrix.get(
     path="pythonidae.nex",
     schema="nexus")
 result = phyml.run_phyml(
+    phyml_path='phyml',
     char_matrix=data,
     data_type="nt",
     subst_model="HKY85",
