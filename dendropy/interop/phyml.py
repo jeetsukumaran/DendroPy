@@ -20,7 +20,6 @@
 Wrapper around calls to PhyML.
 """
 
-import errno
 import glob
 import os
 import re
