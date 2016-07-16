@@ -35,7 +35,7 @@ def _get_path(seq_path, phyml_suffix):
     """
     Get the full path to a PhyML output file. Returns the path regardless
     of whether the filename has an extension (e.g. ".txt") or not.
-    Return None if no file matches the constructed search pattern.
+    Returns None if no file matches the constructed search pattern.
     """
     match_pattern = seq_path + phyml_suffix + "*"
     matches = glob.glob(match_pattern)
