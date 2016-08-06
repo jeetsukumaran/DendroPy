@@ -5301,6 +5301,7 @@ class Tree(
         Removes terminal nodes associated with Taxon objects given by the container
         ``taxa`` (which can be any iterable, including a TaxonNamespace object) from ``self``.
         """
+        taxa = set(taxa)
         nodes_to_remove = []
         for nd in self.postorder_node_iter():
             if (
