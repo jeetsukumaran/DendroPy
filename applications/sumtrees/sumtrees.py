@@ -1701,46 +1701,6 @@ def main():
             msg = "Summarizing onto target tree".format(len(target_trees))
         msg += " defined in '{}':".format(target_tree_filepath)
         _message_and_log(msg, wrap=False)
-    # if args.collapse_edges_with_less_than_minimum_support and args.summary_target != "consensus":
-    if args.min_clade_freq is not None and args.summary_target != "consensus":
-        msg = "Collapsing clades or splits with support frequency less than {}".format(args.min_clade_freq)
-        for tree in target_trees:
-            tree_array.collapse_edges_with_less_than_minimum_support(
-                    tree=tree,
-                    min_freq=args.min_clade_freq,)
-        _message_and_log(msg, wrap=False)
-
-    ###  rooting
-
-    if args.root_target_at_outgroup is not None or args.set_outgroup is not None:
-        if args.root_target_at_outgroup is not None:
-            outgroup_label = args.root_target_at_outgroup
-        elif args.set_outgroup is not None:
-            outgroup_label = args.set_outgroup
-        if args.input_format in ("nexus/newick", "nexus", "newick"):
-            if not args.preserve_underscores:
-                outgroup_label = outgroup_label.replace("_", " ")
-        for tree in target_trees:
-            outgroup_node = tree.find_node_with_taxon_label(outgroup_label)
-            if outgroup_node is None:
-                messenger.error("Cannot locate node with outgroup taxon '{}' on target tree".format(outgroup_label))
-                sys.exit(1)
-            tree.to_outgroup_position(
-                    outgroup_node=outgroup_node,
-                    update_bipartitions=True,
-                    suppress_unifurcations=True)
-            if args.root_target_at_outgroup is not None:
-                tree.is_rooted = True
-        if args.root_target_at_outgroup is not None:
-            _bulleted_message_and_log("Target tree(s) rerooted using outgroup: '{}'".format(outgroup_label))
-        elif args.set_outgroup is not None:
-            _bulleted_message_and_log("Target tree(s) rotated to set outgroup: '{}'".format(outgroup_label))
-    elif args.root_target_at_midpoint:
-        for tree in target_trees:
-            tree.reroot_at_midpoint(
-                    update_bipartitions=True,
-                    suppress_unifurcations=True)
-        _bulleted_message_and_log("Target tree(s) rerooted at midpoint")
 
     ###  set up summarization regime
 
@@ -1819,6 +1779,48 @@ def main():
         if args.node_labels == "clear":
             for nd in tree:
                 nd.label = None
+
+    ###  rooting
+
+    if args.root_target_at_outgroup is not None or args.set_outgroup is not None:
+        if args.root_target_at_outgroup is not None:
+            outgroup_label = args.root_target_at_outgroup
+        elif args.set_outgroup is not None:
+            outgroup_label = args.set_outgroup
+        if args.input_format in ("nexus/newick", "nexus", "newick"):
+            if not args.preserve_underscores:
+                outgroup_label = outgroup_label.replace("_", " ")
+        for tree in target_trees:
+            outgroup_node = tree.find_node_with_taxon_label(outgroup_label)
+            if outgroup_node is None:
+                messenger.error("Cannot locate node with outgroup taxon '{}' on target tree".format(outgroup_label))
+                sys.exit(1)
+            tree.to_outgroup_position(
+                    outgroup_node=outgroup_node,
+                    update_bipartitions=True,
+                    suppress_unifurcations=True)
+            if args.root_target_at_outgroup is not None:
+                tree.is_rooted = True
+        if args.root_target_at_outgroup is not None:
+            _bulleted_message_and_log("Target tree(s) rerooted using outgroup: '{}'".format(outgroup_label))
+        elif args.set_outgroup is not None:
+            _bulleted_message_and_log("Target tree(s) rotated to set outgroup: '{}'".format(outgroup_label))
+    elif args.root_target_at_midpoint:
+        for tree in target_trees:
+            tree.reroot_at_midpoint(
+                    update_bipartitions=True,
+                    suppress_unifurcations=True)
+        _bulleted_message_and_log("Target tree(s) rerooted at midpoint")
+
+    # collapse if below minimum threshold
+    if args.min_clade_freq is not None and args.summary_target != "consensus":
+        msg = "Collapsing clades or splits with support frequency less than {}".format(args.min_clade_freq)
+        for tree in target_trees:
+            tree_array.collapse_edges_with_less_than_minimum_support(
+                    tree=tree,
+                    min_freq=args.min_clade_freq,)
+        _message_and_log(msg, wrap=False)
+
 
     main_time_end = datetime.datetime.now()
 
