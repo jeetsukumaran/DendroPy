@@ -1780,6 +1780,15 @@ def main():
             for nd in tree:
                 nd.label = None
 
+    # collapse if below minimum threshold
+    if args.min_clade_freq is not None and args.summary_target != "consensus":
+        msg = "Collapsing clades or splits with support frequency less than {}".format(args.min_clade_freq)
+        for tree in target_trees:
+            tree_array.collapse_edges_with_less_than_minimum_support(
+                    tree=tree,
+                    min_freq=args.min_clade_freq,)
+        _message_and_log(msg, wrap=False)
+
     ###  rooting
 
     if args.root_target_at_outgroup is not None or args.set_outgroup is not None:
@@ -1811,16 +1820,6 @@ def main():
                     update_bipartitions=True,
                     suppress_unifurcations=True)
         _bulleted_message_and_log("Target tree(s) rerooted at midpoint")
-
-    # collapse if below minimum threshold
-    if args.min_clade_freq is not None and args.summary_target != "consensus":
-        msg = "Collapsing clades or splits with support frequency less than {}".format(args.min_clade_freq)
-        for tree in target_trees:
-            tree_array.collapse_edges_with_less_than_minimum_support(
-                    tree=tree,
-                    min_freq=args.min_clade_freq,)
-        _message_and_log(msg, wrap=False)
-
 
     main_time_end = datetime.datetime.now()
 
