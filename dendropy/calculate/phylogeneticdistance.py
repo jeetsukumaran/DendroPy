@@ -940,6 +940,7 @@ class PhylogeneticDistanceMatrix(object):
         if tree_factory is None:
             tree_factory = dendropy.Tree
         tree = tree_factory(taxon_namespace=self.taxon_namespace)
+        tree.is_rooted = False
 
         # initialize node pool
         node_pool = []
@@ -1085,6 +1086,7 @@ class PhylogeneticDistanceMatrix(object):
         if tree_factory is None:
             tree_factory = dendropy.Tree
         tree = tree_factory(taxon_namespace=self.taxon_namespace)
+        tree.is_rooted = True
         node_pool = []
         for t1 in self._mapped_taxa:
             nd = tree.node_factory()

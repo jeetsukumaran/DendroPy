@@ -786,7 +786,7 @@ class PdmUpgmaTree(PdmTreeChecker, unittest.TestCase):
             expected_tree = dendropy.Tree.get(
                     data=expected_tree_str,
                     schema="newick",
-                    # rooting="force-unrooted",
+                    rooting="force-rooted",
                     taxon_namespace=pdm.taxon_namespace,
                     preserve_underscores=True)
             self.check_tree(obs_tree=obs_tree,
