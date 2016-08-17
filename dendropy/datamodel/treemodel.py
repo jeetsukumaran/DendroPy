@@ -370,7 +370,7 @@ class Bipartition(object):
         To represent a bipartition in the same scheme used by, e.g. PAUP* or
         Mr. Bayes::
 
-            print(bipartition.as_string('.', '*', reverse=True))
+            print(bipartition.leafset_as_bitstring('.', '*', reverse=True))
         """
         return self.bitmask_as_bitstring(
                 mask=self._leafset_bitmask,
