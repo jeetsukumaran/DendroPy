@@ -6073,7 +6073,7 @@ class Tree(
                    hex(id(self)),
                    label))
         if depth >= 1:
-            newick_str = self.as_newick_string()
+            newick_str = self._as_newick_string()
             if not newick_str:
                 newick_str = "()"
             if depth == 1:
@@ -6503,7 +6503,7 @@ class AsciiTreePlot(object):
         widths = [self.node_offset[i] for i in tree.leaf_node_iter() if self.node_offset[i] is not None]
         max_width = float(max(widths))
         if max_width == 0:
-            raise AsciiTreePlot.NullEdgeLengthError("Tree cannot be plotted under metric '%s' due to zero or null edge lengths: '%s'" % (self.plot_metric, tree.as_newick_string()))
+            raise AsciiTreePlot.NullEdgeLengthError("Tree cannot be plotted under metric '%s' due to zero or null edge lengths: '%s'" % (self.plot_metric, tree._as_newick_string()))
         edge_scale_factor = float(effective_display_width) / max_width
         self.calc_plot(tree.seed_node,
                        edge_scale_factor=edge_scale_factor)
