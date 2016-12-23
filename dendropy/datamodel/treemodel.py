@@ -5172,6 +5172,7 @@ class Tree(
                     next_attachment = Node()
                     p = next_sib._parent_node
                     p.add_child(next_attachment)
+                    next_attachment.edge.length = 0.0
                     p.remove_child(next_sib)
                     next_attachment.add_child(next_sib)
                     next_attachment.add_child(next_child)
@@ -5180,7 +5181,7 @@ class Tree(
             else:
                 while len(node._child_nodes) > limit:
                     nn1 = Node()
-                    nn1.edge.length = 0
+                    nn1.edge.length = 0.0
                     c1 = node._child_nodes[0]
                     c2 = node._child_nodes[1]
                     node.remove_child(c1)
