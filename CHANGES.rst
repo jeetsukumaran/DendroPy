@@ -1,19 +1,16 @@
-Release 4.1.1
+Release 4.2.0
 -------------
 
-New or Updated Features
-^^^^^^^^^^^^^^^^^^^^^^^
-
+-   0 branch lengths assigned to randomly resolved polytomies.
+-   Explicitly set rooting for NJ and UPGMA trees.
+-   Faster pruning (kyungtaekLIM)
+-   Fix nesting bug in raised KeyError in basemodel.AnnotationSet.__deepcopy__ (Steve Bond)
+-   Catch edge case during deepcopy when Edge object has no _annotations (Steve Bond)
+-   Optimizations and fixes for various population genetic calculations (Andrew Guy)
+-   newickreader: Parse jplace style edge numbering. (Ben J Woodcroft)
 -   Calculate probability of gene tree(s) in species trees under the Multispecies Coalescent model.
 -   New approaches to calculate distances between unlabeled trees of different sizes: ``dendropy.profiledistance`` and ``dendropy.calculate.treecompare.TreeShapeKernel``.
 -   When parsing Newick/NEXUS, allow for internal node labels to be associated with either nodes or edges.
--   Parse "jplace"-style node numbering in Newick format (thanks Ben J. Woodcroft!).
-
-Bug Fixes
-^^^^^^^^^
-
--   Fix missing state issues with various population genetic calculations (thanks Andrew Guy!)
-
 
 Release 4.1.0
 -------------
