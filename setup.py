@@ -23,6 +23,12 @@ Package setup and installation.
 import sys
 import os
 
+### "highly-discouraged" workaround to deal with Python 2.8+ and 3.4+ verifying
+### certificates by default; this breaks PyPI uploads ...
+import ssl
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
+
 ###############################################################################
 # Identification
 
