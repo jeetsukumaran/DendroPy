@@ -1,3 +1,8 @@
+Release 4.3.0
+-------------
+
+-   Added ``sumlabels.py`` application.
+
 Release 4.2.0
 -------------
 

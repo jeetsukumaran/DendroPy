@@ -111,7 +111,7 @@ def main_cli():
             action="store_true",
             dest="to_newick_format",
             default=False,
-            help="same as --newick")
+            help="same as --to-newick")
     parser.add_argument("-r", "--replace",
             action="store_true",
             dest="replace",
