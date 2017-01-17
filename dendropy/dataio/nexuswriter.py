@@ -178,7 +178,7 @@ class NexusWriter(ioservice.DataWriter):
         # and need to be removed so as not to cause problems with our keyword
         # validation scheme
         self.simple = kwargs.pop("simple", False)
-        self.suppress_taxa_blocks = kwargs.pop("suppress_taxa_block", None)
+        self.suppress_taxa_blocks = kwargs.pop("suppress_taxa_blocks", None)
         self.suppress_block_titles = kwargs.pop("suppress_block_titles", None)
         self.file_comments = kwargs.pop("file_comments", [])
         if self.file_comments is None:
