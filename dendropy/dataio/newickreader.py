@@ -303,7 +303,8 @@ class NewickReader(ioservice.DataReader):
                     taxon_symbol_map_fn=taxon_symbol_mapper.require_taxon_for_symbol)
             yield tree
             if tree is None:
-                raise StopIteration
+                # raise StopIteration
+                return
 
     def _read(self,
             stream,

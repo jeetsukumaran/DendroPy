@@ -772,6 +772,9 @@ class Edge(
     def __eq__(self, other):
         return self is other
 
+    def __lt__(self, other):
+        return id(self) < id(other)
+
     ###########################################################################
     ### Basic Structure
 
