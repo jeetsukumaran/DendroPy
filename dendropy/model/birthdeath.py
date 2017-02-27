@@ -232,6 +232,8 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 break
             if target_num_extinct_tips is not None and len(extinct_tips) >= target_num_extinct_tips:
                 break
+            if target_num_total_tips is not None and (len(extant_tips) + len(extinct_tips)) >= target_num_total_tips:
+                break
             if max_time is not None and total_time >= max_time:
                 break
         elif len(extant_tips) >= gsa_ntax:
