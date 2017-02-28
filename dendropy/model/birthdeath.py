@@ -379,12 +379,26 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
     if is_assign_extant_taxa or is_assign_extinct_taxa:
         taxon_pool = [t for t in taxon_namespace]
+
+        ### does not work unless in GSA sub-section we remove ALL extant and
+        ### extinct nodes beyond time slice: expensive
+        # node_pool_labels = ("T", "X")
+        # sys.stderr.write("{}, {}\n".format(len(extant_tips), len(extinct_tips)))
+        # for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
+        #     for node_idx, nd in enumerate(node_pool):
+        #         if taxon_pool:
+        #             taxon = taxon_pool.pop()
+        #         else:
+        #             taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
+        #         nd.taxon = taxon
+        #         sys.stderr.write("{}: {}, {}, {}\n".format(len(taxon_namespace), node_pool_idx, node_idx, taxon.label))
+
         extant_counter = 1
         extinct_counter = 1
         for nd_idx, nd in enumerate(tree.leaf_nodes()):
             if not taxon_pool:
                 if nd in extinct_tips:
-                    t = taxon_namespace.require_taxon("E{}".format(extant_counter))
+                    t = taxon_namespace.require_taxon("X{}".format(extant_counter))
                     extant_counter += 1
                 else:
                     t = taxon_namespace.require_taxon("T{}".format(extinct_counter))
