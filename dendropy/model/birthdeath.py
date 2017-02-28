@@ -164,11 +164,25 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             and ("num_total_tips" not in kwargs)
             and ("max_time" not in kwargs) ):
         if "taxon_namespace" in kwargs:
-            deprecate.dendropy_deprecation_warning(
-                    preamble="Deprecated: The 'taxon_namespace' argument can no longer be used to specify a termination condition as a side-effect. Use one or more of the following instead with the length of the taxon namespace instance as a value: 'num_extant_tips', 'num_extinct_tips', or 'num_total_tips'",
-                    old_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    ...\n)",
-                    new_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    num_extant_tips=len(taxon_namespace),\n    ...\n)")
-            kwargs["num_extant_tips"] = len(kwargs["taxon_namespace"])
+            ### cannot support legacy approach, b/c ``taxon_namespace`` may grow during function, leading to unpredictable behavior
+            # deprecate.dendropy_deprecation_warning(
+            #         preamble="Deprecated: The 'taxon_namespace' argument can no longer be used to specify a termination condition as a side-effect. Use one or more of the following instead with the length of the taxon namespace instance as a value: 'num_extant_tips', 'num_extinct_tips', or 'num_total_tips'",
+            #         old_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    ...\n)",
+            #         new_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    num_extant_tips=len(taxon_namespace),\n    ...\n)")
+            # kwargs["num_extant_tips"] = len(kwargs["taxon_namespace"])
+            raise ValueError("The 'taxon_namespace' argument can no longer be used to specify a termination condition as a side-effect."
+                             "Use one or more of the following instead with the length of the taxon namespace instance as a value: "
+                             "'num_extant_tips', 'num_extinct_tips', or 'num_total_tips'.\n"
+                             "That is, instead of:\n\n"
+                             "    tree = birth_death_tree(\n        ...\n        taxon_namespace=taxon_namespace,\n        ...\n    )\n\n"
+                             "Use:\n\n"
+                             "    ntax = len(taxon_namespace)\n    tree = birth_death_tree(\n        ...\n        taxon_namespace=taxon_namespace,\n        num_extant_tips=ntax,\n        ...\n    )\n"
+                             "\nOr (recommended):\n\n"
+                             "    tree = birth_death_tree(\n        ...\n        taxon_namespace=taxon_namespace,\n        num_extant_tips=100,\n        ...\n    )\n"
+                             "\nNote that the taxon namespace instance size may grow during any particular call of the function depending on taxon assignment/creation settings, so"
+                             " for stable and predictable behavor it is important to take a snapshot of the desired taxon namespace size before any call of the function, or, better yet"
+                             " simply pass in a constant value."
+                             )
         else:
             raise ValueError("One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time'")
     target_num_extant_tips = kwargs.pop("num_extant_tips", None)
@@ -204,7 +218,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     elif target_num_total_tips is not None:
         raise ValueError("If 'gsa_ntax' is specified, 'num_total_tips' cannot be specified")
     elif gsa_ntax < target_num_extant_tips:
-        raise ValueError("'gsa_ntax' must be greater than 'num_extant_tips'")
+        raise ValueError("'gsa_ntax' ({}) must be greater than 'num_extant_tips' ({})".format(gsa_ntax, target_num_extant_tips))
 
     # initialize tree
     if tree is not None:
@@ -379,11 +393,16 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             e.length = prev_length + last_waiting_time
 
     if not is_retain_extinct_tips:
+        processed_nodes = set()
         for nd in list(extinct_tips):
+            if nd in processed_nodes:
+                continue
+            processed_nodes.add(nd)
             extinct_tips.discard(nd)
             assert not nd._child_nodes
             while (nd.parent_node is not None) and (len(nd.parent_node._child_nodes) == 1):
                 nd = nd.parent_node
+                processed_nodes.add(nd)
             tree.prune_subtree(nd, suppress_unifurcations=False)
     tree.suppress_unifurcations()
 
