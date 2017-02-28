@@ -28,6 +28,7 @@ from dendropy.calculate import probability
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import TreeSimTotalExtinctionException
 from dendropy.utility import constants
+from dendropy.utility import deprecate
 
 import dendropy
 
@@ -130,14 +131,28 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
     """
     if "assign_taxa" in kwargs:
-        raise ValueError("'assign_taxa' is no longer supported in this function; please use 'is_assign_extant_taxa' and/or 'is_assign_extinct_taxa' instead")
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated: 'assign_taxa' will no longer be supported as an argument to this function. Use 'is_assign_extant_taxa' and/or 'is_assign_extinct_taxa' instead",
+                stacklevel=3)
+        a = kwargs.pop("assign_taxa")
+        kwargs["is_assign_extant_taxa"] = a
+        kwargs["is_assign_extant_taxa"] = a
     if "ntax" in kwargs:
-        raise ValueError("'ntax' is no longer supported as an argument to this function. One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time' instead")
-    if (
-        ("num_extant_tips" not in kwargs)
-        and ("num_extinct_tips" not in kwargs)
-        and ("num_total_tips" not in kwargs)
-        and ("max_time" not in kwargs) ):
+        deprecate.dendropy_deprecation_warning(
+                message="Deprecated: 'ntax' is no longer supported as an argument to this function. Use one or more of the following instead: 'num_extant_tips', 'num_extinct_tips', 'num_total_tips', or 'max_time'",
+                stacklevel=3)
+        kwargs["num_extant_tips"] = kwargs.pop("ntax")
+    if (("num_extant_tips" not in kwargs)
+            and ("num_extinct_tips" not in kwargs)
+            and ("num_total_tips" not in kwargs)
+            and ("max_time" not in kwargs) ):
+        if "taxon_namespace" in kwargs:
+            deprecate.dendropy_deprecation_warning(
+                    preamble="Deprecated: The 'taxon_namespace' argument can no longer be used to specify a termination condition as a side-effect. Use one or more of the following instead with the length of the taxon namespace instance as a value: 'num_extant_tips', 'num_extinct_tips', or 'num_total_tips'",
+                    old_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    ...\n)",
+                    new_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    num_extant_tips=len(taxon_namespace),\n    ...\n)")
+            kwargs["num_extant_tips"] = len(taxon_namespace)
+        else:
             raise ValueError("One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time'")
     target_num_extant_tips = kwargs.pop("num_extant_tips", None)
     target_num_extinct_tips = kwargs.pop("num_extinct_tips", None)
@@ -151,8 +166,8 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     is_assign_extinct_taxa = kwargs.pop('is_assign_extinct_taxa', True)
     repeat_until_success = kwargs.pop('repeat_until_success', True)
 
-    tree = kwargs.get("tree", None)
-    taxon_namespace = kwargs.get("taxon_namespace", None)
+    tree = kwargs.pop("tree", None)
+    taxon_namespace = kwargs.pop("taxon_namespace", None)
 
     rng = kwargs.pop('rng', GLOBAL_RNG)
 
@@ -166,7 +181,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     #     taxon_namespace = dendropy.TaxonNamespace()
     ignore_unrecognized_keyword_arguments = kwargs.pop('ignore_unrecognized_keyword_arguments', False)
     if kwargs and not ignore_unrecognized_keyword_arguments:
-        raise ValueError("Unrecognized keyword arguments: ".format(kwargs))
+        raise ValueError("Unsupported keyword arguments: {}".format(kwargs.keys()))
 
     terminate_at_full_tree = False
 
