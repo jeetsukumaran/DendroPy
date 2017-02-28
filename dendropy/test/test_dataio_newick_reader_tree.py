@@ -990,9 +990,9 @@ class NewickInternalLabelAssociationTest(unittest.TestCase):
                     expected_label = expected_labels[int(nd.bipartition)]
                     if labels_to_edges:
                         self.assertIs(nd.label, None)
-                        self.assertEquals(nd.edge.label, expected_label)
+                        self.assertEqual(nd.edge.label, expected_label)
                     else:
-                        self.assertEquals(nd.label, expected_label)
+                        self.assertEqual(nd.label, expected_label)
                         self.assertIs(nd.edge.label, None)
 
 if __name__ == "__main__":
