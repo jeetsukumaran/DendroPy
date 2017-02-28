@@ -183,7 +183,8 @@ class AssemblageInducedTreeManagerTestBase(unittest.TestCase):
         tree = dendropy.simulate.birth_death_tree(
                 birth_rate=0.1,
                 death_rate=0.0,
-                taxon_namespace=tns)
+                taxon_namespace=tns,
+                num_extant_tips=len(tns))
         tree.assemblage_leaf_sets = []
         tree.assemblage_classification_regime_subtrees = []
         for group_id in AssemblageInducedTreeManagerTests.GROUP_IDS:

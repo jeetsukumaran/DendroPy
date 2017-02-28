@@ -59,7 +59,7 @@ class BirthDeathTreeTest(unittest.TestCase):
         """test that the birth-death process produces the correct number of tips with GSA."""
         _RNG = MockRandom()
         for num_leaves in range(2, 15):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, ntax=num_leaves, gsa_ntax=3*num_leaves, rng=_RNG)
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, gsa_ntax=3*num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
@@ -67,7 +67,7 @@ class BirthDeathTreeTest(unittest.TestCase):
         """test that the pure-birth process produces the correct number of tips."""
         _RNG = MockRandom()
         for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, ntax=num_leaves, rng=_RNG)
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
@@ -75,7 +75,7 @@ class BirthDeathTreeTest(unittest.TestCase):
         """test that the pure-birth process produces the correct number of tips with GSA."""
         _RNG = MockRandom()
         for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, ntax=num_leaves, gsa_ntax=4*num_leaves, rng=_RNG)
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, gsa_ntax=4*num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
@@ -83,7 +83,7 @@ class BirthDeathTreeTest(unittest.TestCase):
         """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
         _RNG = MockRandom()
         for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, ntax=num_leaves, rng=_RNG)
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
