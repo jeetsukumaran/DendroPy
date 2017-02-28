@@ -340,8 +340,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             daughter_nd = e.head_node
             for nd in daughter_nd.child_nodes():
                 nd._parent_node = None
-                if is_add_extinct_attr:
-                    setattr(nd, extinct_attr_name, True)
                 extinct_tips.discard(nd)
                 extant_tips.discard(nd)
                 for desc in nd.preorder_iter():
@@ -376,20 +374,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 else:
                     taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
                 nd.taxon = taxon
-
-        # extant_counter = 1
-        # extinct_counter = 1
-        # for nd_idx, nd in enumerate(tree.leaf_nodes()):
-        #     if not taxon_pool:
-        #         if nd in extinct_tips:
-        #             t = taxon_namespace.require_taxon("X{}".format(extant_counter))
-        #             extant_counter += 1
-        #         else:
-        #             t = taxon_namespace.require_taxon("T{}".format(extinct_counter))
-        #             extinct_counter += 1
-        #     else:
-        #         t = taxon_pool.pop()
-        #     nd.taxon = t
 
     return tree
 
