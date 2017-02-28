@@ -131,12 +131,14 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     """
     if "assign_taxa" in kwargs:
         raise ValueError("'assign_taxa' is no longer supported in this function; please use 'is_assign_extant_taxa' and/or 'is_assign_extinct_taxa' instead")
+    if "ntax" in kwargs:
+        raise ValueError("'ntax' is no longer supported as an argument to this function. One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time' instead")
     if (
         ("num_extant_tips" not in kwargs)
         and ("num_extinct_tips" not in kwargs)
         and ("num_total_tips" not in kwargs)
         and ("max_time" not in kwargs) ):
-            raise ValueError("At least one of the following must be specified: 'num_extant_tips', 'num_extant_tips', or 'max_time'")
+            raise ValueError("One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time'")
     target_num_extant_tips = kwargs.pop("num_extant_tips", None)
     target_num_extinct_tips = kwargs.pop("num_extinct_tips", None)
     target_num_total_tips = kwargs.pop("num_total_tips", None)
