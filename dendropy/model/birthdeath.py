@@ -408,29 +408,42 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
     if is_assign_extant_taxa or is_assign_extinct_taxa:
         taxon_pool = [t for t in taxon_namespace]
+        rng.shuffle(taxon_pool)
+        taxon_pool_labels = set([t.label for t in taxon_pool])
 
         ### ONLY works if in GSA sub-section we remove ALL extant and
         ### extinct nodes beyond time slice: expensive
+        ### Furthermore, main reason to use this approach is to have different
+        ### label prefixes for extinct vs. extant lineages, but the second time
+        ### this function is called with the same taxon namespace or any time
+        ### this function is called with a populated taxon namespace, that
+        ### aesthetic is lost.
+        # node_pool_labels = ("T", "X")
+        # for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
+        #     for node_idx, nd in enumerate(node_pool):
+        #         if taxon_pool:
+        #             taxon = taxon_pool.pop()
+        #         else:
+        #             taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
+        #         nd.taxon = taxon
+        #         assert not nd._child_nodes
 
-        __tip_nodes = set()
-        node_pool_labels = ("T", "X")
-        for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
-            for node_idx, nd in enumerate(node_pool):
-                if taxon_pool:
-                    taxon = taxon_pool.pop()
-                else:
-                    taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
-                nd.taxon = taxon
-                assert not nd._child_nodes
-                assert nd not in __tip_nodes
-                __tip_nodes.add(nd)
-        __check_tip_nodes = set([nd for nd in tree.leaf_nodes()])
-        assert __tip_nodes == __check_tip_nodes, (
-                "\n\n--In observed but not in expected:\n    {}\n".format(__tip_nodes.difference(__check_tip_nodes))
-                +"\n--In expected but not in observed:\n    {}\n".format(__check_tip_nodes.difference(__tip_nodes)))
-
+        tlabel_counter = 0
+        leaf_nodes = tree.leaf_nodes()
+        rng.shuffle(leaf_nodes)
+        for nd_idx, nd in enumerate(leaf_nodes):
+            if taxon_pool:
+                taxon = taxon_pool.pop()
+            else:
+                while True:
+                    tlabel_counter += 1
+                    label = "{}{}".format("T", tlabel_counter)
+                    if label not in taxon_pool_labels:
+                        break
+                taxon = taxon_namespace.require_taxon(label=label)
+                taxon_pool_labels.add(label)
+            nd.taxon = taxon
     return tree
-
 
 def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
     """
