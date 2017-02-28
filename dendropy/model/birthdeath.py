@@ -168,7 +168,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                     preamble="Deprecated: The 'taxon_namespace' argument can no longer be used to specify a termination condition as a side-effect. Use one or more of the following instead with the length of the taxon namespace instance as a value: 'num_extant_tips', 'num_extinct_tips', or 'num_total_tips'",
                     old_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    ...\n)",
                     new_construct="tree = birth_death_tree(\n    ...\n    taxon_namespace=taxon_namespace,\n    num_extant_tips=len(taxon_namespace),\n    ...\n)")
-            kwargs["num_extant_tips"] = len(taxon_namespace)
+            kwargs["num_extant_tips"] = len(kwargs["taxon_namespace"])
         else:
             raise ValueError("One or more of the following must be specified: 'num_extant_tips', 'num_extinct_tips', or 'max_time'")
     target_num_extant_tips = kwargs.pop("num_extant_tips", None)
@@ -188,14 +188,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
     rng = kwargs.pop('rng', GLOBAL_RNG)
 
-    # if "tree" in kwargs:
-    #     if "taxon_namespace" in kwargs and kwargs['taxon_namespace'] is not tree.taxon_namespace:
-    #         raise ValueError("Cannot specify both ``tree`` and ``taxon_namespace``")
-    #     taxon_namespace = kwargs.pop("taxon_namespace", None)
-    # elif "taxon_namespace" in kwargs:
-    #     taxon_namespace = kwargs.pop("taxon_namespace", None)
-    # else:
-    #     taxon_namespace = dendropy.TaxonNamespace()
     ignore_unrecognized_keyword_arguments = kwargs.pop('ignore_unrecognized_keyword_arguments', False)
     if kwargs and not ignore_unrecognized_keyword_arguments:
         raise ValueError("Unsupported keyword arguments: {}".format(kwargs.keys()))
@@ -387,12 +379,12 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             e.length = prev_length + last_waiting_time
 
     if not is_retain_extinct_tips:
-        for nd in extinct_tips:
+        for nd in list(extinct_tips):
+            extinct_tips.discard(nd)
             assert not nd._child_nodes
             while (nd.parent_node is not None) and (len(nd.parent_node._child_nodes) == 1):
                 nd = nd.parent_node
-            if nd.parent_node:
-                tree.prune_subtree(nd, suppress_unifurcations=False)
+            tree.prune_subtree(nd, suppress_unifurcations=False)
     tree.suppress_unifurcations()
 
     if is_assign_extant_taxa or is_assign_extinct_taxa:
@@ -400,6 +392,8 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 
         ### ONLY works if in GSA sub-section we remove ALL extant and
         ### extinct nodes beyond time slice: expensive
+
+        __tip_nodes = set()
         node_pool_labels = ("T", "X")
         for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
             for node_idx, nd in enumerate(node_pool):
@@ -408,6 +402,13 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 else:
                     taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
                 nd.taxon = taxon
+                assert not nd._child_nodes
+                assert nd not in __tip_nodes
+                __tip_nodes.add(nd)
+        __check_tip_nodes = set([nd for nd in tree.leaf_nodes()])
+        assert __tip_nodes == __check_tip_nodes, (
+                "\n\n--In observed but not in expected:\n    {}\n".format(__tip_nodes.difference(__check_tip_nodes))
+                +"\n--In expected but not in observed:\n    {}\n".format(__check_tip_nodes.difference(__tip_nodes)))
 
     return tree
 
