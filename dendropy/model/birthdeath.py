@@ -336,37 +336,23 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         edges_at_slice = selected_slice[1]
         last_waiting_time = selected_slice[0]
 
-        if True:
-
-            for e, prev_length in edges_at_slice:
-                daughter_nd = e.head_node
-                for nd in daughter_nd.child_nodes():
-                    nd._parent_node = None
-                    if is_add_extinct_attr:
-                        setattr(nd, extinct_attr_name, True)
-                    extinct_tips.discard(nd)
-                daughter_nd.clear_child_nodes()
-                extinct_tips.discard(daughter_nd)
-                extant_tips.add(daughter_nd)
+        for e, prev_length in edges_at_slice:
+            daughter_nd = e.head_node
+            for nd in daughter_nd.child_nodes():
+                nd._parent_node = None
                 if is_add_extinct_attr:
-                    setattr(daughter_nd, extinct_attr_name, False)
-                e.length = prev_length + last_waiting_time
-
-        else:
-
-            for e, prev_length in edges_at_slice:
-                daughter_nd = e.head_node
-                for nd in daughter_nd.child_nodes():
-                    tree.prune_subtree(nd, suppress_unifurcations=False)
-                    try:
-                        extinct_tips.remove(nd)
-                    except:
-                        pass
-                try:
-                    extinct_tips.remove(daughter_nd)
-                except:
-                    pass
-                e.length = prev_length + last_waiting_time
+                    setattr(nd, extinct_attr_name, True)
+                extinct_tips.discard(nd)
+                extant_tips.discard(nd)
+                for desc in nd.preorder_iter():
+                    extinct_tips.discard(desc)
+                    extant_tips.discard(desc)
+            daughter_nd.clear_child_nodes()
+            extinct_tips.discard(daughter_nd)
+            extant_tips.add(daughter_nd)
+            if is_add_extinct_attr:
+                setattr(daughter_nd, extinct_attr_name, False)
+            e.length = prev_length + last_waiting_time
 
     if not is_retain_extinct_tips:
         for nd in extinct_tips:
@@ -380,32 +366,30 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     if is_assign_extant_taxa or is_assign_extinct_taxa:
         taxon_pool = [t for t in taxon_namespace]
 
-        ### does not work unless in GSA sub-section we remove ALL extant and
+        ### ONLY works if in GSA sub-section we remove ALL extant and
         ### extinct nodes beyond time slice: expensive
-        # node_pool_labels = ("T", "X")
-        # sys.stderr.write("{}, {}\n".format(len(extant_tips), len(extinct_tips)))
-        # for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
-        #     for node_idx, nd in enumerate(node_pool):
-        #         if taxon_pool:
-        #             taxon = taxon_pool.pop()
-        #         else:
-        #             taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
-        #         nd.taxon = taxon
-        #         sys.stderr.write("{}: {}, {}, {}\n".format(len(taxon_namespace), node_pool_idx, node_idx, taxon.label))
-
-        extant_counter = 1
-        extinct_counter = 1
-        for nd_idx, nd in enumerate(tree.leaf_nodes()):
-            if not taxon_pool:
-                if nd in extinct_tips:
-                    t = taxon_namespace.require_taxon("X{}".format(extant_counter))
-                    extant_counter += 1
+        node_pool_labels = ("T", "X")
+        for node_pool_idx, node_pool in enumerate((extant_tips, extinct_tips)):
+            for node_idx, nd in enumerate(node_pool):
+                if taxon_pool:
+                    taxon = taxon_pool.pop()
                 else:
-                    t = taxon_namespace.require_taxon("T{}".format(extinct_counter))
-                    extinct_counter += 1
-            else:
-                t = taxon_pool.pop()
-            nd.taxon = t
+                    taxon = taxon_namespace.require_taxon("{}{}".format(node_pool_labels[node_pool_idx], node_idx+1))
+                nd.taxon = taxon
+
+        # extant_counter = 1
+        # extinct_counter = 1
+        # for nd_idx, nd in enumerate(tree.leaf_nodes()):
+        #     if not taxon_pool:
+        #         if nd in extinct_tips:
+        #             t = taxon_namespace.require_taxon("X{}".format(extant_counter))
+        #             extant_counter += 1
+        #         else:
+        #             t = taxon_namespace.require_taxon("T{}".format(extinct_counter))
+        #             extinct_counter += 1
+        #     else:
+        #         t = taxon_pool.pop()
+        #     nd.taxon = t
 
     return tree
 
