@@ -548,6 +548,7 @@ class TaxonNamespace(
             raise TypeError("TaxonNamespace() takes at most 1 non-keyword argument ({} given)".format(len(args)))
         elif len(args) == 1:
             # special case: construct from argument
+            basemodel.DataObject.__init__(self, label=kwargs_set_label)
             other = args[0]
             for i in other:
                 if isinstance(i, Taxon):
