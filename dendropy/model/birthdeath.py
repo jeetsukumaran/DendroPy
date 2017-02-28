@@ -58,8 +58,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
           ``num_extinct_tips`` and ``num_total_tips`` CANNOT be specified.
 
     If more than one of the above is given, then tree growth will terminate when
-    *any* of the termination conditions (i.e., number of tips == ``ntax`` or
-    maximum time = ``max_time``) are met.
+    *any* one of the termination conditions are met.
 
     Parameters
     ----------
