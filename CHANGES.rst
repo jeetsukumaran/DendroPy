@@ -2,6 +2,7 @@ Release 4.3.0
 -------------
 
 -   Added ``sumlabels.py`` application.
+-   ``dendropy.model.birth_death_tree`` now allows for preservation of extinct tips.
 
 Release 4.2.0
 -------------
