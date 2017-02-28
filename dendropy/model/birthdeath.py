@@ -260,15 +260,15 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         waiting_time = rng.expovariate(rate_of_any_event)
 
         if ( (gsa_ntax is not None)
-                and (len(extant_tips) == target_num_extinct_tips)
+                and (len(extant_tips) == target_num_extant_tips)
                 ):
             edge_and_start_length = []
             for nd in extant_tips:
                 e = nd.edge
                 edge_and_start_length.append((e, e.length))
             targetted_time_slices.append((waiting_time, edge_and_start_length))
-            # if terminate_at_full_tree:
-            #     break
+            if terminate_at_full_tree:
+                break
 
         # add waiting time to nodes
         for nd in extant_tips:
@@ -335,14 +335,37 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         assert(selected_slice is not None)
         edges_at_slice = selected_slice[1]
         last_waiting_time = selected_slice[0]
-        for e, prev_length in edges_at_slice:
-            daughter_nd = e.head_node
-            for nd in daughter_nd.child_nodes():
-                extinct_tips.discard(nd)
-                extant_tips.discard(nd)
-            daughter_nd.clear_child_nodes()
-            if not is_retain_extinct_tips:
+
+        if True:
+
+            for e, prev_length in edges_at_slice:
+                daughter_nd = e.head_node
+                for nd in daughter_nd.child_nodes():
+                    nd._parent_node = None
+                    if is_add_extinct_attr:
+                        setattr(nd, extinct_attr_name, True)
+                    extinct_tips.discard(nd)
+                daughter_nd.clear_child_nodes()
                 extinct_tips.discard(daughter_nd)
+                extant_tips.add(daughter_nd)
+                if is_add_extinct_attr:
+                    setattr(daughter_nd, extinct_attr_name, False)
+                e.length = prev_length + last_waiting_time
+
+        else:
+
+            for e, prev_length in edges_at_slice:
+                daughter_nd = e.head_node
+                for nd in daughter_nd.child_nodes():
+                    tree.prune_subtree(nd, suppress_unifurcations=False)
+                    try:
+                        extinct_tips.remove(nd)
+                    except:
+                        pass
+                try:
+                    extinct_tips.remove(daughter_nd)
+                except:
+                    pass
                 e.length = prev_length + last_waiting_time
 
     if not is_retain_extinct_tips:
@@ -363,7 +386,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 t = taxon_pool.pop()
             nd.taxon = t
 
-    # return
     return tree
 
 
