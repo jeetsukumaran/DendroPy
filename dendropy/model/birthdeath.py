@@ -432,6 +432,10 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         leaf_nodes = tree.leaf_nodes()
         rng.shuffle(leaf_nodes)
         for nd_idx, nd in enumerate(leaf_nodes):
+            if not is_assign_extant_taxa and nd in extant_tips:
+                continue
+            if not is_assign_extant_taxa and nd in extinct_tips:
+                continue
             if taxon_pool:
                 taxon = taxon_pool.pop()
             else:
