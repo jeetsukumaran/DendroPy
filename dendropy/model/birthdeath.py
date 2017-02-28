@@ -80,10 +80,27 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     Keyword Arguments
     -----------------
 
-    ntax: integer
-        If specified, then tree will grown until the number of EXTANT tips equals this number.
-    tree : Tree
+    num_extant_tips: int
+        If specified, branching process is terminated when number of EXTANT
+        tips equals this number.
+    num_extinct_tips: int
+        If specified, branching process is terminated when number of EXTINCT
+        tips equals this number.
+    num_total_tips: int
+        If specified, branching process is terminated when number of EXTINCT
+        plus EXTANT tips equals this number.
+    max_time: float
+        If specified, branching process is terminated when time reaches or
+        exceeds this value.
+    gsa_ntax: int
+        The General Sampling Approach threshold for number of taxa. See above
+        for details.
+    tree : Tree instance
         If given, then this tree will be used; otherwise a new one will be created.
+    taxon_namespace : TaxonNamespace instance
+        If given, then this will be assigned to the new tree, and, in addition,
+        taxa assigned to tips will be sourced from or otherwise created with
+        reference to this.
     is_assign_extant_taxa : bool [default: True]
         If False, then taxa will not be assigned to extant tips. If True
         (default), then taxa will be assigned to extant tips. Taxa will be
