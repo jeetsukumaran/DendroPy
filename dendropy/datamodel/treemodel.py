@@ -6106,7 +6106,7 @@ class Tree(
             output.write(s)
         return s
 
-    def as_python_source(self, tree_obj_name=None, tree_args=None, oids=False):
+    def as_python_source(self, tree_obj_name=None, tree_args=None):
         """
         Returns string that will rebuild this tree in Python.
         """
@@ -6122,10 +6122,9 @@ class Tree(
             tree_args = ""
         else:
             tree_args = ", " + tree_args
-        p.append("%s = dendropy.Tree(label=%s%s%s)" \
+        p.append("%s = dendropy.Tree(label=%s%s)" \
             % (tree_obj_name,
                label,
-               oid_str,
                tree_args))
 
         taxon_obj_namer = lambda x: "tax_%s" % id(x)
@@ -6135,11 +6134,11 @@ class Tree(
                 label = "'" + taxon.label + "'"
             else:
                 label = "None"
-            p.append("%s = %s.taxon_namespace.require_taxon(label=%s%s)" \
+            p.append("%s = %s.taxon_namespace.require_taxon(label=%s)" \
                 % (tobj_name,
                    tree_obj_name,
                    label,
-                   oid_str))
+                   ))
 
         node_obj_namer = lambda x: "nd_%s" % id(x)
         for node in self.preorder_node_iter():
@@ -6156,13 +6155,13 @@ class Tree(
                     ct = taxon_obj_namer(child.taxon)
                 else:
                     ct = "None"
-                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
+                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s)" %
                         (node_obj_namer(child),
                          nn,
                          label,
                          ct,
                          child.edge.length,
-                         oid_str))
+                         ))
 
         return "\n".join(p)
 
