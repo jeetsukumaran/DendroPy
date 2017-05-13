@@ -1606,7 +1606,7 @@ class CharacterMatrix(
         # recalculated, which will require some careful and perhaps arbitrary
         # handling of corner cases
         clone.character_subsets = container.OrderedCaselessDict()
-        # clone.clone_from(self)
+        indices = set(indices)
         for vec in clone.values():
             for cell_idx in range(len(vec)-1, -1, -1):
                 if cell_idx not in indices:
