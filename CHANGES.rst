@@ -2,7 +2,8 @@ Release 4.3.0
 -------------
 
 -   Added ``sumlabels.py`` application.
--   ``dendropy.model.birth_death_tree`` now allows for preservation of extinct tips.
+-   BD tree (``dendropy.model.birth_death_tree``) now allows for preservation of extinct tips.
+-   Improved performance of character subset export
 
 Release 4.2.0
 -------------
