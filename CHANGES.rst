@@ -1,6 +1,7 @@
 Release 4.3.0
 -------------
 
+-   [SumTrees]: Important bugfix in tracking splits on consensus tree from rooted trees: previously it was possible for a split on the consensus tree to be ignored, resulting in a null (0) edge length and no (0.0) support.
 -   Added ``sumlabels.py`` application.
 -   BD tree (``dendropy.model.birth_death_tree``) now allows for preservation of extinct tips.
 -   Improved performance of character subset export
