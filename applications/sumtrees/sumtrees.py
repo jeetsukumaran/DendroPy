@@ -1659,6 +1659,7 @@ def main():
         else:
             raise ValueError(args.summary_target)
         _message_and_log(msg, wrap=True)
+        tree.encode_bipartitions()
         target_trees.append(tree)
     else:
         try:
