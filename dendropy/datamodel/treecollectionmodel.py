@@ -2079,8 +2079,8 @@ class SplitDistributionSummarizer(object):
                         node.edge.length = self.no_data_values.get("median", 0.0)
                 else:
                     raise ValueError(self.set_edge_lengths)
-                if self.minimum_edge_length is not None and edge.length < self.minimum_edge_length:
-                    edge.length = self.minimum_edge_length
+                if self.minimum_edge_length is not None and node.edge.length < self.minimum_edge_length:
+                    node.edge.length = self.minimum_edge_length
             else:
                 raise ValueError(self.set_edge_lengths)
         if self.set_edge_lengths in ("mean-age", "median-age"):
