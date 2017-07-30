@@ -33,6 +33,7 @@ Process Models
     continuous.rst
     discrete.rst
     parsimony.rst
+    protractedspeciation.rst
     reconcile.rst
     treeshape.rst
 

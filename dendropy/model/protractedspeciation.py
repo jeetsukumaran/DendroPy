@@ -401,7 +401,7 @@ class ProtractedSpeciationProcess(object):
 
         If ``is_correlate_lineage_and_species_trees`` is |True|,
         then additional attributes will be added. See
-        :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
+        :meth:`dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
         for details.
 
         Parameters
@@ -440,7 +440,7 @@ class ProtractedSpeciationProcess(object):
             [NOT USED]
             If |True| then additional attributes will be added to the
             resulting trees to relate them. See
-            :meth:``dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
+            :meth:`dendropy.model.protractedspeciation.ProtractedSpeciationProcess.correlate_lineage_and_species_trees`
             for details.
 
         Returns
