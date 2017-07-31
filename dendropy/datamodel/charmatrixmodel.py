@@ -22,6 +22,7 @@ Character and character-sequence data structures.
 
 import warnings
 import copy
+import math
 import collections
 from dendropy.utility.textprocessing import StringIO
 from dendropy.utility import textprocessing
@@ -1854,6 +1855,49 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                     v.append(set(state.fundamental_indexes))
             taxon_to_state_indices[t] = v
         return taxon_to_state_indices
+
+    def folded_site_frequency_spectrum(self, is_pad_vector_to_unfolded_length=False):
+        """
+        Returns the folded or minor site/allele frequency spectrum.
+
+        Given $N$ chromosomes, the site frequency spectrum is a vector $(f_0,
+        f_1, f_2, ..., f_N)$, where the value $f_i$ is the number of
+        sites where $i$ derived alleles are segregating in the sample: 0
+        alleles, 1 allele, 2 alleles, etc.
+
+        The *folded* site frequency spectrum is a vector $(f_0, f_1, f_2, ...,
+        f_m), m = \ceil{\frac{N}{2}}$, where the values are the number of minor
+        alleles in the site.
+
+        Parameters
+        ----------
+        is_pad_vector_to_unfolded_length: bool
+            If False, then the vector length will be $\ceil{\frac{N}{2}}$,
+            where $N$ is the number of taxa. Otherwise, by default,
+            True, length of vector will be number of taxa + 1, with the
+            first element the number of monomorphic sites not contributing to
+            the site frequency spectrum.
+
+        Returns
+        -------
+        v : list[int]
+            A vector of integers representing the folded site frequency
+            spectrum.
+        """
+        site_columns = zip(*self.sequences())
+        if is_pad_vector_to_unfolded_length:
+            sfs = [0 for idx in range(len(self._taxon_sequence_map)+1)]
+        else:
+            sfs = [0 for idx in range(int(math.ceil(len(self._taxon_sequence_map)/2.0)))]
+        for site in site_columns:
+            counter = collections.Counter(site)
+            if len(counter) == 1:
+                sfs[0] += 1
+                continue
+            del counter[counter.most_common(1)[0][0]]
+            sfs[sum(counter.values())] += 1
+        assert sum(sfs) == len(site_columns)
+        return sfs
 
 ### Fixed Alphabet Characters ##################################################
 
