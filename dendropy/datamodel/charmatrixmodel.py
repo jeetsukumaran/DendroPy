@@ -1888,7 +1888,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         if is_pad_vector_to_unfolded_length:
             sfs = [0 for idx in range(len(self._taxon_sequence_map)+1)]
         else:
-            sfs = [0 for idx in range(int(math.ceil(len(self._taxon_sequence_map)/2.0)))]
+            sfs = [0 for idx in range(int(math.ceil(len(self._taxon_sequence_map)/2.0))+1)]
         for site in site_columns:
             counter = collections.Counter(site)
             if len(counter) == 1:
