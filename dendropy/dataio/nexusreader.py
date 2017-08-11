@@ -769,7 +769,7 @@ class NexusReader(ioservice.DataReader):
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
                         self._data_type = "standard"
-                        self._symbols = "01"
+                        self._symbols = "0123456789"
                 else:
                     raise self._nexus_error("Expecting '=' after DATATYPE keyword")
                 token = self._nexus_tokenizer.require_next_token_ucase()
