@@ -234,7 +234,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, False)
                 else:
-                    extinct_tips.append(nd)
+                    extinct_tips.add(nd)
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, True)
             elif is_add_extinct_attr:
