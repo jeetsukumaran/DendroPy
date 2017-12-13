@@ -360,7 +360,7 @@ class CharacterDataSequence(
             |AnnotationSet| representing metadata annotations of character at index ``idx``.
         """
         if self._character_annotations[idx] is None:
-            self._character_annotations[idx] = basemodel.AnnotationSet()
+            self._character_annotations[idx] = basemodel.AnnotationSet(object())
         return self._character_annotations[idx]
 
     def has_annotations_at(self, idx):

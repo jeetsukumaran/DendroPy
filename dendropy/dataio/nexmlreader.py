@@ -888,6 +888,9 @@ class _NexmlCharBlockParser(_AnnotationParser):
             self._chartype_id_to_pos_map[chartype_id] = len(self._chartype_id_to_pos_map)
             self._id_chartype_map[chartype_id] = col
             self._char_types.append(col)
+            annotations = [i for i in nxchars.findall_annotations()]
+            for annotation in annotations:
+                self._parse_annotations(col, annotation)
 
     def create_standard_character_alphabet(self, char_matrix, symbol_list=None):
         """
