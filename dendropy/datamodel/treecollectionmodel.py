@@ -1564,7 +1564,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 continue
             try:
                 self._split_edge_length_summaries[split] = statistics.summarize(elens)
-            except ValueError:
+            except (ValueError, TypeError):
                 pass
         return self._split_edge_length_summaries
 
@@ -1575,7 +1575,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
                 continue
             try:
                 self._split_node_age_summaries[split] = statistics.summarize(ages)
-            except ValueError:
+            except (ValueError, TypeError):
                 pass
         return self._split_node_age_summaries
 
