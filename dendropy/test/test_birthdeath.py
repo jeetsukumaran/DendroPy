@@ -17,10 +17,11 @@
 ##############################################################################
 
 """
-Tests of birth-death model fitting.
+Tests of birth-death model likelihood calculatio and fitting.
 """
 
 import unittest
+import json
 import dendropy
 from dendropy.test.support.mockrandom import MockRandom
 from dendropy.test.support import pathmap
@@ -86,6 +87,41 @@ class BirthDeathTreeTest(unittest.TestCase):
             t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+class BirthDeathLikelihoodTestCases(unittest.TestCase):
+
+    def test_likelihood_calc(self):
+        src = pathmap.other_source_stream("birth-death-test-data1.json")
+        ref_data = json.load(src)
+        for test_group in ref_data:
+            tree = dendropy.Tree.get(
+                    data=test_group["tree"] + ";",
+                    schema="newick",
+                    rooting="force-rooted")
+            estimation_profiles = test_group["estimates"]
+            for estimation_profile in estimation_profiles:
+                expected = estimation_profile["log_likelihood"]
+                observed1 = birthdeath.birth_death_likelihood(
+                        tree=tree,
+                        birth_rate=estimation_profile["estimation_birth_rate"],
+                        death_rate=estimation_profile["estimation_death_rate"],
+                        sampling_probability=estimation_profile["estimation_sampling_probability"],
+                        sampling_strategy=estimation_profile["estimation_sampling_strategy"],
+                        is_mrca_included=estimation_profile["estimation_includes_mrca"],
+                        condition_on=estimation_profile["estimation_conditioned_on"],
+                        ultrametricity_precision=1e-5,
+                        )
+                self.assertAlmostEqual(observed1, expected, 6)
+                observed2 = birthdeath.birth_death_likelihood(
+                        internal_node_ages=sorted(tree.internal_node_ages(ultrametricity_precision=1e-5), reverse=True),
+                        birth_rate=estimation_profile["estimation_birth_rate"],
+                        death_rate=estimation_profile["estimation_death_rate"],
+                        sampling_probability=estimation_profile["estimation_sampling_probability"],
+                        sampling_strategy=estimation_profile["estimation_sampling_strategy"],
+                        is_mrca_included=estimation_profile["estimation_includes_mrca"],
+                        condition_on=estimation_profile["estimation_conditioned_on"],
+                        )
+                self.assertAlmostEqual(observed2, expected, 6)
 
 if __name__ == "__main__":
     unittest.main()

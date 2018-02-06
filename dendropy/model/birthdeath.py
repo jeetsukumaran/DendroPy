@@ -16,14 +16,45 @@
 ##
 ##############################################################################
 
+##############################################################################
+## Parts of this code were adapted from:
+##
+##  -   TESS
+##
+##          https://github.com/hoehna/TESS
+##
+##          H{"o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+##          global time-dependent birth--death processes. Bioinformatics, 29(11)
+##          1367-1374.
+##
+##          Copyright (c) 2012- Sebastian Hoehna
+##
+##          TESS is free software; you can redistribute it and/or modify
+##          it under the terms of the GNU Lesser General Public License as
+##          published by the Free Software Foundation; either version 2
+##          of the License, or (at your option) any later version.
+##
+##############################################################################
+
 """
 Models, modeling and model-fitting of birth-death processes.
+
+-   Nee, S.  2001.  Inferring speciation rates from phylogenies.
+    Evolution 55:661-668.
+-   Yule, G. U. 1924. A mathematical theory of evolution based on the
+    conclusions of Dr.  J. C. Willis. Phil. Trans. R. Soc. Lond. B
+    213:21-87.
+-   Hoehna, S. (2015). The time-dependent reconstructed evolutionary process
+    with a key-role for mass-extinction events. Journal of theoretical biology,
+    380, 321-331.
+
 """
 
 import sys
 import math
 import collections
 import itertools
+from dendropy.calculate import combinatorics
 from dendropy.calculate import probability
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility.error import TreeSimTotalExtinctionException
@@ -611,15 +642,9 @@ def uniform_pure_birth_tree(taxon_namespace, birth_rate=1.0, rng=None):
 
 def fit_pure_birth_model(**kwargs):
     """
-    Calculates the maximum-likelihood estimate of the birth rate of a set of
-    *internal* node ages under a Yule (pure-birth) model.
+    Calculates the maximum-likelihood estimate of the birth rate of a set of *internal* node ages under a Yule (pure-birth) model.
 
-    Requires either a |Tree| object or an interable of *internal* node
-    ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``,
-    respectively. The former is more convenient when doing one-off
-    calculations, while the latter is more efficient if the list of internal
-    node ages needs to be used in other places and you already have it
-    calculated and want to avoid re-calculating it here.
+    Requires either a |Tree| object or an interable of *internal* node ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``, respectively. The former is more convenient when doing one-off calculations, while the latter is more efficient if the list of internal node ages needs to be used in other places and you already have it calculated and want to avoid re-calculating it here.
 
     Parameters
     ----------
@@ -628,39 +653,20 @@ def fit_pure_birth_model(**kwargs):
         Exactly *one* of the following *must* be specified:
 
             tree : a |Tree| object.
-                A |Tree| object. The tree needs to be ultrametric for the
-                internal node ages (time from each internal node to the tips)
-                to make sense. The precision by which the ultrametricity is
-                checked can be specified using the ``ultrametricity_precision`` keyword
-                argument (see below). If ``tree`` is given, then
-                ``internal_node_ages`` cannot be given, and vice versa. If ``tree``
-                is not given, then ``internal_node_ages`` must be given.
+                A |Tree| object. The tree needs to be ultrametric for the internal node ages (time from each internal node to the tips) to make sense. The precision by which the ultrametricity is checked can be specified using the ``ultrametricity_precision`` keyword argument (see below). If ``tree`` is given, then ``internal_node_ages`` cannot be given, and vice versa. If ``tree`` is not given, then ``internal_node_ages`` must be given.
             internal_node_ages : iterable (of numerical values)
-                Iterable of node ages of the internal nodes of a tree, i.e., the
-                list of sum of the edge lengths between each internal node and
-                the tips of the tree. If ``internal_node_ages`` is given, then
-                ``tree`` cannot be given, and vice versa. If ``internal_node_ages``
-                is not given, then ``tree`` must be given.
+                Iterable of node ages of the internal nodes of a tree, i.e., the list of sum of the edge lengths between each internal node and the tips of the tree. If ``internal_node_ages`` is given, then ``tree`` cannot be given, and vice versa. If ``internal_node_ages`` is not given, then ``tree`` must be given.
 
-        While the following is optional, and is only used if internal node ages
-        need to be calculated (i.e., 'tree' is passed in).
+        The following are optional, and are only used if internal node ages are
+        specified (i.e., 'internal_node_ages' are passed in):
 
-            ultrametricity_precision : float
-                When calculating the node ages, an error will be raised if the tree in
-                o ultrametric. This error may be due to floating-point or numerical
-                imprecision. You can set the precision of the ultrametricity validation
-                by setting the ``ultrametricity_precision`` parameter. E.g., use
-                ``ultrametricity_precision=0.01`` for a more relaxed precision,
-                down to 2 decimal places. Use ``ultrametricity_precision=False``
-                to disable checking of ultrametricity precision.
-
-            ignore_likelihood_calculation_failure: bool (default: False)
-                In some cases (typically, abnormal trees, e.g., 1-tip), the
-                likelihood estimation will fail. In this case a ValueError will
-                be raised. If ``ignore_likelihood_calculation_failure`` is
-                |True|, then the function call will still succeed, with the
-                likelihood set to -``inf``.
-
+            is_node_ages_presorted : bool
+                By default, the vector of node ages are sorted. If this
+                argument is specified as ``True``, then this sorting will be
+                skipped, in which case it is the client code's responsibility
+                to make sure that the node ages are given in REVERSE order
+                (i.e., oldest nodes -- nodes closer to the root -- given
+                first).
     Returns
     -------
     m : dictionary
@@ -675,13 +681,6 @@ def fit_pure_birth_model(**kwargs):
 
     Examples
     --------
-
-    Given trees such as::
-
-        import dendropy
-        from dendropy.model import birthdeath
-        trees = dendropy.TreeList.get_from_path(
-                "pythonidae.nex", "nexus")
 
     Birth rates can be estimated by passing in trees directly::
 
@@ -707,24 +706,18 @@ def fit_pure_birth_model(**kwargs):
             Speciation/Extinction Rates from Phylogenies. R package version
             2.4-1. http://CRAN.R-project.org/package=laser
 
-    See also:
-
-        -   Nee, S.  2001.  Inferring speciation rates from phylogenies.
-            Evolution 55:661-668.
-        -   Yule, G. U. 1924. A mathematical theory of evolution based on the
-            conclusions of Dr.  J. C. Willis. Phil. Trans. R. Soc. Lond. B
-            213:21-87.
-
     """
     tree = kwargs.get("tree", None)
     if tree is not None:
-        internal_node_ages = tree.internal_node_ages(ultrametricity_precision=kwargs.get("ultrametricity_precision", 0.0000001))
+        internal_node_ages = tree.internal_node_ages(ultrametricity_precision=kwargs.get("ultrametricity_precision", 1e-6))
     else:
         try:
             internal_node_ages = kwargs["internal_node_ages"]
         except KeyError:
             raise TypeError("Need to specify 'tree' or 'internal_node_ages'")
-    x = sorted(internal_node_ages, reverse=True)
+    x = internal_node_ages
+    if tree is not None or not kwargs.get("is_node_ages_presorted", False):
+        x = sorted(internal_node_ages, reverse=True)
     st1 = x[0]
     st2 = 0
     nvec = range(2, len(x)+2)
@@ -797,3 +790,481 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
     """
     return fit_pure_birth_model(tree=tree, ultrametricity_precision=ultrametricity_precision)
 
+
+def birth_death_likelihood(**kwargs):
+    """
+    Calculates the log-likelihood of a tree (or a set of internal nodes) under
+    a birth death model.
+
+    Requires either a |Tree| object or an interable of *internal* node
+    ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``,
+    respectively. The former is more convenient when doing one-off
+    calculations, while the latter is more efficient if the list of internal
+    node ages needs to be used in other places and you already have it
+    calculated and want to avoid re-calculating it here.
+
+    Parameters
+    ----------
+    \*\*kwargs : keyword arguments, mandatory
+
+        Exactly *one* of the following *must* be specified:
+
+            tree : a |Tree| object.
+                A |Tree| object. The tree needs to be ultrametric for the
+                internal node ages (time from each internal node to the tips)
+                to make sense. The precision by which the ultrametricity is
+                checked can be specified using the ``ultrametricity_precision`` keyword
+                argument (see below). If ``tree`` is given, then
+                ``internal_node_ages`` cannot be given, and vice versa. If ``tree``
+                is not given, then ``internal_node_ages`` must be given.
+            internal_node_ages : iterable (of numerical values)
+                Iterable of node ages of the internal nodes of a tree, i.e., the
+                list of sum of the edge lengths between each internal node and
+                the tips of the tree. If ``internal_node_ages`` is given, then
+                ``tree`` cannot be given, and vice versa. If ``internal_node_ages``
+                is not given, then ``tree`` must be given.
+
+        The following keyword parameters are mandatory:
+
+            birth_rate : float
+                The birth rate.
+            death_rate : float
+                The death rate.
+
+        The following keyword parameters are optional:
+
+            sampling_probability
+                The probability for a species to be included in the sample. Defaults to 1.0 (all species sampled).
+            sampling_strategy
+                The strategy how samples were obtained. Options are: uniform|diversified|age.
+            is_mrca_included
+                Does the process start with the most recent common ancestor?
+            condition_on : string
+                Do we condition the process on: "time", "survival", or "taxa"?
+
+        The following are optional, and are only used if internal node ages
+        need to be calculated (i.e., 'tree' is passed in).
+
+            ultrametricity_precision : float
+                When calculating the node ages, an error will be raised if the tree in
+                o ultrametric. This error may be due to floating-point or numerical
+                imprecision. You can set the precision of the ultrametricity validation
+                by setting the ``ultrametricity_precision`` parameter. E.g., use
+                ``ultrametricity_precision=0.01`` for a more relaxed precision,
+                down to 2 decimal places. Use ``ultrametricity_precision=False``
+                to disable checking of ultrametricity precision.
+
+            ignore_likelihood_calculation_failure: bool (default: False)
+                In some cases (typically, abnormal trees, e.g., 1-tip), the
+                likelihood estimation will fail. In this case a ValueError will
+                be raised. If ``ignore_likelihood_calculation_failure`` is
+                |True|, then the function call will still succeed, with the
+                likelihood set to -``inf``.
+
+        The following are optional, and are only used if internal node ages are
+        specified (i.e., 'internal_node_ages' are passed in):
+
+            is_node_ages_presorted : bool
+                By default, the vector of node ages are sorted. If this
+                argument is specified as ``True``, then this sorting will be
+                skipped, in which case it is the client code's responsibility
+                to make sure that the node ages are given in REVERSE order
+                (i.e., oldest nodes -- nodes closer to the root -- given
+                first).
+
+    Notes
+    -----
+    Lifted directly from the (fantastic!) TESS package for R:
+
+        H{"o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+        global time-dependent birth--death processes. Bioinformatics, 29(11)
+        1367-1374.
+
+    Returns
+    -------
+    lnl : float
+
+    The log-likehood of the tree under the birth-death model.
+
+    """
+    tree = kwargs.get("tree", None)
+    if tree is not None:
+        internal_node_ages = tree.internal_node_ages(ultrametricity_precision=kwargs.get("ultrametricity_precision", 1e-6))
+    else:
+        try:
+            internal_node_ages = kwargs["internal_node_ages"]
+        except KeyError:
+            raise TypeError("Need to specify 'tree' or 'internal_node_ages'")
+    if tree is not None or not kwargs.get("is_node_ages_presorted", False):
+        internal_node_ages = sorted(internal_node_ages, reverse=True)
+
+    # check for sensible parameter values
+    # if ( lambda <= 0 || mu < 0 || sampling_probability <= 0 || sampling_probability > 1.0) {
+    #     stop("Invalid parameter values for lambda and mu!")
+    # }
+
+    # massExtinctionTimes=c(),
+    # massExtinctionSurvivalProbabilities=c(),
+    # missingSpecies = c(),
+    # timesMissingSpecies = c(),
+    # tess.likelihood 11
+    # samplingProbability=1.0,
+    # samplingStrategy="uniform",
+    # MRCA=TRUE,
+    # CONDITION="survival",
+    birth_rate = kwargs.get("birth_rate")
+    death_rate = kwargs.get("death_rate")
+    massExtinctionTimes = None
+    massExtinctionSurvivalProbabilities = None
+    sampling_probability = kwargs.get("sampling_probability", 1.0)
+    sampling_strategy = kwargs.get("sampling_strategy", "uniform")
+    is_mrca_included = kwargs.get("is_mrca_included", True)
+    condition_on = kwargs.get("condition_on", "survival")
+
+    ntax = len(internal_node_ages) + 1
+    PRESENT = max(internal_node_ages)
+    times = [(PRESENT - t) for t in internal_node_ages]
+
+    # if we condition on the MRCA, then we need to remove the root speciation event
+    if is_mrca_included:
+        times = times[1:]
+
+    # set the uniform taxon sampling probability
+    if sampling_strategy == "uniform":
+        rho = sampling_probability
+    else:
+        rho = 1.0
+
+    # initialize the log likelihood
+    lnl = 0.0
+
+    # what do we condition on?
+    # did we condition on survival?
+    if condition_on == "survival":
+        lnl = - _p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,rho,0,PRESENT,PRESENT)
+
+    # death_rateltiply the probability of a descendant of the initial species
+    lnl = lnl + _p1_constant(
+            birth_rate=birth_rate,
+            death_rate=death_rate,
+            massExtinctionTimes=massExtinctionTimes,
+            massExtinctionSurvivalProbabilities=massExtinctionSurvivalProbabilities,
+            sampling_probability=rho,
+            t=0,
+            T=PRESENT)
+
+    # add the survival of a second species if we condition on the MRCA
+    if is_mrca_included:
+        lnl = 2 * lnl
+
+    # did we condition on observing n species today
+    if condition_on == "taxa":
+        lnl = lnl - _p_N_constant(
+                birth_rate=birth_rate,
+                death_rate=death_rate,
+                massExtinctionTimes=massExtinctionTimes,
+                massExtinctionSurvivalProbabilities=massExtinctionSurvivalProbabilities,
+                sampling_probability=sampling_probability,
+                i=ntax,
+                s=0,
+                t=PRESENT,
+                SURVIVAL=False,
+                MRCA=is_mrca_included)
+
+    # if we assume diversified sampling, we need to death_rateltiply with the
+    # probability that all missing species happened after the last speciation
+    # event
+    if sampling_strategy == "diversified":
+        # We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+        lastEvent = times[-1]
+        p_0_T = 1.0 - math.exp(_p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,1.0,0,PRESENT,PRESENT)) * math.exp((death_rate-birth_rate)*PRESENT)
+        p_0_t = 1.0 - math.exp(_p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,1.0,lastEvent,PRESENT,PRESENT)) * math.exp((death_rate-birth_rate)*(PRESENT-lastEvent))
+        F_t = p_0_t / p_0_T
+        # get an estimate of the actual number of taxa
+        m = round(float(ntax) / sampling_probability)
+        # remove the number of species that we started with
+        if is_mrca_included:
+            k = 2
+        else:
+            k = 1
+        lnl = lnl + (m-ntax) * math.log(F_t) + math.log(combinatorics.choose(int(m-k),int(ntax-k)))
+
+    # multiply the probability for the missing species
+    # if len(missing_species) > 0:
+    #     # We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+    #     # now iterate over the vector of missing species per interval
+    #     lastEvent = timesMissingSpecies
+    #     p_0_T = 1.0 - math.exp( _p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,1.0,0,PRESENT,PRESENT,log=TRUE) + ((death_rate-birth_rate)*PRESENT) )
+    #     p_0_t = 1.0 - math.exp( _p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,1.0,lastEvent,PRESENT,PRESENT,log=TRUE) + ((death_rate-birth_rate)*(PRESENT-lastEvent)) )
+    #     log_F_t = math.log(p_0_t) - math.log(p_0_T)
+    #     # get an estimate of the actual number of taxa
+    #     m = missingSpecies
+    #     # remove the number of species that we started with
+    #     lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,ntax-k)
+
+
+    # multiply the probability for each speciation time
+    if len(times) > 0:
+        # lnl = lnl + len(times)*math.log(birth_rate) + sum(tess.equations.p1.constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,rho,times,PRESENT,log=TRUE))
+        lnl += (len(times) * math.log(birth_rate))
+        for time in times:
+            lnl += _p1_constant(
+                    birth_rate=birth_rate,
+                    death_rate=death_rate,
+                    massExtinctionTimes=massExtinctionTimes,
+                    massExtinctionSurvivalProbabilities=massExtinctionSurvivalProbabilities,
+                    sampling_probability=rho,
+                    t=time,
+                    T=PRESENT)
+
+    return lnl
+
+
+
+################################################################################
+# From: TESS
+#
+#   https://github.com/hoehna/TESS
+#
+#   H{"o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+#   global time-dependent birth--death processes. Bioinformatics, 29(11)
+#   1367-1374.
+#
+#   Copyright (c) 2012- Sebastian Hoehna
+#
+#   TESS is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as
+#   published by the Free Software Foundation; either version 2
+#   of the License, or (at your option) any later version.
+#
+# @brief  Calculate the probability of n lineage existing at time t
+#         if we started with 1 (or 2) lineage at time s.
+#
+#
+# @see    Equation (3), (5) and (12) in Hoehna, S.: Fast simulation of reconstructed phylogenies
+#         under global, time-dependent birth-death processes. 2013, Bioinformatics
+#
+# @date Last modified: 2013-01-30
+# @author Sebastian Hoehna
+# @version 1.1
+# @since 2012-09-11, version 1.0
+#
+# @param    lambda                                        scalar        speciation rate
+# @param    mu                                            scalar        extinction rate
+# @param    massExtinctionTimes                           vector        timse at which mass-extinctions happen
+# @param    massExtinctionSurvivalProbabilities           vector        survival probability of a mass extinction event
+# @param    samplingProbability                           scalar        probability of uniform sampling at present
+# @param    i                                             scalar        number of lineages
+# @param    s                                             scalar        start time
+# @param    t                                             scalar        stop time
+# @param    MRCA                                          boolean       does the tree start at the mrca?
+# @param    log                                           bool          if in log-scale
+# @return                                                 scalar        log-probability
+#
+################################################################################
+# tess.equations.pN.constant = function(lambda,mu,massExtinctionTimes,massExtinctionSurvivalProbabilities,samplingProbability,i,s,t,SURVIVAL=FALSE,MRCA=FALSE,log=FALSE) {
+def _p_N_constant(
+        birth_rate,
+        death_rate,
+        massExtinctionTimes,
+        massExtinctionSurvivalProbabilities,
+        sampling_probability,
+        i,
+        s,
+        t,
+        SURVIVAL=False,
+        MRCA=False,):
+    if i < 1: # we assume conditioning on survival
+        p = 0
+    elif i == 1:
+        if MRCA: # we assume conditioning on survival of the two species
+            p = 0
+        else:
+            if SURVIVAL:
+                p =  _p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,sampling_probability,s,t,t) + (death_rate-birth_rate)*(t-s) - math.log(sampling_probability)
+            else:
+                p =  2*_p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,sampling_probability,s,t,t) + (death_rate-birth_rate)*(t-s) - math.log(sampling_probability)
+    else:
+        p_s = math.exp(_p_survival_constant(birth_rate,death_rate,massExtinctionTimes,massExtinctionSurvivalProbabilities,sampling_probability,s,t,t))
+        r   = (death_rate-birth_rate)*(t-s) - math.log(sampling_probability)
+        # for (j in seq_len(length(massExtinctionTimes)) ) {
+        #     cond =  (s < massExtinctionTimes[j]) & (t >= massExtinctionTimes[j])
+        #     r  = r - ifelse(cond, log(massExtinctionSurvivalProbabilities[j]), 0.0)
+        e = p_s * math.exp(r)
+        if e > 1:
+            e = 1.0
+
+        if not MRCA:
+            if SURVIVAL:
+                p   = math.log(p_s) + r + math.log( 1 - e) * (i-1)
+            else:
+                p   = 2*math.log(p_s) + r + math.log( 1 - e) * (i-1)
+        else:
+            if SURVIVAL:
+                p = math.log(i-1) + 2*math.log(p_s) + 2*r + math.log( 1 - e) * (i-2)
+            else:
+                p = math.log(i-1) + 4*math.log(p_s) + 2*r + math.log( 1 - e) * (i-2)
+
+    return p
+
+################################################################################
+# From: TESS
+#
+#   https://github.com/hoehna/TESS
+#
+#   H{"o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+#   global time-dependent birth--death processes. Bioinformatics, 29(11)
+#   1367-1374.
+#
+#   Copyright (c) 2012- Sebastian Hoehna
+#
+#   TESS is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as
+#   published by the Free Software Foundation; either version 2
+#   of the License, or (at your option) any later version.
+#
+# @brief  Calculate the probability of survival in the interval [t_low,t_high].
+#
+# See Equation (2) from Hoehna, S., 2013, Fast simulation of reconstructed phylogenies under global, time-dependent birth-death processes
+#
+#
+# @date Last modified: 2013-01-30
+# @author Sebastian Hoehna
+# @version 1.1
+# @since 2012-09-11, version 1.0
+#
+# @param    lambda                                        scalar        speciation rate
+# @param    mu                                            scalar        extinction rate
+# @param    massExtinctionTimes                           vector        timse at which mass-extinctions happen
+# @param    massExtinctionSurvivalProbabilities           vector        survival probability of a mass extinction event
+# @param    samplingProbability                           scalar        probability of uniform sampling at present
+# @param    t_low                                         scalar        starting time
+# @param    t_high                                        scalar        end time
+# @param    T                                             scalar        present time (time goes forward and the origin/MRCA might be 0)
+# @param    log                                           bool          if in log-scale
+# @return                                                 scalar        probability of survival in [t,tau]
+#
+################################################################################
+# tess.equations.pSurvival.constant = function(lambda,mu,massExtinctionTimes,massExtinctionSurvivalProbabilities,samplingProbability,t_low,t_high,T,log=FALSE) {
+def _p_survival_constant(
+        birth_rate,
+        death_rate,
+        massExtinctionTimes,
+        massExtinctionSurvivalProbabilities,
+        sampling_probability,
+        t_low,
+        t_high,
+        T):
+
+    # compute the rate
+    rate = death_rate - birth_rate
+
+    # do the integration of int_{t_low}^{t_high} ( death_rate(s) exp(rate(t,s)) ds )
+    # where rate(t,s) = int_{t}^{s} ( death_rate(x)-birth_rate(x) dx ) - sum_{for all t < m_i < s in massExtinctionTimes }( log(massExtinctionSurvivalProbability[i]) )
+
+    # we compute the integral stepwise for each epoch between mass-extinction events
+    # add mass-extinction
+    accudeath_ratelatedMassExtinction = 1.0
+    prev_time = t_low
+    den = 1.0
+    # if ( length(massExtinctionTimes) > 0 ) {
+    #     for (j in 1:length(massExtinctionTimes) ) {
+    #         cond =  (t_low < massExtinctionTimes[j]) & (t_high >= massExtinctionTimes[j])
+    #         # compute the integral for this time episode until the mass-extinction event
+    #     #       den = den + ifelse(cond, exp(-rate*t_low) * death_rate / (rate * accudeath_ratelatedMassExtinction ) * ( exp(rate* massExtinctionTimes[j]) - exp(rate*prev_time)) , 0 )
+    #         den = den + cond * exp(-rate*t_low) * death_rate / (rate * accudeath_ratelatedMassExtinction ) * ( exp(rate* massExtinctionTimes[j]) - exp(rate*prev_time))
+    #         # store the current time so that we remember from which episode we need to integrate next
+    #     #       prev_time = ifelse(cond, massExtinctionTimes[j], prev_time)
+    #         prev_time[cond] = massExtinctionTimes[j]
+    #         accudeath_ratelatedMassExtinction = accudeath_ratelatedMassExtinction * ifelse(cond, massExtinctionSurvivalProbabilities[j], 1.0)
+    #         # integrate over the tiny time interval of the mass-extinction event itself and add it to the integral
+    #     #       den = den - ifelse(cond, (massExtinctionSurvivalProbabilities[j]-1) / accudeath_ratelatedMassExtinction * exp( rate*(massExtinctionTimes[j] - t_low) ), 0.0 )
+    #         den = den - cond * (massExtinctionSurvivalProbabilities[j]-1) / accudeath_ratelatedMassExtinction * exp( rate*(massExtinctionTimes[j] - t_low) )
+    #     }
+    # }
+
+    # add the integral of the final epoch until the present time
+    den = den + math.exp(-rate*t_low) * death_rate / (rate * accudeath_ratelatedMassExtinction ) * ( math.exp(rate*t_high) - math.exp(rate*prev_time))
+
+    # add sampling
+    if (sampling_probability < 1) and (t_low < T) and (t_high >= T):
+        accudeath_ratelatedMassExtinction = accudeath_ratelatedMassExtinction *  sampling_probability
+        cond = 1
+    else:
+        cond = 0
+
+    #   den = den - ifelse(cond, (sampling_probability-1)*math.exp( rate*(T-t_low) ) / accudeath_ratelatedMassExtinction, 0.0)
+    den = den - cond * (sampling_probability-1)*math.exp( rate*(T-t_low) ) / accudeath_ratelatedMassExtinction
+
+    res = 1.0 / den
+    res = math.log(res)
+
+    return (res)
+
+
+################################################################################
+# From: TESS
+#
+#   https://github.com/hoehna/TESS
+#
+#   H{"o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+#   global time-dependent birth--death processes. Bioinformatics, 29(11)
+#   1367-1374.
+#
+#   Copyright (c) 2012- Sebastian Hoehna
+#
+#   TESS is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as
+#   published by the Free Software Foundation; either version 2
+#   of the License, or (at your option) any later version.
+#
+# @brief  Calculate the probability of exactly 1 lineage surviving until time T
+#         if we started with 1 lineage at time t.
+#
+# @see    Equation (4) in Hoehna, S.: Fast simulation of reconstructed phylogenies
+#         under global, time-dependent birth-death processes. 2013, Bioinformatics
+#
+# @date Last modified: 2013-01-30
+# @author Sebastian Hoehna
+# @version 1.1
+# @since 2012-09-11, version 1.0
+#
+# @param    lambda                                        scalar        speciation rate
+# @param    mu                                            scalar        extinction rate
+# @param    massExtinctionTimes                           vector        timse at which mass-extinctions happen
+# @param    massExtinctionSurvivalProbabilities           vector        survival probability of a mass extinction event
+# @param    samplingProbability                           scalar        probability of uniform sampling at present
+# @param    t                                             scalar        time
+# @param    T                                             scalar        present time
+# @param    log                                           bool          if in log-scale
+# @return                                                 scalar        ln-probability
+#
+################################################################################
+# tess.equations.p1.constant = function(lambda,mu,massExtinctionTimes,massExtinctionSurvivalProbabilities,samplingProbability,t,T,log=FALSE) {
+def _p1_constant(
+        birth_rate,
+        death_rate,
+        massExtinctionTimes,
+        massExtinctionSurvivalProbabilities,
+        sampling_probability,
+        t,
+        T):
+    # compute the survival probability
+    a = _p_survival_constant(
+            birth_rate=birth_rate,
+            death_rate=death_rate,
+            massExtinctionTimes=massExtinctionTimes,
+            massExtinctionSurvivalProbabilities=massExtinctionSurvivalProbabilities,
+            sampling_probability=sampling_probability,
+            t_low=t,
+            t_high=T,
+            T=T)
+    # compute the rate
+    rate = (death_rate - birth_rate)*(T-t)
+    # add mass-extinction
+    # for (j in range(len(massExtinctionTimes)) ) :
+    #     rate = rate - ifelse( t < massExtinctionTimes[j] & T >= massExtinctionTimes[j], log(massExtinctionSurvivalProbabilities[j]), 0 )
+    # add sampling
+    rate = rate - math.log(sampling_probability)
+    p = 2*a + rate
+    return p
