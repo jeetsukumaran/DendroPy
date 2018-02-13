@@ -5503,7 +5503,7 @@ class Tree(
     ###########################################################################
     ### Ages, depths, branch lengths etc. (calculation)
 
-    def phylogenetic_distance_matrix(self):
+    def phylogenetic_distance_matrix(self, *args, **kwargs):
         """
         Returns a |PhylogeneticDistanceMatrix| instance based
         on the tree (in its current state).
@@ -5515,7 +5515,7 @@ class Tree(
             tree in its current state.
         """
         from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
-        return PhylogeneticDistanceMatrix.from_tree(tree=self)
+        return PhylogeneticDistanceMatrix.from_tree(tree=self, *args, **kwargs)
 
     def node_distance_matrix(self):
         from dendropy.calculate.phylogeneticdistance import NodeDistanceMatrix

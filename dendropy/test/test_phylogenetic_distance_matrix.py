@@ -873,7 +873,7 @@ class PhylogeneticPathTest(unittest.TestCase):
                 node.edge.label = node_edge_labels[node.taxon.label]
             elif node.label is not None:
                 node.edge.label = node_edge_labels[node.label]
-        pdm = tree.phylogenetic_distance_matrix()
+        pdm = tree.phylogenetic_distance_matrix(is_store_path_edges=True)
         expected = {
                 ('a', 'a'):  [],
                 ('a', 'b'):  ['v1', 'v2'],

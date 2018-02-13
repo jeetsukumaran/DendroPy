@@ -35,7 +35,7 @@ class PhylogeneticDistanceMatrix(object):
     """
 
     @classmethod
-    def from_tree(cls, tree):
+    def from_tree(cls, tree, *args, **kwargs):
         """
         Creates and returns a |PhylogeneticDistanceMatrix| based
         on the given tree.
@@ -75,7 +75,7 @@ class PhylogeneticDistanceMatrix(object):
             pdm2 = tree.phylogenetic_distance_matrix()
 
         """
-        pdm = cls()
+        pdm = cls(*args, **kwargs)
         pdm.compile_from_tree(tree=tree)
         return pdm
 
@@ -230,8 +230,10 @@ class PhylogeneticDistanceMatrix(object):
                 taxon_namespace=taxon_namespace)
         return pdm
 
-    def __init__(self):
+    def __init__(self,
+            is_store_path_edges=False):
         self.clear()
+        self.is_store_path_edges = is_store_path_edges
 
     def clear(self):
         self.taxon_namespace = None
@@ -258,6 +260,10 @@ class PhylogeneticDistanceMatrix(object):
         #     self._mrca[t1] = {}
         self._tree_length = 0.0
         self._num_edges = 0
+        if self.is_store_path_edges:
+            default_pedges = []
+        else:
+            default_pedges = None
         for node in tree.postorder_node_iter():
             try:
                 self._tree_length += node.edge.length
@@ -266,7 +272,7 @@ class PhylogeneticDistanceMatrix(object):
             self._num_edges += 1
             children = node.child_nodes()
             if len(children) == 0:
-                node.desc_paths = {node : (0,0, [])}
+                node.desc_paths = {node : (0,0, default_pedges)}
             else:
                 node.desc_paths = {}
                 for cidx1, c1 in enumerate(children):
@@ -275,8 +281,10 @@ class PhylogeneticDistanceMatrix(object):
                             c1_edge_length = 0.0
                         else:
                             c1_edge_length = c1.edge.length
-                        pedges = list([c1.edge] + desc1_pedges)
-                        pedges = list(desc1_pedges + [c1.edge])
+                        if self.is_store_path_edges:
+                            pedges = list(desc1_pedges + [c1.edge])
+                        else:
+                            pedges = default_pedges
                         node.desc_paths[desc1] = (desc1_plen + c1_edge_length, desc1_psteps + 1, pedges)
                         assert desc1.taxon is not None
                         if desc1.taxon not in self._taxon_phylogenetic_distances:
@@ -285,8 +293,9 @@ class PhylogeneticDistanceMatrix(object):
                             self._taxon_phylogenetic_distances[desc1.taxon][desc1.taxon] = 0.0
                             self._taxon_phylogenetic_path_steps[desc1.taxon] = {}
                             self._taxon_phylogenetic_path_steps[desc1.taxon][desc1.taxon] = 0
-                            self._taxon_phylogenetic_path_edges[desc1.taxon] = {}
-                            self._taxon_phylogenetic_path_edges[desc1.taxon][desc1.taxon] = []
+                            if self.is_store_path_edges:
+                                self._taxon_phylogenetic_path_edges[desc1.taxon] = {}
+                                self._taxon_phylogenetic_path_edges[desc1.taxon][desc1.taxon] = []
                             self._mrca[desc1.taxon] = {desc1.taxon: desc1}
                         for c2 in children[cidx1+1:]:
                             for desc2, (desc2_plen, desc2_psteps, desc2_pedges) in c2.desc_paths.items():
@@ -302,8 +311,9 @@ class PhylogeneticDistanceMatrix(object):
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
-                                pedges = tuple(node.desc_paths[desc1][2] + [c2.edge] + desc2_pedges[::-1])
-                                self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
+                                if self.is_store_path_edges:
+                                    pedges = tuple(node.desc_paths[desc1][2] + [c2.edge] + desc2_pedges[::-1])
+                                    self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
                     del(c1.desc_paths)
         self._mirror_lookups()
         # assert self._tree_length == tree.length()
