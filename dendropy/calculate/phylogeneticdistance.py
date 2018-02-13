@@ -241,6 +241,7 @@ class PhylogeneticDistanceMatrix(object):
         self._num_edges = None
         self._taxon_phylogenetic_distances = {}
         self._taxon_phylogenetic_path_steps = {}
+        self._taxon_phylogenetic_path_edges = {}
         self._mrca = {}
 
     def compile_from_tree(self, tree):
@@ -265,16 +266,18 @@ class PhylogeneticDistanceMatrix(object):
             self._num_edges += 1
             children = node.child_nodes()
             if len(children) == 0:
-                node.desc_paths = {node : (0,0)}
+                node.desc_paths = {node : (0,0, [])}
             else:
                 node.desc_paths = {}
                 for cidx1, c1 in enumerate(children):
-                    for desc1, (desc1_plen, desc1_psteps) in c1.desc_paths.items():
+                    for desc1, (desc1_plen, desc1_psteps, desc1_pedges) in c1.desc_paths.items():
                         if c1.edge_length is None:
                             c1_edge_length = 0.0
                         else:
                             c1_edge_length = c1.edge.length
-                        node.desc_paths[desc1] = (desc1_plen + c1_edge_length, desc1_psteps + 1)
+                        pedges = list([c1.edge] + desc1_pedges)
+                        pedges = list(desc1_pedges + [c1.edge])
+                        node.desc_paths[desc1] = (desc1_plen + c1_edge_length, desc1_psteps + 1, pedges)
                         assert desc1.taxon is not None
                         if desc1.taxon not in self._taxon_phylogenetic_distances:
                             self._mapped_taxa.add(desc1.taxon)
@@ -282,9 +285,11 @@ class PhylogeneticDistanceMatrix(object):
                             self._taxon_phylogenetic_distances[desc1.taxon][desc1.taxon] = 0.0
                             self._taxon_phylogenetic_path_steps[desc1.taxon] = {}
                             self._taxon_phylogenetic_path_steps[desc1.taxon][desc1.taxon] = 0
+                            self._taxon_phylogenetic_path_edges[desc1.taxon] = {}
+                            self._taxon_phylogenetic_path_edges[desc1.taxon][desc1.taxon] = []
                             self._mrca[desc1.taxon] = {desc1.taxon: desc1}
                         for c2 in children[cidx1+1:]:
-                            for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
+                            for desc2, (desc2_plen, desc2_psteps, desc2_pedges) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
                                 # self._all_distinct_mapped_taxa_pairs.add( tuple([desc1.taxon, desc2.taxon]) )
@@ -297,6 +302,8 @@ class PhylogeneticDistanceMatrix(object):
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
                                 path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
+                                pedges = tuple(node.desc_paths[desc1][2] + [c2.edge] + desc2_pedges[::-1])
+                                self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
                     del(c1.desc_paths)
         self._mirror_lookups()
         # assert self._tree_length == tree.length()
@@ -323,6 +330,12 @@ class PhylogeneticDistanceMatrix(object):
                     if taxon2 not in ddata:
                         ddata[taxon2] = {}
                     ddata[taxon2][taxon1] = ddata[taxon1][taxon2]
+        for taxon1 in self._taxon_phylogenetic_path_edges:
+            for taxon2 in self._taxon_phylogenetic_path_edges:
+                if taxon2 not in self._taxon_phylogenetic_path_edges:
+                    self._taxon_phylogenetic_path_edges[taxon2][taxon1] = {}
+                if taxon1 not in self._taxon_phylogenetic_path_edges[taxon2]:
+                    self._taxon_phylogenetic_path_edges[taxon2][taxon1] = tuple(reversed(self._taxon_phylogenetic_path_edges[taxon1][taxon2]))
 
     def __eq__(self, o):
         if self.taxon_namespace is not o.taxon_namespace:
@@ -332,6 +345,7 @@ class PhylogeneticDistanceMatrix(object):
                 and (self._all_distinct_mapped_taxa_pairs == o._all_distinct_mapped_taxa_pairs)
                 and (self._taxon_phylogenetic_distances == o._taxon_phylogenetic_distances)
                 and (self._taxon_phylogenetic_path_steps == o._taxon_phylogenetic_path_steps)
+                and (self._taxon_phylogenetic_path_edges == o._taxon_phylogenetic_path_edges)
                 and (self._mrca == o._mrca)
                 and (self._tree_length == o._tree_length)
                 and (self._num_edges == o._num_edges)
@@ -360,6 +374,7 @@ class PhylogeneticDistanceMatrix(object):
         for src, dest in (
                 (self._taxon_phylogenetic_distances, o._taxon_phylogenetic_distances,),
                 (self._taxon_phylogenetic_path_steps, o._taxon_phylogenetic_path_steps,),
+                (self._taxon_phylogenetic_path_edges, o._taxon_phylogenetic_path_edges,),
                 (self._mrca, o._mrca,),
                 ):
             for t1 in src:
@@ -410,6 +425,12 @@ class PhylogeneticDistanceMatrix(object):
             return float(d) / self._num_edges
         else:
             return d
+
+    def path_edges(self, taxon1, taxon2):
+        """
+        Returns the edges between two taxon objects.
+        """
+        return self._taxon_phylogenetic_path_edges[taxon1][taxon2]
 
     def distances(self,
             is_weighted_edge_distances=True,
