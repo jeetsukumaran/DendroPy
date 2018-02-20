@@ -141,7 +141,7 @@ class Bipartition(object):
 
     """
 
-    def normalize_bitmask(bitmask, fill_bitmask, lowest_relevant_bit):
+    def normalize_bitmask(bitmask, fill_bitmask, lowest_relevant_bit=1):
         if bitmask & lowest_relevant_bit:
             return (~bitmask) & fill_bitmask             # force least-significant bit to 0
         else:
@@ -979,6 +979,28 @@ class Node(
     A :term:|Node| on a :term:|Tree|.
     """
 
+    def edge_factory(cls, **kwargs):
+        """
+        Creates and returns a |Edge| object.
+
+        Derived classes can override this method to provide support for
+        specialized or different types of edges on the tree.
+
+        Parameters
+        ----------
+
+        \*\*kwargs : keyword arguments
+            Passed directly to constructor of |Edge|.
+
+        Returns
+        -------
+        |Edge|
+            A new |Edge| object.
+
+        """
+        return Edge(**kwargs)
+    edge_factory = classmethod(edge_factory)
+
     ###########################################################################
     ### Life-cycle
 
@@ -1001,7 +1023,7 @@ class Node(
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
-        self.edge = Edge(head_node=self,
+        self.edge = self.edge_factory(head_node=self,
                 length=kwargs.pop("edge_length", None))
         if kwargs:
             raise TypeError("Unsupported keyword arguments: {}".format(kwargs))

@@ -1885,18 +1885,20 @@ class DiscreteCharacterMatrix(CharacterMatrix):
             spectrum.
         """
         site_columns = zip(*self.sequences())
+        nsites = 0
         if is_pad_vector_to_unfolded_length:
             sfs = [0 for idx in range(len(self._taxon_sequence_map)+1)]
         else:
             sfs = [0 for idx in range(int(math.ceil(len(self._taxon_sequence_map)/2.0))+1)]
         for site in site_columns:
             counter = collections.Counter(site)
+            nsites += 1
             if len(counter) == 1:
                 sfs[0] += 1
                 continue
             del counter[counter.most_common(1)[0][0]]
             sfs[sum(counter.values())] += 1
-        assert sum(sfs) == len(site_columns)
+        assert sum(sfs) == nsites
         return sfs
 
 ### Fixed Alphabet Characters ##################################################
