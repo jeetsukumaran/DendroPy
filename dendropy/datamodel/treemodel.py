@@ -5832,6 +5832,7 @@ class Tree(
             is |True|, then |None|.
 
         """
+        self._split_bitmask_edge_map = None
         self._bipartition_edge_map = None
         taxon_namespace = self._taxon_namespace
         seed_node = self.seed_node
@@ -5933,10 +5934,18 @@ class Tree(
             if not self.bipartition_encoding:
                 self.encode_bipartitions()
             self._bipartition_edge_map = {}
+            self._split_bitmask_edge_map = {}
             for edge in self.postorder_edge_iter():
                 self._bipartition_edge_map[edge.bipartition] = edge
+                self._split_bitmask_edge_map[edge.bipartition.split_bitmask] = edge
         return self._bipartition_edge_map
     bipartition_edge_map = property(_get_bipartition_edge_map)
+
+    def _get_split_bitmask_edge_map(self):
+        if not self._split_bitmask_edge_map:
+            self._get_bipartition_edge_map()
+        return self._split_bitmask_edge_map
+    split_bitmask_edge_map = property(_get_split_bitmask_edge_map)
 
     ###########################################################################
     ### Metrics -- Unary
