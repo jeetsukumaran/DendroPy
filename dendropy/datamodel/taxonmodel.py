@@ -1460,7 +1460,8 @@ class TaxonNamespace(
         return Bipartition(
                 bitmask=bitmask,
                 tree_leafset_bitmask=tree_leafset_bitmask,
-                compile_bipartition=True)
+                compile_bipartition=True,
+                is_rooted=kwargs.get("is_rooted", None))
 
     def get_taxa_bitmask(self, **kwargs):
         """
