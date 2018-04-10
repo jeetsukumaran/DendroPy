@@ -49,56 +49,6 @@ This includes:
 
 and more.
 
-Testing
-=======
-
-.. note::
-
-    Note that some tests rely on PAUP* being available on your system.
-    You will need to set the environmental variable ``DENDROPY_PAUP_EXECUTABLE_PATH`` to the path
-    of the PAUP* executable for these tests to be run, e.g.::
-
-        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python setup.py test
-
-    or::
-
-        DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup python -m dendropy.test
-
-    If this variable is not set or set to "NONE", then any tests that rely on
-    PAUP* will NOT be run.
-
-Tests can be run by typing::
-
-    $ python -m dendropy.test
-
-By default, all tests are run. You can run specific by providing the
-fully-qualified name of the modules, test cases, or specific test methods to
-run, e.g.::
-
-    $ python -m dendropy.test test_tokenizer
-    $ python -m dendropy.test test_tokenizer.TestCase
-    $ python -m dendropy.test test_tokenizer.TestCase.test1
-    $ python -m dendropy.test test_tokenizer test_datamodel_taxon
-
-Or special pre-defined sub-groups of tests, e.g.::
-
-    $ python -m dendropy.test @datamodel
-    $ python -m dendropy.test @dataio
-    $ python -m dendropy.test @datamodel @newick
-
-A list of all available sub-groups can be seen by::
-
-    $ python -m dendropy.test --help-testgroups
-
-For any tests run, you can set the level at which the test progress is logged
-by::
-
-    $ python -m dendropy.test -l DEBUG all
-
-For all options, type::
-
-    $ python -m dendropy.test --help
-
 License and Warranty
 ====================
 
