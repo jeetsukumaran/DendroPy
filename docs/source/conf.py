@@ -348,8 +348,16 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    "**" : ["logo.html", "searchbox.html", "localtoc.html", "relations.html", "side_supplemental.html"],
-}
+    "**" : ["logo.html",
+            "cleardiv.html",
+            "searchbox.html",
+            "cleardiv.html",
+            "localtoc.html",
+            "cleardiv.html",
+            "relations.html",
+            "cleardiv.html",
+            "side_supplemental.html"],
+        }
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
