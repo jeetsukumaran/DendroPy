@@ -180,7 +180,7 @@ class TestBasicCredibilityScoring(unittest.TestCase):
 class TestTreeEdgeSummarization(unittest.TestCase):
 
     def setUp(self):
-        selfsupport_trees_path = pathmap.tree_source_path("primates.beast.mcmc.trees")
+        self.support_trees_path = pathmap.tree_source_path("primates.beast.mcmc.trees")
         self.target_tree_path = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
         self.expected_tree_path = pathmap.tree_source_path("primates.beast.mcct.medianh.tre")
         self.burnin = 40
