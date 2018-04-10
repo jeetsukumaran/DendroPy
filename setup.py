@@ -37,10 +37,13 @@ if hasattr(ssl, '_create_unverified_context'):
 ## Utility
 
 def _read(names, **kwargs):
-    with open(os.path.join(os.path.dirname(__file__), *names),
-            encoding=kwargs.get('encoding', 'utf8')) as src:
-        s = src.read()
-    return s
+    path = os.path.join(os.path.dirname(__file__), *names)
+    if sys.version_info.major < 3:
+        return open(path, "rU").read()
+    else:
+        with open(path, encoding=kwargs.get('encoding', 'utf8')) as src:
+            s = src.read()
+        return s
 
 def _compose_list(values, prefix=None):
     if prefix is None:
