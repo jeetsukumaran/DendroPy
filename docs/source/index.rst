@@ -87,7 +87,7 @@ Documentation
 
         A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.
 
-    :doc: `News </news>`
+    :doc:`News </news>`
 
         Announcements relating to DendroPy.
 
