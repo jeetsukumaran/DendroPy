@@ -1867,7 +1867,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         alleles, 1 allele, 2 alleles, etc.
 
         The *folded* site frequency spectrum is a vector $(f_0, f_1, f_2, ...,
-        f_m), m = \ceil{\frac{N}{2}}$, where the values are the number of minor
+        f_m), m = \ceil{\\frac{N}{2}}$, where the values are the number of minor
         alleles in the site.
 
         Parameters
