@@ -188,7 +188,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
     def testMeanNodeAgeSummarizationOnMCCT(self):
         tree_array = dendropy.TreeArray(ignore_node_ages=False)
         tree_array.read_from_path(
-                selfsupport_trees_path,
+                self.support_trees_path,
                 "nexus",
                 # colleciton_offset=0,
                 tree_offset=self.burnin,
