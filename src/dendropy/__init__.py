@@ -102,15 +102,8 @@ from dendropy.legacy import treesum
 ###############################################################################
 ## PACKAGE METADATA
 import collections
-version_info = collections.namedtuple("dendropy_version_info",
-        ["major", "minor", "micro", "releaselevel"])(
-                major=4,
-                minor=3,
-                micro=0,
-                releaselevel=""
-                )
 __project__ = "DendroPy"
-__version__ = ".".join(str(s) for s in version_info[:4] if s != "")
+__version__ = "4.3.0"
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
