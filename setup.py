@@ -68,7 +68,6 @@ except ImportError as e:
             "dendropy.mathlib",
             "dendropy.model",
             "dendropy.simulate",
-            "dendropy.test",
             "dendropy.utility",
             "dendropy.utility.libexec",
             ]
@@ -78,7 +77,7 @@ else:
 EXTRA_KWARGS = dict(
     install_requires = ['setuptools'],
     include_package_data = True,
-    test_suite = "dendropy.test",
+    test_suite = "tests",
     zip_safe = True,
     )
 
@@ -114,12 +113,12 @@ else:
 
     ###########################################################################
     # coverage
-    from dendropy.test.support import coverage_analysis
-    if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
-        sys.stderr.write("-setup.py: coverage analysis available ('python setup.py coverage')\n")
-        ENTRY_POINTS[command_hook].append("coverage = dendropy.test.support.coverage_analysis:CoverageAnalysis")
-    else:
-        sys.stderr.write("-setup.py: coverage analysis not available\n")
+    # from dendropy.test.support import coverage_analysis
+    # if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
+    #     sys.stderr.write("-setup.py: coverage analysis available ('python setup.py coverage')\n")
+    #     ENTRY_POINTS[command_hook].append("coverage = dendropy.test.support.coverage_analysis:CoverageAnalysis")
+    # else:
+    #     sys.stderr.write("-setup.py: coverage analysis not available\n")
 
 
 ###############################################################################
