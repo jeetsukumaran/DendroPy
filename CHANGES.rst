@@ -1,16 +1,20 @@
-Release 4.3.0
+Release 4.4.0
 -------------
 
--   [SumTrees]: Important bugfix in tracking splits on consensus tree from rooted trees: previously it was possible for a split on the consensus tree to be ignored, resulting in a null (0) edge length and no (0.0) support.
--   Added ``sumlabels.py`` application.
 -   Calculation of birth-death likelihoods.
--   Birth-death tree (``dendropy.model.birth_death_tree``) now allows for preservation of extinct tips.
--   Improved performance of character subset export
 -   Bipartitions inherit rooting state of trees.
 -   Patristic paths between tips can be tracked in ``PatristicDistanceMatrix``.
 -   Character column metadata annotations now actually possible.
 -   Standard character matrix defaults to 0-9 alphabet instead of just 01.
 -   Reorganization of package directory: from "$HOME/dendropy" and "$HOME/dendropy/test" to more modern "$HOME/src/dendropy" and "$HOME/tests" respectively.
+
+Release 4.3.0
+-------------
+
+-   [SumTrees]: Important bugfix in tracking splits on consensus tree from rooted trees: previously it was possible for a split on the consensus tree to be ignored, resulting in a null (0) edge length and no (0.0) support.
+-   Added ``sumlabels.py`` application.
+-   Birth-death tree (``dendropy.model.birth_death_tree``) now allows for preservation of extinct tips.
+-   Improved performance of character subset export
 
 Release 4.2.0
 -------------
