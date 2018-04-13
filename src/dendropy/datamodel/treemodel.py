@@ -5520,7 +5520,7 @@ class Tree(
                 if minimum_edge_length is not None and edge_length < minimum_edge_length:
                     edge_length = minimum_edge_length
                 if error_on_negative_edge_lengths and edge_length < 0.0:
-                    raise ValueError("Negative edge length: {}".foramt(edge_length))
+                    raise ValueError("Negative edge length: {}".format(edge_length))
                 nd.edge.length = edge_length
 
     ###########################################################################
