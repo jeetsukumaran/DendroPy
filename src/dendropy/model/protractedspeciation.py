@@ -651,11 +651,11 @@ class ProtractedSpeciationProcess(object):
                 taxon_namespace=species_taxon_namespace,
                 )
         lineage_tree = self._compile_lineage_tree(
-            lineage_collection=self._lineage_collection,
-            max_time=self._current_time,
-            is_drop_extinct=True,
-            taxon_namespace=lineage_taxon_namespace,
-            )
+                lineage_collection=self._lineage_collection,
+                max_time=self._current_time,
+                is_drop_extinct=True,
+                taxon_namespace=lineage_taxon_namespace,
+                )
         self._correlate_lineage_and_species_trees()
         return lineage_tree, orthospecies_tree
 
