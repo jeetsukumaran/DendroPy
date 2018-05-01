@@ -635,7 +635,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             for psm in self.iter_psm_models(rng=rng):
                 for kwargs in (
                         {"max_time": 20},
-                        # {"max_extant_orthospecies": 10},
+                        {"max_extant_orthospecies": 10},
                         {"max_extant_lineages": 20},
                         ):
                     for is_initial_lineage_orthospecies in (True, False):
