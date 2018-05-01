@@ -556,16 +556,18 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                             )
                     yield psm
 
-    def iter_samples(self):
-        for psm in self.iter_psm_models():
-            for kwargs in (
-                    {"max_time": 20},
-                    {"max_extant_orthospecies": 10},
-                    {"max_extant_lineages": 20},
-                    ):
-                for is_initial_lineage_orthospecies in (True, False):
-                    kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
-                    yield psm.generate_sample(**kwargs)
+    def iter_samples(self, psm, additional_kwargs=None):
+        if additional_kwargs is None:
+            additional_kwargs = {}
+        for kwargs in (
+                {"max_time": 20},
+                {"max_extant_orthospecies": 10},
+                {"max_extant_lineages": 20},
+                ):
+            for is_initial_lineage_orthospecies in (True, False):
+                kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
+                kwargs.update(additional_kwargs)
+                yield psm.generate_sample(**kwargs)
 
     def check(self, tree):
         tree.calc_node_ages()
@@ -584,6 +586,9 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             self.assertNotIn(leaf.taxon.label, seen_taxon_labels)
             seen_taxon_labels.add(leaf.taxon.label)
             num_leaves += 1
+        if len(expected_taxa) != 0:
+            print(tree.as_string("newick"))
+            print("Remaining: {}".format(", ".join(t.label for t in expected_taxa)))
         self.assertEqual(len(expected_taxa), 0)
         self.assertEqual(num_leaves, len(tree.taxon_namespace))
         for nd in tree.internal_nodes():
@@ -614,9 +619,30 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                 for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
                     self.check(tree)
 
+    def test_taxon_namespace(self):
+        for psm in self.iter_psm_models():
+            for kwargs in (
+                    {"max_time": 20},
+                    # {"max_extant_orthospecies": 10},
+                    {"max_extant_lineages": 20},
+                    ):
+                for is_initial_lineage_orthospecies in (True, False):
+                    kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
+                    lineage_taxon_namespace = dendropy.TaxonNamespace()
+                    species_taxon_namespace = dendropy.TaxonNamespace()
+                    kwargs["lineage_taxon_namespace"] = lineage_taxon_namespace
+                    kwargs["species_taxon_namespace"] = species_taxon_namespace
+                    print(kwargs)
+                    lineage_tree, orthospecies_tree = psm.generate_sample(**kwargs)
+                    self.assertIs(lineage_tree.taxon_namespace, lineage_taxon_namespace)
+                    self.assertIs(orthospecies_tree.taxon_namespace, species_taxon_namespace)
+                    for tree in (lineage_tree, orthospecies_tree):
+                        self.check(tree)
+
     def test_(self):
-        for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples()):
-            pass
+        for psm in self.iter_psm_models():
+            for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples(psm)):
+                pass
 
 if __name__ == "__main__":
     unittest.main()

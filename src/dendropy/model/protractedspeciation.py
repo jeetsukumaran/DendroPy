@@ -592,7 +592,6 @@ class ProtractedSpeciationProcess(object):
                             lineage_collection=lineage_collection_snapshot,
                             max_time=self._current_time,
                             sampling_scheme=orthospecies_sampling_scheme,
-                            taxon_namespace=species_taxon_namespace,
                             )
                     num_leaves = len(orthospecies_tree.leaf_nodes())
                     if num_leaves >= max_extant_orthospecies:
@@ -600,8 +599,9 @@ class ProtractedSpeciationProcess(object):
                             lineage_collection=lineage_collection_snapshot,
                             max_time=self._current_time,
                             is_drop_extinct=True,
-                            taxon_namespace=lineage_taxon_namespace,
                             )
+                        self._build_taxa(tree=lineage_tree, taxon_namespace=lineage_taxon_namespace)
+                        self._build_taxa(tree=orthospecies_tree, taxon_namespace=species_taxon_namespace)
                         self._correlate_lineage_and_species_trees()
                         return lineage_tree, orthospecies_tree
                 except ProcessFailedException:
@@ -647,14 +647,14 @@ class ProtractedSpeciationProcess(object):
                 lineage_collection=self._lineage_collection,
                 max_time=self._current_time,
                 is_drop_extinct=True,
-                taxon_namespace=lineage_taxon_namespace,
                 )
         orthospecies_tree = self._compile_species_tree(
                 lineage_collection=self._lineage_collection,
                 max_time=self._current_time,
                 sampling_scheme=orthospecies_sampling_scheme,
-                taxon_namespace=species_taxon_namespace,
                 )
+        self._build_taxa(tree=lineage_tree, taxon_namespace=lineage_taxon_namespace)
+        self._build_taxa(tree=orthospecies_tree, taxon_namespace=species_taxon_namespace)
         self._correlate_lineage_and_species_trees()
         return lineage_tree, orthospecies_tree
 
@@ -717,7 +717,6 @@ class ProtractedSpeciationProcess(object):
             lineage_collection,
             max_time,
             sampling_scheme="oldest",
-            taxon_namespace=None,
             ):
         if sampling_scheme == "oldest":
             lt = sorted(lineage_collection, key=lambda x: x.origin_time)
@@ -741,7 +740,7 @@ class ProtractedSpeciationProcess(object):
                 max_time=max_time,
                 tree_type="species",
                 is_drop_extinct=True,
-                taxon_namespace=taxon_namespace)
+                )
         for k,v in to_restore_species_extinction_times.items():
             k.extinction_time = v
         return t
@@ -750,14 +749,12 @@ class ProtractedSpeciationProcess(object):
             lineage_collection,
             max_time,
             is_drop_extinct=True,
-            taxon_namespace=None,
             ):
         return self._compile_tree(
             lineage_collection=lineage_collection,
             max_time=max_time,
             tree_type="lineage",
             is_drop_extinct=is_drop_extinct,
-            taxon_namespace=taxon_namespace,
             )
 
     def _compile_tree(self,
@@ -765,7 +762,6 @@ class ProtractedSpeciationProcess(object):
             max_time,
             tree_type,
             is_drop_extinct=True,
-            taxon_namespace=None,
             ):
         if tree_type == "lineage":
             label_template = self.lineage_label_format_template
@@ -776,12 +772,10 @@ class ProtractedSpeciationProcess(object):
         else:
             raise ValueError(tree_type)
         node_slot_idx = ProtractedSpeciationProcess._ETX_NODE
-        if taxon_namespace is None:
-            taxon_namespace = dendropy.TaxonNamespace()
         if len(lineage_collection) == 1:
-            tree = dendropy.Tree(taxon_namespace=taxon_namespace, is_rooted=True)
+            tree = dendropy.Tree(is_rooted=True)
             label = label_template.format(species_id=1, lineage_id=0)
-            tree.seed_node.taxon = tree.taxon_namespace.require_taxon(label=label)
+            tree.seed_node._taxon_label = label
             tree.seed_node.edge.length = max_time
             tree.seed_node._time = max_time
             return tree
@@ -789,7 +783,6 @@ class ProtractedSpeciationProcess(object):
                 lineage_collection=lineage_collection,
                 max_time=max_time,
                 is_drop_extinct=is_drop_extinct,
-                taxon_namespace=taxon_namespace,
                 node_attr=node_attr,
                 label_template=label_template,
                 )
@@ -839,7 +832,6 @@ class ProtractedSpeciationProcess(object):
                 seed_node = getattr(initial_lineage, node_attr)
                 seed_node.edge.length = initial_lineage.origin_time
                 tree = dendropy.Tree(
-                        taxon_namespace=taxon_namespace,
                         seed_node=seed_node,
                         is_rooted=True,
                         )
@@ -847,11 +839,20 @@ class ProtractedSpeciationProcess(object):
             if parent_lineage_id == 0:
                 raise ValueError
 
+    def _build_taxa(self, tree, taxon_namespace):
+        if taxon_namespace is None:
+            taxon_namespace = dendropy.TaxonNamespace()
+        assert len(tree.taxon_namespace) == 0
+        tree.taxon_namespace = taxon_namespace
+        for nd in tree.leaf_node_iter():
+            nd.taxon = tree.taxon_namespace.require_taxon(label=nd._taxon_label)
+            del nd._taxon_label
+        return tree
+
     def _build_lineage_queue(self,
             lineage_collection,
             max_time,
             is_drop_extinct,
-            taxon_namespace,
             node_attr,
             label_template,
             ):
@@ -864,7 +865,7 @@ class ProtractedSpeciationProcess(object):
                 else:
                     node._time = lineage.extinction_time if lineage.extinction_time is not None else max_time
                 label = label_template.format(species_id=lineage.species_id, lineage_id=lineage.lineage_id)
-                node.taxon = taxon_namespace.require_taxon(label=label)
+                node._taxon_label = label
                 setattr(lineage, node_attr, node)
                 lineageq.push_lineage(lineage=lineage, is_copy=True)
             else:
