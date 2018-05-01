@@ -466,6 +466,7 @@ class ProtractedSpeciationProcess(object):
         self.speciation_initiation_from_incipient_species_rate = speciation_initiation_from_incipient_species_rate
         self.speciation_completion_rate = speciation_completion_rate
         self.incipient_species_extinction_rate = incipient_species_extinction_rate
+        self.species_lineage_sampling_scheme = kwargs.get("species_lineage_sampling_scheme", "random") # 'random', 'oldest', 'youngest'
         if lineage_label_format_template is None:
             self.lineage_label_format_template = "S{species_id}.{lineage_id}"
         else:
@@ -574,7 +575,6 @@ class ProtractedSpeciationProcess(object):
         max_time = kwargs.get("max_time", None)
         max_extant_lineages = kwargs.get("max_extant_lineages", None)
         max_extant_orthospecies = kwargs.get("max_extant_orthospecies", None)
-        orthospecies_sampling_scheme = kwargs.get("orthospecies_sampling_scheme", "random")
         lineage_taxon_namespace = kwargs.get("lineage_taxon_namespace", None)
         species_taxon_namespace = kwargs.get("species_taxon_namespace", None)
         is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", True)
@@ -595,7 +595,6 @@ class ProtractedSpeciationProcess(object):
                     orthospecies_tree = self._compile_species_tree(
                             lineage_collection=lineage_collection_snapshot,
                             max_time=self._current_time,
-                            sampling_scheme=orthospecies_sampling_scheme,
                             )
                     num_leaves = len(orthospecies_tree.leaf_nodes())
                     if num_leaves >= max_extant_orthospecies:
@@ -658,7 +657,6 @@ class ProtractedSpeciationProcess(object):
         orthospecies_tree = self._compile_species_tree(
                 lineage_collection=self._lineage_collection,
                 max_time=self._current_time,
-                sampling_scheme=orthospecies_sampling_scheme,
                 )
         return self._finalize_trees(
                 lineage_tree=lineage_tree,
@@ -764,13 +762,12 @@ class ProtractedSpeciationProcess(object):
     def _compile_species_tree(self,
             lineage_collection,
             max_time,
-            sampling_scheme="oldest",
             ):
-        if sampling_scheme == "oldest":
+        if self.species_lineage_sampling_scheme == "oldest":
             lt = sorted(lineage_collection, key=lambda x: x.origin_time)
-        elif sampling_scheme == "youngest":
+        elif self.species_lineage_sampling_scheme == "youngest":
             lt = sorted(lineage_collection, key=lambda x: -x.origin_time, reverse=True)
-        elif sampling_scheme == "random":
+        elif self.species_lineage_sampling_scheme == "random":
             lt = self.rng.sample(lineage_collection, len(lineage_collection))
         else:
             raise ValueError(sampling_scheme)

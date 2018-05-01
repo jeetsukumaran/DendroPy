@@ -494,9 +494,9 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
         for test_idx, test_ref in enumerate(self.iter_test_references()):
             lineage_collection = test_ref["lineage_collection"]
             t0 = test_ref["species_tree_oldest_samples"]
+            self.psm.species_lineage_sampling_scheme = "oldest"
             t1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
-                    sampling_scheme="oldest",
                     max_time=test_ref["data"]["age"],
                     )
             self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
@@ -506,9 +506,9 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
         for test_idx, test_ref in enumerate(self.iter_test_references()):
             lineage_collection = test_ref["lineage_collection"]
             t0 = test_ref["species_tree_youngest_samples"]
+            self.psm.species_lineage_sampling_scheme = "youngest"
             t1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
-                    sampling_scheme="youngest",
                     max_time=test_ref["data"]["age"],
                     )
             self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
@@ -533,18 +533,18 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
                     )
             self.psm._build_taxa(tree=t2_1, taxon_namespace=t2_0.taxon_namespace)
             self.assert_equal_trees(t2_0, t2_1)
+            self.psm.species_lineage_sampling_scheme = "oldest"
             t3_0 = test_ref["species_tree_oldest_samples"]
             t3_1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
-                    sampling_scheme="oldest",
                     max_time=test_ref["data"]["age"],
                     )
             self.psm._build_taxa(tree=t3_1, taxon_namespace=t3_0.taxon_namespace)
             self.assert_equal_trees(t3_0, t3_1)
+            self.psm.species_lineage_sampling_scheme = "youngest"
             t4_0 = test_ref["species_tree_youngest_samples"]
             t4_1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
-                    sampling_scheme="youngest",
                     max_time=test_ref["data"]["age"])
             self.psm._build_taxa(tree=t4_1, taxon_namespace=t4_0.taxon_namespace)
             self.assert_equal_trees(t4_0, t4_1)
