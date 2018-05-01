@@ -579,10 +579,11 @@ class ProtractedSpeciationProcess(object):
             initial_lineage.speciation_completion_time = 0.0
             self._current_orthospecies_lineages.append(initial_lineage)
             self._current_incipient_species_lineages = []
+        print("start")
         while True:
             num_orthospecies = len(self._current_orthospecies_lineages)
             num_incipient_species = len(self._current_incipient_species_lineages)
-            if len(self._current_orthospecies_lineages) + len(self._current_orthospecies_lineages) == 0:
+            if num_incipient_species + num_orthospecies == 0:
                 raise TreeSimTotalExtinctionException()
             if max_extant_orthospecies is not None:
                 ## note: expensive operation to count leaves!
