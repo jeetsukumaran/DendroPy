@@ -644,17 +644,17 @@ class ProtractedSpeciationProcess(object):
                 self._process_incipient_species_extinction()
             else:
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
-        orthospecies_tree = self._compile_species_tree(
-                lineage_collection=self._lineage_collection,
-                max_time=self._current_time,
-                sampling_scheme=orthospecies_sampling_scheme,
-                taxon_namespace=species_taxon_namespace,
-                )
         lineage_tree = self._compile_lineage_tree(
                 lineage_collection=self._lineage_collection,
                 max_time=self._current_time,
                 is_drop_extinct=True,
                 taxon_namespace=lineage_taxon_namespace,
+                )
+        orthospecies_tree = self._compile_species_tree(
+                lineage_collection=self._lineage_collection,
+                max_time=self._current_time,
+                sampling_scheme=orthospecies_sampling_scheme,
+                taxon_namespace=species_taxon_namespace,
                 )
         self._correlate_lineage_and_species_trees()
         return lineage_tree, orthospecies_tree
@@ -690,6 +690,7 @@ class ProtractedSpeciationProcess(object):
 
     def _process_orthospecies_extinction(self):
         lineage_idx = self.rng.randint(0, len(self._current_orthospecies_lineages)-1)
+        self._current_orthospecies_lineages[lineage_idx].extinction_time = self._current_time
         del self._current_orthospecies_lineages[lineage_idx]
 
     def _process_initiation_of_speciation_from_incipient_species(self):
@@ -707,6 +708,7 @@ class ProtractedSpeciationProcess(object):
 
     def _process_incipient_species_extinction(self):
         lineage_idx = self.rng.randint(0, len(self._current_incipient_species_lineages)-1)
+        self._current_incipient_species_lineages[lineage_idx].extinction_time = self._current_time
         del self._current_incipient_species_lineages[lineage_idx]
 
     def _process_initiation_of_speciation(self, parent_lineage):
