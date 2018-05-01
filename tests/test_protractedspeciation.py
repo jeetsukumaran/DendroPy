@@ -23,8 +23,27 @@ Tests of protracted speciation model/process.
 
 import math
 import unittest
+import json
 import dendropy
+from dendropy.calculate import treecompare
 from dendropy.model import protractedspeciation
+from support import pathmap
+
+def _load_json(filename):
+    with open(pathmap.other_source_path(filename)) as src:
+        j = json.load(src)
+    return j
+
+def _get_stock_psm():
+    return protractedspeciation.ProtractedSpeciationProcess(
+            speciation_initiation_from_orthospecies_rate=0.01,
+            speciation_initiation_from_incipient_species_rate=0.01,
+            speciation_completion_rate=0.01,
+            orthospecies_extinction_rate=0.01,
+            incipient_species_extinction_rate=0.01,
+            lineage_label_format_template="S{species_id}-{species_id}-{lineage_id}", # for compatibility with PBD generated data
+            species_label_format_template="S{species_id}-{species_id}-{lineage_id}", # for compatibility with PBD generated data
+            )
 
 class ProtractedSpeciationCalcs(unittest.TestCase):
 
@@ -312,7 +331,227 @@ class ProtractedSpeciationCalcs(unittest.TestCase):
                     )
             self.assertAlmostEqual(obs_result, exp_result)
 
+class LineageQueueTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.pbd_tables = (
+                    (
+                        [1  , 0  , -1e-10             , 0                , -1               , 1] ,
+                        [2  , 1  , 6.67615606179445   , -1               , -1               , 1] ,
+                        [3  , 1  , 0                  , -1               , -1               , 1] ,
+                        [4  , -3 , 5.03236379137566   , -1               , 12.4555382563192 , 1] ,
+                        [5  , -4 , 5.82067825984527   , 8.46863636938638 , 10.0921769421767 , 2] ,
+                        [6  , -4 , 7.43692788970062   , -1               , 9.49403765538272 , 1] ,
+                        [7  , -3 , 9.3964900131076    , -1               , -1               , 1] ,
+                        [8  , -4 , 12.0831255638222   , -1               , -1               , 1] ,
+                        [9  , -7 , 13.2396812008651   , -1               , -1               , 1] ,
+                        [10 , -8 , 13.437755189092    , 13.7529521422405 , -1               , 3]
+                    ),
+                    (
+                        (1  , 0   , -1e-10            , 0                , -1 , 1) ,
+                        (2  , 1   , 2.85912504426404  , 3.34543532862682 , -1 , 2) ,
+                        (3  , 1   , 0                 , -1               , -1 , 1) ,
+                        (4  , -3  , 0.772044112888897 , 9.58420144285785 , -1 , 4) ,
+                        (5  , -3  , 5.17020330746366  , -1               , -1 , 1) ,
+                        (6  , -3  , 6.91843597758094  , -1               , -1 , 1) ,
+                        (7  , -6  , 8.0848153631966   , 9.09087035090051 , -1 , 3) ,
+                        (8  , -5  , 8.17426394667072  , -1               , -1 , 1) ,
+                        (9  , 4   , 9.67145552103779  , 11.527621978474  , -1 , 5) ,
+                        (10 , -8  , 10.1553007690956  , -1               , -1 , 1) ,
+                        (11 , -6  , 10.9176536767969  , -1               , -1 , 1) ,
+                        (12 , -8  , 12.3660726549949  , 13.6104437800854 , -1 , 6) ,
+                        (13 , -3  , 12.5586831168778  , -1               , -1 , 1) ,
+                        (14 , -8  , 12.6877684466107  , -1               , -1 , 1) ,
+                        (15 , -12 , 13.1641235715743  , -1               , -1 , 1) ,
+                        (16 , -10 , 14.5891386243993  , -1               , -1 , 1) ,
+                        (17 , -6  , 14.8032830504263  , -1               , -1 , 1)
+                    ),
+                )
+
+    def test_build_from_collection(self):
+        psm = _get_stock_psm()
+        for tree_type in ("lineage", "species"):
+            for is_drop_extinct in (False, True):
+                if tree_type == "lineage" and not is_drop_extinct:
+                    continue
+                if tree_type == "lineage":
+                    label_template_attr = "lineage_label_format_template"
+                    node_attr = "lineage_node"
+                elif tree_type == "species":
+                    label_template_attr = "species_label_format_template"
+                    node_attr = "species_node"
+                for pbd_table in self.pbd_tables:
+                    taxon_namespace = dendropy.TaxonNamespace()
+                    lineage_collection = [protractedspeciation.ProtractedSpeciationProcess._Lineage.from_pbd_entry(pbd_lineage_entry)
+                            for pbd_lineage_entry in pbd_table]
+                    lineage_queue = psm._build_lineage_queue(
+                            lineage_collection,
+                            max_time=100,
+                            is_drop_extinct=is_drop_extinct,
+                            taxon_namespace=taxon_namespace,
+                            node_attr="lineage_node",
+                            label_template = getattr(psm, label_template_attr),
+                            )
+                    if is_drop_extinct:
+                        pbd_table = [entry for entry in pbd_table if entry[protractedspeciation.ProtractedSpeciationProcess._ET_EXTINCTION_TIME] < 0]
+                    expected = sorted(pbd_table, key=lambda x: x[2], reverse=True)
+                    self.assertEqual(len(lineage_queue), len(pbd_table))
+                    for ei in expected:
+                        lineage_entry = lineage_queue.pop_youngest_lineage()
+                        self.assertEqual(ei[0], lineage_entry.lineage_id)
+                        self.assertEqual(abs(ei[1]), lineage_entry.parent_lineage_id)
+                        if ei[1] < 0:
+                            self.assertFalse(lineage_entry.is_parent_orthospecies)
+                        else:
+                            self.assertTrue(lineage_entry.is_parent_orthospecies)
+                        self.assertEqual(ei[2], lineage_entry.origin_time)
+                        self.assertEqual(ei[3], lineage_entry.speciation_completion_time)
+                        if ei[4] < 0:
+                            self.assertIs(None, lineage_entry.extinction_time)
+                            self.assertFalse(lineage_entry.is_extinct)
+                        else:
+                            self.assertEqual(ei[4], lineage_entry.extinction_time)
+                            self.assertTrue(lineage_entry.is_extinct)
+                        self.assertEqual(ei[5], lineage_entry.species_id)
+
+class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.TestCase):
+    test_reference = _load_json("protracted_speciation_process.json")
+
+    def setUp(self):
+        ## dummy PSM; use when not simulating process but checking other aspects
+        self.psm = _get_stock_psm()
+
+    def pbd_table_to_lineage_collection(self, pbd_table):
+        lineage_collection = [protractedspeciation.ProtractedSpeciationProcess._Lineage.from_pbd_entry(pbd_lineage_entry)
+                    for pbd_lineage_entry in pbd_table]
+        return lineage_collection
+
+    def assert_equal_trees(self, t0, t1):
+        self.assertEqual(treecompare.unweighted_robinson_foulds_distance(t0, t1), 0)
+        self.assertAlmostEqual(treecompare.weighted_robinson_foulds_distance(t0, t1), 0, 8)
+
+    def iter_test_references(self):
+        for tidx, test_ref in enumerate(self.test_reference):
+            r = {}
+            r["data"] = test_ref
+            r["psm"] = protractedspeciation.ProtractedSpeciationProcess(
+                    speciation_initiation_from_orthospecies_rate=test_ref["lineage_origination_rate"],
+                    speciation_initiation_from_incipient_species_rate=test_ref["lineage_origination_rate"],
+                    speciation_completion_rate=test_ref["speciation_completion_rate"],
+                    orthospecies_extinction_rate=test_ref["extinction_rate"],
+                    incipient_species_extinction_rate=test_ref["extinction_rate"],
+                    )
+            r["lineage_tree"] = dendropy.Tree.get(
+                    data=test_ref["lineage_tree"],
+                    schema="newick",
+                    rooting="force-rooted",
+                    )
+            r["lineage_tree_incl_extinct"] = dendropy.Tree.get(
+                    data=test_ref["lineage_tree_incl_extinct"],
+                    schema="newick",
+                    rooting="force-rooted",
+                    )
+            r["species_tree_oldest_samples"] = dendropy.Tree.get(
+                    data=test_ref["species_tree_oldest_samples"],
+                    schema="newick",
+                    rooting="force-rooted",
+                    )
+            r["species_tree_youngest_samples"] = dendropy.Tree.get(
+                    data=test_ref["species_tree_youngest_samples"],
+                    schema="newick",
+                    rooting="force-rooted",
+                    )
+            r["lineage_collection"] = self.pbd_table_to_lineage_collection(test_ref["lineage_table"])
+            yield r
+
+    def test_lineage_tree_compilation(self):
+        for test_idx, test_ref in enumerate(self.iter_test_references()):
+            lineage_collection = test_ref["lineage_collection"]
+            t0 = test_ref["lineage_tree"]
+            t1 = self.psm._compile_lineage_tree(
+                    lineage_collection=lineage_collection,
+                    max_time=test_ref["data"]["age"],
+                    is_drop_extinct=True,
+                    taxon_namespace=t0.taxon_namespace)
+            self.assert_equal_trees(t0, t1)
+
+    def test_lineage_tree_incl_extinct_compilation(self):
+        for test_ref in self.iter_test_references():
+            lineage_collection = test_ref["lineage_collection"]
+            t0 = test_ref["lineage_tree_incl_extinct"]
+            t1 = self.psm._compile_lineage_tree(
+                    lineage_collection=lineage_collection,
+                    max_time=test_ref["data"]["age"],
+                    is_drop_extinct=False,
+                    taxon_namespace=t0.taxon_namespace)
+            self.assert_equal_trees(t0, t1)
+
+    def test_species_tree_of_oldest_lineages(self):
+        for test_idx, test_ref in enumerate(self.iter_test_references()):
+            lineage_collection = test_ref["lineage_collection"]
+            t0 = test_ref["species_tree_oldest_samples"]
+            t1 = self.psm._compile_species_tree(
+                    lineage_collection=lineage_collection,
+                    sampling_scheme="oldest",
+                    max_time=test_ref["data"]["age"],
+                    taxon_namespace=t0.taxon_namespace)
+            self.assert_equal_trees(t0, t1)
+
+    def test_species_tree_of_youngest_lineages(self):
+        for test_idx, test_ref in enumerate(self.iter_test_references()):
+            lineage_collection = test_ref["lineage_collection"]
+            t0 = test_ref["species_tree_youngest_samples"]
+            t1 = self.psm._compile_species_tree(
+                    lineage_collection=lineage_collection,
+                    sampling_scheme="youngest",
+                    max_time=test_ref["data"]["age"],
+                    taxon_namespace=t0.taxon_namespace)
+            self.assert_equal_trees(t0, t1)
+
+    def test_multi_tree_compilation(self):
+        for test_idx, test_ref in enumerate(self.iter_test_references()):
+            lineage_collection = test_ref["lineage_collection"]
+            t1_0 = test_ref["lineage_tree"]
+            t1_1 = self.psm._compile_lineage_tree(
+                    lineage_collection=lineage_collection,
+                    max_time=test_ref["data"]["age"],
+                    is_drop_extinct=True,
+                    taxon_namespace=t1_0.taxon_namespace)
+            self.assert_equal_trees(t1_0, t1_1)
+            t2_0 = test_ref["lineage_tree_incl_extinct"]
+            t2_1 = self.psm._compile_lineage_tree(
+                    lineage_collection=lineage_collection,
+                    max_time=test_ref["data"]["age"],
+                    is_drop_extinct=False,
+                    taxon_namespace=t2_0.taxon_namespace)
+            self.assert_equal_trees(t2_0, t2_1)
+            t3_0 = test_ref["species_tree_oldest_samples"]
+            t3_1 = self.psm._compile_species_tree(
+                    lineage_collection=lineage_collection,
+                    sampling_scheme="oldest",
+                    max_time=test_ref["data"]["age"],
+                    taxon_namespace=t3_0.taxon_namespace)
+            self.assert_equal_trees(t3_0, t3_1)
+            t4_0 = test_ref["species_tree_youngest_samples"]
+            t4_1 = self.psm._compile_species_tree(
+                    lineage_collection=lineage_collection,
+                    sampling_scheme="youngest",
+                    max_time=test_ref["data"]["age"],
+                    taxon_namespace=t4_0.taxon_namespace)
+            self.assert_equal_trees(t4_0, t4_1)
+
+class ProtractedSpeciationProcessGeneration(unittest.TestCase):
+
+    def test0(self):
+        psm = protractedspeciation.ProtractedSpeciationProcess(
+                speciation_initiation_from_orthospecies_rate = 0.1,
+                orthospecies_extinction_rate = 0.00,
+                speciation_initiation_from_incipient_species_rate = 0.1,
+                speciation_completion_rate = 0.05,
+                incipient_species_extinction_rate = 0.00,
+                )
+        t0, t1 = psm.generate_sample(max_time=20)
+        t0, t1 = psm.generate_sample(max_extant_orthospecies=5)
+
 if __name__ == "__main__":
     unittest.main()
-
-
