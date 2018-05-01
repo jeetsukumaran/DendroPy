@@ -542,16 +542,27 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
 
 class ProtractedSpeciationProcessGeneration(unittest.TestCase):
 
+    def iter_samples(self):
+        for extinction_rate in (0.00, 0.05):
+            psm = protractedspeciation.ProtractedSpeciationProcess(
+                    speciation_initiation_from_orthospecies_rate=0.1,
+                    orthospecies_extinction_rate=extinction_rate,
+                    speciation_initiation_from_incipient_species_rate=0.1,
+                    speciation_completion_rate=0.05,
+                    incipient_species_extinction_rate=extinction_rate,
+                    )
+            for kwargs in (
+                    {"max_time": 20},
+                    {"max_extant_orthospecies": 10},
+                    {"max_extant_lineages": 20},
+                    ):
+                for is_initial_lineage_orthospecies in (True, False):
+                    kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
+                    yield psm.generate_sample(**kwargs)
+
     def test0(self):
-        psm = protractedspeciation.ProtractedSpeciationProcess(
-                speciation_initiation_from_orthospecies_rate = 0.1,
-                orthospecies_extinction_rate = 0.00,
-                speciation_initiation_from_incipient_species_rate = 0.1,
-                speciation_completion_rate = 0.05,
-                incipient_species_extinction_rate = 0.00,
-                )
-        t0, t1 = psm.generate_sample(max_time=20)
-        t0, t1 = psm.generate_sample(max_extant_orthospecies=5)
+        for lineage_tree, orthospecies_tree in self.iter_samples():
+            pass
 
 if __name__ == "__main__":
     unittest.main()
