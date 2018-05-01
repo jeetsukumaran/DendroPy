@@ -564,11 +564,19 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                     kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
                     yield psm.generate_sample(**kwargs)
 
-    def check_distances(self, tree):
+    def check(self, tree):
         tree.calc_node_ages()
         leaf_root_distances = tree.calc_node_root_distances(return_leaf_distances_only=True)
         for dist in leaf_root_distances:
             self.assertAlmostEqual(dist, tree.seed_node.age, 8)
+        seen_taxa = set()
+        seen_taxon_labels = set()
+        for leaf in tree.leaf_node_iter():
+            self.assertIn(leaf.taxon, tree.taxon_namespace)
+            self.assertNotIn(leaf.taxon, seen_taxa)
+            seen_taxa.add(leaf.taxon)
+            self.assertNotIn(leaf.taxon.label, seen_taxon_labels)
+            seen_taxon_labels.add(leaf.taxon.label)
 
     def test_by_max_time(self):
         psm = self.get_psm()
@@ -577,7 +585,15 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
                 for nd in tree.leaf_node_iter():
                     self.assertAlmostEqual(nd._time, max_time, 8)
-                self.check_distances(tree)
+                self.check(tree)
+
+    def test_by_max_orthospecies(self):
+        psm = self.get_psm()
+        for max_num in (5, 10, 20):
+            lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=max_num)
+            self.assertEqual(len(orthospecies_tree.taxon_namespace), max_num)
+            for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
+                self.check(tree)
 
     def test_(self):
         for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples()):
