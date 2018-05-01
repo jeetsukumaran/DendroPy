@@ -650,6 +650,18 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                         for tree in (lineage_tree, orthospecies_tree):
                             self.check(tree)
 
+    def test_lineage_species_tip_correlation(self):
+        # for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(10))):
+        for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(20))):
+            rng = random.Random(seed)
+            for psm in self.iter_psm_models(rng=rng):
+                for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples(psm)):
+                    for tree in (lineage_tree, orthospecies_tree):
+                        self.check(tree)
+                    lineage_tree_species_labels = set([taxon.label.split(".")[0] for taxon in lineage_tree.taxon_namespace])
+                    species_tree_taxon_labels = set([taxon.label for taxon in orthospecies_tree.taxon_namespace])
+                    self.assertEqual(lineage_tree_species_labels, species_tree_taxon_labels)
+
     def test_(self):
         for psm in self.iter_psm_models():
             for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples(psm)):
