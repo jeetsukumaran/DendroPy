@@ -542,19 +542,22 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
 
 class ProtractedSpeciationProcessGeneration(unittest.TestCase):
 
-    def get_psm(self):
-        psm = protractedspeciation.ProtractedSpeciationProcess(
-                speciation_initiation_from_orthospecies_rate=0.1,
-                orthospecies_extinction_rate=0.05,
-                speciation_initiation_from_incipient_species_rate=0.1,
-                speciation_completion_rate=0.05,
-                incipient_species_extinction_rate=0.05,
-                )
-        return psm
+    def iter_psm_models(self):
+        for splitting_rate in (0.1,):
+            for extinction_rate_factor in (0.5, 0.0):
+                extinction_rate = splitting_rate * extinction_rate_factor
+                for speciation_completion_rate in (splitting_rate * 0.5,):
+                    psm = protractedspeciation.ProtractedSpeciationProcess(
+                            speciation_initiation_from_orthospecies_rate=splitting_rate,
+                            orthospecies_extinction_rate=extinction_rate,
+                            speciation_initiation_from_incipient_species_rate=splitting_rate,
+                            speciation_completion_rate=speciation_completion_rate,
+                            incipient_species_extinction_rate=extinction_rate,
+                            )
+                    yield psm
 
     def iter_samples(self):
-        for extinction_rate in (0.00, 0.05):
-            psm = self.get_psm()
+        for psm in self.iter_psm_models():
             for kwargs in (
                     {"max_time": 20},
                     {"max_extant_orthospecies": 10},
@@ -577,23 +580,33 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             seen_taxa.add(leaf.taxon)
             self.assertNotIn(leaf.taxon.label, seen_taxon_labels)
             seen_taxon_labels.add(leaf.taxon.label)
+        for nd in tree.internal_nodes():
+            self.assertEqual(len(nd.child_nodes()), 2)
 
     def test_by_max_time(self):
-        psm = self.get_psm()
-        for max_time in (10, 15, 20):
-            lineage_tree, orthospecies_tree = psm.generate_sample(max_time=max_time)
-            for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
-                for nd in tree.leaf_node_iter():
-                    self.assertAlmostEqual(nd._time, max_time, 8)
-                self.check(tree)
+        for psm in self.iter_psm_models():
+            for max_time in (10, 15, 20):
+                lineage_tree, orthospecies_tree = psm.generate_sample(max_time=max_time)
+                for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
+                    for nd in tree.leaf_node_iter():
+                        self.assertAlmostEqual(nd._time, max_time, 8)
+                    self.check(tree)
+
+    def test_by_max_lineages(self):
+        for psm in self.iter_psm_models():
+            for max_num in (5, 25, 50):
+                lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_lineages=max_num)
+                self.assertEqual(len(lineage_tree.taxon_namespace), max_num)
+                for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
+                    self.check(tree)
 
     def test_by_max_orthospecies(self):
-        psm = self.get_psm()
-        for max_num in (5, 10, 20):
-            lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=max_num)
-            self.assertEqual(len(orthospecies_tree.taxon_namespace), max_num)
-            for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
-                self.check(tree)
+        for psm in self.iter_psm_models():
+            for max_num in (5, 10, 20):
+                lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=max_num)
+                self.assertEqual(len(orthospecies_tree.taxon_namespace), max_num)
+                for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
+                    self.check(tree)
 
     def test_(self):
         for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples()):
