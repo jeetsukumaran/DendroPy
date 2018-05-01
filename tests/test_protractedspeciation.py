@@ -574,12 +574,18 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             self.assertAlmostEqual(dist, tree.seed_node.age, 8)
         seen_taxa = set()
         seen_taxon_labels = set()
+        expected_taxa = set([taxon for taxon in tree.taxon_namespace])
+        num_leaves = 0
         for leaf in tree.leaf_node_iter():
-            self.assertIn(leaf.taxon, tree.taxon_namespace)
+            self.assertIn(leaf.taxon, expected_taxa)
+            expected_taxa.remove(leaf.taxon)
             self.assertNotIn(leaf.taxon, seen_taxa)
             seen_taxa.add(leaf.taxon)
             self.assertNotIn(leaf.taxon.label, seen_taxon_labels)
             seen_taxon_labels.add(leaf.taxon.label)
+            num_leaves += 1
+        self.assertEqual(len(expected_taxa), 0)
+        self.assertEqual(num_leaves, len(tree.taxon_namespace))
         for nd in tree.internal_nodes():
             self.assertEqual(len(nd.child_nodes()), 2)
 
