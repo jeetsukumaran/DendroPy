@@ -29,7 +29,10 @@ import json
 import dendropy
 from dendropy.calculate import treecompare
 from dendropy.model import protractedspeciation
-from support import pathmap
+if __name__ == "__main__":
+    from support import pathmap
+else:
+    from .support import pathmap
 
 def _load_json(filename):
     with open(pathmap.other_source_path(filename)) as src:
@@ -383,14 +386,12 @@ class LineageQueueTestCase(unittest.TestCase):
                     label_template_attr = "species_label_format_template"
                     node_attr = "species_node"
                 for pbd_table in self.pbd_tables:
-                    taxon_namespace = dendropy.TaxonNamespace()
                     lineage_collection = [protractedspeciation.ProtractedSpeciationProcess._Lineage.from_pbd_entry(pbd_lineage_entry)
                             for pbd_lineage_entry in pbd_table]
                     lineage_queue = psm._build_lineage_queue(
                             lineage_collection,
                             max_time=100,
                             is_drop_extinct=is_drop_extinct,
-                            taxon_namespace=taxon_namespace,
                             node_attr="lineage_node",
                             label_template = getattr(psm, label_template_attr),
                             )
@@ -473,8 +474,8 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
             t1 = self.psm._compile_lineage_tree(
                     lineage_collection=lineage_collection,
                     max_time=test_ref["data"]["age"],
-                    is_drop_extinct=True,
-                    taxon_namespace=t0.taxon_namespace)
+                    is_drop_extinct=True)
+            self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
             self.assert_equal_trees(t0, t1)
 
     def test_lineage_tree_incl_extinct_compilation(self):
@@ -485,7 +486,8 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
                     lineage_collection=lineage_collection,
                     max_time=test_ref["data"]["age"],
                     is_drop_extinct=False,
-                    taxon_namespace=t0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
             self.assert_equal_trees(t0, t1)
 
     def test_species_tree_of_oldest_lineages(self):
@@ -496,7 +498,8 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
                     lineage_collection=lineage_collection,
                     sampling_scheme="oldest",
                     max_time=test_ref["data"]["age"],
-                    taxon_namespace=t0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
             self.assert_equal_trees(t0, t1)
 
     def test_species_tree_of_youngest_lineages(self):
@@ -507,7 +510,8 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
                     lineage_collection=lineage_collection,
                     sampling_scheme="youngest",
                     max_time=test_ref["data"]["age"],
-                    taxon_namespace=t0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t1, taxon_namespace=t0.taxon_namespace)
             self.assert_equal_trees(t0, t1)
 
     def test_multi_tree_compilation(self):
@@ -518,28 +522,31 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
                     lineage_collection=lineage_collection,
                     max_time=test_ref["data"]["age"],
                     is_drop_extinct=True,
-                    taxon_namespace=t1_0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t1_1, taxon_namespace=t1_0.taxon_namespace)
             self.assert_equal_trees(t1_0, t1_1)
             t2_0 = test_ref["lineage_tree_incl_extinct"]
             t2_1 = self.psm._compile_lineage_tree(
                     lineage_collection=lineage_collection,
                     max_time=test_ref["data"]["age"],
                     is_drop_extinct=False,
-                    taxon_namespace=t2_0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t2_1, taxon_namespace=t2_0.taxon_namespace)
             self.assert_equal_trees(t2_0, t2_1)
             t3_0 = test_ref["species_tree_oldest_samples"]
             t3_1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
                     sampling_scheme="oldest",
                     max_time=test_ref["data"]["age"],
-                    taxon_namespace=t3_0.taxon_namespace)
+                    )
+            self.psm._build_taxa(tree=t3_1, taxon_namespace=t3_0.taxon_namespace)
             self.assert_equal_trees(t3_0, t3_1)
             t4_0 = test_ref["species_tree_youngest_samples"]
             t4_1 = self.psm._compile_species_tree(
                     lineage_collection=lineage_collection,
                     sampling_scheme="youngest",
-                    max_time=test_ref["data"]["age"],
-                    taxon_namespace=t4_0.taxon_namespace)
+                    max_time=test_ref["data"]["age"])
+            self.psm._build_taxa(tree=t4_1, taxon_namespace=t4_0.taxon_namespace)
             self.assert_equal_trees(t4_0, t4_1)
 
 class ProtractedSpeciationProcessGeneration(unittest.TestCase):
