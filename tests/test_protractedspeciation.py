@@ -542,15 +542,19 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
 
 class ProtractedSpeciationProcessGeneration(unittest.TestCase):
 
+    def get_psm(self):
+        psm = protractedspeciation.ProtractedSpeciationProcess(
+                speciation_initiation_from_orthospecies_rate=0.1,
+                orthospecies_extinction_rate=0.05,
+                speciation_initiation_from_incipient_species_rate=0.1,
+                speciation_completion_rate=0.05,
+                incipient_species_extinction_rate=0.05,
+                )
+        return psm
+
     def iter_samples(self):
         for extinction_rate in (0.00, 0.05):
-            psm = protractedspeciation.ProtractedSpeciationProcess(
-                    speciation_initiation_from_orthospecies_rate=0.1,
-                    orthospecies_extinction_rate=extinction_rate,
-                    speciation_initiation_from_incipient_species_rate=0.1,
-                    speciation_completion_rate=0.05,
-                    incipient_species_extinction_rate=extinction_rate,
-                    )
+            psm = self.get_psm()
             for kwargs in (
                     {"max_time": 20},
                     {"max_extant_orthospecies": 10},
@@ -560,8 +564,23 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                     kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
                     yield psm.generate_sample(**kwargs)
 
-    def test0(self):
-        for lineage_tree, orthospecies_tree in self.iter_samples():
+    def check_distances(self, tree):
+        tree.calc_node_ages()
+        leaf_root_distances = tree.calc_node_root_distances(return_leaf_distances_only=True)
+        for dist in leaf_root_distances:
+            self.assertAlmostEqual(dist, tree.seed_node.age, 8)
+
+    def test_by_max_time(self):
+        psm = self.get_psm()
+        for max_time in (10, 15, 20):
+            lineage_tree, orthospecies_tree = psm.generate_sample(max_time=max_time)
+            for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
+                for nd in tree.leaf_node_iter():
+                    self.assertAlmostEqual(nd._time, max_time, 8)
+                self.check_distances(tree)
+
+    def test_(self):
+        for test_idx, (lineage_tree, orthospecies_tree) in enumerate(self.iter_samples()):
             pass
 
 if __name__ == "__main__":

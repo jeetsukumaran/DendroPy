@@ -783,6 +783,7 @@ class ProtractedSpeciationProcess(object):
             label = label_template.format(species_id=1, lineage_id=0)
             tree.seed_node.taxon = tree.taxon_namespace.require_taxon(label=label)
             tree.seed_node.edge.length = max_time
+            tree.seed_node._time = max_time
             return tree
         lineage_queue = self._build_lineage_queue(
                 lineage_collection=lineage_collection,
