@@ -766,7 +766,7 @@ class ProtractedSpeciationProcess(object):
         if self.species_lineage_sampling_scheme == "oldest":
             lt = sorted(lineage_collection, key=lambda x: x.origin_time)
         elif self.species_lineage_sampling_scheme == "youngest":
-            lt = sorted(lineage_collection, key=lambda x: -x.origin_time, reverse=True)
+            lt = sorted(lineage_collection, key=lambda x: x.origin_time, reverse=True)
         elif self.species_lineage_sampling_scheme == "random":
             lt = self.rng.sample(lineage_collection, len(lineage_collection))
         else:
