@@ -629,7 +629,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                 for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
                     self.check(tree)
 
-    def test_taxon_namespace(self):
+    def test_taxon_assignment_and_namespace(self):
         for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(10))):
             rng = random.Random(seed)
             for psm in self.iter_psm_models(rng=rng):
