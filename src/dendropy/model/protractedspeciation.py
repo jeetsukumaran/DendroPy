@@ -459,6 +459,7 @@ class ProtractedSpeciationProcess(object):
             lineage_label_format_template=None,
             species_label_format_template=None,
             rng=None,
+            **kwargs,
             ):
         self.speciation_initiation_from_orthospecies_rate = speciation_initiation_from_orthospecies_rate
         self.orthospecies_extinction_rate = orthospecies_extinction_rate
@@ -477,6 +478,8 @@ class ProtractedSpeciationProcess(object):
             self.rng = GLOBAL_RNG
         else:
             self.rng = rng
+        self.lineage_tree_to_species_tree_node_attr = "species_tree_node"
+        self.species_tree_to_lineage_tree_node_attr = "lineage_tree_nodes"
         self.reset()
 
     def reset(self):
@@ -497,13 +500,14 @@ class ProtractedSpeciationProcess(object):
                 only has "good" species, i.e. with all incipient species
                 pruned out.
 
-        Each node on the protracted speciation tree as will as the "good" species
-        tree will have an attribute, ``protracted_speciation_model_lineage``,
-        which is a reference to a
-        :class:`~dendropy.model.birthdeath.ProtractedSpeciationProcess.ProtractedSpeciationProcessLineage`
-        instance which represents the lineage associated with this node. Note
-        that each node can only be associated with a single lineage, but a
-        lineage might span several nodes.
+        Each tip node on the lineage tree will have an attribute,
+        ``species_tree_node``, which is a reference to the species tree tip to
+        which the lineage tip corresponds.
+
+        Each tip node on the species tree will have an attribute,
+        ``lineage_tree_nodes``, which is a reference to an iterable of
+        tip nodes on the lineage tree that are associated with
+        this species tree node.
 
         Parameters
         ----------
@@ -600,10 +604,13 @@ class ProtractedSpeciationProcess(object):
                             max_time=self._current_time,
                             is_drop_extinct=True,
                             )
-                        self._build_taxa(tree=lineage_tree, taxon_namespace=lineage_taxon_namespace)
-                        self._build_taxa(tree=orthospecies_tree, taxon_namespace=species_taxon_namespace)
-                        self._correlate_lineage_and_species_trees()
-                        return lineage_tree, orthospecies_tree
+                        return self._finalize_trees(
+                                lineage_tree=lineage_tree,
+                                lineage_taxon_namespace=lineage_taxon_namespace,
+                                orthospecies_tree=orthospecies_tree,
+                                species_taxon_namespace=species_taxon_namespace,
+                                lineage_collection=lineage_collection_snapshot,
+                                )
                 except ProcessFailedException:
                     pass
             if max_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= max_extant_lineages:
@@ -653,10 +660,13 @@ class ProtractedSpeciationProcess(object):
                 max_time=self._current_time,
                 sampling_scheme=orthospecies_sampling_scheme,
                 )
-        self._build_taxa(tree=lineage_tree, taxon_namespace=lineage_taxon_namespace)
-        self._build_taxa(tree=orthospecies_tree, taxon_namespace=species_taxon_namespace)
-        self._correlate_lineage_and_species_trees()
-        return lineage_tree, orthospecies_tree
+        return self._finalize_trees(
+                lineage_tree=lineage_tree,
+                lineage_taxon_namespace=lineage_taxon_namespace,
+                orthospecies_tree=orthospecies_tree,
+                species_taxon_namespace=species_taxon_namespace,
+                lineage_collection=self._lineage_collection,
+                )
 
     def _new_lineage(self, parent_lineage):
         if parent_lineage is None:
@@ -680,8 +690,46 @@ class ProtractedSpeciationProcess(object):
         self._current_incipient_species_lineages.append(lineage)
         return lineage
 
-    def _correlate_lineage_and_species_trees(self):
-        pass
+    def _correlate_lineage_and_species_trees(self, lineage_collection):
+        seen_lineage_nodes = set()
+        seen_species_nodes = set()
+        lineage_id_to_species_maps = {}
+        species_id_lineage_node_collection_map = {}
+        species_id_species_node_map = {}
+        for lineage in lineage_collection:
+            if not lineage.lineage_node:
+                assert not lineage.species_node
+                continue
+            if lineage.lineage_node.taxon is None:
+                continue
+            lineage_node = lineage.lineage_node
+            species_node = lineage.species_node
+            assert lineage_node not in seen_lineage_nodes
+            seen_lineage_nodes.add(lineage_node)
+            try:
+                species_id_lineage_node_collection_map[lineage_node._species_id].add(lineage_node)
+            except KeyError:
+                species_id_lineage_node_collection_map[lineage_node._species_id] = set([lineage_node])
+            if species_node is not None:
+                assert species_node not in seen_species_nodes
+                seen_species_nodes.add(lineage.species_node)
+                species_id_species_node_map[species_node._species_id] = species_node
+                setattr(species_node, self.species_tree_to_lineage_tree_node_attr, species_id_lineage_node_collection_map[species_node._species_id])
+        for species_id, lineage_nodes in species_id_lineage_node_collection_map.items():
+            for nd in lineage_nodes:
+                setattr(nd, self.lineage_tree_to_species_tree_node_attr, species_id_species_node_map[species_id])
+
+    def _finalize_trees(self,
+            lineage_tree,
+            lineage_taxon_namespace,
+            orthospecies_tree,
+            species_taxon_namespace,
+            lineage_collection,
+            ):
+        self._build_taxa(tree=lineage_tree, taxon_namespace=lineage_taxon_namespace)
+        self._build_taxa(tree=orthospecies_tree, taxon_namespace=species_taxon_namespace)
+        self._correlate_lineage_and_species_trees(lineage_collection=lineage_collection)
+        return lineage_tree, orthospecies_tree
 
     def _process_initiation_of_speciation_from_orthospecies(self):
         parent_lineage = self.rng.choice(self._current_orthospecies_lineages)
@@ -776,8 +824,11 @@ class ProtractedSpeciationProcess(object):
             tree = dendropy.Tree(is_rooted=True)
             label = label_template.format(species_id=1, lineage_id=0)
             tree.seed_node._taxon_label = label
+            tree.seed_node._lineage_id = 0
+            tree.seed_node._species_id = 1
             tree.seed_node.edge.length = max_time
             tree.seed_node._time = max_time
+            setattr(lineage_collection[0], node_attr, tree.seed_node)
             return tree
         lineage_queue = self._build_lineage_queue(
                 lineage_collection=lineage_collection,
@@ -866,6 +917,8 @@ class ProtractedSpeciationProcess(object):
                     node._time = lineage.extinction_time if lineage.extinction_time is not None else max_time
                 label = label_template.format(species_id=lineage.species_id, lineage_id=lineage.lineage_id)
                 node._taxon_label = label
+                node._lineage_id = lineage.lineage_id
+                node._species_id = lineage.species_id
                 setattr(lineage, node_attr, node)
                 lineageq.push_lineage(lineage=lineage, is_copy=True)
             else:

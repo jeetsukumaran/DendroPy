@@ -651,6 +651,14 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                             self.check(tree)
 
     def test_lineage_species_tip_correlation(self):
+        psm = protractedspeciation.ProtractedSpeciationProcess(
+                speciation_initiation_from_orthospecies_rate=0.1,
+                speciation_initiation_from_incipient_species_rate=0.1,
+                speciation_completion_rate=0.05,
+                orthospecies_extinction_rate=0.0,
+                incipient_species_extinction_rate=0.00,
+                )
+        lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=5)
         # for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(10))):
         for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(20))):
             rng = random.Random(seed)
@@ -661,6 +669,20 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                     lineage_tree_species_labels = set([taxon.label.split(".")[0] for taxon in lineage_tree.taxon_namespace])
                     species_tree_taxon_labels = set([taxon.label for taxon in orthospecies_tree.taxon_namespace])
                     self.assertEqual(lineage_tree_species_labels, species_tree_taxon_labels)
+                    # print("\nLineages: {}\nSpecies: {}".format(",".join(lineage_tree_species_labels), ", ".join(species_tree_taxon_labels)))
+                    check_species_node_lineage_nodes_map = {}
+                    for lineage_node in lineage_tree.leaf_node_iter():
+                        lineage_node_species_node = getattr(lineage_node, psm.lineage_tree_to_species_tree_node_attr)
+                        species_node_lineage_nodes = getattr(lineage_node_species_node, psm.species_tree_to_lineage_tree_node_attr)
+                        self.assertIn(lineage_node, species_node_lineage_nodes)
+                        self.assertEqual(lineage_node.taxon.label.split(".")[0], lineage_node_species_node.taxon.label)
+                        try:
+                            check_species_node_lineage_nodes_map[lineage_node_species_node].add(lineage_node)
+                        except KeyError:
+                            check_species_node_lineage_nodes_map[lineage_node_species_node] = set([lineage_node])
+                    for species_node in orthospecies_tree.leaf_node_iter():
+                        species_node_lineage_nodes = getattr(species_node, psm.species_tree_to_lineage_tree_node_attr)
+                        self.assertEqual(check_species_node_lineage_nodes_map[species_node], species_node_lineage_nodes)
 
     def test_(self):
         for psm in self.iter_psm_models():
