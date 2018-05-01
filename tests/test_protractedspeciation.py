@@ -21,6 +21,8 @@
 Tests of protracted speciation model/process.
 """
 
+import random
+import itertools
 import math
 import unittest
 import json
@@ -542,7 +544,7 @@ class ProtractedSpeciationLowLevelTreeCompilationFromEventsTestCase(unittest.Tes
 
 class ProtractedSpeciationProcessGeneration(unittest.TestCase):
 
-    def iter_psm_models(self):
+    def iter_psm_models(self, **kwargs):
         for splitting_rate in (0.1,):
             for extinction_rate_factor in (0.5, 0.0):
                 extinction_rate = splitting_rate * extinction_rate_factor
@@ -553,6 +555,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                             speciation_initiation_from_incipient_species_rate=splitting_rate,
                             speciation_completion_rate=speciation_completion_rate,
                             incipient_species_extinction_rate=extinction_rate,
+                            **kwargs,
                             )
                     yield psm
 
@@ -620,24 +623,25 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                     self.check(tree)
 
     def test_taxon_namespace(self):
-        for psm in self.iter_psm_models():
-            for kwargs in (
-                    {"max_time": 20},
-                    # {"max_extant_orthospecies": 10},
-                    {"max_extant_lineages": 20},
-                    ):
-                for is_initial_lineage_orthospecies in (True, False):
-                    kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
-                    lineage_taxon_namespace = dendropy.TaxonNamespace()
-                    species_taxon_namespace = dendropy.TaxonNamespace()
-                    kwargs["lineage_taxon_namespace"] = lineage_taxon_namespace
-                    kwargs["species_taxon_namespace"] = species_taxon_namespace
-                    print(kwargs)
-                    lineage_tree, orthospecies_tree = psm.generate_sample(**kwargs)
-                    self.assertIs(lineage_tree.taxon_namespace, lineage_taxon_namespace)
-                    self.assertIs(orthospecies_tree.taxon_namespace, species_taxon_namespace)
-                    for tree in (lineage_tree, orthospecies_tree):
-                        self.check(tree)
+        for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(10))):
+            rng = random.Random(seed)
+            for psm in self.iter_psm_models(rng=rng):
+                for kwargs in (
+                        {"max_time": 20},
+                        # {"max_extant_orthospecies": 10},
+                        {"max_extant_lineages": 20},
+                        ):
+                    for is_initial_lineage_orthospecies in (True, False):
+                        kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
+                        lineage_taxon_namespace = dendropy.TaxonNamespace()
+                        species_taxon_namespace = dendropy.TaxonNamespace()
+                        kwargs["lineage_taxon_namespace"] = lineage_taxon_namespace
+                        kwargs["species_taxon_namespace"] = species_taxon_namespace
+                        lineage_tree, orthospecies_tree = psm.generate_sample(**kwargs)
+                        self.assertIs(lineage_tree.taxon_namespace, lineage_taxon_namespace)
+                        self.assertIs(orthospecies_tree.taxon_namespace, species_taxon_namespace)
+                        for tree in (lineage_tree, orthospecies_tree):
+                            self.check(tree)
 
     def test_(self):
         for psm in self.iter_psm_models():
