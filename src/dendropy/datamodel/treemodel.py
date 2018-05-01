@@ -3179,7 +3179,7 @@ class Tree(
             taxonmodel.TaxonNamespaceAssociated.__init__(self,
                     taxon_namespace=taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None))
             self.comments = []
-            self._is_rooted = None
+            self._is_rooted = kwargs.pop("is_rooted", None)
             self.weight = None
             self.length_type = None
             self._seed_node = None
