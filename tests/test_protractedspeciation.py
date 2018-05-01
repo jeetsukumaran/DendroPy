@@ -575,7 +575,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                 {"max_extant_lineages": 20},
                 ):
             for is_initial_lineage_orthospecies in (True, False):
-                kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
+                psm.is_initial_lineage_orthospecies = is_initial_lineage_orthospecies
                 kwargs.update(additional_kwargs)
                 yield psm.generate_sample(**kwargs)
 
@@ -638,17 +638,15 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                         {"max_extant_orthospecies": 10},
                         {"max_extant_lineages": 20},
                         ):
-                    for is_initial_lineage_orthospecies in (True, False):
-                        kwargs["is_initial_lineage_orthospecies"] = is_initial_lineage_orthospecies
-                        lineage_taxon_namespace = dendropy.TaxonNamespace()
-                        species_taxon_namespace = dendropy.TaxonNamespace()
-                        kwargs["lineage_taxon_namespace"] = lineage_taxon_namespace
-                        kwargs["species_taxon_namespace"] = species_taxon_namespace
-                        lineage_tree, orthospecies_tree = psm.generate_sample(**kwargs)
-                        self.assertIs(lineage_tree.taxon_namespace, lineage_taxon_namespace)
-                        self.assertIs(orthospecies_tree.taxon_namespace, species_taxon_namespace)
-                        for tree in (lineage_tree, orthospecies_tree):
-                            self.check(tree)
+                    lineage_taxon_namespace = dendropy.TaxonNamespace()
+                    species_taxon_namespace = dendropy.TaxonNamespace()
+                    kwargs["lineage_taxon_namespace"] = lineage_taxon_namespace
+                    kwargs["species_taxon_namespace"] = species_taxon_namespace
+                    lineage_tree, orthospecies_tree = psm.generate_sample(**kwargs)
+                    self.assertIs(lineage_tree.taxon_namespace, lineage_taxon_namespace)
+                    self.assertIs(orthospecies_tree.taxon_namespace, species_taxon_namespace)
+                    for tree in (lineage_tree, orthospecies_tree):
+                        self.check(tree)
 
     def test_lineage_species_tip_correlation(self):
         psm = protractedspeciation.ProtractedSpeciationProcess(

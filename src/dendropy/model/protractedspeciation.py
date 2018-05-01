@@ -466,6 +466,7 @@ class ProtractedSpeciationProcess(object):
         self.speciation_initiation_from_incipient_species_rate = speciation_initiation_from_incipient_species_rate
         self.speciation_completion_rate = speciation_completion_rate
         self.incipient_species_extinction_rate = incipient_species_extinction_rate
+        self.is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", True)
         self.species_lineage_sampling_scheme = kwargs.get("species_lineage_sampling_scheme", "random") # 'random', 'oldest', 'youngest'
         if lineage_label_format_template is None:
             self.lineage_label_format_template = "S{species_id}.{lineage_id}"
@@ -526,10 +527,6 @@ class ProtractedSpeciationProcess(object):
             the lineage tree (i.e. the tree with both incipient and good
             species). If |None|, then do not terminate based on the
             number of tipes on the incipient species tree.
-        is_initial_lineage_orthospecies : bool
-            Whether the first lineage that initialies the process is a
-            "good" species or not. Defaults to |True|: first species on
-            the tree is a "good" species.
         is_retry_on_total_extinction : bool
             If |False|, then a TreeSimTotalExtinctionException will be raised
             if all lineages go extinct before the termination conditions are
@@ -577,12 +574,11 @@ class ProtractedSpeciationProcess(object):
         max_extant_orthospecies = kwargs.get("max_extant_orthospecies", None)
         lineage_taxon_namespace = kwargs.get("lineage_taxon_namespace", None)
         species_taxon_namespace = kwargs.get("species_taxon_namespace", None)
-        is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", True)
         initial_lineage = self._new_lineage(None)
-        if is_initial_lineage_orthospecies:
+        if self.is_initial_lineage_orthospecies:
             initial_lineage.speciation_completion_time = 0.0
             self._current_orthospecies_lineages.append(initial_lineage)
-            self._current_incipient_species_lineages = []
+            self._current_incipient_species_lineages.pop()
         while True:
             num_orthospecies = len(self._current_orthospecies_lineages)
             num_incipient_species = len(self._current_incipient_species_lineages)
