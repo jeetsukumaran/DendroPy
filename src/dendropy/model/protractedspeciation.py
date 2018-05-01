@@ -483,7 +483,7 @@ class ProtractedSpeciationProcess(object):
         self._current_time = 0.0
         self._current_orthospecies_lineages = []
         self._current_incipient_species_lineages = []
-        self._next_species_id = 1
+        self._species_id = 1
         self._lineage_collection = []
 
     def generate_sample(self, **kwargs):
@@ -701,8 +701,8 @@ class ProtractedSpeciationProcess(object):
         lineage_idx = self.rng.randint(0, len(self._current_incipient_species_lineages)-1)
         lineage = self._current_incipient_species_lineages[lineage_idx]
         lineage.speciation_completion_time = self._current_time
-        self._next_species_id += 1
-        lineage.species_id = self._next_species_id
+        self._species_id += 1
+        lineage.species_id = self._species_id
         self._current_orthospecies_lineages.append(lineage)
         del self._current_incipient_species_lineages[lineage_idx]
 
