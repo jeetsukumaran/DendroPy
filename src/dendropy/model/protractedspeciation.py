@@ -608,12 +608,12 @@ class ProtractedSpeciationProcess(object):
         lineage_collection = lineage_data[0]["lineage_collection"] + lineage_data[1]["lineage_collection"]
         lineage_tree = self._compile_lineage_tree(
                 lineage_collection=lineage_collection,
-                max_time=max_time if max_time is not None else lineage_data[phase_idx]["current_time"],
+                max_time=max_time if max_time is not None else lineage_data[phase_idx]["final_time"],
                 is_drop_extinct=True,
                 )
         orthospecies_tree = self._compile_species_tree(
                 lineage_collection=lineage_collection,
-                max_time=max_time if max_time is not None else lineage_data[phase_idx]["current_time"],
+                max_time=max_time if max_time is not None else lineage_data[phase_idx]["final_time"],
                 )
         return self._finalize_trees(
                 lineage_tree=lineage_tree,
@@ -681,25 +681,26 @@ class ProtractedSpeciationProcess(object):
             if max_time and (current_time + waiting_time) > max_time:
                 current_time = max_time
                 break
-            current_time += waiting_time
             # we do this here so that the (newest) tip lineages have the
             # waiting time to the next event branch lengths
             if min_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= min_extant_lineages:
-                lineage_data[phase_idx]["current_time"] = current_time
+                final_time = current_time + self.rng.uniform(0, waiting_time)
+                lineage_data[phase_idx]["final_time"] = final_time
                 break
             elif min_extant_orthospecies is not None:
                 ## note: very expensive operation to count orthospecies leaves!
+                final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
                     orthospecies_tree = self._compile_species_tree(
                             lineage_collection=lineage_collection_snapshot,
-                            max_time=current_time,
+                            max_time=final_time,
                             )
                     num_leaves = len(orthospecies_tree.leaf_nodes())
                     if num_leaves >= min_extant_orthospecies:
                         lineage_tree = self._compile_lineage_tree(
                             lineage_collection=lineage_collection_snapshot,
-                            max_time=current_time,
+                            max_time=final_time,
                             is_drop_extinct=True,
                             )
                         lineage_tree, orthospecies_tree = self._finalize_trees(
@@ -714,6 +715,8 @@ class ProtractedSpeciationProcess(object):
                         return
                 except ProcessFailedException:
                     pass
+            # add to current time
+            current_time += waiting_time
             # Select event
             event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
             assert (event_type_idx >= 0 and event_type_idx <= 4)
