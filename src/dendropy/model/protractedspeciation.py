@@ -593,8 +593,8 @@ class ProtractedSpeciationProcess(object):
                     species_taxon_namespace=species_taxon_namespace,
                     )
             if min_extant_orthospecies is not None:
-                if "lineage_tree" in lineage_data[1]:
-                    return lineage_data[1]["lineage_tree"], lineage_data[1]["orthospecies_tree"]
+                if "lineage_tree" in lineage_data[phase_idx]:
+                    return lineage_data[phase_idx]["lineage_tree"], lineage_data[phase_idx]["orthospecies_tree"]
                 else:
                     raise ProcessFailedException()
             elif min_extant_lineages is not None:
@@ -713,8 +713,8 @@ class ProtractedSpeciationProcess(object):
                                 species_taxon_namespace=species_taxon_namespace,
                                 lineage_collection=lineage_collection_snapshot,
                                 )
-                        lineage_data[1]["lineage_tree"] = lineage_tree
-                        lineage_data[1]["orthospecies_tree"] = orthospecies_tree
+                        lineage_data[phase_idx]["lineage_tree"] = lineage_tree
+                        lineage_data[phase_idx]["orthospecies_tree"] = orthospecies_tree
                         return
                 except ProcessFailedException:
                     pass
