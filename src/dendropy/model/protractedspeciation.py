@@ -466,7 +466,7 @@ class ProtractedSpeciationProcess(object):
         self.speciation_initiation_from_incipient_species_rate = speciation_initiation_from_incipient_species_rate
         self.speciation_completion_rate = speciation_completion_rate
         self.incipient_species_extinction_rate = incipient_species_extinction_rate
-        self.is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", True)
+        self.is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", False)
         self.species_lineage_sampling_scheme = kwargs.get("species_lineage_sampling_scheme", "random") # 'random', 'oldest', 'youngest'
         if lineage_label_format_template is None:
             self.lineage_label_format_template = "S{species_id}.{lineage_id}"
@@ -579,6 +579,7 @@ class ProtractedSpeciationProcess(object):
             initial_lineage.speciation_completion_time = 0.0
             self._current_orthospecies_lineages.append(initial_lineage)
             self._current_incipient_species_lineages.pop()
+        # print("\n[[[ START ]]]")
         while True:
             num_orthospecies = len(self._current_orthospecies_lineages)
             num_incipient_species = len(self._current_incipient_species_lineages)
@@ -626,7 +627,20 @@ class ProtractedSpeciationProcess(object):
             rate_of_any_event = sum(event_rates)
             # Waiting time
             waiting_time = self.rng.expovariate(rate_of_any_event)
+            # waiting_time = -math.log(self.rng.uniform(0, 1))/rate_of_any_event
+            # print("Current time: {}, rate_of_any_event: {}, waiting_time: {}".format(self._current_time, rate_of_any_event, waiting_time))
             if max_time and (self._current_time + waiting_time) > max_time:
+                # if len(self._lineage_collection) < 2:
+                # for lineage in self._lineage_collection:
+                #     print("{}\t{}\t{:0.4f}\t{:0.4f}\t{:0.4f}\t{}".format(
+                #         lineage.lineage_id,
+                #         lineage.parent_lineage_id,
+                #         lineage.origin_time,
+                #         lineage.speciation_completion_time if lineage.speciation_completion_time is not None else 0,
+                #         lineage.extinction_time if lineage.extinction_time is not None else 0,
+                #         lineage.species_id))
+                if not self._check_good():
+                    raise ProcessFailedException()
                 self._current_time = max_time
                 break
             self._current_time += waiting_time
@@ -647,12 +661,12 @@ class ProtractedSpeciationProcess(object):
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
         lineage_tree = self._compile_lineage_tree(
                 lineage_collection=self._lineage_collection,
-                max_time=self._current_time,
+                max_time=max_time if max_time is not None else self._current_time,
                 is_drop_extinct=True,
                 )
         orthospecies_tree = self._compile_species_tree(
                 lineage_collection=self._lineage_collection,
-                max_time=self._current_time,
+                max_time=max_time if max_time is not None else self._current_time,
                 )
         return self._finalize_trees(
                 lineage_tree=lineage_tree,
@@ -680,6 +694,7 @@ class ProtractedSpeciationProcess(object):
                 extinction_time=None,
                 species_id=species_id,
                 )
+        lineage._check_parent_lineage = parent_lineage # for _check_good
         self._lineage_collection.append(lineage)
         self._current_incipient_species_lineages.append(lineage)
         return lineage
@@ -917,3 +932,18 @@ class ProtractedSpeciationProcess(object):
             else:
                 lineageq.register_lineage_reference(lineage=lineage)
         return lineageq
+
+    def _check_good(self):
+        if self._current_orthospecies_lineages:
+            return True
+        if not self._current_incipient_species_lineages:
+            return False
+        for lineage in self._current_incipient_species_lineages:
+            parent_lineage = lineage._check_parent_lineage
+            origin_time = lineage.origin_time
+            while parent_lineage is not None and parent_lineage.lineage_id > 1:
+                if parent_lineage.speciation_completion_time is not None and parent_lineage.speciation_completion_time < origin_time:
+                    return True
+                origin_time = parent_lineage.origin_time
+                parent_lineage = parent_lineage._check_parent_lineage
+        return False
