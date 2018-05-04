@@ -884,7 +884,6 @@ class ProtractedSpeciationProcess(object):
             node_attr = "species_node"
         else:
             raise ValueError(tree_type)
-        node_slot_idx = ProtractedSpeciationProcess._ETX_NODE
         if len(lineage_collection) == 1:
             tree = dendropy.Tree(is_rooted=True)
             label = label_template.format(species_id=1, lineage_id=0)
