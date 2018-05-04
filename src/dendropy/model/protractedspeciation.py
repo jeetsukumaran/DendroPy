@@ -665,8 +665,34 @@ class ProtractedSpeciationProcess(object):
             num_incipient_species = len(incipient_species_lineages)
             if num_incipient_species + num_orthospecies == 0:
                 raise TreeSimTotalExtinctionException()
-            if min_extant_orthospecies is not None:
-                ## note: expensive operation to count leaves!
+            ## Draw time to next event
+            event_rates = []
+            # Event type 0
+            event_rates.append(self.speciation_initiation_from_orthospecies_rate * num_orthospecies)
+            # Event type 1
+            event_rates.append(self.orthospecies_extinction_rate * num_orthospecies)
+            # Event type 2
+            event_rates.append(self.speciation_initiation_from_incipient_species_rate * num_incipient_species)
+            # Event type 3
+            event_rates.append(self.speciation_completion_rate * num_incipient_species)
+            # Event type 4
+            event_rates.append(self.incipient_species_extinction_rate * num_incipient_species)
+            # All events
+            rate_of_any_event = sum(event_rates)
+            # Waiting time
+            waiting_time = self.rng.expovariate(rate_of_any_event)
+            # waiting_time = -math.log(self.rng.uniform(0, 1))/rate_of_any_event
+            if max_time and (current_time + waiting_time) > max_time:
+                current_time = max_time
+                break
+            current_time += waiting_time
+            # we do this here so that the (newest) tip lineages have the
+            # waiting time to the next event branch lengths
+            if min_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= min_extant_lineages:
+                lineage_data[phase_idx]["current_time"] = current_time
+                break
+            elif min_extant_orthospecies is not None:
+                ## note: very expensive operation to count orthospecies leaves!
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
                     orthospecies_tree = self._compile_species_tree(
@@ -692,30 +718,6 @@ class ProtractedSpeciationProcess(object):
                         return
                 except ProcessFailedException:
                     pass
-            if min_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= min_extant_lineages:
-                lineage_data[phase_idx]["current_time"] = current_time
-                break
-            ## Draw time to next event
-            event_rates = []
-            # Event type 0
-            event_rates.append(self.speciation_initiation_from_orthospecies_rate * num_orthospecies)
-            # Event type 1
-            event_rates.append(self.orthospecies_extinction_rate * num_orthospecies)
-            # Event type 2
-            event_rates.append(self.speciation_initiation_from_incipient_species_rate * num_incipient_species)
-            # Event type 3
-            event_rates.append(self.speciation_completion_rate * num_incipient_species)
-            # Event type 4
-            event_rates.append(self.incipient_species_extinction_rate * num_incipient_species)
-            # All events
-            rate_of_any_event = sum(event_rates)
-            # Waiting time
-            waiting_time = self.rng.expovariate(rate_of_any_event)
-            # waiting_time = -math.log(self.rng.uniform(0, 1))/rate_of_any_event
-            if max_time and (current_time + waiting_time) > max_time:
-                current_time = max_time
-                break
-            current_time += waiting_time
             # Select event
             event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
             assert (event_type_idx >= 0 and event_type_idx <= 4)
