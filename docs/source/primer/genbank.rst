@@ -32,7 +32,7 @@ The value of this argument should be a container with either GenBank accession i
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(ids=['EU105474', 'EU105475'])
     >>> for gb in gb_dna:
-    ...     print gb
+    ...     print(gb)
     gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
 
@@ -108,11 +108,11 @@ For example::
 
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(['EU105474', 'EU105475'])
-    >>> print len(gb_dna)
+    >>> print(len(gb_dna))
     >>> gb_dna.acquire([158930547, 158930548])
-    >>> print len(gb_dna)
+    >>> print(len(gb_dna))
     >>> gb_dna.acquire_range(105479, 105480, prefix="EU")
-    >>> print len(gb_dna)
+    >>> print(len(gb_dna))
     2
     4
     6
@@ -126,32 +126,32 @@ Each of these :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects 
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(['EU105474', 'EU105475'])
     >>> for gb_rec in gb_dna:
-    ...    print gb_rec.gi
-    ...    print gb_rec.locus
-    ...    print gb_rec.length
-    ...    print gb_rec.moltype
-    ...    print gb_rec.topology
-    ...    print gb_rec.strandedness
-    ...    print gb_rec.division
-    ...    print gb_rec.update_date
-    ...    print gb_rec.create_date
-    ...    print gb_rec.definition
-    ...    print gb_rec.primary_accession
-    ...    print gb_rec.accession_version
-    ...    print "(other seq ids)"
+    ...    print(gb_rec.gi)
+    ...    print(gb_rec.locus)
+    ...    print(gb_rec.length)
+    ...    print(gb_rec.moltype)
+    ...    print(gb_rec.topology)
+    ...    print(gb_rec.strandedness)
+    ...    print(gb_rec.division)
+    ...    print(gb_rec.update_date)
+    ...    print(gb_rec.create_date)
+    ...    print(gb_rec.definition)
+    ...    print(gb_rec.primary_accession)
+    ...    print(gb_rec.accession_version)
+    ...    print("(other seq ids)")
     ...    for osi_key, osi_value in gb_rec.other_seq_ids.items():
-    ...        print "    ", osi_key, osi_value
-    ...    print gb_rec.source
-    ...    print gb_rec.organism
-    ...    print gb_rec.taxonomy
-    ...    print "(references)"
+    ...        print("    ", osi_key, osi_value)
+    ...    print(gb_rec.source)
+    ...    print(gb_rec.organism)
+    ...    print(gb_rec.taxonomy)
+    ...    print("(references)")
     ...    for ref in gb_rec.references:
-    ...        print "    ", ref.number , ref.position , ref.authors , ref.consrtm , ref.title , ref.journal , ref.medline_id , ref.pubmed_id , ref.remark
-    ...    print "(feature_table)"
+    ...        print("    ", ref.number , ref.position , ref.authors , ref.consrtm , ref.title , ref.journal , ref.medline_id , ref.pubmed_id , ref.remark)
+    ...    print("(feature_table)")
     ...    for feature in gb_rec.feature_table:
-    ...        print "    ", feature.key, feature.location
+    ...        print("    ", feature.key, feature.location)
     ...        for qualifier in feature.qualifiers:
-    ...            print "        ", qualifier.name, qualifier.value
+    ...            print("        ", qualifier.name, qualifier.value)
     ...
     158930545
     EU105474
@@ -197,7 +197,7 @@ When called without any arguments, it generates a new |TaxonNamespace| block, cr
     >>> from dendropy.interop import genbank
     >>> gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     >>> char_matrix = gb_dna.generate_char_matrix()
-    >>> print char_matrix.as_string("nexus")
+    >>> print(char_matrix.as_string("nexus"))
     #NEXUS
 
     BEGIN TAXA;
@@ -229,7 +229,9 @@ Customizing/Controlling Sequence Taxa
 The taxon assignment can be controlled in one of two ways:
 
     1. Using the "``label_components``" and optionally the "``label_component_separator``" arguments.
-    2. Specifying a custom function using the "``gb_to_taxon_func``" argument that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonNamespace| object passed using the "``taxon_namespace``" argument.
+    2. Specifying a custom function using the "``gb_to_taxon_fn``" argument that takes *two* arguments, a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and a |TaxonNamespace| argument, and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonNamespace| object passed using the "``taxon_namespace``" argument.
+
+    .. versionchanged:: 4.4.0 (previous versions took just the first argument, the GenBankAccessionRecord object; this meant client code had to independently keep track and use the correct |TaxonNamespace| object to create |Taxon| objects. Now, the function has direct access to it).
 
 Specifying a Custom Label for Sequence Taxa
 ...........................................
@@ -246,32 +248,32 @@ For example::
     >>> char_matrix = gb_dna.generate_char_matrix(
     ... label_components=["accession", "organism", ],
     ... label_component_separator="_")
-    >>> print [t.label for t in char_matrix.taxon_namespace]
+    >>> print([t.label for t in char_matrix.taxon_namespace])
     ['EU105474_Homo_sapiens', 'EU105475_Homo_sapiens']
     >>> char_matrix = gb_dna.generate_char_matrix(
     ... label_components=["organism", "moltype", "gi"],
     ... label_component_separator=".")
-    >>> print [t.label for t in char_matrix.taxon_namespace]
+    >>> print([t.label for t in char_matrix.taxon_namespace])
     ['Homo.sapiens.DNA.158930545', 'Homo.sapiens.DNA.158930546']
 
 Specifying a Custom Taxon-Discovery Function
 ............................................
 
-Full control over the |Taxon| object assignment process is given by using the "``gb_to_taxon_func``" argument.
+Full control over the |Taxon| object assignment process is given by using the "``gb_to_taxon_fn``" argument.
 This should be used to specify a function that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence.
 The specification of a |TaxonNamespace| object passed using the "``taxon_namespace``" argument is also required, so that this can be assigned to the |CharacterMatrix| object.
 
-A simple example that illustrates the usage of the "``gb_to_taxon_func``" argument by creating a custom label::
+A simple example that illustrates the usage of the "``gb_to_taxon_fn``" argument by creating a custom label::
 
     #! /usr/bin/env python
 
     import dendropy
     from dendropy.interop import genbank
 
-    def gb_to_taxon(gb):
+    def gb_to_taxon(gb, taxon_namespace):
         locality = gb.feature_table.find("source").qualifiers.find("note").value
         label = "GI" + gb.gi + "." + locality
-        taxon = dendropy.Taxon(label=label)
+        taxon = taxon_namespace.require_taxon(label=label)
         return taxon
 
     taxon_namespace = dendropy.TaxonNamespace()
@@ -279,8 +281,8 @@ A simple example that illustrates the usage of the "``gb_to_taxon_func``" argume
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(
         taxon_namespace=taxon_namespace,
-        gb_to_taxon_func=gb_to_taxon)
-    print [t.label for t in char_matrix.taxon_namespace]
+        gb_to_taxon_fn=gb_to_taxon)
+    print([t.label for t in char_matrix.taxon_namespace])
 
 which results in::
 
@@ -298,7 +300,7 @@ The following illustrates how to do this::
     tree = dendropy.Tree.get_from_string(
         "(Ache, (Arara, (Bribri, (Guatuso, Guaymi))))",
         "newick")
-    def gb_to_taxon(gb):
+    def gb_to_taxon(gb, taxon_namespace):
         locality = gb.feature_table.find("source").qualifiers.find("note").value
         taxon = tree.taxon_namespace.get_taxon(label=locality)
         assert taxon is not None
@@ -309,13 +311,13 @@ The following illustrates how to do this::
     gb_dna = genbank.GenBankDna(ids=gb_ids)
     char_matrix = gb_dna.generate_char_matrix(
         taxon_namespace=tree.taxon_namespace,
-        gb_to_taxon_func=gb_to_taxon)
-    print [t.label for t in char_matrix.taxon_namespace]
-    print tree.taxon_namespace is char_matrix.taxon_namespace
+        gb_to_taxon_fn=gb_to_taxon)
+    print([t.label for t in char_matrix.taxon_namespace])
+    print(tree.taxon_namespace is char_matrix.taxon_namespace)
     for taxon in tree.taxon_namespace:
-        print "{}: {}".format(
+        print("{}: {}".format(
             taxon.label,
-            char_matrix[taxon].symbols_as_string()[:10])
+            char_matrix[taxon].symbols_as_string()[:10]))
 
 which results in::
 
@@ -345,9 +347,9 @@ For example::
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(set_taxon_attr="gb_rec")
     for taxon in char_matrix.taxon_namespace:
-        print "Data for taxon '{}' is based on GenBank record: {}".format(
+        print("Data for taxon '{}' is based on GenBank record: {}".format(
             taxon.label,
-            taxon.gb_rec.definition)
+            taxon.gb_rec.definition))
 
 will result in::
 
@@ -363,10 +365,10 @@ Alternatively, the following::
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(set_seq_attr="gb_rec")
     for sidx, sequence in enumerate(char_matrix.vectors()):
-        print "Sequence {} ('{}') is based on GenBank record: {}".format(
+        print("Sequence {} ('{}') is based on GenBank record: {}".format(
             sidx+1,
             char_matrix.taxon_namespace[sidx].label,
-            sequence.gb_rec.defline)
+            sequence.gb_rec.defline))
 
 will result in::
 
@@ -393,7 +395,7 @@ So, for example::
     from dendropy.interop import genbank
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(add_ref_annotation_to_taxa=True)
-    print char_matrix.as_string("nexml")
+    print(char_matrix.as_string("nexml"))
 
 
 will result in::
@@ -430,7 +432,7 @@ Alternatively::
     from dendropy.interop import genbank
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(add_ref_annotation_to_seqs=True)
-    print char_matrix.as_string("nexml")
+    print(char_matrix.as_string("nexml"))
 
 will result in::
 
@@ -471,7 +473,7 @@ For example::
     from dendropy.interop import genbank
     gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
     char_matrix = gb_dna.generate_char_matrix(add_full_annotation_to_taxa=True)
-    print char_matrix.as_string("nexml")
+    print(char_matrix.as_string("nexml"))
 
 will result in the following::
 
