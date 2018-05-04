@@ -571,8 +571,8 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             additional_kwargs = {}
         for kwargs in (
                 {"max_time": 20},
-                {"max_extant_orthospecies": 10},
-                {"max_extant_lineages": 20},
+                {"min_extant_orthospecies": 10},
+                {"min_extant_lineages": 20},
                 ):
             for is_initial_lineage_orthospecies in (True, False):
                 psm.is_initial_lineage_orthospecies = is_initial_lineage_orthospecies
@@ -616,15 +616,17 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
     def test_by_max_lineages(self):
         for psm in self.iter_psm_models():
             for max_num in (5, 25, 50):
-                lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_lineages=max_num)
-                self.assertEqual(len(lineage_tree.taxon_namespace), max_num)
+                lineage_tree, orthospecies_tree = psm.generate_sample(min_extant_lineages=max_num)
+                # self.assertEqual(len(lineage_tree.taxon_namespace), max_num)
+                self.assertTrue(len(lineage_tree.taxon_namespace) >= max_num)
                 for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
                     self.check(tree)
 
     def test_by_max_orthospecies(self):
         for psm in self.iter_psm_models():
             for max_num in (5, 10, 20):
-                lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=max_num)
+                # lineage_tree, orthospecies_tree = psm.generate_sample(min_extant_orthospecies=max_num)
+                lineage_tree, orthospecies_tree = psm.generate_sample(min_extant_orthospecies=max_num)
                 self.assertEqual(len(orthospecies_tree.taxon_namespace), max_num)
                 for tree_idx, tree in enumerate((lineage_tree, orthospecies_tree,)):
                     self.check(tree)
@@ -635,8 +637,8 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
             for psm in self.iter_psm_models(rng=rng):
                 for kwargs in (
                         {"max_time": 20},
-                        {"max_extant_orthospecies": 10},
-                        {"max_extant_lineages": 20},
+                        {"min_extant_orthospecies": 10},
+                        {"min_extant_lineages": 20},
                         ):
                     lineage_taxon_namespace = dendropy.TaxonNamespace()
                     species_taxon_namespace = dendropy.TaxonNamespace()
@@ -656,7 +658,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                 orthospecies_extinction_rate=0.0,
                 incipient_species_extinction_rate=0.00,
                 )
-        lineage_tree, orthospecies_tree = psm.generate_sample(max_extant_orthospecies=5)
+        lineage_tree, orthospecies_tree = psm.generate_sample(min_extant_orthospecies=5)
         # for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(10))):
         for seed in itertools.chain((559, 631, 230, 212, 907, 237,), (random.randint(0, 1000) for i in range(20))):
             rng = random.Random(seed)
