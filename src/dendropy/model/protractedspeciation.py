@@ -584,6 +584,8 @@ class ProtractedSpeciationProcess(object):
                     )
             if phase_idx == 0 and (len(lineage_data[0]["orthospecies_lineages"]) + len(lineage_data[0]["incipient_species_lineages"]) > 0):
                 phase_idx += 1
+            elif phase_idx == 1 and max_extant_orthospecies is not None and "lineage_tree" in lineage_data[1]:
+                return lineage_data[1]["lineage_tree"], lineage_data[1]["orthospecies_tree"]
             elif phase_idx == 1 and self._check_good(
                     orthospecies_lineages=lineage_data[1]["orthospecies_lineages"],
                     incipient_species_lineages=lineage_data[1]["incipient_species_lineages"]):
@@ -646,10 +648,9 @@ class ProtractedSpeciationProcess(object):
             num_incipient_species = len(incipient_species_lineages)
             if num_incipient_species + num_orthospecies == 0:
                 raise TreeSimTotalExtinctionException()
-            if max_extant_orthospecies is not None:
+            if phase_idx == 1 and max_extant_orthospecies is not None:
                 ## note: expensive operation to count leaves!
-                raise NotImplementedError
-                lineage_collection_snapshot = [lineage.clone() for lineage in lineage_collection]
+                lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
                     orthospecies_tree = self._compile_species_tree(
                             lineage_collection=lineage_collection_snapshot,
@@ -662,13 +663,16 @@ class ProtractedSpeciationProcess(object):
                             max_time=current_time,
                             is_drop_extinct=True,
                             )
-                        return self._finalize_trees(
+                        lineage_tree, orthospecies_tree = self._finalize_trees(
                                 lineage_tree=lineage_tree,
                                 lineage_taxon_namespace=lineage_taxon_namespace,
                                 orthospecies_tree=orthospecies_tree,
                                 species_taxon_namespace=species_taxon_namespace,
                                 lineage_collection=lineage_collection_snapshot,
                                 )
+                        lineage_data[1]["lineage_tree"] = lineage_tree
+                        lineage_data[1]["orthospecies_tree"] = orthospecies_tree
+                        return
                 except ProcessFailedException:
                     pass
             if max_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= max_extant_lineages:
