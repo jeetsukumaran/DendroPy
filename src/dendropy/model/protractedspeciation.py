@@ -443,14 +443,6 @@ class ProtractedSpeciationProcess(object):
         def get_initial_lineage(self):
             return self._lineages[0][1]
 
-    _ET_LINEAGE_ID = 0
-    _ET_PARENT_ID = 1
-    _ET_ORIGIN_T = 2
-    _ET_SPECIATION_T = 3
-    _ET_EXTINCTION_TIME = 4
-    _ET_SPECIES_ID = 5
-    _ETX_NODE = 6
-
     def __init__(self,
             speciation_initiation_from_orthospecies_rate,
             speciation_initiation_from_incipient_species_rate,
@@ -460,7 +452,7 @@ class ProtractedSpeciationProcess(object):
             lineage_label_format_template=None,
             species_label_format_template=None,
             rng=None,
-            **kwargs,
+            **kwargs
             ):
         self.speciation_initiation_from_orthospecies_rate = speciation_initiation_from_orthospecies_rate
         self.orthospecies_extinction_rate = orthospecies_extinction_rate

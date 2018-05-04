@@ -34,6 +34,14 @@ if __name__ == "__main__":
 else:
     from .support import pathmap
 
+_ET_LINEAGE_ID = 0
+_ET_PARENT_ID = 1
+_ET_ORIGIN_T = 2
+_ET_SPECIATION_T = 3
+_ET_EXTINCTION_TIME = 4
+_ET_SPECIES_ID = 5
+_ETX_NODE = 6
+
 def _load_json(filename):
     with open(pathmap.other_source_path(filename)) as src:
         j = json.load(src)
@@ -396,7 +404,7 @@ class LineageQueueTestCase(unittest.TestCase):
                             label_template = getattr(psm, label_template_attr),
                             )
                     if is_drop_extinct:
-                        pbd_table = [entry for entry in pbd_table if entry[protractedspeciation.ProtractedSpeciationProcess._ET_EXTINCTION_TIME] < 0]
+                        pbd_table = [entry for entry in pbd_table if entry[_ET_EXTINCTION_TIME] < 0]
                     expected = sorted(pbd_table, key=lambda x: x[2], reverse=True)
                     self.assertEqual(len(lineage_queue), len(pbd_table))
                     for ei in expected:
@@ -562,7 +570,7 @@ class ProtractedSpeciationProcessGeneration(unittest.TestCase):
                             speciation_initiation_from_incipient_species_rate=splitting_rate,
                             speciation_completion_rate=speciation_completion_rate,
                             incipient_species_extinction_rate=extinction_rate,
-                            **kwargs,
+                            **kwargs
                             )
                     yield psm
 

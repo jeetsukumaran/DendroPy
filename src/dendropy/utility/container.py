@@ -127,13 +127,13 @@ class OrderedSet(object):
 
     def __reversed__(self):
         """
-        Returns `OrderedSet` with values in reversed order.
+        Returns ``OrderedSet`` with values in reversed order.
         """
         return OrderedSet(reversed(self._item_list))
 
     def __add__(self, other):
         """
-        Returns `OrderedSet` consisting of union of values in ``self``
+        Returns ``OrderedSet`` consisting of union of values in ``self``
         and ``other``.
         """
         v = self._item_list + other._item_list

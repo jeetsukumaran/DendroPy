@@ -1867,13 +1867,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         alleles, 1 allele, 2 alleles, etc.
 
         The *folded* site frequency spectrum is a vector $(f_0, f_1, f_2, ...,
-        f_m), m = \ceil{\\frac{N}{2}}$, where the values are the number of minor
+        f_m), m = \\ceil{\\frac{N}{2}}$, where the values are the number of minor
         alleles in the site.
 
         Parameters
         ----------
         is_pad_vector_to_unfolded_length: bool
-            If False, then the vector length will be $\ceil{\frac{N}{2}}$,
+            If False, then the vector length will be $\\ceil{\\frac{N}{2}}$,
             where $N$ is the number of taxa. Otherwise, by default,
             True, length of vector will be number of taxa + 1, with the
             first element the number of monomorphic sites not contributing to
