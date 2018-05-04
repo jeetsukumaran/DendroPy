@@ -583,6 +583,10 @@ class ProtractedSpeciationProcess(object):
                 })
         phase_idx = 0
         while phase_idx < 2:
+            # Run two passes if 'max_time' specified, with each pass building
+            # up one side of the root and only accepted if there are at least
+            # one surviving lineage; this way, condition crown age on
+            # 'max_time'.
             self._generate_lineages(
                     lineage_data=lineage_data,
                     max_time=max_time,
