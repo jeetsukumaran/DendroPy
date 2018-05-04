@@ -660,7 +660,7 @@ class ProtractedSpeciationProcess(object):
             num_incipient_species = len(incipient_species_lineages)
             if num_incipient_species + num_orthospecies == 0:
                 raise TreeSimTotalExtinctionException()
-            if phase_idx == 0 and min_extant_orthospecies is not None:
+            if phase_idx == 0 and (min_extant_orthospecies is not None or min_extant_lineages is not None):
                 if num_orthospecies + num_incipient_species > 0:
                     return
             elif phase_idx == 1 and min_extant_orthospecies is not None:
