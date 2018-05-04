@@ -592,10 +592,15 @@ class ProtractedSpeciationProcess(object):
                     lineage_taxon_namespace=lineage_taxon_namespace,
                     species_taxon_namespace=species_taxon_namespace,
                     )
-            if phase_idx == 0 and (len(lineage_data[0]["orthospecies_lineages"]) + len(lineage_data[0]["incipient_species_lineages"]) > 0):
+            if min_extant_orthospecies is not None:
+                if "lineage_tree" in lineage_data[1]:
+                    return lineage_data[1]["lineage_tree"], lineage_data[1]["orthospecies_tree"]
+                else:
+                    raise ProcessFailedException()
+            elif min_extant_lineages is not None:
+                break
+            elif phase_idx == 0 and (len(lineage_data[0]["orthospecies_lineages"]) + len(lineage_data[0]["incipient_species_lineages"]) > 0):
                 phase_idx += 1
-            elif phase_idx == 1 and min_extant_orthospecies is not None and "lineage_tree" in lineage_data[1]:
-                return lineage_data[1]["lineage_tree"], lineage_data[1]["orthospecies_tree"]
             elif phase_idx == 1 and self._check_good(
                     orthospecies_lineages=lineage_data[1]["orthospecies_lineages"],
                     incipient_species_lineages=lineage_data[1]["incipient_species_lineages"]):
@@ -607,12 +612,12 @@ class ProtractedSpeciationProcess(object):
         lineage_collection = lineage_data[0]["lineage_collection"] + lineage_data[1]["lineage_collection"]
         lineage_tree = self._compile_lineage_tree(
                 lineage_collection=lineage_collection,
-                max_time=max_time if max_time is not None else lineage_data[1]["current_time"],
+                max_time=max_time if max_time is not None else lineage_data[phase_idx]["current_time"],
                 is_drop_extinct=True,
                 )
         orthospecies_tree = self._compile_species_tree(
                 lineage_collection=lineage_collection,
-                max_time=max_time if max_time is not None else lineage_data[1]["current_time"],
+                max_time=max_time if max_time is not None else lineage_data[phase_idx]["current_time"],
                 )
         return self._finalize_trees(
                 lineage_tree=lineage_tree,
@@ -660,10 +665,7 @@ class ProtractedSpeciationProcess(object):
             num_incipient_species = len(incipient_species_lineages)
             if num_incipient_species + num_orthospecies == 0:
                 raise TreeSimTotalExtinctionException()
-            if phase_idx == 0 and (min_extant_orthospecies is not None or min_extant_lineages is not None):
-                if num_orthospecies + num_incipient_species > 0:
-                    return
-            elif phase_idx == 1 and min_extant_orthospecies is not None:
+            if min_extant_orthospecies is not None:
                 ## note: expensive operation to count leaves!
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
