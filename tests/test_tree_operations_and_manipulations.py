@@ -21,10 +21,13 @@
 Tests native tree structuring routines.
 """
 
+import os
 import sys
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 import unittest
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import curated_test_tree
 from support import compare_and_validate
 from support import pathmap

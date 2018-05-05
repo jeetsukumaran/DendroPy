@@ -24,6 +24,7 @@ Support for coverage analysis.
 import unittest
 import shutil
 import sys
+import os
 from optparse import OptionParser
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -42,8 +43,10 @@ else:
         _LOG.info("coverage imported successfully: test coverage analysis available")
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
-        from dendropy.test.support.dendropytest import get_test_suite
-        from . import pathmap
+        if __name__ == '__main__':
+            sys.path.insert(0, os.path.dirname(__file__))
+        from dendropytest import get_test_suite
+        import pathmap
 
         class CoverageAnalysis(Command):
             """

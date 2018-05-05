@@ -23,11 +23,14 @@ Tests for general NEXUS tree list reading.
 import sys
 import unittest
 import dendropy
+import os
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 from support import standard_file_test_trees
 from support import curated_test_tree
 from support import pathmap
-from . import base_standard_trees_parsing_test_cases
+import base_standard_trees_parsing_test_cases
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 

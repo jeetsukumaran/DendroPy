@@ -24,6 +24,10 @@ Tests basic Tree copying etc.
 import unittest
 import dendropy
 import copy
+import os
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import curated_test_tree
 from support import compare_and_validate
 

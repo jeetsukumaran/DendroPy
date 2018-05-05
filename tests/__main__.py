@@ -24,7 +24,7 @@ import collections
 import unittest
 from dendropy.utility import metavar
 from dendropy.utility import messaging
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from support import dendropytest
 
 def main():

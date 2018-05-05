@@ -24,6 +24,10 @@ Tests for general NEWICK tree iteration reading.
 import sys
 import unittest
 import dendropy
+import os
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 from support import standard_file_test_trees
 

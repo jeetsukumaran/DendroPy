@@ -23,11 +23,15 @@ Continuous character tests.
 
 import unittest
 import inspect
-import dendropy
+import os
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 from support.mockrandom import MockRandom
 from support import dendropytest
 from dendropy.model import continuous
+import dendropy
 
 class BounceConstrainTest(unittest.TestCase):
 

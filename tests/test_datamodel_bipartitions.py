@@ -26,6 +26,9 @@ import unittest
 import re
 import sys
 import json
+import os
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 from support import paupsplitsreference
 from support.dendropytest import ExtendedTestCase

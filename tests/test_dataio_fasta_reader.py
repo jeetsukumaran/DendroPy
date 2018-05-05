@@ -22,6 +22,10 @@ Tests for general FASTA reading.
 
 import unittest
 import dendropy
+import os
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 from support import pathmap
 from support import standard_file_test_chars

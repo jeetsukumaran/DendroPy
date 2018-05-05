@@ -173,7 +173,7 @@ class NexusTreeDataYielder(
                 raise self._nexus_error("'BEGIN' found without completion of previous block",
                         nexusreader.NexusReader.IncompleteBlockError)
         self._nexus_tokenizer.skip_to_semicolon() # move past END command
-        raise StopIteration
+        return
 
 class NexusNewickTreeDataYielder(NexusTreeDataYielder):
 

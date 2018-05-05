@@ -29,10 +29,11 @@ import json
 import dendropy
 from dendropy.calculate import treecompare
 from dendropy.model import protractedspeciation
+import os
+import sys
 if __name__ == "__main__":
-    from support import pathmap
-else:
-    from .support import pathmap
+    sys.path.insert(0, os.path.dirname(__file__))
+from support import pathmap
 
 _ET_LINEAGE_ID = 0
 _ET_PARENT_ID = 1

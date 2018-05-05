@@ -24,6 +24,9 @@ Tests reconciliation calculations.
 import os
 import unittest
 import dendropy
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)

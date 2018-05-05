@@ -25,8 +25,10 @@ import sys
 import os
 import unittest
 import dendropy
-from dendropy.utility import error
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
+from dendropy.utility import error
 from dendropy.dataio import nexusreader
 from dendropy.dataio import nexusprocessing
 

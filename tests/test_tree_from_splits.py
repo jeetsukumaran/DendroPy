@@ -22,6 +22,10 @@ NEXUS data read/write parse/format tests.
 """
 
 import unittest
+import os
+import sys
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 from dendropy.utility.messaging import get_logger
 from dendropy.calculate import treecompare
