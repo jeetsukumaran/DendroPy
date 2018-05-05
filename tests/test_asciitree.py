@@ -24,8 +24,7 @@ Tests of ascii tree plots.
 import unittest
 import os
 import sys
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support import curated_test_tree
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)

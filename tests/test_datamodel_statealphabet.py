@@ -29,8 +29,7 @@ import collections
 import dendropy
 from dendropy.utility import container
 import os
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 
 class StateAlphabetTester(object):

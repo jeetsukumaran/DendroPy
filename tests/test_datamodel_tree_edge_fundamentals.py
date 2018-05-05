@@ -25,8 +25,7 @@ import copy
 import unittest
 import os
 import sys
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support import compare_and_validate
 import dendropy
 

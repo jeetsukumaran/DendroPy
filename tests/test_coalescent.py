@@ -27,8 +27,7 @@ import sys
 import dendropy
 from dendropy.model import coalescent
 from dendropy.simulate import popgensim
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support.mockrandom import MockRandom
 from support import pathmap
 

@@ -31,8 +31,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 import dendropy
 from dendropy.calculate.treescore import fitch_down_pass
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 
 class FitchTest(unittest.TestCase):

@@ -31,8 +31,7 @@ from dendropy.calculate import treecompare
 from dendropy.model import protractedspeciation
 import os
 import sys
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 
 _ET_LINEAGE_ID = 0
