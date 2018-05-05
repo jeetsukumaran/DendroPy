@@ -45,7 +45,7 @@ else:
 
         if __name__ == '__main__':
             sys.path.insert(0, os.path.dirname(__file__))
-        from dendropytest import get_test_suite
+        from support.dendropytest import get_test_suite
         import pathmap
 
         class CoverageAnalysis(Command):
