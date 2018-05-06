@@ -2,6 +2,45 @@
 DendroPy News
 #############
 
+2018-05-07
+==========
+
+DendroPy 4.4.0 has been released!
+
+-   Calculation of birth-death likelihoods.
+-   Bipartitions inherit rooting state of trees.
+-   Patristic paths between tips can be tracked in ``PatristicDistanceMatrix``.
+-   Character column metadata annotations now actually possible.
+-   Standard character matrix defaults to 0-9 alphabet instead of just 01.
+-   Reorganization of package directory: from "$HOME/dendropy" and "$HOME/dendropy/test" to more modern "$HOME/src/dendropy" and "$HOME/tests" respectively.
+
+For more information:
+
+    http://dendropy.org
+
+Get it now with:
+
+    $ sudo pip install --upgrade dendropy
+
+or:
+    $ sudo pip install -U dendropy
+
+You can install directly from the main GitHub repository using:
+
+    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git
+
+or:
+
+    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git
+
+Or, if you are working out of a local Git repo:
+
+    $ git pull origin
+    $ python setup.py build
+    $ sudo python setup.py develop
+
+(note: ``sudo`` should be used only if you are installing system-wide using your system Python).
+
 2017-06-17
 ==========
 
