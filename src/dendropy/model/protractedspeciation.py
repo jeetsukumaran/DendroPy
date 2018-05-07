@@ -555,15 +555,15 @@ class ProtractedSpeciationProcess(object):
     def _generate_trees(self, **kwargs):
         max_time = kwargs.get("max_time", None)
         if "max_extant_lineages" in kwargs:
-            num_extant_lineages = kwargs.get("num_extant_lineages", None)
-        else:
-            num_extant_lineages = None
+            if "num_extant_lineages" in kwargs and kwargs["num_extant_lineages"] != kwargs["max_extant_lineages"]:
+                raise ValueError("Cannot specify both 'max_extant_lineages' and 'num_extant_lineages'")
+            kwargs["num_extant_lineages"] = kwargs["max_extant_lineages"]
+        num_extant_lineages = kwargs.get("num_extant_lineages", None)
         if "max_extant_orthospecies" in kwargs:
-            num_extant_orthospecies = kwargs.get("num_extant_orthospecies", None)
-        else:
-            num_extant_orthospecies = None
-        num_extant_lineages = kwargs.get("num_extant_lineages", num_extant_lineages)
-        num_extant_orthospecies = kwargs.get("num_extant_orthospecies", num_extant_orthospecies)
+            if "num_extant_orthospecies" in kwargs and kwargs["num_extant_orthospecies"] != kwargs["max_extant_orthospecies"]:
+                raise ValueError("Cannot specify both 'max_extant_orthospecies' and 'num_extant_orthospecies'")
+            kwargs["num_extant_orthospecies"] = kwargs["max_extant_orthospecies"]
+        num_extant_orthospecies = kwargs.get("num_extant_orthospecies", None)
         lineage_taxon_namespace = kwargs.get("lineage_taxon_namespace", None)
         species_taxon_namespace = kwargs.get("species_taxon_namespace", None)
         lineage_data = []
