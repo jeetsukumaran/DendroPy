@@ -59,6 +59,14 @@ Or::
 If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
 Other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`/downloading`" section.
 
+If you are using the `conda package manager <https://conda.io/docs/>`_, DendroPy can be installed to your conda environment via pip. From within an Anaconda terminal, or a `Jupyter Notebook <http://jupyter.org/>`_, type::
+
+    $ import pip
+    $ pip.main(['install', 'dendropy'])
+
+DendroPy will now be available in your conda-managed environment.
+
+
 Documentation
 ==============
 
