@@ -52,7 +52,7 @@ def _D(speciation_initiation_rate,
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.
@@ -86,7 +86,7 @@ def _phi(speciation_initiation_rate,
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.
@@ -128,7 +128,7 @@ def expected_duration_of_speciation(
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.
@@ -176,7 +176,7 @@ def probability_of_duration_of_speciation(
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.
@@ -231,7 +231,7 @@ def log_probability_of_duration_of_speciation(
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.
@@ -283,7 +283,7 @@ def maximum_probability_duration_of_speciation(
         either incipient or "good" species lineages.
     speciation_completion_rate : float
         The rate at which incipient species get converted to good
-        species, $\lambda_1$.
+        species, $lambda_1$.
     incipient_species_extinction_rate : float
         The incipient species exctinction rate, $\mu_1$: the rate at which
         incipient species go extinct.

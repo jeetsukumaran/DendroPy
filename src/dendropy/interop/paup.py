@@ -480,9 +480,9 @@ class PaupService(object):
         tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree.*', re.I)
 
         bipartition_section = re.compile('Bipartitions found in one or more trees and frequency of occurrence:')
-        bp_full_row_with_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
-        bp_full_row_with_no_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)')
-        bp_row = re.compile('([\.|\*]+).*')
+        bp_full_row_with_perc_col = re.compile(r'([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
+        bp_full_row_with_no_perc_col = re.compile(r'([\.|\*]+)\s+([\d\.]+)')
+        bp_row = re.compile(r'([\.|\*]+).*')
 
         # find tree count
         for idx, line in enumerate(paup_output):
@@ -830,20 +830,20 @@ def estimate_model(char_matrix,
     stdout, stderr = processio.communicate(paup_run, paup_template % paup_args)
     results = {}
     patterns = {
-        'likelihood' : re.compile('-ln L\s+([\d\.]+)'),
-        'rAC' : re.compile('  AC\s+([\d\.]+)'),
-        'rAG' : re.compile('  AG\s+([\d\.]+)'),
-        'rAT' : re.compile('  AT\s+([\d\.]+)'),
-        'rCG' : re.compile('  CG\s+([\d\.]+)'),
-        'rCT' : re.compile('  CT\s+([\d\.]+)'),
-        'rGT' : re.compile('  GT\s+([\d\.]+)'),
-        'kappa': re.compile('  kappa\s+([\d\.]+)'),
-        'prop_invar' : re.compile('P_inv\s+([\d\.]+)'),
-        'alpha' : re.compile('Shape\s+([\S]+)'),
-        'pA' : re.compile('  A\s+([\d\.]+)'),
-        'pC' : re.compile('  C\s+([\d\.]+)'),
-        'pG' : re.compile('  G\s+([\d\.]+)'),
-        'pT' : re.compile('  T\s+([\d\.]+)'),
+        'likelihood' : re.compile(r'-ln L\s+([\d\.]+)'),
+        'rAC' : re.compile(r'  AC\s+([\d\.]+)'),
+        'rAG' : re.compile(r'  AG\s+([\d\.]+)'),
+        'rAT' : re.compile(r'  AT\s+([\d\.]+)'),
+        'rCG' : re.compile(r'  CG\s+([\d\.]+)'),
+        'rCT' : re.compile(r'  CT\s+([\d\.]+)'),
+        'rGT' : re.compile(r'  GT\s+([\d\.]+)'),
+        'kappa': re.compile(r'  kappa\s+([\d\.]+)'),
+        'prop_invar' : re.compile(r'P_inv\s+([\d\.]+)'),
+        'alpha' : re.compile(r'Shape\s+([\S]+)'),
+        'pA' : re.compile(r'  A\s+([\d\.]+)'),
+        'pC' : re.compile(r'  C\s+([\d\.]+)'),
+        'pG' : re.compile(r'  G\s+([\d\.]+)'),
+        'pT' : re.compile(r'  T\s+([\d\.]+)'),
     }
     for value_name in patterns:
         results[value_name] = None

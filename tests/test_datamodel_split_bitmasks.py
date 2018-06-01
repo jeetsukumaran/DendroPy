@@ -141,7 +141,7 @@ class SplitDistributionTestCases(ExtendedTestCase):
                         expected_num_trees=num_trees)
 
 if not paup.DENDROPY_PAUP_INTEROPERABILITY:
-    _LOG.warn("PAUP interoperability not available: skipping split counting tests")
+    _LOG.warning("PAUP interoperability not available: skipping split counting tests")
 else:
 
     class SplitCountTest(ExtendedTestCase):

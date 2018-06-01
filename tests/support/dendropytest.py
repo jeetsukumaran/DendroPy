@@ -45,9 +45,9 @@ def discover_test_module_paths(filter_patterns=None):
     should be a list of regular expression patterns, and only files that match
     at least one of the patterns will be returned.
     """
-    test_module_pattern = re.compile("^test.*\.py$", re.IGNORECASE)
+    test_module_pattern = re.compile(r"^test.*\.py$", re.IGNORECASE)
     if filter_patterns:
-        filter_pattern = re.compile("(" + r"\|".join(filter_patterns) + ")")
+        filter_pattern = re.compile(r"(" + r"\|".join(filter_patterns) + ")")
     else:
         filter_pattern = None
     path = os.path.dirname(os.path.dirname(__file__))
