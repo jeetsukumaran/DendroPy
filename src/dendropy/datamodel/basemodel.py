@@ -173,7 +173,7 @@ class Deserializable(object):
             Source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -201,7 +201,7 @@ class Deserializable(object):
             Full file path to source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -229,7 +229,7 @@ class Deserializable(object):
             Data as a string.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -258,7 +258,7 @@ class Deserializable(object):
             URL of location providing source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -302,7 +302,7 @@ class MultiReadable(object):
             Source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -363,7 +363,7 @@ class MultiReadable(object):
             Source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -393,7 +393,7 @@ class MultiReadable(object):
             Full file path to source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -423,7 +423,7 @@ class MultiReadable(object):
             Data as a string.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying
@@ -453,7 +453,7 @@ class MultiReadable(object):
             URL of location providing source of data.
         schema : string
             Specification of data format (e.g., "nexus").
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Arguments to customize parsing, instantiation, processing, and
             accession of objects read from the data source, including schema-
             or format-specific handling. These will be passed to the underlying

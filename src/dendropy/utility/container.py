@@ -25,6 +25,11 @@ import collections
 import copy
 import sys
 import csv
+try:
+    from collections.abc import MutableMapping
+except ImportError:
+    # Python 2
+    from collections import MutableMapping
 
 ###############################################################################
 ## OrderedSet
@@ -354,7 +359,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class CaseInsensitiveDict(collections.MutableMapping):
+class CaseInsensitiveDict(MutableMapping):
     """
     A case-insensitive ``dict``-like object.
 
