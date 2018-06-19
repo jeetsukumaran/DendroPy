@@ -3386,11 +3386,11 @@ class Tree(
             other = self.__class__(taxon_namespace=self.taxon_namespace)
         else:
             other = tree_factory(taxon_namespace=self.taxon_namespace)
-            if node_factory is None:
-                try:
-                    node_factory = other.node_factory
-                except AttributeError:
-                    pass
+        if node_factory is None:
+            try:
+                node_factory = other.node_factory
+            except AttributeError:
+                pass
         other._is_rooted = self._is_rooted
         other.weight = self.weight
         other.length_type = self.length_type
