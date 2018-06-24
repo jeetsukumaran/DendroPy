@@ -41,7 +41,7 @@ _LOG = messaging.get_logger(__name__)
 
 import dendropy
 
-PAUP_PATH = os.environ.get(metavar.DENDROPY_PAUP_PATH_ENVAR, "NONE")
+PAUP_PATH = os.environ.get(metavar.DENDROPY_PAUP_PATH_ENVAR, "paup")
 if PAUP_PATH == "NONE":
     DENDROPY_PAUP_INTEROPERABILITY = False
 else:
@@ -674,8 +674,7 @@ def estimate_ultrametric_tree(
         paup_args["post_est_commands"] = post_est_commands
         paup_args["outtree_file"] = output_tree_filepath
         paup_block = paup_block % paup_args
-        paup_run = subprocess.Popen(['%s -n' % paup_path],
-                                    shell=True,
+        paup_run = subprocess.Popen([paup_path, "-n"],
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE)
         stdout, stderr = processio.communicate(paup_run, paup_block)
