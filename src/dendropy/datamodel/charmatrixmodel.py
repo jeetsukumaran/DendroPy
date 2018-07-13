@@ -1395,7 +1395,7 @@ class CharacterMatrix(
         for taxon in other_matrix._taxon_sequence_map:
             self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
 
-    def extend_sequences(self, other_matrix):
+    def extend_sequences(self, other_matrix, is_add_new_sequences=False):
         """
         Extends sequences in ``self`` with characters associated with
         corresponding |Taxon| objects in ``other_matrix``.
@@ -1418,7 +1418,11 @@ class CharacterMatrix(
         if other_matrix.taxon_namespace is not self.taxon_namespace:
             raise error.TaxonNamespaceIdentityError(self, other_matrix)
         for taxon in other_matrix._taxon_sequence_map:
-            if taxon in self._taxon_sequence_map:
+            if taxon not in self._taxon_sequence_map:
+                if not is_add_new_sequences:
+                    continue
+                self._taxon_sequence_map[taxon] = self.__class__.character_sequence_type(other_matrix._taxon_sequence_map[taxon])
+            else:
                 self._taxon_sequence_map[taxon].extend(other_matrix._taxon_sequence_map[taxon])
 
     def extend_matrix(self, other_matrix):
