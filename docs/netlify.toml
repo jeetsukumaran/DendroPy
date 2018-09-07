@@ -2,5 +2,5 @@
   ID = "b1510f2f-5f7e-400a-82e5-0c78ffedcc8b"
 
 [Build]
-  Publish = ""
+  Publish = "build/html/"
   Functions = ""
