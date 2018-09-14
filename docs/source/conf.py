@@ -254,6 +254,7 @@ rst_prolog = """
 .. |AnnotationSet| replace:: :class:`~dendropy.datamodel.basemodel.AnnotationSet`
 .. |Annotable| replace:: :class:`~dendropy.datamodel.basemodel.Annotable`
 .. |PhylogeneticDistanceMatrix| replace:: :class:`~dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix`
+.. |AsciiTreePlot| replace:: :class:`~dendropy.datamodel.treemodel.AsciiTreePlot`
 
 .. |get| replace::  :py:meth:`get`
 .. |put| replace::  :py:meth:`put`

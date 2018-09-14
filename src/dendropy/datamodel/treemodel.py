@@ -6203,7 +6203,7 @@ class Tree(
     def as_ascii_plot(self, **kwargs):
         """
         Returns a string representation a graphic of this tree using ASCII
-        characters.
+        characters. See |AsciiTreePlot| for details on arguments.
         """
         ap = AsciiTreePlot(**kwargs)
         return ap.compose(self)
