@@ -908,7 +908,7 @@ class PaupSession(processio.Session):
 
     EOC_FLAG = "@@@END-OF-COMMAND@@@"
     FLAG_DETECT = re.compile(r'^\s*%s\s*$' % EOC_FLAG, re.MULTILINE)
-    EOC_FLAG_STRIP = re.compile(r"^(paup>)*\s*(\[!)*" + EOC_FLAG + "(\])*\s*$", re.MULTILINE)
+    EOC_FLAG_STRIP = re.compile(r"^(paup>)*\s*(\[!)*" + EOC_FLAG + r"(\])*\s*$", re.MULTILINE)
     # FLAG_DETECT = re.compile(r'[^\[]\s*%s\s*[^\]]' % EOC_FLAG, re.MULTILINE)
 
     def __init__(self, paup_path=None):
