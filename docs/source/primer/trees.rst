@@ -178,7 +178,7 @@ Sometimes it is useful to get a visual representation of a |Tree|.
 
 For quick inspection, the :meth:`~dendropy.datamodel.treemodel.Tree.print_plot()` will write an ASCII text plot to the standard output stream::
 
-    >>> t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
+    >>> t = dendropy.Tree.get_from_string("(A,(B,(C,D)));", "newick")
     >>> t.print_plot()
     /----------------------------------------------- A
     +
@@ -202,7 +202,7 @@ If you need to store this representation as a string instead, you can use :meth:
 
 You can also, as mentioned above, using the :meth:`~dendropy.datamodel.treemodel.Tree.as_string` method to represent a |Tree| as string in any format::
 
-    t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
+    t = dendropy.Tree.get_from_string("(A,(B,(C,D)));", "newick")
     print(t.as_string(schema="nexus"))
     print(t.as_string(schema="newick"))
 
