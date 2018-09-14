@@ -427,7 +427,7 @@ class PaupService(object):
         ``stage_list_taxa``, this parses out and returns a taxon block.
         """
         taxlabels = []
-        taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
+        taxinfo_pattern = re.compile(r'\s*(\d+) (.*)\s+\-')
         idx = 0
         for line in paup_output:
             idx += 1
@@ -477,9 +477,9 @@ class PaupService(object):
         bipartition_freqs = {}
         bipartition_counts = {}
         tree_count = None
-        tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree.*', re.I)
+        tree_count_pattern = re.compile(r'.*Majority-rule consensus of ([\d]*) tree.*', re.I)
 
-        bipartition_section = re.compile('Bipartitions found in one or more trees and frequency of occurrence:')
+        bipartition_section = re.compile(r'Bipartitions found in one or more trees and frequency of occurrence:')
         bp_full_row_with_perc_col = re.compile(r'([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
         bp_full_row_with_no_perc_col = re.compile(r'([\.|\*]+)\s+([\d\.]+)')
         bp_row = re.compile(r'([\.|\*]+).*')

@@ -31,3 +31,9 @@ The :class:`Bipartition` Class
     :members:
     :inherited-members:
 
+The :class:`AsciiTreePlot` Class
+================================
+.. autoclass:: dendropy.datamodel.treemodel.AsciiTreePlot
+    :members:
+    :inherited-members:
+
