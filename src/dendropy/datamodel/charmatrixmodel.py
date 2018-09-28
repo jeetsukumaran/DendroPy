@@ -1497,7 +1497,7 @@ class CharacterMatrix(
             List or some other iterable of |Taxon| instances.
         """
         to_keep = set(taxa)
-        for taxon in self._taxon_sequence_map:
+        for taxon in tuple(self._taxon_sequence_map.keys()):
             if taxon not in to_keep:
                 del self._taxon_sequence_map[taxon]
 
