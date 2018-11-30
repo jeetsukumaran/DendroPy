@@ -34,6 +34,7 @@ from dendropy.datamodel.treemodel import Bipartition
 from dendropy.datamodel.treemodel import Edge
 from dendropy.datamodel.treemodel import Node
 from dendropy.datamodel.treemodel import Tree
+from dendropy.datamodel.treemodel import AsciiTreePlot
 from dendropy.datamodel.treecollectionmodel import TreeList
 from dendropy.datamodel.treecollectionmodel import SplitDistribution
 from dendropy.datamodel.treecollectionmodel import TreeArray

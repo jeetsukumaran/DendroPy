@@ -6438,8 +6438,8 @@ class AsciiTreePlot(object):
 
         """
         self.plot_metric = kwargs.pop('plot_metric', 'depth')
+        self.show_external_node_labels = kwargs.pop('show_external_node_labels', True)
         self.show_internal_node_labels = kwargs.pop('show_internal_node_labels', False)
-        self.show_external_node_labels = kwargs.pop('show_internal_node_labels', True)
         self.leaf_spacing_factor = kwargs.pop('leaf_spacing_factor', 2)
 #        self.null_edge_length = kwargs.pop('null_edge_length', 0)
         self.width = kwargs.pop('width', None)
