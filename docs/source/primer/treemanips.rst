@@ -64,7 +64,7 @@ As an example:
 Setting the Rooting State
 -------------------------
 
-All |Tree| objects have a boolean property, :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.datamodel.treemodel.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` to |True| will result in :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` being set to |False| and vice versa.
+All |Tree| objects have a boolean property, :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.datamodel.treemodel.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` to |True| will result in :attr:`~dendropy.datamodel.treemodel.Tree.is_unrooted` being set to |False| and vice versa.
 
 The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you need to update the splits hashes after modifying the :attr:`~dendropy.datamodel.treemodel.Tree.is_rooted` property by calling the :meth:`~dendropy.datamodel.treemodel.Tree.update_bipartitions()` before carrying out any calculations on or with the |Tree| object. Note that calling :meth:`~dendropy.datamodel.treemodel.Tree.update_bipartitions()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``suppress_unifurcations=False`` to :meth:`~dendropy.datamodel.treemodel.Tree.update_bipartitions()`.
 
@@ -304,7 +304,7 @@ which results in::
 Pruning Subtrees and Tips
 =========================
 
-To remove a set of tips from a |Tree|, you cna use either the :meth:`~dendropy.datamodel.treemodel.Tree.prune_taxa()` or the :meth:`~dendropy.datamodel.treemodel.Tree.prune_taxa_with_labels()` methods. The first takes a container of |TaxonNamespace| objects as an argument, while the second takes container of strings. In both cases, nodes associated with the specified taxa (as given by the |TaxonNamespace| objects directly in the first case, or |TaxonNamespace| objects with labels given in the list of string in the second case) will e removed from the tree. For example:
+To remove a set of tips from a |Tree|, you can use either the :meth:`~dendropy.datamodel.treemodel.Tree.prune_taxa()` or the :meth:`~dendropy.datamodel.treemodel.Tree.prune_taxa_with_labels()` methods. The first takes a container of |TaxonNamespace| objects as an argument, while the second takes container of strings. In both cases, nodes associated with the specified taxa (as given by the |TaxonNamespace| objects directly in the first case, or |TaxonNamespace| objects with labels given in the list of string in the second case) will be removed from the tree. For example:
 
 .. literalinclude:: /examples/prune_taxa_with_labels.py
 
