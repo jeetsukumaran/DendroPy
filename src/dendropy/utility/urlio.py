@@ -22,6 +22,7 @@ Communications using web/internet protocols.
 """
 
 from dendropy.utility import textprocessing
+from dendropy.utility import error
 
 import sys
 if sys.hexversion < 0x03000000:
@@ -46,3 +47,17 @@ def read_url(url, strip_markup=False):
         return re.sub(r'<[^>]*?>', '', text)
     else:
         return text
+
+def post_request(url, data=None, **kwargs):
+    try:
+        import requests
+    except ImportError:
+        msg = ("\n"
+              "This operation requires installation of the 'Requests' library:\n"
+              "\n"
+              "    http://docs.python-requests.org/en/master/ \n"
+              "\n")
+        raise error.LibraryDependencyError(msg)
+    response = requests.post(url=url, data=data, **kwargs)
+    return response
+

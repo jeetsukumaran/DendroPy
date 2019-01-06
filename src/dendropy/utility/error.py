@@ -195,3 +195,8 @@ class ExternalServiceError(Exception):
         parts.append(self.stderr)
         parts.append(">>>>>>>")
         return "\n".join(parts)
+
+class LibraryDependencyError(ImportError):
+
+    def __init__(self, msg):
+        ImportError.__init__(self, msg)
