@@ -279,7 +279,7 @@ class ItolService(object):
                 self._render_params[name] = value
         object.__setattr__(self, name, value)
 
-    def query(self,
+    def read_remote(self,
             tree_id,
             result_format):
         """
@@ -299,7 +299,7 @@ class ItolService(object):
         result = response.read()
         return result
 
-    def fetch(self,
+    def download(self,
             dest,
             tree_id,
             result_format):
@@ -321,13 +321,13 @@ class ItolService(object):
             itol_service.line_width = 13
             itol_service.internal_scale = 0
             result_format = "pdf" # "png", "svg", etc.
-            itol_service.fetch(
+            itol_service.download(
                     dest="x1.{}".format(result_format),
                     tree_id=709552230231221546743590,
                     result_format=result_format,)
 
         """
-        result = self.query(
+        result = self.read_remote(
                 tree_id=tree_id,
                 result_format=result_format,)
         if isinstance(dest, str):
@@ -402,8 +402,9 @@ class ItolService(object):
                     result_format=result_format,)
         """
         tree_id = self.upload(tree)
-        self.fetch(
+        self.download(
                 dest=dest,
                 tree_id=tree_id,
                 result_format=result_format,)
+        return tree_id
 
