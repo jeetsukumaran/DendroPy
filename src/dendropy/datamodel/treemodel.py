@@ -5950,6 +5950,15 @@ class Tree(
     ###########################################################################
     ### Metrics -- Unary
 
+    def __len__(self):
+        """
+        Returns number of tips on tree (could be less than number of taxa in namespace).
+        """
+        count = 0
+        for nd in self.seed_node.leaf_iter():
+            count += 1
+        return count
+
     def B1(self):
         """DEPRECATED: Use :func:`dendropy.calculate.treemeasure.B1()`."""
         deprecate.dendropy_deprecation_warning(
