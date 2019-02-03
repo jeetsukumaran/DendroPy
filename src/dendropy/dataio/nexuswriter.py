@@ -370,7 +370,7 @@ class NexusWriter(ioservice.DataWriter):
             stream.write("BEGIN DATA;\n")
             # note that this will only list the number of taxa for
             # which sequences are available
-            ntaxstr = "NTAX={}".format(len(taxon_label_map))
+            ntaxstr = " NTAX={}".format(len(taxon_label_map))
         else:
             stream.write("BEGIN CHARACTERS;\n")
             ntaxstr = ""
