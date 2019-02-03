@@ -11,6 +11,10 @@ from dendropy.utility import cli
 from dendropy.utility import error
 from dendropy.utility import messaging
 
+usage = """\
+cat SRC-FILE | dendropy-format {nexus|newick|phylip|nexml|fasta} --from [FORMAT] [OPTIONS] > DEST-FILE
+"""
+
 def convert(args):
     if args.input_format is None:
         sys.exit("Please specify source format")
@@ -55,7 +59,7 @@ def main():
     Main CLI handler.
     """
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=usage)
     source_options = argparse.ArgumentParser(add_help=False)
     source_options.add_argument(
             "-f", "--from",
