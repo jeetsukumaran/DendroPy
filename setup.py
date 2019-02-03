@@ -108,6 +108,7 @@ ENTRY_POINTS = {}
 SCRIPT_SUBPATHS = [
     ['applications', 'sumtrees', 'sumtrees.py'],
     ['applications', 'sumlabels', 'sumlabels.py'],
+    ['applications', 'dendropy-format', 'dendropy-format'],
     # ['scripts', 'sumtrees', 'cattrees.py'],
     # ['scripts', 'calculators', 'strict_consensus_merge.py'],
     # ['scripts', 'calculators', 'long_branch_symmdiff.py'],

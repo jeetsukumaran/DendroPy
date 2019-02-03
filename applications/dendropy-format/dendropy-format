@@ -1,0 +1,92 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+import argparse
+import dendropy
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    from dendropy.utility.filesys import pre_py34_open as open
+from dendropy.utility import cli
+from dendropy.utility import error
+from dendropy.utility import messaging
+
+def convert(args):
+    if args.input_format is None:
+        sys.exit("Please specify source format")
+    src = sys.stdin
+    with src:
+        ds = dendropy.DataSet.get(
+                file=src,
+                schema=args.input_format,
+                )
+    dest = sys.stdout
+    with dest:
+        ds.write(
+                file=dest,
+                schema=args.output_format)
+
+def to_nexus(args):
+    args.output_format = "nexus"
+    convert(args)
+
+def to_newick(args):
+    args.output_format = "newick"
+    convert(args)
+
+def to_nexus(args):
+    args.output_format = "nexus"
+    convert(args)
+
+def to_nexml(args):
+    args.output_format = "nexml"
+    convert(args)
+
+def to_fasta(args):
+    args.output_format = "fasta"
+    convert(args)
+
+def to_phylip(args):
+    args.output_format = "phylip"
+    convert(args)
+
+def main():
+    """
+    Main CLI handler.
+    """
+
+    parser = argparse.ArgumentParser()
+    source_options = argparse.ArgumentParser(add_help=False)
+    source_options.add_argument(
+            "-f", "--from",
+            dest="input_format",
+            metavar="FORMAT",
+            default=None,
+            choices=[
+                    "nexus",
+                    "newick",
+                    "phylip",
+                    "nexml",
+                    "fasta",
+                    ],
+            help="Format of data source.")
+    parents = [source_options]
+    subparsers = parser.add_subparsers(title="Format",
+            description="Format Types",
+            help="Additional help.",
+            dest="format_subcommand")
+    subparsers.add_parser("newick", parents=parents).set_defaults(func=to_newick)
+    subparsers.add_parser("nexus", parents=parents).set_defaults(func=to_nexus)
+    subparsers.add_parser("phylip", parents=parents).set_defaults(func=to_phylip)
+    subparsers.add_parser("nexml", parents=parents).set_defaults(func=to_nexml)
+    subparsers.add_parser("fasta", parents=parents).set_defaults(func=to_fasta)
+    args = parser.parse_args()
+    if args.format_subcommand is None:
+        args.format_subcommand = args.input_format
+    args.func(args)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit("\n(Terminating due to user interrupt signal)")
