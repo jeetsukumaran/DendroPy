@@ -19,10 +19,44 @@ def convert(args):
     if args.input_format is None:
         sys.exit("Please specify source format")
     src = sys.stdin
+    read_kwargs = {}
+    if args.input_format == "phylip-strict":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = True
+        read_kwargs["multispace_delimiter"] = False
+        read_kwargs["interleaved"] = False
+    elif args.input_format == "phylip-relaxed-singlespace":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = False
+        read_kwargs["multispace_delimiter"] = False
+        read_kwargs["interleaved"] = False
+    elif args.input_format == "phylip-relaxed-multispace":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = False
+        read_kwargs["multispace_delimiter"] = True
+        read_kwargs["interleaved"] = False
+    if args.input_format == "phylip-strict-interleaved":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = True
+        read_kwargs["multispace_delimiter"] = False
+        read_kwargs["interleaved"] = True
+    elif args.input_format == "phylip-relaxed-singlespace-interleaved":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = False
+        read_kwargs["multispace_delimiter"] = False
+        read_kwargs["interleaved"] = True
+    elif args.input_format == "phylip-relaxed-multispace-interleaved":
+        args.input_format = "phylip"
+        read_kwargs["strict"] = False
+        read_kwargs["multispace_delimiter"] = True
+        read_kwargs["interleaved"] = True
+    if args.input_format in ("fasta", "phylip"):
+        read_kwargs["data_type"] = args.data_type
     with src:
         ds = dendropy.DataSet.get(
                 file=src,
                 schema=args.input_format,
+                **read_kwargs,
                 )
     dest = sys.stdout
     with dest:
@@ -69,11 +103,26 @@ def main():
             choices=[
                     "nexus",
                     "newick",
-                    "phylip",
+                    "phylip-strict",
+                    "phylip-relaxed-singlespace",
+                    "phylip-relaxed-multispace",
+                    "phylip-strict-interleaved",
+                    "phylip-relaxed-singlespace-interleaved",
+                    "phylip-relaxed-multispace-interleaved",
                     "nexml",
                     "fasta",
                     ],
             help="Format of data source.")
+    source_options.add_argument(
+            "-d", "--data-type",
+            dest="data_type",
+            default=None,
+            choices=[
+                    "dna",
+                    "rna",
+                    "standard",
+                    ],
+            help="Type of data")
     parents = [source_options]
     subparsers = parser.add_subparsers(title="Format",
             description="Format Types",
