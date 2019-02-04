@@ -101,16 +101,16 @@ def main():
             metavar="FORMAT",
             default=None,
             choices=[
-                    "nexus",
+                    "fasta",
                     "newick",
+                    "nexml",
+                    "nexus",
                     "phylip-strict",
                     "phylip-relaxed-singlespace",
                     "phylip-relaxed-multispace",
                     "phylip-strict-interleaved",
                     "phylip-relaxed-singlespace-interleaved",
                     "phylip-relaxed-multispace-interleaved",
-                    "nexml",
-                    "fasta",
                     ],
             help="Format of data source.")
     source_options.add_argument(
@@ -128,11 +128,11 @@ def main():
             description="Format Types",
             help="Additional help.",
             dest="format_subcommand")
+    subparsers.add_parser("fasta", parents=parents).set_defaults(func=to_fasta)
     subparsers.add_parser("newick", parents=parents).set_defaults(func=to_newick)
+    subparsers.add_parser("nexml", parents=parents).set_defaults(func=to_nexml)
     subparsers.add_parser("nexus", parents=parents).set_defaults(func=to_nexus)
     subparsers.add_parser("phylip", parents=parents).set_defaults(func=to_phylip)
-    subparsers.add_parser("nexml", parents=parents).set_defaults(func=to_nexml)
-    subparsers.add_parser("fasta", parents=parents).set_defaults(func=to_fasta)
     args = parser.parse_args()
     if args.format_subcommand is None:
         args.format_subcommand = args.input_format
