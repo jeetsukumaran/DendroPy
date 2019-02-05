@@ -18,7 +18,10 @@ cat SRC-FILE | dendropy-format {nexus|newick|phylip|nexml|fasta} --from [FORMAT]
 def convert(args):
     if args.input_format is None:
         sys.exit("Please specify source format")
-    src = sys.stdin
+    if args.source_file is None:
+        src = sys.stdin
+    else:
+        src = open(os.path.expanduser(os.path.expandvars(args.source_file)))
     read_kwargs = {}
     if args.input_format == "phylip-strict":
         args.input_format = "phylip"
@@ -96,6 +99,11 @@ def main():
     parser = argparse.ArgumentParser(usage=usage)
     source_options = argparse.ArgumentParser(add_help=False)
     source_options.add_argument(
+            "-i", "--input_file",
+            dest="source_file",
+            default=None,
+            help="Path to source data.")
+    source_options.add_argument(
             "-f", "--from",
             dest="input_format",
             metavar="FORMAT",
@@ -135,6 +143,7 @@ def main():
     subparsers.add_parser("phylip", parents=parents).set_defaults(func=to_phylip)
     args = parser.parse_args()
     if args.format_subcommand is None:
+        sys.exit("Please specify a format command: 'fasta', 'newick', 'nexml', 'nexus', 'phylip'")
         args.format_subcommand = args.input_format
     args.func(args)
 
