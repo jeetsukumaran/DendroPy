@@ -18,7 +18,8 @@ cat SRC-FILE | dendropy-format {nexus|newick|phylip|nexml|fasta} --from [FORMAT]
 def convert(args):
     if args.input_format is None:
         sys.exit("Please specify source format")
-    if args.source_file is None:
+    if args.source_file is None or args.source_file == "-":
+        sys.stderr.write("(Reading from standard input)\n")
         src = sys.stdin
     else:
         src = open(os.path.expanduser(os.path.expandvars(args.source_file)))
