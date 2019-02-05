@@ -180,9 +180,13 @@ class NexusTaxonSymbolMapper(object):
         self.taxon_namespace_original_mutability_state = None
         self.case_sensitive = case_sensitive
         if not self.case_sensitive:
+            if taxon_namespace.is_case_sensitive:
+                raise ValueError("Attempting case insensitive read with case sensitive TaxonNamespace")
             self.token_taxon_map = container.CaseInsensitiveDict()
             self.label_taxon_map = container.CaseInsensitiveDict()
         else:
+            if not taxon_namespace.is_case_sensitive:
+                raise ValueError("Attempting case sensitive read with case insensitive TaxonNamespace")
             self.token_taxon_map = {}
             self.label_taxon_map = {}
         self.number_taxon_map = {}
