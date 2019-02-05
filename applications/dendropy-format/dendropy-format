@@ -12,7 +12,7 @@ from dendropy.utility import error
 from dendropy.utility import messaging
 
 usage = """\
-cat SRC-FILE | dendropy-format {nexus|newick|phylip|nexml|fasta} --from [FORMAT] [OPTIONS] > DEST-FILE
+cat SRC-FILE | dendropy-format --from [FORMAT] --to [FORMAT] [OPTIONS] > DEST-FILE
 """
 
 def convert(args):
@@ -62,11 +62,19 @@ def convert(args):
                 schema=args.input_format,
                 **read_kwargs,
                 )
+    write_kwargs = {}
+    if args.output_format is None:
+        args.output_format = args.input_format
+    if args.output_format == "phylip-strict":
+        args.output_format = "phylip"
+        write_kwargs["strict"] = True
     dest = sys.stdout
     with dest:
         ds.write(
                 file=dest,
-                schema=args.output_format)
+                schema=args.output_format,
+                **write_kwargs
+                )
 
 def to_nexus(args):
     args.output_format = "nexus"
@@ -98,10 +106,9 @@ def main():
     """
 
     parser = argparse.ArgumentParser(usage=usage)
-    source_options = argparse.ArgumentParser(add_help=False)
+    source_options = parser.add_argument_group("Source")
     source_options.add_argument(
-            "-i", "--input_file",
-            dest="source_file",
+            "source_file",
             default=None,
             help="Path to source data.")
     source_options.add_argument(
@@ -133,20 +140,23 @@ def main():
                     ],
             help="Type of data")
     parents = [source_options]
-    subparsers = parser.add_subparsers(title="Format",
-            description="Format Types",
-            help="Additional help.",
-            dest="format_subcommand")
-    subparsers.add_parser("fasta", parents=parents).set_defaults(func=to_fasta)
-    subparsers.add_parser("newick", parents=parents).set_defaults(func=to_newick)
-    subparsers.add_parser("nexml", parents=parents).set_defaults(func=to_nexml)
-    subparsers.add_parser("nexus", parents=parents).set_defaults(func=to_nexus)
-    subparsers.add_parser("phylip", parents=parents).set_defaults(func=to_phylip)
+    destination_options = parser.add_argument_group("Destination")
+    destination_options.add_argument(
+            "-t", "--to",
+            dest="output_format",
+            metavar="FORMAT",
+            default=None,
+            choices=[
+                    "fasta",
+                    "newick",
+                    "nexml",
+                    "nexus",
+                    "phylip",
+                    "phylip-strict",
+                    ],
+            help="Format of data source.")
     args = parser.parse_args()
-    if args.format_subcommand is None:
-        sys.exit("Please specify a format command: 'fasta', 'newick', 'nexml', 'nexus', 'phylip'")
-        args.format_subcommand = args.input_format
-    args.func(args)
+    convert(args)
 
 if __name__ == '__main__':
     try:
