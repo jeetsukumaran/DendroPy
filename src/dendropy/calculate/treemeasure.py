@@ -27,7 +27,7 @@ from dendropy.calculate import phylogeneticdistance
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
 ## legacy: will soon be deprecated
-class PatrisiticDistanceMatrix(phylogeneticdistance.PhylogeneticDistanceMatrix):
+class PatristicDistanceMatrix(phylogeneticdistance.PhylogeneticDistanceMatrix):
 
     def __init__(self, tree):
         phylogeneticdistance.PhylogeneticDistanceMatrix.__init__(self)
