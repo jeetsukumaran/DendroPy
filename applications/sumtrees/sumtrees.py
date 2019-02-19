@@ -1479,8 +1479,13 @@ def main():
             messenger.error("Maximum number of processes set to {}: cannot run SumTrees with less than 1 process".format(num_processes))
             sys.exit(1)
     else:
-        if args.multiprocess is not None and args.multiprocess > 1:
-            messenger.info("Number of valid sources is less than 2: forcing serial processing")
+        if args.multiprocess is not None:
+            try:
+                mp = int(args.multiprocess)
+                if mp > 1:
+                    messenger.info("Number of valid sources is less than 2: forcing serial processing")
+            except ValueError:
+                pass
         if len(tree_sources) > 1 and num_cpus > 1:
             messenger.info(
                     ("Multiple processors ({num_cpus}) available:"
