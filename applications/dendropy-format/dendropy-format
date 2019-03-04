@@ -60,7 +60,7 @@ def convert(args):
         ds = dendropy.DataSet.get(
                 file=src,
                 schema=args.input_format,
-                **read_kwargs,
+                **read_kwargs
                 )
     write_kwargs = {}
     if args.output_format is None:
