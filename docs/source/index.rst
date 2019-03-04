@@ -35,26 +35,19 @@ DendroPy is a pure-Python library with no dependencies, and runs under any versi
 Installing
 ==========
 
-DendroPy is fully easy-installable and can be installed using |pip|_::
-
-    $ sudo pip install -U dendropy
-
-Note: the "``sudo``" command should only be used if installing system-wide on a machine on which you have administrative privileges. Otherwise, you would use the "``--user``" flag for a local user install::
-
-    $ pip install --user -U dendropy
-
 You can install directly from the main GitHub repository using::
 
-    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git
-    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git
+    $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git
+    $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git
 
 Alternatively, if you want to install from a particular branch, e.g., the latest development branch, ``development-master``::
 
-    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
 
-Or::
+DendroPy is also fully easy-installable and can be installed using |pip|_::
 
-    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install -U dendropy
 
 If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
 Other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`/downloading`" section.
@@ -66,6 +59,7 @@ If you are using the `conda package manager <https://conda.io/docs/>`_, DendroPy
 
 DendroPy will now be available in your conda-managed environment.
 
+More information on downloading and installing DendroPy can be found :doc:`here </downloading>`.
 
 Documentation
 ==============

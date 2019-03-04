@@ -4,23 +4,27 @@ Downloading and Installing DendroPy
 
 DendroPy can be installed directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ using a package manager such as |pip|_ or |setuptools|_, or alternatively the source code can be downloaded and manually installed.
 
+Installing from the GitHub Repositories
+=======================================
+
+We recommend that you install directly from the main GitHub repository using |pip|_ (which works with an `Anaconda <https://www.anaconda.com/>`_ environment as well)::
+
+    $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git
+    $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git
+
+If you already have DendroPy installed, you can upgrade to the latest release version by using the "``--upgrade``" flag::
+
+    $ python3 -m pip install --upgrade git+https://github.com/jeetsukumaran/DendroPy.git
+    $ python3 -m pip install --upgrade git+git://github.com/jeetsukumaran/DendroPy.git
+
+Note: If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
+
 Installing From the Python Package Index
 ========================================
 
-DendroPy is "easy_installable" directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_.
-If you have |pip|_ set up on your system, you can install the latest release of DendroPy by running::
+DendroPy is also "easy_installable" directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_::
 
-    $ sudo pip install -U dendropy
-
-If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
-Note: the "``sudo``" command should only be used if installing system-wide on a machine on which you have administrative privileges. Otherwise, you would use the "``--user``" flag for a local user install::
-
-    $ pip install --user -U dendropy
-
-You can install directly from the main GitHub repository using::
-
-    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git
-    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git
+    $ python3 -m pip install -U dendropy
 
 Source Download and Installation
 ================================
@@ -35,18 +39,23 @@ Once downloaded, it can be installed by running:
 
     $ tar -xvzf DendroPy-|version|.tar.gz
     $ cd DendroPy-|version|
-    $ sudo python setup.py install
+    $ sudo python3 setup.py install
 
-Installaing the Latest Development Version
-==========================================
+Installing the Latest Development Version
+=========================================
 
-If you want to install from a particular branch, e.g., the latest development branch, ``development-master``, you can use::
+If you want to install from a particular branch, e.g., the latest development branch, "development-master", you can use::
 
     $ pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
 
 Or::
 
     $ pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
+
+And, to update to incorporate changes as they are added to the branch::
+
+    $ python3 -m pip install --upgrade git+https://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install --upgrade git+git://github.com/jeetsukumaran/DendroPy.git@development-master
 
 Cloning the Source Code Repository
 ==================================
@@ -58,7 +67,7 @@ The DendroPy source code is version-controlled using |Git|_, and the `DendroPy G
 If you plan to use this repository code as you main library code, you probably want to install DendroPy in developer mode::
 
     $ cd DendroPy
-    $ sudo python setup.py develop
+    $ python3 -m pip install -e .
 
 You will, of course, need to get yourself |Git|_ for the above to work:
 
