@@ -1164,6 +1164,14 @@ class CharacterMatrix(
             if t in self._taxon_sequence_map:
                 yield t
 
+    def __contains__(self, key):
+        if isinstance(key, str):
+            for t in self._taxon_sequence_map:
+                if t.label == key:
+                    return True
+            return False
+        return key in self._taxon_sequence_map
+
     def values(self):
         """
         Iterates values (i.e. sequences) in this matrix.
