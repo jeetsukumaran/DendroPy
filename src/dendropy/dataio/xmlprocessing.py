@@ -107,7 +107,8 @@ class XmlElement(XmlObject):
     def namespaced_getiterator(self, tag, namespace=None, subelement_factory=None):
         if subelement_factory is None:
             subelement_factory = self.subelement_factory
-        for element in self._element.getiterator(self.compose_tag(tag, namespace)):
+        # for element in self._element.getiterator(self.compose_tag(tag, namespace)):
+        for element in self._element.iter(self.compose_tag(tag, namespace)):
             yield self.recast_element(element=element, subelement_factory=subelement_factory)
 
     def namespaced_findall(self, tag, namespace=None, subelement_factory=None):
