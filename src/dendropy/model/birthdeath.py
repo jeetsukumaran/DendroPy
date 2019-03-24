@@ -420,7 +420,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 except ValueError:
                     pass
                 for desc in nd.preorder_iter():
-                    extinct_tips.discard(desc)
                     try:
                         extant_tips.remove(desc)
                     except ValueError:
