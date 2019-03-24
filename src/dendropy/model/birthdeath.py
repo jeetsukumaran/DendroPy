@@ -257,16 +257,16 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             assert tree.taxon_namespace is taxon_namespace
         else:
             taxon_namespace = tree.taxon_namespace
-        extant_tips = set()
-        extinct_tips = set()
+        extant_tips = []
+        extinct_tips = []
         for nd in tree:
             if not nd._child_nodes:
                 if getattr(nd, extinct_attr_name, False):
-                    extant_tips.add(nd)
+                    extant_tips.append(nd)
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, False)
                 else:
-                    extinct_tips.add(nd)
+                    extinct_tips.append(nd)
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, True)
             elif is_add_extinct_attr:
@@ -281,10 +281,10 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         tree.seed_node.death_rate = death_rate
         if is_add_extinct_attr:
             setattr(tree.seed_node, extinct_attr_name, False)
-        extant_tips = set([tree.seed_node])
-        extinct_tips = set()
-    initial_extant_tip_set = set(extant_tips)
-    initial_extinct_tip_set = set(extinct_tips)
+        extant_tips = [tree.seed_node]
+        extinct_tips = []
+    initial_extant_tip_set = list(extant_tips)
+    initial_extinct_tip_set = list(extinct_tips)
 
     total_time = 0
 
@@ -368,11 +368,11 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                 c1.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
                 c2.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
                 c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
-                extant_tips.add(c1)
-                extant_tips.add(c2)
+                extant_tips.append(c1)
+                extant_tips.append(c2)
             else:
                 if len(extant_tips) > 0:
-                    extinct_tips.add(nd)
+                    extinct_tips.append(nd)
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, None)
                 else:
@@ -385,8 +385,8 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
                     # We are going to basically restart the simulation because
                     # the tree has gone extinct (without reaching the specified
                     # ntax)
-                    extant_tips = set(initial_extant_tip_set)
-                    extinct_tips = set(initial_extinct_tip_set)
+                    extant_tips = list(initial_extant_tip_set)
+                    extinct_tips = list(initial_extinct_tip_set)
                     for nd in extant_tips:
                         if is_add_extinct_attr:
                             setattr(nd, extinct_attr_name, False)
@@ -411,14 +411,26 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             daughter_nd = e.head_node
             for nd in daughter_nd.child_nodes():
                 nd._parent_node = None
-                extinct_tips.discard(nd)
-                extant_tips.discard(nd)
+                try:
+                    extinct_tips.remove(nd)
+                except ValueError:
+                    pass
+                try:
+                    extant_tips.remove(nd)
+                except ValueError:
+                    pass
                 for desc in nd.preorder_iter():
                     extinct_tips.discard(desc)
-                    extant_tips.discard(desc)
+                    try:
+                        extant_tips.remove(desc)
+                    except ValueError:
+                        pass
             daughter_nd.clear_child_nodes()
-            extinct_tips.discard(daughter_nd)
-            extant_tips.add(daughter_nd)
+            try:
+                extinct_tips.remove(daughter_nd)
+            except ValueError:
+                pass
+            extant_tips.append(daughter_nd)
             if is_add_extinct_attr:
                 setattr(daughter_nd, extinct_attr_name, False)
             e.length = prev_length + last_waiting_time
@@ -429,7 +441,10 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
             if nd in processed_nodes:
                 continue
             processed_nodes.add(nd)
-            extinct_tips.discard(nd)
+            try:
+                extinct_tips.remove(nd)
+            except ValueError:
+                pass
             assert not nd._child_nodes
             while (nd.parent_node is not None) and (len(nd.parent_node._child_nodes) == 1):
                 nd = nd.parent_node
