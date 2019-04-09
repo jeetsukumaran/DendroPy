@@ -6247,7 +6247,7 @@ class Tree(
             dot_nd = "n%d" % n
             out.write(' %s  [label="%s"];\n' % (dot_nd, label))
             nd_id_to_dot_nd[nd] = dot_nd
-        for nd, dot_nd in nd_id_to_dot_nd.iteritems():
+        for nd, dot_nd in nd_id_to_dot_nd.items():
             try:
                 e = nd.edge
                 par_dot_nd = nd_id_to_dot_nd[e.tail_node]
