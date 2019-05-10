@@ -513,7 +513,7 @@ def contained_coalescent_tree(containing_tree,
         if edge.head_node.parent_node is None:
             if len(pop_node_genes[edge.head_node]) > 1:
                 final = coalesce_nodes(nodes=pop_node_genes[edge.head_node],
-                                            pop_size=default_pop_size,
+                                            pop_size=pop_size,
                                             period=None,
                                             rng=rng)
             else:
