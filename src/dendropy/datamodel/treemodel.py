@@ -4962,7 +4962,7 @@ class Tree(
         assert outgroup_node.edge.length == _ognlen
         return self.seed_node
 
-    def reroot_at_node(self, new_root_node, update_bipartitions=False, suppress_unifurcations=True):
+    def reroot_at_node(self, new_root_node, update_bipartitions=False, suppress_unifurcations=True, collapse_unrooted_basal_bifurcation=True):
         """
         Takes an internal node, ``new_seed_node`` that must already be in the tree and
         roots the tree at that node.
@@ -4978,10 +4978,12 @@ class Tree(
         """
         self.reseed_at(new_seed_node=new_root_node,
                 update_bipartitions=False,
-                suppress_unifurcations=suppress_unifurcations)
+                suppress_unifurcations=suppress_unifurcations,
+                collapse_unrooted_basal_bifurcation=False,
+                )
         self.is_rooted = True
         if update_bipartitions:
-            self.update_bipartitions(suppress_unifurcations=suppress_unifurcations)
+            self.update_bipartitions(suppress_unifurcations=suppress_unifurcations, collapse_unrooted_basal_bifurcation=collapse_unrooted_basal_bifurcation)
         return self.seed_node
 
     def reroot_at_edge(self,
@@ -5015,7 +5017,7 @@ class Tree(
                 suppress_unifurcations=suppress_unifurcations)
         return self.seed_node
 
-    def reroot_at_midpoint(self, update_bipartitions=False, suppress_unifurcations=True):
+    def reroot_at_midpoint(self, update_bipartitions=False, suppress_unifurcations=True, collapse_unrooted_basal_bifurcation=True):
         """
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
@@ -5090,10 +5092,17 @@ class Tree(
             # old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
             old_tail_node.add_child(new_seed_node)
             new_seed_node.edge.length = tail_node_edge_len
-            self.reseed_at(new_seed_node, update_bipartitions=False, suppress_unifurcations=suppress_unifurcations)
+            self.reseed_at(
+                    new_seed_node, update_bipartitions=False,
+                    suppress_unifurcations=suppress_unifurcations,
+                    collapse_unrooted_basal_bifurcation=False,
+                    )
         self.is_rooted = True
         if update_bipartitions:
-            self.update_bipartitions(suppress_unifurcations=False)
+            self.update_bipartitions(
+                    suppress_unifurcations=False,
+                    collapse_unrooted_basal_bifurcation=collapse_unrooted_basal_bifurcation,
+                    )
         return self.seed_node
 
     def suppress_unifurcations(self, update_bipartitions=False):
