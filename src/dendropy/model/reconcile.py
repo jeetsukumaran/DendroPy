@@ -375,6 +375,10 @@ class ContainingTree(dendropy.Tree):
                 size. If this attribute does not exist, then the population
                 size is taken to be 1.
 
+        Each coalescent tree terminal node will have a ``container_tree_node``
+        attribute added that references the node on the container tree from
+        which it was sampled.
+
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
         ``build_edge_taxa_sets()`` should be called), and that the tree
         is *not* added to the set of contained trees. For the latter, call
@@ -390,6 +394,7 @@ class ContainingTree(dendropy.Tree):
             for gt in nd.edge.contained_taxa:
                 gn = dendropy.Node(taxon=gt)
                 contained_nodes[nd].append(gn)
+                gn.container_tree_node = nd
 
         # Generate the tree structure
         for edge in self.postorder_edge_iter():
