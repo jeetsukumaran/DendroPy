@@ -462,7 +462,7 @@ class ProtractedSpeciationProcess(object):
         self.is_initial_lineage_orthospecies = kwargs.get("is_initial_lineage_orthospecies", False)
         self.species_lineage_sampling_scheme = kwargs.get("species_lineage_sampling_scheme", "random") # 'random', 'oldest', 'youngest'
         if lineage_label_format_template is None:
-            self.lineage_label_format_template = "S{species_id}.{lineage_id}"
+            self.lineage_label_format_template = "S{species_id}.L{lineage_id}"
         else:
             self.lineage_label_format_template = lineage_label_format_template
         if species_label_format_template is None:
