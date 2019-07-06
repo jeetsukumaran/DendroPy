@@ -127,7 +127,21 @@ def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=N
 ###############################################################################
 ##
 
-def format_dict_table(rows, column_names=None, max_column_width=None, border_style=2):
+def format_dict_table(*args, **kwargs):
+    """
+    Returns a (single) string representation of a tuple of dictionaries in a
+    table format. This method can read the column names directly off the
+    dictionary keys, but if a tuple of these keys is provided in the
+    'column_names' variable, then the order of column_names will follow the
+    order of the fields/keys in that variable.
+    """
+    display = format_dict_table_rows(*args, **kwargs)
+    if display:
+        return "\n".join(display)
+    else:
+        return ""
+
+def format_dict_table_rows(rows, column_names=None, max_column_width=None, border_style=2):
     """
     Returns a string representation of a tuple of dictionaries in a
     table format. This method can read the column names directly off the
@@ -201,7 +215,7 @@ def format_dict_table(rows, column_names=None, max_column_width=None, border_sty
                 display.append(left_table_edge_rule + (row_template % row) + right_table_edge_rule)
             if border_style > 0:
                 display.append(full_line)
-            return "\n".join(display)
+            return display
         else:
             return ''
     else:
