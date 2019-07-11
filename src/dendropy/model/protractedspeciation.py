@@ -500,13 +500,17 @@ class ProtractedSpeciationProcess(object):
         ----------
 
         max_time : float or |None|
-            Terminate and return results when this time is reached. If |None|,
-            then do not terminated based on run time.
-        num_extant_orthospecies : int or |None|
-            Terminate and return results when this number of tips are found in
-            the confirmed-species tree (i.e., the pruned tree consisting of only
-            "good" species). If |None|, then do not terminate
-            based on the number of tipes on the confirmed-species tree.
+            Terminate and return results if this time is exceeded. If |None|,
+            then do not terminate based on run time.
+        min_extant_orthospecies : int or |None|
+            Terminate and return results when at least this number of tips are
+            found in the confirmed-species tree (i.e., the pruned tree
+            consisting of only "good" species) and other specified conditions
+            are met.
+        max_extant_orthospecies : int or |None|
+            Terminate and return results when at least this number of tips are
+            found in the confirmed-species tree (i.e., the pruned tree
+            consisting of only "good" species).
         num_extant_lineages : int or |None|
             Terminate and return results when this number of tips are found in
             the lineage tree (i.e. the tree with both incipient and good
@@ -554,16 +558,12 @@ class ProtractedSpeciationProcess(object):
 
     def _generate_trees(self, **kwargs):
         max_time = kwargs.get("max_time", None)
-        if "max_extant_lineages" in kwargs:
-            if "num_extant_lineages" in kwargs and kwargs["num_extant_lineages"] != kwargs["max_extant_lineages"]:
-                raise ValueError("Cannot specify both 'max_extant_lineages' and 'num_extant_lineages'")
-            kwargs["num_extant_lineages"] = kwargs["max_extant_lineages"]
         num_extant_lineages = kwargs.get("num_extant_lineages", None)
-        if "max_extant_orthospecies" in kwargs:
-            if "num_extant_orthospecies" in kwargs and kwargs["num_extant_orthospecies"] != kwargs["max_extant_orthospecies"]:
-                raise ValueError("Cannot specify both 'max_extant_orthospecies' and 'num_extant_orthospecies'")
-            kwargs["num_extant_orthospecies"] = kwargs["max_extant_orthospecies"]
+        min_extant_lineages = kwargs.get("min_extant_lineages", None)
+        max_extant_lineages = kwargs.get("max_extant_lineages", None)
         num_extant_orthospecies = kwargs.get("num_extant_orthospecies", None)
+        min_extant_orthospecies = kwargs.get("min_extant_orthospecies", None)
+        max_extant_orthospecies = kwargs.get("max_extant_orthospecies", None)
         lineage_taxon_namespace = kwargs.get("lineage_taxon_namespace", None)
         species_taxon_namespace = kwargs.get("species_taxon_namespace", None)
         lineage_data = []
@@ -583,17 +583,21 @@ class ProtractedSpeciationProcess(object):
                     lineage_data=lineage_data,
                     max_time=max_time,
                     num_extant_lineages=num_extant_lineages,
+                    min_extant_lineages=min_extant_lineages,
+                    max_extant_lineages=max_extant_lineages,
                     num_extant_orthospecies=num_extant_orthospecies,
+                    min_extant_orthospecies=min_extant_orthospecies,
+                    max_extant_orthospecies=max_extant_orthospecies,
                     phase_idx=phase_idx,
                     lineage_taxon_namespace=lineage_taxon_namespace,
                     species_taxon_namespace=species_taxon_namespace,
                     )
-            if num_extant_orthospecies is not None:
+            if num_extant_orthospecies is not None or max_extant_orthospecies is not None or min_extant_orthospecies is not None:
                 if "lineage_tree" in lineage_data[phase_idx]:
                     return lineage_data[phase_idx]["lineage_tree"], lineage_data[phase_idx]["orthospecies_tree"]
                 else:
                     raise ProcessFailedException()
-            elif num_extant_lineages is not None:
+            elif num_extant_lineages is not None or max_extant_lineages is not None or min_extant_lineages is not None:
                 break
             elif phase_idx == 0 and (len(lineage_data[0]["orthospecies_lineages"]) + len(lineage_data[0]["incipient_species_lineages"]) > 0):
                 phase_idx += 1
@@ -628,7 +632,11 @@ class ProtractedSpeciationProcess(object):
         lineage_data = kwargs.get("lineage_data")
         max_time = kwargs.get("max_time", None)
         num_extant_lineages = kwargs.get("num_extant_lineages", None)
+        min_extant_lineages = kwargs.get("min_extant_lineages", None)
+        max_extant_lineages = kwargs.get("max_extant_lineages", None)
         num_extant_orthospecies = kwargs.get("num_extant_orthospecies", None)
+        min_extant_orthospecies = kwargs.get("min_extant_orthospecies", None)
+        max_extant_orthospecies = kwargs.get("max_extant_orthospecies", None)
         phase_idx = kwargs.get("phase_idx")
         lineage_taxon_namespace = kwargs.get("lineage_taxon_namespace", None)
         species_taxon_namespace = kwargs.get("species_taxon_namespace", None)
@@ -683,11 +691,17 @@ class ProtractedSpeciationProcess(object):
                 break
             # we do this here so that the (newest) tip lineages have the
             # waiting time to the next event branch lengths
-            if num_extant_lineages is not None and (num_incipient_species + num_orthospecies) >= num_extant_lineages:
+            if (
+                    (num_extant_lineages is None or ((num_incipient_species + num_orthospecies) == num_extant_lineages))
+                    and (min_extant_lineages is None or ((num_incipient_species + num_orthospecies) >= min_extant_lineages))
+                    and (max_extant_lineages is None or ((num_incipient_species + num_orthospecies) == max_extant_lineages))
+                    ):
                 final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_data[phase_idx]["final_time"] = final_time
                 break
-            elif num_extant_orthospecies is not None:
+            elif max_extant_lineages is not None and (num_incipient_species + num_orthospecies) > max_extant_lineages:
+                raise ProcessFailedException()
+            elif num_extant_orthospecies is not None or max_extant_orthospecies is not None or min_extant_orthospecies is not None:
                 ## note: very expensive operation to count orthospecies leaves!
                 final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
@@ -697,7 +711,11 @@ class ProtractedSpeciationProcess(object):
                             max_time=final_time,
                             )
                     num_leaves = len(orthospecies_tree.leaf_nodes())
-                    if num_leaves >= num_extant_orthospecies:
+                    if (
+                            (num_extant_orthospecies is None or num_leaves == num_extant_orthospecies)
+                            and (min_extant_orthospecies is None or num_leaves >= min_extant_orthospecies)
+                            and (max_extant_orthospecies is None or num_leaves <= max_extant_orthospecies)
+                            ):
                         lineage_tree = self._compile_lineage_tree(
                             lineage_collection=lineage_collection_snapshot,
                             max_time=final_time,
@@ -715,6 +733,8 @@ class ProtractedSpeciationProcess(object):
                         return
                 except ProcessFailedException:
                     pass
+                if max_extant_orthospecies is not None and num_leaves > max_extant_orthospecies:
+                    raise ProcessFailedException
             # add to current time
             current_time += waiting_time
             # Select event
