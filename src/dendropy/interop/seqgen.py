@@ -113,7 +113,7 @@ class SeqGen(object):
         self.state_freqs = None
         self.ti_tv = 0.5 # = kappa of 1.0, i.e. JC
         self.general_rates = None
-        self.ancestral_seq = None
+        self.ancestral_seq_idx = None
         self.output_text_append = None
         self.write_ancestral_seqs = False
         self.write_site_rates = False
@@ -168,8 +168,8 @@ class SeqGen(object):
                 args.append("-r%s" % self.general_rates)
             else:
                 args.append("-r%s" % (",".join([str(r) for r in self.general_rates])))
-        if self.ancestral_seq:
-            args.append("-k%s" % self.ancestral_seq)
+        if self.ancestral_seq_idx:
+            args.append("-k%s" % self.ancestral_seq_idx)
         if self.output_text_append:
             args.append("-x'%s'" % self.output_text_append)
         if self.write_ancestral_seqs:
