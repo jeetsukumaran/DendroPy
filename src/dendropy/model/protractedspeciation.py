@@ -691,18 +691,25 @@ class ProtractedSpeciationProcess(object):
                 break
             # we do this here so that the (newest) tip lineages have the
             # waiting time to the next event branch lengths
+            if (num_extant_lineages is None
+                    and min_extant_lineages is None
+                    and max_extant_lineages is None):
+                lineage_requirements_met = True
+            else:
+                lineage_requirements_met = False
+            if max_extant_lineages is not None and (num_incipient_species + num_orthospecies) > max_extant_lineages:
+                raise ProcessFailedException()
             if (
                     (num_extant_lineages is None or ((num_incipient_species + num_orthospecies) == num_extant_lineages))
                     and (min_extant_lineages is None or ((num_incipient_species + num_orthospecies) >= min_extant_lineages))
                     and (max_extant_lineages is None or ((num_incipient_species + num_orthospecies) == max_extant_lineages))
                     ):
-                final_time = current_time + self.rng.uniform(0, waiting_time)
-                lineage_data[phase_idx]["final_time"] = final_time
-                break
-            elif max_extant_lineages is not None and (num_incipient_species + num_orthospecies) > max_extant_lineages:
-                raise ProcessFailedException()
-            elif num_extant_orthospecies is not None or max_extant_orthospecies is not None or min_extant_orthospecies is not None:
+                lineage_requirements_met = True
+            else:
+                lineage_requirements_met = False
+            if num_extant_orthospecies is not None or max_extant_orthospecies is not None or min_extant_orthospecies is not None:
                 ## note: very expensive operation to count orthospecies leaves!
+                orthospecies_requirements_met = False
                 final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
@@ -730,11 +737,13 @@ class ProtractedSpeciationProcess(object):
                                 )
                         lineage_data[phase_idx]["lineage_tree"] = lineage_tree
                         lineage_data[phase_idx]["orthospecies_tree"] = orthospecies_tree
-                        return
+                        orthospecies_requirements_met = True
                 except ProcessFailedException:
                     pass
                 if max_extant_orthospecies is not None and num_leaves > max_extant_orthospecies:
                     raise ProcessFailedException
+            else:
+                orthospecies_requirements_met = True
             # add to current time
             current_time += waiting_time
             # Select event
@@ -783,6 +792,11 @@ class ProtractedSpeciationProcess(object):
                 del incipient_species_lineages[lineage_idx]
             else:
                 raise Exception("Unexpected event type index: {}".format(event_type_idx))
+            if lineage_requirements_met and orthospecies_requirements_met:
+                final_time = current_time + self.rng.uniform(0, waiting_time)
+                lineage_data[phase_idx]["final_time"] = final_time
+                print("OK")
+                break
 
     def _new_lineage(self,
             lineage_id,
