@@ -207,8 +207,7 @@ class SeqGen(object):
                     suppress_internal_node_labels=True)
             inputf.flush()
             args.append(inputf.name)
-            #_LOG.debug("seq-gen args: = %s" % " ".join(args))
-            #_LOG.debug("seq-gen input: = %s" % " ".join(args))
+            # print("seq-gen args: = %s" % " ".join(args))
             run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = processio.communicate(run)
             if stderr or run.returncode != 0:
