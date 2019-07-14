@@ -41,10 +41,16 @@ HOSTNAME = socket.gethostname()
 PID = os.getpid()
 
 def _get_strongly_unique_tempfile(dir=None):
-    return tempfile.NamedTemporaryFile(dir=dir, prefix="dendropy_tempfile-{0}-{1}-{2}".format(HOSTNAME, PID, uuid.uuid4()))
+    return tempfile.NamedTemporaryFile(
+            dir=dir,
+            prefix="dendropy_tempfile-{0}-{1}-{2}".format(HOSTNAME, PID, uuid.uuid4()),
+            mode="w",
+            )
 
 def _get_tempfile(dir=None):
-    return tempfile.NamedTemporaryFile(dir=dir)
+    return tempfile.NamedTemporaryFile(
+            dir=dir,
+            mode="w")
 
 class SeqGen(object):
     """
@@ -182,28 +188,39 @@ class SeqGen(object):
         args.append("-n1")
         return args
 
-    def generate(self, trees, dataset=None, taxon_namespace=None, **kwargs):
+    def generate(
+            self,
+            trees,
+            dataset=None,
+            taxon_namespace=None,
+            input_sequences=None,
+            **kwargs):
         args=self._compose_arguments()
-        tree_inputf = self.get_tempfile()
-        trees.write_to_path(tree_inputf.name,
-                "newick",
-                suppress_rooting=True,
-                suppress_internal_node_labels=True)
-        tree_inputf.flush()
-        args.append(tree_inputf.name)
-        #_LOG.debug("seq-gen args: = %s" % " ".join(args))
-        run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = processio.communicate(run)
-        if stderr or run.returncode != 0:
-            raise RuntimeError("Seq-gen error: %s" % stderr)
-        if taxon_namespace is None:
-            taxon_namespace = trees.taxon_namespace
-        if dataset is None:
-            dataset = dendropy.DataSet(**kwargs)
-            if taxon_namespace is not None:
-                dataset.attach_taxon_namespace(taxon_namespace)
-        dataset.read(data=stdout, schema="nexus")
-        return dataset
+        # with open("x.txt", "w") as inputf:
+        with self.get_tempfile() as inputf:
+            if input_sequences is not None:
+                input_sequences.write_to_stream(inputf, schema="phylip",)
+                inputf.write("{}\n".format(len(trees)))
+            trees.write_to_stream(inputf,
+                    "newick",
+                    suppress_rooting=True,
+                    suppress_internal_node_labels=True)
+            inputf.flush()
+            args.append(inputf.name)
+            #_LOG.debug("seq-gen args: = %s" % " ".join(args))
+            #_LOG.debug("seq-gen input: = %s" % " ".join(args))
+            run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = processio.communicate(run)
+            if stderr or run.returncode != 0:
+                raise RuntimeError("Seq-gen error: %s" % stderr)
+            if taxon_namespace is None:
+                taxon_namespace = trees.taxon_namespace
+            if dataset is None:
+                dataset = dendropy.DataSet(**kwargs)
+                if taxon_namespace is not None:
+                    dataset.attach_taxon_namespace(taxon_namespace)
+            dataset.read(data=stdout, schema="nexus")
+            return dataset
 
 
 
