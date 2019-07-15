@@ -30,7 +30,7 @@ from dendropy.utility.textprocessing import StringIO
 
 class MultiPhylipReader(ioservice.DataReader):
 
-    data_block_start_pattern = re.compile(r'\n*(?=\s*\d+\s+\d+\s*\n)', re.MULTILINE)
+    data_block_start_pattern = re.compile(r'^\s*(\d+\s+\d+)\s*\n', re.MULTILINE)
 
     def __init__(self, **kwargs):
         """
@@ -45,15 +45,19 @@ class MultiPhylipReader(ioservice.DataReader):
             char_matrix_factory=None,
             state_alphabet_factory=None,
             global_annotations_target=None):
-        lines = stream.read()
-        blocks = MultiPhylipReader.data_block_start_pattern.split(lines)
-        if len(blocks) == 1:
+        data = stream.read()
+        start_positions = []
+        for match in MultiPhylipReader.data_block_start_pattern.finditer(data):
+            start_positions.append(match.start(1))
+        if not start_positions:
             raise error.DataParseError("No PHYLIP data blocks found in source", stream=stream)
         char_matrices = []
-        for block in blocks:
-            # block = block.strip()
-            if not block:
-                continue
+        for idx, start_pos in enumerate(start_positions):
+            if idx == len(start_positions) - 1:
+                end_pos = len(data)
+            else:
+                end_pos = start_positions[idx+1]
+            block = data[start_pos:end_pos]
             src = StringIO(block)
             subproduct = self._phylip_reader._read(
                     stream=src,
