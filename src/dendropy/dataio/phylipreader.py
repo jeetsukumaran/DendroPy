@@ -121,6 +121,7 @@ class PhylipReader(ioservice.DataReader):
                 raise ValueError("Cannot specify 'default_state_alphabet' with data type of '{}'".format(self.data_type))
         self.check_for_unused_keyword_arguments(kwargs)
         self.ntax = None
+        self.taxa_processed = None
         self.nchar = None
         self.char_matrix = None
         self.taxon_namespace = None
@@ -143,6 +144,7 @@ class PhylipReader(ioservice.DataReader):
         self.char_matrix = None
         self.taxon_namespace = None
         self.stream = None
+        self.taxa_processed = set()
 
     def _read(self,
             stream,
@@ -193,6 +195,8 @@ class PhylipReader(ioservice.DataReader):
             self._parse_interleaved(lines)
         else:
             self._parse_sequential(lines)
+        if len(self.taxa_processed) != self.ntax:
+            self._taxon_error(num_expected=self.ntax, found=self.taxa_processed)
         product = self.Product(
                 taxon_namespaces=None,
                 tree_lists=None,
@@ -225,6 +229,9 @@ class PhylipReader(ioservice.DataReader):
             if len(self.char_matrix[current_taxon]) >= self.nchar:
                 raise self._data_parse_error("Cannot add characters to sequence for taxon '%s': already has declared number of characters (%d)" \
                         % (current_taxon.label, self.char_matrix[current_taxon]), line_index=line_index)
+        self.taxa_processed.add(current_taxon)
+        if len(self.taxa_processed) > self.ntax:
+            self._taxon_error(num_expected=self.ntax, found=self.taxa_processed)
         return current_taxon, line
 
     def _parse_sequence_from_line(self, current_taxon, line, line_index):
@@ -307,3 +314,23 @@ class PhylipReader(ioservice.DataReader):
             error_type = PhylipReader.PhylipStrictSequentialError
         return error_type(message, line_num=row, stream=self.stream)
 
+    def _taxon_error(self, num_expected, found):
+        if num_expected == 1:
+            n1 = "taxon"
+        else:
+            n1 = "taxa"
+        if len(found) == 1:
+            n2 = "taxon"
+        else:
+            n2 = "taxa"
+        if num_expected > len(found):
+            a = "only "
+        else:
+            a = ""
+        raise error.DataParseError("{} {} expected but {}{} {} found: {}".format(
+            num_expected,
+            n1,
+            a,
+            len(found),
+            n2,
+            ", ".join("{}".format(t) for t in found)))
