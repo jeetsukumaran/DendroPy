@@ -47,7 +47,6 @@ class MultiPhylipReader(ioservice.DataReader):
             global_annotations_target=None):
         lines = stream.read()
         blocks = MultiPhylipReader.data_block_start_pattern.split(lines)
-        print(blocks)
         if len(blocks) == 1:
             raise error.DataParseError("No PHYLIP data blocks found in source", stream=stream)
         char_matrices = []
