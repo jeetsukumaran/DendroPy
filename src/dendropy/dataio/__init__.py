@@ -31,6 +31,7 @@ from dendropy.dataio import nexmlwriter
 from dendropy.dataio import nexmlyielder
 from dendropy.dataio import phylipreader
 from dendropy.dataio import phylipwriter
+from dendropy.dataio import multiphylipreader
 from dendropy.utility import container
 
 _IOServices = collections.namedtuple(
@@ -48,6 +49,7 @@ _IO_SERVICE_REGISTRY["dnafasta"] = _IOServices(fastareader.DnaFastaReader, fasta
 _IO_SERVICE_REGISTRY["rnafasta"] = _IOServices(fastareader.RnaFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["proteinfasta"] = _IOServices(fastareader.ProteinFastaReader, fastawriter.FastaWriter, None)
 _IO_SERVICE_REGISTRY["phylip"] = _IOServices(phylipreader.PhylipReader, phylipwriter.PhylipWriter, None)
+_IO_SERVICE_REGISTRY["multiphylip"] = _IOServices(multiphylipreader.MultiPhylipReader, None, None)
 
 def get_reader(schema, **kwargs):
     try:

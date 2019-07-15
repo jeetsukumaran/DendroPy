@@ -177,7 +177,7 @@ class PhylipReader(ioservice.DataReader):
                 self.char_matrix.state_alphabets.append(state_alphabet)
         lines = filesys.get_lines(stream)
         if len(lines) == 0:
-            raise error.DataSourceError("No data in source", stream=self.stream)
+            raise error.DataParseError("No data in source", stream=self.stream)
         elif len(lines) <= 2:
             raise error.DataParseError("Expecting at least 2 lines in PHYLIP format data source", stream=self.stream)
         desc_line = lines[0]
@@ -188,7 +188,7 @@ class PhylipReader(ioservice.DataReader):
         self.ntax = int(m.groups()[0])
         self.nchar = int(m.groups()[1])
         if self.ntax == 0 or self.nchar == 0:
-            raise error.DataSourceError("No data in source", stream=self.stream)
+            raise error.DataParseError("No data in source", stream=self.stream)
         if self.interleaved:
             self._parse_interleaved(lines)
         else:
