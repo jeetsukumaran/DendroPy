@@ -1576,6 +1576,8 @@ class TaxonNamespace(
         output_strio = StringIO()
         if self.label is None:
             label = str(self.label)
+        else:
+            label = self.label
         output_strio.write('%s%sTaxonNamespace object at %s%s'
                 % (indent*' ',
                    itemize,
@@ -1591,6 +1593,11 @@ class TaxonNamespace(
         if output is not None:
             output.write(s)
         return s
+
+    ### Partitioning
+
+    def partition(self, *args, **kwargs):
+        return TaxonNamespacePartition(self, *args, **kwargs)
 
     ### I/O
 
@@ -1837,6 +1844,9 @@ class TaxonNamespacePartition(TaxonNamespaceAssociated):
                 |Taxon| object in ``taxon_namespace`` represented once and only
                 once in the sub-containers.
         """
+        if "membership_fn" not in kwargs and "membership_func" in kwargs:
+            kwargs["membership_fn"] = kwargs["membership_func"]
+            del kwargs["membership_func"]
         if "membership_fn" in kwargs:
             self.apply_membership_fn(kwargs["membership_fn"])
         elif  "membership_attr_name" in kwargs:
