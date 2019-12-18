@@ -33,7 +33,7 @@ END
 seqs = dendropy.DnaCharacterMatrix.get_from_string(seqstr, 'nexus')
 taxon_namespace = seqs.taxon_namespace
 
-tax_parts = taxon_namespace.partition(membership_func=lambda x: x.label[0])
+tax_parts = taxon_namespace.partition(membership_fn=lambda x: x.label[0])
 
 for s in tax_parts.subsets():
     print(s.description())
