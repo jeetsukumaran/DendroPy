@@ -49,7 +49,7 @@ class NexmlTreeDataYielder(
         taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             These will be passed directly to the base `nexmlreader.NexusReader`
             class. See `nexmlreader.NexusReader` for details.
         """

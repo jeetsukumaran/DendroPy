@@ -102,7 +102,7 @@ def time_to_coalescence(n_genes,
     The waiting time for coalescence of *any* two gene lineages in a sample of
     $n$ gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $\\choose{N, 2}$ and
-    an expectation of $\\frac{1}{\choose{N, 2}}$.
+    an expectation of $\\frac{1}{\\choose{N, 2}}$.
 
     Parameters
     ----------
@@ -394,11 +394,11 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
-    Under the classical neutral coalescent \citep{Kingman1982,
+    Under the classical neutral coalescent \\citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    :math`\\frac{{k \choose 2}}{N_e}`::
+    :math`\\frac{{k \\choose 2}}{N_e}`::
 
         .. math::
 

@@ -663,7 +663,7 @@ def fit_pure_birth_model(**kwargs):
 
     Parameters
     ----------
-    \*\*kwargs : keyword arguments, mandatory
+    **kwargs : keyword arguments, mandatory
 
         Exactly *one* of the following *must* be specified:
 
@@ -820,7 +820,7 @@ def birth_death_likelihood(**kwargs):
 
     Parameters
     ----------
-    \*\*kwargs : keyword arguments, mandatory
+    **kwargs : keyword arguments, mandatory
 
         Exactly *one* of the following *must* be specified:
 

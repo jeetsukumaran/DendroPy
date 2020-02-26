@@ -142,7 +142,7 @@ class PhylogeneticDistanceMatrix(object):
             applied to row and column labels before they are matched to taxon
             labels in the |TaxonNamespace| instance given by
             ``taxon_namespace``.
-        \*\*csv_reader_kwargs : keyword arguments
+        **csv_reader_kwargs : keyword arguments
             This arguments will be passed to the underlying CSV reader.
             The most important one is probably 'delimiter'.
 

@@ -508,9 +508,9 @@ class DataYielder(IOService):
         self._current_file_name = None
 
     def reset(self):
-        self.current_file_index = None
-        self.current_file = None
-        self.current_file_name = None
+        self._current_file_index = None
+        self._current_file = None
+        self._current_file_name = None
 
     def _get_current_file_index(self):
         return self._current_file_index

@@ -990,7 +990,7 @@ class Node(
         Parameters
         ----------
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Passed directly to constructor of |Edge|.
 
         Returns
@@ -1510,19 +1510,19 @@ class Node(
         [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]::
 
                            a
-                          / \
-                         /   \
-                        /     \
-                       /       \
-                      /         \
-                     /           \
+                          / \\
+                         /   \\
+                        /     \\
+                       /       \\
+                      /         \\
+                     /           \\
                     /             c
-                   b             / \
-                  / \           /   \
+                   b             / \\
+                  / \\          /   \\
                  /   e         /     f
-                /   / \       /     / \
-               /   /   \     g     /   h
-              /   /     \   / \   /   / \
+                /   / \\      /     / \\
+               /   /   \\    g     /   h
+              /   /     \\  / \\  /   / \\
              i   j       k l   m n   o   p
 
 
@@ -1682,7 +1682,7 @@ class Node(
 
         Parameters
         ----------
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Keyword arguments will be passed directly to the |Node|
             constructor (:meth:`Node.__init()__`).
 
@@ -1705,7 +1705,7 @@ class Node(
         ----------
         index : integer
             The index before which to insert the new node.
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the |Node|
             constructor (:meth:`Node.__init()__`).
 
@@ -2607,7 +2607,7 @@ class Tree(
             index of the tree within the collection specified by
             ``collection_offset`` to be retrieved.
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Arguments to customize parsing and instantiation this |Tree|
             from the data source, including schema- or format-specific
             handling. The following optional keyword arguments are recognized
@@ -2788,7 +2788,7 @@ class Tree(
         taxon_namespace : |TaxonNamespace| instance
             The operational taxonomic unit concept namespace to use to manage
             taxon definitions.
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             These will be passed directly to the schema-parser implementation.
 
         Yields
@@ -3015,7 +3015,7 @@ class Tree(
         Parameters
         ----------
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Passed directly to constructor of |Node|.
 
         Returns
@@ -3041,11 +3041,11 @@ class Tree(
         Parameters
         ----------
 
-        \*args : positional argument, optional
+        *args : positional argument, optional
             If given, should be exactly one |Tree| object. The new
             |Tree| will then be a structural clone of this argument.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             The following optional keyword arguments are recognized
             and handled by this constructor:
 
@@ -3679,7 +3679,7 @@ class Tree(
             available. If this is not implemented for the schema specified, then
             a UnsupportedSchemaError is raised.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.
@@ -3973,7 +3973,7 @@ class Tree(
 
         Parameters
         ----------
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Exactly one of the following must be specified:
 
                 ``leafset_bitmask`` : integer
@@ -4333,19 +4333,19 @@ class Tree(
         [a,b,i,e,j,k,c,g,l,m,f,n,h,o,p,]::
 
                            a
-                          / \
-                         /   \
-                        /     \
-                       /       \
-                      /         \
-                     /           \
+                          / \\
+                         /   \\
+                        /     \\
+                       /       \\
+                      /         \\
+                     /           \\
                     /             c
-                   b             / \
-                  / \           /   \
+                   b             / \\
+                  / \\          /   \\
                  /   e         /     f
-                /   / \       /     / \
-               /   /   \     g     /   h
-              /   /     \   / \   /   / \
+                /   / \\      /     / \\
+               /   /   \\    g     /   h
+              /   /     \\  / \\  /   / \\
              i   j       k l   m n   o   p
 
 

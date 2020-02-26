@@ -107,7 +107,7 @@ class TreeList(
             identified using the ``tree_collection_offset`` parameter: if
             ``tree_collection_offset`` is not specified, a TypeError is raised.
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
             accession of |Tree| objects read from the data source, including
             schema- or format-specific handling.
@@ -297,10 +297,10 @@ class TreeList(
 
         Parameters
         ----------
-        \*args : positional arguments
+        *args : positional arguments
             Passed directly to constructor of |Tree|.
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Passed directly to constructor of |Tree|.
 
         Returns
@@ -563,7 +563,7 @@ class TreeList(
             identified using the ``tree_collection_offset`` parameter: if
             ``tree_collection_offset`` is not specified, a TypeError is raised.
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
 
             Arguments to customize parsing, instantiation, processing, and
             accession of |Tree| objects read from the data source, including
@@ -693,7 +693,7 @@ class TreeList(
             available. If this is not implemented for the schema specified, then
             a UnsupportedSchemaError is raised.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.
@@ -760,7 +760,7 @@ class TreeList(
             If ``tree`` is associated with a different |TaxonNamespace|,
             this argument determines how new |Taxon| objects in ``tree``
             are handled: 'migrate' or 'add'. See above for details.
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             These arguments will be passed directly to
             'migrate_taxon_namespace()' method call on ``tree``.
 
@@ -811,7 +811,7 @@ class TreeList(
             If ``tree`` is associated with a different |TaxonNamespace|,
             this argument determines how new |Taxon| objects in ``tree``
             are handled: 'migrate' or 'add'. See above for details.
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             These arguments will be passed directly to
             'migrate_taxon_namespace()' method call on ``tree``.
 
@@ -1021,7 +1021,7 @@ class TreeList(
             tree.poll_taxa(taxa)
         return taxa
 
-    def reindex_subcomponent_taxa():
+    def reindex_subcomponent_taxa(self):
         raise NotImplementedError()
 
    ##############################################################################
@@ -1729,7 +1729,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             explicitly rooted or unrooted, then this will default to |True| or
             |False|, respectively. Otherwise it defaults to |None|.
 
-        \*\*split_summarization_kwargs : keyword arguments
+        **split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
@@ -1782,7 +1782,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         is_bipartitions_updated: bool
             If |True|, then bipartitions will not be recalculated.
 
-        \*\*split_summarization_kwargs : keyword arguments
+        **split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.
@@ -2381,7 +2381,7 @@ class TreeArray(
             objects opened for reading).
         schema : string
             The data format of the source. E.g., "nexus", "newick", "nexml".
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             These will be passed directly to the underlying schema-specific
             reader implementation.
         """
@@ -2485,7 +2485,7 @@ class TreeArray(
     ##############################################################################
     ## Container (List) Interface
 
-    def append(tree, is_bipartitions_updated=False):
+    def append(self, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2505,7 +2505,7 @@ class TreeArray(
         return self.add_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
 
-    def insert(index, tree, is_bipartitions_updated=False):
+    def insert(self, index, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2861,7 +2861,7 @@ class TreeArray(
             explicitly rooted or unrooted, then this will default to |True| or
             |False|, respectively. Otherwise it defaults to |None|.
 
-        \*\*split_summarization_kwargs : keyword arguments
+        **split_summarization_kwargs : keyword arguments
             These will be passed directly to the underlying
             `SplitDistributionSummarizer` object. See
             :meth:`SplitDistributionSummarizer.configure` for options.

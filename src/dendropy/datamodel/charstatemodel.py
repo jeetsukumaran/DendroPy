@@ -315,7 +315,7 @@ class StateAlphabet(
             by case-variants if the state alphabet is not case-sensitive). Can
             be blank ("") or |None| if there.
 
-        \*\*kwargs : keyword arguments, mandatory
+        **kwargs : keyword arguments, mandatory
             Exactly one of the following must be specified:
 
                 member_state_symbols : iterable of strings
@@ -352,7 +352,7 @@ class StateAlphabet(
             by case-variants if the state alphabet is not case-sensitive). Can
             be blank ("") or |None| if there.
 
-        \*\*kwargs : keyword arguments, mandatory
+        **kwargs : keyword arguments, mandatory
             Exactly one of the following must be specified:
 
                 member_state_symbols : iterable of strings
@@ -393,7 +393,7 @@ class StateAlphabet(
         state_denomination : enum
             StateAlphabet.POLYMORPHIC_STATE or StateAlphabet.AMBIGUOUS_STATE
 
-        \*\*kwargs : keyword arguments, mandatory
+        **kwargs : keyword arguments, mandatory
             Exactly one of the following must be specified:
 
                 member_state_symbols : iterable of strings

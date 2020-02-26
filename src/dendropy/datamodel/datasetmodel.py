@@ -360,7 +360,7 @@ class DataSet(
             available. If this is not implemented for the schema specified, then
             a UnsupportedSchemaError is raised.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.
@@ -584,9 +584,9 @@ class DataSet(
 
         Parameters
         ----------
-        \*args : positional arguments
+        *args : positional arguments
             Passed directly to |TreeList| constructor.
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Passed directly to |TreeList| constructor.
 
         Returns

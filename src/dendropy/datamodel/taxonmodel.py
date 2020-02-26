@@ -410,7 +410,7 @@ class TaxonNamespaceAssociated(object):
         self.reindex_subcomponent_taxa()
         return self.taxon_namespace
 
-    def reindex_subcomponent_taxa():
+    def reindex_subcomponent_taxa(self):
         """
         DEPRECATED: Use :meth:`reconstruct_taxon_namespace()` instead.
         Derived classes should override this to ensure that their various
@@ -446,7 +446,7 @@ class TaxonNamespace(
         Parameters
         ----------
 
-        \*args : positional arguments, optional
+        *args : positional arguments, optional
             Accepts a single iterable as an optional positional argument.  If a
             |TaxonNamespace| object is passed as the positional argument, then
             clones or deep-copies of its member |Taxon| objects will be added
@@ -456,7 +456,7 @@ class TaxonNamespace(
             the string as its label (name), while each Taxon object in the
             iterable will be added to the namespace directly.
 
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             label : string
                 The label or name for this namespace.
             is_mutable : boolean, optional (default = |True|)
@@ -1406,7 +1406,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Requires one of:
 
                 taxa : ``collections.Iterable`` [|Taxon|]
@@ -1438,7 +1438,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        \*\*kwargs : keyword arguments
+        **kwargs : keyword arguments
             Requires one of:
 
                 taxa : ``collections.Iterable`` [|Taxon|]
@@ -1609,7 +1609,7 @@ class TaxonNamespace(
             available. If this is not implemented for the schema specified, then
             a UnsupportedSchemaError is raised.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.

@@ -480,9 +480,9 @@ def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
         return ""
     if not preserve_spaces \
             and "_" not in label \
-            and not re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n]', label):
+            and not re.search(r'[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n]', label):
         label = label.replace(' ', '_').replace('\t', '_')
-    elif re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label) \
+    elif re.search(r'[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label) \
         or quote_underscores and "_" in label:
         s = label.split("'")
         if len(s) == 1:

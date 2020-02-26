@@ -735,7 +735,7 @@ class CharacterMatrix(
             If |True|, matching of string labels specified as keys in ``d`` will
             be matched to |Taxon| objects in current taxon namespace
             with case being respected. If |False|, then case will be ignored.
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments to be passed to constructor of
             |CharacterMatrix| when creating new instance to populate, if
             no target instance is provided via ``char_matrix``.
@@ -865,7 +865,7 @@ class CharacterMatrix(
             is not implemented for the schema specified, then a
             UnsupportedSchemaError is raised.
 
-        \*\*kwargs : keyword arguments, optional
+        **kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the writer for the
             specified schema. See documentation for details on keyword
             arguments supported by writers of various schemas.
