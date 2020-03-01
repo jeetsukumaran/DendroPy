@@ -43,6 +43,11 @@ class PhylipWriter(ioservice.DataWriter):
         spaces_to_underscores : bool
             If |True|, all spaces will be converted to underscores. Default is
             |False|: spaces will be preserved.
+        taxon_label_fn: function object
+            If specified, then this function will be called everytime taxon
+            label is required. It will be passed a |Taxon| object as an
+            argument and should represent the string or string-like object that
+            should serve as the label.
         force_unique_taxon_labels : bool
             If |True|, then taxon labels will be modified to avoid duplicate
             labels. Default is |False|: taxon labels will not be modified.
@@ -59,6 +64,9 @@ class PhylipWriter(ioservice.DataWriter):
         self.spaces_to_underscores = kwargs.pop("spaces_to_underscores", False)
         self.force_unique_taxon_labels = kwargs.pop("force_unique_taxon_labels", False)
         self.suppress_missing_taxa = kwargs.pop("suppress_missing_taxa", False)
+        self.taxon_label_fn = kwargs.pop("taxon_label_fn", None)
+        if self.taxon_label_fn is None:
+            self.taxon_label_fn = lambda taxon: taxon.label
         self.check_for_unused_keyword_arguments(kwargs)
 
     def _write(self,
@@ -85,7 +93,7 @@ class PhylipWriter(ioservice.DataWriter):
         else:
             taxon_label_map = {}
             for taxon in char_matrix.taxon_namespace:
-                label = taxon.label
+                label = self.taxon_label_fn(taxon)
                 if self.spaces_to_underscores:
                     label = label.replace(' ', '_')
                 taxon_label_map[taxon] = label
@@ -110,7 +118,7 @@ class PhylipWriter(ioservice.DataWriter):
         else:
             max_label_len = 0
         for taxon in taxon_namespace:
-            label = taxon.label
+            label = self.taxon_label_fn(taxon)
             if self.spaces_to_underscores:
                 label = label.replace(' ', '_')
             if self.strict:
@@ -123,4 +131,5 @@ class PhylipWriter(ioservice.DataWriter):
                 if len(label) < STRICT_MODE_MAX_LABEL_LENGTH:
                     taxon_label_map[t] = label.ljust(STRICT_MODE_MAX_LABEL_LENGTH)
         return taxon_label_map
+
 
