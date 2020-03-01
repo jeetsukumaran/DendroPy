@@ -2049,7 +2049,7 @@ class SplitDistributionSummarizer(object):
             elif self.set_edge_lengths == "support":
                 node.edge.length = split_support
             elif self.set_edge_lengths == "clear":
-                edge.length = None
+                node.edge.length = None
             elif self.set_edge_lengths in ("mean-age", "median-age"):
                 if not node_age_summaries:
                     raise ValueError("Node ages not available")
