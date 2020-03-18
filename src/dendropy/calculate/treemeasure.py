@@ -248,3 +248,342 @@ def treeness(tree):
             internal += nd.edge.length
     return internal/(external + internal)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import sys
+import copy
+
+class BandeltNode:
+    """
+    This is just an auxiliary class that does Bandelt encoding / decoding.
+    Users don't need to access this class. 
+    """
+    def __init__(self, data):
+        self.parent = None
+        self.left = None
+        self.right = None
+        self.data = data
+        
+    def find_node(self, val):
+        if self.data == val:
+            return self
+        else:
+            if (self.left == None) and (self.right == None):
+                return None
+            if self.left != None:
+                find_left = self.left.find_node(val)
+                if find_left != None:
+                    return find_left
+            if self.right != None:
+                find_right = self.right.find_node(val)
+                if find_right != None:
+                    return find_right
+            return None
+    
+    # This is a helper function to check whether the tree is correctly constructed.
+    def print_details(self):
+        parent_data = self.parent.data if (self.parent != None) else self.parent
+        left_data = self.left.data if (self.left != None) else self.left
+        right_data = self.right.data if (self.right != None) else self.right
+        print("Current Value: ", self.data, "; Parent: ", parent_data, "; left: ", left_data, "; right: ", right_data)
+        
+    # This is a helper function to check whether the tree is correctly constructed.
+    def print_subtree(self, indent_num = 1):
+        if indent_num == 1:
+            print(self.data)
+        if self.left != None:
+            print('___'*indent_num, self.left.data)
+            self.left.print_subtree(indent_num + 1)
+        if self.right != None:
+            print('___'*indent_num, self.right.data)
+            self.right.print_subtree(indent_num + 1)
+            
+    # This is a helper function to check encoded & decoded tree are same. 
+    def compare_subtree(self, compared_root_node):
+        if self.data != compared_root_node.data:
+            return False
+        self_left_data = self.left.data if (self.left != None) else None
+        self_right_data = self.right.data if (self.right != None) else None
+        compared_root_node_left_data = compared_root_node.left.data if (compared_root_node.left != None) else None
+        compared_root_node_right_data = compared_root_node.right.data if (compared_root_node.right != None) else None
+        if (self_left_data in [compared_root_node_left_data, compared_root_node_right_data]) and (self_right_data in [compared_root_node_left_data, compared_root_node_right_data]):
+            if (self_left_data == compared_root_node_left_data):
+                if self.left != None:
+                    compare_ans_left = self.left.compare_subtree(compared_root_node.left)
+                    if not compare_ans_left:
+                        return False
+                if self.right != None:
+                    compare_ans_right = self.right.compare_subtree(compared_root_node.right)
+                    if not compare_ans_right:
+                        return False
+                
+            elif (self_left_data == compared_root_node_right_data):
+                if self.left != None:
+                    compare_ans_left = self.left.compare_subtree(compared_root_node.right)
+                    if not compare_ans_left:
+                        return False
+                if self.right != None:
+                    compare_ans_right = self.right.compare_subtree(compared_root_node.left)
+                    if not compare_ans_right:
+                        return False
+        else:
+            return False
+        return True
+    
+
+def Bandelt_encode(tree):
+    """
+    Returns (1) Bandelt encoded list, (2)encoding dictionary and (3)decoding dictionary.
+    """
+    def create_Bandelt_tree(parent, parent_BN_node):    
+        for idx, child in enumerate(parent.child_nodes()):
+            if child.taxon is not None:
+            ## leaf nodes
+                child_BN_node = BandeltNode(encode_dict[child.taxon.label.replace(' ', '_')])
+            else:
+            ## inner nodes
+                child_BN_node = BandeltNode(-100)
+            if idx == 0:
+                parent_BN_node.left = child_BN_node
+                child_BN_node.parent = parent_BN_node
+            elif idx == 1:
+                parent_BN_node.right = child_BN_node
+                child_BN_node.parent = parent_BN_node
+            create_Bandelt_tree(child, child_BN_node)
+            
+    def inner_node_indexation(current_node):
+        if current_node.left != None:
+            left_data = inner_node_indexation(current_node.left)
+        if current_node.right != None:
+            right_data = inner_node_indexation(current_node.right)
+        if current_node.left != None and current_node.right != None:
+            # This is the inner node
+            if len(left_data) == 0:
+                current_node.data = int(-right_data[0])
+                return []
+            if len(right_data) == 0:
+                current_node.data = int(-left_data[0])
+                return []
+            if len(left_data) != 0 and len(right_data) != 0:
+                if abs(left_data[0]) > abs(right_data[0]):
+                    current_node.data = int(-left_data[0])
+                    return [right_data[0]]
+                elif abs(left_data[0]) < abs(right_data[0]):
+                    current_node.data = int(-right_data[0])
+                    return [left_data[0]]
+        elif current_node.left != None and current_node.right == None:
+            # Finish!
+            pass
+        else:
+            return [current_node.data]
+        
+    def find_Bandelt_encode(target_node, val):
+        visited_nodes = []
+        queue = []
+        visited_nodes.append(target_node.data)
+        queue.append(target_node)
+        encode_num = None
+        while queue:
+            current_node = queue.pop(0)
+            if current_node != None:
+                if current_node.data != '*' and abs(int(current_node.data)) < abs(int(val)):
+                    encode_num = current_node.data
+            if current_node.left != None:
+                if current_node.left.data not in visited_nodes:
+                    visited_nodes.append(current_node.left.data)
+                    queue.append(current_node.left)
+            if current_node.right != None:
+                if current_node.right.data not in visited_nodes:
+                    visited_nodes.append(current_node.right.data)
+                    queue.append(current_node.right)   
+            if encode_num != None:
+                break
+        return encode_num
+    
+    # Get encoding dictionary & decoding dictionary first
+    encode_dict = {}
+    decode_dict = {}
+    for idx, lves in enumerate(tree.leaf_nodes()):
+        if idx == 0:
+            encode_dict[lves.taxon.label.replace(' ', '_')] = sys.maxsize
+            decode_dict[sys.maxsize] = lves.taxon.label.replace(' ', '_')
+        else:
+            encode_dict[lves.taxon.label.replace(' ', '_')] = idx-1
+            decode_dict[idx-1] = lves.taxon.label.replace(' ', '_')
+
+    #######################################################
+    #######################################################
+    ## Tree checking conditions should be added HERE !! ##
+    #######################################################
+    #######################################################
+    # 1. Bifurcating tree (IQ-Tree output as the input of this function)
+    # 
+    # What I want to do here is to choose the first leaf node as the root node but I don't know whether there is a better way to 
+    # write the checking conditions. Please help me out here. 
+    
+    # For example, this is the tree created by dendropy with IQ-Tree output. 
+    #
+    #  (1) Tree 1
+    #   /---------------------------------------------------- A
+    #   |
+    #   +---------------------------------------------------- B
+    #   |
+    #   |                /----------------------------------- C
+    #   \----------------+
+    #                    |                 /----------------- D
+    #                    \-----------------+
+    #                                      \----------------- E
+    #
+    #  (1) Tree 2
+    # I want to construct the tree like the structure below with my own auxiliary BandeltNode class.
+    #
+    #                /---------------------------------------------------- B
+    #   A -----------+
+    #                |                /----------------------------------- C
+    #                \----------------+
+    #                                 |                 /----------------- D
+    #                                 \-----------------+
+    #                                                   \----------------- E
+    #
+    # Now I assume the read-in tree will look like Tree 1 and let the first child of seed_node be the root node of my own 
+    # Bandelt tree (BandeltNode). 
+    
+    # Condition: The number of seed_node's children node must be 3 and the first child must be a leaf node which 
+    #            wil be used as the root node.
+    #if (len(tree.seed_node.child_nodes()) == 3 && 
+    #    encode_dict[tree.seed_node.child_nodes()[0].taxon.label.replace(' ', '_')] == sys.maxsize):
+    #    pass
+            
+    root_node = BandeltNode(encode_dict[tree.seed_node.child_nodes()[0].taxon.label.replace(' ', '_')])
+    root_inner_node = BandeltNode(-100)
+    root_node.left = root_inner_node
+    root_inner_node.parent = root_node
+    
+    root_child_nodes = tree.seed_node.child_nodes()
+
+    if (root_child_nodes[1].taxon is not None):
+        sec_layer_left = BandeltNode(encode_dict[root_child_nodes[1].taxon.label.replace(' ', '_')])
+    else:
+        sec_layer_left = BandeltNode(-100)
+
+    if (root_child_nodes[2].taxon is not None):
+        sec_layer_right = BandeltNode(encode_dict[root_child_nodes[2].taxon.label.replace(' ', '_')])
+    else:
+        sec_layer_right = BandeltNode(-100)
+
+    root_inner_node.left = sec_layer_left
+    sec_layer_left.parent = root_inner_node
+    root_inner_node.right = sec_layer_right
+    sec_layer_right.parent = root_inner_node
+    create_Bandelt_tree(tree.seed_node.child_nodes()[1], root_node.left.left)
+    create_Bandelt_tree(tree.seed_node.child_nodes()[2], root_node.left.right)
+    inner_node_indexation(root_node)
+    encode_num_list = []
+    for i in range(0, len(tree.leaf_nodes())-2):
+        target_node_val = -(i+1)
+        found_node = root_node.find_node(target_node_val)
+        encode_num = find_Bandelt_encode(found_node, target_node_val)
+        encode_num_list.append(encode_num)
+        
+    return(encode_num_list, encode_dict, decode_dict)
+
+
+
+def Bandelt_decode(Bandelt_Encode_list, decode_dict):
+    """
+    Returns Bandelt decode newick string.
+    """
+    def post_order_traversal_num_2_name(current_node, decode_dict):
+        if current_node.left != None:
+            left_newick_string = post_order_traversal_num_2_name(current_node.left, decode_dict)
+        if current_node.right != None:
+            right_newick_string = post_order_traversal_num_2_name(current_node.right, decode_dict)
+        if current_node.data < 0:
+            current_node.data = ''
+        elif current_node.data >= 0:
+            current_node.data = decode_dict[int(current_node.data)]
+
+    def post_order_traversal_newick_string(current_node):
+        if current_node.left != None:
+            left_newick_string = post_order_traversal_newick_string(current_node.left)
+        if current_node.right != None:
+            right_newick_string = post_order_traversal_newick_string(current_node.right)
+
+        if current_node.left == None and current_node.right == None:     
+            # This node is the terminal vertex
+            return str(current_node.data)
+
+        if current_node.left != None and current_node.right != None:
+            newick_string = '(' + left_newick_string + ',' + right_newick_string + ')' + str(current_node.data)
+
+        if current_node.left != None and current_node.right == None:
+            newick_string = '(' + str(current_node.data) + ',' + left_newick_string + ')'
+
+        return newick_string
+    
+    BANDELT_NUM = len(Bandelt_Encode_list)
+    # Initial with three nodes
+    root_node = BandeltNode(sys.maxsize)
+    node_1 = BandeltNode(1)
+    node_neg_1 = BandeltNode(-1)
+    node_0 = BandeltNode(0)
+    # Create links between initial three nodes
+    root_node.left = node_neg_1
+    node_neg_1.parent = root_node
+    node_neg_1.left = node_0
+    node_neg_1.right = node_1
+    node_1.parent = node_neg_1
+    node_0.parent = node_neg_1
+    
+    for i in range(1, BANDELT_NUM):
+        added_node_val = -(i+1)
+        added_node_neg = BandeltNode(added_node_val)
+        added_node_pos = BandeltNode(-added_node_val)
+
+        target_node = root_node.find_node(Bandelt_Encode_list[i])
+
+        # If target node is the left child 
+        if target_node.parent.left == target_node:
+            target_node.parent.left = added_node_neg
+            added_node_neg.parent = target_node.parent
+            added_node_neg.left = target_node
+            target_node.parent = added_node_neg
+
+            added_node_neg.right = added_node_pos
+            added_node_pos.parent = added_node_neg
+
+        # If target node is the right child
+        if target_node.parent.right == target_node:
+            target_node.parent.right = added_node_neg
+            added_node_neg.parent = target_node.parent
+            added_node_neg.right = target_node
+            target_node.parent = added_node_neg
+
+            added_node_neg.left = added_node_pos
+            added_node_pos.parent = added_node_neg
+    copy_root_node = copy.deepcopy(root_node)
+    post_order_traversal_num_2_name(copy_root_node, decode_dict)
+    decode_tree = post_order_traversal_newick_string(copy_root_node)
+    decode_tree_newick = decode_tree + ';'
+    return decode_tree_newick
