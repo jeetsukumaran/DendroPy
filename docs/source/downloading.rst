@@ -44,18 +44,18 @@ Once downloaded, it can be installed by running:
 Installing the Latest Development Version
 =========================================
 
-If you want to install from a particular branch, e.g., the latest development branch, "development-master", you can use::
+If you want to install from a particular branch, e.g., the latest development branch, "development-main", you can use::
 
-    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-main
 
 Or::
 
-    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-main
 
 And, to update to incorporate changes as they are added to the branch::
 
-    $ python3 -m pip install --upgrade git+https://github.com/jeetsukumaran/DendroPy.git@development-master
-    $ python3 -m pip install --upgrade git+git://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install --upgrade git+https://github.com/jeetsukumaran/DendroPy.git@development-main
+    $ python3 -m pip install --upgrade git+git://github.com/jeetsukumaran/DendroPy.git@development-main
 
 Cloning the Source Code Repository
 ==================================

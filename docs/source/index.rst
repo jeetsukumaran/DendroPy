@@ -40,10 +40,10 @@ You can install directly from the main GitHub repository using::
     $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git
     $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git
 
-Alternatively, if you want to install from a particular branch, e.g., the latest development branch, ``development-master``::
+Alternatively, if you want to install from a particular branch, e.g., the latest development branch, ``development-main``::
 
-    $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-master
-    $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-master
+    $ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-main
+    $ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-main
 
 DendroPy is also fully easy-installable and can be installed using |pip|_::
 
