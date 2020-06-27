@@ -5201,16 +5201,25 @@ class Tree(
                 for child in to_attach:
                     node.remove_child(child)
                 attachment_points = list(node._child_nodes)
+                attachment_points.append(node)
                 while len(to_attach) > 0:
                     next_child = to_attach.pop()
                     next_sib = rng.choice(attachment_points)
                     next_attachment = Node()
-                    p = next_sib._parent_node
-                    p.add_child(next_attachment)
+                    if next_sib is node:
+                        cc = list(node._child_nodes)
+                        node.add_child(next_attachment)
+                        for c in cc:
+                            node.remove_child(c)
+                            next_attachment.add_child(c)
+                        node.add_child(next_child)
+                    else:
+                        p = next_sib._parent_node
+                        p.add_child(next_attachment)
+                        p.remove_child(next_sib)
+                        next_attachment.add_child(next_sib)
+                        next_attachment.add_child(next_child)
                     next_attachment.edge.length = 0.0
-                    p.remove_child(next_sib)
-                    next_attachment.add_child(next_sib)
-                    next_attachment.add_child(next_child)
                     attachment_points.append(next_attachment)
                     attachment_points.append(next_child)
             else:
