@@ -644,7 +644,7 @@ def estimate_ultrametric_tree(
     if topology_tree is None:
         ultrametric_tree = estimate_tree(char_matrix,
                 tree_est_criterion="nj",
-                num_states=2,
+                num_subst=2,
                 unequal_base_freqs=False,
                 gamma_rates=False,
                 prop_invar=False,
@@ -686,7 +686,7 @@ def estimate_ultrametric_tree(
 
 def estimate_tree(char_matrix,
                     tree_est_criterion="likelihood",
-                    num_states=6,
+                    num_subst=6,
                     unequal_base_freqs=True,
                     gamma_rates=True,
                     prop_invar=True,
@@ -700,7 +700,7 @@ def estimate_tree(char_matrix,
     Given a dataset, ``char_matrix``, estimates a tree using the given criterion.
     """
     paup_args = {
-        'nst': num_states,
+        'nst': num_subst,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
         'rates' : gamma_rates and 'gamma' or 'equal',
         'pinvar' : prop_invar and 'estimate' or '0',
@@ -769,7 +769,7 @@ def estimate_tree(char_matrix,
 
 def estimate_model(char_matrix,
                     tree_model=None,
-                    num_states=6,
+                    num_subst=6,
                     unequal_base_freqs=True,
                     gamma_rates=True,
                     prop_invar=True,
@@ -784,7 +784,7 @@ def estimate_model(char_matrix,
     base_frequencies, alpha, prop_invar, etc. as well as likelihood.
     """
     paup_args = {
-        'nst': num_states,
+        'nst': num_subst,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
         'rates' : gamma_rates and 'gamma' or 'equal',
         'pinvar' : prop_invar and 'estimate' or '0',

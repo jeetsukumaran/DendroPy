@@ -9,4 +9,4 @@ data = dendropy.DnaCharacterMatrix.get(
     schema="nexus")
 tree = paup.estimate_tree(data,
         tree_est_criterion='nj')
-print tree.as_string(schema="newick")
+print(tree.as_string(schema="newick"))
