@@ -733,7 +733,7 @@ def estimate_tree(char_matrix,
     """
     if tree_est_criterion.startswith("like"):
         paup_template += """\
-    lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+    lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s ;
     """
     if tree_est_criterion not in ["nj", "upgma"] :
         paup_template += """\
@@ -750,7 +750,7 @@ def estimate_tree(char_matrix,
 
     paup_template += """\
     %(post_est_commands)s;
-    savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
+    savetrees file=%(est_tree_file)s format=nexus brlens=yes taxablk=yes maxdecimals=20;
     """
     # paup_run = subprocess.Popen(['%s -n' % paup_path],
     #                             shell=True,
