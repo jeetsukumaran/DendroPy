@@ -7,22 +7,32 @@ import argparse
 import dendropy
 from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
 
+VERBOSE = False
+
+def debug(m):
+    if VERBOSE:
+        sys.stderr.write(f'greedy_mmd debug: {m}\n')
 
 def greedy_mmd(tree_file, num_taxa):
     # not efficiently updating min dist yet
+    debug(f'Reading tree from {tree_file}')
     tree = dendropy.Tree.get(path=tree_file, schema="newick")
-    pdmc = PhylogeneticDistanceMatrix.from_tree(tree)
     taxa_list = [i for i in tree.taxon_namespace]
     taxa_label_list = [i.label for i in taxa_list]
     if num_taxa == len(taxa_label_list):
         return taxa_label_list
     if num_taxa > len(taxa_label_list):
         raise ValueError('num_taxa exceeds the number of taxa in the tree')
+    debug(f'Calculating patristic distance matrix')
+    pdmc = PhylogeneticDistanceMatrix.from_tree(tree)
     pdm = []
     max_dist = None
     max_dist_inds = None
+    debug(f'Copying patristic distance matrix')
     for row_ind, row_tax in enumerate(taxa_list):
         row = []
+        if row_ind % 100 == 0:
+            debug(f'  row {row_ind}')
         for col_ind, col_tax in enumerate(taxa_list):
             nd = pdmc.patristic_distance(row_tax, col_tax)
             if max_dist is None or nd > max_dist:
@@ -32,8 +42,9 @@ def greedy_mmd(tree_file, num_taxa):
         pdm.append(row)
     sel_tax_labels = [taxa_label_list[max_dist_inds[0]], taxa_label_list[max_dist_inds[1]], ]
     sel_inds = set(max_dist_inds)
-    
+    debug(f'Most divergent 2 taxa are "{sel_tax_labels}" with dist= {max_dist}')
     while len(sel_inds) < num_taxa:
+        debug(f'Finding taxon {1 + len(sel_inds)}...')
         max_min_dist, mmd_ind = -1, None
         for row_ind, row_tax in enumerate(taxa_list):
             if row_ind in sel_inds:
@@ -44,18 +55,24 @@ def greedy_mmd(tree_file, num_taxa):
             if curr_min_dist > max_min_dist:
                 max_min_dist = curr_min_dist
                 mmd_ind = row_ind
-        sel_tax_labels.append(taxa_label_list[mmd_ind])
+        ntl = taxa_label_list[mmd_ind]
+        debug(f'    taxon {1 + len(sel_inds)} = "{ntl}" with MD = {curr_min_dist}')
+        sel_tax_labels.append(ntl)
         sel_inds.add(mmd_ind)
-    #print(sel_tax_labels)
-    #print(sel_inds)
+    debug('Taxa selected, cleaning up...')
     return sel_tax_labels
 
 def main():
+    global VERBOSE
     """
     Main CLI handler.
     """
     usage = "greedy-mmd --tree=treefilepath --num-taxa=#"
     parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument("-v","--verbose",
+                        dest="verbose",
+                        action="store_true",
+                        help="verbose mode")
     parser.add_argument("-t","--tree",
                         dest="tree_filepath",
                         default=None,
@@ -73,6 +90,7 @@ def main():
     itf = os.path.expanduser(os.path.expandvars(args.tree_filepath))
     if not os.path.isfile(itf):
         sys.exit(f'Tree file {args.tree_filepath} does not exist.\n')
+    VERBOSE = bool(args.verbose)
     mmt = greedy_mmd(itf, args.num_taxa)
     print('\n'.join(mmt))
     return mmt
