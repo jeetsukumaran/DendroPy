@@ -1,0 +1,87 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+import argparse
+import dendropy
+from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
+
+
+def greedy_mmd(tree_file, num_taxa):
+    # not efficiently updating min dist yet
+    tree = dendropy.Tree.get(path=tree_file, schema="newick")
+    pdmc = PhylogeneticDistanceMatrix.from_tree(tree)
+    taxa_list = [i for i in tree.taxon_namespace]
+    taxa_label_list = [i.label for i in taxa_list]
+    if num_taxa == len(taxa_label_list):
+        return taxa_label_list
+    if num_taxa > len(taxa_label_list):
+        raise ValueError('num_taxa exceeds the number of taxa in the tree')
+    pdm = []
+    max_dist = None
+    max_dist_inds = None
+    for row_ind, row_tax in enumerate(taxa_list):
+        row = []
+        for col_ind, col_tax in enumerate(taxa_list):
+            nd = pdmc.patristic_distance(row_tax, col_tax)
+            if max_dist is None or nd > max_dist:
+                max_dist = nd
+                max_dist_inds = (row_ind, col_ind)
+            row.append(nd)
+        pdm.append(row)
+    sel_tax_labels = [taxa_label_list[max_dist_inds[0]], taxa_label_list[max_dist_inds[1]], ]
+    sel_inds = set(max_dist_inds)
+    
+    while len(sel_inds) < num_taxa:
+        max_min_dist, mmd_ind = -1, None
+        for row_ind, row_tax in enumerate(taxa_list):
+            if row_ind in sel_inds:
+                continue
+            row = pdm[row_ind]
+            inc_dist = [row[i] for i in sel_inds]
+            curr_min_dist = min(inc_dist)
+            if curr_min_dist > max_min_dist:
+                max_min_dist = curr_min_dist
+                mmd_ind = row_ind
+        sel_tax_labels.append(taxa_label_list[mmd_ind])
+        sel_inds.add(mmd_ind)
+    #print(sel_tax_labels)
+    #print(sel_inds)
+    return sel_tax_labels
+
+def main():
+    """
+    Main CLI handler.
+    """
+    usage = "greedy-mmd --tree=treefilepath --num-taxa=#"
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument("-t","--tree",
+                        dest="tree_filepath",
+                        default=None,
+                        required=True,
+                        help="input tree in Newick")
+    parser.add_argument("-n","--num-taxa",
+                        dest="num_taxa",
+                        default=None,
+                        type=int,
+                        required=True,
+                        help="number of taxa to sample")
+    args = parser.parse_args()
+    if args.num_taxa < 2:
+        sys.exit('At least 2 taxa must be requested.\n')
+    itf = os.path.expanduser(os.path.expandvars(args.tree_filepath))
+    if not os.path.isfile(itf):
+        sys.exit(f'Tree file {args.tree_filepath} does not exist.\n')
+    mmt = greedy_mmd(itf, args.num_taxa)
+    print('\n'.join(mmt))
+    return mmt
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit("\n(Terminating due to user interrupt signal)\n")
+    except Exception as x:
+        sys.exit(f'Terminating due to an exception: {x}\n')
