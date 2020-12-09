@@ -40,13 +40,13 @@ class NexusTokenizer(Tokenizer):
             preserve_unquoted_underscores=False):
         Tokenizer.__init__(self,
             src=src,
-            uncaptured_delimiters=list(" \t\n\r"),
-            captured_delimiters=list("{}(),;:=\\\""),
-            quote_chars="'",
+            uncaptured_delimiters=set(" \t\n\r"),
+            captured_delimiters=set("{}(),;:=\\\""),
+            quote_chars=set("'"),
             escape_quote_by_doubling=True,
-            escape_chars="",
-            comment_begin="[",
-            comment_end="]",
+            escape_chars=set(""),
+            comment_begin=set("["),
+            comment_end=set("]"),
             capture_comments=True,
             preserve_unquoted_underscores=preserve_unquoted_underscores)
         # self.preserve_unquoted_underscores = preserve_unquoted_underscores
@@ -61,38 +61,38 @@ class NexusTokenizer(Tokenizer):
     def set_capture_eol(self, capture_eol):
         if capture_eol:
             try:
-                self.uncaptured_delimiters.remove("\n")
+                self.uncaptured_delimiters.discard("\n")
             except ValueError:
                 pass
             try:
-                self.uncaptured_delimiters.remove("\r")
+                self.uncaptured_delimiters.discard("\r")
             except ValueError:
                 pass
             if "\n" not in self.captured_delimiters:
-                self.captured_delimiters.append("\n")
+                self.captured_delimiters.add("\n")
             if "\r" not in self.captured_delimiters:
-                self.captured_delimiters.append("\r")
+                self.captured_delimiters.add("\r")
         else:
             try:
-                self.captured_delimiters.remove("\n")
+                self.captured_delimiters.discard("\n")
             except ValueError:
                 pass
             try:
-                self.captured_delimiters.remove("\r")
+                self.captured_delimiters.discard("\r")
             except ValueError:
                 pass
             if "\n" not in self.uncaptured_delimiters:
-                self.uncaptured_delimiters.append("\n")
+                self.uncaptured_delimiters.add("\n")
             if "\r" not in self.uncaptured_delimiters:
-                self.uncaptured_delimiters.append("\r")
+                self.uncaptured_delimiters.add("\r")
 
     def set_hyphens_as_captured_delimiters(self, hyphens_as_captured_delimiters):
         if hyphens_as_captured_delimiters:
             if "-" not in self.captured_delimiters:
-                self.captured_delimiters.append("-")
+                self.captured_delimiters.add("-")
         else:
             try:
-                self.captured_delimiters.remove("-")
+                self.captured_delimiters.discard("-")
             except ValueError:
                 pass
 

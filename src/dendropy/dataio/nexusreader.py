@@ -281,6 +281,9 @@ class NexusReader(ioservice.DataReader):
         exclude_trees : bool
             If |False|, then tree data will not be read. Defaults to
             |True|: tree data will be read.
+        store_other_blocks : bool
+            If |True|, then other NEXUS blocks will be stored under attribute ``other_blocks``.
+            Defaults to |False|: non-character and tree blocks will not be read.
         attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
         ignore_unrecognized_keyword_arguments : boolean, default: |False|
@@ -297,6 +300,7 @@ class NexusReader(ioservice.DataReader):
         # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
+        self.store_other_blocks = kwargs.pop("store_other_blocks", False)
         self._data_type = kwargs.pop("data_type", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
@@ -336,6 +340,7 @@ class NexusReader(ioservice.DataReader):
         self._char_matrices = []
         self._tree_lists = []
         self._product = None
+        self._other_blocks = []
 
     ###########################################################################
     ## Reader Implementation
@@ -590,7 +595,13 @@ class NexusReader(ioservice.DataReader):
                         NexusReader.IncompleteBlockError)
             else:
                 # unknown block
-                token = self._consume_to_end_of_block(token)
+                if self._global_annotations_target is not None and token is not None and self.store_other_blocks:
+                    b = self._read_block_without_processing(token=token)
+                    if not hasattr(self._global_annotations_target, "other_blocks"):
+                        setattr(self._global_annotations_target, "other_blocks", [])
+                    self._global_annotations_target.other_blocks.append(b)
+                else:
+                    token = self._consume_to_end_of_block(token)
 
     ###########################################################################
     ## TAXA BLOCK
@@ -1228,11 +1239,39 @@ class NexusReader(ioservice.DataReader):
         else:
             token = "DUMMY"
         while not (token == 'END' or token == 'ENDBLOCK') \
-            and not self._nexus_tokenizer.is_eof() \
-            and not token==None:
+                and not self._nexus_tokenizer.is_eof() \
+                and not token==None:
             self._nexus_tokenizer.skip_to_semicolon()
             token = self._nexus_tokenizer.next_token_ucase()
         return token
+
+    def _read_block_without_processing(self, token=None):
+        # used for unknown blocks we want to save
+        # NOT (really) TESTED
+        # Everybody else except Jeet: (REALLY) DO NOT USE!
+        # Jeet: SORTA DO NOT USE WITHOUT MORE TESTING
+        if token:
+            token = token.upper()
+        block = ["BEGIN", token]
+        old_uncaptured_delimiters = self._nexus_tokenizer.uncaptured_delimiters
+        old_captured_delimiters = self._nexus_tokenizer.captured_delimiters
+        to_switch = "\n\r"
+        for ch in to_switch:
+            self._nexus_tokenizer.uncaptured_delimiters.discard(ch)
+            self._nexus_tokenizer.captured_delimiters.add(ch)
+        while not (token == 'END' or token == 'ENDBLOCK') \
+                and not self._nexus_tokenizer.is_eof() \
+                and not token==None:
+            token = self._nexus_tokenizer.require_next_token()
+            uctoken = token.upper()
+            if uctoken == "END" or uctoken == "ENDBLOCK":
+                token = uctoken
+            block.append(token)
+        self._nexus_tokenizer.uncaptured_delimiters = old_uncaptured_delimiters
+        self._nexus_tokenizer.captured_delimiters = old_captured_delimiters
+        self._nexus_tokenizer.skip_to_semicolon() # move past end
+        block.append(";")
+        return " ".join(block)
 
     def _read_character_states(self,
             character_data_vector,
