@@ -281,8 +281,10 @@ class NexusReader(ioservice.DataReader):
         exclude_trees : bool
             If |False|, then tree data will not be read. Defaults to
             |True|: tree data will be read.
-        store_other_blocks : bool
-            If |True|, then other NEXUS blocks will be stored under attribute ``other_blocks``.
+        store_ignored_blocks : bool
+            If |True|, then ignored NEXUS blocks will be stored under the annotation
+            (NOT attribute!) ``ignored_nexus_blocks''.
+            To dereference, for e.g.: ``dataset.annotations["ignored_nexus_blocks"]``.
             Defaults to |False|: non-character and tree blocks will not be read.
         attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
@@ -300,7 +302,7 @@ class NexusReader(ioservice.DataReader):
         # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
-        self.store_other_blocks = kwargs.pop("store_other_blocks", False)
+        self.store_ignored_blocks = kwargs.pop("store_ignored_blocks", False)
         self._data_type = kwargs.pop("data_type", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
@@ -340,7 +342,7 @@ class NexusReader(ioservice.DataReader):
         self._char_matrices = []
         self._tree_lists = []
         self._product = None
-        self._other_blocks = []
+        self._ignored_blocks = []
 
     ###########################################################################
     ## Reader Implementation
@@ -370,6 +372,16 @@ class NexusReader(ioservice.DataReader):
                 taxon_namespaces=self._taxon_namespaces,
                 tree_lists=self._tree_lists,
                 char_matrices=self._char_matrices)
+        if self._global_annotations_target is not None and self._ignored_blocks:
+            a = self._global_annotations_target.annotations.find(name="ignored_nexus_blocks")
+            if a is None:
+                self._global_annotations_target.annotations.add_new(
+                        name="ignored_nexus_blocks",
+                        value=self._ignored_blocks,
+                        datatype_hint="xsd:list",
+                        )
+            else:
+                a.extend(self._ignored_blocks)
         return self._product
 
     ###########################################################################
@@ -595,11 +607,9 @@ class NexusReader(ioservice.DataReader):
                         NexusReader.IncompleteBlockError)
             else:
                 # unknown block
-                if self._global_annotations_target is not None and token is not None and self.store_other_blocks:
+                if token is not None and self.store_ignored_blocks:
                     b = self._read_block_without_processing(token=token)
-                    if not hasattr(self._global_annotations_target, "other_blocks"):
-                        setattr(self._global_annotations_target, "other_blocks", [])
-                    self._global_annotations_target.other_blocks.append(b)
+                    self._ignored_blocks.append(b)
                 else:
                     token = self._consume_to_end_of_block(token)
 
