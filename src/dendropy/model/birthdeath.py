@@ -499,7 +499,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
 #in number of tips instead of quadratic. To obtain this accelleration, however,
 #I have removed variation in birth and death rates.
 def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
-    #NICOLA: we are not allowing variation in birth and death rate so to have 
+    #NICOLA: we are not allowing variation in birth and death rate so to have
     #increased efficiency.
     birth_rate_sd=0.0
     death_rate_sd=0.0
@@ -767,7 +767,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
         		nd.edge.length=total_time-nd.edge.length
         	break
 
-        
+
         # get vector of birth/death probabilities, and
         # associate with nodes/events
         #NICOLA: replaced this
@@ -892,7 +892,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
                         nd.edge.length=initial_lengths[ndIndex]
                         ndIndex+=1
                     total_time = 0
-                    
+
 
     if gsa_ntax is not None:
         total_duration_at_target_n_tax = 0.0
@@ -994,7 +994,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
                 taxon_pool_labels.add(label)
             nd.taxon = taxon
     return tree
-    
+
 
 
 def discrete_birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
