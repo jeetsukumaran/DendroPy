@@ -729,7 +729,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
     #NICOLA: in case we need a restart, let's record the initial branch lengths.
     initial_lengths=[]
     for nd in initial_extant_tip_set:
-    	initial_lengths.append(nd.edge.length)
+        initial_lengths.append(nd.edge.length)
 
     total_time = 0
 
@@ -745,27 +745,27 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
     while True:
         if gsa_ntax is None:
             if target_num_extant_tips is not None and len(extant_tips) >= target_num_extant_tips:
-            	#NICOLA: here and in the other cases, update the branch length so to
-            	#represent the true branch length (explained better below).
-            	for nd in extant_tips:
-            		nd.edge.length=total_time-nd.edge.length
-            	break
+                #NICOLA: here and in the other cases, update the branch length so to
+                #represent the true branch length (explained better below).
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
             if target_num_extinct_tips is not None and len(extinct_tips) >= target_num_extinct_tips:
-            	for nd in extant_tips:
-            		nd.edge.length=total_time-nd.edge.length
-            	break
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
             if target_num_total_tips is not None and (len(extant_tips) + len(extinct_tips)) >= target_num_total_tips:
-            	for nd in extant_tips:
-            		nd.edge.length=total_time-nd.edge.length
-            	break
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
             if max_time is not None and total_time >= max_time:
-            	for nd in extant_tips:
-            		nd.edge.length=total_time-nd.edge.length
-            	break
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
         elif len(extant_tips) >= gsa_ntax:
-        	for nd in extant_tips:
-        		nd.edge.length=total_time-nd.edge.length
-        	break
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
 
 
         # get vector of birth/death probabilities, and
@@ -804,10 +804,10 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
                 edge_and_start_length.append((e, total_time-e.length))
             targetted_time_slices.append((waiting_time, edge_and_start_length))
             if terminate_at_full_tree:
-            	#NICOLA: terminal update as before
-            	for nd in extant_tips:
-            		nd.edge.length=total_time-nd.edge.length
-            	break
+                #NICOLA: terminal update as before
+                for nd in extant_tips:
+                        nd.edge.length=total_time-nd.edge.length
+                break
 
         # add waiting time to nodes
         #Nicola: this is the part that makes it quadratic in ntax.
@@ -831,9 +831,9 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
             #sample a random integer to represent the chosen taxon, and sample if birth or death event.
             taxI=rng.randint(0, len(extant_tips)-1)
             if rng.random()< birth_rate/(birth_rate+death_rate):
-            	birth_event=True
+                birth_event=True
             else:
-            	birth_event=False
+                birth_event=False
             nd=extant_tips[taxI]
             #extant_tips.remove(nd)
             if birth_event:
@@ -866,7 +866,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
                 #extant_tips.append(c1)
                 extant_tips.append(c2)
             else:
-            	del extant_tips[taxI]
+                del extant_tips[taxI]
                 if len(extant_tips) > 0:
                     extinct_tips.append(nd)
                     if is_add_extinct_attr:
