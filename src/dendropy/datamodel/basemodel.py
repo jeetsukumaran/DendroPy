@@ -632,6 +632,9 @@ class Annotable(object):
     or other information as metadata should subclass.
     """
 
+    def __init__(self):
+        self.comments = []
+
     def _get_annotations(self):
         if not hasattr(self, "_annotations"):
             self._annotations = AnnotationSet(self)

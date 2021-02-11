@@ -691,25 +691,27 @@ class ProtractedSpeciationProcess(object):
                 break
             # we do this here so that the (newest) tip lineages have the
             # waiting time to the next event branch lengths
-            if (num_extant_lineages is None
-                    and min_extant_lineages is None
-                    and max_extant_lineages is None):
-                lineage_requirements_met = True
+            if (num_extant_lineages is not None
+                    or min_extant_lineages is not None
+                    or max_extant_lineages is not None):
+                has_lineage_count_requirements = True
+                if (
+                        (num_extant_lineages is None or ((num_incipient_species + num_orthospecies) == num_extant_lineages))
+                        and (min_extant_lineages is None or ((num_incipient_species + num_orthospecies) >= min_extant_lineages))
+                        and (max_extant_lineages is None or ((num_incipient_species + num_orthospecies) == max_extant_lineages))
+                        ):
+                    is_lineage_count_requirements_met = True
+                else:
+                    is_lineage_count_requirements_met = False
             else:
-                lineage_requirements_met = False
+                has_lineage_count_requirements = False
+                is_lineage_count_requirements_met = None
             if max_extant_lineages is not None and (num_incipient_species + num_orthospecies) > max_extant_lineages:
                 raise ProcessFailedException()
-            if (
-                    (num_extant_lineages is None or ((num_incipient_species + num_orthospecies) == num_extant_lineages))
-                    and (min_extant_lineages is None or ((num_incipient_species + num_orthospecies) >= min_extant_lineages))
-                    and (max_extant_lineages is None or ((num_incipient_species + num_orthospecies) == max_extant_lineages))
-                    ):
-                lineage_requirements_met = True
-            else:
-                lineage_requirements_met = False
             if num_extant_orthospecies is not None or max_extant_orthospecies is not None or min_extant_orthospecies is not None:
                 ## note: very expensive operation to count orthospecies leaves!
-                orthospecies_requirements_met = False
+                has_orthospecies_count_requirements = True
+                is_orthospecies_count_requirements_met = False
                 final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_collection_snapshot = [lineage.clone() for lineage in itertools.chain(lineage_data[0]["lineage_collection"], lineage_data[1]["lineage_collection"])]
                 try:
@@ -737,66 +739,71 @@ class ProtractedSpeciationProcess(object):
                                 )
                         lineage_data[phase_idx]["lineage_tree"] = lineage_tree
                         lineage_data[phase_idx]["orthospecies_tree"] = orthospecies_tree
-                        orthospecies_requirements_met = True
+                        is_orthospecies_count_requirements_met = True
                 except ProcessFailedException:
                     pass
                 if max_extant_orthospecies is not None and num_leaves > max_extant_orthospecies:
                     raise ProcessFailedException
             else:
-                orthospecies_requirements_met = True
-            # add to current time
-            current_time += waiting_time
-            # Select event
-            event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
-            assert (event_type_idx >= 0 and event_type_idx <= 4)
-            if event_type_idx == 0:
-                # Splitting of new incipient species lineage from orthospecies lineage
-                parent_lineage = self.rng.choice(orthospecies_lineages)
-                lineage_data[phase_idx]["lineage_id"] += 1
-                new_lineage = self._new_lineage(
-                        lineage_id=lineage_data[phase_idx]["lineage_id"],
-                        parent_lineage=parent_lineage,
-                        origin_time=current_time,
-                        )
-                lineage_collection.append(new_lineage)
-                incipient_species_lineages.append(new_lineage)
-            elif event_type_idx == 1:
-                # Extinction of an orthospecies lineage
-                lineage_idx = self.rng.randint(0, len(orthospecies_lineages)-1)
-                orthospecies_lineages[lineage_idx].extinction_time = current_time
-                del orthospecies_lineages[lineage_idx]
-            elif event_type_idx == 2:
-                # Splitting of new incipient species lineage from incipient lineage
-                parent_lineage = self.rng.choice(incipient_species_lineages)
-                lineage_data[phase_idx]["lineage_id"] += 1
-                new_lineage = self._new_lineage(
-                        lineage_id=lineage_data[phase_idx]["lineage_id"],
-                        parent_lineage=parent_lineage,
-                        origin_time=current_time,
-                        )
-                lineage_collection.append(new_lineage)
-                incipient_species_lineages.append(new_lineage)
-            elif event_type_idx == 3:
-                # Completion of speciation
-                lineage_idx = self.rng.randint(0, len(incipient_species_lineages)-1)
-                lineage = incipient_species_lineages[lineage_idx]
-                lineage.speciation_completion_time = current_time
-                lineage_data[phase_idx]["species_id"] += 1
-                lineage.species_id = lineage_data[phase_idx]["species_id"]
-                orthospecies_lineages.append(lineage)
-                del incipient_species_lineages[lineage_idx]
-            elif event_type_idx == 4:
-                # Extinction of an incipient_species lineage
-                lineage_idx = self.rng.randint(0, len(incipient_species_lineages)-1)
-                incipient_species_lineages[lineage_idx].extinction_time = current_time
-                del incipient_species_lineages[lineage_idx]
-            else:
-                raise Exception("Unexpected event type index: {}".format(event_type_idx))
-            if lineage_requirements_met and orthospecies_requirements_met:
+                has_orthospecies_count_requirements = False
+                is_orthospecies_count_requirements_met = None
+            if (
+                    ( (has_lineage_count_requirements and is_lineage_count_requirements_met) and (has_orthospecies_count_requirements and is_orthospecies_count_requirements_met) )
+                    or ( (has_lineage_count_requirements and is_lineage_count_requirements_met) and (not has_orthospecies_count_requirements) )
+                    or ( (not has_lineage_count_requirements) and (has_orthospecies_count_requirements and is_orthospecies_count_requirements_met) )
+            ):
                 final_time = current_time + self.rng.uniform(0, waiting_time)
                 lineage_data[phase_idx]["final_time"] = final_time
-                print("OK")
                 break
+            else:
+                # add to current time
+                current_time += waiting_time
+                # Select event
+                event_type_idx = probability.weighted_index_choice(weights=event_rates, rng=self.rng)
+                assert (event_type_idx >= 0 and event_type_idx <= 4)
+                if event_type_idx == 0:
+                    # Splitting of new incipient species lineage from orthospecies lineage
+                    parent_lineage = self.rng.choice(orthospecies_lineages)
+                    lineage_data[phase_idx]["lineage_id"] += 1
+                    new_lineage = self._new_lineage(
+                            lineage_id=lineage_data[phase_idx]["lineage_id"],
+                            parent_lineage=parent_lineage,
+                            origin_time=current_time,
+                            )
+                    lineage_collection.append(new_lineage)
+                    incipient_species_lineages.append(new_lineage)
+                elif event_type_idx == 1:
+                    # Extinction of an orthospecies lineage
+                    lineage_idx = self.rng.randint(0, len(orthospecies_lineages)-1)
+                    orthospecies_lineages[lineage_idx].extinction_time = current_time
+                    del orthospecies_lineages[lineage_idx]
+                elif event_type_idx == 2:
+                    # Splitting of new incipient species lineage from incipient lineage
+                    parent_lineage = self.rng.choice(incipient_species_lineages)
+                    lineage_data[phase_idx]["lineage_id"] += 1
+                    new_lineage = self._new_lineage(
+                            lineage_id=lineage_data[phase_idx]["lineage_id"],
+                            parent_lineage=parent_lineage,
+                            origin_time=current_time,
+                            )
+                    lineage_collection.append(new_lineage)
+                    incipient_species_lineages.append(new_lineage)
+                elif event_type_idx == 3:
+                    # Completion of speciation
+                    lineage_idx = self.rng.randint(0, len(incipient_species_lineages)-1)
+                    lineage = incipient_species_lineages[lineage_idx]
+                    lineage.speciation_completion_time = current_time
+                    lineage_data[phase_idx]["species_id"] += 1
+                    lineage.species_id = lineage_data[phase_idx]["species_id"]
+                    orthospecies_lineages.append(lineage)
+                    del incipient_species_lineages[lineage_idx]
+                elif event_type_idx == 4:
+                    # Extinction of an incipient_species lineage
+                    lineage_idx = self.rng.randint(0, len(incipient_species_lineages)-1)
+                    incipient_species_lineages[lineage_idx].extinction_time = current_time
+                    del incipient_species_lineages[lineage_idx]
+                else:
+                    raise Exception("Unexpected event type index: {}".format(event_type_idx))
 
     def _new_lineage(self,
             lineage_id,

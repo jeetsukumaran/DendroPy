@@ -20,6 +20,7 @@
 import sys
 import collections
 import warnings
+from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.utility import deprecate
 from dendropy.utility import textprocessing
@@ -355,12 +356,26 @@ class DataReader(IOService):
 
         """
         # ``product`` is a namedtuple("DataReaderProducts", ["taxon_namespaces", "tree_lists", "char_matrices"])
+
+        ### Put this here as a way to propagate annotations from main file to trees, chars;
+        ### Removed it because not sure if we should actually do this (metadata may not apply).
+        ### For now, if we want to pull metadata from main file, we need to read as dataset and extract from there
+
+        # if global_annotations_target is None:
+        #     global_annotations_target = basemodel.Annotable()
+        #     is_post_process_global_annotations = True
+        # else:
+        #     is_post_process_global_annotations = False
+
         product = self._read(stream=stream,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=tree_list_factory,
                 char_matrix_factory=None,
                 state_alphabet_factory=None,
                 global_annotations_target=global_annotations_target)
+        # if is_post_process_global_annotations:
+        #     for tree_list in product.tree_lists:
+        #         tree_list.copy_annotations_from(global_annotations_target)
         return product.tree_lists
 
     def read_char_matrices(self,
@@ -369,12 +384,23 @@ class DataReader(IOService):
             char_matrix_factory,
             state_alphabet_factory,
             global_annotations_target=None):
+        ### Put this here as a way to propagate annotations from main file to trees, chars;
+        ### Removed it because not sure if we should actually do this (metadata may not apply).
+        ### For now, if we want to pull metadata from main file, we need to read as dataset and extract from there
+        # if global_annotations_target is None:
+        #     global_annotations_target = basemodel.Annotable()
+        #     is_post_process_global_annotations = True
+        # else:
+        #     is_post_process_global_annotations = False
         product = self._read(stream=stream,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=None,
                 char_matrix_factory=char_matrix_factory,
                 state_alphabet_factory=state_alphabet_factory,
                 global_annotations_target=global_annotations_target)
+        # if is_post_process_global_annotations:
+        #     for char_matrix in product.char_matrices:
+        #         char_matrix.copy_annotations_from(global_annotations_target)
         return product.char_matrices
 
 ###############################################################################

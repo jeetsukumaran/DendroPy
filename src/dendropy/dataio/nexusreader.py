@@ -281,6 +281,11 @@ class NexusReader(ioservice.DataReader):
         exclude_trees : bool
             If |False|, then tree data will not be read. Defaults to
             |True|: tree data will be read.
+        store_ignored_blocks : bool
+            If |True|, then ignored NEXUS blocks will be stored under the annotation
+            (NOT attribute!) ``ignored_nexus_blocks''.
+            To dereference, for e.g.: ``dataset.annotations["ignored_nexus_blocks"]``.
+            Defaults to |False|: non-character and tree blocks will not be read.
         attached_taxon_namespace : |TaxonNamespace|
             Unify all operational taxonomic unit definitions in this namespace.
         ignore_unrecognized_keyword_arguments : boolean, default: |False|
@@ -297,6 +302,7 @@ class NexusReader(ioservice.DataReader):
         # keyword validation scheme
         self.exclude_chars = kwargs.pop("exclude_chars", False)
         self.exclude_trees = kwargs.pop("exclude_trees", False)
+        self.store_ignored_blocks = kwargs.pop("store_ignored_blocks", False)
         self._data_type = kwargs.pop("data_type", "standard")
         self.attached_taxon_namespace = kwargs.pop("attached_taxon_namespace", None)
 
@@ -336,6 +342,7 @@ class NexusReader(ioservice.DataReader):
         self._char_matrices = []
         self._tree_lists = []
         self._product = None
+        self._ignored_blocks = []
 
     ###########################################################################
     ## Reader Implementation
@@ -365,6 +372,16 @@ class NexusReader(ioservice.DataReader):
                 taxon_namespaces=self._taxon_namespaces,
                 tree_lists=self._tree_lists,
                 char_matrices=self._char_matrices)
+        if self._global_annotations_target is not None and self._ignored_blocks:
+            a = self._global_annotations_target.annotations.find(name="ignored_nexus_blocks")
+            if a is None:
+                self._global_annotations_target.annotations.add_new(
+                        name="ignored_nexus_blocks",
+                        value=self._ignored_blocks,
+                        datatype_hint="xsd:list",
+                        )
+            else:
+                a.extend(self._ignored_blocks)
         return self._product
 
     ###########################################################################
@@ -590,7 +607,11 @@ class NexusReader(ioservice.DataReader):
                         NexusReader.IncompleteBlockError)
             else:
                 # unknown block
-                token = self._consume_to_end_of_block(token)
+                if token is not None and self.store_ignored_blocks:
+                    b = self._read_block_without_processing(token=token)
+                    self._ignored_blocks.append(b)
+                else:
+                    token = self._consume_to_end_of_block(token)
 
     ###########################################################################
     ## TAXA BLOCK
@@ -640,19 +661,45 @@ class NexusReader(ioservice.DataReader):
         if taxon_namespace is None:
             taxon_namespace = self._get_taxon_namespace()
         token = self._nexus_tokenizer.next_token()
+
+        # Construct label lookup set
+        # The get_taxon call is expensive for large taxon namespaces as it requires
+        # a linear search. This causes significant performance penalties for loading
+        # very large trees into an empty taxon namespace as each new taxon requires
+        # a worst case search of the existing namespace before it can be inserted.
+        # To alleviate this, we build a temporary one-time set of all the labels
+        # in the taxon namespace. Now we can determine in constant-time whether
+        # a label token corresponds to a new taxon that requires insertion,
+        # or if an existing taxon can be fetched with get_taxon.
+        label_set = set([])
+        for taxon in taxon_namespace._taxa:
+            if taxon_namespace.is_case_sensitive:
+                label_set.add(taxon.label)
+            else:
+                label_set.add(taxon.lower_cased_label)
+
         while token != ';':
             label = token
-            # if taxon_namespace.has_taxon(label=label):
-            #     pass
-            # elif len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
-            #     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
-            # else:
-            #     taxon_namespace.require_taxon(label=label)
-            taxon = taxon_namespace.get_taxon(label=label)
-            if taxon is None:
+
+            # Convert the token to the appropriate case to check against label set
+            if taxon_namespace.is_case_sensitive:
+                check_label = label
+            else:
+                check_label = label.lower()
+
+            if check_label in label_set:
+                taxon = taxon_namespace.get_taxon(label=label)
+            else:
                 if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace and not self.unconstrained_taxa_accumulation_mode:
                     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
                 taxon = taxon_namespace.new_taxon(label=label)
+
+                # Add the new label to the label lookup set too
+                if taxon_namespace.is_case_sensitive:
+                    label_set.add(taxon.label)
+                else:
+                    label_set.add(taxon.lower_cased_label)
+
             token = self._nexus_tokenizer.next_token()
             self._nexus_tokenizer.process_and_clear_comments_for_item(taxon,
                     self.extract_comment_metadata)
@@ -1228,11 +1275,39 @@ class NexusReader(ioservice.DataReader):
         else:
             token = "DUMMY"
         while not (token == 'END' or token == 'ENDBLOCK') \
-            and not self._nexus_tokenizer.is_eof() \
-            and not token==None:
+                and not self._nexus_tokenizer.is_eof() \
+                and not token==None:
             self._nexus_tokenizer.skip_to_semicolon()
             token = self._nexus_tokenizer.next_token_ucase()
         return token
+
+    def _read_block_without_processing(self, token=None):
+        # used for unknown blocks we want to save
+        # NOT (really) TESTED
+        # Everybody else except Jeet: (REALLY) DO NOT USE!
+        # Jeet: SORTA DO NOT USE WITHOUT MORE TESTING
+        if token:
+            token = token.upper()
+        block = ["BEGIN", token]
+        old_uncaptured_delimiters = self._nexus_tokenizer.uncaptured_delimiters
+        old_captured_delimiters = self._nexus_tokenizer.captured_delimiters
+        to_switch = "\n\r"
+        for ch in to_switch:
+            self._nexus_tokenizer.uncaptured_delimiters.discard(ch)
+            self._nexus_tokenizer.captured_delimiters.add(ch)
+        while not (token == 'END' or token == 'ENDBLOCK') \
+                and not self._nexus_tokenizer.is_eof() \
+                and not token==None:
+            token = self._nexus_tokenizer.require_next_token()
+            uctoken = token.upper()
+            if uctoken == "END" or uctoken == "ENDBLOCK":
+                token = uctoken
+            block.append(token)
+        self._nexus_tokenizer.uncaptured_delimiters = old_uncaptured_delimiters
+        self._nexus_tokenizer.captured_delimiters = old_captured_delimiters
+        self._nexus_tokenizer.skip_to_semicolon() # move past end
+        block.append(";")
+        return " ".join(block)
 
     def _read_character_states(self,
             character_data_vector,
