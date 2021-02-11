@@ -1,3 +1,10 @@
+Release 4.5.2
+-------------
+
+-   *MUCH* faster label lookup (thanks Sam Nicholls / @SamStudio8 !)
+-   Faster birth-death tree generation (thanks @NicolaDM !)
+-   Storage of supplemental NEXUS blocks
+
 Release 4.4.0
 -------------
 
