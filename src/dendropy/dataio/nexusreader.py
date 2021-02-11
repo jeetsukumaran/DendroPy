@@ -661,19 +661,45 @@ class NexusReader(ioservice.DataReader):
         if taxon_namespace is None:
             taxon_namespace = self._get_taxon_namespace()
         token = self._nexus_tokenizer.next_token()
+
+        # Construct label lookup set
+        # The get_taxon call is expensive for large taxon namespaces as it requires
+        # a linear search. This causes significant performance penalties for loading
+        # very large trees into an empty taxon namespace as each new taxon requires
+        # a worst case search of the existing namespace before it can be inserted.
+        # To alleviate this, we build a temporary one-time set of all the labels
+        # in the taxon namespace. Now we can determine in constant-time whether
+        # a label token corresponds to a new taxon that requires insertion,
+        # or if an existing taxon can be fetched with get_taxon.
+        label_set = set([])
+        for taxon in taxon_namespace._taxa:
+            if taxon_namespace.is_case_sensitive:
+                label_set.add(taxon.label)
+            else:
+                label_set.add(taxon.lower_cased_label)
+
         while token != ';':
             label = token
-            # if taxon_namespace.has_taxon(label=label):
-            #     pass
-            # elif len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace:
-            #     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
-            # else:
-            #     taxon_namespace.require_taxon(label=label)
-            taxon = taxon_namespace.get_taxon(label=label)
-            if taxon is None:
+
+            # Convert the token to the appropriate case to check against label set
+            if taxon_namespace.is_case_sensitive:
+                check_label = label
+            else:
+                check_label = label.lower()
+
+            if check_label in label_set:
+                taxon = taxon_namespace.get_taxon(label=label)
+            else:
                 if len(taxon_namespace) >= self._file_specified_ntax and not self.attached_taxon_namespace and not self.unconstrained_taxa_accumulation_mode:
                     raise self._too_many_taxa_error(taxon_namespace=taxon_namespace, label=label)
                 taxon = taxon_namespace.new_taxon(label=label)
+
+                # Add the new label to the label lookup set too
+                if taxon_namespace.is_case_sensitive:
+                    label_set.add(taxon.label)
+                else:
+                    label_set.add(taxon.lower_cased_label)
+
             token = self._nexus_tokenizer.next_token()
             self._nexus_tokenizer.process_and_clear_comments_for_item(taxon,
                     self.extract_comment_metadata)

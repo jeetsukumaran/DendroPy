@@ -1,0 +1,46 @@
+#NEXUS
+
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=33;
+    TAXLABELS
+        python_regius
+        python_sebae
+        python_molurus
+        python_curtus
+        morelia_bredli
+        morelia_spilota
+        morelia_tracyae
+        morelia_clastolepis
+        morelia_kinghorni
+        morelia_nauta
+        morelia_amethistina
+        morelia_oenpelliensis
+        antaresia_maculosa
+        antaresia_perthensis
+        antaresia_stimsoni
+        antaresia_childreni
+        morelia_carinata
+        morelia_viridisn
+        morelia_viridiss
+        apodora_papuana
+        liasis_olivaceus
+        liasis_fuscus
+        liasis_mackloti
+        antaresia_melanocephalus
+        antaresia_ramsayi
+        liasis_albertisii
+        bothrochilus_boa
+        morelia_boeleni
+        python_timoriensis
+        python_reticulatus
+        xenopeltis_unicolor
+        candoia_aspera
+        loxocemus_bicolor
+  ;
+END;
+
+BEGIN TREES;
+    TREE 0 = [&U] (((python_regius:0.1058922755,((python_sebae:0.0629755585,python_molurus:0.0335903967):0.02165,python_curtus:0.1067094932):0.016163):0.032743,(((((morelia_bredli:0.0274921037,morelia_spilota:0.0241663426):0.026356,((morelia_tracyae:0.0377936102,((morelia_clastolepis:0.0045446653,(morelia_kinghorni:0.0075825724,morelia_nauta:0.0086155842):0.004182):0.018597,morelia_amethistina:0.0227641045):0.007181):0.024796,morelia_oenpelliensis:0.0579745143):0.004283):0.031732,((antaresia_maculosa:0.0679212061,(antaresia_perthensis:0.0760812159,(antaresia_stimsoni:0.0152390165,antaresia_childreni:0.023141749):0.032397):0.012848):0.011617,(morelia_carinata:0.0660356718,(morelia_viridisn:0.0377499268,morelia_viridiss:0.0473589755):0.027329):0.013482):0.015469):0.006602,(((((apodora_papuana:0.0670782319,liasis_olivaceus:0.0430801028):0.010168,(liasis_fuscus:0.0194903208,liasis_mackloti:0.0141916418):0.048505):0.013422,(antaresia_melanocephalus:0.0380695554,antaresia_ramsayi:0.0325474267):0.043626):0.007734,(liasis_albertisii:0.0542142498,bothrochilus_boa:0.0638595214):0.038444):0.002713,morelia_boeleni:0.0843874314):0.002859):0.027099,(python_timoriensis:0.074479767,python_reticulatus:0.0562613055):0.06004):0.030952):0.060789,(xenopeltis_unicolor:0.1983677797,candoia_aspera:0.4092923305):0.048508,loxocemus_bicolor:0.2627888765);
+END;
+
