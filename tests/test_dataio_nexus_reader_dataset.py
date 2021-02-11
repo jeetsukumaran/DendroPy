@@ -323,6 +323,47 @@ class DataSetNexusTaxonManagementTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(len(d.taxon_namespaces[0]), 33)
         self.assertEqual(len(d.taxon_namespaces[1]), 114)
 
+    def testAttachTaxonNamespaceOnGet_caseInsensitive(self):
+        # Ensure TAXLABELS block from multiple trees with upper and lower case
+        # labels are appropriately treated as the same taxon via the label set
+        # in _parse_taxlabels_statement
+        t = dendropy.TaxonNamespace(is_case_sensitive=False)
+        d = dendropy.DataSet.get_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'),
+                "nexus",
+                taxon_namespace=t)
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertIsNot(d.attached_taxon_namespace, None)
+        self.assertIs(d.taxon_namespaces[0], d.attached_taxon_namespace)
+        self.assertIs(d.attached_taxon_namespace, t)
+        self.assertEqual(len(d.taxon_namespaces[0]), 33)
+        d.read(path=pathmap.tree_source_path('pythonidae.upper.mle.nex'), schema="nexus")
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertEqual(len(d.taxon_namespaces[0]), 33)
+        d.read(path=pathmap.tree_source_path('pythonidae.lower.mle.nex'), schema="nexus")
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertEqual(len(d.taxon_namespaces[0]), 33)
+
+    def testAttachTaxonNamespaceOnGet_caseSensitive(self):
+        # Ensure TAXLABELS block from multiple trees with upper and lower case
+        # labels are appropriately treated as different taxons via the label set
+        # in _parse_taxlabels_statement
+        t = dendropy.TaxonNamespace(is_case_sensitive=True)
+        d = dendropy.DataSet.get_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'),
+                "nexus",
+                taxon_namespace=t,
+                case_sensitive_taxon_labels=True)
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertIsNot(d.attached_taxon_namespace, None)
+        self.assertIs(d.taxon_namespaces[0], d.attached_taxon_namespace)
+        self.assertIs(d.attached_taxon_namespace, t)
+        self.assertEqual(len(d.taxon_namespaces[0]), 33)
+        d.read(path=pathmap.tree_source_path('pythonidae.upper.mle.nex'), schema="nexus", case_sensitive_taxon_labels=True)
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertEqual(len(d.taxon_namespaces[0]), 66)
+        d.read(path=pathmap.tree_source_path('pythonidae.lower.mle.nex'), schema="nexus", case_sensitive_taxon_labels=True)
+        self.assertEqual(len(d.taxon_namespaces), 1)
+        self.assertEqual(len(d.taxon_namespaces[0]), 99)
+
 class NexusDataSetMultiTreesBlockTestCase(dendropytest.ExtendedTestCase):
 
     def test_multiple_trees1(self):
