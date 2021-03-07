@@ -458,6 +458,8 @@ class RaxmlRunner(object):
 
     def estimate_tree(self,
             char_matrix,
+            substitution_model='GTRCAT',
+            random_seed=None,
             raxml_args=None):
 
         # set up taxa
@@ -486,14 +488,15 @@ class RaxmlRunner(object):
         self.files_to_clean.append(raxml_seqs_filepath + ".reduced")
 
         # run RAxML
+        if random_seed is None:
+            random_seed = random.randint(0, sys.maxsize)
         if raxml_args is None:
             raxml_args = []
         cmd = [self.raxml_path,
-                '-m',
-                'GTRCAT',
+                '-m', substitution_model,
                 '-s', raxml_seqs_filepath,
                 '-n', self.name,
-                '-p', str(random.randint(0, sys.maxsize))] + raxml_args
+                '-p', str(random_seed)] + raxml_args
         # self._send_info("Executing: {}".format(" ".join(cmd)))
         if self.verbosity >= 2:
             stdout_pipe = None
