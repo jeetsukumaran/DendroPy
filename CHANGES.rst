@@ -1,6 +1,7 @@
 Release 4.5.2
 -------------
 
+-   Support for user-specified random seed in RaXML wrapper (thanks @NoahAmsel)
 -   *MUCH* faster label lookup (thanks Sam Nicholls / @SamStudio8 !)
 -   Faster birth-death tree generation (thanks @NicolaDM !)
 -   Storage of supplemental NEXUS blocks
