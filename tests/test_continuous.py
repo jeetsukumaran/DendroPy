@@ -133,7 +133,7 @@ class BifurcatingTreePICTest(dendropytest.ExtendedTestCase):
         self.char_matrix = dendropy.ContinuousCharacterMatrix.get_from_string(data_str,
                 'nexus',
                 taxon_namespace=taxa)
-        self.pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+        self.pic = continuous.PhylogeneticIndependentContrasts(tree=self.tree,
                 char_matrix=self.char_matrix)
         self.expected_vals = []
         self.expected_vals.append({
@@ -194,24 +194,24 @@ class MultifurcatingTreePICTest(dendropytest.ExtendedTestCase):
                 taxon_namespace=taxa)
 
     def testErrorOnDefault(self):
-        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+        pic = continuous.PhylogeneticIndependentContrasts(tree=self.tree,
                 char_matrix=self.char_matrix)
         self.assertRaises(ValueError, pic.contrasts_tree, 1)
 
     def testError(self):
-        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+        pic = continuous.PhylogeneticIndependentContrasts(tree=self.tree,
                 char_matrix=self.char_matrix,
                 polytomy_strategy="error")
         self.assertRaises(ValueError, pic.contrasts_tree, 1)
 
     def testIgnore(self):
-        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+        pic = continuous.PhylogeneticIndependentContrasts(tree=self.tree,
                 char_matrix=self.char_matrix,
                 polytomy_strategy="Ignore")
         ctree = pic.contrasts_tree(1)
 
     def testResolve(self):
-        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+        pic = continuous.PhylogeneticIndependentContrasts(tree=self.tree,
                 char_matrix=self.char_matrix,
                 polytomy_strategy="Resolve")
         ctree = pic.contrasts_tree(1)

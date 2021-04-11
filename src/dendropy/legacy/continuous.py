@@ -32,7 +32,7 @@ def simulate_continuous(node, rng=None, **kwargs):
             epilog="Note that this function is also available through 'dendropy.simulate.charsim.evolve_continuous_char(...)'.")
     return continuous.evolve_continuous_char(node, rng, **kwargs)
 
-class PhylogeneticIndependentConstrasts(continuous.PhylogeneticIndependentConstrasts):
+class PhylogeneticIndependentContrasts(continuous.PhylogeneticIndependentContrasts):
 
     def __init__(self,
             tree,
@@ -40,10 +40,10 @@ class PhylogeneticIndependentConstrasts(continuous.PhylogeneticIndependentConstr
             polytomy_strategy=None):
         deprecate.dendropy_deprecation_warning(
                 preamble="The 'dendropy.continuous' module has moved to 'dendropy.model.continuous'.",
-                old_construct="from dendropy import continuous\ncontinuous.PhylogeneticIndependentConstrasts(...)",
-                new_construct="from dendropy.model import continuous\ncontinuous.PhylogeneticIndependentConstrasts(...)",
+                old_construct="from dendropy import continuous\ncontinuous.PhylogeneticIndependentContrasts(...)",
+                new_construct="from dendropy.model import continuous\ncontinuous.PhylogeneticIndependentContrasts(...)",
                 )
-        continuous.PhylogeneticIndependentConstrasts.__init__(self,
+        continuous.PhylogeneticIndependentContrasts.__init__(self,
                 tree=tree,
                 char_matrix=char_matrix,
                 polytomy_strategy=polytomy_strategy)

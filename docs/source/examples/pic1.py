@@ -10,7 +10,7 @@ chars = dendropy.ContinuousCharacterMatrix.get_from_path(
         "primates.cc.nex",
         "nexus",
         taxon_namespace=taxa)
-pic = continuous.PhylogeneticIndependentConstrasts(
+pic = continuous.PhylogeneticIndependentContrasts(
         tree=tree,
         char_matrix=chars)
 for cidx in range(chars.vector_size):

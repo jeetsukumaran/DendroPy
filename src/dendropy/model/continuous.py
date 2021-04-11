@@ -27,7 +27,7 @@ import operator
 import dendropy
 from dendropy.utility import GLOBAL_RNG
 
-class PhylogeneticIndependentConstrasts(object):
+class PhylogeneticIndependentContrasts(object):
     """
     Phylogenetic Independent Contrasts.
 
