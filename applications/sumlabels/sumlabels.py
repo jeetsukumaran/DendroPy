@@ -54,7 +54,7 @@ def main_cli():
 
     description =  "%s %s %s" % (_program_name, _program_version, _program_subtitle)
 
-    parser = argparse.ArgumentParser(version =_program_version, description=description)
+    parser = argparse.ArgumentParser(description=description)
 
     parser.add_argument(
             "sources",
