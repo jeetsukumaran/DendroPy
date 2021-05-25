@@ -71,6 +71,25 @@ def convert(args):
     if args.output_format == "nexus" or args.output_format == "newick":
         if args.unquoted_underscores:
             write_kwargs["unquoted_underscores"] = True
+    if args.recode_uncertain is not None:
+        operational_state_alphabet = dendropy.DNA_STATE_ALPHABET
+        if args.recode_uncertain == "gap":
+            convert_to = operational_state_alphabet.gap
+        elif args.recode_uncertain == "missing":
+            convert_to = operational_state_alphabet.missing
+        else:
+            raise ValueError(args.recode_uncertain)
+        convert_from = set()
+        for s in operational_state_alphabet._polymorphic_states:
+            convert_from.add(s)
+        for s in operational_state_alphabet._ambiguous_states:
+            convert_from.add(s)
+        for char_matrix in ds.char_matrices:
+            for taxon in char_matrix:
+                seq = char_matrix[taxon]
+                for idx, c in enumerate(seq):
+                    if c in convert_from:
+                        seq[idx] = convert_to
     dest = sys.stdout
     with dest:
         ds.write(
@@ -162,7 +181,16 @@ def main():
             "-u", "--unquoted-underscores",
             action="store_true",
             default=None,
-            help="[NEXUS/Newick: do not quote labels with undescores].",
+            help="[NEXUS/Newick:] Do not quote labels with undescores.",
+            )
+    destination_options.add_argument(
+            "--recode-uncertain",
+            choices=[
+                "missing",
+                "gap",
+                ],
+            default=None,
+            help="Recode ambiguous or uncertain characters as missing ('?') or gaps ('-')",
             )
     args = parser.parse_args()
     convert(args)
