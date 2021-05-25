@@ -12,7 +12,7 @@ from dendropy.utility import error
 from dendropy.utility import messaging
 
 usage = """\
-cat SRC-FILE | dendropy-format --from [FORMAT] --to [FORMAT] [OPTIONS] > DEST-FILE
+dendropy-format --from [FORMAT] --to [FORMAT] [OPTIONS] <SOURCE-FILE> > DEST-FILE
 """
 
 def convert(args):
@@ -68,6 +68,9 @@ def convert(args):
     if args.output_format == "phylip-strict":
         args.output_format = "phylip"
         write_kwargs["strict"] = True
+    if args.output_format == "nexus" or args.output_format == "newick":
+        if args.unquoted_underscores:
+            write_kwargs["unquoted_underscores"] = True
     dest = sys.stdout
     with dest:
         ds.write(
@@ -155,6 +158,12 @@ def main():
                     "phylip-strict",
                     ],
             help="Format of data source.")
+    destination_options.add_argument(
+            "-u", "--unquoted-underscores",
+            action="store_true",
+            default=None,
+            help="[NEXUS/Newick: do not quote labels with undescores].",
+            )
     args = parser.parse_args()
     convert(args)
 
