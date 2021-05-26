@@ -2640,7 +2640,10 @@ class Tree(
 
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = taxonmodel.TaxonNamespace()
+            if "case_sensitive_taxon_labels" in kwargs:
+                taxon_namespace = taxonmodel.TaxonNamespace(is_case_sensitive=kwargs["case_sensitive_taxon_labels"])
+            else:
+                taxon_namespace = taxonmodel.TaxonNamespace()
 
         def tns_factory(label):
             if label is not None and taxon_namespace.label is None:
