@@ -511,7 +511,7 @@ class CharacterMatrix(
             **kwargs):
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = taxonmodel.TaxonNamespace()
+            taxon_namespace = taxonmodel.TaxonNamespace(is_case_sensitive=kwargs.get("case_sensitive_taxon_labels", False))
         def tns_factory(label):
             if label is not None and taxon_namespace.label is None:
                 taxon_namespace.label = label
@@ -657,7 +657,7 @@ class CharacterMatrix(
         """
         taxon_namespace = taxonmodel.process_kwargs_dict_for_taxon_namespace(kwargs, None)
         if taxon_namespace is None:
-            taxon_namespace = taxonmodel.TaxonNamespace()
+            taxon_namespace = taxonmodel.TaxonNamespace(is_case_sensitive=kwargs.get("case_sensitive_taxon_labels", False))
         kwargs["taxon_namespace"] = taxon_namespace
         char_matrices = []
         for stream in streams:
