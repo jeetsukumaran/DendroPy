@@ -71,7 +71,7 @@ class GenBankResourceStore(object):
         return gb_recs
     parse_xml = staticmethod(parse_xml)
 
-    def fetch_xml(db, ids, prefix=None, email=None, as_stream=False):
+    def fetch_xml(db, ids, prefix=None, email=None, as_stream=False, str_decoding="utf-8"):
         stream = entrez.efetch(db=db,
                 ids=ids,
                 rettype='gbc',
@@ -80,7 +80,7 @@ class GenBankResourceStore(object):
         if as_stream:
             return stream
         else:
-            return stream.read()
+            return stream.read().decode(str_decoding)
     fetch_xml = staticmethod(fetch_xml)
 
     def prepare_ids(ids, prefix=None):
