@@ -277,8 +277,8 @@ class Deserializable(object):
                     stream=ssrc,
                     schema=schema,
                     **kwargs)
-        except error.DataParseError:
-            sys.stderr.write(text)
+        except error.DataParseError as exc:
+            exc.url_text = text
             raise
     get_from_url = classmethod(get_from_url)
 
