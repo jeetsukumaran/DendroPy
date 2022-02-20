@@ -5562,6 +5562,33 @@ class Tree(
         from dendropy.calculate.phylogeneticdistance import NodeDistanceMatrix
         return NodeDistanceMatrix.from_tree(tree=self)
 
+    def resolve_node_ages(self, **kwargs):
+        """
+        Adds an attribute called "age" to  each node, with the value equal to
+        the time elapsed since the present.
+
+        This is calculated by:
+        (1) setting the age of the root node to the sum of path lengths to the most distant tip
+        (2) setting the age of each other node as the sum of path lengths from the root.
+
+        Unlike the (legacy) `calc_node_ages()` there is no ultrametricity requirement or check.
+        """
+        max_root_distance = (0.0, None)
+        for node in self.preorder_node_iter():
+            if node._parent_node is None:
+                node.root_distance = 0.0
+            else:
+                node.root_distance = node.edge.length + node._parent_node.root_distance
+            if node.root_distance > max_root_distance[0]:
+                max_root_distance = (node.root_distance, node)
+        ages = []
+        for node in self:
+            node.age = max_root_distance[0] - node.root_distance
+            # if node is self.seed_node:
+            #     assert abs(node.age - max_root_distance[0]) <= 1e-8
+            ages.append(node.age)
+        return ages
+
     def calc_node_ages(self,
             ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
             is_force_max_age=False,
@@ -5571,6 +5598,9 @@ class Tree(
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the sum of edge lengths from the node to the tips.
+
+        NOTE: Consider using the newer and more flexible `resolve_node_ages()`
+        instead of this.
 
         Parameters
         ----------
