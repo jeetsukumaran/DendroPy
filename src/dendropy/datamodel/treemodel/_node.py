@@ -1563,7 +1563,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         n = self
         while n is not None:
             n._write_indented_form_line(out, level, **kwargs)
-            n, lev = self._preorder_list_manip(siblings, ancestors)
+            n, lev = n._preorder_list_manip(siblings, ancestors)
             level += lev
 
     def _get_indented_form_line(self, level, **kwargs):
