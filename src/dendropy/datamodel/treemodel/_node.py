@@ -21,7 +21,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         Parameters
         ----------
 
-        \*\*kwargs : keyword arguments
+        kwargs : keyword arguments
             Passed directly to constructor of |Edge|.
 
         Returns
@@ -96,6 +96,9 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         return "<{} object at {}: '{}' ({})>".format(
             self.__class__.__name__, hex(id(self)), self._label, repr(self.taxon)
         )
+
+    def __iter__(self, *args, **kwargs):
+        return self.preorder_iter(*args, **kwargs)
 
     def preorder_iter(self, filter_fn=None):
         """
@@ -713,7 +716,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
         Parameters
         ----------
-        \*\*kwargs : keyword arguments
+        kwargs : keyword arguments
             Keyword arguments will be passed directly to the |Node|
             constructor (:meth:`Node.__init()__`).
 
@@ -736,7 +739,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         ----------
         index : integer
             The index before which to insert the new node.
-        \*\*kwargs : keyword arguments, optional
+        kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the |Node|
             constructor (:meth:`Node.__init()__`).
 
