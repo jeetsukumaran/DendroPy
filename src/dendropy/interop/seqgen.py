@@ -195,6 +195,29 @@ class SeqGen(object):
             taxon_namespace=None,
             input_sequences=None,
             **kwargs):
+        stdout = self.generate_raw(
+            trees=trees,
+            dataset=dataset,
+            taxon_namespace=taxon_namespace,
+            input_sequences=input_sequences,
+            **kwargs,
+        )
+        if taxon_namespace is None:
+            taxon_namespace = trees.taxon_namespace
+        if dataset is None:
+            dataset = dendropy.DataSet(**kwargs)
+            if taxon_namespace is not None:
+                dataset.attach_taxon_namespace(taxon_namespace)
+        dataset.read(data=stdout, schema="nexus")
+        return dataset
+
+    def generate_raw(
+            self,
+            trees,
+            dataset=None,
+            taxon_namespace=None,
+            input_sequences=None,
+            **kwargs):
         args=self._compose_arguments()
         # with open("x.txt", "w") as inputf:
         with self.get_tempfile() as inputf:
@@ -212,14 +235,9 @@ class SeqGen(object):
             stdout, stderr = processio.communicate(run)
             if stderr or run.returncode != 0:
                 raise RuntimeError("Seq-gen error: %s" % stderr)
-            if taxon_namespace is None:
-                taxon_namespace = trees.taxon_namespace
-            if dataset is None:
-                dataset = dendropy.DataSet(**kwargs)
-                if taxon_namespace is not None:
-                    dataset.attach_taxon_namespace(taxon_namespace)
-            dataset.read(data=stdout, schema="nexus")
-            return dataset
+            return stdout
+
+
 
 
 
