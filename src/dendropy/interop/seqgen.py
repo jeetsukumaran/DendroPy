@@ -83,7 +83,11 @@ class SeqGen(object):
         return None
     get_model = staticmethod(get_model)
 
-    def __init__(self, strongly_unique_tempfiles=False):
+    def __init__(
+        self,
+        strongly_unique_tempfiles=False,
+        rng=None
+    ):
         """
         Sets up all properties, which (generally) map directly to command
         parameters of Seq-Gen.
@@ -98,7 +102,7 @@ class SeqGen(object):
         # python object specific attributes
         self.seqgen_path = 'seq-gen'
         self.rng_seed = None
-        self._rng = None
+        self._rng = rng
 
         # following are passed to seq-gen in one form or another
         self.char_model = 'HKY'
@@ -131,7 +135,10 @@ class SeqGen(object):
     def _set_kappa(self, kappa):
         self.ti_tv = kappa * 2
 
-    def _compose_arguments(self):
+    def _compose_arguments(
+        self,
+        output_format="nexus",
+    ):
         """
         Composes and returns a list of strings that make up the arguments to a Seq-Gen
         call, based on the attribute values of the object.
@@ -177,13 +184,18 @@ class SeqGen(object):
         if self.write_site_rates:
             args.append("-wr")
 
+        if output_format == "nexus":
+            args.append("-on")
+        elif output_format == "fasta":
+            args.append("-of")
+        elif output_format == "phylip":
+            args.append("-or")
+
         # following are controlled directly by the wrapper
         # silent running
         args.append("-q")
         # we explicitly pass a random number seed on each call
         args.append("-z%s" % self.rng.randint(0, sys.maxsize))
-        # force nexus
-        args.append("-on")
         # force one dataset at a time
         args.append("-n1")
         return args
@@ -194,13 +206,14 @@ class SeqGen(object):
             dataset=None,
             taxon_namespace=None,
             input_sequences=None,
-            **kwargs):
+            **kwargs
+    ):
         stdout = self.generate_raw(
             trees=trees,
             dataset=dataset,
             taxon_namespace=taxon_namespace,
             input_sequences=input_sequences,
-            **kwargs,
+            output_format="nexus",
         )
         if taxon_namespace is None:
             taxon_namespace = trees.taxon_namespace
@@ -217,8 +230,9 @@ class SeqGen(object):
             dataset=None,
             taxon_namespace=None,
             input_sequences=None,
-            **kwargs):
-        args=self._compose_arguments()
+            **kwargs,
+    ):
+        args=self._compose_arguments(**kwargs)
         # with open("x.txt", "w") as inputf:
         with self.get_tempfile() as inputf:
             if input_sequences is not None:
