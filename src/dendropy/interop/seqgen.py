@@ -206,6 +206,7 @@ class SeqGen(object):
             dataset=None,
             taxon_namespace=None,
             input_sequences=None,
+            tree_serialization_kwargs=None,
             **kwargs
     ):
         stdout = self.generate_raw(
@@ -213,6 +214,7 @@ class SeqGen(object):
             dataset=dataset,
             taxon_namespace=taxon_namespace,
             input_sequences=input_sequences,
+            tree_serialization_kwargs=tree_serialization_kwargs,
             output_format="nexus",
         )
         if taxon_namespace is None:
@@ -230,6 +232,7 @@ class SeqGen(object):
             dataset=None,
             taxon_namespace=None,
             input_sequences=None,
+            tree_serialization_kwargs=None,
             **kwargs,
     ):
         args=self._compose_arguments(**kwargs)
@@ -238,10 +241,15 @@ class SeqGen(object):
             if input_sequences is not None:
                 input_sequences.write_to_stream(inputf, schema="phylip",)
                 inputf.write("{}\n".format(len(trees)))
-            trees.write_to_stream(inputf,
+            if tree_serialization_kwargs is None:
+                tree_serialization_kwargs = {}
+            trees.write_to_stream(
+                    inputf,
                     "newick",
                     suppress_rooting=True,
-                    suppress_internal_node_labels=True)
+                    suppress_internal_node_labels=True,
+                    **tree_serialization_kwargs,
+            )
             inputf.flush()
             args.append(inputf.name)
             # print("seq-gen args: = %s" % " ".join(args))
