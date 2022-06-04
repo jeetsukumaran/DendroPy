@@ -86,7 +86,8 @@ class SeqGen(object):
     def __init__(
         self,
         strongly_unique_tempfiles=False,
-        rng=None
+        rng=None,
+        seq_len=None,
     ):
         """
         Sets up all properties, which (generally) map directly to command
@@ -106,7 +107,7 @@ class SeqGen(object):
 
         # following are passed to seq-gen in one form or another
         self.char_model = 'HKY'
-        self.seq_len = None
+        self.seq_len = seq_len
         self.num_partitions = None
         self.scale_branch_lens = None
         self.scale_tree_len = None
@@ -118,9 +119,9 @@ class SeqGen(object):
         self.ti_tv = 0.5 # = kappa of 1.0, i.e. JC
         self.general_rates = None
         self.ancestral_seq_idx = None
-        self.output_text_append = None
         self.write_ancestral_seqs = False
         self.write_site_rates = False
+        self.record_separator = "//"
 
     def _get_rng(self):
         if self._rng is None:
@@ -138,6 +139,7 @@ class SeqGen(object):
     def _compose_arguments(
         self,
         output_format="nexus",
+        append_file=None,
     ):
         """
         Composes and returns a list of strings that make up the arguments to a Seq-Gen
@@ -177,8 +179,6 @@ class SeqGen(object):
                 args.append("-r%s" % (",".join([str(r) for r in self.general_rates])))
         if self.ancestral_seq_idx:
             args.append("-k%s" % self.ancestral_seq_idx)
-        if self.output_text_append:
-            args.append("-x'%s'" % self.output_text_append)
         if self.write_ancestral_seqs:
             args.append("-wa")
         if self.write_site_rates:
@@ -189,7 +189,14 @@ class SeqGen(object):
         elif output_format == "fasta":
             args.append("-of")
         elif output_format == "phylip":
+            args.append("-op")
+        elif output_format == "relaxed-phylip":
             args.append("-or")
+        elif output_format:
+            raise ValueError(output_format)
+
+        if append_file:
+            args.append("-x%s" % append_file)
 
         # following are controlled directly by the wrapper
         # silent running
@@ -211,7 +218,6 @@ class SeqGen(object):
     ):
         stdout = self.generate_raw(
             trees=trees,
-            dataset=dataset,
             taxon_namespace=taxon_namespace,
             input_sequences=input_sequences,
             tree_serialization_kwargs=tree_serialization_kwargs,
@@ -226,10 +232,51 @@ class SeqGen(object):
         dataset.read(data=stdout, schema="nexus")
         return dataset
 
+    def generate_dict(
+            self,
+            **kwargs,
+    ):
+        if "output_format" in kwargs:
+            raise TypeError("Cannot specify 'output_format' when requesting 'dict' result")
+        kwargs["output_format"] = "fasta"
+        if "append_file" in kwargs:
+            raise TypeError("Cannot specify 'append_file' when requesting 'dict' result")
+        # with self.get_tempfile() as textf:
+        with self.get_tempfile() as textf:
+            textf.write(self.record_separator)
+            textf.write("\n")
+            textf.flush()
+            kwargs["append_file"] = textf.name
+            raw_result = self.generate_raw(**kwargs)
+        data_ds = []
+        data_d = {}
+        label_data = None
+        sequence_data = []
+        for idx, line in enumerate(raw_result.split("\n")):
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith(">") or line == self.record_separator:
+                if label_data is not None:
+                    assert label_data not in data_d
+                    data_d[label_data] = "".join(sequence_data)
+                    sequence_data = []
+                else:
+                    assert not sequence_data
+                if line == self.record_separator:
+                    if data_d:
+                        data_ds.append(data_d)
+                        data_d = {}
+                        label_data = None
+                else:
+                    label_data = line[1:]
+            else:
+                sequence_data.append(line)
+        return data_ds
+
     def generate_raw(
             self,
             trees,
-            dataset=None,
             taxon_namespace=None,
             input_sequences=None,
             tree_serialization_kwargs=None,
