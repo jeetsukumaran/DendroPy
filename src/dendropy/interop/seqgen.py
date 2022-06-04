@@ -232,7 +232,7 @@ class SeqGen(object):
         dataset.read(data=stdout, schema="nexus")
         return dataset
 
-    def generate_dict(
+    def generate_dicts(
             self,
             **kwargs,
     ):
