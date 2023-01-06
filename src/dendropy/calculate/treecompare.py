@@ -67,14 +67,14 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 
     ::
 
-        import dendropy
+        from dendropy import TaxonNamespace, Tree
         from dendropy.calculate import treecompare
-        tns = dendropy.TaxonNamespace()
-        tree1 = tree.get_from_path(
+        tns = TaxonNamespace()
+        tree1 = Tree.get_from_path(
                 "t1.nex",
                 "nexus",
                 taxon_namespace=tns)
-        tree2 = tree.get_from_path(
+        tree2 = Tree.get_from_path(
                 "t2.nex",
                 "nexus",
                 taxon_namespace=tns)
