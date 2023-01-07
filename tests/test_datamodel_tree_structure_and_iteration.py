@@ -164,6 +164,37 @@ class TestTreeNodeFinders(curated_test_tree.CuratedTestTree, unittest.TestCase):
                 result_mrca_node = tree.mrca(taxon_labels=taxon_labels)
                 self.assertEqual(true_mrca_label, result_mrca_node.label)
 
+        #  helper function to add internal unifurcations to tree
+        def splice_unifurcation_above(tree, target_node):
+            new_node = dendropy.Node()
+            if target_node.parent_node is not None:
+                target_node.parent_node.add_child(new_node)
+                target_node.parent_node.remove_child(target_node)
+            new_node.add_child(target_node)
+
+            if tree.seed_node.parent_node is not None:
+                # set tree._seed_node manually
+                # because reseed_at, reroot_at_node fail in this case
+                tree.seed_node = tree.seed_node.parent_node
+
+            tree.update_bipartitions(
+                suppress_unifurcations=False,
+                collapse_unrooted_basal_bifurcation=False,
+            )
+
+        # cumulatively add internal unifurcations above existing MRCA nodes
+        # ensure that mrca is detected at bottom (and not top) of unifurcations
+        for true_mrca_label, leaf_labels in mrca_leaves_labels:
+            for taxon_labels in itertools.permutations(leaf_labels, 2):
+                # manually encoding bipartitions with
+                # collapse_unrooted_basal_bifurcation False required to prevent
+                # dissappearance of node c
+                # tree_copy = tree.taxon_namespace_scoped_copy()
+                for __ in range(3):
+                    result_mrca_node = tree.mrca(taxon_labels=taxon_labels)
+                    self.assertEqual(true_mrca_label, result_mrca_node.label)
+                    splice_unifurcation_above(tree, result_mrca_node)
+
 class TestTreeIterators(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
     ### Default Iterator ###
