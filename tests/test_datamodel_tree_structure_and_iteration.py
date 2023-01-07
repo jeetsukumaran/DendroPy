@@ -23,6 +23,7 @@ Tests basic Tree structure and iteration.
 
 import unittest
 import dendropy
+import itertools
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
@@ -133,6 +134,35 @@ class TestTreeNodeFinders(curated_test_tree.CuratedTestTree, unittest.TestCase):
         tree, anodes, lnodes, inodes = self.get_tree()
         node = tree.find_node_with_label("zzz")
         self.assertIs(node, None)
+
+    def test_mrca(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+
+        # setup taxa
+        for nd in tree.leaf_node_iter():
+            nd.taxon = tree.taxon_namespace.new_taxon(nd.label)
+
+        # setting is_rooted necessary to precent dissappearance of node c
+        # when encoding bipartitions with collapse_unrooted_basal_bifurcation
+        # False
+        tree.is_rooted = True
+
+        # for each internal node as mrca, pick arbitrary leaf nodes
+        mrca_leaves_labels = [
+            ("a", ("l", "j")),
+            ("b", ("i", "k")),
+            ("c", ("m", "n")),
+            ("e", ("k", "j")),
+            ("f", ("p", "n")),
+            ("g", ("l", "m")),
+            ("h", ("p", "o")),
+        ]
+
+        # no internal unifurcations
+        for true_mrca_label, leaf_labels in mrca_leaves_labels:
+            for taxon_labels in itertools.permutations(leaf_labels, 2):
+                result_mrca_node = tree.mrca(taxon_labels=taxon_labels)
+                self.assertEqual(true_mrca_label, result_mrca_node.label)
 
 class TestTreeIterators(curated_test_tree.CuratedTestTree, unittest.TestCase):
 
