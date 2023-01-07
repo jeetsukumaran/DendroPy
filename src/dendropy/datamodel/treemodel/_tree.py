@@ -1569,6 +1569,10 @@ class Tree(
                     if cms == leafset_bitmask:
                         # curr_node has all of the 1's that bipartition has
                         if cm == leafset_bitmask:
+                            # step down internal unifurcations until first
+                            # multifurcation
+                            while curr_node.num_child_nodes() == 1:
+                                curr_node, = curr_node.child_nodes()
                             return curr_node
                         last_match = curr_node
                         nd_source = iter(curr_node.child_nodes())
