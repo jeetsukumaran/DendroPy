@@ -1688,7 +1688,7 @@ class Tree(
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Pre-order iterator over internal nodes tree.
+        Post-order iterator over internal nodes tree.
 
         Visits internal nodes in ``self``, with each node visited after its
         children. In DendroPy, "internal nodes" are nodes that have at least
@@ -2069,7 +2069,7 @@ class Tree(
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
-        Pre-order iterator over internal edges tree.
+        Post-order iterator over internal edges tree.
 
         Visits internal edges in ``self``, with each edge visited after its
         children. In DendroPy, "internal edges" are edges that have at least
