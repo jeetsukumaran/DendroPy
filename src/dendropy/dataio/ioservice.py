@@ -24,8 +24,14 @@ from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.utility import deprecate
 from dendropy.utility import textprocessing
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+if sys.version_info.major >= 3 and sys.version_info.minor >= 4:
+    import pathlib
+    def _is_pathlib_path(x):
+        return isinstance(x, pathlib.PurePath)
+else:
     from dendropy.utility.filesys import pre_py34_open as open
+    def _is_pathlib_path(x):
+        return False
 
 ###############################################################################
 ## IOService
@@ -559,6 +565,9 @@ class DataYielder(IOService):
     def iterate_over_file(self, current_file):
         if textprocessing.is_str_type(current_file):
             self._current_file = open(current_file, "r")
+            self._current_file_name = current_file
+        elif _is_pathlib_path(current_file):
+            self._current_file = current_file.open()
             self._current_file_name = current_file
         else:
             self._current_file = current_file
