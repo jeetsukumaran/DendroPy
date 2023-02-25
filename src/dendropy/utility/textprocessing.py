@@ -39,9 +39,12 @@ except ImportError:
 ## Unicode/String Conversions
 
 try:
-    ENCODING = locale.getdefaultlocale()[1]
-except ValueError:
-    ENCODING = None # let default value be assigned below
+    ENCODING = locale.getencoding()
+except:
+    try:
+        ENCODING = locale.getdefaultlocale()[1]
+    except ValueError:
+        ENCODING = None # let default value be assigned below
 
 if ENCODING == None:
     ENCODING = 'UTF-8'
