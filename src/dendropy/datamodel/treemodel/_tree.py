@@ -3195,7 +3195,7 @@ class Tree(
 
         return NodeDistanceMatrix.from_tree(tree=self)
 
-    def resolve_node_ages(self, **kwargs):
+    def resolve_node_ages(self, node_callback_fn=None):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the time elapsed since the present.
@@ -3205,6 +3205,7 @@ class Tree(
         (2) setting the age of each other node as the sum of path lengths from the root.
 
         Unlike the (legacy) `calc_node_ages()` there is no ultrametricity requirement or check.
+
         """
         max_root_distance = (0.0, None)
         for node in self.preorder_node_iter():
@@ -3215,13 +3216,12 @@ class Tree(
                 node.root_distance = node.edge.length + node._parent_node.root_distance
             if node.root_distance > max_root_distance[0]:
                 max_root_distance = (node.root_distance, node)
-        ages = []
         for node in self:
             node.age = max_root_distance[0] - node.root_distance
             if node is self.seed_node:
                 assert abs(node.age - max_root_distance[0]) <= 1e-8
-            ages.append(node.age)
-        return ages
+            if node_callback_fn:
+                node_callback_fn(node)
 
     def calc_node_ages(
         self,
