@@ -32,10 +32,8 @@ from dendropy.calculate import combinatorics
 ###############################################################################
 ## Calculations and statistics
 
-def discrete_time_to_coalescence(n_genes,
-                                 pop_size=None,
-                                 n_to_coalesce=2,
-                                 rng=None):
+
+def discrete_time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
     to go from ``n_genes`` genes to ``n_genes``-1 genes in a discrete-time
@@ -75,10 +73,8 @@ def discrete_time_to_coalescence(n_genes,
     tmrca = probability.geometric_rv(p)
     return tmrca * time_units
 
-def time_to_coalescence(n_genes,
-        pop_size=None,
-        n_to_coalesce=2,
-        rng=None):
+
+def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version): Time
     to go from ``n_genes`` genes to ``n_genes``-1 genes in a continuous-time
@@ -135,6 +131,7 @@ def time_to_coalescence(n_genes,
     tmrca = rng.expovariate(rate)
     return tmrca * time_units
 
+
 def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     """
     Expected (mean) value for the Time to the Most Recent Common Ancestor of
@@ -164,17 +161,16 @@ def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
 
     """
     nc2 = combinatorics.choose(n_genes, n_to_coalesce)
-    tmrca = (float(1)/nc2)
+    tmrca = float(1) / nc2
     if pop_size is not None:
         return tmrca * pop_size
     else:
         return tmrca
 
-def coalesce_nodes(nodes,
-             pop_size=None,
-             period=None,
-             rng=None,
-             use_expected_tmrca=False):
+
+def coalesce_nodes(
+    nodes, pop_size=None, period=None, rng=None, use_expected_tmrca=False
+):
     """
     Returns a list of nodes that have not yet coalesced once ``period`` is
     exhausted.
@@ -317,7 +313,10 @@ def coalesce_nodes(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
+
+def node_waiting_time_pairs(
+    tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION
+):
     """
     Returns a list of tuples of (nodes, coalescent interval time) on the tree.
     That is, each element in the list is tuple pair consisting of where: the
@@ -352,10 +351,13 @@ def node_waiting_time_pairs(tree, ultrametricity_precision=constants.DEFAULT_ULT
     for i, d in enumerate(ages[1:]):
         nd = d[0]
         prev_nd = ages[i][0]
-        intervals.append( (nd, nd.age - prev_nd.age) )
+        intervals.append((nd, nd.age - prev_nd.age))
     return intervals
 
-def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
+
+def extract_coalescent_frames(
+    tree, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION
+):
     """
     Returns a list of tuples describing the coalescent frames on the tree. That
     is, each element in the list is tuple pair consisting of where: the first
@@ -382,8 +384,10 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
         Returns dictionary, with key = number of alleles, and values = waiting
         time for coalescent for the given tree
     """
-    nwti = node_waiting_time_pairs(tree, ultrametricity_precision=ultrametricity_precision)
-#     num_genes = len(tree.taxon_namespace)
+    nwti = node_waiting_time_pairs(
+        tree, ultrametricity_precision=ultrametricity_precision
+    )
+    #     num_genes = len(tree.taxon_namespace)
     num_genes = len(tree.leaf_nodes())
     num_genes_wt = {}
     for n in nwti:
@@ -391,6 +395,7 @@ def extract_coalescent_frames(tree, ultrametricity_precision=constants.DEFAULT_U
         num_genes = num_genes - len(n[0].child_nodes()) + 1
     # num_alleles_list = sorted(num_genes_wt.keys(), reverse=True)
     return num_genes_wt
+
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
@@ -410,26 +415,36 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     lp = 0.0
     for k, t in coalescent_frames.items():
-        k2N = (float(k * (k-1)) / 2) / haploid_pop_size
-#         k2N = float(combinatorics.choose(k, 2)) / haploid_pop_size
-        lp =  lp + math.log(k2N) - (k2N * t)
+        k2N = (float(k * (k - 1)) / 2) / haploid_pop_size
+        #         k2N = float(combinatorics.choose(k, 2)) / haploid_pop_size
+        lp = lp + math.log(k2N) - (k2N * t)
     return lp
 
-def log_probability_of_coalescent_tree(tree, haploid_pop_size, ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION):
+
+def log_probability_of_coalescent_tree(
+    tree,
+    haploid_pop_size,
+    ultrametricity_precision=constants.DEFAULT_ULTRAMETRICITY_PRECISION,
+):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """
-    return log_probability_of_coalescent_frames(extract_coalescent_frames(tree),
-            haploid_pop_size)
+    return log_probability_of_coalescent_frames(
+        extract_coalescent_frames(tree), haploid_pop_size
+    )
+
 
 ###############################################################################
 ## Tree Simulations
 
-def contained_coalescent_tree(containing_tree,
-        gene_to_containing_taxon_map,
-        edge_pop_size_attr="pop_size",
-        default_pop_size=1,
-        rng=None):
+
+def contained_coalescent_tree(
+    containing_tree,
+    gene_to_containing_taxon_map,
+    edge_pop_size_attr="pop_size",
+    default_pop_size=1,
+    rng=None,
+):
     """
     Returns a gene tree simulated under the coalescent contained within a
     population or species tree.
@@ -499,8 +514,8 @@ def contained_coalescent_tree(containing_tree,
                 gene_node = dendropy.Node()
                 gene_node.taxon = gene_taxon
                 pop_node_genes[nd].append(gene_node)
-            #gene_nodes = [dendropy.Node() for i in range(len(gene_taxa))]
-            #for gidx, gene_node in enumerate(gene_nodes):
+            # gene_nodes = [dendropy.Node() for i in range(len(gene_taxa))]
+            # for gidx, gene_node in enumerate(gene_nodes):
             #    gene_node.taxon = gene_taxa[gidx]
             #    pop_node_genes[nd].append(gene_node)
 
@@ -512,24 +527,29 @@ def contained_coalescent_tree(containing_tree,
             pop_size = default_pop_size
         if edge.head_node.parent_node is None:
             if len(pop_node_genes[edge.head_node]) > 1:
-                final = coalesce_nodes(nodes=pop_node_genes[edge.head_node],
-                                            pop_size=pop_size,
-                                            period=None,
-                                            rng=rng)
+                final = coalesce_nodes(
+                    nodes=pop_node_genes[edge.head_node],
+                    pop_size=pop_size,
+                    period=None,
+                    rng=rng,
+                )
             else:
                 final = pop_node_genes[edge.head_node]
             gene_tree.seed_node = final[0]
         else:
-            uncoal = coalesce_nodes(nodes=pop_node_genes[edge.head_node],
-                                         pop_size=pop_size,
-                                         period=edge.length,
-                                         rng=rng)
+            uncoal = coalesce_nodes(
+                nodes=pop_node_genes[edge.head_node],
+                pop_size=pop_size,
+                period=edge.length,
+                rng=rng,
+            )
             if edge.tail_node not in pop_node_genes:
                 pop_node_genes[edge.tail_node] = []
             pop_node_genes[edge.tail_node].extend(uncoal)
 
     gene_tree.pop_node_genes = pop_node_genes
     return gene_tree
+
 
 def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     """
@@ -552,15 +572,14 @@ def pure_kingman_tree(taxon_namespace, pop_size=1, rng=None):
 
     """
     if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
+        rng = GLOBAL_RNG  # use the global rng by default
     nodes = [dendropy.Node(taxon=t) for t in taxon_namespace]
-    seed_node = coalesce_nodes(nodes=nodes,
-                                    pop_size=pop_size,
-                                    period=None,
-                                    rng=rng,
-                                    use_expected_tmrca=False)[0]
+    seed_node = coalesce_nodes(
+        nodes=nodes, pop_size=pop_size, period=None, rng=rng, use_expected_tmrca=False
+    )[0]
     tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
     return tree
+
 
 def pure_kingman_tree_shape(num_leaves, pop_size=1, rng=None):
     """
@@ -581,15 +600,14 @@ def pure_kingman_tree_shape(num_leaves, pop_size=1, rng=None):
 
     """
     if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
+        rng = GLOBAL_RNG  # use the global rng by default
     nodes = [dendropy.Node() for t in range(num_leaves)]
-    seed_node = coalesce_nodes(nodes=nodes,
-                                    pop_size=pop_size,
-                                    period=None,
-                                    rng=rng,
-                                    use_expected_tmrca=False)[0]
+    seed_node = coalesce_nodes(
+        nodes=nodes, pop_size=pop_size, period=None, rng=rng, use_expected_tmrca=False
+    )[0]
     tree = dendropy.Tree(seed_node=seed_node)
     return tree
+
 
 def mean_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     """
@@ -597,23 +615,25 @@ def mean_kingman_tree(taxon_namespace, pop_size=1, rng=None):
     Kingman's neutral coalescent.
     """
     if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
+        rng = GLOBAL_RNG  # use the global rng by default
     nodes = [dendropy.Node(taxon=t) for t in taxon_namespace]
-    seed_node = coalesce_nodes(nodes=nodes,
-                                    pop_size=pop_size,
-                                    period=None,
-                                    rng=rng,
-                                    use_expected_tmrca=True)[0]
+    seed_node = coalesce_nodes(
+        nodes=nodes, pop_size=pop_size, period=None, rng=rng, use_expected_tmrca=True
+    )[0]
     tree = dendropy.Tree(taxon_namespace=taxon_namespace, seed_node=seed_node)
     return tree
 
-def constrained_kingman_tree(pop_tree,
-                        gene_tree_list=None,
-                        rng=None,
-                        gene_node_label_fn=None,
-                        num_genes_attr='num_genes',
-                        pop_size_attr='pop_size',
-                        decorate_original_tree=False):
+
+def constrained_kingman_tree(
+    pop_tree,
+    gene_tree_list=None,
+    rng=None,
+    gene_node_label_fn=None,
+    gene_sampling_strategy="node_attribute",
+    num_genes_attr="num_genes",
+    pop_size_attr="pop_size",
+    decorate_original_tree=False,
+):
     """
     Given a population tree, ``pop_tree`` this will return a *pair of
     trees*: a gene tree simulated on this population tree based on
@@ -622,16 +642,22 @@ def constrained_kingman_tree(pop_tree,
     uncoalesced nodes from the gene tree associated with the given
     node from the population tree.
 
-    ``pop_tree`` should be a DendroPy Tree object or an object
-    of a class derived from this with the following attribute
-    ``num_genes`` -- the number of gene samples from each population in the
-    present.  Each edge on the tree should also have the attribute
+    ``pop_tree``: a Tree object.
 
-    ``pop_size_attr`` is the attribute name of the edges of ``pop_tree`` that
-    specify the population size. By default it is ``pop_size``. The should
-    specify the effective *haploid* population size; i.e., number of gene
-    in the population: 2 * N in a diploid population of N individuals,
-    or N in a haploid population of N individuals.
+    ``gene_sampling_strategy``: string
+        - "node_attribute": Will expect each leaf of ``pop_tree`` to
+          have an attribute, ``num_genes``, that specifies the number
+          of genes to be sampled from that population.
+        - "sample_with_replacement": Will assign genes to leaves with
+          uniform probability until ``num_genes`` genes have been
+          assigned.
+
+    ``pop_size_attr``: string
+        The attribute name of the edges of ``pop_tree`` that
+        specify the population size. By default it is ``pop_size``. The should
+        specify the effective *haploid* population size; i.e., number of gene
+        in the population: 2 * N in a diploid population of N individuals,
+        or N in a haploid population of N individuals.
 
     If ``pop_size`` is 1 or 0 or None, then the edge lengths of ``pop_tree`` is
     taken to be in haploid population units; i.e. where 1 unit equals 2N
@@ -658,7 +684,7 @@ def constrained_kingman_tree(pop_tree,
 
     # get our random number generator
     if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
+        rng = GLOBAL_RNG  # use the global rng by default
 
     if gene_tree_list is not None:
         gtaxa = gene_tree_list.taxon_namespace
@@ -675,7 +701,9 @@ def constrained_kingman_tree(pop_tree,
         gene_nodes = []
         for gene_count in range(getattr(leaf, num_genes_attr)):
             gene_node = dendropy.Node()
-            gene_node.taxon = gtaxa.require_taxon(label=gene_node_label_fn(leaf.taxon.label, gene_count+1))
+            gene_node.taxon = gtaxa.require_taxon(
+                label=gene_node_label_fn(leaf.taxon.label, gene_count + 1)
+            )
             gene_nodes.append(gene_node)
         leaf.gene_nodes = gene_nodes
 
@@ -702,10 +730,12 @@ def constrained_kingman_tree(pop_tree,
         # if mrca root, run unconstrained coalescent
         if edge.head_node.parent_node is None:
             if len(edge.head_node.gene_nodes) > 1:
-                final = coalesce_nodes(nodes=edge.head_node.gene_nodes,
-                                            pop_size=pop_size,
-                                            period=None,
-                                            rng=rng)
+                final = coalesce_nodes(
+                    nodes=edge.head_node.gene_nodes,
+                    pop_size=pop_size,
+                    period=None,
+                    rng=rng,
+                )
             else:
                 final = edge.head_node.gene_nodes
             gene_tree.seed_node = final[0]
@@ -717,11 +747,13 @@ def constrained_kingman_tree(pop_tree,
                 # this means all our time will be in population units
                 pop_size = 1
 
-            uncoal = coalesce_nodes(nodes=edge.head_node.gene_nodes,
-                                         pop_size=pop_size,
-                                         period=edge.length,
-                                         rng=rng)
-            if not hasattr(edge.tail_node, 'gene_nodes'):
+            uncoal = coalesce_nodes(
+                nodes=edge.head_node.gene_nodes,
+                pop_size=pop_size,
+                period=edge.length,
+                rng=rng,
+            )
+            if not hasattr(edge.tail_node, "gene_nodes"):
                 edge.tail_node.gene_nodes = []
             edge.tail_node.gene_nodes.extend(uncoal)
 
