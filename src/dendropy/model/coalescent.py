@@ -629,7 +629,8 @@ def constrained_kingman_tree(
     gene_tree_list=None,
     rng=None,
     gene_node_label_fn=None,
-    gene_sampling_strategy="node_attribute",
+    gene_sampling_strategy="random_uniform",
+    num_genes=None,
     num_genes_attr="num_genes",
     pop_size_attr="pop_size",
     decorate_original_tree=False,
@@ -648,7 +649,7 @@ def constrained_kingman_tree(
         - "node_attribute": Will expect each leaf of ``pop_tree`` to
           have an attribute, ``num_genes``, that specifies the number
           of genes to be sampled from that population.
-        - "sample_with_replacement": Will assign genes to leaves with
+        - "random_uniform": Will assign genes to leaves with
           uniform probability until ``num_genes`` genes have been
           assigned.
 
@@ -697,15 +698,32 @@ def constrained_kingman_tree(
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
     # of 'taxon'.
-    for leaf_count, leaf in enumerate(pop_tree.leaf_node_iter()):
-        gene_nodes = []
-        for gene_count in range(getattr(leaf, num_genes_attr)):
+    if gene_sampling_strategy == "node_attribute":
+        for leaf_count, leaf in enumerate(pop_tree.leaf_node_iter()):
+            gene_nodes = []
+            for gene_count in range(getattr(leaf, num_genes_attr)):
+                gene_node = dendropy.Node()
+                gene_node.taxon = gtaxa.require_taxon(
+                    label=gene_node_label_fn(leaf.taxon.label, gene_count + 1)
+                )
+                gene_nodes.append(gene_node)
+            leaf.gene_nodes = gene_nodes
+    elif gene_sampling_strategy == "random_uniform":
+        gene_count = 0
+        leaves = list(pop_tree.leaf_node_iter())
+        while gene_count < num_genes:
+            gene_count += 1
+            leaf = rng.choice(leaves)
             gene_node = dendropy.Node()
             gene_node.taxon = gtaxa.require_taxon(
-                label=gene_node_label_fn(leaf.taxon.label, gene_count + 1)
+                label=gene_node_label_fn(leaf.taxon.label, gene_count)
             )
-            gene_nodes.append(gene_node)
-        leaf.gene_nodes = gene_nodes
+            try:
+                leaf.gene_nodes.append(gene_node)
+            except:
+                leaf.gene_nodes = [ gene_node ]
+    else:
+        raise ValueError(f"Unrecognized strategy '{gene_sampling_strategy}'")
 
     # We iterate through the edges of the population tree in post-order,
     # i.e., visiting child edges before we visit parent edges. For
@@ -726,6 +744,8 @@ def constrained_kingman_tree(
     gene_tree = dendropy.Tree()
     gene_tree.taxon_namespace = gtaxa
     for edge in working_poptree.postorder_edge_iter():
+        if not hasattr(edge.head_node, "gene_nodes"):
+            continue
 
         # if mrca root, run unconstrained coalescent
         if edge.head_node.parent_node is None:
