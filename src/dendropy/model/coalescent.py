@@ -649,6 +649,7 @@ def constrained_kingman_tree(
         - "node_attribute": Will expect each leaf of ``pop_tree`` to
           have an attribute, ``num_genes``, that specifies the number
           of genes to be sampled from that population.
+        - "fixed_per_population": Will assign ``num_genes`` to each population.
         - "random_uniform": Will assign genes to leaves with
           uniform probability until ``num_genes`` genes have been
           assigned.
@@ -698,10 +699,14 @@ def constrained_kingman_tree(
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
     # of 'taxon'.
-    if gene_sampling_strategy == "node_attribute":
+    if gene_sampling_strategy in ("node_attribute", "fixed_per_population"):
         for leaf_count, leaf in enumerate(pop_tree.leaf_node_iter()):
             gene_nodes = []
-            for gene_count in range(getattr(leaf, num_genes_attr)):
+            if gene_sampling_strategy == "node_attribute":
+                node_ngenes = getattr(leaf, num_genes_attr)
+            else:
+                node_ngenes = num_genes
+            for gene_count in range(node_ngenes):
                 gene_node = dendropy.Node()
                 gene_node.taxon = gtaxa.require_taxon(
                     label=gene_node_label_fn(leaf.taxon.label, gene_count + 1)
