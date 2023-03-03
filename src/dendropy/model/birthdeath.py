@@ -221,7 +221,6 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
     target_num_total_tips = kwargs.pop("num_total_tips", None)
     max_time = kwargs.pop('max_time', None)
     gsa_ntax = kwargs.pop('gsa_ntax', None)
-    print(gsa_ntax)
     is_add_extinct_attr = kwargs.pop('is_add_extinct_attr', True)
     extinct_attr_name = kwargs.pop('extinct_attr_name', 'is_extinct')
     is_retain_extinct_tips = kwargs.pop('is_retain_extinct_tips', False)
