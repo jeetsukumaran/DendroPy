@@ -3195,7 +3195,38 @@ class Tree(
 
         return NodeDistanceMatrix.from_tree(tree=self)
 
-    def resolve_node_ages(self, node_callback_fn=None):
+    def resolve_node_depths(
+        self,
+        node_callback_fn=None,
+        node_edge_length_fn=None,
+        attr_name="depth",
+    ):
+        """
+        Adds an attribute given by ``attr_name`` to  each node, with the value equal to
+        the sum of edge lengths from the root.
+        """
+        cache = {}
+        if node_edge_length_fn is None:
+            node_edge_length_fn = lambda nd: nd.edge.length
+        for node in self.preorder_node_iter():
+            if node._parent_node is None:
+                assert node is self.seed_node
+                v = 0.0
+            else:
+                v = node_edge_length_fn(node) + cache[node._parent_node]
+            cache[node] = v
+            if attr_name:
+                setattr(node, attr_name, v)
+            if node_callback_fn:
+                node_callback_fn(node)
+        return cache
+
+    def resolve_node_ages(
+        self,
+        node_callback_fn=None,
+        node_edge_length_fn=None,
+        attr_name="age",
+    ):
         """
         Adds an attribute called "age" to  each node, with the value equal to
         the time elapsed since the present.
@@ -3207,19 +3238,20 @@ class Tree(
         Unlike the (legacy) `calc_node_ages()` there is no ultrametricity requirement or check.
 
         """
-        max_root_distance = (0.0, None)
+        depth_cache = self.resolve_node_depths(
+            node_edge_length_fn=node_edge_length_fn,
+            attr_name=None,
+        )
+        max_depth = max(depth_cache.values())
+        cache = {}
         for node in self.preorder_node_iter():
-            if node._parent_node is None:
-                assert node is self.seed_node
-                node.root_distance = 0.0
-            else:
-                node.root_distance = node.edge.length + node._parent_node.root_distance
-            if node.root_distance > max_root_distance[0]:
-                max_root_distance = (node.root_distance, node)
-        for node in self:
-            node.age = max_root_distance[0] - node.root_distance
-            if node is self.seed_node:
-                assert abs(node.age - max_root_distance[0]) <= 1e-8
+            v = max_depth - depth_cache[node]
+            print(v)
+            cache[node] = v
+            if attr_name:
+                setattr(node, attr_name, v)
+            # if node is self.seed_node:
+            #     assert abs(getattr(node, attr_name) - max_root_distance[0]) <= 1e-8
             if node_callback_fn:
                 node_callback_fn(node)
 
