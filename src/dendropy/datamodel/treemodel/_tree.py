@@ -3246,7 +3246,6 @@ class Tree(
         cache = {}
         for node in self.preorder_node_iter():
             v = max_depth - depth_cache[node]
-            print(v)
             cache[node] = v
             if attr_name:
                 setattr(node, attr_name, v)
@@ -3254,6 +3253,7 @@ class Tree(
             #     assert abs(getattr(node, attr_name) - max_root_distance[0]) <= 1e-8
             if node_callback_fn:
                 node_callback_fn(node)
+        return cache
 
     def calc_node_ages(
         self,
