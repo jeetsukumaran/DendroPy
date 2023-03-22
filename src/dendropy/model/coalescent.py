@@ -752,6 +752,11 @@ def constrained_kingman_tree(
         if not hasattr(edge.head_node, "gene_nodes"):
             continue
         # if mrca root, run unconstrained coalescent
+        if hasattr(edge, pop_size_attr):
+            pop_size = getattr(edge, pop_size_attr)
+        else:
+            # this means all our time will be in population units
+            pop_size = 1.0
         if edge.head_node.parent_node is None:
             if len(edge.head_node.gene_nodes) > 1:
                 final = coalesce_nodes(
@@ -764,13 +769,6 @@ def constrained_kingman_tree(
                 final = edge.head_node.gene_nodes
             gene_tree.seed_node = final[0]
         else:
-
-            if hasattr(edge, pop_size_attr):
-                pop_size = getattr(edge, pop_size_attr)
-            else:
-                # this means all our time will be in population units
-                pop_size = 1.0
-
             uncoal = coalesce_nodes(
                 nodes=edge.head_node.gene_nodes,
                 pop_size=pop_size,
