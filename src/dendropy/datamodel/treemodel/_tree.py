@@ -3075,19 +3075,25 @@ class Tree(
         else:
             nd_iterator = self.leaf_node_iter
         current_node_taxon_map = {}
-        node_taxa = set()
+        node_taxa = []
         for nd in nd_iterator():
             if nd.taxon is not None:
+                assert nd.taxon not in current_node_taxon_map
                 current_node_taxon_map[nd] = nd.taxon
-                assert nd.taxon not in node_taxa
-                node_taxa.add(nd.taxon)
+                node_taxa.append(nd.taxon)
         assert len(current_node_taxon_map) == len(node_taxa)
         current_to_shuffled_taxon_map = {}
         for nd in current_node_taxon_map:
-            new_taxon = rng.sample(node_taxa, 1)[0]
+            # swap a random element to end of node_taxa...
+            random_index = rng.randrange(len(node_taxa))
+            node_taxa[-1], node_taxa[random_index] = (
+                node_taxa[random_index], node_taxa[-1]
+            )
+            # ... then pop it off the end and use it
+            new_taxon = node_taxa.pop()
             current_to_shuffled_taxon_map[nd.taxon] = new_taxon
             nd.taxon = new_taxon
-            node_taxa.remove(new_taxon)
+
         assert len(node_taxa) == 0, node_taxa
         assert len(current_to_shuffled_taxon_map) == len(current_node_taxon_map)
         return current_to_shuffled_taxon_map
