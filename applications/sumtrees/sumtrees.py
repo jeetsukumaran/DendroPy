@@ -1533,7 +1533,7 @@ def main():
                 preserve_underscores=args.preserve_underscores,
                 )
         if tree_array.split_distribution.is_mixed_rootings_counted():
-            raise TreeArray.IncompatibleRootingTreeArrayUpdate("Mixed rooting states detected in source trees")
+            raise dendropy.TreeArray.IncompatibleRootingTreeArrayUpdate("Mixed rooting states detected in source trees")
     except KeyboardInterrupt as e:
         raise e
     except Exception as exception_object:
