@@ -728,7 +728,9 @@ def constrained_kingman_tree(
             except:
                 leaf.gene_nodes = [ gene_node ]
     else:
-        raise ValueError(f"Unrecognized strategy '{gene_sampling_strategy}'")
+        raise ValueError("Unrecognized strategy '{}'".format(
+            gene_sampling_strategy
+        ))
 
     # We iterate through the edges of the population tree in post-order,
     # i.e., visiting child edges before we visit parent edges. For
