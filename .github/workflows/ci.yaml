@@ -6,6 +6,7 @@ jobs:
   examples:
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: False
       matrix:
         python-version:
           - "2.7"
@@ -52,6 +53,7 @@ jobs:
   tests:
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: False
       matrix:
         python-version:
           - "2.7"
