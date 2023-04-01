@@ -25,6 +25,9 @@ print(tree2.as_string("newick"))
 print(tree3.as_string("newick"))
 print(tree4.as_string("newick"))
 
-assert treecompare.weighted_robinson_foulds_distance(tree1, tree2) == 0.0
-assert treecompare.weighted_robinson_foulds_distance(tree2, tree3) == 0.0
-assert treecompare.weighted_robinson_foulds_distance(tree3, tree4) == 0.0
+assert treecompare.weighted_robinson_foulds_distance(tree1, tree2) == 0.0, \
+    treecompare.weighted_robinson_foulds_distance(tree1, tree2)
+assert treecompare.weighted_robinson_foulds_distance(tree2, tree3) == 0.0, \
+    treecompare.weighted_robinson_foulds_distance(tree2, tree3)
+assert treecompare.weighted_robinson_foulds_distance(tree3, tree4) == 0.0, \
+    treecompare.weighted_robinson_foulds_distance(tree3, tree4)
