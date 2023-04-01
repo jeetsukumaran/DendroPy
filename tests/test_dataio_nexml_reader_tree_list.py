@@ -45,6 +45,7 @@ class NexmlStandardTreeParsingTestCase(
     ## NOTE: many tests are in standard_file_test_trees.StandardTreeParsingTestCase !! ##
 
     def test_collection_comments_and_annotations(self):
+        NexmlStandardTreeParsingTestCase.setUpClass()
         for tree_file_title in (
                 "dendropy-test-trees-multifurcating-rooted-annotated",
                 "dendropy-test-trees-n33-unrooted-annotated-x10a",
