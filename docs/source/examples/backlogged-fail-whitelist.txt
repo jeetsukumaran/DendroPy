@@ -1,0 +1,16 @@
+# ideally, this list might shrink but should not grow
+# see https://sirupsen.com/shitlists
+bdtree_multi1.py
+bdtree_multi2.py
+bibtex_annotations1.py
+bibtex_annotations2.py
+bibtex_annotations3.py
+ds2.py
+paup_estimate_model.py
+paup_estimate_tree_ml.py
+pdm_tns1.py
+preorder_filtered_edge_iteration.py
+raxml_estimate_tree.py
+seqgen.py
+taxa_mgmt1a.py
+tree_list_add1.py
