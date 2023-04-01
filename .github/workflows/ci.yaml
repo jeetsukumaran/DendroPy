@@ -31,7 +31,8 @@ jobs:
           python -m pip install .
       - name: Run examples
         run: |
-          for f in docs/source/examples/*.py; do
+          cd docs/source/examples
+          for f in *.py; do
             echo "${f}"
             python3 "${f}"
           done
