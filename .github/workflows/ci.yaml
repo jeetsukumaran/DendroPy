@@ -49,7 +49,6 @@ jobs:
             elif grep -q "${f}" backlogged-fail-whitelist.txt; then
               :
             else
-              break
               exit 1
             fi
           done
