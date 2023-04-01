@@ -33,11 +33,11 @@ from dendropy.utility.textprocessing import StringIO
 def _safe_unicode(obj, *args):
     """ return the unicode representation of obj """
     try:
-        return unicode(obj, *args)
+        return str(obj, *args)
     except UnicodeDecodeError:
         # obj is byte string
         ascii_text = str(obj).encode('string_escape')
-        return unicode(ascii_text)
+        return str(ascii_text)
 
 def _safe_str(obj):
     """ return the byte string representation of obj """
@@ -45,7 +45,7 @@ def _safe_str(obj):
         return str(obj)
     except UnicodeEncodeError:
         # obj is unicode
-        return unicode(obj).encode('unicode_escape')
+        return str(obj).encode('unicode_escape')
 
 def _protect_attr(x):
 #     return cgi.escape(x)
