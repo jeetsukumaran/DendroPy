@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dendropy.utility.textprocessing import StringIO
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel.treemodel import _edge
@@ -1305,7 +1306,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
                     else:
                         children_to_add[0].edge.length += nd0.edge.length
                 else:
-                    nd1.edge.length = children_to_add[0].edge.length
+                    nd0.edge.length = children_to_add[0].edge.length
                 if nd0.parent_node is None:
                     start_node = children_to_add[0]
                     break
@@ -1666,8 +1667,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
             curr_add = left_child
         if curr_add:
             ndl = [curr_add]
-            t = _convert_node_to_root_polytomy(self)
+            t = self._convert_node_to_root_polytomy(self)
             ndl.extend(t)
             return tuple(ndl)
         return ()
-

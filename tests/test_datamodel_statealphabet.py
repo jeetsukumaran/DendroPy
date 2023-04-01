@@ -348,7 +348,7 @@ class StateAlphabetTester(object):
                 else:
                     if state.state_denomination == self.sa.AMBIGUOUS_STATE:
                         mapping_src = self.ambiguous_symbol_mappings
-                    elif state.state_denomination == StateAlphabet.POLYMORPHIC_STATE:
+                    elif state.state_denomination == dendropy.StateAlphabet.POLYMORPHIC_STATE:
                         mapping_src = self.polymorphic_symbol_mappings
                     else:
                         raise Exception("Unrecognized denomination: {}".format(state.state_denomination))

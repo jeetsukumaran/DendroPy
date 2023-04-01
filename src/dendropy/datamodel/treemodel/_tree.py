@@ -8,12 +8,15 @@ from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.utility import constants
+from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import messaging
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel.treemodel import _bipartition
 from dendropy.datamodel.treemodel import _node
 from dendropy import dataio
 
+_LOG = messaging.get_logger(__name__)
 
 class Tree(
     taxonmodel.TaxonNamespaceAssociated,

@@ -498,7 +498,7 @@ def contained_coalescent_tree(
     gene_tree_taxon_namespace = gene_to_containing_taxon_map.domain_taxon_namespace
     if gene_tree_taxon_namespace is None:
         gene_tree_taxon_namespace = dendropy.TaxonNamespace()
-        for gene_taxa in pop_gene_taxa_map:
+        for gene_taxa in gene_to_containing_taxon_map:
             for taxon in gene_taxa:
                 gene_tree_taxon_namespace.add(taxon)
     gene_tree = dendropy.Tree(taxon_namespace=gene_tree_taxon_namespace)

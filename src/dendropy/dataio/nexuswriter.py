@@ -269,7 +269,7 @@ class NexusWriter(ioservice.DataWriter):
 
         #  Write out taxon namespaces
         if not self.simple and not self.suppress_taxa_blocks:
-            if self.suppress_block_titles and len(taxon_namespace_to_write) > 1:
+            if self.suppress_block_titles and len(self.taxon_namespaces_to_write) > 1:
                 warnings.warn("Multiple taxon namespaces will be written, but block titles are suppressed: data file may not be interpretable")
             for tns in self.taxon_namespaces_to_write:
                 self._write_taxa_block(stream, tns)

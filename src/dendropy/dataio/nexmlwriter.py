@@ -559,13 +559,9 @@ class NexmlWriter(ioservice.DataWriter):
         elif len(char_matrix.state_alphabets) == 1:
             sa = char_matrix.state_alphabets[0]
         elif len(char_matrix.state_alphabets) > 1:
-            raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
-                    + " 'character_type' property, and multiple state alphabets are defined for the containing" \
-                    + " character matrix with no default specified")
+            raise TypeError("Multiple state alphabets defined for this matrix with no default specified")
         elif len(char_matrix.state_alphabets) == 0:
-            raise TypeError("Character cell %d for taxon '%s' does not have a state alphabet mapping given by the" % (col_idx, taxon.label)\
-                    + " 'character_type' property, and no state alphabets are defined for the containing" \
-                    + " character matrix")
+            raise TypeError("No state alphabets defined for this matrix")
         return sa
 
     def _write_format_section(self, char_matrix, dest, indent_level):
