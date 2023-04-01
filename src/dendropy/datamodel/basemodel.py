@@ -213,7 +213,8 @@ class Deserializable(object):
             New instance of object, constructed and populated from data given
             in source.
         """
-        with open(src, "r", newline=None) as fsrc:
+        open_args = ["r"] if sys.version_info >= (3, 3) else ["rU"]
+        with open(src, *open_args) as fsrc:
             return cls._parse_and_create_from_stream(stream=fsrc,
                     schema=schema,
                     **kwargs)
@@ -410,7 +411,8 @@ class MultiReadable(object):
                 - |CharacterMatrix|: number of sequences
                 - |DataSet|: ``tuple`` (number of taxon namespaces, number of tree lists, number of matrices)
         """
-        with open(src, "r", newline=None) as fsrc:
+        open_args = ["r"] if sys.version_info >= (3, 3) else ["rU"]
+        with open(src, *open_args) as fsrc:
             return self._parse_and_add_from_stream(stream=fsrc, schema=schema, **kwargs)
 
     def read_from_string(self, src, schema, **kwargs):
