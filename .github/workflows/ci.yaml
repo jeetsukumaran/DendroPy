@@ -44,7 +44,7 @@ jobs:
           # and enforce removal of working examples from known failures
           for f in *.py; do
             echo "${f}"
-            if timeout 10 python3 "${f}" && ! grep -q "${f}" backlogged-fail-whitelist.txt; then
+            if timeout 10 python "${f}" && ! grep -q "${f}" backlogged-fail-whitelist.txt; then
               :
             elif grep -q "${f}" backlogged-fail-whitelist.txt; then
               :
