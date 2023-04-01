@@ -226,7 +226,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Pre-order iterator over internal nodes of subtree rooted at this node.
+        Post-order iterator over internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with each node visited
         after its children. In DendroPy, "internal nodes" are nodes that have
