@@ -124,12 +124,12 @@ else:
         try:
             i = open(stdoutf.name, "rU")
         except ValueError:
-            i = open(stdoutf.name, "r", newline=None)
+            i = open(stdoutf.name, "r")
         stdout = i.read()
         try:
             i = open(stderrf.name, "rU")
         except ValueError:
-            i = open(stdoutf.name, "r", newline=None)
+            i = open(stdoutf.name, "r")
         stderr = i.read()
         return stdout, stderr
 

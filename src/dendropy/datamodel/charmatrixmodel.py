@@ -677,7 +677,7 @@ class CharacterMatrix(
         try:
             streams = [open(path, "rU") for path in paths]
         except ValueError:
-            streams = [open(path, "r", newline=None) for path in paths]
+            streams = [open(path, "r") for path in paths]
         return cls.concatenate_from_streams(streams, schema, **kwargs)
     concatenate_from_paths = classmethod(concatenate_from_paths)
 

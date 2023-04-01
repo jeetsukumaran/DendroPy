@@ -139,7 +139,7 @@ class LineReadingThread(Thread):
             try:
                 return open(filename, "rU")
             except ValueError:
-                return open(filename, "r", newline=None)
+                return open(filename, "r")
         return None
 
 
