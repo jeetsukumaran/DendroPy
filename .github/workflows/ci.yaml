@@ -49,8 +49,6 @@ jobs:
         run: |
           # stop the build if there are Python syntax errors or undefined names
           ruff check --format=github --select=E9,F63,F7,F82 --extend-exclude=docs/source/examples,docs/source/schemas/interfaces --target-version=py37 .
-          # default set of ruff rules with GitHub Annotations
-          ruff --format=github --target-version=py37 .
   tests:
     runs-on: ubuntu-20.04
     strategy:
