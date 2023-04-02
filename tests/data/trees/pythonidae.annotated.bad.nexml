@@ -3,7 +3,7 @@
     version="0.9"
     xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-    xmlns:dendropy="http://packages.python.org/DendroPy/"
+    xmlns:dendropy="http://pypi.org/project/DendroPy/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns="http://www.nexml.org/2009"

@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
     xmlns:dwc="http://rs.tdwg.org/dwc/terms/"
     xmlns:to="http://rs.tdwg.org/ontology/voc/TaxonOccurrence#"
-    xmlns:dendropy="http://packages.python.org/DendroPy/"
+    xmlns:dendropy="http://pypi.org/project/DendroPy/"
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns="http://www.nexml.org/2009"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

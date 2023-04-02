@@ -76,7 +76,7 @@ class _AnnotationParser(object):
                     value = self._coerce_to_xml_schema_type(value, dt)
                 elif dt_namespace.startswith("http://www.nexml.org/1.0") or dt_namespace.startswith("http://www.nexml.org/2009"):
                     value = self._coerce_to_nexml_type(value, dt)
-                elif dt_namespace.startswith("http://dendropy.org") or dt_namespace.startswith("http://packages.python.org/DendroPy"):
+                elif dt_namespace.startswith("http://dendropy.org") or dt_namespace.startswith("http://packages.python.org/DendroPy") or dt_namespace.startswith("http://pypi.org/project/DendroPy/"):
                     value = self._coerce_to_dendropy_type(value, dt)
         a = annotated.annotations.add_new(
                 name=name,

@@ -240,7 +240,7 @@ When printing the tree in NeXML, the metadata will be rendered as a "``<meta>``"
     <nex:nexml
         version="0.9"
         xsi:schemaLocation="http://www.nexml.org/2009"
-        xmlns:dendropy="http://packages.python.org/DendroPy/"
+        xmlns:dendropy="http://pypi.org/project/DendroPy//"
         xmlns="http://www.nexml.org/2009"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -256,7 +256,7 @@ When printing the tree in NeXML, the metadata will be rendered as a "``<meta>``"
     .
     .
 
-As can be seen, by default, the metadata property is mapped to the "``dendropy``" namespace (i.e., '``xmlns:dendropy="http://packages.python.org/DendroPy/"``').
+As can be seen, by default, the metadata property is mapped to the "``dendropy``" namespace (i.e., '``xmlns:dendropy="http://pypi.org/project/DendroPy//"``').
 This can be customized by using the "``name_prefix``" and "``namespace``" arguments to the call to :meth:`~dendropy.datamodel.basemodel.AnnotationSet.add_new`::
 
     >>> tree.annotations.add_new(
@@ -276,7 +276,7 @@ This will result in the following NeXML fragment::
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xml="http://www.w3.org/XML/1998/namespace"
         xmlns:nex="http://www.nexml.org/2009"
-        xmlns:dendropy="http://packages.python.org/DendroPy/"
+        xmlns:dendropy="http://pypi.org/project/DendroPy//"
     >
     .
     .
@@ -369,7 +369,7 @@ results in::
     <nex:nexml
         version="0.9"
         xsi:schemaLocation="http://www.nexml.org/2009"
-        xmlns:dendropy="http://packages.python.org/DendroPy/"
+        xmlns:dendropy="http://pypi.org/project/DendroPy//"
         xmlns="http://www.nexml.org/2009"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -468,7 +468,7 @@ will result in::
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xml="http://www.w3.org/XML/1998/namespace"
         xmlns:nex="http://www.nexml.org/2009"
-        xmlns:dendropy="http://packages.python.org/DendroPy/"
+        xmlns:dendropy="http://pypi.org/project/DendroPy//"
     >
         <meta xsi:type="nex:LiteralMeta" property="bibtex:journal" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320453648" />
         <meta xsi:type="nex:LiteralMeta" property="bibtex:bibtype" content="article" datatype="xsd:string" id="meta4320453200" />
