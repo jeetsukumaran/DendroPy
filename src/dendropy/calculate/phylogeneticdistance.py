@@ -249,9 +249,11 @@ class PhylogeneticDistanceMatrix(object):
 
     def compile_from_tree(self, tree):
         """
-        Calculates the distances. Note that the path length (in number of
-        steps) between taxa that span the root will be off by one if
-        the tree is unrooted.
+        Calculates the distances. Note that for unrooted trees path length (in number of steps),
+        as returned by ``path_edge_count``, and the length of path list returned by ``path_edges`` are off by one.
+
+        The former ignores seed node ("root") as unrooted tree shouldn't have one from biological standpoint,
+        but the latter preserves all nodes as implemented in case they need to be e.g. iterated on.
         """
         self.clear()
         self.taxon_namespace = tree.taxon_namespace
@@ -302,7 +304,6 @@ class PhylogeneticDistanceMatrix(object):
                             for desc2, (desc2_plen, desc2_psteps, desc2_pedges) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
-                                # self._all_distinct_mapped_taxa_pairs.add( tuple([desc1.taxon, desc2.taxon]) )
                                 self._all_distinct_mapped_taxa_pairs.add( frozenset([desc1.taxon, desc2.taxon]) )
                                 if c2.edge_length is None:
                                     c2_edge_length = 0.0
@@ -310,9 +311,14 @@ class PhylogeneticDistanceMatrix(object):
                                     c2_edge_length = c2.edge.length
                                 pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2_edge_length
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
-                                path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
+                                if not tree.is_rooted and node is tree.seed_node:
+                                    # Seed node has no biological meaning in unrooted tree and should be ignored.
+                                    path_steps = node.desc_paths[desc1][1] + desc2_psteps
+                                else:
+                                    path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                                 if self.is_store_path_edges:
+                                    # Even in unrooted case, preserve all edges in case something needs them all
                                     pedges = tuple(node.desc_paths[desc1][2] + [c2.edge] + desc2_pedges[::-1])
                                     self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
                     del(c1.desc_paths)
