@@ -1,5 +1,6 @@
 # ideally, this list might shrink but should not grow
 # see https://sirupsen.com/shitlists
+# see https://github.com/jeetsukumaran/DendroPy/issues/160
 bdtree_multi1.py
 bdtree_multi2.py
 bibtex_annotations1.py
