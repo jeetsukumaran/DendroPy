@@ -108,6 +108,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - examples
+      - lint
+      - tests
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.8
