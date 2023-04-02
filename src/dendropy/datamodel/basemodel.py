@@ -941,7 +941,7 @@ class Annotation(Annotable):
 
     def _get_namespace(self):
         if self._namespace is None:
-            self._namespace = "http://packages.python.org/DendroPy/"
+            self._namespace = "http://pypi.org/project/DendroPy/"
         return self._namespace
     def _set_namespace(self, prefix):
         self._namespace = prefix
@@ -1065,7 +1065,7 @@ class AnnotationSet(container.OrderedSet):
         if not name_is_prefixed:
             if name_prefix is None and namespace is None:
                 name_prefix = "dendropy"
-                namespace = "http://packages.python.org/DendroPy/"
+                namespace = "http://pypi.org/project/DendroPy/"
             elif name_prefix is None:
                 raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
             elif namespace is None:
@@ -1143,7 +1143,7 @@ class AnnotationSet(container.OrderedSet):
         if not name_is_prefixed:
             if name_prefix is None and namespace is None:
                 name_prefix = "dendropy"
-                namespace = "http://packages.python.org/DendroPy/"
+                namespace = "http://pypi.org/project/DendroPy/"
             elif name_prefix is None:
                 raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
             elif namespace is None:
@@ -1292,7 +1292,7 @@ class AnnotationSet(container.OrderedSet):
         # elif store_as.lower().startswith("bibtex-record"):
         #     if name_prefix is None and namespace is None:
         #         name_prefix = "dendropy"
-        #         namespace = "http://packages.python.org/DendroPy/"
+        #         namespace = "http://pypi.org/project/DendroPy/"
         #     self.add_new(
         #             name="bibtex",
         #             value=bt.as_compact_bibtex(),
@@ -1358,8 +1358,8 @@ class AnnotationSet(container.OrderedSet):
         that match based on *all* criteria specified in keyword arguments::
 
             >>> notes = tree.annotations.findall(name="color")
-            >>> notes = tree.annotations.findall(namespace="http://packages.python.org/DendroPy/")
-            >>> notes = tree.annotations.findall(namespace="http://packages.python.org/DendroPy/",
+            >>> notes = tree.annotations.findall(namespace="http://pypi.org/project/DendroPy/")
+            >>> notes = tree.annotations.findall(namespace="http://pypi.org/project/DendroPy/",
                                           name="color")
             >>> notes = tree.annotations.findall(name_prefix="dc")
             >>> notes = tree.annotations.findall(prefixed_name="dc:color")
@@ -1474,14 +1474,14 @@ class AnnotationSet(container.OrderedSet):
             >>> tree.annotations.drop(name="color")
 
         Remove all annotation objects with ``namespace`` ==
-        "http://packages.python.org/DendroPy/"::
+        "http://pypi.org/project/DendroPy/"::
 
-            >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/")
+            >>> tree.annotations.drop(namespace="http://pypi.org/project/DendroPy/")
 
         Remove all annotation objects with ``namespace`` ==
-        "http://packages.python.org/DendroPy/" *and* ``name`` == "color"::
+        "http://pypi.org/project/DendroPy/" *and* ``name`` == "color"::
 
-            >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/",
+            >>> tree.annotations.drop(namespace="http://pypi.org/project/DendroPy/",
                     name="color")
 
         Remove all annotation objects with ``name_prefix`` == "dc"::

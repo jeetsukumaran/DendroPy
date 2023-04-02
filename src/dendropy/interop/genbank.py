@@ -968,7 +968,7 @@ class GenBankAccessionRecord(object):
         #         value=value,
         #         datatype_hint=None,
         #         name_prefix="dendropy",
-        #         namespace="http://packages.python.org/DendroPy/",
+        #         namespace="http://pypi.org/project/DendroPy/",
         #         name_is_prefixed=False,
         #         is_attribute=False,
         #         annotate_as_reference=False,

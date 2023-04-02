@@ -19,7 +19,7 @@ The primary home page for DendroPy, with detailed tutorials and documentation, i
 
 DendroPy is also hosted in the official Python repository:
 
-    http://packages.python.org/DendroPy/
+    http://pypi.org/project/DendroPy//
 
 Requirements and Installation
 =============================
