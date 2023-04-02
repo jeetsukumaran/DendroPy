@@ -33,7 +33,7 @@ if sys.hexversion >= 0x03010000:
         """
         try:
             return n.bit_length()
-        except AttributeError:
+        except AttributeError:  # if n is None
             return 0
 else:
     def bit_length(n):
@@ -43,9 +43,12 @@ else:
         index of the highest set bit, or the width of the bitstring
         representing the integer.
         """
-        s = bin(n)          # binary representation:  bin(-37) --> '-0b100101'
-        s = s.lstrip('-0b') # remove leading zeros and minus sign
-        return len(s)       # len('100101') --> 6
+        try:
+            s = bin(n)          # binary representation:  bin(-37) --> '-0b100101'
+            s = s.lstrip('-0b') # remove leading zeros and minus sign
+            return len(s)       # len('100101') --> 6
+        except TypeError:  # if n is None
+            return 0
 
 def int_as_bitstring(n, length=None, symbol0=None, symbol1=None, reverse=False):
     if length is None:

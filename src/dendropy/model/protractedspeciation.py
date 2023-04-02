@@ -882,7 +882,7 @@ class ProtractedSpeciationProcess(object):
         elif self.species_lineage_sampling_scheme == "random":
             lt = self.rng.sample(lineage_collection, len(lineage_collection))
         else:
-            raise ValueError(sampling_scheme)
+            raise ValueError(self.species_lineage_sampling_scheme)
         seen_species_ids = set()
         to_restore_species_extinction_times = {}
         for lineage_entry in lt:

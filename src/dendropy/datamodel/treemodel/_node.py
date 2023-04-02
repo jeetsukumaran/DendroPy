@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dendropy.utility.textprocessing import StringIO
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel.treemodel import _edge
@@ -1266,6 +1267,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         start_node_to_match = self
         if node_factory is None:
             node_factory = self.__class__
+        nd1 = None  # verbosity to mollify linter
         for nd0 in self.postorder_iter():
             if node_filter_fn is not None:
                 if nd0._child_nodes:
@@ -1666,8 +1668,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
             curr_add = left_child
         if curr_add:
             ndl = [curr_add]
-            t = _convert_node_to_root_polytomy(self)
+            t = self._convert_node_to_root_polytomy()
             ndl.extend(t)
             return tuple(ndl)
         return ()
-

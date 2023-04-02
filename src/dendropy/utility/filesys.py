@@ -136,7 +136,10 @@ class LineReadingThread(Thread):
         Returns None if the stop event is triggered.
         """
         if self.wait_for_file_to_appear(filename):
-            return open(filename, "rU")
+            try:
+                return open(filename, "rU")
+            except ValueError:
+                return open(filename, "r")
         return None
 
 

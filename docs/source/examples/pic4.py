@@ -23,4 +23,4 @@ for nd in ctree1.postorder_internal_node_iter():
     row_str = [(("%10.8f") % i) for i in row]
     row_str = "    ".join(row_str)
     label = nd.label.ljust(6)
-    print "%s %s" % (label, row_str)
+    print("%s %s" % (label, row_str))

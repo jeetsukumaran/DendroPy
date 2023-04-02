@@ -74,8 +74,9 @@ def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
     # https://github.com/mtholder/peyotl
     # https://github.com/mtholder/peyotl/blob/c3a544211edc669e664bae28095d52cecfa004f3/peyotl/utility/str_util.py#L5-L25
 if sys.version_info.major == 2:
+    import __builtin__ as builtins  # extra verbosity to mollify linter
     def is_str_type(x):
-        return isinstance(x, basestring)
+        return isinstance(x, builtins.basestring)
 else:
     def is_str_type(x):
         return isinstance(x, str)
