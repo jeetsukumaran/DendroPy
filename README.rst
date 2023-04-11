@@ -2,6 +2,9 @@
    :align: right
    :alt: DendroPy
 
+.. image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
+   :target: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml
+
 DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and
 manipulation of phylogenetic trees and character matrices, and supports the
