@@ -9,7 +9,7 @@
         :target: https://pypi.org/project/DendroPy/
 
 .. image:: https://readthedocs.org/projects/DendroPy/badge/?version=main
-        :target: https://dendropy.readthedocs.io/en/latest/?badge=main
+        :target: https://dendropy.readthedocs.io/en/main/?badge=main
         :alt: Documentation Status
 
 DendroPy is a Python library for phylogenetic computing.
