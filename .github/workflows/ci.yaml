@@ -115,6 +115,7 @@ jobs:
         python-version: 3.8
     - name: Install paup
       run: |
+        sudo apt-get install libpython2.7  # required by paup
         temp_dir=$(mktemp -d)
         wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
         gunzip ${temp_dir}/paup4a168_ubuntu64.gz
