@@ -540,7 +540,7 @@ class CharacterMatrix(
 
     @classmethod
     def get(cls, **kwargs):
-        """
+        r"""
         Instantiate and return a *new* character matrix object from a data source.
 
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
@@ -599,7 +599,7 @@ class CharacterMatrix(
                     path="python_morph.nex",
                     schema="nexus")
             std2 = dendropy.StandardCharacterMatrix.get(
-                    data=">t1\\n01011\\n\\n>t2\\n11100",
+                    data=">t1\n01011\n\n>t2\n11100",
                     schema="fasta")
 
         """
@@ -683,7 +683,7 @@ class CharacterMatrix(
             char_matrix=None,
             case_sensitive_taxon_labels=False,
             **kwargs):
-        """
+        r"""
         Populates character matrix from dictionary (or similar mapping type),
         creating |Taxon| objects and sequences as needed.
 
@@ -851,7 +851,7 @@ class CharacterMatrix(
     #     return self.clone_from(m)
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -1870,7 +1870,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         return taxon_to_state_indices
 
     def folded_site_frequency_spectrum(self, is_pad_vector_to_unfolded_length=False):
-        """
+        r"""
         Returns the folded or minor site/allele frequency spectrum.
 
         Given $N$ chromosomes, the site frequency spectrum is a vector $(f_0,
@@ -1879,13 +1879,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         alleles, 1 allele, 2 alleles, etc.
 
         The *folded* site frequency spectrum is a vector $(f_0, f_1, f_2, ...,
-        f_m), m = \\ceil{\\frac{N}{2}}$, where the values are the number of minor
+        f_m), m = \ceil{\frac{N}{2}}$, where the values are the number of minor
         alleles in the site.
 
         Parameters
         ----------
         is_pad_vector_to_unfolded_length: bool
-            If False, then the vector length will be $\\ceil{\\frac{N}{2}}$,
+            If False, then the vector length will be $\ceil{\frac{N}{2}}$,
             where $N$ is the number of taxa. Otherwise, by default,
             True, length of vector will be number of taxa + 1, with the
             first element the number of monomorphic sites not contributing to

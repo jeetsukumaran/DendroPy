@@ -91,7 +91,7 @@ class PhylogeneticDistanceMatrix(object):
             label_transform_fn=None,
             **csv_reader_kwargs
             ):
-        """
+        r"""
         Instantiates a new PhylogeneticDistanceMatrix instance with data
         from an external source.
 
@@ -508,7 +508,7 @@ class PhylogeneticDistanceMatrix(object):
             filter_fn=None,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False):
-        """
+        r"""
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
@@ -516,9 +516,9 @@ class PhylogeneticDistanceMatrix(object):
         The mean pairwise distance (mpd) is given by:
 
             .. math::
-                mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{n \\choose 2},
+                mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n \choose 2},
 
-        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
@@ -676,14 +676,14 @@ class PhylogeneticDistanceMatrix(object):
             is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
-        """
+        r"""
         Returns the standardized effect size value for the MPD statistic under
         a null model under various community compositions.
 
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
+                SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
@@ -773,14 +773,14 @@ class PhylogeneticDistanceMatrix(object):
             is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
-        """
+        r"""
         Returns the standardized effect size value for the MNTD statistic under
         a null model under various community compositions.
 
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
+                SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where

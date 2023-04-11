@@ -64,14 +64,14 @@ def _clean_parsed_text(text):
         text = text[1:-1]
     elif text.startswith('"') and text.endswith('"'):
         text = text[1:-1]
-    text = re.sub("[\s]+", " ", text).strip()
+    text = re.sub(r"[\s]+", " ", text).strip()
     return text
 
 def _format_bibtex_value(text, col_start=1, wrap=True, width=78):
     """
     Formats text of a BibTeX field.
     """
-    ftext = re.sub("[\s]+", " ", text).strip()
+    ftext = re.sub(r"[\s]+", " ", text).strip()
     col_indent = " " * col_start
     if not ftext[0].isdigit():
         if wrap:

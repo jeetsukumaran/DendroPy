@@ -83,14 +83,14 @@ def _count_differences(char_sequences, state_alphabet, ignore_uncertain=True):
     return sum_diff, mean_diff / comps, sq_diff
 
 def _nucleotide_diversity(char_sequences, state_alphabet, ignore_uncertain=True):
-    """
+    r"""
     Returns $\pi$, the proportional nucleotide diversity, calculated for a
     list of character sequences.
     """
     return _count_differences(char_sequences, state_alphabet, ignore_uncertain)[1]
 
 def _average_number_of_pairwise_differences(char_sequences, state_alphabet, ignore_uncertain=True):
-    """
+    r"""
     Returns $k$ (Tajima 1983; Wakely 1996), calculated for a set of sequences:
 
     k = \frac{\right(\sum \sum \k_{ij}\left)}{n \choose 2}
@@ -178,7 +178,7 @@ def average_number_of_pairwise_differences(char_matrix, ignore_uncertain=True):
     return _average_number_of_pairwise_differences(char_matrix.sequences(), char_matrix.default_state_alphabet, ignore_uncertain)
 
 def nucleotide_diversity(char_matrix, ignore_uncertain=True):
-    """
+    r"""
     Returns $\pi$, calculated for a character block.
     """
     return _nucleotide_diversity(char_matrix.sequences(), char_matrix.default_state_alphabet, ignore_uncertain)

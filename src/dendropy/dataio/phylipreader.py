@@ -184,7 +184,7 @@ class PhylipReader(ioservice.DataReader):
             raise error.DataParseError("Expecting at least 2 lines in PHYLIP format data source", stream=self.stream)
         desc_line = lines[0]
         lines = lines[1:]
-        m = re.match('\s*(\d+)\s+(\d+)\s*$', desc_line)
+        m = re.match(r'\s*(\d+)\s+(\d+)\s*$', desc_line)
         if m is None:
             raise self._data_parse_error("Invalid data description line: '%s'" % desc_line)
         self.ntax = int(m.groups()[0])
