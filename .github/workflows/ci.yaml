@@ -99,6 +99,10 @@ jobs:
           chmod +x ${temp_dir}/paup4a168_ubuntu64
           sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
+      - name: Python2 compatibility workaround # TODO remove when Python2 compatibility dropped
+        if: matrix.python-version == '2.7'
+        run: |
+          rm tests/dendropy
       - name: Test with setup.py
         run: |
           python setup.py test
