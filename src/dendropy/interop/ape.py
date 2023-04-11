@@ -148,12 +148,12 @@ else:
     #            23, 291, 313, 196, 1027, 5712]
         stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_r_vector(taxon_num_species, int))
         patterns = {
-            r'deviance' : '\s*Deviance: ([\d\-\.Ee\+]+).*',
-            r'log-likelihood' : '\s*Log-likelihood: ([\d\-\.Ee\+]+)',
-            r'd/b' : '\s*d / b = ([\d\-\.Ee\+]+)',
-            r'd/b s.e.' : '\s*d / b = .* StdErr = ([\d\-\.Ee\+]+)',
-            r'b-d' : '\s*b - d = ([\d\-\.Ee\+]+)',
-            r'b-d s.e.' : '\s*b - d = .* StdErr = ([\d\-\.Ee\+]+)',
+            r'deviance' : r'\s*Deviance: ([\d\-\.Ee\+]+).*',
+            r'log-likelihood' : r'\s*Log-likelihood: ([\d\-\.Ee\+]+)',
+            r'd/b' : r'\s*d / b = ([\d\-\.Ee\+]+)',
+            r'd/b s.e.' : r'\s*d / b = .* StdErr = ([\d\-\.Ee\+]+)',
+            r'b-d' : r'\s*b - d = ([\d\-\.Ee\+]+)',
+            r'b-d s.e.' : r'\s*b - d = .* StdErr = ([\d\-\.Ee\+]+)',
         }
         results = {}
         for k, v in patterns.items():
