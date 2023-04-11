@@ -1241,7 +1241,7 @@ class NexusReader(ioservice.DataReader):
                                             else:
                                                 raise self._nexus_error('Expecting digit but found "%s".' % (token))
                                         else:
-                                            raise self._nexus_error('Expecting other tokens after "\\", but no more found.')
+                                            raise self._nexus_error(r'Expecting other tokens after "\", but no more found.')
                                         token = self._nexus_tokenizer.next_token()
                                     else:
                                         step = 1

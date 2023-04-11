@@ -42,7 +42,7 @@ class RService(object):
             env=None,
             rscript_path=RSCRIPT_EXECUTABLE,
             ):
-        """
+        r"""
         Executes a sequence of commands in R and returns the results. All the
         noise is sunk into the stderr return variable, and just the output
         comes out cleanly in the stdout return variable.
@@ -127,7 +127,7 @@ class RService(object):
         use this::
 
             returncode, stdout, stderr = RService.call([
-                "cat('hello, world\\n')",
+                "cat('hello, world\n')",
             ])
 
         or::

@@ -591,7 +591,7 @@ class PhylogeneticDistanceMatrix(object):
             filter_fn=None,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False):
-        """
+        r"""
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
@@ -599,9 +599,9 @@ class PhylogeneticDistanceMatrix(object):
         The mean nearest taxon distance (mntd) is given by:
 
             .. math::
-                mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
+                mntd = \frac{ \sum_{i}^{n} min(\delta_{i,j}) }{n},
 
-        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
