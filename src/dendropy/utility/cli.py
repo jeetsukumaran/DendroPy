@@ -26,7 +26,8 @@ import argparse
 import os
 import sys
 if sys.hexversion < 0x03000000:
-    input_str = raw_input
+    import __builtin_ as builtins  # verbosity added to mollify linter
+    input_str = builtins.raw_input
 else:
     input_str = input
 import textwrap

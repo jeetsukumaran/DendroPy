@@ -28,6 +28,7 @@ from dendropy.utility import container
 from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.dataio import xmlprocessing
+from dendropy.datamodel.charstatemodel import StateAlphabet, StateIdentity
 
 SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/2009')
 
@@ -487,7 +488,7 @@ class _NexmlTreeParser(object):
                     raise Exception("Tree already has an explictly defined root node, but node without parent found: {}".format(unparented_node))
             else:
                 tree_obj.seed_node = unparented_node
-        elif len(unparented_node_sets) > 1:
+        elif len(unparented_node_set) > 1:
             for node in unparented_node_set:
                 tree_obj.seed_node.add_child(node)
         else:
@@ -614,10 +615,10 @@ class _NexmlCharBlockParser(_AnnotationParser):
         # set up taxa
         otus_id = nxchars.get('otus', None)
         if otus_id is None:
-            raise Exception("Character Block %s (\"%s\"): Taxon namespace not specified" % (char_matrix_oid, char_matrix.label))
+            raise Exception("Character Block %s (\"%s\"): Taxon namespace not specified" % (char_matrix_oid, label))
         taxon_namespace = self._id_taxon_namespace_map.get(otus_id, None)
         if not taxon_namespace:
-            raise Exception("Character Block %s (\"%s\"): Specified taxon namespace not found" % (char_matrix_oid, char_matrix.label))
+            raise Exception("Character Block %s (\"%s\"): Specified taxon namespace not found" % (char_matrix_oid, label))
 
         # character matrix instantiation
         nxchartype = nxchars.parse_type()
@@ -636,7 +637,7 @@ class _NexmlCharBlockParser(_AnnotationParser):
         elif nxchartype.startswith('Continuous'):
             data_type = "continuous"
         else:
-            raise Exception("Character Block %s (\"%s\"): Character type '%s' not supported" % (char_matrix_oid, char_matrix.label, nxchartype))
+            raise Exception("Character Block %s (\"%s\"): Character type '%s' not supported" % (char_matrix_oid, label, nxchartype))
         char_matrix = self._char_matrix_factory(
                 data_type,
                 taxon_namespace=taxon_namespace,
@@ -899,10 +900,9 @@ class _NexmlCharBlockParser(_AnnotationParser):
         Defaults to '0' - '9' if not specified.
         """
         if symbol_list is None:
-            symbol_list = [str(i) for i in xrange(10)]
-        state_alphabet = dendropy.StateAlphabet()
+            symbol_list = [str(i) for i in range(10)]
+        state_alphabet = StateAlphabet()
         for s in symbol_list:
-            state_alphabet.append(dendropy.StateAlphabetElement(symbol=s))
+            state_alphabet.append(StateIdentity(symbol=s))
         char_matrix.state_alphabets.append(state_alphabet)
         char_matrix.default_state_alphabet = state_alphabet
-

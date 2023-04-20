@@ -8,12 +8,15 @@ from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.utility import constants
+from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import messaging
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel.treemodel import _bipartition
 from dendropy.datamodel.treemodel import _node
 from dendropy import dataio
 
+_LOG = messaging.get_logger(__name__)
 
 class Tree(
     taxonmodel.TaxonNamespaceAssociated,
@@ -1550,10 +1553,7 @@ class Tree(
         if start_node.edge.bipartition.leafset_bitmask == 0 or not kwargs.get(
             "is_bipartitions_updated", True
         ):
-            self.encode_bipartitions(
-                suppress_unifurcations=False,
-                collapse_unrooted_basal_bifurcation=False,
-            )
+            self.encode_bipartitions(suppress_unifurcations=False)
 
         if (
             start_node.edge.bipartition.leafset_bitmask & leafset_bitmask
@@ -1691,7 +1691,7 @@ class Tree(
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order iterator over internal nodes tree.
+        Pre-order iterator over internal nodes tree.
 
         Visits internal nodes in ``self``, with each node visited after its
         children. In DendroPy, "internal nodes" are nodes that have at least
@@ -2072,7 +2072,7 @@ class Tree(
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
-        Post-order iterator over internal edges tree.
+        Pre-order iterator over internal edges tree.
 
         Visits internal edges in ``self``, with each edge visited after its
         children. In DendroPy, "internal edges" are edges that have at least

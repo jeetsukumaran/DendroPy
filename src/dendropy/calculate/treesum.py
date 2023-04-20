@@ -304,31 +304,6 @@ class TreeSummarizer(object):
                 edge.length = 0.0
         return tree
 
-        ## here we add the support values and/or edge lengths for the terminal taxa ##
-        for node in leaves:
-            if not is_rooted:
-                split = node.edge.split_bitmask
-            else:
-                split = node.edge.leafset_bitmask
-            self.map_split_support_to_node(node, 1.0)
-            if include_edge_lengths:
-                elen = split_distribution.split_edge_lengths.get(split, [0.0])
-                if len(elen) > 0:
-                    mean, var = mean_and_sample_variance(elen)
-                    node.edge.length = mean
-                    if include_edge_length_var:
-                        node.edge.length_var = var
-                else:
-                    node.edge.length = None
-                    if include_edge_length_var:
-                        node.edge.length_var = None
-        #if include_edge_lengths:
-            #self.map_edge_lengths_to_tree(tree=con_tree,
-            #        split_distribution=split_distribution,
-            #        summarization_fn=summarization_fn,
-            #        include_edge_length_var=False)
-        return con_tree
-
     def count_splits_on_trees(self, tree_iterator, split_distribution=None, is_bipartitions_updated=False):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,

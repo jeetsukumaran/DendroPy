@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dendropy.utility.textprocessing import StringIO
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel.treemodel import _edge
@@ -226,7 +227,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order iterator over internal nodes of subtree rooted at this node.
+        Pre-order iterator over internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with each node visited
         after its children. In DendroPy, "internal nodes" are nodes that have
@@ -1266,6 +1267,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         start_node_to_match = self
         if node_factory is None:
             node_factory = self.__class__
+        nd1 = None  # verbosity to mollify linter
         for nd0 in self.postorder_iter():
             if node_filter_fn is not None:
                 if nd0._child_nodes:
@@ -1666,8 +1668,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
             curr_add = left_child
         if curr_add:
             ndl = [curr_add]
-            t = _convert_node_to_root_polytomy(self)
+            t = self._convert_node_to_root_polytomy()
             ndl.extend(t)
             return tuple(ndl)
         return ()
-

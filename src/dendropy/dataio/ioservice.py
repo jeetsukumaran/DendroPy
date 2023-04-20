@@ -54,11 +54,13 @@ class IOService(object):
     def _get_attached_taxon_set(self):
         IOService.attached_taxon_set_deprecation_warning()
         return self.attached_taxon_namespace
-    def _set_attached_taxon_set(IOService, v):
+    def _set_attached_taxon_set(self, v):
         IOService.attached_taxon_set_deprecation_warning()
         self.attached_taxon_namespace = v
-    def _del_attached_taxon_set(IOService):
+    def _del_attached_taxon_set(self):
         IOService.attached_taxon_set_deprecation_warning()
+        del self.attached_taxon_namespace
+
     attached_taxon_set = property(_get_attached_taxon_set, _set_attached_taxon_set, _del_attached_taxon_set)
 
     def check_for_unused_keyword_arguments(self, kwargs_dict):

@@ -21,8 +21,11 @@
 Various data structures.
 """
 
+import inspect
+import sys
+
 def get_calling_code_info(stack_level):
-    frame = inspect.stack()[stacklevel]
+    frame = inspect.stack()[stack_level]
     filename = inspect.getfile(frame[0])
     lineno = inspect.getlineno(frame[0])
     return filename, lineno

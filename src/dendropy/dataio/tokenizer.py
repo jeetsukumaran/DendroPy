@@ -198,7 +198,7 @@ class Tokenizer(object):
                             quote_char=cur_quote_char,
                             line_num=self.current_line_num,
                             col_num=self.current_column_num,
-                            stream=src)
+                            stream=self.src)
                 if self._cur_char == cur_quote_char:
                     self._get_next_char()
                     if self.escape_quote_by_doubling:

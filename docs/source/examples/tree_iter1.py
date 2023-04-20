@@ -14,8 +14,8 @@ burnin = 20
 source_files = [
         open("pythonidae.mcmc1.nex", "r"), # Note: for 'Tree.yield_from_files',
         open("pythonidae.mcmc2.nex", "r"), # sources can be specified as file
-        "pythonidae.mcmc3.nex", "r",       # objects or strings, with strings
-        "pythonidae.mcmc4.nex", "r",       # assumed to specify file paths
+        "pythonidae.mcmc3.nex",       # objects or strings, with strings
+        "pythonidae.mcmc4.nex",       # assumed to specify file paths
         ]
 tree_yielder = dendropy.Tree.yield_from_files(
         files=source_files,

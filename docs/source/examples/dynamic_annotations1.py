@@ -31,5 +31,4 @@ for node in tree.postorder_node_iter():
             node.taxon.category = "small"
         elif node.pop_size >= 2000:
             node.taxon.category = "tiny"
-print tree.as_string(schema="nexml")
-
+print(tree.as_string(schema="nexml"))

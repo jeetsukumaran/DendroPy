@@ -304,7 +304,7 @@ class TaxonNamespaceAssociated(object):
 
         """
         if taxon_namespace is None:
-            taxon_namespace = taxon.TaxonNamespace()
+            taxon_namespace = TaxonNamespace()
         self._taxon_namespace = taxon_namespace
         self.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
@@ -617,7 +617,7 @@ class TaxonNamespace(
         return id(self)
 
     def __lt__(self, other):
-        return self._taxa < o._taxa
+        return self._taxa < other._taxa
 
     def __eq__(self, other):
         # enforce non-equivalence of non-identical namespaces

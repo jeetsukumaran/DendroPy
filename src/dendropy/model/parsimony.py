@@ -397,7 +397,7 @@ def parsimony_score(
 
     """
     if tree.taxon_namespace is not chars.taxon_namespace:
-        raise TaxonNamespaceIdentityError(tree, data)
+        raise TaxonNamespaceIdentityError(tree, chars)
     taxon_state_sets_map = chars.taxon_state_sets_map(gaps_as_missing=gaps_as_missing)
     nodes = tree.postorder_node_iter()
     pscore = fitch_down_pass(nodes,
