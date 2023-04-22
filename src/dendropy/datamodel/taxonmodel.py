@@ -442,7 +442,7 @@ class TaxonNamespace(
     ### Life-cycle
 
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         Parameters
         ----------
 
@@ -1399,7 +1399,7 @@ class TaxonNamespace(
         return self._taxon_accession_index_map[taxon]
 
     def taxa_bitmask(self, **kwargs):
-        """
+        r"""
         Retrieves the list of split hash bitmask values representing all taxa
         specified by keyword-specified list of taxon objects (``taxa=``) or
         labels (``labels=``).
@@ -1431,7 +1431,7 @@ class TaxonNamespace(
 
     def taxa_bipartition(self,
             **kwargs):
-        """
+        r"""
         Returns a bipartition that represents all taxa specified by
         keyword-specified list of taxon objects (``taxa=``) or labels
         (``labels=``).
@@ -1602,7 +1602,7 @@ class TaxonNamespace(
     ### I/O
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 

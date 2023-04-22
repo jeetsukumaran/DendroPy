@@ -346,7 +346,7 @@ class DataSet(
             exclude_trees=False,
             exclude_chars=False,
             **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -579,7 +579,7 @@ class DataSet(
         return tree_list
 
     def new_tree_list(self, *args, **kwargs):
-        """
+        r"""
         Creates a new |TreeList| instance, adds it to this DataSet.
 
         Parameters

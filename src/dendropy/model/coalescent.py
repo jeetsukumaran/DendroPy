@@ -75,7 +75,7 @@ def discrete_time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=No
 
 
 def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
-    """
+    r"""
     A random draw from the "Kingman distribution" (discrete time version): Time
     to go from ``n_genes`` genes to ``n_genes``-1 genes in a continuous-time
     Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
@@ -83,7 +83,7 @@ def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
 
     Given the number of gene lineages in a sample, ``n_genes``, and a
     population size, ``pop_size``, this function returns a random number from
-    an exponential distribution with rate $\\choose(``pop_size``, 2)$.
+    an exponential distribution with rate $\choose(``pop_size``, 2)$.
     ``pop_size`` is the effective *haploid* population size; i.e., number of gene
     in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals. If ``pop_size`` is 1 or 0 or
@@ -94,11 +94,11 @@ def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
     The coalescence time, or the waiting time for the coalescence, of two
     gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $N$ an
-    expectation of $\\frac{1}{N}$).
+    expectation of $\frac{1}{N}$).
     The waiting time for coalescence of *any* two gene lineages in a sample of
     $n$ gene lineages evolving in a population with haploid size $N$ is an
-    exponentially-distributed random variable with rate of $\\choose{N, 2}$ and
-    an expectation of $\\frac{1}{\choose{N, 2}}$.
+    exponentially-distributed random variable with rate of $\choose{N, 2}$ and
+    an expectation of $\frac{1}{\choose{N, 2}}$.
 
     Parameters
     ----------
@@ -398,16 +398,16 @@ def extract_coalescent_frames(
 
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
-    """
+    r"""
     Under the classical neutral coalescent \citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    :math`\\frac{{k \choose 2}}{N_e}`::
+    :math`\frac{{k \choose 2}}{N_e}`::
 
         .. math::
 
-            \\Pr(T) =  \\frac{{k \\choose 2}}{N_e} \\e{-  \\frac{{k \\choose 2}}{N_e} T},
+            \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
 
     where $T$ is the length of  (chronological) time in which there are
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into

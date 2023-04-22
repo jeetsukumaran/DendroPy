@@ -537,7 +537,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         )
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
-        """
+        r"""
         Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
         ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.

@@ -37,7 +37,7 @@ class Tree(
     def _parse_and_create_from_stream(
         cls, stream, schema, collection_offset=None, tree_offset=None, **kwargs
     ):
-        """
+        r"""
         Constructs a new |Tree| object and populates it with data from
         file-like object ``stream``.
 
@@ -239,7 +239,7 @@ class Tree(
         return cls._get_from(**kwargs)
 
     def yield_from_files(cls, files, schema, taxon_namespace=None, **kwargs):
-        """
+        r"""
         Iterates over trees from files, returning them one-by-one instead of
         instantiating all of them in memory at once.
 
@@ -499,7 +499,7 @@ class Tree(
     from_split_bitmasks = classmethod(from_split_bitmasks)
 
     def node_factory(cls, **kwargs):
-        """
+        r"""
         Creates and returns a |Node| object.
 
         Derived classes can override this method to provide support for
@@ -522,7 +522,7 @@ class Tree(
     node_factory = classmethod(node_factory)
 
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         The constructor can optionally construct a |Tree| object by
         cloning another |Tree| object passed as the first positional
         argument, or out of a data source if ``stream`` and ``schema`` keyword
@@ -1187,7 +1187,7 @@ class Tree(
         )
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -1478,7 +1478,7 @@ class Tree(
         # return self.find_node_with_taxon(lambda x: x is taxon)
 
     def mrca(self, **kwargs):
-        """
+        r"""
         Returns most-recent common ancestor node of a set of taxa on the tree.
 
         Returns the shallowest node in the tree (the node nearest the tips)
@@ -1875,7 +1875,7 @@ class Tree(
         )
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
-        """
+        r"""
         Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
         ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.

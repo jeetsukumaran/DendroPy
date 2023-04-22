@@ -59,7 +59,7 @@ class TreeList(
             collection_offset=None,
             tree_offset=None,
             **kwargs):
-        """
+        r"""
         Constructs a new |TreeList| object and populates it with trees from
         file-like object ``stream``.
 
@@ -283,7 +283,7 @@ class TreeList(
     DEFAULT_TREE_TYPE = treemodel.Tree
 
     def tree_factory(cls, *args, **kwargs):
-        """
+        r"""
         Creates and returns a |Tree| of a type that this list understands how to
         manage.
 
@@ -516,7 +516,7 @@ class TreeList(
             collection_offset=None,
             tree_offset=None,
             **kwargs):
-        """
+        r"""
         Parses |Tree| objects from data source and adds to this collection.
 
         Notes
@@ -679,7 +679,7 @@ class TreeList(
         return basemodel.MultiReadable._read_from(self, **kwargs)
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -726,7 +726,7 @@ class TreeList(
             tree,
             taxon_import_strategy="migrate",
             **kwargs):
-        """
+        r"""
         Inserts a |Tree| object, ``tree``, into the collection before
         ``index``.
 
@@ -780,7 +780,7 @@ class TreeList(
             tree,
             taxon_import_strategy="migrate",
             **kwargs):
-        """
+        r"""
         Adds a |Tree| object, ``tree``, to the collection.
 
         The |TaxonNamespace| reference of ``tree`` will be set to that of
@@ -1714,7 +1714,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             summarize_splits=True,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Returns a consensus tree from splits in ``self``.
 
         Parameters
@@ -1770,7 +1770,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             is_bipartitions_updated=False,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Summarizes support of splits/edges/node on tree.
 
         Parameters
@@ -2368,7 +2368,7 @@ class TreeArray(
             files,
             schema,
             **kwargs):
-        """
+        r"""
         Adds multiple structures from one or more external file sources to the
         collection.
 
@@ -2846,7 +2846,7 @@ class TreeArray(
             summarize_splits=True,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Returns a consensus tree from splits in ``self``.
 
         Parameters
