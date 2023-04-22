@@ -85,6 +85,11 @@ Documentation
         DendroPy 4 is improved in *many* ways over DendroPy 3. However, some of the changes are significant enough to break code written for DendroPy 3. This reference provides an overview of these changes, as well as notes on how to fix, handle or otherwise work-around issues that might result from trying to run code written for DendroPy 3 under DendroPy 4.
 
 
+    :doc:`Developer Guide </developer>`
+
+        This reference provides how-to's for tasks like linting, testing, and releasing DendroPy. Great place to start for new contributors.
+
+
     :doc:`Change History </changes>`
 
         A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.

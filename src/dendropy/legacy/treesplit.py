@@ -93,8 +93,8 @@ d = bitprocessing.int_as_bitstring(..., reverse=True)""")
     return bitprocessing.int_as_bitstring(
             mask=split_mask,
             length=width,
-            symbol0=symbol0,
-            symbol1=symbol1,
+            symbol0=symbol1,
+            symbol1=symbol2,
             reverse=True)
 
 def find_edge_from_split(root, split_to_find, mask=-1):

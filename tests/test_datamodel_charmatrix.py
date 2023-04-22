@@ -898,7 +898,6 @@ class MatrixCreatingAndCloningTester(
                     "{}{}{}".format(seq.label, seq.taxon, idx))
             an2 = seq.annotations.add_bouseq_attribute("label")
             an3 = an1.annotations.add_bouseq_attribute("name")
-            ae3 = ae1.annotations.add_bouseq_attribute("name")
 
     def get_char_matrix(self, taxon_namespace=None):
         char_matrix = self.__class__.matrix_type(taxon_namespace=taxon_namespace)

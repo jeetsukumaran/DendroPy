@@ -17,6 +17,7 @@
 ##
 ##############################################################################
 
+import os
 import sys
 
 def ttysize():
@@ -27,8 +28,8 @@ def ttysize():
         if not ln1:
             raise ValueError('tty size not supported for input')
         vals = {'rows':None, 'columns':None}
-        for ph in string.split(ln1, ';'):
-            x = string.split(ph)
+        for ph in str.split(ln1, ';'):
+            x = str.split(ph)
             if len(x) == 2:
                 vals[x[0]] = x[1]
                 vals[x[1]] = x[0]

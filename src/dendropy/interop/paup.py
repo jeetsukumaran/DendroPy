@@ -329,7 +329,7 @@ class PaupService(object):
         self.commands.append("execute {}".format(filepath))
         if clear_trees:
             self.commands.append("cleartrees")
-        return commands
+        return self.commands
 
     def stage_load_trees(self,
             tree_filepaths,
@@ -555,7 +555,7 @@ def symmetric_difference(tree1, tree2):
     trees.write_to_stream(tf, schema='nexus')
     tf.flush()
     assert tree1.is_rooted == tree2.is_rooted
-    sd = get_split_distribution(
+    sd = trees.get_split_distribution_from_files(
             tree_filepaths=[tf.name],
             taxa_filepath=tf.name,
             is_rooted=tree1.is_rooted,

@@ -9,7 +9,7 @@ treelist1 = dendropy.TreeList.get(
 
 # Full deep copy by calling copy.deepcopy()
 # I.e. Everything cloned including Taxon and TaxonNamespace instances
-treelist2 = copy.deepcopy(treelist)
+treelist2 = copy.deepcopy(treelist1)
 
 # *different* tree instances
 for t1, t2 in zip(treelist1, treelist2):

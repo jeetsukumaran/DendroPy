@@ -27,4 +27,4 @@ dataset.annotations.add_citation(citation,
         store_as="prism")
 dataset.annotations.add_citation(citation,
         store_as="dublin")
-print dataset.as_string(schema="nexml")
+print(dataset.as_string(schema="nexml"))

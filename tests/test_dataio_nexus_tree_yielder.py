@@ -58,7 +58,7 @@ class NexusTreeYielderDefaultTestCase(
         tree_files = []
         for file_idx, tree_file_title in enumerate(tree_file_titles):
             tree_filepath = self.schema_tree_filepaths[tree_file_title]
-            if False and idx % 2 == 0:
+            if False and file_idx % 2 == 0:
                 tree_files.append(open(tree_filepath, "r"))
             else:
                 tree_files.append(tree_filepath)

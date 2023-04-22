@@ -1804,17 +1804,17 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
     def _get_taxon_set(self):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
         return self.taxon_namespace
 
     def _set_taxon_set(self, v):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
         self.taxon_namespace = v
 
     def _del_taxon_set(self):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
 
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
@@ -2485,7 +2485,7 @@ class TreeArray(
     ##############################################################################
     ## Container (List) Interface
 
-    def append(tree, is_bipartitions_updated=False):
+    def append(self, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2505,7 +2505,7 @@ class TreeArray(
         return self.add_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
 
-    def insert(index, tree, is_bipartitions_updated=False):
+    def insert(self, index, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2553,7 +2553,7 @@ class TreeArray(
         assert self.use_tree_weights is tree_array.use_tree_weights
         self._tree_split_bitmasks.extend(tree_array._tree_split_bitmasks)
         self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
-        self._tree_weights.extend(other._tree_weights)
+        self._tree_weights.extend(tree_array._tree_weights)
         self._split_distribution.update(tree_array._split_distribution)
         return self
 

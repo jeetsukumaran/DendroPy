@@ -30,6 +30,11 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import compare_and_validate
 
+if sys.version_info[0] == 2:
+    from collections import Iterable
+else:
+    from collections.abc import Iterable
+
 class TaxonIdentity(compare_and_validate.Comparator, unittest.TestCase):
 
     def setUp(self):
@@ -368,7 +373,7 @@ class TaxonNamespaceTaxonManagement(unittest.TestCase):
         for label in multilabels:
             tns.is_case_sensitive=True
             taxa = tns.findall(label=label)
-            self.assertTrue(isinstance(taxa, collections.Iterable))
+            self.assertTrue(isinstance(taxa, Iterable))
             self.assertEqual(len(taxa), len([s for s in self.str_labels if s == label]))
             for t in taxa:
                 self.assertEqual(t.label, label)

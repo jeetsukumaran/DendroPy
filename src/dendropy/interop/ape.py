@@ -121,9 +121,15 @@ else:
         rfunc(*args, **kwargs)
         _R('sink(type="message")')
         _R('sink()')
-        i = open(stdoutf.name, "rU")
+        try:
+            i = open(stdoutf.name, "rU")
+        except ValueError:
+            i = open(stdoutf.name, "r")
         stdout = i.read()
-        i = open(stderrf.name, "rU")
+        try:
+            i = open(stderrf.name, "rU")
+        except ValueError:
+            i = open(stdoutf.name, "r")
         stderr = i.read()
         return stdout, stderr
 

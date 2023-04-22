@@ -117,6 +117,7 @@ class DiscreteCharacterEvolver(object):
             seq_model = getattr(tree, self.seq_model_attr, None)
 
         # loop through edges in preorder (root->tips)
+        n_prev_seq = None  # to mollify linter undefined variable warning
         for edge in tree.preorder_edge_iter():
             node = edge.head_node
             if not hasattr(node, self.seq_attr):
@@ -124,6 +125,7 @@ class DiscreteCharacterEvolver(object):
             seq_list = getattr(node, self.seq_attr)
             if edge.tail_node:
                 par = edge.tail_node
+                assert n_prev_seq is not None
                 if len(seq_list) != n_prev_seq:
                     raise ValueError("'%s' length varies among nodes" % self.seq_attr)
                 par_seq = getattr(par, self.seq_attr)[-1]

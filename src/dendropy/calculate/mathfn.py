@@ -21,6 +21,8 @@
 Some common mathematical functions.
 """
 
+import functools
+
 def gcd(a, b):
     """Return greatest common divisor using Euclid's Algorithm."""
     while b:
@@ -33,5 +35,4 @@ def lcm(a, b):
 
 def LCM(*args):
     """Return lcm of args."""
-    return reduce(lcm, args)
-
+    return functools.reduce(lcm, args)

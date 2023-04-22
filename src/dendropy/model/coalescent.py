@@ -489,7 +489,7 @@ def contained_coalescent_tree(
             tree nodes that are uncoalesced as values.
 
     Note that this function does very much the same thing as
-    ``constrained_kingman()``, but provides a very different API.
+    ``constrained_kingman_tree()``, but provides a very different API.
     """
 
     if rng is None:
@@ -498,7 +498,7 @@ def contained_coalescent_tree(
     gene_tree_taxon_namespace = gene_to_containing_taxon_map.domain_taxon_namespace
     if gene_tree_taxon_namespace is None:
         gene_tree_taxon_namespace = dendropy.TaxonNamespace()
-        for gene_taxa in pop_gene_taxa_map:
+        for gene_taxa in gene_to_containing_taxon_map:
             for taxon in gene_taxa:
                 gene_tree_taxon_namespace.add(taxon)
     gene_tree = dendropy.Tree(taxon_namespace=gene_tree_taxon_namespace)
@@ -680,7 +680,13 @@ def constrained_kingman_tree(
     each node of the population tree is added to the original (input) population
     tree instead of a copy.
 
-    Note that this function does very much the same thing as ``contained_coalescent()``,
+    If ``num_genes`` is None, then it will be set to 1 under the
+    "node_attribute" strategy (serving as a fallback default for nodes that do
+    not spcify ``num_genes_attr``) or the leaf count of ``pop_tree`` under the
+    ``random_uniform`` strategy.
+
+    Note that this function does very much the same thing as
+    ``contained_coalescent_tree()``,
     but provides a very different API.
     """
 
@@ -695,6 +701,16 @@ def constrained_kingman_tree(
 
     if gene_node_label_fn is None:
         gene_node_label_fn = lambda x, y: "%s_%02d" % (x, y)
+
+    # @MAM taking a stab at a reasonable default for num_genes,
+    # it may make sense to do something else entirely here
+    if num_genes is None:
+        if gene_sampling_strategy == "random_uniform":
+            num_genes = sum(1 for __ in pop_tree.leaf_node_iter())
+        elif gene_sampling_strategy == "node_attribute":
+            num_genes = 1
+        else:
+            num_genes = None
 
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
@@ -728,7 +744,9 @@ def constrained_kingman_tree(
             except:
                 leaf.gene_nodes = [ gene_node ]
     else:
-        raise ValueError(f"Unrecognized strategy '{gene_sampling_strategy}'")
+        raise ValueError("Unrecognized strategy '{}'".format(
+            gene_sampling_strategy
+        ))
 
     # We iterate through the edges of the population tree in post-order,
     # i.e., visiting child edges before we visit parent edges. For
