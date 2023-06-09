@@ -567,7 +567,9 @@ def hky85_chars(
     seq_model = Hky85(
             kappa=kappa,
             base_freqs=base_freqs,
-            state_alphabet=state_alphabet)
+            state_alphabet=state_alphabet,
+            rng=rng,
+    )
     return simulate_discrete_chars(seq_len=seq_len,
                                tree_model=tree_model,
                                seq_model=seq_model,
