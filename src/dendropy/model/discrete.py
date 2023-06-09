@@ -132,7 +132,10 @@ class DiscreteCharacterEvolver(object):
                 seq_model  = getattr(edge, self.seq_model_attr, None) or self.seq_model
                 length = getattr(edge, self.edge_length_attr)
                 mutation_rate = getattr(edge, self.edge_rate_attr, None) or self.mutation_rate
-                seq_list.append(seq_model.simulate_descendant_states(par_seq, length, mutation_rate))
+                seq_list.append(seq_model.simulate_descendant_states(par_seq,
+                                                                     length,
+                                                                     mutation_rate,
+                                                                     rng=rng))
             else:
                 # no tail node: root
                 n_prev_seq = len(seq_list)
@@ -564,7 +567,9 @@ def hky85_chars(
     seq_model = Hky85(
             kappa=kappa,
             base_freqs=base_freqs,
-            state_alphabet=state_alphabet)
+            state_alphabet=state_alphabet,
+            rng=rng,
+    )
     return simulate_discrete_chars(seq_len=seq_len,
                                tree_model=tree_model,
                                seq_model=seq_model,
