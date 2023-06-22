@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install python-pip python2 libpython2.7  # required by paup
+          sudo apt-get install python2 libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Install paup
@@ -104,6 +104,7 @@ jobs:
         if: matrix.python-version == '2.7'
         run: |
           rm tests/dendropy
+          curl --silent --show-error --retry 5 https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2
           python2 -m pip install setuptools --upgrade
           python2 setup.py test
       - name: Test with setup.py
