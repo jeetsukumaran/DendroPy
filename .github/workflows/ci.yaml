@@ -135,6 +135,55 @@ jobs:
         flags: unittests # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
+  packaging-bdist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install build tools
+        run: python3 -m pip install pip setuptools wheel --upgrade
+      - name: Build bdist
+        run: |
+          python3 setup.py bdist_wheel
+          tree dist
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from bdist
+        run: python3 -m pip install dist/*.whl
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
+  packaging-sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install build tools
+        run: python3 -m pip install pip setuptools wheel --upgrade
+      - name: Build sdist
+        run: |
+          python3 setup.py sdist
+          tree dist
+      - name: Install from sdist
+        run: python3 -m pip install dist/*.tar.gz
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
+  packaging-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from source
+        run: python3 -m pip install .
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
