@@ -9,7 +9,6 @@ jobs:
       fail-fast: False
       matrix:
         python-version:
-          - "2.7"
           - "3.6"
           - "3.7"
           - "3.8"
@@ -84,11 +83,13 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
+        continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get install libpython2.7  # required by paup
+          sudo apt-get update
+          sudo apt-get install python2 libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Install paup
@@ -103,7 +104,11 @@ jobs:
         if: matrix.python-version == '2.7'
         run: |
           rm tests/dendropy
+          curl --silent --show-error --retry 5 https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2
+          python2 -m pip install setuptools --upgrade
+          python2 setup.py test
       - name: Test with setup.py
+        if: matrix.python-version != '2.7'
         run: |
           python setup.py test
   coverage:
@@ -135,6 +140,55 @@ jobs:
         flags: unittests # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
+  packaging-bdist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install build tools
+        run: python3 -m pip install pip setuptools wheel --upgrade
+      - name: Build bdist
+        run: |
+          python3 setup.py bdist_wheel
+          tree dist
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from bdist
+        run: python3 -m pip install dist/*.whl
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
+  packaging-sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install build tools
+        run: python3 -m pip install pip setuptools wheel --upgrade
+      - name: Build sdist
+        run: |
+          python3 setup.py sdist
+          tree dist
+      - name: Install from sdist
+        run: python3 -m pip install dist/*.tar.gz
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
+  packaging-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from source
+        run: python3 -m pip install .
+      - name: Test install
+        run: |
+          find . -type f -name '*.py' -exec rm {} \;
+          python3 -c "import dendropy; print(dendropy.__version__)"
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
