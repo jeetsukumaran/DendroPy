@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install pytho-pip python2 libpython2.7  # required by paup
+          sudo apt-get install python-pip python2 libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Install paup
