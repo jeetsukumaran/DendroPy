@@ -104,6 +104,7 @@ jobs:
         if: matrix.python-version == '2.7'
         run: |
           rm tests/dendropy
+          python2 -m pip install setuptools --upgrade
           python2 setup.py test
       - name: Test with setup.py
         if: matrix.python-version != '2.7'
