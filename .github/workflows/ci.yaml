@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
   examples:
     runs-on: ubuntu-20.04
+    # https://github.com/actions/setup-python/issues/672#issuecomment-1589120020
+    container:
+      image: python:2.7.18-buster
     strategy:
       fail-fast: False
       matrix:
@@ -68,9 +71,9 @@ jobs:
           ./lint.sh
   tests:
     runs-on: ubuntu-20.04
-      # https://github.com/actions/setup-python/issues/672#issuecomment-1589120020
-      container:
-        image: python:2.7.18-buster
+    # https://github.com/actions/setup-python/issues/672#issuecomment-1589120020
+    container:
+      image: python:2.7.18-buster
     strategy:
       fail-fast: False
       matrix:
