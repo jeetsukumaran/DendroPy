@@ -1622,7 +1622,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         return siblings.pop(0), levels_moved
 
     def _convert_node_to_root_polytomy(self):
-        """If ``self`` has two children and at least on of them is an internal node,
+        """If ``self`` has two children and at least one of them is an internal node,
         then it will be converted to an out-degree three node (with the edge length
         added as needed).
 
