@@ -95,7 +95,7 @@ else:
 EXTRA_KWARGS = dict(
     install_requires = ['setuptools'],
     include_package_data = True,
-    test_suite = "tests",
+    test_suite = "tests.unittests",
     zip_safe = True,
     )
 
