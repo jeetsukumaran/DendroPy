@@ -180,7 +180,7 @@ class Bipartition(object):
             least-signficant bit correspodning to the second taxon, and so on,
             till the last taxon corresponding to the most-significant bit.
             Taxon membership in one of two arbitrary groups, '0' or '1', is
-            indicated by its correspondign bit being unset or set,
+            indicated by its corresponding bit being unset or set,
             respectively.
         leafset_bitmask : integer
             A bit array representing the presence or absence of taxa in the
