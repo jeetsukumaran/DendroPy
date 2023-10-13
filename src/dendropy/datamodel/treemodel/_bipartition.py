@@ -103,14 +103,14 @@ class Bipartition(object):
 
     """
 
+    @staticmethod
     def normalize_bitmask(bitmask, fill_bitmask, lowest_relevant_bit=1):
         if bitmask & lowest_relevant_bit:
             return (~bitmask) & fill_bitmask  # force least-significant bit to 0
         else:
             return bitmask & fill_bitmask  # keep least-significant bit as 0
 
-    normalize_bitmask = staticmethod(normalize_bitmask)
-
+    @staticmethod
     def is_trivial_bitmask(bitmask, fill_bitmask):
         """
         Returns True if the bitmask occurs in any tree of the taxa ``mask`` -- if
@@ -127,13 +127,11 @@ class Bipartition(object):
             return True
         return False
 
-    is_trivial_bitmask = staticmethod(is_trivial_bitmask)
-
+    @staticmethod
     def is_trivial_leafset(leafset_bitmask):
         return bitprocessing.num_set_bits(leafset_bitmask) == 1
 
-    is_trivial_leafset = staticmethod(is_trivial_leafset)
-
+    @staticmethod
     def is_compatible_bitmasks(m1, m2, fill_bitmask):
         """
         Returns |True| if ``m1`` is compatible with ``m2``
@@ -164,8 +162,6 @@ class Bipartition(object):
         if 0 == (c1 & c2):
             return True
         return False
-
-    is_compatible_bitmasks = staticmethod(is_compatible_bitmasks)
 
     ## Life-cycle
 

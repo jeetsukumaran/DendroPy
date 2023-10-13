@@ -104,6 +104,7 @@ class DataSet(
 
     """
 
+    @classmethod
     def _parse_and_create_from_stream(cls,
             stream,
             schema,
@@ -129,7 +130,6 @@ class DataSet(
                 state_alphabet_factory=charstatemodel.StateAlphabet,
                 )
         return dataset
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):

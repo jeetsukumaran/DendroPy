@@ -53,6 +53,7 @@ class TreeList(
     object reference.
     """
 
+    @classmethod
     def _parse_and_create_from_stream(cls,
             stream,
             schema,
@@ -206,7 +207,6 @@ class TreeList(
         #         tree_offset=tree_offset,
         #         **kwargs)
         # return tree_list
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):
@@ -282,6 +282,7 @@ class TreeList(
 
     DEFAULT_TREE_TYPE = treemodel.Tree
 
+    @classmethod
     def tree_factory(cls, *args, **kwargs):
         r"""
         Creates and returns a |Tree| of a type that this list understands how to
@@ -310,7 +311,6 @@ class TreeList(
         """
         tree = cls.DEFAULT_TREE_TYPE(*args, **kwargs)
         return tree
-    tree_factory = classmethod(tree_factory)
 
     ###########################################################################
     ### Lifecycle and Identity

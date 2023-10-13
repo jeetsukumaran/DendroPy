@@ -41,6 +41,7 @@ class GenBankResourceStore(object):
     Base GenBank data acquisition and manager class.
     """
 
+    @staticmethod
     def parse_xml(**kwargs):
         if "stream" in kwargs and "string" in kwargs:
             raise TypeError("Cannot specify both 'stream' and 'string'")
@@ -69,8 +70,8 @@ class GenBankResourceStore(object):
                 gb_rec = GenBankAccessionRecord(xml=seq)
                 gb_recs.append(gb_rec)
         return gb_recs
-    parse_xml = staticmethod(parse_xml)
 
+    @staticmethod
     def fetch_xml(db, ids, prefix=None, email=None, as_stream=False, str_decoding="utf-8"):
         stream = entrez.efetch(db=db,
                 ids=ids,
@@ -81,8 +82,8 @@ class GenBankResourceStore(object):
             return stream
         else:
             return stream.read().decode(str_decoding)
-    fetch_xml = staticmethod(fetch_xml)
 
+    @staticmethod
     def prepare_ids(ids, prefix=None):
         if prefix is None:
             prefix = ""
@@ -90,7 +91,6 @@ class GenBankResourceStore(object):
         #     ids[idx] = "%s%s" % (prefix, i)
         ids = ["%s%s" % (prefix, i) for i in ids]
         return ids
-    prepare_ids = staticmethod(prepare_ids)
 
     class AccessionFetchError(Exception):
         def __init__(self, missing, response=None):

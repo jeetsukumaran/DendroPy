@@ -357,12 +357,12 @@ class TopologyCounter(object):
     Tracks frequency of occurrences of topologies.
     """
 
+    @staticmethod
     def hash_topology(tree):
         """
         Set of all splits on tree: default topology hash.
         """
         return frozenset(tree.bipartition_encoding)
-    hash_topology = staticmethod(hash_topology)
 
     def __init__(self):
         self.topology_hash_map = {}
