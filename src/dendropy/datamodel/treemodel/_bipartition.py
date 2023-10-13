@@ -93,10 +93,10 @@ class Bipartition(object):
     hand, under the LSB scheme, the bitmask for taxon 1 will be 0b0001 == 1 if
     there are 4 taxa, and 0b00001 == 1 if there 5 taxa, and so on. This
     stability of taxon indexes even as the taxon namespace grows is a strongly
-    desirable property, and this the adoption of the LSB scheme.
+    desirable property, and thus the adoption of the LSB scheme.
 
     Constraining the first taxon to be in group 0 (LSB-0) rather than group 1
-    (LSB-1) is motivated by the fact that, in the former, we can would combine
+    (LSB-1) is motivated by the fact that, in the former, we would combine
     the bitmasks of child nodes using OR (logical addition) operations when
     calculating the bitmask for a parent node, whereas, with the latter, we
     would need to use AND operations. The former strikes us as more intuitive.
