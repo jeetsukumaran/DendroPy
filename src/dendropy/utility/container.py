@@ -225,13 +225,13 @@ class NormalizedBitmaskDict(collections.OrderedDict):
     'fill_bitmask'.
     """
 
+    @staticmethod
     def least_significant_set_bit(s):
         """
         Returns least-significant bit in integer 's' that is set.
         """
         m = s & (s - 1)
         return m ^ s
-    least_significant_set_bit = staticmethod(least_significant_set_bit)
 
     # this is for the least-significant-bit-is-1 normalization convention
     # def normalize(key, fill_bitmask, lowest_relevant_bit):
@@ -242,12 +242,12 @@ class NormalizedBitmaskDict(collections.OrderedDict):
     # normalize = staticmethod(normalize)
 
     # this is for the least-significant-bit-is-0 normalization convention
+    @staticmethod
     def normalize(key, fill_bitmask, lowest_relevant_bit):
         if key & lowest_relevant_bit:
             return (~key) & fill_bitmask             # force least-significant bit to 0
         else:
             return key & fill_bitmask                # keep least-significant bit as 0
-    normalize = staticmethod(normalize)
 
     def __init__(self, other=None, fill_bitmask=None):
         """

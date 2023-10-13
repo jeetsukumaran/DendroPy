@@ -76,12 +76,12 @@ class SeqGen(object):
     MODELS = [F84, HKY, GTR, JTT, WAG, PAM, BLOSUM, MTREV, CPREV, GENERAL]
     MODEL_IDS = [str(m) for m in MODELS]
 
+    @staticmethod
     def get_model(idstr):
         for model in SeqGen.MODELS:
             if idstr.upper() == model.idstr.upper():
                 return model
         return None
-    get_model = staticmethod(get_model)
 
     def __init__(
         self,

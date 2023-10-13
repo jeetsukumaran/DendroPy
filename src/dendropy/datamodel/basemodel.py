@@ -121,6 +121,7 @@ class Deserializable(object):
     Mixin class which all classes that require deserialization should subclass.
     """
 
+    @classmethod
     def _parse_and_create_from_stream(cls, stream, schema, **kwargs):
         """
         Subclasses need to implement this method to create
@@ -128,8 +129,8 @@ class Deserializable(object):
         stream.
         """
         raise NotImplementedError
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
+    @classmethod
     def _get_from(cls, **kwargs):
         """
         Factory method to return new object of this class from an external
@@ -160,8 +161,8 @@ class Deserializable(object):
             return cls.get_from_url(src=src, schema=schema, **kwargs)
         else:
             raise ValueError("Unsupported source type: {}".format(src_type))
-    _get_from = classmethod(_get_from)
 
+    @classmethod
     def get_from_stream(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file-like object
@@ -188,8 +189,8 @@ class Deserializable(object):
         return cls._parse_and_create_from_stream(stream=src,
                 schema=schema,
                 **kwargs)
-    get_from_stream = classmethod(get_from_stream)
 
+    @classmethod
     def get_from_path(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file
@@ -218,8 +219,8 @@ class Deserializable(object):
             return cls._parse_and_create_from_stream(stream=fsrc,
                     schema=schema,
                     **kwargs)
-    get_from_path = classmethod(get_from_path)
 
+    @classmethod
     def get_from_string(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from string ``src``.
@@ -246,8 +247,8 @@ class Deserializable(object):
         return cls._parse_and_create_from_stream(stream=ssrc,
                 schema=schema,
                 **kwargs)
-    get_from_string = classmethod(get_from_string)
 
+    @classmethod
     def get_from_url(cls, src, schema, strip_markup=False, **kwargs):
         """
         Factory method to return a new object of this class from
@@ -281,8 +282,6 @@ class Deserializable(object):
         except error.DataParseError as exc:
             exc.url_text = text
             raise
-    get_from_url = classmethod(get_from_url)
-
 
 ##############################################################################
 ## MultiReadabe

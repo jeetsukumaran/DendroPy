@@ -276,6 +276,7 @@ class FishersExactTest(object):
     the categories represented by the vertical and horizontal axes.
     """
 
+    @staticmethod
     def probability_of_table(table):
         """
         Given a 2x2 table:
@@ -302,7 +303,6 @@ class FishersExactTest(object):
         c = table[1][0]
         d = table[1][1]
         return probability.hypergeometric_pmf(a, a+b, c+d, a+c)
-    probability_of_table = staticmethod(probability_of_table)
 
     def __init__(self, table):
         self.table = table

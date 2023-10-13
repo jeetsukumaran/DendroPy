@@ -34,6 +34,7 @@ class Tree(
     semantically equivalent to the root.
     """
 
+    @classmethod
     def _parse_and_create_from_stream(
         cls, stream, schema, collection_offset=None, tree_offset=None, **kwargs
     ):
@@ -150,8 +151,6 @@ class Tree(
         tree.label = label
         return tree
 
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
-
     @classmethod
     def get(cls, **kwargs):
         """
@@ -238,6 +237,7 @@ class Tree(
         """
         return cls._get_from(**kwargs)
 
+    @classmethod
     def yield_from_files(cls, files, schema, taxon_namespace=None, **kwargs):
         r"""
         Iterates over trees from files, returning them one-by-one instead of
@@ -321,8 +321,7 @@ class Tree(
         )
         return tree_yielder
 
-    yield_from_files = classmethod(yield_from_files)
-
+    @classmethod
     def from_bipartition_encoding(
         cls,
         bipartition_encoding,
@@ -372,8 +371,7 @@ class Tree(
             is_rooted=is_rooted,
         )
 
-    from_bipartition_encoding = classmethod(from_bipartition_encoding)
-
+    @classmethod
     def from_split_bitmasks(
         cls,
         split_bitmasks,
@@ -496,8 +494,7 @@ class Tree(
                 # reconstructed_tree.split_edge_map[split_to_add] = new_edge
         return reconstructed_tree
 
-    from_split_bitmasks = classmethod(from_split_bitmasks)
-
+    @classmethod
     def node_factory(cls, **kwargs):
         r"""
         Creates and returns a |Node| object.
@@ -518,8 +515,6 @@ class Tree(
 
         """
         return _node.Node(**kwargs)
-
-    node_factory = classmethod(node_factory)
 
     def __init__(self, *args, **kwargs):
         r"""

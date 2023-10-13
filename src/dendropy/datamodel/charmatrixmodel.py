@@ -504,6 +504,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Factory (Class) Methods
 
+    @classmethod
     def _parse_and_create_from_stream(cls,
             stream,
             schema,
@@ -536,7 +537,6 @@ class CharacterMatrix(
                     char_matrix.data_type,
                     cls.data_type))
         return char_matrix
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):
@@ -605,6 +605,7 @@ class CharacterMatrix(
         """
         return cls._get_from(**kwargs)
 
+    @classmethod
     def concatenate(cls, char_matrices):
         """
         Creates and returns a single character matrix from multiple
@@ -645,8 +646,8 @@ class CharacterMatrix(
             concatenated_chars.new_character_subset(character_indices=character_indices,
                     label=cs_label)
         return concatenated_chars
-    concatenate = classmethod(concatenate)
 
+    @classmethod
     def concatenate_from_streams(cls, streams, schema, **kwargs):
         """
         Read a character matrix from each file object given in ``streams``,
@@ -664,8 +665,8 @@ class CharacterMatrix(
             char_matrices.append(cls.get_from_stream(stream,
                 schema=schema, **kwargs))
         return cls.concatenate(char_matrices)
-    concatenate_from_streams = classmethod(concatenate_from_streams)
 
+    @classmethod
     def concatenate_from_paths(cls, paths, schema, **kwargs):
         """
         Read a character matrix from each file path given in ``paths``, assuming
@@ -679,8 +680,8 @@ class CharacterMatrix(
         except ValueError:
             streams = [open(path, "r") for path in paths]
         return cls.concatenate_from_streams(streams, schema, **kwargs)
-    concatenate_from_paths = classmethod(concatenate_from_paths)
 
+    @classmethod
     def from_dict(cls,
             source_dict,
             char_matrix=None,
@@ -761,7 +762,6 @@ class CharacterMatrix(
             s = char_matrix.coerce_values(source_dict[key])
             char_matrix[taxon] = s
         return char_matrix
-    from_dict = classmethod(from_dict)
 
     ###########################################################################
     ### Lifecycle and Identity
