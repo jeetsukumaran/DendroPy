@@ -12,6 +12,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
     A :term:|Node| on a :term:|Tree|.
     """
 
+    @classmethod
     def edge_factory(cls, **kwargs):
         """
         Creates and returns a |Edge| object.
@@ -32,8 +33,6 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
         """
         return _edge.Edge(**kwargs)
-
-    edge_factory = classmethod(edge_factory)
 
     def __init__(self, **kwargs):
         """
