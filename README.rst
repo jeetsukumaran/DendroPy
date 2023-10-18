@@ -68,5 +68,5 @@ Developers
 ==========
 
 - `Jeet Sukumaran <https://sukumaranlab.org/people/>`_
-- `Mark Holder <https://phylo.bio.ku.edu/content/mark-t-holder>`
+- `Mark Holder <https://phylo.bio.ku.edu/content/mark-t-holder>`_
 - `Matthew Andres Moreno <https://mmore500.com/>`_
