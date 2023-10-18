@@ -63,3 +63,10 @@ License and Warranty
 ====================
 
 Please see the file "LICENSE.rst" for details.
+
+Developers
+==========
+
+- [Jeet Sukumaran](https://sukumaranlab.org/people/)
+- [Mark Holder](https://phylo.bio.ku.edu/content/mark-t-holder)
+- [Matthew Andres Moreno](https://mmore500.com/)
