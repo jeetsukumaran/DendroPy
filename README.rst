@@ -34,7 +34,7 @@ DendroPy is also hosted in the official Python repository:
 Requirements and Installation
 =============================
 
-DendroPy 4.x runs under Python 3 (all versions > 3.1) and Python 2 (Python 2.7 only).
+The current version of DendroPy requires Python 3:
 
 You can install DendroPy by running::
 
