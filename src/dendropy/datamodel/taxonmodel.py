@@ -304,7 +304,7 @@ class TaxonNamespaceAssociated(object):
 
         """
         if taxon_namespace is None:
-            taxon_namespace = taxon.TaxonNamespace()
+            taxon_namespace = TaxonNamespace()
         self._taxon_namespace = taxon_namespace
         self.reconstruct_taxon_namespace(
                 unify_taxa_by_label=unify_taxa_by_label,
@@ -442,7 +442,7 @@ class TaxonNamespace(
     ### Life-cycle
 
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         Parameters
         ----------
 
@@ -617,7 +617,7 @@ class TaxonNamespace(
         return id(self)
 
     def __lt__(self, other):
-        return self._taxa < o._taxa
+        return self._taxa < other._taxa
 
     def __eq__(self, other):
         # enforce non-equivalence of non-identical namespaces
@@ -1399,7 +1399,7 @@ class TaxonNamespace(
         return self._taxon_accession_index_map[taxon]
 
     def taxa_bitmask(self, **kwargs):
-        """
+        r"""
         Retrieves the list of split hash bitmask values representing all taxa
         specified by keyword-specified list of taxon objects (``taxa=``) or
         labels (``labels=``).
@@ -1431,7 +1431,7 @@ class TaxonNamespace(
 
     def taxa_bipartition(self,
             **kwargs):
-        """
+        r"""
         Returns a bipartition that represents all taxa specified by
         keyword-specified list of taxon objects (``taxa=``) or labels
         (``labels=``).
@@ -1602,7 +1602,7 @@ class TaxonNamespace(
     ### I/O
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 

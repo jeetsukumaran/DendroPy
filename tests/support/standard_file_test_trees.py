@@ -245,7 +245,7 @@ class StandardTestTreesChecker(object):
                     if not self.__class__.is_distinct_taxa_and_labels_on_tree:
                         self.assertIsNot(node.taxon, None)
                         self.assertEqual(node.taxon.label, ref_node_label)
-                        self.assertIs(ch.label, None)
+                        self.assertIs(node.label, None)
                         obs_taxa.append(node.taxon)
                     else:
                         obs_taxa.append(node.label)
@@ -262,7 +262,7 @@ class StandardTestTreesChecker(object):
                     self.assertIsNot(node.taxon, None)
                     self.assertEqual(node.taxon.label, ref_node_label)
                     if not self.__class__.is_distinct_taxa_and_labels_on_tree:
-                        self.assertIs(ch.label, None)
+                        self.assertIs(node.label, None)
                     obs_taxa.append(node.taxon)
             if node.parent_node is not None:
                 if node.parent_node.is_internal:

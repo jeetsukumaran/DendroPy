@@ -109,6 +109,7 @@ class GbifDataProvenance(object):
 
 class GbifOccurrenceRecord(object):
 
+    @staticmethod
     def parse_from_stream(stream):
         xml_doc = xmlprocessing.XmlDocument(file_obj=stream,
                 subelement_factory=GbifXmlElement)
@@ -118,7 +119,6 @@ class GbifOccurrenceRecord(object):
             gbo.parse_taxon_occurrence_xml(txo)
             gb_recs.append(gbo)
         return gb_recs
-    parse_from_stream = staticmethod(parse_from_stream)
 
     def __init__(self):
         self.gbif_key = None

@@ -1159,7 +1159,7 @@ def uniform_pure_birth_tree(taxon_namespace, birth_rate=1.0, rng=None):
     return tree
 
 def fit_pure_birth_model(**kwargs):
-    """
+    r"""
     Calculates the maximum-likelihood estimate of the birth rate of a set of *internal* node ages under a Yule (pure-birth) model.
 
     Requires either a |Tree| object or an interable of *internal* node ages to be passed in via keyword arguments ``tree`` or ``internal_node_ages``, respectively. The former is more convenient when doing one-off calculations, while the latter is more efficient if the list of internal node ages needs to be used in other places and you already have it calculated and want to avoid re-calculating it here.
@@ -1310,7 +1310,7 @@ def fit_pure_birth_model_to_tree(tree, ultrametricity_precision=constants.DEFAUL
 
 
 def birth_death_likelihood(**kwargs):
-    """
+    r"""
     Calculates the log-likelihood of a tree (or a set of internal nodes) under
     a birth death model.
 

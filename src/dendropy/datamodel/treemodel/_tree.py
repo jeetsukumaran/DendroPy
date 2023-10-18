@@ -8,12 +8,15 @@ from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
 from dendropy.utility import constants
+from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import messaging
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.datamodel.treemodel import _bipartition
 from dendropy.datamodel.treemodel import _node
 from dendropy import dataio
 
+_LOG = messaging.get_logger(__name__)
 
 class Tree(
     taxonmodel.TaxonNamespaceAssociated,
@@ -31,10 +34,11 @@ class Tree(
     semantically equivalent to the root.
     """
 
+    @classmethod
     def _parse_and_create_from_stream(
         cls, stream, schema, collection_offset=None, tree_offset=None, **kwargs
     ):
-        """
+        r"""
         Constructs a new |Tree| object and populates it with data from
         file-like object ``stream``.
 
@@ -147,8 +151,6 @@ class Tree(
         tree.label = label
         return tree
 
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
-
     @classmethod
     def get(cls, **kwargs):
         """
@@ -235,8 +237,9 @@ class Tree(
         """
         return cls._get_from(**kwargs)
 
+    @classmethod
     def yield_from_files(cls, files, schema, taxon_namespace=None, **kwargs):
-        """
+        r"""
         Iterates over trees from files, returning them one-by-one instead of
         instantiating all of them in memory at once.
 
@@ -318,8 +321,7 @@ class Tree(
         )
         return tree_yielder
 
-    yield_from_files = classmethod(yield_from_files)
-
+    @classmethod
     def from_bipartition_encoding(
         cls,
         bipartition_encoding,
@@ -369,8 +371,7 @@ class Tree(
             is_rooted=is_rooted,
         )
 
-    from_bipartition_encoding = classmethod(from_bipartition_encoding)
-
+    @classmethod
     def from_split_bitmasks(
         cls,
         split_bitmasks,
@@ -493,10 +494,9 @@ class Tree(
                 # reconstructed_tree.split_edge_map[split_to_add] = new_edge
         return reconstructed_tree
 
-    from_split_bitmasks = classmethod(from_split_bitmasks)
-
+    @classmethod
     def node_factory(cls, **kwargs):
-        """
+        r"""
         Creates and returns a |Node| object.
 
         Derived classes can override this method to provide support for
@@ -516,10 +516,8 @@ class Tree(
         """
         return _node.Node(**kwargs)
 
-    node_factory = classmethod(node_factory)
-
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         The constructor can optionally construct a |Tree| object by
         cloning another |Tree| object passed as the first positional
         argument, or out of a data source if ``stream`` and ``schema`` keyword
@@ -1184,7 +1182,7 @@ class Tree(
         )
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -1475,7 +1473,7 @@ class Tree(
         # return self.find_node_with_taxon(lambda x: x is taxon)
 
     def mrca(self, **kwargs):
-        """
+        r"""
         Returns most-recent common ancestor node of a set of taxa on the tree.
 
         Returns the shallowest node in the tree (the node nearest the tips)
@@ -1550,10 +1548,7 @@ class Tree(
         if start_node.edge.bipartition.leafset_bitmask == 0 or not kwargs.get(
             "is_bipartitions_updated", True
         ):
-            self.encode_bipartitions(
-                suppress_unifurcations=False,
-                collapse_unrooted_basal_bifurcation=False,
-            )
+            self.encode_bipartitions(suppress_unifurcations=False)
 
         if (
             start_node.edge.bipartition.leafset_bitmask & leafset_bitmask
@@ -1691,7 +1686,7 @@ class Tree(
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order iterator over internal nodes tree.
+        Pre-order iterator over internal nodes tree.
 
         Visits internal nodes in ``self``, with each node visited after its
         children. In DendroPy, "internal nodes" are nodes that have at least
@@ -1875,7 +1870,7 @@ class Tree(
         )
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
-        """
+        r"""
         Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
         ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.
@@ -2072,7 +2067,7 @@ class Tree(
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
-        Post-order iterator over internal edges tree.
+        Pre-order iterator over internal edges tree.
 
         Visits internal edges in ``self``, with each edge visited after its
         children. In DendroPy, "internal edges" are edges that have at least

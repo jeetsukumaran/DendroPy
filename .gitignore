@@ -19,3 +19,7 @@ tags
 
 # Virtual environments
 .venv
+
+# Tooling
+.pytest_cache/*
+.ruff_cache/*

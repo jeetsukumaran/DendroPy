@@ -182,7 +182,7 @@ def chisq_pdf(chisq, df):
     if even:
         s = y
     else:
-        s = 2.0 * zprob(-math.sqrt(chisq))
+        s = 2.0 * z_pmf(-math.sqrt(chisq))
     if (df > 2):
         chisq = 0.5 * (df - 1.0)
         if even:

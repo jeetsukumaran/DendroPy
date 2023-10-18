@@ -38,7 +38,7 @@ from dendropy.calculate import probability
 def _D(speciation_initiation_rate,
        speciation_completion_rate,
        incipient_species_extinction_rate):
-    """
+    r"""
     Returns value of D, as given in eq. 5 in Etienne et al.
     (2014).
 
@@ -72,7 +72,7 @@ def _D(speciation_initiation_rate,
 def _phi(speciation_initiation_rate,
        speciation_completion_rate,
        incipient_species_extinction_rate):
-    """
+    r"""
     Returns value of $\varphi$, as given in eq. 6 in Etienne et al.
     (2014).
 
@@ -106,7 +106,7 @@ def expected_duration_of_speciation(
         incipient_species_extinction_rate,
         D=None,
         ):
-    """
+    r"""
     Returns mean duration of speciation, following Eqs. 4 in Etienne et al.
     (2014):
 
@@ -160,7 +160,7 @@ def probability_of_duration_of_speciation(
         D=None,
         phi=None,
         ):
-    """
+    r"""
     Returns probability of duration of speciation, tau, following Eqs. 6
     in Etienne et al.
 
@@ -215,7 +215,7 @@ def log_probability_of_duration_of_speciation(
         D=None,
         phi=None,
         ):
-    """
+    r"""
     Returns probability of duration of speciation, tau, following Eqs. 6
     in Etienne et al.
 
@@ -269,7 +269,7 @@ def maximum_probability_duration_of_speciation(
         D=None,
         phi=None,
         ):
-    """
+    r"""
     Returns duration of speciation that maximizes probability under given
     process parameters, following eq. 8 of Etienne et al (2014).
 
@@ -882,7 +882,7 @@ class ProtractedSpeciationProcess(object):
         elif self.species_lineage_sampling_scheme == "random":
             lt = self.rng.sample(lineage_collection, len(lineage_collection))
         else:
-            raise ValueError(sampling_scheme)
+            raise ValueError(self.species_lineage_sampling_scheme)
         seen_species_ids = set()
         to_restore_species_extinction_times = {}
         for lineage_entry in lt:

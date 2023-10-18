@@ -160,7 +160,7 @@ class NewickWriter(ioservice.DataWriter):
         legacy = {
                 "internal_labels": "Use 'suppress_internal_taxon_labels' instead",
                 "write_rooting": "Use 'suppress_rooting' instead",
-                "quote_undescores" : "Use 'unquoted_underscores' instead",
+                "quote_underscores" : "Use 'unquoted_underscores' instead",
                 "annotations_as_comments": "Use 'suppress_annotations' instead"
                 }
         for kw in legacy:

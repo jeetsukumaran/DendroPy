@@ -91,7 +91,7 @@ class PhylogeneticDistanceMatrix(object):
             label_transform_fn=None,
             **csv_reader_kwargs
             ):
-        """
+        r"""
         Instantiates a new PhylogeneticDistanceMatrix instance with data
         from an external source.
 
@@ -249,11 +249,9 @@ class PhylogeneticDistanceMatrix(object):
 
     def compile_from_tree(self, tree):
         """
-        Calculates the distances. Note that for unrooted trees path length (in number of steps),
-        as returned by ``path_edge_count``, and the length of path list returned by ``path_edges`` are off by one.
-
-        The former ignores seed node ("root") as unrooted tree shouldn't have one from biological standpoint,
-        but the latter preserves all nodes as implemented in case they need to be e.g. iterated on.
+        Calculates the distances. Note that the path length (in number of
+        steps) between taxa that span the root will be off by one if
+        the tree is unrooted.
         """
         self.clear()
         self.taxon_namespace = tree.taxon_namespace
@@ -304,6 +302,7 @@ class PhylogeneticDistanceMatrix(object):
                             for desc2, (desc2_plen, desc2_psteps, desc2_pedges) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
+                                # self._all_distinct_mapped_taxa_pairs.add( tuple([desc1.taxon, desc2.taxon]) )
                                 self._all_distinct_mapped_taxa_pairs.add( frozenset([desc1.taxon, desc2.taxon]) )
                                 if c2.edge_length is None:
                                     c2_edge_length = 0.0
@@ -311,14 +310,9 @@ class PhylogeneticDistanceMatrix(object):
                                     c2_edge_length = c2.edge.length
                                 pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2_edge_length
                                 self._taxon_phylogenetic_distances[desc1.taxon][desc2.taxon] = pat_dist
-                                if not tree.is_rooted and node is tree.seed_node:
-                                    # Seed node has no biological meaning in unrooted tree and should be ignored.
-                                    path_steps = node.desc_paths[desc1][1] + desc2_psteps
-                                else:
-                                    path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
+                                path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
                                 self._taxon_phylogenetic_path_steps[desc1.taxon][desc2.taxon] = path_steps
                                 if self.is_store_path_edges:
-                                    # Even in unrooted case, preserve all edges in case something needs them all
                                     pedges = tuple(node.desc_paths[desc1][2] + [c2.edge] + desc2_pedges[::-1])
                                     self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
                     del(c1.desc_paths)
@@ -508,7 +502,7 @@ class PhylogeneticDistanceMatrix(object):
             filter_fn=None,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False):
-        """
+        r"""
         Calculates the phylogenetic ecology statistic "MPD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
@@ -516,9 +510,9 @@ class PhylogeneticDistanceMatrix(object):
         The mean pairwise distance (mpd) is given by:
 
             .. math::
-                mpd = \\frac{ \\sum_{i}^{n} \\sum_{j}^{n} \\delta_{i,j} }{n \\choose 2},
+                mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n \choose 2},
 
-        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
@@ -591,7 +585,7 @@ class PhylogeneticDistanceMatrix(object):
             filter_fn=None,
             is_weighted_edge_distances=True,
             is_normalize_by_tree_size=False):
-        """
+        r"""
         Calculates the phylogenetic ecology statistic "MNTD"[1,2] for the tree
         (only considering taxa for which ``filter_fn`` returns True when
         applied if ``filter_fn`` is specified).
@@ -599,9 +593,9 @@ class PhylogeneticDistanceMatrix(object):
         The mean nearest taxon distance (mntd) is given by:
 
             .. math::
-                mntd = \\frac{ \\sum_{i}^{n} min(\\delta_{i,j}) }{n},
+                mntd = \frac{ \sum_{i}^{n} min(\delta_{i,j}) }{n},
 
-        where :math:`i \\neq j`, :math:`\\delta_{i,j}` is the phylogenetic
+        where :math:`i \neq j`, :math:`\delta_{i,j}` is the phylogenetic
         distance between species :math:`i` and :math:`j`, and :math:`n` is the number
         of species in the sample.
 
@@ -676,14 +670,14 @@ class PhylogeneticDistanceMatrix(object):
             is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
-        """
+        r"""
         Returns the standardized effect size value for the MPD statistic under
         a null model under various community compositions.
 
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
+                SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where
@@ -773,14 +767,14 @@ class PhylogeneticDistanceMatrix(object):
             is_skip_single_taxon_assemblages=False,
             null_model_type="taxa.label",
             rng=None):
-        """
+        r"""
         Returns the standardized effect size value for the MNTD statistic under
         a null model under various community compositions.
 
         The S.E.S. is given by:
 
             .. math::
-                SES(statistic) = \\frac{observed - mean(model_{null})}{sd(model_{null})}
+                SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}
 
         This removes any bias associated with the decrease in variance in the
         MPD statistic value as species richness increases to the point where

@@ -69,7 +69,7 @@ def mode(values, bin_size=0.1):
             bins[idx] = 1
     sorted_bins = sorted(bins.items(), key=itemgetter(1), reverse=True)
     max_count = sorted_bins[0][1]
-    results = [(sorted_bins[i][0] * bin_size) for i in xrange(len(sorted_bins)) if sorted_bins[i][1] >= max_count]
+    results = [(sorted_bins[i][0] * bin_size) for i in range(len(sorted_bins)) if sorted_bins[i][1] >= max_count]
     return results
 
 def median(pool):
@@ -276,6 +276,7 @@ class FishersExactTest(object):
     the categories represented by the vertical and horizontal axes.
     """
 
+    @staticmethod
     def probability_of_table(table):
         """
         Given a 2x2 table:
@@ -302,7 +303,6 @@ class FishersExactTest(object):
         c = table[1][0]
         d = table[1][1]
         return probability.hypergeometric_pmf(a, a+b, c+d, a+c)
-    probability_of_table = staticmethod(probability_of_table)
 
     def __init__(self, table):
         self.table = table

@@ -1,0 +1,16 @@
+[bumpver]
+current_version = "v4.6.1"
+version_pattern = "vMAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[bumpver.file_patterns]
+"src/dendropy/__init__.py" = [
+    "{pep440_version}",
+    "{pep440_version}",
+]
+"bumpver.toml" = [
+    'current_version = "{version}"',
+]

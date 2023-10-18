@@ -76,12 +76,12 @@ class SeqGen(object):
     MODELS = [F84, HKY, GTR, JTT, WAG, PAM, BLOSUM, MTREV, CPREV, GENERAL]
     MODEL_IDS = [str(m) for m in MODELS]
 
+    @staticmethod
     def get_model(idstr):
         for model in SeqGen.MODELS:
             if idstr.upper() == model.idstr.upper():
                 return model
         return None
-    get_model = staticmethod(get_model)
 
     def __init__(
         self,
@@ -234,7 +234,7 @@ class SeqGen(object):
 
     def generate_dicts(
             self,
-            **kwargs,
+            **kwargs
     ):
         if "output_format" in kwargs:
             raise TypeError("Cannot specify 'output_format' when requesting 'dict' result")
@@ -280,7 +280,7 @@ class SeqGen(object):
             taxon_namespace=None,
             input_sequences=None,
             tree_serialization_kwargs=None,
-            **kwargs,
+            **kwargs
     ):
         args=self._compose_arguments(**kwargs)
         # with open("x.txt", "w") as inputf:
@@ -295,7 +295,7 @@ class SeqGen(object):
                     "newick",
                     suppress_rooting=True,
                     suppress_internal_node_labels=True,
-                    **tree_serialization_kwargs,
+                    **tree_serialization_kwargs
             )
             inputf.flush()
             args.append(inputf.name)

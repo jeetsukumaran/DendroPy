@@ -117,6 +117,7 @@ class DiscreteCharacterEvolver(object):
             seq_model = getattr(tree, self.seq_model_attr, None)
 
         # loop through edges in preorder (root->tips)
+        n_prev_seq = None  # to mollify linter undefined variable warning
         for edge in tree.preorder_edge_iter():
             node = edge.head_node
             if not hasattr(node, self.seq_attr):
@@ -124,13 +125,17 @@ class DiscreteCharacterEvolver(object):
             seq_list = getattr(node, self.seq_attr)
             if edge.tail_node:
                 par = edge.tail_node
+                assert n_prev_seq is not None
                 if len(seq_list) != n_prev_seq:
                     raise ValueError("'%s' length varies among nodes" % self.seq_attr)
                 par_seq = getattr(par, self.seq_attr)[-1]
                 seq_model  = getattr(edge, self.seq_model_attr, None) or self.seq_model
                 length = getattr(edge, self.edge_length_attr)
                 mutation_rate = getattr(edge, self.edge_rate_attr, None) or self.mutation_rate
-                seq_list.append(seq_model.simulate_descendant_states(par_seq, length, mutation_rate))
+                seq_list.append(seq_model.simulate_descendant_states(par_seq,
+                                                                     length,
+                                                                     mutation_rate,
+                                                                     rng=rng))
             else:
                 # no tail node: root
                 n_prev_seq = len(seq_list)
@@ -562,7 +567,9 @@ def hky85_chars(
     seq_model = Hky85(
             kappa=kappa,
             base_freqs=base_freqs,
-            state_alphabet=state_alphabet)
+            state_alphabet=state_alphabet,
+            rng=rng,
+    )
     return simulate_discrete_chars(seq_len=seq_len,
                                tree_model=tree_model,
                                seq_model=seq_model,

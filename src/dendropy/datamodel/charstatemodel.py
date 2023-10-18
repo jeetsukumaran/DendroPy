@@ -302,7 +302,7 @@ class StateAlphabet(
         return new_state
 
     def new_ambiguous_state(self, symbol, **kwargs):
-        """
+        r"""
         Adds a new ambiguous state to the collection
         of states in this alphabet.
 
@@ -339,7 +339,7 @@ class StateAlphabet(
     def new_polymorphic_state(self,
             symbol,
             **kwargs):
-        """
+        r"""
         Adds a new polymorphic state to the collection
         of states in this alphabet.
 
@@ -377,7 +377,7 @@ class StateAlphabet(
             symbol,
             state_denomination,
             **kwargs):
-        """
+        r"""
         Adds a new polymorphic or ambiguous state to the collection
         of states in this alphabet.
 

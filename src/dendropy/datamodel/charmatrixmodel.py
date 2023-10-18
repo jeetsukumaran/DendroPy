@@ -504,6 +504,7 @@ class CharacterMatrix(
     ###########################################################################
     ### Factory (Class) Methods
 
+    @classmethod
     def _parse_and_create_from_stream(cls,
             stream,
             schema,
@@ -536,11 +537,10 @@ class CharacterMatrix(
                     char_matrix.data_type,
                     cls.data_type))
         return char_matrix
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):
-        """
+        r"""
         Instantiate and return a *new* character matrix object from a data source.
 
         **Mandatory Source-Specification Keyword Argument (Exactly One of the Following Required):**
@@ -599,12 +599,13 @@ class CharacterMatrix(
                     path="python_morph.nex",
                     schema="nexus")
             std2 = dendropy.StandardCharacterMatrix.get(
-                    data=">t1\\n01011\\n\\n>t2\\n11100",
+                    data=">t1\n01011\n\n>t2\n11100",
                     schema="fasta")
 
         """
         return cls._get_from(**kwargs)
 
+    @classmethod
     def concatenate(cls, char_matrices):
         """
         Creates and returns a single character matrix from multiple
@@ -645,8 +646,8 @@ class CharacterMatrix(
             concatenated_chars.new_character_subset(character_indices=character_indices,
                     label=cs_label)
         return concatenated_chars
-    concatenate = classmethod(concatenate)
 
+    @classmethod
     def concatenate_from_streams(cls, streams, schema, **kwargs):
         """
         Read a character matrix from each file object given in ``streams``,
@@ -664,8 +665,8 @@ class CharacterMatrix(
             char_matrices.append(cls.get_from_stream(stream,
                 schema=schema, **kwargs))
         return cls.concatenate(char_matrices)
-    concatenate_from_streams = classmethod(concatenate_from_streams)
 
+    @classmethod
     def concatenate_from_paths(cls, paths, schema, **kwargs):
         """
         Read a character matrix from each file path given in ``paths``, assuming
@@ -674,16 +675,19 @@ class CharacterMatrix(
         character matrix. Component parts will be recorded as character
         subsets.
         """
-        streams = [open(path, "rU") for path in paths]
+        try:
+            streams = [open(path, "rU") for path in paths]
+        except ValueError:
+            streams = [open(path, "r") for path in paths]
         return cls.concatenate_from_streams(streams, schema, **kwargs)
-    concatenate_from_paths = classmethod(concatenate_from_paths)
 
+    @classmethod
     def from_dict(cls,
             source_dict,
             char_matrix=None,
             case_sensitive_taxon_labels=False,
             **kwargs):
-        """
+        r"""
         Populates character matrix from dictionary (or similar mapping type),
         creating |Taxon| objects and sequences as needed.
 
@@ -758,7 +762,6 @@ class CharacterMatrix(
             s = char_matrix.coerce_values(source_dict[key])
             char_matrix[taxon] = s
         return char_matrix
-    from_dict = classmethod(from_dict)
 
     ###########################################################################
     ### Lifecycle and Identity
@@ -851,7 +854,7 @@ class CharacterMatrix(
     #     return self.clone_from(m)
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -1870,7 +1873,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         return taxon_to_state_indices
 
     def folded_site_frequency_spectrum(self, is_pad_vector_to_unfolded_length=False):
-        """
+        r"""
         Returns the folded or minor site/allele frequency spectrum.
 
         Given $N$ chromosomes, the site frequency spectrum is a vector $(f_0,
@@ -1879,13 +1882,13 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         alleles, 1 allele, 2 alleles, etc.
 
         The *folded* site frequency spectrum is a vector $(f_0, f_1, f_2, ...,
-        f_m), m = \\ceil{\\frac{N}{2}}$, where the values are the number of minor
+        f_m), m = \ceil{\frac{N}{2}}$, where the values are the number of minor
         alleles in the site.
 
         Parameters
         ----------
         is_pad_vector_to_unfolded_length: bool
-            If False, then the vector length will be $\\ceil{\\frac{N}{2}}$,
+            If False, then the vector length will be $\ceil{\frac{N}{2}}$,
             where $N$ is the number of taxa. Otherwise, by default,
             True, length of vector will be number of taxa + 1, with the
             first element the number of monomorphic sites not contributing to

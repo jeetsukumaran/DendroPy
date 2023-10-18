@@ -100,7 +100,7 @@ class FragmentedPopulations(object):
     def generate_pop_tree(self, species_name, samples_per_pop=10):
         tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
         desc_lineages = []
-        for i in xrange(self.num_desc_pops):
+        for i in range(self.num_desc_pops):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
         tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))

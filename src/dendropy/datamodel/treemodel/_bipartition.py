@@ -93,24 +93,24 @@ class Bipartition(object):
     hand, under the LSB scheme, the bitmask for taxon 1 will be 0b0001 == 1 if
     there are 4 taxa, and 0b00001 == 1 if there 5 taxa, and so on. This
     stability of taxon indexes even as the taxon namespace grows is a strongly
-    desirable property, and this the adoption of the LSB scheme.
+    desirable property, and thus the adoption of the LSB scheme.
 
     Constraining the first taxon to be in group 0 (LSB-0) rather than group 1
-    (LSB-1) is motivated by the fact that, in the former, we can would combine
+    (LSB-1) is motivated by the fact that, in the former, we would combine
     the bitmasks of child nodes using OR (logical addition) operations when
     calculating the bitmask for a parent node, whereas, with the latter, we
     would need to use AND operations. The former strikes us as more intuitive.
 
     """
 
+    @staticmethod
     def normalize_bitmask(bitmask, fill_bitmask, lowest_relevant_bit=1):
         if bitmask & lowest_relevant_bit:
             return (~bitmask) & fill_bitmask  # force least-significant bit to 0
         else:
             return bitmask & fill_bitmask  # keep least-significant bit as 0
 
-    normalize_bitmask = staticmethod(normalize_bitmask)
-
+    @staticmethod
     def is_trivial_bitmask(bitmask, fill_bitmask):
         """
         Returns True if the bitmask occurs in any tree of the taxa ``mask`` -- if
@@ -127,13 +127,11 @@ class Bipartition(object):
             return True
         return False
 
-    is_trivial_bitmask = staticmethod(is_trivial_bitmask)
-
+    @staticmethod
     def is_trivial_leafset(leafset_bitmask):
         return bitprocessing.num_set_bits(leafset_bitmask) == 1
 
-    is_trivial_leafset = staticmethod(is_trivial_leafset)
-
+    @staticmethod
     def is_compatible_bitmasks(m1, m2, fill_bitmask):
         """
         Returns |True| if ``m1`` is compatible with ``m2``
@@ -165,8 +163,6 @@ class Bipartition(object):
             return True
         return False
 
-    is_compatible_bitmasks = staticmethod(is_compatible_bitmasks)
-
     ## Life-cycle
 
     def __init__(self, **kwargs):
@@ -180,7 +176,7 @@ class Bipartition(object):
             least-signficant bit correspodning to the second taxon, and so on,
             till the last taxon corresponding to the most-significant bit.
             Taxon membership in one of two arbitrary groups, '0' or '1', is
-            indicated by its correspondign bit being unset or set,
+            indicated by its corresponding bit being unset or set,
             respectively.
         leafset_bitmask : integer
             A bit array representing the presence or absence of taxa in the

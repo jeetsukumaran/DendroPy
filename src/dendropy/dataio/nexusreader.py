@@ -713,7 +713,7 @@ class NexusReader(ioservice.DataReader):
         Assumes current token is 'TITLE'
         """
         if self._nexus_tokenizer.cast_current_token_to_ucase() != "TITLE":
-            raise self._nexus_error("Expecting 'TITLE' token, but instead found '{}'".format(token))
+            raise self._nexus_error("Expecting 'TITLE' token, but instead found '{}'".format(self._nexus_tokenizer.cast_current_token_to_ucase()))
         title = self._nexus_tokenizer.require_next_token()
         sc = self._nexus_tokenizer.require_next_token()
         if sc != ";":
@@ -1241,7 +1241,7 @@ class NexusReader(ioservice.DataReader):
                                             else:
                                                 raise self._nexus_error('Expecting digit but found "%s".' % (token))
                                         else:
-                                            raise self._nexus_error('Expecting other tokens after "\\", but no more found.')
+                                            raise self._nexus_error(r'Expecting other tokens after "\", but no more found.')
                                         token = self._nexus_tokenizer.next_token()
                                     else:
                                         step = 1
@@ -1462,9 +1462,8 @@ class NexusReader(ioservice.DataReader):
                     #         exc.__cause__ = None # Python 3.3, 3.4
                     #         raise exc
                 if len(character_data_vector) == self._file_specified_nchar:
-                    raise self._too_many_characters_error(c)
+                    raise self._too_many_characters_error(token)
                 character_data_vector.append(state)
         if self._interleave:
             self._nexus_tokenizer.set_capture_eol(False)
         return character_data_vector
-

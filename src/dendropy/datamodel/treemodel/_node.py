@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dendropy.utility.textprocessing import StringIO
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
 from dendropy.datamodel.treemodel import _edge
@@ -11,6 +12,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
     A :term:|Node| on a :term:|Tree|.
     """
 
+    @classmethod
     def edge_factory(cls, **kwargs):
         """
         Creates and returns a |Edge| object.
@@ -31,8 +33,6 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
         """
         return _edge.Edge(**kwargs)
-
-    edge_factory = classmethod(edge_factory)
 
     def __init__(self, **kwargs):
         """
@@ -226,7 +226,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order iterator over internal nodes of subtree rooted at this node.
+        Pre-order iterator over internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with each node visited
         after its children. In DendroPy, "internal nodes" are nodes that have
@@ -536,7 +536,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         )
 
     def apply(self, before_fn=None, after_fn=None, leaf_fn=None):
-        """
+        r"""
         Applies function ``before_fn`` and ``after_fn`` to all internal nodes and
         ``leaf_fn`` to all terminal nodes in subtree starting with ``self``, with
         nodes visited in pre-order.
@@ -1266,6 +1266,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         start_node_to_match = self
         if node_factory is None:
             node_factory = self.__class__
+        nd1 = None  # verbosity to mollify linter
         for nd0 in self.postorder_iter():
             if node_filter_fn is not None:
                 if nd0._child_nodes:
@@ -1620,7 +1621,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         return siblings.pop(0), levels_moved
 
     def _convert_node_to_root_polytomy(self):
-        """If ``self`` has two children and at least on of them is an internal node,
+        """If ``self`` has two children and at least one of them is an internal node,
         then it will be converted to an out-degree three node (with the edge length
         added as needed).
 
@@ -1666,8 +1667,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
             curr_add = left_child
         if curr_add:
             ndl = [curr_add]
-            t = _convert_node_to_root_polytomy(self)
+            t = self._convert_node_to_root_polytomy()
             ndl.extend(t)
             return tuple(ndl)
         return ()
-

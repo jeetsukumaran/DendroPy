@@ -53,13 +53,14 @@ class TreeList(
     object reference.
     """
 
+    @classmethod
     def _parse_and_create_from_stream(cls,
             stream,
             schema,
             collection_offset=None,
             tree_offset=None,
             **kwargs):
-        """
+        r"""
         Constructs a new |TreeList| object and populates it with trees from
         file-like object ``stream``.
 
@@ -206,7 +207,6 @@ class TreeList(
         #         tree_offset=tree_offset,
         #         **kwargs)
         # return tree_list
-    _parse_and_create_from_stream = classmethod(_parse_and_create_from_stream)
 
     @classmethod
     def get(cls, **kwargs):
@@ -282,8 +282,9 @@ class TreeList(
 
     DEFAULT_TREE_TYPE = treemodel.Tree
 
+    @classmethod
     def tree_factory(cls, *args, **kwargs):
-        """
+        r"""
         Creates and returns a |Tree| of a type that this list understands how to
         manage.
 
@@ -310,7 +311,6 @@ class TreeList(
         """
         tree = cls.DEFAULT_TREE_TYPE(*args, **kwargs)
         return tree
-    tree_factory = classmethod(tree_factory)
 
     ###########################################################################
     ### Lifecycle and Identity
@@ -516,7 +516,7 @@ class TreeList(
             collection_offset=None,
             tree_offset=None,
             **kwargs):
-        """
+        r"""
         Parses |Tree| objects from data source and adds to this collection.
 
         Notes
@@ -679,7 +679,7 @@ class TreeList(
         return basemodel.MultiReadable._read_from(self, **kwargs)
 
     def _format_and_write_to_stream(self, stream, schema, **kwargs):
-        """
+        r"""
         Writes out ``self`` in ``schema`` format to a destination given by
         file-like object ``stream``.
 
@@ -726,7 +726,7 @@ class TreeList(
             tree,
             taxon_import_strategy="migrate",
             **kwargs):
-        """
+        r"""
         Inserts a |Tree| object, ``tree``, into the collection before
         ``index``.
 
@@ -780,7 +780,7 @@ class TreeList(
             tree,
             taxon_import_strategy="migrate",
             **kwargs):
-        """
+        r"""
         Adds a |Tree| object, ``tree``, to the collection.
 
         The |TaxonNamespace| reference of ``tree`` will be set to that of
@@ -1714,7 +1714,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             summarize_splits=True,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Returns a consensus tree from splits in ``self``.
 
         Parameters
@@ -1770,7 +1770,7 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             is_bipartitions_updated=False,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Summarizes support of splits/edges/node on tree.
 
         Parameters
@@ -1804,17 +1804,17 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
 
     def _get_taxon_set(self):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
         return self.taxon_namespace
 
     def _set_taxon_set(self, v):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
         self.taxon_namespace = v
 
     def _del_taxon_set(self):
         from dendropy import taxonmodel
-        taxon_model.taxon_set_deprecation_warning()
+        taxonmodel.taxon_set_deprecation_warning()
 
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
@@ -2368,7 +2368,7 @@ class TreeArray(
             files,
             schema,
             **kwargs):
-        """
+        r"""
         Adds multiple structures from one or more external file sources to the
         collection.
 
@@ -2485,7 +2485,7 @@ class TreeArray(
     ##############################################################################
     ## Container (List) Interface
 
-    def append(tree, is_bipartitions_updated=False):
+    def append(self, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2505,7 +2505,7 @@ class TreeArray(
         return self.add_tree(tree=tree,
                 is_bipartitions_updated=is_bipartitions_updated)
 
-    def insert(index, tree, is_bipartitions_updated=False):
+    def insert(self, index, tree, is_bipartitions_updated=False):
         """
         Adds a |Tree| instance to the collection before position given
         by ``index``.
@@ -2553,7 +2553,7 @@ class TreeArray(
         assert self.use_tree_weights is tree_array.use_tree_weights
         self._tree_split_bitmasks.extend(tree_array._tree_split_bitmasks)
         self._tree_edge_lengths.extend(tree_array._tree_edge_lengths)
-        self._tree_weights.extend(other._tree_weights)
+        self._tree_weights.extend(tree_array._tree_weights)
         self._split_distribution.update(tree_array._split_distribution)
         return self
 
@@ -2846,7 +2846,7 @@ class TreeArray(
             summarize_splits=True,
             **split_summarization_kwargs
             ):
-        """
+        r"""
         Returns a consensus tree from splits in ``self``.
 
         Parameters

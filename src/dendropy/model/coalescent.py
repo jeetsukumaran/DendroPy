@@ -77,7 +77,7 @@ def discrete_time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=No
 
 
 def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
-    """
+    r"""
     A random draw from the "Kingman distribution" (discrete time version): Time
     to go from ``n_genes`` genes to ``n_genes``-1 genes in a continuous-time
     Wright-Fisher population of ``pop_size`` genes; i.e. waiting time until
@@ -85,7 +85,7 @@ def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
 
     Given the number of gene lineages in a sample, ``n_genes``, and a
     population size, ``pop_size``, this function returns a random number from
-    an exponential distribution with rate $\\choose(``pop_size``, 2)$.
+    an exponential distribution with rate $\choose(``pop_size``, 2)$.
     ``pop_size`` is the effective *haploid* population size; i.e., number of gene
     in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals. If ``pop_size`` is 1 or 0 or
@@ -96,11 +96,11 @@ def time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=None):
     The coalescence time, or the waiting time for the coalescence, of two
     gene lineages evolving in a population with haploid size $N$ is an
     exponentially-distributed random variable with rate of $N$ an
-    expectation of $\\frac{1}{N}$).
+    expectation of $\frac{1}{N}$).
     The waiting time for coalescence of *any* two gene lineages in a sample of
     $n$ gene lineages evolving in a population with haploid size $N$ is an
-    exponentially-distributed random variable with rate of $\\choose{N, 2}$ and
-    an expectation of $\\frac{1}{\choose{N, 2}}$.
+    exponentially-distributed random variable with rate of $\choose{N, 2}$ and
+    an expectation of $\frac{1}{\choose{N, 2}}$.
 
     Parameters
     ----------
@@ -400,16 +400,16 @@ def extract_coalescent_frames(
 
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
-    """
+    r"""
     Under the classical neutral coalescent \citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
-    :math`\\frac{{k \choose 2}}{N_e}`::
+    :math`\frac{{k \choose 2}}{N_e}`::
 
         .. math::
 
-            \\Pr(T) =  \\frac{{k \\choose 2}}{N_e} \\e{-  \\frac{{k \\choose 2}}{N_e} T},
+            \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
 
     where $T$ is the length of  (chronological) time in which there are
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
@@ -491,7 +491,7 @@ def contained_coalescent_tree(
             tree nodes that are uncoalesced as values.
 
     Note that this function does very much the same thing as
-    ``constrained_kingman()``, but provides a very different API.
+    ``constrained_kingman_tree()``, but provides a very different API.
     """
 
     if rng is None:
@@ -500,7 +500,7 @@ def contained_coalescent_tree(
     gene_tree_taxon_namespace = gene_to_containing_taxon_map.domain_taxon_namespace
     if gene_tree_taxon_namespace is None:
         gene_tree_taxon_namespace = dendropy.TaxonNamespace()
-        for gene_taxa in pop_gene_taxa_map:
+        for gene_taxa in gene_to_containing_taxon_map:
             for taxon in gene_taxa:
                 gene_tree_taxon_namespace.add(taxon)
     gene_tree = dendropy.Tree(taxon_namespace=gene_tree_taxon_namespace)
@@ -682,7 +682,13 @@ def constrained_kingman_tree(
     each node of the population tree is added to the original (input) population
     tree instead of a copy.
 
-    Note that this function does very much the same thing as ``contained_coalescent()``,
+    If ``num_genes`` is None, then it will be set to 1 under the
+    "node_attribute" strategy (serving as a fallback default for nodes that do
+    not spcify ``num_genes_attr``) or the leaf count of ``pop_tree`` under the
+    ``random_uniform`` strategy.
+
+    Note that this function does very much the same thing as
+    ``contained_coalescent_tree()``,
     but provides a very different API.
     """
 
@@ -697,6 +703,16 @@ def constrained_kingman_tree(
 
     if gene_node_label_fn is None:
         gene_node_label_fn = lambda x, y: "%s_%02d" % (x, y)
+
+    # @MAM taking a stab at a reasonable default for num_genes,
+    # it may make sense to do something else entirely here
+    if num_genes is None:
+        if gene_sampling_strategy == "random_uniform":
+            num_genes = sum(1 for __ in pop_tree.leaf_node_iter())
+        elif gene_sampling_strategy == "node_attribute":
+            num_genes = 1
+        else:
+            num_genes = None
 
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
@@ -730,7 +746,9 @@ def constrained_kingman_tree(
             except:
                 leaf.gene_nodes = [ gene_node ]
     else:
-        raise ValueError(f"Unrecognized strategy '{gene_sampling_strategy}'")
+        raise ValueError("Unrecognized strategy '{}'".format(
+            gene_sampling_strategy
+        ))
 
     # We iterate through the edges of the population tree in post-order,
     # i.e., visiting child edges before we visit parent edges. For

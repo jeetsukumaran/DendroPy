@@ -33,7 +33,7 @@ class NewickTreeDataYielder(ioservice.TreeDataYielder):
             taxon_namespace=None,
             tree_type=None,
             **kwargs):
-        """
+        r"""
 
         Parameters
         ----------
