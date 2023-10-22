@@ -97,6 +97,8 @@ EXTRA_KWARGS = dict(
     include_package_data = True,
     test_suite = "tests.unittests",
     zip_safe = True,
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
     )
 
 sys.stderr.write("-setup.py: packages identified:\n{}\n".format(_compose_list(PACKAGES, prefix="           - ")))
