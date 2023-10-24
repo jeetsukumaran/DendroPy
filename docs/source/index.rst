@@ -16,6 +16,7 @@ DendroPy Phylogenetic Computing Library
     migration.rst
     news.rst
     developer.rst
+    planning.rst
     changes.rst
     code_of_conduct.rst
 
