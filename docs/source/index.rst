@@ -15,7 +15,10 @@ DendroPy Phylogenetic Computing Library
     glossary.rst
     migration.rst
     news.rst
+    developer.rst
+    planning.rst
     changes.rst
+    code_of_conduct.rst
 
 
 DendroPy is a |Python|_ library for phylogenetic computing.
@@ -59,7 +62,7 @@ If you are using the `conda package manager <https://conda.io/docs/>`_, DendroPy
 
 DendroPy will now be available in your conda-managed environment.
 
-More information on downloading and installing DendroPy can be found :doc:`here </downloading>`.
+More information on downloading and installing DendroPy can be found in our :doc:`setup instructions </downloading>`.
 
 Documentation
 ==============
@@ -138,7 +141,20 @@ I follow and respond to messages on this group fairly regularly, so you should g
 
 Of course, we accept all bug reports, bad or good, and I guess we would prefer to have a bad bug report than no report at all, so if all the above seem enough of a hassle to discourage you from posting an issue at all, feel free to go ahead and write it up any way you see fit.
 
+Code of Conduct
+===============
+
+We are dedicated to fostering a supportive and inclusive atmosphere for everyone involved in our project.
+
+We oversee DendroPy according to a Code of Conduct from the `Contributor Covenant project <https://www.contributor-covenant.org/>`_.
+This document describes expectations for project participants and provides mechanisms to address misconduct.
+Please take a moment to familiarize yourself with it `here <./code_of_conduct.html>`_.
+
 .. include:: citation.inc
 .. include:: license.inc
 .. include:: acknowledgements.inc
 
+Authors
+=======
+
+.. include:: ../../AUTHORS.rst
