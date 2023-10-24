@@ -143,3 +143,7 @@ Of course, we accept all bug reports, bad or good, and I guess we would prefer t
 .. include:: license.inc
 .. include:: acknowledgements.inc
 
+Authors
+=======
+
+.. include:: ../../AUTHORS.rst
