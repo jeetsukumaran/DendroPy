@@ -13,9 +13,9 @@ Governance
 DendroPy currently operates under a founder-leader model where project decisions are driven by consensus within a small group of core maintainers.
 Although this governance structure suits the project's scope and objectives at present, we are open to exploring alternate options as the DendroPy project and community continues to develop.
 
-We are committed to actively involving DendroPy user community in project decision-making.
+We are committed to actively involving the DendroPy user community in project decision-making.
 Please use the |dendropy_issues|_ page to suggest features and highlight important library use cases.
-Keep up with announcements via our |dendropy_announce|_  mailing list and contribute to broader discussion through our |dendropy_users|_ mailing list,.
+Keep up with announcements via our |dendropy_announce|_  mailing list and contribute to broader discussion through our |dendropy_users|_ mailing list.
 
 
 Roadmap
