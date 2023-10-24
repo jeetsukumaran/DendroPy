@@ -15,6 +15,7 @@ DendroPy Phylogenetic Computing Library
     glossary.rst
     migration.rst
     news.rst
+    developer.rst
     changes.rst
 
 
