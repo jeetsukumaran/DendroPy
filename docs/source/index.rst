@@ -62,7 +62,7 @@ If you are using the `conda package manager <https://conda.io/docs/>`_, DendroPy
 
 DendroPy will now be available in your conda-managed environment.
 
-More information on downloading and installing DendroPy can be found :doc:`here </downloading>`.
+More information on downloading and installing DendroPy can be found in our :doc:`setup instructions </downloading>`.
 
 Documentation
 ==============
