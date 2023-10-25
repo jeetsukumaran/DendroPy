@@ -45,16 +45,17 @@ To run an individual test file,
 Documentation
 =============
 
-We use `ReadTheDocs <https://readthedocs.org/>`_ to host the projects' documentation and keep it up-to-date with the `main` branch.
-So manual documentation builds aren't usually necessary, unless you're encountering a documentation-specific issue.
+We use `Netlify <https://netlify.com/>`_ to host the projects' documentation.
+We keep deployed documentation up-to-date with the `main` branch through our Github Actions continuous integration.
 
+Manual documentation builds aren't usually necessary, unless you're encountering a documentation-specific issue.
 To build the documentation locally,
 
 .. code-block:: shell
 
    make -C docs/ html
 
-This requires the version of DendroPy you want to build for, `sphinx`, and requirements listed in `requirements.readthedocs.txt` to be installed.
+This requires the version of DendroPy you want to build for and requirements listed in `docs/requirements.txt` to be installed.
 
 Docstrings
 ==========
