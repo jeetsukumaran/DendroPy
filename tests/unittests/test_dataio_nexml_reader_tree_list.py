@@ -28,7 +28,7 @@ import dendropy
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from support import dendropytest
 from support import standard_file_test_trees
-import base_standard_trees_parsing_test_cases
+import tests.unittests.base_standard_trees_parsing_test_cases as base_standard_trees_parsing_test_cases
 from support import curated_test_tree
 from support import pathmap
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
