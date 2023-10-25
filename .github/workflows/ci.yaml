@@ -189,6 +189,34 @@ jobs:
         run: |
           find . -type f -name '*.py' -exec rm {} \;
           python3 -c "import dendropy; print(dendropy.__version__)"
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        continue-on-error: true
+        with:
+          python-version: 3.9
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from source
+        run: python3 -m pip install .
+      - name: Install documentation build dependencies
+        run: python3 -m pip install -r requirements.readthedocs.txt
+      - name: Build documentation
+        run: make -C docs html
+      - name: Deploy to netlify
+        if: github.ref == 'refs/heads/main'
+        uses: jsmrcaga/action-netlify-deploy@v2.0.0
+        with:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_DEPLOY_MESSAGE: "Prod deploy v${{ github.ref }}"
+          install_command: "echo Skipping installing the dependencies"
+          build_command: "echo Skipping building the web files"
+          build_directory: docs/build/html
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
