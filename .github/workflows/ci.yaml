@@ -204,7 +204,7 @@ jobs:
       - name: Install from source
         run: python3 -m pip install .
       - name: Install documentation build dependencies
-        run: python3 -m pip install -r requirements.readthedocs.txt
+        run: python3 -m pip install -r docs/requirements.txt
       - name: Build documentation
         run: make -C docs html
       - name: Deploy to netlify
