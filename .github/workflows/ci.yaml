@@ -71,8 +71,6 @@ jobs:
       fail-fast: False
       matrix:
         python-version:
-          - "2.7"
-          - "3.5"
           - "3.6"
           - "3.7"
           - "3.8"
@@ -101,14 +99,7 @@ jobs:
           sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Python2 compatibility workaround # TODO remove when Python2 compatibility dropped
-        if: matrix.python-version == '2.7'
-        run: |
-          rm tests/dendropy
-          curl --silent --show-error --retry 5 https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2
-          python2 -m pip install setuptools --upgrade
-          python2 setup.py test
       - name: Test with setup.py
-        if: matrix.python-version != '2.7'
         run: |
           python setup.py test
   coverage:
