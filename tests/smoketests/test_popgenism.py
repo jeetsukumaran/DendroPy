@@ -1,7 +1,7 @@
-import pytest
+import dendropy
 from . import pytestmark
 
-from dendropy.simulate.popgensim import FragmentedPopulations, pop_gen_tree
+from dendropy.simulate.popgensim import FragmentedPopulations 
 
 def test_popgenism():
     populations = FragmentedPopulations(1)

@@ -1,4 +1,6 @@
+import dendropy
 from . import pytestmark
+from dendropy.datamodel.treemodel import Tree, Node
 
 from dendropy.model.coalescent import (
     discrete_time_to_coalescence,
@@ -16,8 +18,6 @@ from dendropy.model.coalescent import (
     constrained_kingman_tree,
 )
 
-from dendropy.datamodel.treemodel import Tree, Node
-import dendropy
 
 def test_discrete_time_to_coalescence():
     # discrete_time_to_coalescence(2) # if no second parameter, errors on 72
