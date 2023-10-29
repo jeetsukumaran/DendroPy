@@ -100,10 +100,10 @@ jobs:
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Unit tests with setup.py
         run: |
-          python3 setup.py pytest --addopts '-m "not smoke"'  
+          python setup.py pytest --addopts '-m "not smoke"'  
       - name: Smoke tests with setup.py
         run: |
-          python3 setup.py pytest --addopts "-m smoke" 
+          python setup.py pytest --addopts "-m smoke" 
   coverage:
     runs-on: ubuntu-20.04
     steps:
