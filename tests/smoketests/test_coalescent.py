@@ -1,73 +1,87 @@
 import dendropy
-from . import pytestmark
-from dendropy.datamodel.treemodel import Tree, Node
-
+from dendropy.datamodel.treemodel import Node, Tree
 from dendropy.model.coalescent import (
-    discrete_time_to_coalescence,
-    time_to_coalescence,
-    expected_tmrca,
     coalesce_nodes,
-    node_waiting_time_pairs,
+    constrained_kingman_tree,
+    contained_coalescent_tree,
+    discrete_time_to_coalescence,
+    expected_tmrca,
     extract_coalescent_frames,
     log_probability_of_coalescent_frames,
     log_probability_of_coalescent_tree,
-    contained_coalescent_tree,
+    mean_kingman_tree,
+    node_waiting_time_pairs,
     pure_kingman_tree,
     pure_kingman_tree_shape,
-    mean_kingman_tree,
-    constrained_kingman_tree,
+    time_to_coalescence,
 )
+
+from . import pytestmark
 
 
 def test_discrete_time_to_coalescence():
-    # discrete_time_to_coalescence(2) # if no second parameter, errors on 72
-    # discrete_time_to_coalescence(1, 1) # first parameter must be >1
-    discrete_time_to_coalescence(2, 1)
-    assert type(discrete_time_to_coalescence(2, 1, 1)) == int
+    res1 = discrete_time_to_coalescence(2, 1)
+    res2 = discrete_time_to_coalescence(2, 1, 1)
+    assert isinstance(res1, int)
+    assert isinstance(res2, int)
+
 
 def test_time_to_coalesence():
-    # time_to_coalescence(1) # also requires >1
-    time_to_coalescence(2)
+    res = time_to_coalescence(2)
+    assert isinstance(res, int)
+
 
 def test_expected_tmrca():
-    # expected_tmrca(1)
-    assert type(expected_tmrca(2)) == float
-    assert type(expected_tmrca(2, 1)) == float
+    res1 = expected_tmrca(2)
+    res2 = expected_tmrca(2, 1)
+    assert isinstance(res1, float)
+    assert isinstance(res2, float)
+
 
 def test_coalesce_nodes():
     t = Tree()
-    assert type(coalesce_nodes(None) == list)
-    assert type(coalesce_nodes(t.nodes(), use_expected_tmrca=True)) == list
+
+    res1 = coalesce_nodes(None)
+    res2 = coalesce_nodes(t.nodes(), use_expected_tmrca=True)
+    assert isinstance(res1, list)
+    assert isinstance(res2, list)
+
 
 def test_node_waiting_time_pairs():
     t = Tree()
     n = Node()
     t.seed_node.add_child(n)
-    # requires internal nodes
 
-    assert type(node_waiting_time_pairs(t)) == list
+    res = node_waiting_time_pairs(t)
+    assert isinstance(res, list)
+
 
 def test_extract_coalescent_frames():
     t = Tree()
     n = Node()
     t.seed_node.add_child(n)
-    
-    assert type(extract_coalescent_frames(t)) == dict
+
+    res = extract_coalescent_frames(t)
+    assert isinstance(res, dict)
+
 
 def test_log_probability_of_coalescent_frames():
     t = Tree()
     t.seed_node.new_child(edge_length=1)
     t.seed_node.new_child(edge_length=1)
-    # how did this even pass
 
-    assert type(log_probability_of_coalescent_frames(extract_coalescent_frames(t), 1)) == float
+    res = log_probability_of_coalescent_frames(extract_coalescent_frames(t), 1)
+    assert isinstance(res, float)
+
 
 def test_log_probability_of_coalescent_trees():
     t = Tree()
     t.seed_node.new_child(edge_length=1)
     t.seed_node.new_child(edge_length=1)
 
-    log_probability_of_coalescent_tree(t, 1)
+    res = log_probability_of_coalescent_tree(t, 1)
+    assert isinstance(res, float)
+
 
 def test_contained_coalescent_tree():
     taxon_namespace = dendropy.TaxonNamespace(["A"])
@@ -77,21 +91,31 @@ def test_contained_coalescent_tree():
     n.taxon = taxon_namespace.get_taxon("A")
 
     gene_to_species_map = dendropy.TaxonNamespaceMapping.create_contained_taxon_mapping(
-        containing_taxon_namespace=t.taxon_namespace,
-        num_contained=1)
+        containing_taxon_namespace=t.taxon_namespace, num_contained=1
+    )
 
-    assert type(contained_coalescent_tree(t, gene_to_species_map)) == Tree
+    res = contained_coalescent_tree(t, gene_to_species_map)
+    assert isinstance(res, Tree)
+
 
 def test_pure_kingman_tree():
     taxon_namespace = dendropy.TaxonNamespace(["A"])
-    assert type(pure_kingman_tree(taxon_namespace)) == Tree
+
+    res = pure_kingman_tree(taxon_namespace)
+    assert isinstance(res, Tree)
+
 
 def test_pure_kingman_tree_shape():
-    assert type(pure_kingman_tree_shape(1, 1)) == Tree
+    res = pure_kingman_tree_shape(1, 1)
+    assert isinstance(res, Tree)
+
 
 def test_mean_kingman_tree():
     taxon_namespace = dendropy.TaxonNamespace(["A"])
-    assert type(mean_kingman_tree(taxon_namespace)) == Tree
+
+    res = mean_kingman_tree(taxon_namespace)
+    assert isinstance(res, Tree)
+
 
 def test_constrained_kingman_tree():
     taxon_namespace = dendropy.TaxonNamespace(["A"])
@@ -99,5 +123,5 @@ def test_constrained_kingman_tree():
     n = t.seed_node.new_child()
     n.taxon = taxon_namespace.get_taxon("A")
 
-    assert type(constrained_kingman_tree(t)) == tuple
- 
+    res = constrained_kingman_tree(t)
+    assert isinstance(res, tuple)
