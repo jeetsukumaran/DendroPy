@@ -127,7 +127,7 @@ jobs:
         python3 -m pip install pytest-cov
     - name: Generate coverage report
       run: |
-        python3 -m pytest tests --cov=tests --cov-report=xml
+        python3 -m pytest tests/unittests --cov=tests --cov-report=xml
     - uses: codecov/codecov-action@v3
       with:
         flags: unittests # optional
