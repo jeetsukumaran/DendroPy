@@ -28,7 +28,7 @@ def test_discrete_time_to_coalescence():
 
 def test_time_to_coalesence():
     res = time_to_coalescence(2)
-    assert isinstance(res, int)
+    assert isinstance(res, float)
 
 
 def test_expected_tmrca():
