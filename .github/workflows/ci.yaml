@@ -89,7 +89,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python2 libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
