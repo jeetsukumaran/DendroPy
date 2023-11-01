@@ -71,8 +71,6 @@ jobs:
       fail-fast: False
       matrix:
         python-version:
-          - "2.7"
-          - "3.5"
           - "3.6"
           - "3.7"
           - "3.8"
@@ -91,7 +89,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python2 libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
@@ -100,17 +98,12 @@ jobs:
           chmod +x ${temp_dir}/paup4a168_ubuntu64
           sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
-      - name: Python2 compatibility workaround # TODO remove when Python2 compatibility dropped
-        if: matrix.python-version == '2.7'
+      - name: Unit tests with setup.py
         run: |
-          rm tests/dendropy
-          curl --silent --show-error --retry 5 https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2
-          python2 -m pip install setuptools --upgrade
-          python2 setup.py test
-      - name: Test with setup.py
-        if: matrix.python-version != '2.7'
+          python setup.py pytest --addopts '-m "not smoke"'  
+      - name: Smoke tests with setup.py
         run: |
-          python setup.py test
+          python setup.py pytest --addopts "-m smoke" 
   coverage:
     runs-on: ubuntu-20.04
     steps:
@@ -134,7 +127,7 @@ jobs:
         python3 -m pip install pytest-cov
     - name: Generate coverage report
       run: |
-        python3 -m pytest tests --cov=tests/dendropy --cov-report=xml
+        python3 -m pytest tests/unittests --cov=tests --cov-report=xml
     - uses: codecov/codecov-action@v3
       with:
         flags: unittests # optional
