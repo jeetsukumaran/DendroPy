@@ -1,30 +1,30 @@
 import dendropy
-
-from . import pytestmark
 from dendropy.datamodel.treecollectionmodel import (
     SplitDistribution,
     TreeArray,
     TreeList,
 )
 
+from . import pytestmark
+
 
 def test_maximum_product_of_split_support_tree():
     list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
-    
+
     res = list.maximum_product_of_split_support_tree()
     assert isinstance(res, dendropy.Tree)
 
 
 def test_maximum_sum_of_split_support_tree():
     list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
-    
+
     res = list.maximum_sum_of_split_support_tree()
     assert isinstance(res, dendropy.Tree)
 
 
 def test_frequency_of_split():
     list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
-    
+
     res = list.frequency_of_split(labels="A")
     assert isinstance(res, float)
 

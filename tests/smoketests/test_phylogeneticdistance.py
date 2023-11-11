@@ -1,6 +1,7 @@
+import tempfile
+
 from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
 from dendropy.utility.container import DataTable
-import tempfile
 
 from . import pytestmark
 
@@ -16,7 +17,7 @@ def test_write_csv():
     mat = PhylogeneticDistanceMatrix()
     file = tempfile.NamedTemporaryFile()
     res = mat.write_csv(file.name)
-    assert res == None
+    assert res is None
 
 
 def test_distances():
