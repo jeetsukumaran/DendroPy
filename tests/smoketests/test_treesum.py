@@ -6,45 +6,45 @@ from . import pytestmark
 
 
 def test_tree_from_splits():
-    d = SplitDistribution()
-    s = TreeSummarizer()
+    dist = SplitDistribution()
+    summ = TreeSummarizer()
 
-    res = s.tree_from_splits(d)
+    res = summ.tree_from_splits(dist)
     assert isinstance(res, dendropy.Tree)
 
 
 def test_compose_support_label():
-    s = TreeSummarizer()
+    summ = TreeSummarizer()
 
-    res = s.compose_support_label(1)
+    res = summ.compose_support_label(1)
     assert isinstance(res, str)
 
 
 def test_map_split_support_to_node():
-    s = TreeSummarizer()
-    t = dendropy.Tree()
-    n = t.seed_node.new_child()
+    summ = TreeSummarizer()
+    tree = dendropy.Tree()
+    node = tree.seed_node.new_child()
 
-    res = s.map_split_support_to_node(n, 1)
+    res = summ.map_split_support_to_node(node, 1)
     assert isinstance(res, dendropy.Node)
 
 
 def test_map_split_support_to_tree():
-    s = TreeSummarizer()
-    t = dendropy.Tree()
-    d = SplitDistribution()
+    summ = TreeSummarizer()
+    tree = dendropy.Tree()
+    dist = SplitDistribution()
 
-    res = s.map_split_support_to_tree(t, d)
+    res = summ.map_split_support_to_tree(tree, dist)
     assert isinstance(res, dendropy.Tree)
 
 
 def test_annotate_nodes_and_edges():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    s = TreeSummarizer()
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    d = SplitDistribution(taxon_namespace=taxon_namespace)
+    namespace = dendropy.TaxonNamespace(["A"])
+    summ = TreeSummarizer()
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    dist = SplitDistribution(taxon_namespace=namespace)
 
-    res = s.annotate_nodes_and_edges(t, d)
+    res = summ.annotate_nodes_and_edges(tree, dist)
     assert res is None
 
 
@@ -72,11 +72,11 @@ def test_summarize_node_ages_on_tree():
 
 
 def test_summarize_edge_lengths_on_tree():
-    t = dendropy.Tree()
-    s = TreeSummarizer()
-    d = SplitDistribution()
+    tree = dendropy.Tree()
+    summ = TreeSummarizer()
+    dist = SplitDistribution()
 
-    s.summarize_edge_lengths_on_tree(t, d)
+    summ.summarize_edge_lengths_on_tree(tree, dist)
 
 
 def test_count_splits_on_trees():

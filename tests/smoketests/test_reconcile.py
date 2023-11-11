@@ -21,45 +21,45 @@ def test_clear():
 
 
 def test_rebuild():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    t.seed_node.taxon = taxon_namespace.get_taxon("A")
-    m = dendropy.TaxonNamespaceMapping(
-        domain_taxon_namespace=taxon_namespace,
-        range_taxon_namespace=taxon_namespace,
-        mapping_fn=lambda t: taxon_namespace.require_taxon(label=t.label[0].upper()),
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    map = dendropy.TaxonNamespaceMapping(
+        domain_taxon_namespace=namespace,
+        range_taxon_namespace=namespace,
+        mapping_fn=lambda t: namespace.require_taxon(label=t.label[0].upper()),
     )
-    c = ContainingTree(t, taxon_namespace, m)
+    cont = ContainingTree(tree, namespace, map)
 
-    res = c.rebuild()
+    res = cont.rebuild()
     assert res is None
 
 
 def test_embed_contained_kingman():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    t.seed_node.taxon = taxon_namespace.get_taxon("A")
-    m = dendropy.TaxonNamespaceMapping(
-        domain_taxon_namespace=taxon_namespace,
-        range_taxon_namespace=taxon_namespace,
-        mapping_fn=lambda t: taxon_namespace.require_taxon(label=t.label[0].upper()),
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    map = dendropy.TaxonNamespaceMapping(
+        domain_taxon_namespace=namespace,
+        range_taxon_namespace=namespace,
+        mapping_fn=lambda t: namespace.require_taxon(label=t.label[0].upper()),
     )
-    c = ContainingTree(t, taxon_namespace, m)
+    cont = ContainingTree(tree, namespace, map)
 
-    res = c.embed_contained_kingman()
+    res = cont.embed_contained_kingman()
     assert isinstance(res, dendropy.Tree)
 
 
 def test_simulate_contained_kingman():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    t.seed_node.taxon = taxon_namespace.get_taxon("A")
-    m = dendropy.TaxonNamespaceMapping(
-        domain_taxon_namespace=taxon_namespace,
-        range_taxon_namespace=taxon_namespace,
-        mapping_fn=lambda t: taxon_namespace.require_taxon(label=t.label[0].upper()),
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    map = dendropy.TaxonNamespaceMapping(
+        domain_taxon_namespace=namespace,
+        range_taxon_namespace=namespace,
+        mapping_fn=lambda t: namespace.require_taxon(label=t.label[0].upper()),
     )
-    c = ContainingTree(t, taxon_namespace, m)
+    cont = ContainingTree(tree, namespace, map)
 
-    res = c.simulate_contained_kingman()
+    res = cont.simulate_contained_kingman()
     assert isinstance(res, dendropy.Tree)

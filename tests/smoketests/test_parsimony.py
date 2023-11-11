@@ -5,7 +5,7 @@ from . import pytestmark
 
 
 def test_fitch_up_pass():
-    t = dendropy.Tree()
+    tree = dendropy.Tree()
 
-    res = fitch_up_pass(t.preorder_node_iter())
+    res = fitch_up_pass(tree.preorder_node_iter())
     assert res is None

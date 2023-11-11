@@ -17,20 +17,20 @@ def test_qmatrix():
 
 
 def test_simulate_discrete_char_dataset():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    t.seed_node.taxon = taxon_namespace.get_taxon("A")
-    m = NucleotideCharacterEvolutionModel()
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    model = NucleotideCharacterEvolutionModel()
 
-    res = simulate_discrete_char_dataset(1, t, m)
+    res = simulate_discrete_char_dataset(1, tree, model)
     assert isinstance(res, dendropy.DataSet)
 
 
 def test_simulate_discrete_chars():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    t.seed_node.taxon = taxon_namespace.get_taxon("A")
-    m = NucleotideCharacterEvolutionModel()
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    model = NucleotideCharacterEvolutionModel()
 
-    res = simulate_discrete_chars(1, t, m)
+    res = simulate_discrete_chars(1, tree, model)
     assert isinstance(res, dendropy.DnaCharacterMatrix)

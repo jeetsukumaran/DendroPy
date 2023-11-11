@@ -16,31 +16,31 @@ def test_birth_death_tree():
 
 
 def test_uniform_pure_birth_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
+    namespace = dendropy.TaxonNamespace(["A"])
 
-    res = uniform_pure_birth_tree(taxon_namespace)
+    res = uniform_pure_birth_tree(namespace)
     assert isinstance(res, dendropy.Tree)
 
 
 def test_fit_pure_birth_model():
-    t = dendropy.Tree()
-    t.seed_node.new_child(edge_length=1)
+    tree = dendropy.Tree()
+    tree.seed_node.new_child(edge_length=1)
 
-    res = fit_pure_birth_model(tree=t)
+    res = fit_pure_birth_model(tree=tree)
     assert isinstance(res, dict)
 
 
 def test_fit_pure_birth_model_to_tree():
-    t = dendropy.Tree()
-    t.seed_node.new_child(edge_length=1)
+    tree = dendropy.Tree()
+    tree.seed_node.new_child(edge_length=1)
 
-    res = fit_pure_birth_model_to_tree(t)
+    res = fit_pure_birth_model_to_tree(tree)
     assert isinstance(res, dict)
 
 
 def test_birth_death_likelihood():
-    t = dendropy.Tree()
-    t.seed_node.new_child()
+    tree = dendropy.Tree()
+    tree.seed_node.new_child()
 
-    res = birth_death_likelihood(tree=t, birth_rate=1, death_rate=2)
+    res = birth_death_likelihood(tree=tree, birth_rate=1, death_rate=2)
     assert isinstance(res, float)

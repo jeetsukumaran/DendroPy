@@ -5,41 +5,41 @@ from . import pytestmark
 
 
 def test_add():
-    p = MeasurementProfile()
+    prof = MeasurementProfile()
 
-    res = p.add(1)
+    res = prof.add(1)
     assert res is None
 
 
 def test_set_data():
-    p = MeasurementProfile()
+    prof = MeasurementProfile()
 
-    res = p.set_data([])
+    res = prof.set_data([])
     assert res is None
 
 
 def test_euclidean_distance():
-    p = MeasurementProfile()
+    prof = MeasurementProfile()
 
-    res = p._euclidean_distance([], [])
+    res = prof._euclidean_distance([], [])
     assert isinstance(res, float)
 
 
 def test_distance():
-    p1 = MeasurementProfile()
-    p2 = MeasurementProfile()
-    p1.add(1)
-    p2.add(1)
-    p2.add(1)
+    prof1 = MeasurementProfile()
+    prof2 = MeasurementProfile()
+    prof1.add(1)
+    prof2.add(1)
+    prof2.add(1)
 
-    res = p1.distance(p2, 2)
+    res = prof1.distance(prof2, 2)
     assert isinstance(res, float)
 
 
 def test_compile():
-    t = dendropy.Tree()
-    t.seed_node.new_child(edge_length=1)
-    p = TreeProfile(t)
+    tree = dendropy.Tree()
+    tree.seed_node.new_child(edge_length=1)
+    prof = TreeProfile(tree)
 
-    res = p.compile(t)
+    res = prof.compile(tree)
     assert res is None

@@ -1,25 +1,26 @@
 from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
 from dendropy.utility.container import DataTable
+import tempfile
 
 from . import pytestmark
 
 
 def test_as_data_table():
-    m = PhylogeneticDistanceMatrix()
+    mat = PhylogeneticDistanceMatrix()
 
-    res = m.as_data_table()
+    res = mat.as_data_table()
     assert isinstance(res, DataTable)
 
 
 def test_write_csv():
-    m = PhylogeneticDistanceMatrix()
-
-    # res = m.write_csv("a.out")
-    # assert res == None
+    mat = PhylogeneticDistanceMatrix()
+    file = tempfile.NamedTemporaryFile()
+    res = mat.write_csv(file.name)
+    assert res == None
 
 
 def test_distances():
-    m = PhylogeneticDistanceMatrix()
+    mat = PhylogeneticDistanceMatrix()
 
-    res = m.distances()
+    res = mat.distances()
     assert isinstance(res, list)

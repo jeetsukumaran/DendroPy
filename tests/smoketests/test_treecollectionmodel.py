@@ -1,6 +1,6 @@
 import dendropy
 
-# from . import pytestmark
+from . import pytestmark
 from dendropy.datamodel.treecollectionmodel import (
     SplitDistribution,
     TreeArray,
@@ -9,52 +9,61 @@ from dendropy.datamodel.treecollectionmodel import (
 
 
 def test_maximum_product_of_split_support_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    l = TreeList()
-    l.__add__(t)
-    l.maximum_product_of_split_support_tree()
+    list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
+    
+    res = list.maximum_product_of_split_support_tree()
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_maximum_sum_of_split_support_tree():
-    t = dendropy.Tree()
-    l = TreeList()
-    l.__add__(t)
-    l.maximum_sum_of_split_support_tree()
+    list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
+    
+    res = list.maximum_sum_of_split_support_tree()
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_frequency_of_split():
-    l = TreeList()
-    l.frequency_of_split(labels="A")
+    list = TreeList.get(data="((A,B),(C,D));((A,C),(B,D));", schema="newick")
+    
+    res = list.frequency_of_split(labels="A")
+    assert isinstance(res, float)
 
 
 def test_splits_considered():
-    d = SplitDistribution()
-    d.splits_considered()
+    dist = SplitDistribution()
+
+    res = dist.splits_considered()
+    assert isinstance(res, tuple)
 
 
 def test_update():
-    d = SplitDistribution()
-    d1 = SplitDistribution()
-    d.update(d1)
+    dist1 = SplitDistribution()
+    dist2 = SplitDistribution()
+
+    res = dist1.update(dist2)
+    assert res is None
 
 
 def test_collapse_edges_with_less_than_minimum_support():
-    d = SplitDistribution()
-    t = dendropy.Tree()
-    d.collapse_edges_with_less_than_minimum_support(t)
+    dist = SplitDistribution()
+    tree = dendropy.Tree()
+
+    res = dist.collapse_edges_with_less_than_minimum_support(tree)
+    assert res is None
 
 
 def test_treearray_update():
-    a = TreeArray()
-    a1 = TreeArray()
-    a.update(a1)
+    arr1 = TreeArray()
+    arr2 = TreeArray()
+
+    res = arr1.update(arr2)
+    assert res is None
 
 
 def test_extend():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    a = TreeArray(taxon_namespace=taxon_namespace)
-    a1 = TreeArray(taxon_namespace=taxon_namespace)
-    t = dendropy.Tree(taxon_namespace=taxon_namespace)
-    a1.add_tree(t)
-    a.extend(a1)
+    namespace = dendropy.TaxonNamespace(["A"])
+    arr1 = TreeArray(taxon_namespace=namespace)
+    arr2 = TreeArray(taxon_namespace=namespace)
+
+    res = arr1.extend(arr2)
+    assert isinstance(res, TreeArray)
