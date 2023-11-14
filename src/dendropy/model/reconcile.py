@@ -177,7 +177,8 @@ class ContainingTree(dendropy.Tree):
         """
         Clears all contained trees and mapped edges.
         """
-        self.contained_trees = dendropy.TreeList(taxon_namespace=self._contained_to_containing_taxon_map.domain_taxa)
+        if hasattr(self._contained_to_containing_taxon_map, "domain_taxa"):
+            self.contained_trees = dendropy.TreeList(taxon_namespace=self._contained_to_containing_taxon_map.domain_taxa)
         self.clear_contained_edges()
 
     def clear_contained_edges(self):
