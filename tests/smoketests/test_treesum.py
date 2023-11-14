@@ -1,5 +1,5 @@
 import dendropy
-from dendropy.calculate.treesum import TreeSummarizer, TopologyCounter
+from dendropy.calculate.treesum import TopologyCounter, TreeSummarizer
 from dendropy.datamodel.treecollectionmodel import SplitDistribution
 
 from . import marksmoke as pytestmark

@@ -13,6 +13,7 @@ def test_taxa_bipartition():
     res = namespace.taxa_bipartition(labels=[])
     assert isinstance(res, Bipartition)
 
+
 def test_bitmask_taxa_list():
     namespace = TaxonNamespace()
 
