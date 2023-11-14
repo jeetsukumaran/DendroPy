@@ -51,20 +51,20 @@ def test_annotate_nodes_and_edges():
 def test_summarize_node_ages_on_tree():
     # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
 
-    # taxon_namespace = dendropy.TaxonNamespace(["A", "B", "C", "D",])
-    # tree = dendropy.Tree(taxon_namespace=taxon_namespace)
-    # tree.seed_node.taxon = taxon_namespace.get_taxon("A")
-    # tree.seed_node.edge.length = 1
-    # tree.seed_node.label = "asdf"
-    # tree.seed_node.age = 1
+    taxon_namespace = dendropy.TaxonNamespace(["A", "B", "C", "D",])
+    tree = dendropy.Tree(taxon_namespace=taxon_namespace)
+    tree.seed_node.taxon = taxon_namespace.get_taxon("A")
+    tree.seed_node.edge.length = 1
+    tree.seed_node.label = "asdf"
+    tree.seed_node.age = 1
 
-    # tree.update_splits()
-    # tree.update_bipartitions()
+    tree.update_splits()
+    tree.update_bipartitions()
 
-    # s = TreeSummarizer()
-    # d = SplitDistribution()
+    s = TreeSummarizer()
+    d = SplitDistribution()
 
-    # s.summarize_node_ages_on_tree(tree, d)
+    s.summarize_node_ages_on_tree(tree, d)
     pass
 
 
