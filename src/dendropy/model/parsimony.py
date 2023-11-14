@@ -223,7 +223,7 @@ def fitch_up_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over |Node| objects
+    preorder_node_list : iterable of/over |Node| objects
         An iterable of |Node| objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
