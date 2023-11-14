@@ -4,7 +4,7 @@ from dendropy.calculate.popgenstat import (
     unfolded_site_frequency_spectrum,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_derived_state_matrix():

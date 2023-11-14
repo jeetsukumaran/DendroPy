@@ -11,7 +11,7 @@ from dendropy.calculate.probability import (
     z_pmf,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_binomial_rv():

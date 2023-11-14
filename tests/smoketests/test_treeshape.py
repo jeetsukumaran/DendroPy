@@ -1,7 +1,7 @@
 import dendropy
 from dendropy.model.treeshape import star_tree
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_star_tree():

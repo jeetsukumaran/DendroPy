@@ -6,7 +6,7 @@ from dendropy.model.discrete import (
     simulate_discrete_chars,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_qmatrix():

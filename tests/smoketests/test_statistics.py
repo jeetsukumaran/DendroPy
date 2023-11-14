@@ -1,6 +1,6 @@
 from dendropy.calculate.statistics import empirical_cdf, mode, quantile
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_mode():

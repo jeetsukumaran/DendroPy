@@ -1,3 +1,4 @@
 import pytest
 
-pytestmark = pytest.mark.smoke
+marksmoke = pytest.mark.smoke
+

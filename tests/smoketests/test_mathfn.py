@@ -1,6 +1,6 @@
 from dendropy.calculate.mathfn import LCM, lcm
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_lcm():

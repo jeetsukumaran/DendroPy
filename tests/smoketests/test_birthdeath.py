@@ -7,7 +7,7 @@ from dendropy.model.birthdeath import (
     uniform_pure_birth_tree,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_birth_death_tree():

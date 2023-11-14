@@ -1,6 +1,6 @@
 from dendropy.interop.genbank import GenBankResourceStore
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_parsexml():

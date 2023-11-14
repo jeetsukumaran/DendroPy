@@ -5,7 +5,7 @@ from dendropy.datamodel.treecollectionmodel import (
     TreeList,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_maximum_product_of_split_support_tree():

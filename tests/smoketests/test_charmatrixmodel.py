@@ -3,7 +3,7 @@ from types import GeneratorType
 import dendropy
 from dendropy.datamodel.charmatrixmodel import CharacterMatrix, DiscreteCharacterMatrix
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_concatenate():

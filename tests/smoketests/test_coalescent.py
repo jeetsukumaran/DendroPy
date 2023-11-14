@@ -15,7 +15,7 @@ from dendropy.model.coalescent import (
     time_to_coalescence,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_discrete_time_to_coalescence():

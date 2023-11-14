@@ -5,7 +5,7 @@ from dendropy.calculate.combinatorics import (
     num_internal_nodes_on_tree,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_choose():
