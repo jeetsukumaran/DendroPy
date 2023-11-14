@@ -1,5 +1,4 @@
 import dendropy
-from dendropy.datamodel.treemodel import Node, Tree
 from dendropy.model.coalescent import (
     coalesce_nodes,
     constrained_kingman_tree,
@@ -16,7 +15,7 @@ from dendropy.model.coalescent import (
     time_to_coalescence,
 )
 
-from . import pytestmark
+from . import marksmoke as pytestmark
 
 
 def test_discrete_time_to_coalescence():
@@ -39,89 +38,89 @@ def test_expected_tmrca():
 
 
 def test_coalesce_nodes():
-    t = Tree()
+    tree = dendropy.Tree()
 
     res1 = coalesce_nodes(None)
-    res2 = coalesce_nodes(t.nodes(), use_expected_tmrca=True)
+    res2 = coalesce_nodes(tree.nodes(), use_expected_tmrca=True)
     assert isinstance(res1, list)
     assert isinstance(res2, list)
 
 
 def test_node_waiting_time_pairs():
-    t = Tree()
-    n = Node()
-    t.seed_node.add_child(n)
+    tree = dendropy.Tree()
+    node = dendropy.Node()
+    tree.seed_node.add_child(node)
 
-    res = node_waiting_time_pairs(t)
+    res = node_waiting_time_pairs(tree)
     assert isinstance(res, list)
 
 
 def test_extract_coalescent_frames():
-    t = Tree()
-    n = Node()
-    t.seed_node.add_child(n)
+    tree = dendropy.Tree()
+    node = dendropy.Node()
+    tree.seed_node.add_child(node)
 
-    res = extract_coalescent_frames(t)
+    res = extract_coalescent_frames(tree)
     assert isinstance(res, dict)
 
 
 def test_log_probability_of_coalescent_frames():
-    t = Tree()
-    t.seed_node.new_child(edge_length=1)
-    t.seed_node.new_child(edge_length=1)
+    tree = dendropy.Tree()
+    tree.seed_node.new_child(edge_length=1)
+    tree.seed_node.new_child(edge_length=1)
 
-    res = log_probability_of_coalescent_frames(extract_coalescent_frames(t), 1)
+    res = log_probability_of_coalescent_frames(extract_coalescent_frames(tree), 1)
     assert isinstance(res, float)
 
 
 def test_log_probability_of_coalescent_trees():
-    t = Tree()
-    t.seed_node.new_child(edge_length=1)
-    t.seed_node.new_child(edge_length=1)
+    tree = dendropy.Tree()
+    tree.seed_node.new_child(edge_length=1)
+    tree.seed_node.new_child(edge_length=1)
 
-    res = log_probability_of_coalescent_tree(t, 1)
+    res = log_probability_of_coalescent_tree(tree, 1)
     assert isinstance(res, float)
 
 
 def test_contained_coalescent_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = Tree(taxon_namespace=taxon_namespace)
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
 
-    n = t.seed_node.new_child()
-    n.taxon = taxon_namespace.get_taxon("A")
+    node = tree.seed_node.new_child()
+    node.taxon = namespace.get_taxon("A")
 
     gene_to_species_map = dendropy.TaxonNamespaceMapping.create_contained_taxon_mapping(
-        containing_taxon_namespace=t.taxon_namespace, num_contained=1
+        containing_taxon_namespace=tree.taxon_namespace, num_contained=1
     )
 
-    res = contained_coalescent_tree(t, gene_to_species_map)
-    assert isinstance(res, Tree)
+    res = contained_coalescent_tree(tree, gene_to_species_map)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_pure_kingman_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
+    namespace = dendropy.TaxonNamespace(["A"])
 
-    res = pure_kingman_tree(taxon_namespace)
-    assert isinstance(res, Tree)
+    res = pure_kingman_tree(namespace)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_pure_kingman_tree_shape():
     res = pure_kingman_tree_shape(1, 1)
-    assert isinstance(res, Tree)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_mean_kingman_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
+    namespace = dendropy.TaxonNamespace(["A"])
 
-    res = mean_kingman_tree(taxon_namespace)
-    assert isinstance(res, Tree)
+    res = mean_kingman_tree(namespace)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_constrained_kingman_tree():
-    taxon_namespace = dendropy.TaxonNamespace(["A"])
-    t = Tree(taxon_namespace=taxon_namespace)
-    n = t.seed_node.new_child()
-    n.taxon = taxon_namespace.get_taxon("A")
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    node = tree.seed_node.new_child()
+    node.taxon = namespace.get_taxon("A")
 
-    res = constrained_kingman_tree(t)
+    res = constrained_kingman_tree(tree)
     assert isinstance(res, tuple)
