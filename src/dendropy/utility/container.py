@@ -251,7 +251,6 @@ class NormalizedBitmaskDict(collections.OrderedDict):
 
     def __init__(self, other=None, fill_bitmask=None):
         """
-
         Parameters
         ----------
         fill_bitmask : integer
