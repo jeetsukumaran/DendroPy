@@ -49,8 +49,6 @@ def test_annotate_nodes_and_edges():
 
 
 def test_summarize_node_ages_on_tree():
-    # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-
     taxon_namespace = dendropy.TaxonNamespace(["A", "B", "C", "D",])
     tree = dendropy.Tree(taxon_namespace=taxon_namespace)
     tree.seed_node.taxon = taxon_namespace.get_taxon("A")
@@ -61,11 +59,11 @@ def test_summarize_node_ages_on_tree():
     tree.update_splits()
     tree.update_bipartitions()
 
-    s = TreeSummarizer()
-    d = SplitDistribution()
+    summ = TreeSummarizer()
+    dist = SplitDistribution()
 
-    s.summarize_node_ages_on_tree(tree, d)
-    pass
+    res = summ.summarize_node_ages_on_tree(tree, dist)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_summarize_edge_lengths_on_tree():
@@ -73,18 +71,22 @@ def test_summarize_edge_lengths_on_tree():
     summ = TreeSummarizer()
     dist = SplitDistribution()
 
-    summ.summarize_edge_lengths_on_tree(tree, dist)
+    res = summ.summarize_edge_lengths_on_tree(tree, dist)
+    assert isinstance(res, dendropy.Tree)
 
 
 def test_count_splits_on_trees():
     # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-    # s = TreeSummarizer()
-    # t = dendropy.Tree()
-    # d = SplitDistribution(taxon_namespace=None)
-    # l = []
-    # l.append(t)
+    # namespace = dendropy.TaxonNamespace(["A"])
+    # namespace.is_mutable = False
+    # summ = TreeSummarizer()
+    # tree = dendropy.Tree(taxon_namespace=namespace)
+    # tree.encode_bipartitions(is_bipartitions_mutable=False)
+    # dist = SplitDistribution(taxon_namespace=namespace)
+    # list = []
+    # list.append(tree)
 
-    # s.count_splits_on_trees(l, d)
+    # summ.count_splits_on_trees(list, dist)
     pass
 
 

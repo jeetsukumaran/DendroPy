@@ -72,6 +72,7 @@ class FragmentedPopulations(object):
 
         self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
+        assert isinstance(self.mutation_tree.taxon_namespace, dendropy.TaxonNamespace)
         d = dendropy.DataSet(self.mutation_tree.taxon_namespace)
         if self.use_seq_gen is True:
             sg = seqgen.SeqGen()
@@ -127,7 +128,9 @@ class FragmentedPopulations(object):
                                                           gene_node_label_fn=lambda x,y: "%sX%d" % (x,y),
                                                           rng=self.rng)
 
+        assert isinstance(self.gene_tree.taxon_namespace, dendropy.TaxonNamespace)
         self.mutation_tree = copy.deepcopy(self.gene_tree)
+        assert isinstance(self.mutation_tree.taxon_namespace, dendropy.TaxonNamespace)
         for edge in self.mutation_tree.preorder_edge_iter():
             edge.length = edge.length * self.mutrate_per_site_per_generation
         return self.gene_tree
