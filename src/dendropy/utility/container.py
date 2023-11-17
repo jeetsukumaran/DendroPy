@@ -219,7 +219,7 @@ class OrderedSet(object):
 class NormalizedBitmaskDict(collections.OrderedDict):
     """
     Keys, {K_i}, are longs. ``fill_bitmask`` must be provided before elements can be
-    added removed from dictionary. All keys are normalized such that the
+    added or removed from dictionary. All keys are normalized such that the
     least- significant bit is '0'. That is, if the key's least-significant bit
     is '0', it is added as-is, otherwise it is complemented by XOR'ing it with
     'fill_bitmask'.
