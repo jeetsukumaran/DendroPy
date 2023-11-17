@@ -21,26 +21,26 @@ def test_remove():
 
 def test_index():
     set = OrderedSet([1])
+
     res = set.index(1)
     assert isinstance(res, int)
 
 
 def test_clear():
     set = OrderedSet([1])
+
     res = set.clear()
     assert res is None
 
+def test_pop():
+    set = NormalizedBitmaskDict()
+    res = set.pop(1)
+    assert isinstance(res, int)
 
-# TODO: https://github.com/jeetsukumaran/DendroPy/issues/179
-# def test_pop():
-#     set = NormalizedBitmaskDict()
-#     res = set.pop(1)
-#     assert isinstance(res, int)
-
-# def test_get():
-#     set = NormalizedBitmaskDict()
-#     res = set.get(1)
-#     assert isinstance(res, int)
+def test_get():
+    set = NormalizedBitmaskDict(fill_bitmask=0b11101001)
+    res = set.get(1)
+    assert res is None
 
 
 def test_lower_items():
