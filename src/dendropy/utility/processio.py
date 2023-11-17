@@ -81,7 +81,7 @@ class SessionReader(object):
     def read(self):
         # read line without blocking
 
-        for line in self.stream.readline():
+        for line in self.stream.readlines():
             self.queue.put(line)
 
         try:
