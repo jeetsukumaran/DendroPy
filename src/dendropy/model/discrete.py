@@ -405,7 +405,7 @@ def simulate_discrete_char_dataset(seq_len,
         Length of sequence (number of characters).
     tree_model    : |Tree|
         Tree on which to simulate.
-    seq_model     : dendropy.model.discrete.DiscreteCharacterEvolutionModel
+    seq_model     : dendropy.model.discrete.NucleotideCharacterEvolutionModel
         The character substitution model under which to to evolve the
         characters.
     mutation_rate : float
@@ -469,7 +469,7 @@ def simulate_discrete_chars(
         Length of sequence (number of characters).
     tree_model    : |Tree|
         Tree on which to simulate.
-    seq_model     : dendropy.model.discrete.DiscreteCharacterEvolutionModel
+    seq_model     : dendropy.model.discrete.NucleotideCharacterEvolutionModel
         The character substitution model under which to to evolve the
         characters.
     mutation_rate : float
