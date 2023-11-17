@@ -1,13 +1,15 @@
-import tempfile
-
 from dendropy.utility.processio import Session, SessionReader
+import io
+import tempfile
 
 from . import marksmoke as pytestmark
 
 # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179
-# def test_enqueue_stream():
-#     read = SessionReader("")
-#     read.enqueue_stream()
+def test_enqueue_stream():
+
+    with tempfile.NamedTemporaryFile() as file:
+        read = SessionReader(file)
+        read.enqueue_stream()
 
 
 def test_read():
