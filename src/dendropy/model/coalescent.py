@@ -399,15 +399,15 @@ def extract_coalescent_frames(
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     r"""
-    Under the classical neutral coalescent \citep{Kingman1982,
-    Kingman1982b}, the waiting times between coalescent events in a
+    Under the classical neutral coalescent :math:`\citep{Kingman1982,
+    Kingman1982b}`, the waiting times between coalescent events in a
     sample of :math:`k` alleles segregating in a  population of (haploid) size
     :math:`N_e` is distributed exponentially with a rate parameter of
     :math:`\frac{{k \choose 2}}{N_e}`:
 
         .. math::
 
-            \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
+            \Pr(T) =  \frac{{k \choose 2}}{N_e} e^{-  \frac{{k \choose 2}}{N_e} T},
 
     where :math:`T` is the length of  (chronological) time in which there are
     :math:`k` alleles in the sample (i.e., for :math:`k` alleles to coalesce into
