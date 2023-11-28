@@ -25,6 +25,7 @@ import collections
 import copy
 import sys
 import csv
+from dendropy.utility import deprecate
 try:
     from collections.abc import MutableMapping
 except ImportError:
@@ -261,6 +262,9 @@ class NormalizedBitmaskDict(collections.OrderedDict):
             missing taxa 2, 3, and 5, ``fill_bitmask`` would be 0b11101001.
 
         """
+        if not other and not fill_bitmask:
+            deprecate.dendropy_deprecation_warning(message="Deprecated since DendroPy 5: either other or fill_bitmask must be specified.")
+
         collections.OrderedDict.__init__(self)
         self.lowest_relevant_bit = NormalizedBitmaskDict.least_significant_set_bit(fill_bitmask)
         self.fill_bitmask = fill_bitmask
