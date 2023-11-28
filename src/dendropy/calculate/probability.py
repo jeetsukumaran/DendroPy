@@ -99,7 +99,7 @@ def poisson_pmf(k, rate):
     with rate parameter, ``rate`` (= 1/mean).
     """
     mean = 1.0/rate
-    return float((mean ** k) * math.exp(-mean))/combinatorics.factorial(k)
+    return float((mean ** k) * math.exp(-mean))/math.factorial(k)
 
 def sample_multinomial(probs, rng=None):
     """Returns the index of the probability bin in ``probs``.
