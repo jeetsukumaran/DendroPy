@@ -172,7 +172,7 @@ def fitch_down_pass(
             new_construct="postorder_node_iter"
         )
         postorder_node_iter = kwargs.pop("postorder_nodes")
-    if len(kwargs) == 0:
+    if len(kwargs) != 0:
         raise ValueError(f"Unrecognized argument(s): {kwargs}")
     
     if score_by_character_list is not None:
@@ -278,12 +278,12 @@ def fitch_up_pass(
     """
     if "preorder_nodes" in kwargs:
         deprecate.dendropy_deprecation_warning(
-            preamble="Deprecated since DendroPy 5"
-            old_construct="preorder_nodes"
+            preamble="Deprecated since DendroPy 5",
+            old_construct="preorder_nodes",
             new_construct="preorder_node_iter"
         )
         preorder_node_iter = kwargs.pop("preorder_nodes")
-    if len(kwargs) == 0:
+    if len(kwargs) != 0:
         raise ValueError(f"Unrecognized argument(s): {kwargs}")
 
     node_state_sets_map = {}
