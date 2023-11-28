@@ -44,7 +44,7 @@ def discrete_time_to_coalescence(n_genes, pop_size=None, n_to_coalesce=2, rng=No
     ----------
 
     n_genes : integer
-        The number of genes in the sample.
+        the number of genes in the sample. Must be greater than or equal to n_to_coalesce.
     pop_size : integer
         The effective *haploid* population size; i.e., number of genes in the
         population: 2 * N in a diploid population of N individuals, or N in a
