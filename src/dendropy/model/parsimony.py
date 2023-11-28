@@ -25,6 +25,7 @@ from functools import reduce
 import operator
 import dendropy
 from dendropy.utility.error import TaxonNamespaceIdentityError
+from dendropy.utility import deprecate
 
 class _NodeStateSetMap(dict):
     def __init__(self, taxon_state_sets_map=None):
@@ -49,11 +50,12 @@ def _retrieve_state_sets_from_attr(n, state_sets_attr_name, taxon_state_sets_map
         return v
 
 def fitch_down_pass(
-        postorder_nodes,
+        postorder_node_iter,
         state_sets_attr_name="state_sets",
         taxon_state_sets_map=None,
         weights=None,
         score_by_character_list=None,
+        **kwargs,
         ):
     """
     Returns the parsimony score given a list of nodes in postorder and
@@ -61,7 +63,7 @@ def fitch_down_pass(
 
     Parameters
     ----------
-    postorder_nodes : iterable of/over |Node| objects
+    postorder_node_iter : iterable of/over |Node| objects
         An iterable of |Node| objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
@@ -163,6 +165,16 @@ def fitch_down_pass(
         print(score)
 
     """
+    if "postorder_nodes" in kwargs:
+        deprecate.dendropy_deprecation_warning(
+            preamble="Deprecated since DendroPy 5",
+            old_construct="postorder_nodes",
+            new_construct="postorder_node_iter"
+        )
+        postorder_node_iter = kwargs.pop("postorder_nodes")
+    if len(kwargs) == 0:
+        raise ValueError(f"Unrecognized argument(s): {kwargs}")
+    
     if score_by_character_list is not None:
         assert len(score_by_character_list) == 0
         for idx in range(len(list(taxon_state_sets_map.values())[0])): # this is unacceptable!
@@ -175,7 +187,7 @@ def fitch_down_pass(
     else:
         get_node_state_sets = lambda node : _retrieve_state_sets_from_attr(node, state_sets_attr_name, taxon_state_sets_map)
         set_node_state_sets = lambda node, v : _store_sets_as_attr(node, state_sets_attr_name, v)
-    for nd in postorder_nodes:
+    for nd in postorder_node_iter:
         c = nd.child_nodes()
         if not c:
             ss = get_node_state_sets(nd)
@@ -214,16 +226,17 @@ def fitch_down_pass(
     return score
 
 def fitch_up_pass(
-        preorder_node_list,
+        preorder_node_iter,
         state_sets_attr_name="state_sets",
-        taxon_state_sets_map=None):
+        taxon_state_sets_map=None,
+        **kwargs):
     """
     Finalizes the state set lists associated with each node using the "final
     phase" of Fitch's (1971) unordered parsimony algorithm.
 
     Parameters
     ----------
-    preorder_node_list : iterable of/over |Node| objects
+    preorder_node_iter : iterable of/over |Node| objects
         An iterable of |Node| objects in in order of post-order
         traversal of the tree.
     state_sets_attr_name : str
@@ -263,8 +276,18 @@ def fitch_up_pass(
             print(nd.state_sets)
 
     """
+    if "preorder_nodes" in kwargs:
+        deprecate.dendropy_deprecation_warning(
+            preamble="Deprecated since DendroPy 5"
+            old_construct="preorder_nodes"
+            new_construct="preorder_node_iter"
+        )
+        preorder_node_iter = kwargs.pop("preorder_nodes")
+    if len(kwargs) == 0:
+        raise ValueError(f"Unrecognized argument(s): {kwargs}")
+
     node_state_sets_map = {}
-    for nd in preorder_node_list:
+    for nd in preorder_node_iter:
         c = nd.child_nodes()
         p = nd.parent_node
         if (not c) or (not p):
