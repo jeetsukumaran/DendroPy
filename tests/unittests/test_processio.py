@@ -5,7 +5,6 @@ import tempfile
 from dendropy.utility import processio
 
 class SessionTests(unittest.TestCase):
-    @pytest.mark.asdf
     def test_session(self):
         with tempfile.NamedTemporaryFile() as file, open(file.name, mode="w") as filew, open(file.name, mode="r") as filer:
             reader = processio.SessionReader(filer)
