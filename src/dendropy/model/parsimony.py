@@ -172,7 +172,7 @@ def fitch_down_pass(
             new_construct="postorder_node_iter"
         )
         postorder_node_iter = kwargs.pop("postorder_nodes")
-    if len(kwargs) != 0:
+    if kwargs:
         raise ValueError(f"Unrecognized argument(s): {kwargs}")
     
     if score_by_character_list is not None:
