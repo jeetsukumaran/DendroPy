@@ -150,7 +150,6 @@ class ContainingTree(dendropy.Tree):
                     domain_taxon_namespace=self.contained_taxon_namespace,
                     range_taxon_namespace=self.taxon_namespace)
         self.build_edge_taxa_sets()
-    #contained_to_containing_taxon_map = property(_get_contained_to_containing_taxon_map)
 
     @property
     def contained_trees(self):
