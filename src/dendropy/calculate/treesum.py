@@ -259,16 +259,18 @@ class TreeSummarizer(object):
             if split in split_distribution.split_node_ages:
                 ages = split_distribution.split_node_ages[split]
                 nd.age = summarization_fn(ages)
-            else:
+            elif nd.parent_node is not None:
                 # default to age of parent if split not found
                 nd.age = nd.parent_node.age
+            else:
+                nd.age = 0
             ## force parent nodes to be at least as old as their oldest child
             if collapse_negative_edges:
                 for child in nd.child_nodes():
                     if child.age > nd.age:
                         nd.age = child.age
         if set_edge_lengths:
-            tree.set_edge_lengths_from_node_ages(allow_negative_edges=allow_negative_edges)
+            tree.set_edge_lengths_from_node_ages(error_on_negative_edge_lengths=allow_negative_edges)
         return tree
 
     def summarize_edge_lengths_on_tree(self,

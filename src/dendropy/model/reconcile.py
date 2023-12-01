@@ -107,27 +107,32 @@ class ContainingTree(dendropy.Tree):
         self._contained_taxon_namespace = contained_taxon_namespace
         self._contained_to_containing_taxon_map = None
         self._contained_trees = None
-        self._set_contained_to_containing_taxon_map(contained_to_containing_taxon_map)
+        self.contained_to_containing_taxon_map = contained_to_containing_taxon_map
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
         self.collapse_empty_edges = collapse_empty_edges
         self.ultrametricity_precision = ultrametricity_precision
         self.ignore_root_deep_coalescences = ignore_root_deep_coalescences
         if contained_trees:
-            self._set_contained_trees(contained_trees)
+            self.contained_trees = contained_trees
         if self.contained_trees:
             self.rebuild(rebuild_taxa=False)
 
-    def _set_contained_taxon_namespace(self, taxon_namespace):
-        self._contained_taxon_namespace = taxon_namespace
-
-    def _get_contained_taxon_namespace(self):
+    @property
+    def contained_taxon_namespace(self):
         if self._contained_taxon_namespace is None:
             self._contained_taxon_namespace = dendropy.TaxonNamespace()
         return self._contained_taxon_namespace
 
-    contained_taxon_namespace = property(_get_contained_taxon_namespace)
+    @contained_taxon_namespace.setter
+    def contained_taxon_namespace(self, taxon_namespace):
+        self._contained_taxon_namespace = taxon_namespace
 
-    def _set_contained_to_containing_taxon_map(self, contained_to_containing_taxon_map):
+    @property
+    def contained_to_containing_taxon_map(self):
+        return self._contained_to_containing_taxon_map
+
+    @contained_to_containing_taxon_map.setter
+    def contained_to_containing_taxon_map(self, contained_to_containing_taxon_map):
         """
         Sets mapping of |Taxon| objects of the genes/parasite/etc. to that of
         the population/species/host/etc.
@@ -146,12 +151,14 @@ class ContainingTree(dendropy.Tree):
                     range_taxon_namespace=self.taxon_namespace)
         self.build_edge_taxa_sets()
 
-    def _get_contained_to_containing_taxon_map(self):
-        return self._contained_to_containing_taxon_map
+    @property
+    def contained_trees(self):
+            if self._contained_trees is None:
+                self._contained_trees = dendropy.TreeList(taxon_namespace=self._contained_taxon_namespace)
+            return self._contained_trees
 
-    contained_to_containing_taxon_map = property(_get_contained_to_containing_taxon_map)
-
-    def _set_contained_trees(self, trees):
+    @contained_trees.setter
+    def contained_trees(self, trees):
         if hasattr(trees, 'taxon_namespace'):
             if self._contained_taxon_namespace is None:
                 self._contained_taxon_namespace = trees.taxon_namespace
@@ -161,23 +168,19 @@ class ContainingTree(dendropy.Tree):
         if self._contained_taxon_namespace is None:
             self._contained_taxon_namespace = self._contained_trees.taxon_namespace
 
-    def _get_contained_trees(self):
-        if self._contained_trees is None:
-            self._contained_trees = dendropy.TreeList(taxon_namespace=self._contained_taxon_namespace)
-        return self._contained_trees
-
-    contained_trees = property(_get_contained_trees)
-
-    def _get_containing_to_contained_taxa_map(self):
+    @property
+    def containing_to_contained_taxa_map(self):
         return self._contained_to_containing_taxon_map.reverse
 
-    containing_to_contained_taxa_map = property(_get_containing_to_contained_taxa_map)
 
     def clear(self):
         """
         Clears all contained trees and mapped edges.
         """
-        self.contained_trees = dendropy.TreeList(taxon_namespace=self._contained_to_containing_taxon_map.domain_taxa)
+        if hasattr(self._contained_to_containing_taxon_map, "domain_taxa"):
+            self.contained_trees = dendropy.TreeList(taxon_namespace=self._contained_to_containing_taxon_map.domain_taxa)
+        else:
+            self.contained_trees = dendropy.TreeList(taxon_namespace=self.taxon_namespace)
         self.clear_contained_edges()
 
     def clear_contained_edges(self):

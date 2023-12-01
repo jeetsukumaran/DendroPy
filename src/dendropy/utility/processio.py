@@ -66,20 +66,13 @@ class SessionReader(object):
     def __init__(self, file_handle):
         self.queue = Queue()
         self.stream = file_handle
-        self.thread = threading.Thread(
-                target=self.enqueue_stream,
-                )
-        self.thread.daemon = True
-        self.thread.start()
-
-    def enqueue_stream(self):
-        # for line in self.stream.readline():
-        for line in iter(self.stream.readline, b''):
-            self.queue.put(line)
-        self.stream.close()
 
     def read(self):
         # read line without blocking
+
+        for line in self.stream.readlines():
+            self.queue.put(line)
+
         try:
             line = self.queue.get_nowait()
             # line = self.queue.get(timeout=0.1)

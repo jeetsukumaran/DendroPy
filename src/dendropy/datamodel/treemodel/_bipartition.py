@@ -194,6 +194,8 @@ class Bipartition(object):
         is_rooted : bool
             Specifies whether or not the tree with which this bipartition is
             associated is rooted.
+        is_mutable : bool
+            Specifies whether or not the tree is mutable.
         """
         self._split_bitmask = kwargs.get("bitmask", 0)
         self._leafset_bitmask = kwargs.get("leafset_bitmask", self._split_bitmask)

@@ -7,32 +7,44 @@ from . import marksmoke as pytestmark
 
 def test_error_leader():
     mess = ConsoleMessenger()
-    mess.error_leader()
+    
+    res = mess.error_leader()
+    isinstance(res, str)
 
 
 def test_warning_leader():
     mess = ConsoleMessenger()
-    mess.warning_leader()
+    
+    res = mess.warning_leader()
+    assert isinstance(res, str)
 
 
 def test_info_leader():
     mess = ConsoleMessenger()
-    mess.info_leader()
+
+    res = mess.info_leader()
+    assert isinstance(res, str)
 
 
 def test_format_message():
     mess = ConsoleMessenger()
-    mess.format_message("A", level=ConsoleMessenger.ERROR_MESSAGING_LEVEL)
+
+    res = mess.format_message("A", level=ConsoleMessenger.ERROR_MESSAGING_LEVEL)
+    assert isinstance(res, str)
 
 
 def test_log():
     mess = ConsoleMessenger()
-    mess.log("A")
+
+    res = mess.log("A")
+    assert res is None
 
 
 def test_log_lines():
     mess = ConsoleMessenger()
-    mess.log_lines("A", level=1)
+
+    res = mess.log_lines("A", level=1)
+    assert res is None
 
 
 def test_error():
