@@ -1204,6 +1204,11 @@ class AnnotationSet(container.OrderedSet):
         annotation : |Annotation|
             The new |Annotation| created.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message="Deprecated since DendroPy 5: BibTexEntry is broken. If this is important, open an issue on GitHub."
+        )
+
         if read_as == "bibtex":
             return self.add_bibtex(citation=citation,
                     store_as=store_as,
@@ -1247,6 +1252,11 @@ class AnnotationSet(container.OrderedSet):
         annotation : |Annotation|
             The new |Annotation| created.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message="Deprecated since DendroPy 5: BibTexEntry is broken. If this is important, open an issue on GitHub."
+        )
+
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
 
