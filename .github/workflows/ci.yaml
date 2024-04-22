@@ -113,6 +113,8 @@ jobs:
           python setup.py test
   coverage:
     runs-on: ubuntu-20.04
+    env:
+      CODECOV_TOKEN: fa818d5d-2c4d-417f-b994-37f71b3d8ee9
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
